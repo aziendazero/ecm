@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	</head>
+	<body th:fragment="footer">
+		<!-- Bootstrap -->
+		<script src="../static/gentella/js/bootstrap.min.js"
+				th:src="@{/gentella/js/bootstrap.min.js}"></script>
+		<!-- pace page loader -->
+		<script src="../static/gentella/js/pace/pace.min.js"
+				th:src="@{/gentella/js/pace/pace.min.js}"></script>
+		<!-- Validator -->
+		<script src="../static/gentella/js/validator/validator.js"
+				th:src="@{/gentella/js/validator/validator.js}"></script>
+		<!-- form wizard -->
+		<script src="../static/gentella/js/wizard/jquery.smartWizard.js"
+				th:src="@{/gentella/js/wizard/jquery.smartWizard.js}"></script>
+				
+		<!-- DataTable -->
+		<script src="../static/gentella/js/datatables/jquery.datatables.min.js"
+				th:src="@{/gentella/js/datatables/jquery.datatables.min.js}"></script>
+		<script src="../static/gentella/js/datatables/dataTables.bootstrap.js"
+				th:src="@{/gentella/js/datatables/dataTables.bootstrap.js}"></script>
+		<script src="../static/gentella/js/datatables/dataTables.buttons.min.js"
+				th:src="@{/gentella/js/datatables/dataTables.buttons.min.js}"></script>
+		<script src="../static/gentella/js/datatables/buttons.bootstrap.min.js"
+				th:src="@{/gentella/js/datatables/buttons.bootstrap.min.js}"></script>
+			
+		<!-- iCheck -->
+		<script src="../static/gentella/js/icheck/icheck.min.js"
+				th:src="@{/gentella/js/icheck/icheck.min.js}"></script>		
+				
+		<!-- Switch dei form -->
+		<script src="../static/gentella/js/switchery/switchery.min.js"
+				th:src="@{/gentella/js/switchery/switchery.min.js}"></script>
+				
+		<!-- Custom -->			
+		<script src="../static/gentella/js/custom.js"
+				th:src="@{/gentella/js/custom.js}"></script>
+		
+		<!-- initialize the validator.js  --> 		
+		<script th:inline="javascript">
+	        /*<![CDATA[*/
+	        validator.message['invalid'] = [[#{error.invalid}]];
+	        validator.message['empty'] = [[#{error.empty}]];
+	        validator.message['min'] = [[#{error.min}]];
+	        validator.message['max'] = [[#{error.max}]];
+	        validator.message['number_min'] = [[#{error.number_min}]];
+	        validator.message['number_max'] = [[#{error.number_max}]];
+	        validator.message['url'] = [[#{error.url}]];
+	        validator.message['number'] = [[#{error.number}]];
+	        validator.message['email'] = [[#{error.email}]];
+	        validator.message['email_repeat'] = [[#{error.email_repeat}]];
+	        validator.message['password_repeat'] = [[#{error.password_repeat}]];
+	        validator.message['repeat'] = [[#{error.repeat}]];
+	        validator.message['complete'] = [[#{error.complete}]];
+	        validator.message['select'] = [[#{error.select}]];
+	        /*]]>*/
+
+	        /* validate a field on "blur" event, a 'select' on 'change' event and a '.required' classed multifield on 'keyup':*/
+	        $('form')
+	            .on('blur', 'input[required], input.optional, select.required, input[required][pattern]', validator.checkField)
+	            .on('change', 'select.required', validator.checkField);
+
+	        $('.multi.required')
+	            .on('keyup blur', 'input', function () {
+	                validator.checkField.apply($(this).siblings().last()[0]);
+	            });
+
+	    /*     $('form').submit(function (e) {
+	            e.preventDefault();
+	            var submit = true;
+	            // evaluate the form using generic validaing
+	            if (!validator.checkAll($(this))) {
+	                submit = false;
+	            }
+	
+	            if (submit)
+	                this.submit();
+	            return false;
+	        }); */
+        
+	        $('#alerts').change(function() {
+	            validator.defaults.alerts = (this.checked) ? false : true;
+	            if (this.checked)
+	              $('form .alert').remove();
+	          }).prop('checked', false);
+		</script>
+	</body>
+</html>

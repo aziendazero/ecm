@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <head>
+        <title th:text="#{label.error}">label.error</title>
+        <!--/*/ <th:block th:include="fragments/header :: head"></th:block> /*/-->
+    </head>
+    <body class="nav-md">
+	    <div class="container body">
+	        <div class="main_container">
+	
+	            <!-- page content -->
+	            <div class="col-md-12">
+	                <div class="col-middle">
+	                    <div class="text-center text-center">
+                    		<h1 class="error-number" th:text="${errorStatus} ? ${errorStatus} : ${status}" >errorStatus</h1>
+	                        <h2 th:text="#{label.error_page_title}">label.error_page_title</h2>
+	                        <p th:text="${errorMessage} ? ${errorMessage} : ${message}">Error message</p>
+	                        <div class="mid_center">
+								<h2><a href="home.html" th:href="@{/home}" th:text="#{label.home}">label.home</a></h2>			                        	
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	            <!-- /page content -->
+	
+	        </div>
+	    </div>
+    </body>
+</html>
