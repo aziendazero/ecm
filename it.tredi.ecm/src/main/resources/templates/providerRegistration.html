@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html layout:decorator="fragments/templatePublic" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	</head>
+	<body>
+
+		<div layout:fragment="content" th:remove="tag">	
+			<div th:replace="provider/providerForm :: providerWizard"></div>
+		</div>
+	</body>
+</html>

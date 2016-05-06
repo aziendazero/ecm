@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html layout:decorator="fragments/template"
+	xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-md-12 col-sm-12 col-xs-12 animated fadeInDown">
+				<div class="x_panel tile fixed_height_220">
+					<div class="x_title">
+						<h2 class="text-uppercase" th:text="#{label.provider}"></h2>
+						<div class="clearfix"></div>
+					</div>
+					<div>
+						<dl class="dl-horizontal">
+							<dt th:text="#{label.denominazione_legale}"></dt>
+							<dd th:text="${provider.denominazioneLegale}" class="text-uppercase">denominazioneLegale</dd>
+							<dt th:text="#{label.tipo_organizzatore}"></dt>
+							<dd th:text="${provider.tipoOrganizzatore}" class="">tipoOrganizzatore</dd>
+							<dt th:text="#{label.codice_fiscale}"></dt>
+							<dd th:text="${provider.cfPiva}" class="text-uppercase">cf_piva</dd>
+							<dt th:text="#{label.email}"></dt>
+							<dd th:text="${provider.account.email}">email</dd>
+						</dl>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- div class="row">
+			<div class="col-md-6 col-sm-6 col-xs-12">
+				<div class="x_panel tile fixed_height_220">
+					<div class="x_title">
+						<h2 th:text="#{label.dati_del_richiedente}"></h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<dl class="dl-horizontal">
+							<dt th:text="#{label.cognome}"></dt>
+							<dd th:text="${provider.richiedente.anagrafica.cognome}">denominazioneLegale</dd>
+							<dt th:text="#{label.nome}"></dt>
+							<dd th:text="${provider.richiedente.anagrafica.nome}">tipoOrganizzatore</dd>
+							<dt th:text="#{label.cf} + ' / ' + #{label.piva}"></dt>
+							<dd th:text="${provider.cf_piva}" class="text-uppercase">cf_piva</dd>
+							<dt th:text="#{label.telefono} + ' / ' + #{label.piva}"></dt>
+							<dd th:text="${provider.richiedente.anagrafica.telefono}">telefono</dd>
+							<dt th:text="#{label.cellulare}"></dt>
+							<dd th:text="${provider.richiedente.anagrafica.cellulare}">cellulare</dd>
+							<dt th:text="#{label.email}"></dt>
+							<dd th:text="${provider.richiedente.anagrafica.email}">email</dd>
+							<dt th:text="#{label.pec}"></dt>
+							<dd th:text="${provider.richiedente.anagrafica.pec}">pec</dd>
+						</dl>
+					</div>
+				</div>
+			</div>
+		</div -->
+		<div class="row">
+			<div class="col-md-4 col-sm-4 col-xs-12 animated fadeInDown" th:each="persona, row: ${provider.persone}">
+				<div class="well profile_view">
+					<div class="col-sm-12">
+						<h4 class="brief">
+							<span class="text-uppercase" th:text="${persona.ruolo}">Ruolo</span>
+						</h4>
+						<div class="left col-xs-9">
+							<h2 th:text="${persona.anagrafica.cognome} + ' ' + ${persona.anagrafica.nome}">Cognome nome</h2>
+							<ul class="list-unstyled">
+								<li>
+									<strong><i class="fa fa-credit-card"></i><span th:text="' ' + #{label.cf} + ':'"></span></strong>
+									<span class="text-uppercase" th:text="${persona.anagrafica.codiceFiscale}"></span>
+								</li>
+								<li>
+									<strong><i class="fa fa-phone"></i><span th:text="' ' + #{label.telefono} + ':'"></span></strong>
+									<span class="text-right"><span th:text="${persona.anagrafica.telefono}"></span></span>
+								</li>	
+								<li>
+									<strong><i class="fa fa-phone"></i><span th:text="' ' + #{label.cellulare} + ':'"></span></strong>
+									<span th:text="${persona.anagrafica.cellulare}"></span>
+								</li>
+								<li>
+									<strong><i class="fa fa-at"></i><span th:text="' ' + #{label.email} + ':'"></span></strong>
+									<span th:text="${persona.anagrafica.email}"></span>
+								</li>
+								<li>
+									<strong><i class="fa fa-at"></i><span th:text="' ' + #{label.pec} + ':'"></span></strong>
+									<span th:text="${persona.anagrafica.pec}"></span>
+								</li>
+							</ul>
+						</div>
+						<div class="right col-xs-3 text-center">
+							<img src="images/user.png" alt="" th:src="@{/gentella/images/user.png}" class="img-circle img-responsive"/>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

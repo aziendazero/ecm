@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head lang="it">
+        <title th:text="#{app.title}">TITLE</title>
+        <!--/*/ <th:block th:include="fragments/header :: head"></th:block> /*/-->
+	</head>
+
+	<body style="background:#F7F7F7;">
+
+	  <div class="">
+	    <a class="hiddenanchor" id="tologin"></a>
+	    <a class="hiddenanchor" id="toreset"></a>
+	
+	    <div id="wrapper">
+	      <div id="login" class="animate form">
+	        <section class="login_content">
+	          <form th:action="@{/login}" method="post">
+	            <h1 th:text="#{label.accedi}">label.accedi</h1>
+	            <div th:if="${param.error}" th:text="#{label.errore_login}" class="alert alert-error"></div>   
+	            <div th:if="${param.error}" th:text="${error}" class="alert alert-error"></div>    
+                <div>
+	              <input type="text" class="form-control" id="username" name="username" placeholder="Username" required="required" />
+	            </div>
+	            <div>
+	              <input type="password" class="form-control" id="password" name="password" placeholder="Password" required="required" />
+	            </div>
+	            <div class="col-2">
+	              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+	              <div class="input-group">
+	              	<div class="checkbox">
+	                  <label>
+    	                  <input type="checkbox" name="rememberme" id="rememberme"/> <span th:text="#{label.ricordami}">label.ricordami</span>
+        	          </label>
+                  	</div>
+                  </div>
+                   <input class="btn btn-default btn-block submit" type="submit" value="label.accedi" th:value="#{label.accedi}" />
+	            </div>
+	            <div class="clearfix"></div>
+	            <div class="separator">
+             		<p class="change_link">
+                		<a href="#toreset" class="reset_pass" th:text="#{label.password_dimenticata}">label.password_dimenticata?</a>
+              		</p>
+              		<p class="change_link">
+	               	 	<a th:href="@{/providerRegistration}" class="to_register" th:text="#{label.registrati}">label.registrati</a>
+	              	</p>	
+	              <div class="clearfix"></div>
+	              <br />
+	              <div>
+	                <h1><i class="fa fa-paw" style="font-size: 26px;"></i><span th:text="' ' + #{app.title}"></span></h1>
+	                <p th:text="#{label.diritti_riservati}">label.diritti_riservati</p>
+	              </div>
+	            </div>
+	          </form>
+	          <!-- form -->
+	        </section>
+	        <!-- content -->
+	      </div>
+	      <div id="reset" class="animate form">
+	        <section class="login_content">
+	          <form th:action="@{/reset}" method="post">
+	            <h1 th:text="#{label.recupera_password}">login.recupera_password</h1>
+	            <div th:text="#{label.reset_message}" class="alert alert-info"></div>   
+				<div class="item form-group">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <input type="email" id="reset_email" name="reset_email" class="form-control col-md-10 col-xs-12"
+								placeholder="email@domain.com" required="required"/>
+                    </div>
+                </div>	           
+	            <div>
+	              <input class="btn btn-default btn-block submit" type="submit" value="label.invia" th:value="#{label.invia}" />
+	            </div>
+	            <div class="clearfix"></div>
+	            <div class="separator">
+	              <p class="change_link">
+	                <a href="#tologin" class="to_login" th:text="#{label.accedi}"> label.accedi </a>
+	              </p>
+	              <div class="clearfix"></div>
+	              <br />
+	              <div>
+	                <h1><i class="fa fa-paw" style="font-size: 26px;"></i><span th:text="' ' + #{app.title}"></span></h1>
+	                <p th:text="#{label.diritti_riservati}">label.diritti_riservati</p>
+	              </div>
+	            </div>
+	          </form>
+	          <!-- form -->
+	        </section>
+	        <!-- content -->
+	      </div>
+	    </div>
+	  </div>
+	  <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+	</body>
+</html>
