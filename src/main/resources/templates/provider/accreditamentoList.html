@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.accreditamenti_lista}">Lista degli
+							accreditamenti</h2>
+						<a class="btn btn-primary pull-right"
+							th:href="@{/provider/accreditamento/new}"
+							th:text="#{label.nuova_domanda}">label.nuova_domanda</a>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<table th:unless="${#lists.isEmpty(accreditamentoList)}" id="datatable-responsive"
+							class="table table-striped table-bordered dt-responsive nowrap"
+							cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.accreditamento_nome}">Nome</th>
+									<th th:text="#{label.accreditamento_stato}">Stato</th>
+									<th th:text="#{label.accreditamento_invio}">Data invio</th>
+									<th th:text="#{label.accreditamento_validazione}">Datavalidazione</th>
+									<th th:text="#{label.accreditamento_mesi_validita}">Validità (mesi)</th>
+								</tr>
+							</thead>
+							<tbody th:unless="${#lists.isEmpty(accreditamentoList)}" th:remove="all-but-first">
+								<tr th:each="accreditamento : ${accreditamentoList}">
+									<th th:text="${accreditamento.tipoDomanda}"
+										th:href="@{|/provider/accreditamento/${accreditamento.id}|}">Provvisorio/Standard</th>
+									<th th:text="${accreditamento.stato}">Accettata</th>
+									<th th:text="${accreditamento.dataInvio}">22/05/2014</th>
+									<th th:text="${accreditamento.dataValutazione}">24/05/2014</th>
+									<th th:text="${accreditamento.mesiValidita}">24</th>
+								</tr>
+							</tbody>
+						</table>
+						<div th:if="${#lists.isEmpty(accreditamentoList)}">
+							<h2 class="col-xs-12 text-center">
+								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessuna_domanda_accreditamento}">Non ci sono domande di accreditamento!</i>
+							</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.dati_attività}">Dati dell'attività</h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<form id="formAccreditamento"
+							class="form-horizontal form-label-left">
+							<div class="item form-group">
+								<label th:text="#{label.accreditamento_tipologia}"
+									class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="accreditamento_tipologia">Accreditamento per
+									tipologia</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="accreditamento_tipologia">
+									<div class="radio">
+										<label> <input type="radio" class="flat"
+											checked="checked" name="tipologiaAccr" value="Generale" /> <span
+											th:text="#{label.tipologia_generale}"
+											onclick="abilitaCheckbox('off', 'procedure_formative')">
+												Generale </span>
+										</label>
+									</div>
+									<div class="radio">
+										<label> <input type="radio" class="flat"
+											name="tipologiaAccr" value="Settoriale" /> <span
+											th:text="#{label.tipologia_settoriale}"
+											onclick="abilitaCheckbox('on', 'procedure_formative')">
+												Settoriale </span>
+										</label>
+									</div>
+								</div>
+							</div>
+							<div class="item form-group">
+								<label th:text="#{label.procedure_formative}"
+									class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="procedure_formative_checkbox">Procedure formative</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="procedure_formative_checkbox">
+									<div class="checkbox">
+										<label> <input type="checkbox" class="flat"
+											checked="checked" name="procedure_formative" value="FAD"
+											disabled="disabled" /> <span th:text="#{label.FAD}">formazione
+												a distanza (FAD)</span>
+										</label>
+									</div>
+									<div class="checkbox">
+										<label> <input type="checkbox" class="flat"
+											checked="checked" name="procedure_formative" value="FSC"
+											disabled="disabled" /> <span th:text="#{label.FSC}">formazione
+												sul campo (FSC)</span>
+										</label>
+									</div>
+									<div class="checkbox">
+										<label> <input type="checkbox" class="flat"
+											checked="checked" name="procedure_formative" value="RES"
+											disabled="disabled" /> <span th:text="#{label.RES}">formazione
+												residenziale (RES)</span>
+										</label>
+									</div>
+								</div>
+							</div>
+							<div class="item form-group">
+								<label th:text="#{label.accreditamento_professioni}"
+									class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="accreditamento_professioni">Accreditamento per
+									professioni - DA FARE!!!</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="accreditamento_professioni"></div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.dati_economici}">Dati economici</h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<form id="formAccreditamentoTipologia"
+							class="form-horizontal form-label-left">
+							<div class="item form-group">
+								<label th:text="#{label.fatturato_complessivo_title}"
+									class="col-xs-12">Fatturato o Costi complessivi degli
+									ultimi 3 anni (in migliaia di euro)</label> <label
+									class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="costi_complessivi_anno1">2013</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="costi_complessivi_anno1">
+									<input id="costi_complessivi_anno1_value"
+										name="costi_complessivi_anno1_value" required="required"
+										class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" />
+								</div>
+							</div>
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="costi_complessivi_anno2">2014</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="costi_complessivi_anno2">
+									<input id="costi_complessivi_anno2_value"
+										name="costi_complessivi_anno2_value" required="required"
+										class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" />
+								</div>
+							</div>
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="costi_complessivi_anno3">2015</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="costi_complessivi_anno3">
+									<input id="costi_complessivi_anno3_value"
+										name="costi_complessivi_anno3_value" required="required"
+										class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" />
+								</div>
+							</div>
+							<div class="divider-dashed"></div>
+							<div class="item form-group">
+								<label th:text="#{label.fatturato_formazione_title}"
+									class="col-xs-12">Fatturato o Costi dedicati alla
+									formazione del personale sanitario degli ultimi 3 anni (in
+									migliaia di euro)</label> <label
+									class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="costi_formazione_anno1">2013</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="costi_formazione_anno1">
+									<input id="costi_formazione_anno1_value"
+										name="costi_formazione_anno1_value" required="required"
+										class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" />
+								</div>
+							</div>
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="costi_formazione_anno2">2014</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="costi_formazione_anno2">
+									<input id="costi_formazione_anno2_value"
+										name="costi_formazione_anno2_value" required="required"
+										class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" />
+								</div>
+							</div>
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="costi_formazione_anno3">2015</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="costi_formazione_anno3">
+									<input id="costi_formazione_anno3_value"
+										name="costi_formazione_anno3_value" required="required"
+										class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" />
+								</div>
+							</div>
+							<div class="divider-dashed"></div>
+							<div class="item form-group">
+								<label th:text="#{label.numero_dipendenti_title}"
+									class="col-xs-12">Numero dipendenti dedicati alla
+									formazione</label> <label th:text="#{label.tempo_indeterminato}"
+									class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="tempo_indeterminato">Tempo indeterminato</label>
+								<div class="col-md-6 col-sm-6 col-xs-12"
+									id="tempo_indeterminato">
+									<input id="tempo_indeterminato_value"
+										name="tempo_indeterminato_value" required="required"
+										class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" />
+								</div>
+							</div>
+							<div class="item form-group">
+								<label th:text="#{label.altro_personale}"
+									class="control-label col-md-3 col-sm-3 col-xs-12"
+									for="altro_personale">Altro personale</label>
+								<div class="col-md-6 col-sm-6 col-xs-12" id="altro_personale">
+									<input id="altro_personale_value" name="altro_personale_value"
+										required="required" class="form-control col-md-7 col-xs-12"
+										type="text" pattern="numeric" />
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.info_provider}"></h2>
+						<div class="clearfix"></div>
+					</div>
+
+					<div class="x_content">
+						<form id="formInfo" class="form-horizontal form-label-left" th:action="@{/provider/save/accreditamento}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+									
+							<input type="hidden" name="editId" th:value="${provider.id}" />
+					
+							<!-- denominazione legale -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('provider.denominazioneLegale')} ? 'bad'">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12" for="denominazioneLegale">
+									<span class="required" th:text="#{label.denominazione_legale}">label.denominazione_legale</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-md-6 col-sm-6 col-xs-12">
+									<input type="text" id="denominazioneLegale" required="required" class="form-control col-md-7 col-xs-12" 
+										name="denominazioneLegale" th:field="${provider.denominazioneLegale}"
+									/>
+								</div>
+								<div th:if="${#fields.hasErrors('provider.denominazioneLegale')}" class="alert" th:errors="${provider.denominazioneLegale}"></div>
+							</div>
+
+							<!-- tipo organizzatore -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('provider.tipoOrganizzatore')} ? 'bad'">
+		                      <label class="control-label col-md-3 col-sm-3 col-xs-12">
+		                      	<span class="required" th:text="#{label.tipo_organizzatore}">label.tipo_organizzatore</span>
+		                      	<span class="required">*</span>
+		                      </label>
+		                      <div class="col-md-6 col-sm-6 col-xs-12">
+		                        <select class="form-control required" th:field="${provider.tipoOrganizzatore}">
+		                          <option value="" th:text="#{label.seleziona}">label.seleziona</option>
+		                          <option th:each="tipo : ${tipoOrganizzatoreList}" th:value="${tipo}" th:text="${tipo.nome}">Choose option</option>
+		                        </select>
+		                      </div>
+		                      <div th:if="${#fields.hasErrors('provider.tipoOrganizzatore')}" class="alert" th:errors="${provider.tipoOrganizzatore}"></div>
+		                    </div>
+							
+							<!-- partita iva -->
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12">
+									<span class="required"  th:text="#{label.partita_iva}">#{label.partita_iva}</span>
+									<span class="required">*</span>
+								</label>
+								<label class="control-label col-md-6 col-sm-6 col-xs-12 left-align">
+									<span th:text="${provider.partitaIva}">000000000</span>
+								</label>
+							</div>
+							
+							<!-- codicefiscale -->
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12">
+									<span class="required"  th:text="#{label.codice_fiscale}">#{label.codice_fiscale}</span>
+									<span class="required">*</span>
+								</label>
+								<label class="control-label col-md-6 col-sm-6 col-xs-12 left-align">
+									<span th:text="${provider.codiceFiscale}">AAABBB</span>
+								</label>
+							</div>
+					
+							<!-- ragioneSociale -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('provider.ragioneSociale')} ? 'bad'">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12" for="ragione_sociale">
+									<span th:text="#{label.ragione_sociale}">Ragione sociale</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-md-6 col-sm-6 col-xs-12">
+									<select id="ragione_sociale" class="form-control required col-md-7 col-xs-12" data-validate-length-range="6" data-validate-words="2"
+										name="ragione_sociale" required="required" th:field="${provider.ragioneSociale}">
+										<option th:text="#{label.seleziona}" value="">Seleziona...</option>
+										<option th:each="item : ${elencoRagioniSociali}" th:value="${item}" th:text="${item}">Choose option</option>
+									</select>
+								</div>
+								<div th:if="${#fields.hasErrors('provider.ragioneSociale')}" class="alert" th:errors="${provider.ragioneSociale}"></div>
+							</div>
+							
+							<!-- naturaOrganizzazione -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('provider.naturaOrganizzazione')} ? 'bad'">
+								<label th:text="#{label.organizzazione_natura}" class="control-label col-md-3 col-sm-3 col-xs-12" for="natura_organizzazione">Natura dell'organizzazione</label>
+								<div class="col-md-6 col-sm-6 col-xs-12" id="natura_organizzazione">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" name="naturaOrg" th:field="${provider.naturaOrganizzazione}" th:value="Pubblica" /> 
+											<span th:text="#{label.pubblica}">Pubblica</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" name="naturaOrg" th:field="${provider.naturaOrganizzazione}" th:value="Privata" />
+											<span th:text="#{label.privata}">Privata</span>
+										</label>
+									</div>
+								</div>
+								<div th:if="${#fields.hasErrors('provider.naturaOrganizzazione')}" class="alert" th:errors="${provider.naturaOrganizzazione}"></div>
+							</div>
+							
+							<!-- noProfit -->
+							<div class="item form-group">
+								<label th:text="#{label.no_profit}" class="control-label col-md-3 col-sm-3 col-xs-12" for="societa_noprofit">Società no-profit</label>
+								<div class="col-md-6 col-sm-6 col-xs-12" id="societa_noprofit">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" name="societaNoProfit" th:field="${provider.noProfit}" value="true" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" name="societaNoProfit" th:field="${provider.noProfit}" value="false" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+							</div>
+							<!-- 
+								<div class="item form-group">
+									<label th:text="#{label.sito_internet}" class="control-label col-md-3 col-sm-3 col-xs-12"
+										for="website">Sito Internet</label>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<input id="website" name="website"
+											class="form-control col-md-7 col-xs-12" type="url" />
+									</div>
+								</div>
+							 -->
+							<!-- Registra solo Provider -->
+							<div class="item form-group text-right">
+								<input class="btn btn-primary right" type="submit" th:value="#{label.salva}"/>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

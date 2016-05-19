@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content" id="test" th:fragment="content" >
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:if="${tipologiaSede == 'SedeLegale'}" th:text="#{label.sede_legale}">label.info_sede</h2>
+						<h2 th:if="${tipologiaSede == 'SedeOperativa'}" th:text="#{label.sede_operativa}">label.info_sede</h2>
+						<input type="button" class="btn btn-success pull-right" onclick="loadSedeLegale()" name="copia_dati" th:if="${tipologiaSede == 'SedeOperativa'}" th:value="#{label.coincide_con_sede_legale}" />
+						<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/sede/new?tipologiaSede=${tipologiaSede}|}"></a>
+						<div class="clearfix"></div>
+					</div>
+					
+					<div class="x_content">
+						<form id="formSede" class="form-horizontal form-label-left" th:action="@{/sede/save}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+								
+							<input type="hidden" name="editId" th:value="${sede.id}" />
+							
+							<!-- provincia -->	
+							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.provincia')} ? 'bad'">
+								<label class="control-label col-xs-1">1</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="provincia_sede"><span th:text="#{label.provincia}">Provincia</span><span class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<select id="provincia_sede" class="form-control required" th:field="${sede.provincia}">
+		                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
+		                          			<option th:each="provincia : ${elencoProvince}" th:value="${provincia}" th:text="${provincia}">Choose option</option>
+		                        	</select>
+							  	</div>
+								<div th:if="${#fields.hasErrors('sede.provincia')}" class="alert" th:errors="${sede.provincia}"></div>
+							</div>
+							
+							<!-- comune -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.comune')} ? 'bad'">
+								<label class="control-label col-xs-1">2</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="comune_sede"><span th:text="#{label.comune}">Comune</span><span class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<select id="comune_sede" class="form-control required" th:field="${sede.comune}">
+										<option th:value="${sede.comune}" th:text="${sede.comune}"/>
+		                        	</select>
+							  	</div>
+								<div th:if="${#fields.hasErrors('sede.comune')}" class="alert" th:errors="${sede.comune}"></div>
+							</div>
+								
+							<!-- indirizzo -->	
+							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.indirizzo')} ? 'bad'">
+								<label class="control-label col-xs-1">3</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="indirizzo_sede"><span th:text="#{label.indirizzo}">Indirizzo</span><span class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="indirizzo_sede" name="indirizzo_sede"
+										required="required" class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${sede.indirizzo}" />
+								</div>
+								<div th:if="${#fields.hasErrors('sede.indirizzo')}" class="alert" th:errors="${sede.indirizzo}"></div>
+							</div>
+							
+							<!-- CAP -->	
+							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.cap')} ? 'bad'">
+								<label class="control-label col-xs-1">4</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="CAP_sede"><span th:text="#{label.cap}">CAP</span><span class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="CAP_sede" name="CAP_legale" required="required"
+										class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" th:field="${sede.cap}" />
+								</div>
+								<div th:if="${#fields.hasErrors('sede.cap')}" class="alert" th:errors="${sede.cap}"></div>
+							</div>
+							
+							<!-- telefono -->	
+							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.telefono')} ? 'bad'">
+								<label class="control-label col-xs-1">5</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="telefono_sede"><span th:text="#{label.telefono}">Telefono</span><span class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="telefono_sede" name="telefono_sede"
+										required="required" class="form-control col-md-7 col-xs-12"
+										type="tel" th:field="${sede.telefono}"/>
+								</div>
+								<div th:if="${#fields.hasErrors('sede.telefono')}" class="alert" th:errors="${sede.telefono}"></div>
+							</div>
+							
+							<!-- altro telefono -->	
+							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.altroTelefono')} ? 'bad'">
+								<label class="control-label col-xs-1">6</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="altroTel_sede"><span th:text="#{label.tel_secondario}">Altro numero telefonico</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="altroTel_sede" name="altroTel_sede"
+										class="form-control col-md-7 col-xs-12" type="tel" th:field="${sede.altroTelefono}"/>
+								</div>
+								<div th:if="${#fields.hasErrors('sede.altroTelefono')}" class="alert" th:errors="${sede.altroTelefono}"></div>
+							</div>
+							
+							<!-- FAX -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.fax')} ? 'bad'">
+								<label class="control-label col-xs-1">7</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="fax_sede"><span th:text="#{label.fax}">FAX</span><span class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="fax_sede" name="fax_sede" required="required"
+										class="form-control col-md-7 col-xs-12" type="tel" th:field="${sede.fax}" />
+								</div>
+								<div th:if="${#fields.hasErrors('sede.fax')}" class="alert" th:errors="${sede.fax}"></div> 	
+							</div>
+							
+							<!-- email -->	
+							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.email')} ? 'bad'">
+								<label class="control-label col-xs-1">8</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="email_sede"><span th:text="#{label.email}">E-mail</span><span class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="email_sede" name="email_sede"
+										required="required" class="form-control col-md-7 col-xs-12"
+										type="email" th:field="${sede.email}"/>
+								</div>
+								<div th:if="${#fields.hasErrors('sede.email')}" class="alert" th:errors="${sede.email}"></div>
+							</div>
+							
+							<!-- Registra Sede -->
+							<div class="item form-group text-right">
+								<input th:if="${tipologiaSede == 'SedeLegale'}" class="btn btn-primary right" name="SedeLegale" type="submit" th:value="#{label.salva}"/>
+								<input th:if="${tipologiaSede == 'SedeOperativa'}" class="btn btn-primary right" name="SedeOperativa" type="submit" th:value="#{label.salva}"/>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<script>
+			function sendAjaxRequest(){
+				var provincia = $("#provincia_sede").val();
+				$.get( "/sede/comuni?provincia=" + provincia, function(data){
+					$("#comune_sede").empty();
+					$("#comune_sede").append('<option value = "">' + "---" + "</option>")
+					
+					for(item in data){
+						console.log(item);
+						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
+						$("#comune_sede").append(option);
+					}
+				});
+			};
+			
+			function loadSedeLegale(){
+				var url = "/sede/loadSedeLegale";
+				
+				$("#test").load(url);
+			}
+			
+			$(document).ready(
+				    function() {
+				        $("#provincia_sede").click(function() {
+				        sendAjaxRequest();
+				        });
+				    }
+				);
+		</script>
+		</div>
+	</div>
+</body>
+</html>
