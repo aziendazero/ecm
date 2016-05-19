@@ -26,7 +26,7 @@
 							
 							<!-- provincia -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.provincia')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset}">1</label>
+								<label class="control-label col-xs-1" th:text="${idOffset}">1</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="provincia_sede"><span th:text="#{label.provincia}">Provincia</span><span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(idEditabili, idOffset)}">	
@@ -48,7 +48,7 @@
 							
 							<!-- comune -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.comune')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 1}">2</label>
+								<label class="control-label col-xs-1" th:text="${idOffset + 1}">2</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="comune_sede"><span th:text="#{label.comune}">Comune</span><span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(idEditabili, idOffset + 1)}">
@@ -69,7 +69,7 @@
 								
 							<!-- indirizzo -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.indirizzo')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 2}">3</label>
+								<label class="control-label col-xs-1" th:text="${idOffset + 2}">3</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="indirizzo_sede"><span th:text="#{label.indirizzo}">Indirizzo</span><span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(idEditabili, idOffset + 2)}">
@@ -90,7 +90,7 @@
 							
 							<!-- CAP -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.cap')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 3}">4</label>
+								<label class="control-label col-xs-1" th:text="${idOffset + 3}">4</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="CAP_sede"><span th:text="#{label.cap}">CAP</span><span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(idEditabili, idOffset + 3)}">
@@ -111,7 +111,7 @@
 							
 							<!-- telefono -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.telefono')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 4}">5</label>
+								<label class="control-label col-xs-1" th:text="${idOffset + 4}">5</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="telefono_sede"><span th:text="#{label.telefono}">Telefono</span><span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(idEditabili, idOffset + 4)}">
@@ -132,7 +132,7 @@
 							
 							<!-- altro telefono -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.altroTelefono')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 5}">6</label>
+								<label class="control-label col-xs-1" th:text="${idOffset + 5}">6</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="altroTel_sede"><span th:text="#{label.tel_secondario}">Altro numero telefonico</span></label>
 								<th:block th:if="${#lists.contains(idEditabili, idOffset + 5)}">
@@ -152,7 +152,7 @@
 							
 							<!-- FAX -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.fax')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 6}">7</label>
+								<label class="control-label col-xs-1" th:text="${idOffset + 6}">7</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="fax_sede"><span th:text="#{label.fax}">FAX</span><span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(idEditabili, idOffset + 6)}">
@@ -172,7 +172,7 @@
 							
 							<!-- email -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.email')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 7}">8</label>
+								<label class="control-label col-xs-1" th:text="${idOffset + 7}">8</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="email_sede"><span th:text="#{label.email}">E-mail</span><span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(idEditabili, idOffset + 7)}">
