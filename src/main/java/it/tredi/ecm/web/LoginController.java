@@ -26,13 +26,6 @@ public class LoginController {
 		return "login";
 	}
 
-	/** Reset form. */
-	//TODO implementare reset form della password dimenticata
-	@RequestMapping("/reset")
-	public String reset() {
-		return "login";
-	}
-
 	/** Main form. */
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
 	public String main() {

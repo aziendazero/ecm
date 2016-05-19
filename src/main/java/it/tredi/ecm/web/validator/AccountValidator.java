@@ -5,11 +5,13 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.service.AccountService;
+import it.tredi.ecm.web.bean.AccountChangePassword;
 
 @Component
 public class AccountValidator {
@@ -27,7 +29,33 @@ public class AccountValidator {
 		Account account = (Account)target;
 		validateAccount(account, errors, prefix);
 	}
-
+	
+	public void validateChangePassword(Object target, Errors errors, Account account){
+		LOGGER.debug("Validating Account Change Password");
+		AccountChangePassword accountChangePassword = (AccountChangePassword)target;
+		if(accountChangePassword.getOldPassword().isEmpty())
+			errors.rejectValue("oldPassword", "error.empty");
+		else{
+			BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+			if(!bcrypt.matches(accountChangePassword.getOldPassword(), account.getPassword())){
+				errors.rejectValue("oldPassword", "error.password.incorrect");
+			}
+		}
+		
+		if(accountChangePassword.getNewPassword().isEmpty()){
+			errors.rejectValue("newPassword", "error.empty");
+		}
+		
+		if(accountChangePassword.getConfirmNewPassword().isEmpty()){
+			errors.rejectValue("confirmNewPassword", "error.empty");
+		}else{
+			if(!accountChangePassword.getNewPassword().equals(accountChangePassword.getConfirmNewPassword())){
+				errors.rejectValue("confirmNewPassword", "error.password_repeat");
+			}
+		}
+		
+	}
+	
 	private void validateAccount(Account account, Errors errors, String prefix){
 		//Presenza e univocità dello username
 		if(account.getUsername().isEmpty()){

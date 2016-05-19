@@ -9,9 +9,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.repository.PersonaRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
@@ -32,6 +34,8 @@ public class ProviderServiceImpl implements ProviderService {
 	private ProfileAndRoleService profileAndRoleService;
 	@Autowired
 	private AccountService accountService;
+	@Autowired
+	private FileService fileService;
 
 	@Override
 	public Provider getProvider() {
@@ -57,9 +61,15 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Provider getProviderByCfPiva(String cf_piva) {
-		LOGGER.info("Retrieving Provider (" + cf_piva +")");
-		return providerRepository.findOneByCfPiva(cf_piva);
+	public Provider getProviderByCodiceFiscale(String codiceFiscale) {
+		LOGGER.info("Retrieving Provider (" + codiceFiscale +")");
+		return providerRepository.findOneByCodiceFiscale(codiceFiscale);
+	}
+	
+	@Override
+	public Provider getProviderByPartitaIva(String partitaIva) {
+		LOGGER.info("Retrieving Provider (" + partitaIva +")");
+		return providerRepository.findOneByPartitaIva(partitaIva);
 	}
 
 	@Override
@@ -73,7 +83,11 @@ public class ProviderServiceImpl implements ProviderService {
 	public void save(Provider provider) {
 		LOGGER.info("Saving Provider");
 		if(provider.getAccount().isNew()){
-			accountService.save(provider.getAccount());
+			try{
+				accountService.save(provider.getAccount());
+			}catch (Exception ex){
+				LOGGER.error("Impossibile salvare il Provider. Errore durante creazione Account",ex);
+			}
 		}
 		providerRepository.save(provider);
 	}
@@ -107,6 +121,11 @@ public class ProviderServiceImpl implements ProviderService {
 				provider.addPersona(legale);
 			}
 			
+			if(!richiedente.isNew()){
+				File delega = fileService.getFileFromPersonaByTipo(richiedente.getId(), Costanti.FILE_DELEGA);
+				providerRegistrationWrapper.setDelegaRichiedenteFile(delega);
+			}
+			
 			providerRegistrationWrapper.setRichiedente(richiedente);
 			providerRegistrationWrapper.setLegale(legale);
 		}
@@ -120,10 +139,11 @@ public class ProviderServiceImpl implements ProviderService {
 		Provider provider = providerRegistrationWrapper.getProvider();
 		Persona richiedente = providerRegistrationWrapper.getRichiedente();
 		Persona legale = providerRegistrationWrapper.getLegale();
+		File delegaRichiedente = providerRegistrationWrapper.getDelegaRichiedenteFile(); 
 		
 		if(provider.getAccount().getProfiles().isEmpty()){
 			//assegno profilo PROVIDER
-			Optional<Profile> providerProfile = profileAndRoleService.getProfileByName("PROVIDER");
+			Optional<Profile> providerProfile = profileAndRoleService.getProfileByName(Costanti.PROFILO_PROVIDER);
 			if(providerProfile.isPresent())
 				provider.getAccount().getProfiles().add(providerProfile.get());
 		}
@@ -134,6 +154,11 @@ public class ProviderServiceImpl implements ProviderService {
 			personaRepository.save(richiedente);
 			provider.addPersona(legale);
 			personaRepository.save(legale);
+			
+			delegaRichiedente.setTipo(Costanti.FILE_DELEGA);
+			delegaRichiedente.setPersona(richiedente);
+			delegaRichiedente.setProvider(provider);
+			fileService.save(delegaRichiedente);
 		}
 	}
 }

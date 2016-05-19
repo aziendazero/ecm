@@ -6,9 +6,11 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Account;
 
 public interface AccountService {
-    Optional<Account> getUserByUsername(String username);
-    Optional<Account> getUserByEmail(String email);
-    Account getUserById(Long id);
-    Set<Account> getAllUsers();
-    void save(Account user);
+    public Optional<Account> getUserByUsername(String username);
+    public Optional<Account> getUserByEmail(String email);
+    public Account getUserById(Long id);
+    public Set<Account> getAllUsers();
+    public void save(Account user) throws Exception;
+    public void resetPassword(String email) throws Exception;
+    public void changePassword(Long id, String password) throws Exception;
 }

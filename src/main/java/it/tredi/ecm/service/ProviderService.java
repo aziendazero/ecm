@@ -10,7 +10,8 @@ import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 public interface ProviderService {
 	public Provider getProvider();
 	public Provider getProvider(Long id);
-	public Provider getProviderByCfPiva(String cf_piva);
+	public Provider getProviderByCodiceFiscale(String codiceFiscale);
+	public Provider getProviderByPartitaIva(String partitaIva);
 	public Set<Provider> getAll();
 	public void save(Provider provider);
 	

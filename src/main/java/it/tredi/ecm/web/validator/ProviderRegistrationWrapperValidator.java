@@ -18,40 +18,47 @@ public class ProviderRegistrationWrapperValidator{
 	private ProviderService providerService;
 	@Autowired
 	private AccountValidator accountValidator;
+	@Autowired
+	private FileValidator fileValidator;
+	@Autowired
+	private ProviderValidator providerValidator;
 	
 	public void validate(Object target, Errors errors,boolean saveMinimal) {
 		LOGGER.debug("Validating ProviderRegistrationWrapper");
 		ProviderRegistrationWrapper providerForm = (ProviderRegistrationWrapper)target;
 		accountValidator.validate(providerForm.getProvider().getAccount(), errors, "provider.account.");
-		validateProvider(providerForm.getProvider(), errors);
+		
+		providerValidator.validateForRegistrazione(providerForm.getProvider(), errors, "provider.");
+		//validateProvider(providerForm.getProvider(), errors);
 		if(!saveMinimal){
 			validateRichiedente(providerForm.getRichiedente(), errors);
 			validateLegale(providerForm.getLegale(), errors);
+			fileValidator.validate(providerForm.getDelegaRichiedenteFile(), errors, "delegaRichiedenteFile");
 		}
 	}
 	
-	private void validateProvider(Provider providerForm, Errors errors){
-		if(providerForm.getDenominazioneLegale().isEmpty())
-			errors.rejectValue("provider.denominazioneLegale", "error.empty");
-		if(providerForm.getTipoOrganizzatore().isEmpty())
-			errors.rejectValue("provider.tipoOrganizzatore", "error.empty");
-		
-		//Presenza e univocità di cfPiva
-		if(providerForm.getCfPiva().isEmpty())
-			errors.rejectValue("provider.cfPiva", "error.empty");
-		else{
-			Provider provider = providerService.getProviderByCfPiva(providerForm.getCfPiva());
-			if(provider != null){
-				if(providerForm.isNew()){
-					errors.rejectValue("provider.cfPiva", "error.cfPiva.duplicated");
-				}else{
-					if(provider.getId() != providerForm.getId()){
-						errors.rejectValue("provider.cfPiva", "error.cfPiva.duplicated");
-					}
-				}
-			}
-		}
-	}
+//	private void validateProvider(Provider providerForm, Errors errors){
+//		if(providerForm.getDenominazioneLegale().isEmpty())
+//			errors.rejectValue("provider.denominazioneLegale", "error.empty");
+//		if(providerForm.getTipoOrganizzatore() == null || providerForm.getTipoOrganizzatore().getNome().isEmpty())
+//			errors.rejectValue("provider.tipoOrganizzatore", "error.empty");
+//		
+//		//Presenza e univocità di codiceFIscale e/o partitaIva
+//		if(providerForm.getPartitaIva().isEmpty())
+//			errors.rejectValue("provider.partitaIva", "error.empty");
+//		else{
+//			Provider provider = providerService.getProviderByPartitaIva((providerForm.getPartitaIva()));
+//			if(provider != null){
+//				if(providerForm.isNew()){
+//					errors.rejectValue("provider.partitaIva", "error.partitaIva.duplicated");
+//				}else{
+//					if(provider.getId() != providerForm.getId()){
+//						errors.rejectValue("provider.partitaIva", "error.partitaIva.duplicated");
+//					}
+//				}
+//			}
+//		}
+//	}
 	
 	private void validateRichiedente(Persona richiedente, Errors errors){
 		if(richiedente.getAnagrafica().getCognome().isEmpty())

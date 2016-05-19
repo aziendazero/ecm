@@ -19,6 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Persona extends BaseEntity{
+	@JoinColumn(name = "anagrafica_id")
 	@ManyToOne(cascade = {CascadeType.PERSIST , CascadeType.MERGE})
 	private Anagrafica anagrafica = new Anagrafica();
 	@ManyToOne @JoinColumn(name = "provider_id")
@@ -26,6 +27,7 @@ public class Persona extends BaseEntity{
 	//TODO enum?
 	private String ruolo;
 	private String incarico = "";
+	private String professione;
 	
 	public Persona(){}
 	public Persona(String ruolo){this.ruolo = ruolo;}

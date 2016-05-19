@@ -35,6 +35,10 @@ body.nav-md .container.body .right_col.main{
 	font-size: 18px;
 }
 
+.control-label.left-align {
+    text-align: left;
+}
+
 @media (max-width: 991px) {
 	body.nav-md .container.body .right_col.main{
 	margin-left: 0;

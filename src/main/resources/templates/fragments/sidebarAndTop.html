@@ -48,6 +48,18 @@
 								<ul class="nav child_menu" style="display: none">
 									<li><a th:href="@{/providerRegistration/edit}" th:text="#{label.registrazione_provider}">label.registrazione_provider</a></li>
 									<li><a th:href="@{/provider/show}" th:text="#{label.info_provider}">label.info_provider</a></li>
+									<li><a th:href="@{/provider/accreditamento}" th:text="#{label.iter_accreditamento}">label.iter_accreditamento</a></li>
+									<li><a th:href="@{/provider/persona/list}" th:text="#{label.persone}">label.persone</a></li>
+									<li><a th:href="@{/provider/sedi}" th:text="#{label.sedi}">label.sedi</a></li>
+									<!--
+									<li><a href="#" th:text="#{label.eventi}">label.eventi</a></li>
+									<li><a href="#" th:text="#{label.piano_formativo}">label.piano_formativo</a></li>
+									<li><a href="#" th:text="#{label.relazione_annuale}">label.relazione_annuale</a></li>
+									<li><a href="#" th:text="#{label.contributo_annuale}">label.contributo_annuale</a></li>
+									<li><a href="#" th:text="#{label.comunicazioni}">label.comunicazioni</a></li>
+									<li><a href="#" th:text="#{label.gestione_utenti}">label.gestione_utenti</a></li>
+									<li><a th:href="@{/user/changePassword}" th:text="#{label.gestione_password}">label.gestione_password</a></li>
+									 -->
 								</ul>
 							</li>
 							<li>
@@ -85,10 +97,7 @@
 		                </a>
 		                <ul class="dropdown-menu dropdown-usermenu animated fadeInDown pull-right">
 		                  <li>
-		                  	<a href="javascript:;">  <span th:text="#{label.profilo}">Profilo</span></a>
-		                  </li>
-		                  <li>
-		                    <a href="javascript:;">Help</a>
+		                  	<a th:href="@{/user/changePassword}" href="javascript:;">  <span th:text="#{label.cambia_password}">label.cambia_password</span></a>
 		                  </li>
 		                  <li>
 		                  	<a href="javascript:;" onclick="$('#logout').submit()"><i class="fa fa-sign-out pull-right"></i> Log Out</a>

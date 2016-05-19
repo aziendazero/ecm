@@ -8,6 +8,7 @@ import it.tredi.ecm.dao.entity.Provider;
 
 public interface ProviderRepository extends CrudRepository<Provider, Long> {
 	public Provider findOneByAccountId(Long id);
-	public Provider findOneByCfPiva(String cf_piva);
+	public Provider findOneByCodiceFiscale(String codiceFiscale);
+	public Provider findOneByPartitaIva(String partitaIva);
 	public Set<Provider> findAll();
 }

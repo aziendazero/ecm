@@ -17,14 +17,18 @@
 				th:src="@{/gentella/js/wizard/jquery.smartWizard.js}"></script>
 				
 		<!-- DataTable -->
-		<script src="../static/gentella/js/datatables/jquery.datatables.min.js"
-				th:src="@{/gentella/js/datatables/jquery.datatables.min.js}"></script>
+		<script src="../static/gentella/js/datatables/jquery.dataTables.min.js"
+				th:src="@{/gentella/js/datatables/jquery.dataTables.min.js}"></script>
 		<script src="../static/gentella/js/datatables/dataTables.bootstrap.js"
 				th:src="@{/gentella/js/datatables/dataTables.bootstrap.js}"></script>
 		<script src="../static/gentella/js/datatables/dataTables.buttons.min.js"
 				th:src="@{/gentella/js/datatables/dataTables.buttons.min.js}"></script>
 		<script src="../static/gentella/js/datatables/buttons.bootstrap.min.js"
 				th:src="@{/gentella/js/datatables/buttons.bootstrap.min.js}"></script>
+			
+		<!--  DataTable responsive -->
+		<script src="../static/gentella/js/datatables/dataTables.responsive.min.js"
+				th:src="@{/gentella/js/datatables/dataTables.responsive.min.js}"></script>	
 			
 		<!-- iCheck -->
 		<script src="../static/gentella/js/icheck/icheck.min.js"
@@ -37,6 +41,17 @@
 		<!-- Custom -->			
 		<script src="../static/gentella/js/custom.js"
 				th:src="@{/gentella/js/custom.js}"></script>
+				
+		<!-- PNotify -->
+		<script src="../static/gentella/js/notify/pnotify.core.js"
+				th:src="@{/gentella/js/notify/pnotify.core.js}"></script>
+		<script src="../static/gentella/js/notify/pnotify.buttons.js"
+				th:src="@{/gentella/js/notify/pnotify.buttons.js}"></script>
+		<script src="../static/gentella/js/notify/pnotify.nonblock.js"
+				th:src="@{/gentella/js/notify/pnotify.nonblock.js}"></script>
+				
+		<script src="../static/js/main.js"
+				th:src="@{/js/main.js}"></script>	
 		
 		<!-- initialize the validator.js  --> 		
 		<script th:inline="javascript">
@@ -67,6 +82,7 @@
 	                validator.checkField.apply($(this).siblings().last()[0]);
 	            });
 
+	        //TODO decommentare per fare validazione prima di inviare il form
 	    /*     $('form').submit(function (e) {
 	            e.preventDefault();
 	            var submit = true;
@@ -85,6 +101,17 @@
 	            if (this.checked)
 	              $('form .alert').remove();
 	          }).prop('checked', false);
+	        
+	        if([[${notifica}]]){
+		    	  showNotifica([[${notifica}]],"registrazione ok",[[${notifica}]]);
+		      }
+	        
+			$('.datatable-responsive').DataTable({
+				"bFilter" : false,
+				"bInfo" : false,
+				"bPaginate" : false,
+				"ordering" : false
+				});
 		</script>
 	</body>
 </html>

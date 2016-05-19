@@ -41,7 +41,7 @@
 						</ul>
 
 						<div class="stepContainer">
-							<form class="form-horizontal form-label-left" th:action="@{/providerRegistration}" th:object="${providerForm}" method="post" novalidate="novalidate">
+							<form class="form-horizontal form-label-left" th:action="@{/providerRegistration}" th:object="${providerForm}" method="post" enctype="multipart/form-data" novalidate="novalidate">
 								
 								<input th:if="*{provider.id}" type="hidden" name="editId" th:value="*{provider.id}" />
 								
@@ -100,17 +100,30 @@
 				                      <div th:if="${#fields.hasErrors('provider.tipoOrganizzatore')}" class="alert" th:errors="*{provider.tipoOrganizzatore}"></div>
 				                    </div>
 									
-									<!-- piva / cf -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('provider.cfPiva')} ? 'bad'">
+									<!-- partita iva -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('provider.partitaIva')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="pIva">
-											<span class="required"  th:text="#{label.partita_iva} + ' / ' + #{label.codice_fiscale}">#{label.partita_iva} + '/' + #{label.codice_fiscale}</span>
+											<span class="required"  th:text="#{label.partita_iva}">#{label.partita_iva}</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="pIva" name="pIva" pattern='codiceFiscale|partitaIva' th:field="*{provider.cfPiva}"
+											<input type="text" id="pIva" name="pIva" pattern='partitaIva' th:field="*{provider.partitaIva}"
 												required="required" class="form-control col-md-7 col-xs-12" />
 										</div>
-										<div th:if="${#fields.hasErrors('provider.cfPiva')}" class="alert" th:errors="*{provider.cfPiva}"></div>
+										<div th:if="${#fields.hasErrors('provider.partitaIva')}" class="alert" th:errors="*{provider.partitaIva}"></div>
+									</div>
+									
+									<!-- codicefiscale -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('provider.codiceFiscale')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="pIva">
+											<span class="required"  th:text="#{label.codice_fiscale}">#{label.codice_fiscale}</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<input type="text" id="codiceFiscale" name="codiceFiscale" pattern='codiceFiscale' th:field="*{provider.codiceFiscale}"
+												required="required" class="form-control col-md-7 col-xs-12" />
+										</div>
+										<div th:if="${#fields.hasErrors('provider.codiceFiscale')}" class="alert" th:errors="*{provider.codiceFiscale}"></div>
 									</div>
 									
 									<!-- Registra solo Provider -->
@@ -198,15 +211,29 @@
 									</div>
 									
 									<!-- delega -->
-									<div class="item form-group">
+									<div class="item form-group" th:classappend="${#fields.hasErrors('delegaRichiedenteFile')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delegaRichiedente">
 											<span class="required" th:text="#{label.delega}">label.delega</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="file" id="delegaRichiedente" name="delegaRichiedente"
-												class="form-control col-md-7 col-xs-12 btn" />
+											
+											<input th:unless="*{delegaRichiedenteFile}" type="file" id="delegaRichiedente" name="delegaRichiedente"
+												required="required" class="form-control col-md-7 col-xs-12 btn" />
+											
+											
+											<span th:if="*{delegaRichiedenteFile}" id="delegaRichiedenteFile" class="form-control col-md-5 col-xs-10">
+												<span class="col-md-11 col-xs-11">
+													<a th:text="*{delegaRichiedenteFile.nomeFile}" th:href="@{|/files/*{delegaRichiedenteFile.id}|}"></a>
+												</span>
+												<span class="col-md-1 col-xs-1">
+													<a th:href="@{|/files/*{delegaRichiedenteFile.id}|/delete}">
+														<i class="fa fa-remove red icon"></i>
+													</a>
+												</span>
+											</span>
 										</div>
+										<div th:if="${#fields.hasErrors('delegaRichiedenteFile')}" class="alert" th:errors="*{delegaRichiedenteFile}"></div>
 									</div>
 									
 								</div>

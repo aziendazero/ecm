@@ -1,5 +1,7 @@
 package it.tredi.ecm.bootstrap;
 
+import java.util.Set;
+
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.PersonaRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
@@ -36,48 +39,54 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		LOGGER.info("Initializing DATABASE...");
-		Persona richiedente = new Persona();
-		richiedente.getAnagrafica().setCognome("Pranteda");
-		richiedente.getAnagrafica().setNome("Domenico");
-		richiedente.getAnagrafica().setCodiceFiscale("PRNDNC86H23Z112R");
-		richiedente.getAnagrafica().setCellulare("3336580687");
-		richiedente.getAnagrafica().setTelefono("098343645");
-		richiedente.getAnagrafica().setEmail("dompranteda@gmail.com");
-		richiedente.getAnagrafica().setPec("dompranteda@pec.com");
-		personaRepository.save(richiedente);
 		
-		LOGGER.info("Persona " + richiedente.getId() + " created");
+		Set<Provider> providers = providerRepository.findAll();
 		
-		Persona legale = new Persona();
-		legale.getAnagrafica().setCognome("Bernardini");
-		legale.getAnagrafica().setNome("Mirko");
-		legale.getAnagrafica().setCodiceFiscale("BCCRSL89H47D969I");
-		legale.getAnagrafica().setCellulare("123456789");
-		legale.getAnagrafica().setTelefono("098342742");
-		legale.getAnagrafica().setEmail("mbernardini@3di.it");
-		legale.getAnagrafica().setPec("mbernardini@pec.it");
-		personaRepository.save(legale);
-		
-		LOGGER.info("Persona " + legale.getId() + " created");
-		
-		richiedente.setRuolo(Ruolo.RICHIEDENTE.getNome());
-		legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE.getNome());
-		Account account = accountRepository.findOneByUsername("admin").orElse(null);
-		
-		Provider provider = new Provider();
-		provider.setDenominazioneLegale("3D Informatica");
-		provider.setCfPiva("00578261208");
-		provider.setTipoOrganizzatore("Azienda Privata");
-		
-		//provider.addPersona(richiedente);
-		provider.addPersona(legale);
-		
-		provider.setAccount(account);
-		providerRepository.save(provider);
-		
-		legale.getAnagrafica().setCognome("pippo");
-		personaRepository.save(legale);
-		
-		LOGGER.info("Provider " + provider.getId() + " created");
+		if(providers.isEmpty()){
+			Persona richiedente = new Persona();
+			richiedente.getAnagrafica().setCognome("Rossi");
+			richiedente.getAnagrafica().setNome("Mario");
+			richiedente.getAnagrafica().setCodiceFiscale("MRARSS86H01Z112R");
+			richiedente.getAnagrafica().setCellulare("3331234567");
+			richiedente.getAnagrafica().setTelefono("0517654321");
+			richiedente.getAnagrafica().setEmail("mrossi@3di.com");
+			richiedente.getAnagrafica().setPec("mrossi@pec.com");
+			personaRepository.save(richiedente);
+			
+			LOGGER.info("Persona " + richiedente.getId() + " created");
+			
+			Persona legale = new Persona();
+			legale.getAnagrafica().setCognome("Verdi");
+			legale.getAnagrafica().setNome("Giuseppe");
+			legale.getAnagrafica().setCodiceFiscale("VRDGPP80H17D969I");
+			legale.getAnagrafica().setCellulare("123456789");
+			legale.getAnagrafica().setTelefono("051987321");
+			legale.getAnagrafica().setEmail("gverdi@3di.it");
+			legale.getAnagrafica().setPec("gverdi@pec.it");
+			personaRepository.save(legale);
+			
+			LOGGER.info("Persona " + legale.getId() + " created");
+			
+			richiedente.setRuolo(Ruolo.RICHIEDENTE.getNome());
+			legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE.getNome());
+			Account account = accountRepository.findOneByUsername("admin").orElse(null);
+			
+			Provider provider = new Provider();
+			provider.setDenominazioneLegale("3D Informatica");
+			provider.setCodiceFiscale("00578261208");
+			provider.setTipoOrganizzatore(TipoOrganizzatore.AZIENDE_SANITARIE);
+			
+			//provider.addPersona(richiedente);
+			provider.addPersona(legale);
+			
+			provider.setAccount(account);
+			providerRepository.save(provider);
+			
+			personaRepository.save(legale);
+			
+			LOGGER.info("Provider " + provider.getId() + " created");
+		}else{
+			LOGGER.info("DATABASE NOT EMPTY...");
+		}
 	}
 }

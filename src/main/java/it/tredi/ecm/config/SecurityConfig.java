@@ -20,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		 .antMatchers("/", "/gentella/**", "/shared/**", "/main", "/providerRegistration").permitAll()
+		 .antMatchers("/", "/gentella/**", "/shared/**", "/main", "/providerRegistration", "/user/resetPassword").permitAll()
 		 
 //		 .antMatchers("/user/{id}/edit").hasAuthority("USER_EDIT")
 //		 .antMatchers("/user/save").hasAuthority("USER_EDIT")
@@ -36,9 +36,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          .and()
 	         .logout()
 	         	.logoutUrl("/logout").logoutSuccessUrl("/")
+	         	.deleteCookies("remember-me")
 	         	.permitAll()
 	     .and()
-	     	.exceptionHandling().accessDeniedPage("/403");
+	     	.exceptionHandling().accessDeniedPage("/403")
+	     .and()
+	     	.rememberMe();
 	}
 	
 	@Override

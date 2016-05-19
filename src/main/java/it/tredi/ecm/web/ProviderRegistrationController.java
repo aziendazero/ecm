@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.CurrentUser;
@@ -60,30 +63,40 @@ public class ProviderRegistrationController {
 	public String registraProvider(@ModelAttribute("providerForm") ProviderRegistrationWrapper providerRegistrationWrapper, 
 									BindingResult result, Model model, 
 									@RequestParam( value="saveTypeMinimal",required = false) String saveTypeMinimal,
-									@RequestParam( value="saveTypeFull",required = false) String saveTypeFull){
+									@RequestParam( value="saveTypeFull",required = false) String saveTypeFull,
+									@RequestParam( value="delegaRichiedente",required = false) MultipartFile multiPartFile){
 		try{
 			//validazione solo del provider oppure dell'intero form?
 			boolean saveMinimal = (saveTypeMinimal != null && saveTypeFull == null) ? true : false; 
-			providerRegistrationValidator.validate(providerRegistrationWrapper, result, saveMinimal);		
+			
+			if(!saveMinimal){
+				File delegaRichiedenteFile = Utils.convertFromMultiPart(multiPartFile);
+				if(delegaRichiedenteFile != null)
+					providerRegistrationWrapper.setDelegaRichiedenteFile(delegaRichiedenteFile);
+			}
+			
+			providerRegistrationValidator.validate(providerRegistrationWrapper, result, saveMinimal);	
 			
 			if(result.hasErrors()){
 				model.addAttribute("stepToShow", evaluateErrorStep(result));
+				model.addAttribute("notifica", "success");
 				return returnToProviderRegistrationForm();
 			}else{
 				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper, saveMinimal);
+				model.addAttribute("notifica", "success");
 				return "redirect:home";
 			}
 		}catch (Exception ex){
-			System.out.println("ECCEZIONEEEEE");
 			model.addAttribute("stepToShow", evaluateErrorStep(result));
 			return returnToProviderRegistrationForm();
 		}
+		
 	}
 	
 	private int evaluateErrorStep(BindingResult result){
 		if(result.hasFieldErrors("provider*"))
 			return 0;
-		if(result.hasFieldErrors("richiedente*"))
+		if(result.hasFieldErrors("richiedente*") || result.hasFieldErrors("delegaRichiedente*"))
 			return 1;
 		if(result.hasFieldErrors("legale*"))
 			return 2;
