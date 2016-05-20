@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+					
+					<!-- AGGIUNGERE LE PARTI THYMELEAF QUANDO HAI I JAVABEAN DELLA PERSONA -->
+					
+						<h1>
+							<span th:remove="tag">Nome</span> <span th:remove="tag">Cognome</span>
+						</h1>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<div class="col-md-9 col-sm-9 col-xs-12">
+
+							<ul class="fontawesome-icon-list list-unstyled user_data">
+
+								<li><i class="fa fa-credit-card"></i> <span th:text="#{label.codice_fiscale}"> Codice Fiscale></span>:</li>
+
+								<li><i class="fa fa-phone-square"></i> <span th:text="#{label.telefono}"> Telefono></span>:</li>
+
+								<li><i class="fa fa-phone"></i> <span th:text="#{label.cellulare}"> Cellulare></span>:</li>
+
+								<li><i class="fa fa-at"></i> <span th:text="#{label.email}"> Email></span>:</li>
+
+								<li><i class="fa fa-envelope"></i> <span th:text="#{label.pec}"> PEC></span>:</li>
+
+								<li><i class="fa fa-bank"></i> <span th:text="#{label.provider}"> Provider></span>:</li>
+
+								<li><i class="fa fa-briefcase"></i> <span th:text="#{label.ruolo}"> Ruolo</span>:</li>
+
+							</ul>
+							<table id="datatable-responsive"
+								class="table table-striped table-bordered dt-responsive nowrap"
+								cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th th:text="#{label.file_nome}">File</th>
+										<th th:text="#{label.file_descrizione}">Descrizione</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>File1</td>
+										<td>Descrizione del file1</td>
+									</tr>
+									<tr>
+										<td>File2</td>
+										<td>Descrizione del file2</td>
+									</tr>
+									<tr>
+										<td>File1</td>
+										<td>Descrizione del file2</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

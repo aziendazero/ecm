@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.dati_del} + ${personaWrapper.persona.ruolo}">Dati del persona.ruolo</h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<form id="formPersona" class="form-horizontal form-label-left" th:action="@{/persona/save}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+								
+							<!--	
+							<input type="hidden" name="editIdPersona" th:value="${personaWrapper.persona.id}" /> 
+							<input type="hidden" name="editIdFileAtto" th:value="${personaWrapper.nomina.id}" />
+							<input type="hidden" name="editIdFileCV" th:value="${personaWrapper.curriculumVitae.id}" />
+							<input type="hidden" name="editIdFileDelega" th:value="${personaWrapper.delega.id}" />
+							 -->
+							
+							<!-- cognome -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset}">1</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="cognome_persona"><span th:text="#{label.cognome}">Cognome</span> <span	class="required">*</span></label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="cognome_persona"	name="cognome_persona" 
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="text" th:field="${personaWrapper.persona.anagrafica.cognome}" />
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="cognome_persona"	
+											class="control-label col-md-7 col-xs-12"
+											th:text="${personaWrapper.persona.anagrafica.cognome}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.cognome}"></div>
+							</div>
+							
+							<!-- nome -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 1}">2</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="cognome_persona"><span th:text="#{label.nome}">Nome</span> <span class="required">*</span></label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 1)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="nome_persona" name="nome_persona" 
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="text" th:field="${personaWrapper.persona.anagrafica.nome}" />
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 1)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="nome_persona" class="control-label col-md-7 col-xs-12"
+											 th:text="${personaWrapper.persona.anagrafica.nome}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.nome}"></div>
+							</div>
+							
+							<!-- codice fiscale -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 2}">3</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="codiceFiscale_persona"><span th:text="#{label.codice_fiscale}">Codice Fiscale</span> <span class="required">*</span></label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 2)}">									
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="codiceFiscale_persona" name="codiceFiscale_persona" 
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="text" th:field="${personaWrapper.persona.anagrafica.codiceFiscale}" />
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 2)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="codiceFiscale_persona" class="control-label col-md-7 col-xs-12"
+											th:text="${personaWrapper.persona.anagrafica.codiceFiscale}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
+							</div>
+							
+							<!-- checkbox flag straniero -->
+							<div th:if="${personaWrapper.persona.isCoordinatoreComitatoScientifico or
+										personaWrapper.persona.isCoordinatoreComitatoScientifico}"
+								class="item form-group">
+								<label class="control-label col-xs-1"></label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="isStraniero_persona"><span th:text="#{label.cf_straniero}">Ha un codice fiscale non italiano</span> <span class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="isStraniero_persona" name="isStraniero_persona" 
+										class="form-control col-md-7 col-xs-12"
+										type="checkbox" th:checked="${personaWrapper.persona.isStraniero}" />
+								</div>
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
+							</div>
+							
+							<!-- telefono -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 3}">4</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="telefono_persona"><span th:text="#{label.telefono}">Telefono</span> <span class="required">*</span></label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 3)}">																	
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="telefono_persona" name="telefono_persona" 
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="tel" th:field="${personaWrapper.persona.anagrafica.telefono}" />
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 3)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="telefono_persona" class="form-control col-md-7 col-xs-12"
+											th:text="${personaWrapper.persona.anagrafica.telefono}"></label>
+									</div>
+								</th:block>								
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.telefono}"></div>
+							</div>
+							
+							<!-- cellulare -->
+							<div th:unless="${personaWrapper.persona.isResponsabileSegreteria or 
+											personaWrapper.persona.isResponsabileFormazione or
+											personaWrapper.persona.isResponsabileSistemaInformatico or
+											personaWrapper.persona.isResponsabileQualità}" 
+								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 4}">5</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="cellulare_persona"><span th:text="#{label.cellulare}">Cellulare</span> <span class="required">*</span></label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 4)}">																									
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="cellulare_persona" name="cellulare_persona" 
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="tel" th:field="${personaWrapper.persona.anagrafica.cellulare}" />
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 4)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="cellulare_persona" class="control-label col-md-7 col-xs-12"
+											th:text="${personaWrapper.persona.anagrafica.cellulare}"></label>
+									</div>
+								</th:block>					
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.cellulare}"></div>
+							</div>
+							
+							<!-- email -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 5}">6</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="email_persona"><span th:text="#{label.email}">Email</span> <span class="required">*</span></label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 5)}">									
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="email_persona" name="email_persona" 
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="email" th:field="${personaWrapper.persona.anagrafica.email}" />
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 5)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="email_persona" class="control-label col-md-7 col-xs-12"
+											th:text="${personaWrapper.persona.anagrafica.email}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.email}"></div>
+							</div>
+							
+							<!-- posta elettronica certificata (PEC) -->
+							<div th:if="${personaWrapper.persona.isLegaleRappresentante or
+										personaWrapper.persona.isDelegatoLegaleRappresentante}"
+								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 6}">7</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="pec_persona"><span th:text="#{label.posta_elettronica_certificata}">Posta elettronica certificata (PEC)</span> <span class="required">*</span></label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 6)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="pec_persona" name="pec_persona" 
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="email" th:field="${personaWrapper.persona.anagrafica.pec}" />
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 6)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="pec_persona" class="control-label col-md-7 col-xs-12"
+											th:text="${personaWrapper.persona.anagrafica.pec}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.pec}"></div>
+							</div>
+							
+							<!-- professione -->	
+							<div th:if="${personaWrapper.persona.isCoordinatoreComitatoScientifico or
+										personaWrapper.persona.isComponenteComitatoScientifico or
+										personaWrapper.persona.isResponsabileSistemaInformatico or
+										personaWrapper.persona.isResponsabileQualità}"
+								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.professione')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 7}">8</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="professione_persona"><span th:text="#{label.professione}">Professione</span><span class="required">*</span></label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 7)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<select id="professione_persona" class="form-control required" th:field="${personaWrapper.persona.professione}">
+			                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
+			                          			<option th:each="professione : ${elencoProfessioni}" th:value="${professione}" th:text="${professione}">Choose option</option>
+			                        	</select>
+								  	</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 7)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="professione_persona" class="control-label col-md-7 col-xs-12"
+											th:text="${personaWrapper.persona.professione}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.professione')}" class="alert" th:errors="${personaWrapper.persona.professione}"></div>
+							</div>
+																
+							<!-- allegato 1 (atto di nomina) -->
+							<div th:unless="${personaWrapper.persona.isDelegatoLegaleRappresentante}"
+								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.nomina.data')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 8}">9</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="nomina_persona">
+									<span th:text="#{label.atto_nomina}">Atto di nomina</span>
+									<span class="required">*</span>
+								</label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 8)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+											<input type="file" id="nomina_persona" name="nomina_persona" required="required"
+												class="form-control col-md-7 col-xs-12 btn" th:field="${personaWrapper.nomina.nomeFile"/>
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 8)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="nomina_persona" class="control-label col-md-7 col-xs-12"
+											th:text="${personaWrapper.nomina.nomeFile}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.nomina.data')}" class="alert" th:errors="${personaWrapper.nomina.data}"></div>
+							</div>
+							
+							<!-- allegato 2 (curriculum vitae) -->
+							<div th:unless="${personaWrapper.persona.isLegaleRappresentante}"
+								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.curriculumVitae.data')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 9}">10</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="curriculumVitae_persona">
+									<span th:text="#{label.curriculum_vitae}">Curriculum vitae</span>
+									<span class="required">*</span>
+								</label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 9)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+											<input type="file" id="curriculumVitae_persona" name="curriculumVitae_persona" required="required"
+												class="form-control col-md-7 col-xs-12 btn" th:field="${personaWrapper.curriculumVitae.nomeFile"/>
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 9)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="curriculumVitae_persona" class="control-label col-md-7 col-xs-12"
+											th:text="${personaWrapper.curriculumVitae.nomeFile}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.curriculumVitae.data')}" class="alert" th:errors="${personaWrapper.curriculumVitae.data}"></div>
+							</div>
+							
+							<!-- allegato 3 (atto di delega) -->
+							<div th:if="${personaWrapper.persona.isDelegatoLegaleRappresentante}"
+								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.delega.data')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 10}">11</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="delega_persona">
+									<span th:text="#{label.atto_delega}">Atto di delega</span>
+									<span class="required">*</span>
+								</label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 10)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+											<input type="file" id="delega_persona" name="delega_persona" required="required"
+												class="form-control col-md-7 col-xs-12 btn" th:field="${personaWrapper.delega.nomeFile"/>
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 10)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="delega_persona" class="control-label col-md-7 col-xs-12"
+											th:text="${personaWrapper.delega.nomeFile}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.delega.data')}" class="alert" th:errors="${personaWrapper.delega.data}"></div>
+							</div>
+							
+							<!-- Registra Persona -->
+							<div class="item form-group text-right">
+								<input class="btn btn-primary right" name="save_persona" type="submit" th:value="#{label.salva}"/>
+							</div>							
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

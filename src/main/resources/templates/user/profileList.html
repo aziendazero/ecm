@@ -1,47 +1,40 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
-		layout:decorator="fragments/template">
-	<head lang="it">
-	</head>
-	<body>
-		<div layout:fragment="content">
-			<div class="row">
-				<div class="x_panel">
-					<div class="x_title">
-						<h2 class="text-uppercase" th:text="#{label.profili}"></h2>
-						<a class="btn btn-primary pull-right" th:href="@{/profile/new}" th:text="#{label.nuovo}">label.nuovo</a>
-						<div class="clearfix"></div>
-					</div>
-					<div class="x_content">
-						<div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-							<div class="row">
-								<div class="col-sm-12">
-									<table id="datatable" class="table table-striped table-bordered dataTable no-footer" role="grid" aria-describedby="datatable_info">
-										<thead>
-											<tr role="row">
-												<th th:text="#{label.nome}">label.username</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr role="row" th:each="profile, row: ${profileList}">
-												<td>
-													<a th:href="@{|/profile/${profile.id}/edit|}" th:text="${profile.name}"></a>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="x_panel">
+				<div class="x_title">
+					<h2 class="text-uppercase" th:text="#{label.profili}"></h2>
+					<a class="btn btn-primary pull-right" th:href="@{/profile/new}"
+						th:text="#{label.nuovo}">label.nuovo</a>
+					<div class="clearfix"></div>
+				</div>
+				<div class="x_content">
+					<div class="x_content col-xs-12">
+						<table id="datatable"
+							class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-ordering"
+							cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.nome}">label.username</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="profile, row: ${profileList}">
+									<td><a th:href="@{|/profile/${profile.id}/edit|}"
+										th:text="${profile.name}"></a></td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
-			<!-- initialize the datatables  --> 		
-			<script th:inline="javascript">
-			 $(document).ready(function() {
-		            $('#datatable').dataTable();
-			 });
-			</script>
 		</div>
-	</body>
+	</div>
+</body>
 </html>
