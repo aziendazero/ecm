@@ -34,6 +34,7 @@ public class AccreditamentoController {
 		dataBinder.setDisallowedFields("id");
 	}
 	
+	
 	/***	Get Accreditamenti per provider corrente	***/
 	@RequestMapping("/provider/accreditamento/list")
 	public String getAllAccreditamentiForCurrentProvider(RedirectAttributes redirectAttrs) throws Exception{
