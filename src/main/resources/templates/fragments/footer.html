@@ -117,6 +117,18 @@
 				"bFilter" : false			
 			});
 			
+		
+			function sendNotify(){
+				var notify = new PNotify({
+					title: [[${message?.titolo}]],
+					text: [[${message?.testo}]],
+					type: [[${message?.tipo}]],
+					hide: false,
+                    buttons: {
+                    	sticker: false
+                    }                             
+            	});
+			};		
 		</script>
 	</body>
 </html>
