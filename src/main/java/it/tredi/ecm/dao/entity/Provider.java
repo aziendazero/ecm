@@ -59,4 +59,12 @@ public class Provider extends BaseEntity{
 		this.persone.add(persona);
 		persona.setProvider(this);
 	}
+	
+	public boolean isSedeCoincide(){
+		if(sedeLegale != null && sedeOperativa != null){
+			return sedeLegale.getId() == sedeOperativa.getId();
+		}else{
+			return false;
+		}
+	}
 }

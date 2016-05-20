@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,9 +20,16 @@ import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
+import it.tredi.ecm.web.validator.SedeValidator;
 
 @Controller
 public class SedeController {
+	
+	private final String EDIT = "sede/sedeEdit";
+	
+	
+	@Autowired
+	private SedeValidator sedeValidator;
 	@Autowired
 	private SedeService sedeService;
 	@Autowired
@@ -89,18 +94,17 @@ public class SedeController {
 		}
 		
 		model.addAttribute("tipologiaSede", Costanti.SEDE_OPERATIVA);
-		model.addAttribute("sede", sedeLegale);
-		return "sede/sedeEdit :: content"; 
+		return goToEditWhitFragment(model, sedeLegale, "content");
 	}
 	
 	/***	NEW / EDIT 	***/
-	@RequestMapping("sede/new")
+	@RequestMapping("/sede/new")
 	public String getNewSedeCurrentProvider(@RequestParam("tipologiaSede") String tipologiaSede, Model model) throws Exception{
 		model.addAttribute("tipologiaSede", tipologiaSede);
 		return goToEdit(model, new Sede());
 	}
 	
-	@RequestMapping("sede/{id}/edit")
+	@RequestMapping("/sede/{id}/edit")
 	public String editSede(@PathVariable("id") Long id, 
 							@RequestParam("tipologiaSede") String tipologiaSede, Model model){
 		model.addAttribute("tipologiaSede", tipologiaSede);
@@ -108,34 +112,34 @@ public class SedeController {
 	}
 	
 	/***	SAVE 	***/
-	@RequestMapping(value = "sede/save", method = RequestMethod.POST)
-	public String saveSede(@ModelAttribute("sede") @Valid Sede sede, BindingResult result,  Model model, 
-							@RequestParam(name = "SedeOperativa", required = false) String SedeOperativa, 
-							@RequestParam(name = "SedeLegale", required = false) String SedeLegale){
+	@RequestMapping(value = "/sede/save", method = RequestMethod.POST)
+	public String saveSede(@ModelAttribute("sede") Sede sede, BindingResult result,  Model model, 
+								@RequestParam(name = Costanti.SEDE_OPERATIVA, required = false) String SedeOperativa, 
+								@RequestParam(name = Costanti.SEDE_LEGALE, required = false) String SedeLegale){
+
+		sedeValidator.validate(sede, result, "");
 		try{
 			if(result.hasErrors()){
-				return "sede/sedeEdit";
+				model.addAttribute("tipologiaSede", SedeOperativa != null ? Costanti.SEDE_OPERATIVA : Costanti.SEDE_LEGALE);
+				return EDIT;
 			}else{
-					sedeService.save(sede);
-					
-					Provider currentProvider = providerService.getProvider();
-					if(SedeLegale != null )
-						currentProvider.setSedeLegale(sede);
-					else if(SedeOperativa != null )
-						currentProvider.setSedeOperativa(sede);
-					
-					providerService.save(currentProvider);
-					return "redirect:/provider/accreditamento";
+					sedeService.save(sede, providerService.getProvider(), SedeOperativa != null ? Costanti.SEDE_OPERATIVA : Costanti.SEDE_LEGALE);
+					return "redirect:/provider/accreditamento/list";
 			}
 		}catch(Exception ex){
-			
+			//TODO Exception
 		}
 		
-		return "sede/sedeEdit";
+		return EDIT;
 	}
 	
 	private String goToEdit(Model model, Sede sede){
 		model.addAttribute("sede", sede);
-		return "sede/sedeEdit";
+		return EDIT;
+	}
+	
+	private String goToEditWhitFragment(Model model, Sede sede, String fragment){
+		model.addAttribute("sede", sede);
+		return EDIT + " :: " + fragment;
 	}
 }

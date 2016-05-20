@@ -8,167 +8,164 @@
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-xs-12">
-				<div class="x_panel">
-					<div class="x_title">
-						<h2 th:if="${accreditamentoWrapper.accreditamento.new}" th:text="#{label.nuova_domanda}">label.nuova_domanda</h2>
-						<h2 th:unless="${accreditamentoWrapper.accreditamento.new}" th:text="${accreditamentoWrapper.accreditamento.tipoDomanda} - ${accreditamentoWrapper.accreditamento.stato}">Provvisorio - bozza</h2>
-						<a th:if="${accreditamentoWrapper.accreditamento.stato} == 'Bozza'" class="btn btn-primary pull-right" th:text="#{label.salva_bozza}" th:href="@{/provider/accreditamento/saveDraft}"></a>
-						<div class="clearfix"></div>
-					</div>
-					<div class="x_content">
-						<div class="" role="tabpanel" data-example-id="togglable-tabs">
-							<ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-								<li role="presentation" class="active">
-									<a href="#tab_content1" id="active-tab1" role="tab" data-toggle="tab" aria-expanded="true" th:text="#{label.dati_del_organizzatore}">
-										Dati dell'organizzatore
-									</a>
-								</li>
-								<li role="presentation" class="">
-									<a href="#tab_content2" role="tab" id="tab2" data-toggle="tab" aria-expanded="false" th:text="#{label.dati_dei_responsabili}">
-									Dati dei responsabili
-									</a>
-								</li>
-								<li role="presentation" class="">
-									<a href="#tab_content3" role="tab" id="tab3" data-toggle="tab" aria-expanded="false" th:text="#{label.allegati}">
-										Allegati
-									</a>
-								</li>
-							</ul>
-							<div id="myTabContent" class="tab-content">
-								<div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="active-tab1">
-									<!--  View delle tabelle, con i check in thymeleaf per vedere se è new -->
-
-									<div class="row">
-										<div class="col-xs-12">
-											<div class="x_panel">
-												<div class="x_title">
-													<h2 th:text="#{label.info_provider}">label.info_provider</h2>
-													<div class="clearfix"></div>
+					<div class="x_panel">
+						<div class="x_title">
+							<h2 th:if="${accreditamentoWrapper.accreditamento.new}" th:text="#{label.nuova_domanda}">label.nuova_domanda</h2>
+							<h2 th:unless="${accreditamentoWrapper.accreditamento.new}" th:text="${accreditamentoWrapper.accreditamento.tipoDomanda} + ' - ' + ${accreditamentoWrapper.accreditamento.stato}">Provvisorio - bozza</h2>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content">
+							<div class="" role="tabpanel" data-example-id="togglable-tabs">
+								<ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+									<li role="presentation" class="active">
+										<a href="#tab_content1" id="active-tab1" role="tab" data-toggle="tab" aria-expanded="true" th:text="#{label.dati_del_organizzatore}">
+											Dati dell'organizzatore
+										</a>
+									</li>
+									<li role="presentation" class="">
+										<a href="#tab_content2" role="tab" id="tab2" data-toggle="tab" aria-expanded="false" th:text="#{label.dati_dei_responsabili}">
+										Dati dei responsabili
+										</a>
+									</li>
+									<li role="presentation" class="">
+										<a href="#tab_content3" role="tab" id="tab3" data-toggle="tab" aria-expanded="false" th:text="#{label.allegati}">
+											Allegati
+										</a>
+									</li>
+								</ul>
+								<div id="myTabContent" class="tab-content">
+									<div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="active-tab1">
+										
+										<div class="row">
+											<div class="col-xs-12">
+												<div class="x_panel">
+													<div class="x_title">
+														<h2 th:text="#{label.info_provider}">label.info_provider</h2>
+														<div class="clearfix"></div>
+													</div>
+													<div class="x_content">
+														<table class="datatable-responsive table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+															<thead>
+																<tr>
+																	<th th:text="#{label.sezione}">label.sezione</th>
+																	<th th:text="#{label.stato}">label.stato</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td><a th:text="#{label.provider}" th:href="@{|/provider/${accreditamentoWrapper.provider.id}/edit|}">label.provider</a></td>
+																	<td	th:if="${accreditamentoWrapper.providerStato}">
+																		<span class="fa fa-check green"></span>
+																	</td>
+																	<td	th:unless="${accreditamentoWrapper.providerStato}">
+																		<span class="fa fa-remove red"></span>
+																	</td>
+																</tr>
+																
+																<tr>
+																	<td th:if="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{/sede/new?tipologiaSede=SedeLegale}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{|/sede/${accreditamentoWrapper.sedeLegale.id}/edit?tipologiaSede=SedeLegale|}"></a></td>
+																	<td	th:if="${accreditamentoWrapper.sedeLegaleStato}">
+																		<span class="fa fa-check green"></span>
+																	</td>
+																	<td	th:unless="${accreditamentoWrapper.sedeLegaleStato}">
+																		<span class="fa fa-remove red"></span>
+																	</td>
+																</tr>
+																
+																<tr>
+																	<td th:if="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{/sede/new?tipologiaSede=SedeOperativa}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{|/sede/${accreditamentoWrapper.provider.sedeOperativa.id}/edit?tipologiaSede=SedeOperativa|}"></a></td>
+																	<td	th:if="${accreditamentoWrapper.sedeOperativaStato}">
+																		<span class="fa fa-check green"></span>
+																	</td>
+																	<td	th:unless="${accreditamentoWrapper.sedeOperativaStato}">
+																		<span class="fa fa-remove red"></span>
+																	</td>
+																</tr>
+																
+																<!-- 
+																<tr>
+																	<td>Delegato legale</td>
+																	<td
+																		th:text="${accreditamentoWrapper.delegatoLegale.new} ? 'Inserisci' : 'Modifica'"></td>
+																</tr>
+																<tr
+																	th:unless="${accreditamentoWrapper.delegatoLeagale.new}">
+																	<td>Legale</td>
+																	<td
+																		th:text="${accreditamentoWrapper.legale.new} ? 'Inserisci' : 'Modifica'"></td>
+																</tr>
+																<tr>
+																	<td>Dati Accreditamento</td>
+																	<td
+																		th:text="${accreditamentoWrapper.accreditamento.new} ? 'Inserisci' : 'Modifica'"></td>
+																</tr>
+																  -->
+															</tbody>
+														</table>
+													</div>
 												</div>
-												<div class="x_content">
-													<table class="datatable-responsive table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-														<thead>
-															<tr>
-																<th th:text="#{label.sezione}">label.sezione</th>
-																<th th:text="#{label.stato}">label.stato</th>
-															</tr>
-														</thead>
-														<tbody>
-															<tr>
-																<td><a th:text="#{label.provider}" th:href="@{|/provider/${accreditamentoWrapper.provider.id}/edit|}">label.provider</a></td>
-																<td	th:if="${accreditamentoWrapper.providerStato}">
-																	<span class="fa fa-check green"></span>
-																</td>
-																<td	th:unless="${accreditamentoWrapper.providerStato}">
-																	<span class="fa fa-remove red"></span>
-																</td>
-															</tr>
-															
-															<tr>
-																<td th:if="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{/sede/new?tipologiaSede=SedeLegale}"></a></td>
-																<td th:unless="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{|/sede/${accreditamentoWrapper.sedeLegale.id}/edit?tipologiaSede=SedeLegale|}"></a></td>
-																<td	th:if="${accreditamentoWrapper.sedeLegaleStato}">
-																	<span class="fa fa-check green"></span>
-																</td>
-																<td	th:unless="${accreditamentoWrapper.sedeLegaleStato}">
-																	<span class="fa fa-remove red"></span>
-																</td>
-															</tr>
-															
-															<tr>
-																<td th:if="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{/sede/new?tipologiaSede=SedeOperativa}"></a></td>
-																<td th:unless="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{|/sede/${accreditamentoWrapper.provider.sedeOperativa.id}/edit?tipologiaSede=SedeOperativa|}"></a></td>
-																<td	th:if="${accreditamentoWrapper.sedeOperativaStato}">
-																	<span class="fa fa-check green"></span>
-																</td>
-																<td	th:unless="${accreditamentoWrapper.sedeOperativaStato}">
-																	<span class="fa fa-remove red"></span>
-																</td>
-															</tr>
-															
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-xs-12">
+												<div class="x_panel">
+													<div class="x_title">
+														<h2>Dati anagrafiche interno provider</h2>
+														<div class="clearfix"></div>
+													</div>
+													<div class="x_content col-xs-12">
+														<table class="datatable-responsive table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+															<thead>
+																<tr>
+																	<th>label</th>
+																	<th>value</th>
+																</tr>
+															</thead>
+															<tbody>
 															<!-- 
-															<tr>
-																<td>Delegato legale</td>
-																<td
-																	th:text="${accreditamentoWrapper.delegatoLegale.new} ? 'Inserisci' : 'Modifica'"></td>
-															</tr>
-															<tr
-																th:unless="${accreditamentoWrapper.delegatoLeagale.new}">
-																<td>Legale</td>
-																<td
-																	th:text="${accreditamentoWrapper.legale.new} ? 'Inserisci' : 'Modifica'"></td>
-															</tr>
-															<tr>
-																<td>Dati Accreditamento</td>
-																<td
-																	th:text="${accreditamentoWrapper.accreditamento.new} ? 'Inserisci' : 'Modifica'"></td>
-															</tr>
-															  -->
-														</tbody>
-													</table>
+																<tr>
+																	<td>Responsabile Segreteria</td>
+																	<td
+																		th:text="${accreditamentoWrapper.responsabileSegreteria.new} ? 'Inserisci' : 'Modifica'"></td>
+																</tr>
+																<tr>
+																	<td>Responsabile Amministrativo</td>
+																	<td
+																		th:text="${accreditamentoWrapper.responsabileAmministrativo.new} ? 'Inserisci' : 'Modifica'"></td>
+																</tr>
+																<tr>
+																	<td>Coordinatore Comitato Scientifico</td>
+																	<td
+																		th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.new} ? 'Inserisci' : 'Modifica'"></td>
+																</tr>
+																<tr>
+																	<td>Componenti Comitato Scientifico</td>
+																	<td
+																		th:text="${accreditamentoWrapper.componentiCOmitatoScientifico[0].new} ? 'Inserisci' : 'Modifica'"></td>
+																</tr>
+																<tr>
+																	<td>Responsabile Sistema Informatico</td>
+																	<td
+																		th:text="${accreditamentoWrapper.responsabileSistemaInformatico.new} ? 'Inserisci' : 'Modifica'"></td>
+																</tr>
+																<tr>
+																	<td>Responsabilità Qualità</td>
+																	<td
+																		th:text="${accreditamentoWrapper.responsabileQualita.new} ? 'Inserisci' : 'Modifica'"></td>
+																</tr>
+																 -->
+															</tbody>
+														</table>
+													</div>
 												</div>
 											</div>
 										</div>
+										<!--  TAB 1 -->
 									</div>
-									<div class="row">
-										<div class="col-xs-12">
-											<div class="x_panel">
-												<div class="x_title">
-													<h2>Dati anagrafiche interno provider</h2>
-													<div class="clearfix"></div>
-												</div>
-												<div class="x_content col-xs-12">
-													<table class="datatable-responsive table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-														<thead>
-															<tr>
-																<th>label</th>
-																<th>value</th>
-															</tr>
-														</thead>
-														<tbody>
-														<!-- 
-															<tr>
-																<td>Responsabile Segreteria</td>
-																<td
-																	th:text="${accreditamentoWrapper.responsabileSegreteria.new} ? 'Inserisci' : 'Modifica'"></td>
-															</tr>
-															<tr>
-																<td>Responsabile Amministrativo</td>
-																<td
-																	th:text="${accreditamentoWrapper.responsabileAmministrativo.new} ? 'Inserisci' : 'Modifica'"></td>
-															</tr>
-															<tr>
-																<td>Coordinatore Comitato Scientifico</td>
-																<td
-																	th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.new} ? 'Inserisci' : 'Modifica'"></td>
-															</tr>
-															<tr>
-																<td>Componenti Comitato Scientifico</td>
-																<td
-																	th:text="${accreditamentoWrapper.componentiCOmitatoScientifico[0].new} ? 'Inserisci' : 'Modifica'"></td>
-															</tr>
-															<tr>
-																<td>Responsabile Sistema Informatico</td>
-																<td
-																	th:text="${accreditamentoWrapper.responsabileSistemaInformatico.new} ? 'Inserisci' : 'Modifica'"></td>
-															</tr>
-															<tr>
-																<td>Responsabilità Qualità</td>
-																<td
-																	th:text="${accreditamentoWrapper.responsabileQualita.new} ? 'Inserisci' : 'Modifica'"></td>
-															</tr>
-															 -->
-														</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div role="tabpanel" class="tab-pane fade" id="tab_content2"
-									aria-labelledby="tab2">
-									<form class="form-horizontal form-label-left" method="post"
-										enctype="multipart/form-data" novalidate="novalidate">
+									<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="tab2">
+										<!--  TAB 2 -->
 										<div class="row">
 											<div class="col-xs-12">
 												<div class="x_panel">
@@ -180,17 +177,20 @@
 												</div>
 											</div>
 										</div>
-									</form>
-								</div>
-								<div role="tabpanel" class="tab-pane fade" id="tab_content3"
-									aria-labelledby="tab3">
-									<p>Testo3 testo3 testo3 testo3 testo3 testo3 testo3 testo3
-										testo3</p>
+										<!--  TAB 2 -->
+									</div>
+									<div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="tab3">
+										<p>
+											<!-- TAB 3 -->
+											Testo3 testo3 testo3 testo3 testo3 testo3 testo3 testo3
+											<!-- TAB 3 -->
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				<!--  -->	
 			</div>
 		</div>
 	</div>
