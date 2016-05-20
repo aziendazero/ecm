@@ -9,7 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.Costanti;
-import it.tredi.springdatautil.JSR310DateConverters;
 import lombok.Getter;
 import lombok.Setter;
 
