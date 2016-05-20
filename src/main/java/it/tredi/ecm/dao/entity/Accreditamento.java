@@ -1,12 +1,15 @@
 package it.tredi.ecm.dao.entity;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
+
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.springdatautil.JSR310DateConverters;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,9 +20,9 @@ public class Accreditamento extends BaseEntity{
 	
 	private String tipoDomanda;
 	private String stato;
-	private LocalTime dataInvio;
-	private LocalTime dataValutazione;
-	private int mesiValidita;
+	private LocalDate dataInvio;
+	private LocalDate dataValutazione;
+	private LocalDate dataScadenza;
 	
 	@JoinColumn(name = "valutato_da")
 	@OneToOne(fetch = FetchType.LAZY)
@@ -41,6 +44,7 @@ public class Accreditamento extends BaseEntity{
 //	private List<Professione> professioniAccreditamento;//generale o settoriale
 //	private List<String> professioni;//se generale tutte altrimenti
 
+	public Accreditamento(){}
 	public Accreditamento(String tipoDomanda){
 		this.tipoDomanda = tipoDomanda;
 		this.stato = Costanti.ACCREDITAMENTO_STATO_BOZZA;

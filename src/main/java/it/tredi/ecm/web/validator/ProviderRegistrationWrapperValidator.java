@@ -6,16 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import it.tredi.ecm.dao.entity.Persona;
-import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 
 @Component
 public class ProviderRegistrationWrapperValidator{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProviderRegistrationWrapperValidator.class);
 	
-	@Autowired
-	private ProviderService providerService;
 	@Autowired
 	private AccountValidator accountValidator;
 	@Autowired

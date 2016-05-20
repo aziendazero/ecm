@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
@@ -34,67 +35,70 @@ public class AccreditamentoController {
 	}
 	
 	/***	Get Accreditamenti per provider corrente	***/
-	@RequestMapping("/provider/accreditamento")
-	public String getAccreditamentoCurrentProvider(RedirectAttributes redirectAttrs) throws Exception{
+	@RequestMapping("/provider/accreditamento/list")
+	public String getAllAccreditamentiForCurrentProvider(RedirectAttributes redirectAttrs) throws Exception{
 		Provider currentProvider = providerService.getProvider();
 		if(currentProvider.isNew()){
 			throw new Exception("Provider non registrato");
 		}else{
 			redirectAttrs.addAttribute("providerId",currentProvider.getId());
-			return "redirect:/provider/{providerId}/accreditamento";
+			return "redirect:/provider/{providerId}/accreditamento/list";
 		}
 	}
 	
-	/***	Get Accreditamenti per provider {providerID}	***/
-	@RequestMapping("/provider/{providerId}/accreditamento")
-	public String getAccreditamentoProvider(@PathVariable("providerId") Long providerId, Model model, RedirectAttributes redirectAttrs){
+	/***	Get Lista Accreditamenti per {providerID}	***/
+	@RequestMapping("/provider/{providerId}/accreditamento/list")
+	public String getAllAccreditamentiForProvider(@PathVariable("providerId") Long providerId, Model model, RedirectAttributes redirectAttrs){
 		Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
-		if(listaAccreditamenti.size() == 1){
-			Accreditamento accreditamento = listaAccreditamenti.iterator().next();
-			redirectAttrs.addAttribute("id",accreditamento.getId())
-							.addFlashAttribute("accreditamento", accreditamento);
-			return "redirect:/provider/accreditamento/{id}";
-		}
-		
 		model.addAttribute("accreditamentoList", listaAccreditamenti);
 		return "provider/accreditamentoList";
+		
+		//TODO per reindirizzare direttamente sulla view è necessario creare un'altra request
+		// che non faccia il ricaricamento da db
+		/*
+	  		if(listaAccreditamenti.size() == 1){
+	 
+				Accreditamento accreditamento = listaAccreditamenti.iterator().next();
+				redirectAttrs.addAttribute("id",accreditamento.getId())
+								.addFlashAttribute("accreditamento", accreditamento);
+				return "redirect:/provider/accreditamento/{id}";
+			}
+		*/
+	}
+	
+	/***	Get Accreditamento ***/
+	@RequestMapping("/provider/accreditamento")
+	public String getAccreditamentoAttivo(Model model){
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento();
+		return goToAccreditamento(model, accreditamento);
 	}
 	
 	/***	Get Accreditamento {ID}	***/
 	@RequestMapping("/provider/accreditamento/{id}")
-	public String getAccreditamento(@ModelAttribute("accreditamento") Accreditamento accreditamento, Model model){
+	public String getAccreditamento(@PathVariable Long id, Model model){
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
+		return goToAccreditamento(model, accreditamento);
+	}
+	
+	private String goToAccreditamento(Model model, Accreditamento accreditamento){
 		if(accreditamento.isProvvisorio()){
 			AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapper(accreditamento);
 			model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
-		} 
+		}//TODO gestire differenza con Accreditamento STANDARD
 		return "provider/accreditamento";
 	}
 	
 	/***	Nuova domanda accreditamento per provider corrente	***/
 	@RequestMapping("/provider/accreditamento/new")
-	public String getNewAccreditamentoCurrentProvider(Model model) throws Exception{
-		Provider currentProvider = providerService.getProvider();
-		if(currentProvider.isNew()){
-			throw new Exception("Provider non registrato");
-		}else{
-			Accreditamento accreditamento = new Accreditamento(Costanti.ACCREDITAMENTO_PROVVISORIO);
-			accreditamento.setProvider(currentProvider);
-			AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapper(accreditamento);
-			model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
-			return "provider/accreditamento";
+	public String getNewAccreditamentoForCurrentProvider(Model model, RedirectAttributes redirectAttrs) {
+		try{
+			redirectAttrs.addAttribute("id", accreditamentoService.getNewAccreditamentoForCurrentProvider().getId());
+			return "redirect:/provider/accreditamento/{id}";
+		}catch (Exception ex){
+			//TODO exception
+			return "redirect:/provider/accreditamento/list";
 		}
 	}
-	
-	@RequestMapping("/provider/accreditamento/saveDraft")
-	public String salvaAccreditamentoBozza(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper accreditamentoWrapper, 
-												RedirectAttributes redirectAttrs){
-		
-		accreditamentoService.save(accreditamentoWrapper.getAccreditamento());
-		redirectAttrs.addAttribute("providerId",accreditamentoWrapper.getProvider().getId());
-		return "redirect:/provider/{providerId}/accreditamento";
-	}
-	
-	
 	
 	private AccreditamentoWrapper prepareAccreditamentoWrapper(Accreditamento accreditamento){
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper();
@@ -110,21 +114,12 @@ public class AccreditamentoController {
 		}
 		
 		Sede sede = accreditamento.getProvider().getSedeLegale();
-		if(sede == null){
-			accreditamentoWrapper.setSedeLegale(new Sede());
-		}else{
-			accreditamentoWrapper.setSedeLegale(sede);
-		}
+		accreditamentoWrapper.setSedeLegale( sede != null ? sede : new Sede());  
 		accreditamentoWrapper.setSedeLegaleStato(true);
 		
 		sede = accreditamento.getProvider().getSedeOperativa();
-		if(sede == null){
-			accreditamentoWrapper.setSedeOperativa(new Sede());
-		}else{
-			accreditamentoWrapper.setSedeOperativa(sede);
-		}
+		accreditamentoWrapper.setSedeOperativa( sede != null ? sede : new Sede());  
 		accreditamentoWrapper.setSedeOperativaStato(true);
-		
 		
 		accreditamentoWrapper.setAccreditamento(accreditamento);
 		return accreditamentoWrapper;
