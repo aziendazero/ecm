@@ -14,7 +14,7 @@ public class AdminController {
 	}
 	
 	public String mirko(){
-		return "ciao";
+		return "ciao vez";
 	}
 	
 	public String albana(){
