@@ -11,10 +11,11 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:if="${tipologiaSede == 'SedeLegale'}" th:text="#{label.sede_legale}">label.info_sede</h2>
-						<h2 th:if="${tipologiaSede == 'SedeOperativa'}" th:text="#{label.sede_operativa}">label.info_sede</h2>
+						<h2 th:text="${tipologiaSede == 'SedeLegale'} ? #{label.sede_legale} : #{label.sede_operativa}">label.info_sede</h2>
+						
 						<input type="button" class="btn btn-success pull-right" onclick="loadSedeLegale()" name="copia_dati" th:if="${tipologiaSede == 'SedeOperativa'}" th:value="#{label.coincide_con_sede_legale}" />
 						<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/sede/new?tipologiaSede=${tipologiaSede}|}"></a>
+						<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/provider/accreditamento/|}"></a>
 						<div class="clearfix"></div>
 					</div>
 					
@@ -64,16 +65,18 @@
 								<div th:if="${#fields.hasErrors('sede.indirizzo')}" class="alert" th:errors="${sede.indirizzo}"></div>
 							</div>
 							
-							<!-- CAP -->	
+							<!-- CAP -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sede.cap')} ? 'bad'">
 								<label class="control-label col-xs-1">4</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="CAP_sede"><span th:text="#{label.cap}">CAP</span><span class="required">*</span></label>
-								<div class="col-md-4 col-sm-4 col-xs-12">
-									<input id="CAP_sede" name="CAP_legale" required="required"
-										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="numeric" th:field="${sede.cap}" />
-								</div>
+									
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="CAP_sede" name="CAP_legale" required="required"
+											class="form-control col-md-7 col-xs-12" type="text"
+											pattern="numeric" th:field="${sede.cap}" />
+									</div>
+								
 								<div th:if="${#fields.hasErrors('sede.cap')}" class="alert" th:errors="${sede.cap}"></div>
 							</div>
 							
@@ -152,7 +155,7 @@
 			};
 			
 			function loadSedeLegale(){
-				var url = "/sede/loadSedeLegale";
+				var url = "/sede/copia";
 				
 				$("#test").load(url);
 			}
