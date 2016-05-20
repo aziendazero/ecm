@@ -10,7 +10,7 @@ public class AdminController {
 	}
 	
 	public String pippo(){
-		return "ciao";
+		return "ciao pippo";
 	}
 	
 	public String mirko(){
