@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h1>
+							<span th:text="#{label.sede_di}" th:remove="tag">Sede di </span><span
+								th:remove="tag">nomeProvider</span>
+						</h1>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<div class="col-md-9 col-sm-9 col-xs-12">
+
+							<ul class="fontawesome-icon-list list-unstyled user_data">
+
+								<li><i class="fa fa-map-marker"></i>  <span
+									th:text="#{label.comune}"> Comune</span>:</li>
+
+								<li><i class="fa fa-map-marker"></i>  <span
+									th:text="#{label.provincia}"> Provincia</span>:</li>
+
+								<li><i class="fa fa-map-marker"></i>  <span
+									th:text="#{label.indirizzo}"> Indirizzo</span>:</li>
+
+								<li><i class="fa fa-phone-square"></i> <span
+									th:text="#{label.telefono}"> Telefono</span>:</li>
+
+								<li><i class="fa fa-phone"></i> <span
+									th:text="#{label.tel_secondario}"> Telefono secondario</span>:</li>
+
+								<li><i class="fa fa-at"></i> <span th:text="#{label.email}">
+										Email</span>:</li>
+
+								<li><i class="fa fa-fax"></i> <span th:text="#{label.fax}">
+										FAX</span>:</li>
+
+								<li><i class="fa fa-envelope-o"></i> <span
+									th:text="#{label.cap}"> CAP</span>:</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
