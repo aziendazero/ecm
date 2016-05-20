@@ -1,15 +1,15 @@
 package it.tredi.ecm.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
-
 import it.tredi.ecm.service.bean.EcmProperties;
 
 @Configuration
 @PropertySource("classpath:ecm.properties")
+@EntityScan(basePackages={"it.tredi.ecm.dao.entity","it.tredi.springdatautil"})
 public class EcmAppConfiguration {
 	@Value("${account.expires.days}")
 	private int accountExpiresDay = 10;

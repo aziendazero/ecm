@@ -24,6 +24,8 @@
 		<!-- tomcat.version>7.0.69</tomcat.version -->
 		<tomcat.version>8.0.8</tomcat.version>
 		<servlet-api.version>3.0.0</servlet-api.version>
+		<liquibaseplugin.version>3.5.0</liquibaseplugin.version>
+		<liquibase-hibernate4.version>3.5</liquibase-hibernate4.version>
 	</properties>
 
 	<!-- profiles> <profile> <id>dev</id> <properties> <activatedProperties>dev</activatedProperties> 
@@ -115,6 +117,10 @@
 			<artifactId>springdatautil</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -127,9 +133,108 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>${liquibaseplugin.version}</version>
+				<configuration>
+					<propertyFile>src/main/resources/liquibase/liquibase.properties</propertyFile>
+					<diffChangeLogFile>src/main/resources/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.javassist</groupId>
+						<artifactId>javassist</artifactId>
+						<version>3.18.2-GA</version>
+					</dependency>
+					<dependency>
+						<groupId>org.liquibase.ext</groupId>
+						<artifactId>liquibase-hibernate4</artifactId>
+						<version>${liquibase-hibernate4.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-data-jpa</artifactId>
+						<version>${project.parent.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 		<finalName>ecm</finalName>
 	</build>
+	
+	<!-- profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<spring.profile>dev</spring.profile>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+			</build>
+		</profile -->
+		<!-- esempio di profilo da utilizzare per ambienti di test per evitare 
+			di copiare le properties di altri ambienti -->
+		<!-- profile>
+			<id>demo</id>
+			<properties>
+				<spring.profile>demo</spring.profile>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<excludes>
+							<exclude>application-*.properties</exclude>
+						</excludes>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>application-demo.properties</include>
+						</includes>
+						<filtering>false</filtering>
+					</resource>
+				</resources>
+			</build>
+		</profile -->
+		<!-- esempio di profilo da utilizzare per le build di produzione o ambienti 
+			di test per evitare di copiare le properties di altri ambienti -->
+		<!-- profile>
+			<id>prod</id>
+			<properties>
+				<spring.profile>prod</spring.profile>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<excludes>
+							<exclude>application-*.properties</exclude>
+						</excludes>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>application-prod.properties</include>
+						</includes>
+						<filtering>false</filtering>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles -->
 
 
 </project>
