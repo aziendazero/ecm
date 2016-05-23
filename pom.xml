@@ -24,7 +24,7 @@
 		<!-- tomcat.version>7.0.69</tomcat.version -->
 		<tomcat.version>8.0.8</tomcat.version>
 		<servlet-api.version>3.0.0</servlet-api.version>
-		<liquibaseplugin.version>3.5.0</liquibaseplugin.version>
+		<!-- liquibaseplugin.version>3.4.2</liquibaseplugin.version -->
 		<liquibase-hibernate4.version>3.5</liquibase-hibernate4.version>
 	</properties>
 
@@ -117,10 +117,10 @@
 			<artifactId>springdatautil</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
-		</dependency>
+		</dependency -->
 	</dependencies>
 
 	<build>
@@ -134,7 +134,7 @@
 				</configuration>
 			</plugin>
 			
-			<plugin>
+			<!-- plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
 				<version>${liquibaseplugin.version}</version>
@@ -159,7 +159,7 @@
 						<version>${project.parent.version}</version>
 					</dependency>
 				</dependencies>
-			</plugin>
+			</plugin -->
 		</plugins>
 		<finalName>ecm</finalName>
 	</build>
