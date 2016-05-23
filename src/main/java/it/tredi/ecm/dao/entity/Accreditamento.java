@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
 
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,10 +19,14 @@ import lombok.Setter;
 @Setter
 public class Accreditamento extends BaseEntity{
 	
+	@Column(name = "tipo_domanda")
 	private String tipoDomanda;
 	private String stato;
+	@Column(name = "data_invio")
 	private LocalDate dataInvio;
+	@Column(name = "data_valutazione")
 	private LocalDate dataValutazione;
+	@Column(name = "data_scadenza")
 	private LocalDate dataScadenza;
 	
 	@JoinColumn(name = "valutato_da")

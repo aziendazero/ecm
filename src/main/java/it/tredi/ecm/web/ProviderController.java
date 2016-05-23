@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
@@ -81,20 +82,31 @@ public class ProviderController {
 		return "provider/providerEdit";
 	}
 	
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/edit")
+	public String editProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model){
+		model.addAttribute("accreditamentoId",accreditamentoId);
+		model.addAttribute("provider",providerService.getProvider(id));
+		return "provider/providerEdit";
+	}
+	
 	/***	SAVE	***/
-	@RequestMapping(value = "provider/save/accreditamento", method = RequestMethod.POST)
-	public String salvaProvider(@ModelAttribute("provider") Provider provider, BindingResult result, Model model){
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/save", method = RequestMethod.POST)
+	public String salvaProvider(@PathVariable Long accreditamentoId, @ModelAttribute("provider") Provider provider, 
+									BindingResult result, Model model, RedirectAttributes redirectAttrs){
 		try{
 			//validazione del provider
 			providerValidator.validateForAccreditamento(provider, result, "");	
 			
 			if(result.hasErrors()){
+				model.addAttribute("accreditamentoId",accreditamentoId);
 				return "provider/providerEdit";
 			}else{
 				providerService.save(provider);
-				return "redirect:/provider/accreditamento";
+				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+				return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch (Exception ex){
+			model.addAttribute("accreditamentoId",accreditamentoId);
 			return "provider/providerEdit";
 		}
 	}

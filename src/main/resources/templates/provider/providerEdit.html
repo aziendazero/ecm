@@ -11,11 +11,12 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.info_provider}"></h2>
+						<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${accreditamentoId}|}"></a>
 						<div class="clearfix"></div>
 					</div>
 
 					<div class="x_content">
-						<form id="formInfo" class="form-horizontal form-label-left" th:action="@{/provider/save/accreditamento}"
+						<form id="formInfo" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${accreditamentoId}/provider/save|}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
 									
 							<input type="hidden" name="editId" th:value="${provider.id}" />

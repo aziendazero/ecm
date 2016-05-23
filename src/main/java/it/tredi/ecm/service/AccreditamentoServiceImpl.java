@@ -1,7 +1,6 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.Set;
 
 import javax.transaction.Transactional;

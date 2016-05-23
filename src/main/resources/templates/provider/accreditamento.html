@@ -53,7 +53,7 @@
 															</thead>
 															<tbody>
 																<tr>
-																	<td><a th:text="#{label.provider}" th:href="@{|/provider/${accreditamentoWrapper.provider.id}/edit|}">label.provider</a></td>
+																	<td><a th:text="#{label.provider}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/edit|}">label.provider</a></td>
 																	<td	th:if="${accreditamentoWrapper.providerStato}">
 																		<span class="fa fa-check green"></span>
 																	</td>

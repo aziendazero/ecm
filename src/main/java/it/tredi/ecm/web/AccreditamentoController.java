@@ -75,7 +75,7 @@ public class AccreditamentoController {
 	}
 	
 	/***	Get Accreditamento {ID}	***/
-	@RequestMapping("/provider/accreditamento/{id}")
+	@RequestMapping("/accreditamento/{id}")
 	public String getAccreditamento(@PathVariable Long id, Model model){
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
 		return goToAccreditamento(model, accreditamento);
@@ -94,7 +94,7 @@ public class AccreditamentoController {
 	public String getNewAccreditamentoForCurrentProvider(Model model, RedirectAttributes redirectAttrs) {
 		try{
 			redirectAttrs.addAttribute("id", accreditamentoService.getNewAccreditamentoForCurrentProvider().getId());
-			return "redirect:/provider/accreditamento/{id}";
+			return "redirect:/accreditamento/{id}";
 		}catch (Exception ex){
 			//TODO exception
 			return "redirect:/provider/accreditamento/list";
