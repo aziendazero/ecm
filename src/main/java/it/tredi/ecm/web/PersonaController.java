@@ -16,6 +16,7 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.web.bean.PersonaWrapper;
 
 @Controller
 public class PersonaController {
@@ -29,15 +30,18 @@ public class PersonaController {
         dataBinder.setDisallowedFields("id");
     }
 	
-	@ModelAttribute("persona")
-	public Persona getPersona(@RequestParam(value="editId",required = false) Long id){
-		if(id != null)
-			return personaService.getPersona(id);
-		return new Persona();
+	@ModelAttribute("personaWrapper")
+	public PersonaWrapper getPersonaWrapper(@RequestParam(value="editId",required = false) Long id){
+		PersonaWrapper personaWrapper = new PersonaWrapper();
+		if(id != null){
+			personaWrapper.setPersona(personaService.getPersona(id));
+			return personaWrapper;
+		}
+		return new PersonaWrapper();
 	}
 	
-	@RequestMapping("/provider/{providerId}/accreditamento/persona/{id}/edit")
-	public String editPersona(@PathVariable("id") Long id, @PathVariable("providerId") Long providerId, Model model){
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/edit")
+	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model){
 		Persona persona = personaService.getPersona(id);
 		if(persona == null){
 			persona = newPersona(providerId);

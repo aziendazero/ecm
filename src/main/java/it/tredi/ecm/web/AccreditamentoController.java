@@ -7,17 +7,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.AccreditamentoWrapper;
@@ -107,11 +104,10 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setProviderStato(false);
 		
 		for(Persona p : accreditamento.getProvider().getPersone()){
-			switch (p.getIncarico()){
-				case Costanti.INCARICO_LEGALERAPPRESENTANTE : accreditamentoWrapper.setLegaleRappresentante(p);
-																			break;
-				default : break;
-			}
+			if(p.isLegaleRappresentante())
+				accreditamentoWrapper.setLegaleRappresentante(p);
+			else if(p.isDelegatoLegaleRappresentante())
+				accreditamentoWrapper.setDelegatoLegaleRappresentante(p);
 		}
 		
 		Sede sede = accreditamento.getProvider().getSedeLegale();

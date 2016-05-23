@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,19 +15,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
+import it.tredi.ecm.web.bean.SedeWrapper;
 import it.tredi.ecm.web.validator.SedeValidator;
 
 @Controller
 public class SedeController {
 	
 	private final String EDIT = "sede/sedeEdit";
-	
 	
 	@Autowired
 	private SedeValidator sedeValidator;
@@ -51,7 +54,7 @@ public class SedeController {
 		return elencoProvince;
 	}
 
-	@RequestMapping("/sede/comuni")
+	@RequestMapping("/comuni")
 	@ResponseBody
 	public List<String>getElencoComuni(@RequestParam String provincia){
 		HashMap<String, List<String>> elencoComuni = new HashMap<String, List<String>>();
@@ -78,53 +81,101 @@ public class SedeController {
 		return elencoComuni.get(provincia);
 	}
 	
-	@ModelAttribute("sede")
-	public Sede getSede(@RequestParam(name = "editId", required = false) Long id){
-		if(id != null)
-			return sedeService.getSede(id);
-		return new Sede();
+	@RequestMapping("/cap")
+	@ResponseBody
+	public List<String>getElencoCap(@RequestParam String comune){
+		HashMap<String, List<String>> elencoCap = new HashMap<String, List<String>>();
+		
+		List<String> capVenezia = new ArrayList<String>();
+		capVenezia.add("11111");
+		capVenezia.add("22222");
+		capVenezia.add("33333");
+		
+		List<String> capPadova = new ArrayList<String>();
+		capPadova.add("44444");
+		capPadova.add("55555");
+		capPadova.add("66666");
+		
+		List<String> capTrieste = new ArrayList<String>();
+		capTrieste.add("77777");
+		capTrieste.add("88888");
+		capTrieste.add("99999");
+		
+		elencoCap.put("Venezia", capVenezia);
+		elencoCap.put("Padova", capPadova);
+		elencoCap.put("Trieste", capTrieste);
+		
+		return elencoCap.get(comune);
 	}
 	
-	@RequestMapping("/sede/copia")
-	public String getCopiaSedeLegale(Model model){
+	@ModelAttribute("sedeWrapper")
+	public SedeWrapper getSede(@RequestParam(name = "editId", required = false) Long id){
+		if(id != null){
+			SedeWrapper sedeWrapper = new SedeWrapper(); 
+			sedeWrapper.setSede(sedeService.getSede(id));
+			return sedeWrapper;
+		}
+		return new SedeWrapper();
+	}
+	
+	@RequestMapping("/accreditamento/{accreditamentoId}/sede/copia")
+	public String getCopiaSedeLegale(@PathVariable Long accreditamentoId, Model model){
+		//recupero sede legale del provider corrente
 		Sede sedeLegale = new Sede();
 		Provider currentProvider = providerService.getProvider();
 		if(currentProvider != null){
 			sedeLegale = currentProvider.getSedeLegale();
 		}
 		
-		model.addAttribute("tipologiaSede", Costanti.SEDE_OPERATIVA);
-		return goToEditWhitFragment(model, sedeLegale, "content");
+		//preparo il wrapper specificando che è una sedeOperativa
+		SedeWrapper sedeWrapper = prepareSedeWrapper(sedeLegale, Costanti.SEDE_OPERATIVA, accreditamentoId);
+		sedeWrapper.setIdEditabili(new ArrayList<>());
+		
+		//refresh solo del fragment della view
+		return goToEditWhitFragment(model, sedeWrapper, "content");
 	}
 	
 	/***	NEW / EDIT 	***/
-	@RequestMapping("/sede/new")
-	public String getNewSedeCurrentProvider(@RequestParam("tipologiaSede") String tipologiaSede, Model model) throws Exception{
-		model.addAttribute("tipologiaSede", tipologiaSede);
-		return goToEdit(model, new Sede());
+	@RequestMapping("/accreditamento/{accreditamentoId}/sede/new")
+	public String getNewSedeCurrentProvider(@PathVariable Long accreditamentoId, @RequestParam("tipologiaSede") String tipologiaSede, 
+												Model model) throws Exception{
+		
+		return goToEdit(model, prepareSedeWrapper(new Sede(), tipologiaSede, accreditamentoId));
 	}
 	
-	@RequestMapping("/sede/{id}/edit")
-	public String editSede(@PathVariable("id") Long id, 
+	@RequestMapping("/accreditamento/{accreditamentoId}/sede/{id}/edit")
+	public String editSede(@PathVariable Long accreditamentoId, @PathVariable Long id, 
 							@RequestParam("tipologiaSede") String tipologiaSede, Model model){
-		model.addAttribute("tipologiaSede", tipologiaSede);
-		return goToEdit(model, sedeService.getSede(id));
+		
+		SedeWrapper sedeWrapper = prepareSedeWrapper(sedeService.getSede(id), tipologiaSede, accreditamentoId);
+		
+		if(tipologiaSede.equals(Costanti.SEDE_OPERATIVA)){
+			Provider currentProvider = providerService.getProvider();
+			if(currentProvider != null){
+				if(currentProvider.getSedeLegale() != null && currentProvider.getSedeOperativa() != null){
+					if(currentProvider.getSedeLegale().getId() == currentProvider.getSedeOperativa().getId())
+						sedeWrapper.setIdEditabili(new ArrayList<>());
+				}
+			}
+		}
+		return goToEdit(model, sedeWrapper);
 	}
 	
 	/***	SAVE 	***/
-	@RequestMapping(value = "/sede/save", method = RequestMethod.POST)
-	public String saveSede(@ModelAttribute("sede") Sede sede, BindingResult result,  Model model, 
-								@RequestParam(name = Costanti.SEDE_OPERATIVA, required = false) String SedeOperativa, 
-								@RequestParam(name = Costanti.SEDE_LEGALE, required = false) String SedeLegale){
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/sede/save", method = RequestMethod.POST)
+	public String saveSede(@ModelAttribute("sedeWrapper") SedeWrapper sedeWrapper, BindingResult result,  
+							Model model, RedirectAttributes redirectAttrs){
 
-		sedeValidator.validate(sede, result, "");
+		sedeValidator.validate(sedeWrapper.getSede(), result, "");
 		try{
 			if(result.hasErrors()){
-				model.addAttribute("tipologiaSede", SedeOperativa != null ? Costanti.SEDE_OPERATIVA : Costanti.SEDE_LEGALE);
+				//model.addAttribute("tipologiaSede", SedeOperativa != null ? Costanti.SEDE_OPERATIVA : Costanti.SEDE_LEGALE);
 				return EDIT;
 			}else{
-					sedeService.save(sede, providerService.getProvider(), SedeOperativa != null ? Costanti.SEDE_OPERATIVA : Costanti.SEDE_LEGALE);
-					return "redirect:/provider/accreditamento/list";
+					//sedeService.save(sede, providerService.getProvider(), SedeOperativa != null ? Costanti.SEDE_OPERATIVA : Costanti.SEDE_LEGALE);
+					sedeService.save(sedeWrapper.getSede(), providerService.getProvider(), sedeWrapper.getTipologiaSede());	
+					redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
+					return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch(Exception ex){
 			//TODO Exception
@@ -133,17 +184,30 @@ public class SedeController {
 		return EDIT;
 	}
 	
-	private String goToEdit(Model model, Sede sede){
-		
-		model.addAttribute("idOffset",0);
-		model.addAttribute("idEditabili", new int[]{0,1,2,5,7,8});
-		
-		model.addAttribute("sede", sede);
+	private String goToEdit(Model model, SedeWrapper sedeWrapper){
+		model.addAttribute("sedeWrapper", sedeWrapper);
 		return EDIT;
 	}
 	
-	private String goToEditWhitFragment(Model model, Sede sede, String fragment){
-		model.addAttribute("sede", sede);
+	private String goToEditWhitFragment(Model model, SedeWrapper sedeWrapper, String fragment){
+		model.addAttribute("sedeWrapper", sedeWrapper);
 		return EDIT + " :: " + fragment;
+	}
+	
+	private SedeWrapper prepareSedeWrapper(Sede sede, String tipologiaSede, long accreditamentoId){
+		SedeWrapper sedeWrapper = new SedeWrapper();
+		
+		sedeWrapper.setSede(sede);
+		
+		//TODO logica per recuperare idEditabili ed idOffset
+		sedeWrapper.setTipologiaSede(tipologiaSede);
+		if(tipologiaSede.equals(Costanti.SEDE_LEGALE)) 
+			sedeWrapper.setIdEditabili(Arrays.asList(8,9,10,11,12,13,14,15)); 
+		else 
+			sedeWrapper.setIdEditabili(Arrays.asList(16,17,18,19,20,21,22,23));
+		
+		sedeWrapper.setAccreditamentoId(accreditamentoId);
+		
+		return sedeWrapper;
 	}
 }

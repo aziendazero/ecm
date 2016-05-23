@@ -1,18 +1,22 @@
 package it.tredi.ecm.web.bean;
 
-import java.util.List;
-
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SedeWrapper {
+public class SedeWrapper extends Wrapper{
 	private Sede sede;
-	private int accreditamentoId;
+	private String tipologiaSede; 
+	private Long accreditamentoId;
 	
-	private int idOffset;
-	private List<Integer> editableId;
-	private List<Integer> showId;
+	public void setTipologiaSede(String tipologiaSede){
+		this.tipologiaSede = tipologiaSede;
+		if(tipologiaSede.equals(Costanti.SEDE_LEGALE))
+			setIdOffset(8);
+		else
+			setIdOffset(16);
+	}
 }
