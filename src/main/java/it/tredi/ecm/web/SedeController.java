@@ -169,10 +169,8 @@ public class SedeController {
 		sedeValidator.validate(sedeWrapper.getSede(), result, "");
 		try{
 			if(result.hasErrors()){
-				//model.addAttribute("tipologiaSede", SedeOperativa != null ? Costanti.SEDE_OPERATIVA : Costanti.SEDE_LEGALE);
 				return EDIT;
 			}else{
-					//sedeService.save(sede, providerService.getProvider(), SedeOperativa != null ? Costanti.SEDE_OPERATIVA : Costanti.SEDE_LEGALE);
 					sedeService.save(sedeWrapper.getSede(), providerService.getProvider(), sedeWrapper.getTipologiaSede());	
 					redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
 					return "redirect:/accreditamento/{accreditamentoId}";

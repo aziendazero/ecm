@@ -85,8 +85,8 @@
 																</tr>
 																
 																<tr>
-																	<td th:unless="${accreditamentoWrapper.legaleRappresentante.new}"><a th:text="#{label.legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/new?tipologiaSede=SedeOperativa|}"></a></td>
-																	<td th:if="${accreditamentoWrapper.legaleRappresentante.new}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/new?tipologiaSede=SedeOperativa|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.legaleRappresentante.new}"><a th:text="#{label.legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.legaleRappresentante.new}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=LR|}"></a></td>
 																</tr>
 																<!-- 
 																<tr>
