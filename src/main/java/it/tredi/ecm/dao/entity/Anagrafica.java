@@ -11,6 +11,7 @@ public class Anagrafica extends BaseEntity{
 	private String cognome;
 	private String nome;
 	private String codiceFiscale;
+	private boolean straniero = false;
 	private String telefono;
 	private String cellulare;
 	private String email;

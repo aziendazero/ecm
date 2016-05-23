@@ -11,19 +11,22 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="${tipologiaSede == 'SedeLegale'} ? #{label.sede_legale} : #{label.sede_operativa}">label.info_sede</h2>
+						<h2 th:text="${sedeWrapper.tipologiaSede == 'SedeLegale'} ? #{label.sede_legale} : #{label.sede_operativa}">label.info_sede</h2>
 						
-						<input type="button" class="btn btn-success pull-right" onclick="loadSedeLegale()" name="copia_dati" th:if="${tipologiaSede == 'SedeOperativa'}" th:value="#{label.coincide_con_sede_legale}" />
-						<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/sede/new?tipologiaSede=${tipologiaSede}|}"></a>
-						<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/provider/accreditamento/|}"></a>
+						<input type="button" class="btn btn-success pull-right" onclick="loadSedeLegale()" name="copia_dati" th:if="${sedeWrapper.tipologiaSede == 'SedeOperativa'}" th:value="#{label.coincide_con_sede_legale}" />
+						<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/sede/new?tipologiaSede=${sedeWrapper.tipologiaSede}|}"></a>
+						<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}|}"></a>
 						<div class="clearfix"></div>
 					</div>
 					
 					<div class="x_content">
-						<form id="formSede" class="form-horizontal form-label-left" th:action="@{/sede/save}"
+						<form id="formSede" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${sedeWrapper.accreditamentoId}/sede/save|}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
 								
 							<input type="hidden" name="editId" th:value="${sedeWrapper.sede.id}" />
+							<input type="hidden" th:field="${sedeWrapper.tipologiaSede}" />
+							<input type="hidden" th:field="${sedeWrapper.idEditabili}" />
+							<input type="hidden" th:field="${sedeWrapper.idOffset}" />
 							
 							<!-- provincia -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.provincia')} ? 'bad'">
@@ -171,7 +174,7 @@
 								<div th:if="${#fields.hasErrors('sedeWrapper.sede.fax')}" class="alert" th:errors="${sedeWrapper.sede.fax}"></div> 	
 							</div>
 							
-							<!-- email -->	
+							<!-- email -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.email')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 7}">8</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
@@ -190,21 +193,21 @@
 									</div>
 								</th:block>
 								<div th:if="${#fields.hasErrors('sedeWrapper.sede.email')}" class="alert" th:errors="${sedeWrapper.sede.email}"></div>
-							</div>
+							</div>	
 							
 							<!-- Registra Sede -->
 							<div class="item form-group text-right">
-								<input th:if="${tipologiaSede == 'SedeLegale'}" class="btn btn-primary right" name="SedeLegale" type="submit" th:value="#{label.salva}"/>
-								<input th:if="${tipologiaSede == 'SedeOperativa'}" class="btn btn-primary right" name="SedeOperativa" type="submit" th:value="#{label.salva}"/>
+								<input th:if="${sedeWrapper.tipologiaSede == 'SedeLegale'}" class="btn btn-primary right" name="SedeLegale" type="submit" th:value="#{label.salva}"/>
+								<input th:if="${sedeWrapper.tipologiaSede == 'SedeOperativa'}" class="btn btn-primary right" name="SedeOperativa" type="submit" th:value="#{label.salva}"/>
 							</div>
 						</form>
 					</div>
 				</div>
 			</div>
-			<script>
+			<script th:inline="javascript">
 			function sendAjaxRequestProvincia(){
 				var provincia = $("#provincia_sede").val();
-				$.get( "/sede/comuni?provincia=" + provincia, function(data){
+				$.get( "/comuni?provincia=" + provincia, function(data){
 					$("#comune_sede").empty();
 					$("#comune_sede").append('<option value = "">' + "---" + "</option>")
 					
@@ -216,8 +219,8 @@
 				});
 			};
 			function sendAjaxRequestCAP(){
-				var provincia = $("#provincia_sede").val();
-				$.get( "/sede/cap?provincia=" + provincia, function(data){
+				var provincia = $("#comune_sede").val();
+				$.get( "/cap?comune=" + comune, function(data){
 					$("#CAP_sede").empty();
 					$("#CAP_sede").append('<option value = "">' + "---" + "</option>")
 					
@@ -231,7 +234,7 @@
 			
 			
 			function loadSedeLegale(){
-				var url = "/sede/copia";
+				var url = "/accreditamento/" + [[${sedeWrapper.accreditamentoId}]] + "/sede/copia";
 				
 				$("#test").load(url);
 			}

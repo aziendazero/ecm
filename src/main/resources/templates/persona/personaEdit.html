@@ -17,8 +17,9 @@
 						<form id="formPersona" class="form-horizontal form-label-left" th:action="@{/persona/save}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
 								
+							<input type="hidden" name="editId" th:value="${personaWrapper.persona.id}" /> 
+							
 							<!--	
-							<input type="hidden" name="editIdPersona" th:value="${personaWrapper.persona.id}" /> 
 							<input type="hidden" name="editIdFileAtto" th:value="${personaWrapper.nomina.id}" />
 							<input type="hidden" name="editIdFileCV" th:value="${personaWrapper.curriculumVitae.id}" />
 							<input type="hidden" name="editIdFileDelega" th:value="${personaWrapper.delega.id}" />
@@ -98,7 +99,7 @@
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="isStraniero_persona" name="isStraniero_persona" 
 										class="form-control col-md-7 col-xs-12"
-										type="checkbox" th:checked="${personaWrapper.persona.isStraniero}" />
+										type="checkbox" th:checked="${personaWrapper.persona.anagrafica.isStraniero}" />
 								</div>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
 							</div>

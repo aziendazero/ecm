@@ -53,7 +53,7 @@
 															</thead>
 															<tbody>
 																<tr>
-																	<td><a th:text="#{label.provider}" th:href="@{|/provider/${accreditamentoWrapper.provider.id}/edit|}">label.provider</a></td>
+																	<td><a th:text="#{label.provider}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/edit|}">label.provider</a></td>
 																	<td	th:if="${accreditamentoWrapper.providerStato}">
 																		<span class="fa fa-check green"></span>
 																	</td>
@@ -63,8 +63,8 @@
 																</tr>
 																
 																<tr>
-																	<td th:if="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{/sede/new?tipologiaSede=SedeLegale}"></a></td>
-																	<td th:unless="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{|/sede/${accreditamentoWrapper.sedeLegale.id}/edit?tipologiaSede=SedeLegale|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/new?tipologiaSede=SedeLegale|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/${accreditamentoWrapper.sedeLegale.id}/edit?tipologiaSede=SedeLegale|}"></a></td>
 																	<td	th:if="${accreditamentoWrapper.sedeLegaleStato}">
 																		<span class="fa fa-check green"></span>
 																	</td>
@@ -74,8 +74,8 @@
 																</tr>
 																
 																<tr>
-																	<td th:if="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{/sede/new?tipologiaSede=SedeOperativa}"></a></td>
-																	<td th:unless="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{|/sede/${accreditamentoWrapper.provider.sedeOperativa.id}/edit?tipologiaSede=SedeOperativa|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/new?tipologiaSede=SedeOperativa|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/${accreditamentoWrapper.provider.sedeOperativa.id}/edit?tipologiaSede=SedeOperativa|}"></a></td>
 																	<td	th:if="${accreditamentoWrapper.sedeOperativaStato}">
 																		<span class="fa fa-check green"></span>
 																	</td>
@@ -84,24 +84,17 @@
 																	</td>
 																</tr>
 																
-																<!-- 
 																<tr>
-																	<td>Delegato legale</td>
-																	<td
-																		th:text="${accreditamentoWrapper.delegatoLegale.new} ? 'Inserisci' : 'Modifica'"></td>
+																	<td th:unless="${accreditamentoWrapper.legaleRappresentante.new}"><a th:text="#{label.legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/new?tipologiaSede=SedeOperativa|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.legaleRappresentante.new}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/new?tipologiaSede=SedeOperativa|}"></a></td>
 																</tr>
-																<tr
-																	th:unless="${accreditamentoWrapper.delegatoLeagale.new}">
-																	<td>Legale</td>
-																	<td
-																		th:text="${accreditamentoWrapper.legale.new} ? 'Inserisci' : 'Modifica'"></td>
-																</tr>
+																<!-- 
 																<tr>
 																	<td>Dati Accreditamento</td>
 																	<td
 																		th:text="${accreditamentoWrapper.accreditamento.new} ? 'Inserisci' : 'Modifica'"></td>
 																</tr>
-																  -->
+																 -->
 															</tbody>
 														</table>
 													</div>

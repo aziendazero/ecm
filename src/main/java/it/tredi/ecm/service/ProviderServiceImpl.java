@@ -106,18 +106,18 @@ public class ProviderServiceImpl implements ProviderService {
 		providerRegistrationWrapper.setProvider(provider);
 		
 		if(provider.isNew()){
-			providerRegistrationWrapper.setRichiedente(new Persona(Ruolo.RICHIEDENTE.getNome()));
-			providerRegistrationWrapper.setLegale(new Persona(Ruolo.LEGALE_RAPPRESENTANTE.getNome()));
+			providerRegistrationWrapper.setRichiedente(new Persona(Ruolo.RICHIEDENTE));
+			providerRegistrationWrapper.setLegale(new Persona(Ruolo.LEGALE_RAPPRESENTANTE));
 		}else{
 			Persona richiedente = getPersonaByRuolo(Ruolo.RICHIEDENTE, provider.getId());
 			if(richiedente == null){
-				richiedente = new Persona(Ruolo.RICHIEDENTE.getNome());
+				richiedente = new Persona(Ruolo.RICHIEDENTE);
 				provider.addPersona(richiedente);
 			}
 			
 			Persona legale = getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE, provider.getId());
 			if(legale == null){
-				legale = new Persona(Ruolo.LEGALE_RAPPRESENTANTE.getNome());
+				legale = new Persona(Ruolo.LEGALE_RAPPRESENTANTE);
 				provider.addPersona(legale);
 			}
 			

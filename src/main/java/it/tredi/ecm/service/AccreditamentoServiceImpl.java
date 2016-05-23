@@ -1,7 +1,6 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -61,7 +60,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId) {
 		LOGGER.debug("Recupero domande di accreditamento per il provider " + providerId);
-		return accreditamentoRepository.findByProviderId(providerId);
+		Set<Accreditamento> l = accreditamentoRepository.findByProviderId(providerId);
+		return l;
 	}
 	
 	@Override

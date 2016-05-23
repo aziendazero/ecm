@@ -26,7 +26,7 @@ public class Provider extends BaseEntity{
 	/*	INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE	*/
 	private String denominazioneLegale;
 	@Enumerated(EnumType.STRING)
-	private TipoOrganizzatore tipoOrganizzatore;//TODO enum?
+	private TipoOrganizzatore tipoOrganizzatore;
 	private String gruppo;
 	private String partitaIva;
 	private String codiceFiscale;

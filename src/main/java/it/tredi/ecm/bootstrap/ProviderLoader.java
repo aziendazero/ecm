@@ -67,8 +67,8 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			
 			LOGGER.info("Persona " + legale.getId() + " created");
 			
-			richiedente.setRuolo(Ruolo.RICHIEDENTE.getNome());
-			legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE.getNome());
+			richiedente.setRuolo(Ruolo.RICHIEDENTE);
+			legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
 			Account account = accountRepository.findOneByUsername("admin").orElse(null);
 			
 			Provider provider = new Provider();
