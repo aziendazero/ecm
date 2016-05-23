@@ -10,14 +10,19 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.dati_del} + ${personaWrapper.persona.ruolo}">Dati del persona.ruolo</h2>
+						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
+						<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<form id="formPersona" class="form-horizontal form-label-left" th:action="@{/persona/save}"
+						<form id="formPersona" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/save|}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
 								
 							<input type="hidden" name="editId" th:value="${personaWrapper.persona.id}" /> 
+							<input type="hidden" th:field="${personaWrapper.accreditamentoId}" /> 
+							<input type="hidden" th:field="${personaWrapper.providerId}" /> 
+							<input type="hidden" th:field="${personaWrapper.idEditabili}" />
+							<input type="hidden" th:field="${personaWrapper.idOffset}" />
 							
 							<!--	
 							<input type="hidden" name="editIdFileAtto" th:value="${personaWrapper.nomina.id}" />
@@ -90,8 +95,8 @@
 							</div>
 							
 							<!-- checkbox flag straniero -->
-							<div th:if="${personaWrapper.persona.isCoordinatoreComitatoScientifico or
-										personaWrapper.persona.isCoordinatoreComitatoScientifico}"
+							<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
+										${personaWrapper.persona.componenteComitatoScientifico}"
 								class="item form-group">
 								<label class="control-label col-xs-1"></label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
@@ -126,10 +131,10 @@
 							</div>
 							
 							<!-- cellulare -->
-							<div th:unless="${personaWrapper.persona.isResponsabileSegreteria or 
-											personaWrapper.persona.isResponsabileFormazione or
-											personaWrapper.persona.isResponsabileSistemaInformatico or
-											personaWrapper.persona.isResponsabileQualità}" 
+							<div th:unless="${personaWrapper.persona.responsabileSegreteria} or 
+											${personaWrapper.persona.responsabileFormazione} or
+											${personaWrapper.persona.responsabileSistemaInformatico} or
+											${personaWrapper.persona.responsabileQualita}" 
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 4}">5</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
@@ -172,8 +177,8 @@
 							</div>
 							
 							<!-- posta elettronica certificata (PEC) -->
-							<div th:if="${personaWrapper.persona.isLegaleRappresentante or
-										personaWrapper.persona.isDelegatoLegaleRappresentante}"
+							<div th:if="${personaWrapper.persona.legaleRappresentante} or
+										${personaWrapper.persona.delegatoLegaleRappresentante}"
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 6}">7</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
@@ -195,10 +200,10 @@
 							</div>
 							
 							<!-- professione -->	
-							<div th:if="${personaWrapper.persona.isCoordinatoreComitatoScientifico or
-										personaWrapper.persona.isComponenteComitatoScientifico or
-										personaWrapper.persona.isResponsabileSistemaInformatico or
-										personaWrapper.persona.isResponsabileQualità}"
+							<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
+										${personaWrapper.persona.componenteComitatoScientifico} or
+										${personaWrapper.persona.responsabileSistemaInformatico} or
+										${personaWrapper.persona.responsabileQualita}"
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.professione')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 7}">8</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
@@ -221,7 +226,7 @@
 							</div>
 																
 							<!-- allegato 1 (atto di nomina) -->
-							<div th:unless="${personaWrapper.persona.isDelegatoLegaleRappresentante}"
+							<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}"
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.nomina.data')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 8}">9</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="nomina_persona">
@@ -231,7 +236,7 @@
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 8)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 											<input type="file" id="nomina_persona" name="nomina_persona" required="required"
-												class="form-control col-md-7 col-xs-12 btn" th:field="${personaWrapper.nomina.nomeFile"/>
+												class="form-control col-md-7 col-xs-12 btn"/>
 									</div>
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 8)}">
@@ -244,7 +249,7 @@
 							</div>
 							
 							<!-- allegato 2 (curriculum vitae) -->
-							<div th:unless="${personaWrapper.persona.isLegaleRappresentante}"
+							<div th:unless="${personaWrapper.persona.legaleRappresentante}"
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.curriculumVitae.data')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 9}">10</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="curriculumVitae_persona">
@@ -254,7 +259,7 @@
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 9)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 											<input type="file" id="curriculumVitae_persona" name="curriculumVitae_persona" required="required"
-												class="form-control col-md-7 col-xs-12 btn" th:field="${personaWrapper.curriculumVitae.nomeFile"/>
+												class="form-control col-md-7 col-xs-12 btn" th:field="${personaWrapper.curriculumVitae.nomeFile}"/>
 									</div>
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 9)}">
@@ -267,7 +272,7 @@
 							</div>
 							
 							<!-- allegato 3 (atto di delega) -->
-							<div th:if="${personaWrapper.persona.isDelegatoLegaleRappresentante}"
+							<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}"
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.delega.data')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${personaWrapper.idOffset + 10}">11</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="delega_persona">
@@ -277,7 +282,7 @@
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 10)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 											<input type="file" id="delega_persona" name="delega_persona" required="required"
-												class="form-control col-md-7 col-xs-12 btn" th:field="${personaWrapper.delega.nomeFile"/>
+												class="form-control col-md-7 col-xs-12 btn" th:field="${personaWrapper.delega.nomeFile}"/>
 									</div>
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, personaWrapper.idOffset + 10)}">
