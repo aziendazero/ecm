@@ -134,6 +134,10 @@ public class SedeController {
 	}
 	
 	private String goToEdit(Model model, Sede sede){
+		
+		model.addAttribute("idOffset",0);
+		model.addAttribute("idEditabili", new int[]{0,1,2,5,7,8});
+		
 		model.addAttribute("sede", sede);
 		return EDIT;
 	}
