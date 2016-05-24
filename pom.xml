@@ -181,19 +181,17 @@
 				<resources>
 					<resource>
 						<directory>src/main/resources</directory>
-						<filtering>true</filtering>
 						<excludes>
-							<exclude>**/*.woff</exclude>
-							<exclude>**/*.ttf</exclude>
+							<exclude>application*.properties</exclude>
 						</excludes>
+						<filtering>false</filtering>
 					</resource>
 					<resource>
 						<directory>src/main/resources</directory>
 						<includes>
-							<include>**/*.woff</include>
-							<include>**/*.ttf</include>
+							<include>application*.properties</include>
 						</includes>
-						<filtering>false</filtering>
+						<filtering>true</filtering>
 					</resource>
 				</resources>
 			</build>
@@ -210,28 +208,48 @@
 					<resource>
 						<directory>src/main/resources</directory>
 						<excludes>
-							<exclude>application-*.properties</exclude>
+							<exclude>application*.properties</exclude>
 						</excludes>
-						<filtering>true</filtering>
+						<filtering>false</filtering>
 					</resource>
 					<resource>
 						<directory>src/main/resources</directory>
 						<includes>
-							<include>application-demo.properties</include>
+							<include>application.properties</include>
+							<include>application-${spring.profile}.properties</include>
 						</includes>
-						<filtering>false</filtering>
+						<filtering>true</filtering>
 					</resource>
 				</resources>
 			</build>
 		</profile>
 		<!-- esempio di profilo da utilizzare per le build di produzione o ambienti 
 			di test per evitare di copiare le properties di altri ambienti -->
-		<!-- profile> <id>prod</id> <properties> <spring.profile>prod</spring.profile> 
-			</properties> <build> <resources> <resource> <directory>src/main/resources</directory> 
-			<excludes> <exclude>application-*.properties</exclude> </excludes> <filtering>true</filtering> 
-			</resource> <resource> <directory>src/main/resources</directory> <includes> 
-			<include>application-prod.properties</include> </includes> <filtering>false</filtering> 
-			</resource> </resources> </build> </profile -->
+		<profile>
+			<id>prod</id>
+			<properties>
+				<spring.profile>prod</spring.profile>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<excludes>
+							<exclude>application*.properties</exclude>
+						</excludes>
+						<filtering>false</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>application.properties</include>
+							<include>application-${spring.profile}.properties</include>
+						</includes>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+			</build>
+		</profile>
 	</profiles>
 
 
