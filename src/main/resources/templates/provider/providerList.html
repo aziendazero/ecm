@@ -31,7 +31,7 @@
 								<tr th:each="provider : ${providerList}">
 									<th><a th:text="${provier.denominazioneLegale}"
 										th:href="@{|/provider/${provider.id}|}">3d informatica</a></th>
-									<th th:text="${provider.codiceFiscale != null} ? ${provider.codiceFiscale} : ${provider.partitaIVA}">RTFEWE03543534 o IVA4353425345321</th>
+									<th th:text="${provider.partitaIVA != null} ? ${provider.partitaIVA} : ${provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</th>
 									<th th:text="${provider.gruppo}">informatica</th>
 								</tr>
 							</tbody>
