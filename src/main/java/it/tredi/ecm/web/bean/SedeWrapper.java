@@ -17,6 +17,6 @@ public class SedeWrapper extends Wrapper{
 		if(tipologiaSede.equals(Costanti.SEDE_LEGALE))
 			setIdOffset(8);
 		else
-			setIdOffset(16);
+			setIdOffset(15);
 	}
 }

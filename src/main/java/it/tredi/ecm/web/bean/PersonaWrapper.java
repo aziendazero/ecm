@@ -14,11 +14,10 @@ public class PersonaWrapper extends Wrapper {
 	
 	public void setOffsetAndIds(){
 		if(persona.isLegaleRappresentante())
-			setIdOffset(17);
+			setIdOffset(22);
 		else if(persona.isLegaleRappresentante())
-			setIdOffset(25);
+			setIdOffset(31);
 	}
-	
 	
 	private File nomina;
 	private File curriculumVitae;

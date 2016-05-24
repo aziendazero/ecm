@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="dpranteda (generated)" id="1464083328777-1">
+        <addColumn tableName="account">
+            <column name="changePassword" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-2">
+        <addColumn tableName="account">
+            <column name="expiresDate" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-3">
+        <addColumn tableName="Anagrafica">
+            <column name="straniero" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-4">
+        <dropColumn columnName="change_password" tableName="account"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-5">
+        <dropColumn columnName="expires_date" tableName="account"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-6">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('accreditamento_id_seq'::regclass)" tableName="Accreditamento"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="Accreditamento"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-7">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('anagrafica_id_seq'::regclass)" tableName="Anagrafica"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="Anagrafica"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-8">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('provider_id_seq'::regclass)" tableName="Provider"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="Provider"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-9">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('valutazione_id_seq'::regclass)" tableName="Valutazione"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="Valutazione"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-10">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('account_id_seq'::regclass)" tableName="account"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="account"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-11">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('file_id_seq'::regclass)" tableName="file"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="file"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-12">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('persona_id_seq'::regclass)" tableName="persona"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="persona"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-13">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('profile_id_seq'::regclass)" tableName="profile"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="profile"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-14">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('role_id_seq'::regclass)" tableName="role"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="role"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464083328777-15">
+        <addDefaultValue columnDataType="bigint" columnName="id" defaultValueComputed="nextval('sede_id_seq'::regclass)" tableName="sede"/>
+        <addAutoIncrement columnDataType="bigint" columnName="id" tableName="sede"/>
+    </changeSet>
+</databaseChangeLog>

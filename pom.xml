@@ -24,7 +24,7 @@
 		<!-- tomcat.version>7.0.69</tomcat.version -->
 		<tomcat.version>8.0.8</tomcat.version>
 		<servlet-api.version>3.0.0</servlet-api.version>
-		<!-- liquibaseplugin.version>3.4.2</liquibaseplugin.version -->
+		<liquibaseplugin.version>3.4.2</liquibaseplugin.version>
 		<liquibase-hibernate4.version>3.5</liquibase-hibernate4.version>
 	</properties>
 
@@ -116,10 +116,10 @@
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
-		<!-- dependency>
+		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
-		</dependency -->
+		</dependency>
 		<dependency>
 			<groupId>it.tredi</groupId>
 			<artifactId>springdatautil</artifactId>
@@ -137,8 +137,8 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			
-			<!-- plugin>
+
+			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
 				<version>${liquibaseplugin.version}</version>
@@ -163,12 +163,12 @@
 						<version>${project.parent.version}</version>
 					</dependency>
 				</dependencies>
-			</plugin -->
+			</plugin>
 		</plugins>
 		<finalName>ecm</finalName>
 	</build>
-	
-	<!-- profiles>
+
+	<profiles>
 		<profile>
 			<id>dev</id>
 			<activation>
@@ -182,13 +182,25 @@
 					<resource>
 						<directory>src/main/resources</directory>
 						<filtering>true</filtering>
+						<excludes>
+							<exclude>**/*.woff</exclude>
+							<exclude>**/*.ttf</exclude>
+						</excludes>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>**/*.woff</include>
+							<include>**/*.ttf</include>
+						</includes>
+						<filtering>false</filtering>
 					</resource>
 				</resources>
 			</build>
-		</profile -->
+		</profile>
 		<!-- esempio di profilo da utilizzare per ambienti di test per evitare 
 			di copiare le properties di altri ambienti -->
-		<!-- profile>
+		<profile>
 			<id>demo</id>
 			<properties>
 				<spring.profile>demo</spring.profile>
@@ -211,34 +223,16 @@
 					</resource>
 				</resources>
 			</build>
-		</profile -->
+		</profile>
 		<!-- esempio di profilo da utilizzare per le build di produzione o ambienti 
 			di test per evitare di copiare le properties di altri ambienti -->
-		<!-- profile>
-			<id>prod</id>
-			<properties>
-				<spring.profile>prod</spring.profile>
-			</properties>
-			<build>
-				<resources>
-					<resource>
-						<directory>src/main/resources</directory>
-						<excludes>
-							<exclude>application-*.properties</exclude>
-						</excludes>
-						<filtering>true</filtering>
-					</resource>
-					<resource>
-						<directory>src/main/resources</directory>
-						<includes>
-							<include>application-prod.properties</include>
-						</includes>
-						<filtering>false</filtering>
-					</resource>
-				</resources>
-			</build>
-		</profile>
-	</profiles -->
+		<!-- profile> <id>prod</id> <properties> <spring.profile>prod</spring.profile> 
+			</properties> <build> <resources> <resource> <directory>src/main/resources</directory> 
+			<excludes> <exclude>application-*.properties</exclude> </excludes> <filtering>true</filtering> 
+			</resource> <resource> <directory>src/main/resources</directory> <includes> 
+			<include>application-prod.properties</include> </includes> <filtering>false</filtering> 
+			</resource> </resources> </build> </profile -->
+	</profiles>
 
 
 </project>

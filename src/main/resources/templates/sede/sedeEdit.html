@@ -24,6 +24,7 @@
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
 								
 							<input type="hidden" name="editId" th:value="${sedeWrapper.sede.id}" />
+							<input type="hidden" th:field="${sedeWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${sedeWrapper.tipologiaSede}" />
 							<input type="hidden" th:field="${sedeWrapper.idEditabili}" />
 							<input type="hidden" th:field="${sedeWrapper.idOffset}" />
@@ -134,38 +135,18 @@
 								<div th:if="${#fields.hasErrors('sedeWrapper.sede.telefono')}" class="alert" th:errors="${sedeWrapper.sede.telefono}"></div>
 							</div>
 							
-							<!-- altro telefono -->	
-							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.altroTelefono')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 5}">6</label>
-								<label class="control-label col-md-3 col-sm-3 col-xs-11"
-									for="altroTel_sede"><span th:text="#{label.tel_secondario}">Altro numero telefonico</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 5)}">
-									<div class="col-md-4 col-sm-4 col-xs-12">
-										<input id="altroTel_sede" name="altroTel_sede"
-											class="form-control col-md-7 col-xs-12" type="tel" th:field="${sedeWrapper.sede.altroTelefono}"/>
-									</div>
-								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 5)}">
-									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="altroTel_sede" class="control-label left-align col-md-7 col-xs-12"
-											th:text="${sedeWrapper.sede.altroTelefono}"></label>
-									</div>
-								</th:block>
-								<div th:if="${#fields.hasErrors('sedeWrapper.sede.altroTelefono')}" class="alert" th:errors="${sedeWrapper.sede.altroTelefono}"></div>
-							</div>
-							
 							<!-- FAX -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.fax')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 6}">7</label>
+								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 5}">7</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="fax_sede"><span th:text="#{label.fax}">FAX</span><span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 6)}">
+								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 5)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<input id="fax_sede" name="fax_sede" required="required"
 											class="form-control col-md-7 col-xs-12" type="tel" th:field="${sedeWrapper.sede.fax}" />
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 6)}">
+								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 5)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="fax_sede" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${sedeWrapper.sede.fax}"></label>
@@ -176,17 +157,17 @@
 							
 							<!-- email -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.email')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 7}">8</label>
+								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 6}">8</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="email_sede"><span th:text="#{label.email}">E-mail</span><span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 7)}">
+								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 6)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<input id="email_sede" name="email_sede"
 											required="required" class="form-control col-md-7 col-xs-12"
 											type="email" th:field="${sedeWrapper.sede.email}"/>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 7)}">
+								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 6)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="email_sede" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${sedeWrapper.sede.email}"></label>

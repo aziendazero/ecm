@@ -95,7 +95,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Persona getPersonaByRuolo(Ruolo ruolo, Long providerId) {
 		LOGGER.info("Retrieving " + ruolo + " for provider " + providerId);
-		Persona persona = personaRepository.findOneByRuoloAndProviderId(ruolo.getNome(), providerId);
+		Persona persona = personaRepository.findOneByRuoloAndProviderId(ruolo, providerId);
 		return persona;
 	}
 

@@ -46,6 +46,11 @@ public class PersonaController {
 		}
 		return new PersonaWrapper();
 	}
+	
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/new")
+	public String newPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model){
+		return goToEdit(model, preparePersonaWrapper(newPersona(providerId), accreditamentoId, providerId));
+	}
 
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/edit")
 	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model){
@@ -99,9 +104,9 @@ public class PersonaController {
 		//TODO logica per recuperare idEditabili ed idOffset
 		personaWrapper.setOffsetAndIds();
 		if(persona.isLegaleRappresentante())
-			personaWrapper.setIdEditabili(Arrays.asList(17,18,19,20,21,22,23,24,24,25,26));
+			personaWrapper.setIdEditabili(Arrays.asList(22,23,24,24,25,26,27,28,29));
 		else if(persona.isDelegatoLegaleRappresentante())
-			personaWrapper.setIdEditabili(Arrays.asList(27,28,29,30,31,32,33,34,35));
+			personaWrapper.setIdEditabili(Arrays.asList(30,31,32,33,34,35,36,37));
 
 		return personaWrapper;
 	}

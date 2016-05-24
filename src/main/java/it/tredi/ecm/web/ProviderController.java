@@ -19,10 +19,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
 
 @Controller
 public class ProviderController {
+	
+	private final String EDIT = "provider/providerEdit";
 	
 	@Autowired
 	private ProviderService providerService;
@@ -51,11 +54,14 @@ public class ProviderController {
 		return TipoOrganizzatore.values();
 	}
 	
-	@ModelAttribute("provider")
-	public Provider getProvider(@RequestParam(name = "editId", required = false) Long id){
-		if(id != null)
-			return providerService.getProvider(id);
-		return new Provider();
+	@ModelAttribute("providerWrapper")
+	public ProviderWrapper getProvider(@RequestParam(name = "editId", required = false) Long id){
+		if(id != null){
+			ProviderWrapper providerWrapper = new ProviderWrapper();
+			providerWrapper.setProvider(providerService.getProvider(id));
+			return providerWrapper;
+		}
+		return new ProviderWrapper();
 	}
 	/*** GLOBAL MODEL ATTRIBUTES***/
 	
@@ -84,38 +90,46 @@ public class ProviderController {
 	
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/edit")
 	public String editProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model){
-		model.addAttribute("accreditamentoId",accreditamentoId);
-		model.addAttribute("provider",providerService.getProvider(id));
-		return "provider/providerEdit";
+		return goToEdit(model, prepareProviderWrapper(providerService.getProvider(id), accreditamentoId));
 	}
 	
 	/***	SAVE	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/save", method = RequestMethod.POST)
-	public String salvaProvider(@PathVariable Long accreditamentoId, @ModelAttribute("provider") Provider provider, 
-									BindingResult result, Model model, RedirectAttributes redirectAttrs){
+	public String salvaProvider(@ModelAttribute("providerWrapper") ProviderWrapper providerWrapper, BindingResult result, 
+									Model model, RedirectAttributes redirectAttrs){
 		try{
 			//validazione del provider
-			providerValidator.validateForAccreditamento(provider, result, "");	
+			providerValidator.validateForAccreditamento(providerWrapper.getProvider(), result, "");	
 			
 			if(result.hasErrors()){
-				model.addAttribute("accreditamentoId",accreditamentoId);
-				return "provider/providerEdit";
+				return EDIT;
 			}else{
-				providerService.save(provider);
-				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+				providerService.save(providerWrapper.getProvider());
+				redirectAttrs.addAttribute("accreditamentoId", providerWrapper.getAccreditamentoId());
 				return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch (Exception ex){
-			model.addAttribute("accreditamentoId",accreditamentoId);
+			model.addAttribute("accreditamentoId",providerWrapper.getAccreditamentoId());
 			return "provider/providerEdit";
 		}
 	}
 	
-	//TODO completare showallprovider
 	@RequestMapping("provider/list")
 	public String showAll(Model model){
 		model.addAttribute("providerList", providerService.getAll());
 		return "provider/showList";
+	}
+	
+	private String goToEdit(Model model, ProviderWrapper providerWrapper){
+		model.addAttribute("providerWrapper",providerWrapper);
+		return EDIT;
+	}
+	
+	private ProviderWrapper prepareProviderWrapper(Provider provider, Long accreditamentoId){
+		ProviderWrapper providerWrapper = new ProviderWrapper();
+		providerWrapper.setProvider(provider);
+		providerWrapper.setAccreditamentoId(accreditamentoId);
+		return providerWrapper;
 	}
 	
 }

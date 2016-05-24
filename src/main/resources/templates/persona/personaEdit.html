@@ -11,6 +11,7 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
+						<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/new?ruolo=${}|}"></a>
 						<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
 						<div class="clearfix"></div>
 					</div>
