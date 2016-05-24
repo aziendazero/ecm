@@ -114,10 +114,10 @@ public class ProviderController {
 		}
 	}
 	
-	@RequestMapping("provider/list")
+	@RequestMapping("/provider/list")
 	public String showAll(Model model){
 		model.addAttribute("providerList", providerService.getAll());
-		return "provider/showList";
+		return "provider/providerList";
 	}
 	
 	private String goToEdit(Model model, ProviderWrapper providerWrapper){
