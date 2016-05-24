@@ -9,14 +9,15 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Role;
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.RoleRepository;
 import it.tredi.ecm.service.AccountService;
 
 @Component
+@org.springframework.context.annotation.Profile("dev")
 public class AccountLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AccountLoader.class);

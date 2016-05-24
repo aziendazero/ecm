@@ -21,6 +21,7 @@ import it.tredi.ecm.dao.repository.PersonaRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
 
 @Component
+@org.springframework.context.annotation.Profile("dev")
 public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ProviderLoader.class);
 	
