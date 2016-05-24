@@ -81,7 +81,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			Account provider = new Account();
 			provider.setUsername("provider");
 			provider.setPassword("provider");
-			provider.setEmail("dpranteda@3di.it");
+			provider.setEmail("tiommi@3di.it");
 			provider.setChangePassword(false);
 			provider.setEnabled(true);
 			provider.setExpiresDate(null);
