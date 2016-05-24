@@ -86,7 +86,7 @@
 								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 2)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="partitaIva" class="control-label left-align col-md-7 col-xs-12"
-											th:text="${providerWrapper.provider.partivaIva}"></label>
+											th:text="${providerWrapper.provider.partitaIva}"></label>
 									</div>
 								</th:block>
 								<div th:if="${#fields.hasErrors('providerWrapper.provider.partitaIva')}" class="alert" th:errors="${providerWrapper.provider.partitaIva}"></div>
