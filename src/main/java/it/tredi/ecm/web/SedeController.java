@@ -100,9 +100,9 @@ public class SedeController {
 		capTrieste.add("88888");
 		capTrieste.add("99999");
 		
-		elencoCap.put("Venezia", capVenezia);
-		elencoCap.put("Padova", capPadova);
-		elencoCap.put("Trieste", capTrieste);
+		elencoCap.put("comuneA - 1", capVenezia);
+		elencoCap.put("comuneB - 1", capPadova);
+		elencoCap.put("comuneC - 1", capTrieste);
 		
 		return elencoCap.get(comune);
 	}
@@ -199,9 +199,9 @@ public class SedeController {
 		//TODO logica per recuperare idEditabili ed idOffset
 		sedeWrapper.setTipologiaSede(tipologiaSede);
 		if(tipologiaSede.equals(Costanti.SEDE_LEGALE)) 
-			sedeWrapper.setIdEditabili(Arrays.asList(8,9,10,11,12,13,14,15)); 
+			sedeWrapper.setIdEditabili(Arrays.asList(8,9,10,11,12,13,14)); 
 		else 
-			sedeWrapper.setIdEditabili(Arrays.asList(16,17,18,19,20,21,22,23));
+			sedeWrapper.setIdEditabili(Arrays.asList(15,16,17,18,19,20,21));
 		
 		sedeWrapper.setAccreditamentoId(accreditamentoId);
 		

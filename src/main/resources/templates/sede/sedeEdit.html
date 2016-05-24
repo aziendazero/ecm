@@ -200,7 +200,7 @@
 				});
 			};
 			function sendAjaxRequestCAP(){
-				var provincia = $("#comune_sede").val();
+				var comune = $("#comune_sede").val();
 				$.get( "/cap?comune=" + comune, function(data){
 					$("#CAP_sede").empty();
 					$("#CAP_sede").append('<option value = "">' + "---" + "</option>")
@@ -225,7 +225,7 @@
 					$("#provincia_sede").click(function() {
 						sendAjaxRequestProvincia();
 					});
-					$("#CAP_sede").click(function() {
+					$("#comune_sede").click(function() {
 						sendAjaxRequestCAP();
 					});
 				}

@@ -25,8 +25,6 @@ public class SedeValidator {
 			error.rejectValue(prefix + "cap", "error.empty");
 		if(sede.getTelefono() == null || sede.getTelefono().isEmpty())
 			error.rejectValue(prefix + "telefono", "error.empty");
-		if(sede.getAltroTelefono() == null || sede.getAltroTelefono().isEmpty())
-			error.rejectValue(prefix + "altroTelefono", "error.empty");
 		if(sede.getFax() == null || sede.getFax().isEmpty())
 			error.rejectValue(prefix + "fax", "error.empty");
 		if(sede.getEmail() == null || sede.getEmail().isEmpty())
