@@ -5,7 +5,7 @@
 <head lang="it">
 </head>
 <body>
-	<div layout:fragment="content">
+	<div layout:fragment="content" th:with="counter=${providerWrapper.idOffset - 1}">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -26,12 +26,12 @@
 
 							<!-- tipo organizzatore -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.tipoOrganizzatore')} ? 'bad'">
-			                    <label class="control-label col-xs-1" th:text="${providerWrapper.idOffset}">1</label>
+			                    <label class="control-label col-xs-1" th:text="${++counter}">1</label>
 			                    <label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoOrganizzatore">
 			                      	<span th:text="#{label.tipo_organizzatore}">label.tipo_organizzatore</span>
 			                      	<span class="required">*</span>
 			                    </label>
-			                    <th:block th:if="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset)}">
+			                    <th:block th:if="${#lists.contains(providerWrapper.idEditabili, counter)}">
 			                      	<div class="col-md-4 col-sm-4 col-xs-12">			                      
 				                        <select id="tipoOrganizzatore" class="form-control required" th:field="${providerWrapper.provider.tipoOrganizzatore}">
 				                          <option value="" th:text="#{label.seleziona}">label.seleziona</option>
@@ -39,7 +39,7 @@
 				                        </select>
 				                    </div>
 				                </th:block>
-				             	<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset)}">
+				             	<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="tipoOrganizzatore" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${providerWrapper.provider.tipoOrganizzatore}"></label>
@@ -50,18 +50,18 @@
 		                    
 		                    <!-- denominazione legale -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.denominazioneLegale')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${providerWrapper.idOffset + 1}">2</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">2</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
 									<span th:text="#{label.denominazione_legale}">label.denominazione_legale</span>
 									<span class="required">*</span>
 								</label>
-								<th:block th:if="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 1)}">
+								<th:block th:if="${#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<input type="text" id="denominazioneLegale" required="required" class="form-control col-md-7 col-xs-12" 
 											name="denominazioneLegale" th:field="${providerWrapper.provider.denominazioneLegale}"/>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 1)}">
+								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="denominzioneLegale" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${providerWrapper.provider.denominazioneLegale}"></label>
@@ -72,18 +72,18 @@
 							
 							<!-- partita iva -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.partitaIva')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${providerWrapper.idOffset + 2}">3</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">3</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="partitaIva">
 									<span th:text="#{label.partita_iva}">label.partita_iva</span>
 									<span class="required">*</span>
 								</label>
-								<th:block th:if="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 2)}">
+								<th:block th:if="${#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<input type="text" id="partitaIva" required="required" class="form-control col-md-7 col-xs-12" 
 											name="partivaIva" th:field="${providerWrapper.provider.partitaIva}"/>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 2)}">
+								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="partitaIva" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${providerWrapper.provider.partitaIva}"></label>
@@ -94,18 +94,18 @@
 							
 							<!-- codice fiscale -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.codiceFiscale')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${providerWrapper.idOffset + 3}">4</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">4</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codiceFiscale">
 									<span th:text="#{label.codice_fiscale}">label.codice_fiscale</span>
 									<span class="required">*</span>
 								</label>
-								<th:block th:if="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 3)}">
+								<th:block th:if="${#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<input type="text" id="codiceFiscale" required="required" class="form-control col-md-7 col-xs-12" 
 											name="codiceFiscale" th:field="${providerWrapper.provider.codiceFiscale}"/>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 3)}">
+								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="codiceFiscale" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${providerWrapper.provider.codiceFiscale}"></label>
@@ -116,12 +116,12 @@
 							
 							<!-- ragione sociale -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.ragioneSociale')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${providerWrapper.idOffset + 4}">5</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">5</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ragioneSociale">
 									<span th:text="#{label.ragione_sociale}">label.ragione_sociale</span>
 									<span class="required">*</span>
 								</label>
-								<th:block th:if="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 4)}">
+								<th:block th:if="${#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<select id="ragioneSociale" class="form-control required" th:field="${providerWrapper.provider.ragioneSociale}">
 			                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
@@ -129,7 +129,7 @@
 			                        	</select>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 4)}">
+								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="ragioneSociale" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${providerWrapper.provider.ragioneSociale}"></label>
@@ -138,11 +138,13 @@
 								<div th:if="${#fields.hasErrors('providerWrapper.provider.ragioneSociale')}" class="alert" th:errors="${providerWrapper.provider.ragioneSociale}"></div>
 							</div>
 							
+							<div class="divider-dashed"></div>
+							
 							<!-- natura organizzazione -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${providerWrapper.idOffset + 5}">6</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">6</label>
 								<label th:text="#{label.organizzazione_natura}" class="control-label col-md-3 col-sm-3 col-xs-11" for="naturaOrganizzazione">Natura dell'organizzazione</label>
-									<th:block th:if="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 5)}">
+									<th:block th:if="${#lists.contains(providerWrapper.idEditabili, counter)}">
 										<div class="col-md-4 col-sm-4 col-xs-12" id="naturaOrganizzazione">
 											<div class="radio">
 												<label>
@@ -158,7 +160,7 @@
 											</div>
 										</div>
 									</th:block>
-									<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 5)}">
+									<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, counter)}">
 										<div class="col-md-4 col-sm-4 col-xs-12">
 											<label id="naturaOrganizzazione" class="control-label left-align col-md-7 col-xs-12"
 												th:text="${providerWrapper.provider.naturaOrganizzazione}"></label>
@@ -167,11 +169,13 @@
 								<div th:if="${#fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')}" class="alert" th:errors="${providerWrapper.provider.naturaOrganizzazione}"></div>
 							</div>
 							
+							<div class="divider-dashed"></div>
+							
 							<!-- no profit -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.noProfit')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${providerWrapper.idOffset + 6}">7</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">7</label>
 								<label th:text="#{label.no_profit}" class="control-label col-md-3 col-sm-3 col-xs-11" for="noProfit">Natura dell'organizzazione</label>
-									<th:block th:if="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 6)}">
+									<th:block th:if="${#lists.contains(providerWrapper.idEditabili, counter)}">
 										<div class="col-md-4 col-sm-4 col-xs-12" id="noProfit">
 											<div class="radio">
 												<label>
@@ -187,7 +191,7 @@
 											</div>
 										</div>
 									</th:block>
-									<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, providerWrapper.idOffset + 6)}">
+									<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, counter)}">
 										<div class="col-md-4 col-sm-4 col-xs-12">
 											<label id="noProfit" class="control-label left-align col-md-7 col-xs-12"
 												th:text="${providerWrapper.provider.noProfit}"></label>
