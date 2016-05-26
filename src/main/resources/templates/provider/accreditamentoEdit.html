@@ -10,42 +10,44 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.dati_attività}">Dati dell'attività</h2>
+						<h2>Dati relativi all’attività</h2>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
 						<form id="formAccreditamento"
 							class="form-horizontal form-label-left">
 							<div class="item form-group">
+								<label class="control-label col-xs-1 text-right">1</label>
 								<label th:text="#{label.accreditamento_tipologia}"
-									class="control-label col-md-3 col-sm-3 col-xs-12"
+									class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="accreditamento_tipologia">Accreditamento per
 									tipologia</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
+								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="accreditamento_tipologia">
 									<div class="radio">
 										<label> <input type="radio" class="flat"
-											checked="checked" name="tipologiaAccr" value="Generale" /> <span
-											th:text="#{label.tipologia_generale}"
-											onclick="abilitaCheckbox('off', 'procedure_formative')">
+											id="generaleTipologia" name="tipologiaAccr" value="Generale" /> <span
+											th:text="#{label.generale}">
 												Generale </span>
 										</label>
 									</div>
 									<div class="radio">
 										<label> <input type="radio" class="flat"
+											id="settorialeTipologia"
 											name="tipologiaAccr" value="Settoriale" /> <span
-											th:text="#{label.tipologia_settoriale}"
-											onclick="abilitaCheckbox('on', 'procedure_formative')">
+											th:text="#{label.settoriale}">
 												Settoriale </span>
 										</label>
 									</div>
 								</div>
 							</div>
+							<div class="divider-dashed"></div>
 							<div class="item form-group">
+								<label class="control-label col-xs-1 text-right">2</label>
 								<label th:text="#{label.procedure_formative}"
-									class="control-label col-md-3 col-sm-3 col-xs-12"
+									class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="procedure_formative_checkbox">Procedure formative</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
+								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="procedure_formative_checkbox">
 									<div class="checkbox">
 										<label> <input type="checkbox" class="flat"
@@ -70,36 +72,285 @@
 									</div>
 								</div>
 							</div>
+							<div class="divider-dashed"></div>
 							<div class="item form-group">
+								<label class="control-label col-xs-1 text-right">3</label>
 								<label th:text="#{label.accreditamento_professioni}"
-									class="control-label col-md-3 col-sm-3 col-xs-12"
+									class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="accreditamento_professioni">Accreditamento per
-									professioni - DA FARE!!!</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
-									id="accreditamento_professioni"></div>
+									professioni</label>
+								<div class="col-md-4 col-sm-4 col-xs-12"
+									id="accreditamento_professioni">
+									<div class="radio">
+										<label> <input type="radio" class="flat" id="generaleProf"
+											name="professioneAccr" value="Generale" /> <span
+											th:text="#{label.generale}">
+												Generale </span>
+										</label>
+									</div>
+									<div class="radio">
+										<label> <input type="radio" class="flat" id="settorialeProf"
+											name="professioneAccr" value="Settoriale" /> <span
+											th:text="#{label.settoriale}">
+												Settoriale </span>
+										</label>
+									</div>
+								</div>
 							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="x_panel">
-					<div class="x_title">
-						<h2 th:text="#{label.dati_economici}">Dati economici</h2>
-						<div class="clearfix"></div>
-					</div>
-					<div class="x_content">
-						<form id="formAccreditamentoTipologia"
-							class="form-horizontal form-label-left">
+							<div class="divider-dashed"></div>
 							<div class="item form-group">
+								<label class="control-label col-xs-1 text-right">4</label>
+								<label th:text="#{label.professioni}"
+									class="control-label col-md-3 col-sm-3 col-xs-11"
+									for="accreditamento_professioni">Professioni</label>
+								<div class="col-md-4 col-sm-4 col-xs-12"
+									id="accreditamento_professioni">
+									<div class="col-xs-12">
+										<select id="professioni" class="selectpicker"
+											multiple="multiple" data-width="100%"
+											data-style="btn-primary" data-actions-box="true"
+											data-size="10" title="Seleziona una professione..."
+											onchange="abilitaDiscipline(this)" data-selected-text-format="count">
+											<option>1: Medico chirurgo</option>
+											<option>2: Odontoiatra</option>
+											<option>3: Farmacista</option>
+											<option>4: Veterinario</option>
+											<option>5: Psicologo</option>
+											<option>6: Biologo</option>
+											<option>7: Chimico</option>
+											<option>8: Fisico</option>
+											<option>9: Assistente sanitario</option>
+											<option>10: Dietista</option>
+											<option>11: Educatore professionale</option>
+											<option>12: Fisioterapista</option>
+											<option>13: Igienista dentale</option>
+											<option>14: Infermiere</option>
+											<option>15: Infermiere pediatrico</option>
+											<option>16: Logopedista</option>
+											<option>17: Ortottista/Assistente di oftalmologia</option>
+											<option>18: Ostetrica/o</option>
+											<option>19: Podologo</option>
+											<option>20: Tecnico audiometrista</option>
+											<option>21: Tecnico audioprotesista</option>
+											<option>22: Tecnico della fisiopatologia
+												cardiocircolatoria e perfusione cardiovascolare</option>
+											<option>23: Tecnico della prevenzione nell'ambiente
+												e nei luoghi di lavoro</option>
+											<option>24: Tecnico della riabilitazione
+												psichiatrica</option>
+											<option>25: Tecnico di neurofisiopatologia</option>
+											<option>26: Tecnico ortopedico</option>
+											<option>27: Tecnico sanitario di radiologia medica</option>
+											<option>28: Tecnico sanitario laboratorio biomedico</option>
+											<option>29: Terapista della neuro e psicomotricità
+												dell'età evolutiva</option>
+											<option>30: Terapista occupazionale</option>
+										</select>
+									</div>
+									<div class="col-xs-12">
+										<select id="discipline" class="selectpicker"
+											multiple="multiple" data-width="100%"
+											data-style="btn-success" data-actions-box="true"
+											data-size="10" data-hide-disabled="true"
+											title="Seleziona una disciplina..." disabled="disabled"
+											data-selected-text-format="count">
+											<optgroup label="Medico chirurgo" disabled="disabled">
+												<option>1: Allergologia ed immunologia clinica</option>
+												<option>2: Angiologia</option>
+												<option>3: Cardiologia</option>
+												<option>4: Dermatologia e venereologia</option>
+												<option>5: Ematologia</option>
+												<option>6: Endocrinologia</option>
+												<option>7: Gastroenterologia</option>
+												<option>8: Genetica medica</option>
+												<option>9: Geriatria</option>
+												<option>10: Malattie metaboliche e diabetologia</option>
+												<option>11: Malattie dell'apparato respiratorio</option>
+												<option>12: Malattie infettive</option>
+												<option>13: Medicina e chirurgia di accettazione e
+													di urgenza</option>
+												<option>14: Medicina fisica e riabilitazione</option>
+												<option>15: Medicina interna</option>
+												<option>16: Medicina termale</option>
+												<option>17: Medicina aeronautica e spaziale</option>
+												<option>18: Medicina dello sport</option>
+												<option>19: Nefrologia</option>
+												<option>20: Neonatologia</option>
+												<option>21: Neurologia</option>
+												<option>22: Neuropsichiatria infantile</option>
+												<option>23: Oncologia</option>
+												<option>24: Pediatria</option>
+												<option>25: Psichiatria</option>
+												<option>26: Radioterapia</option>
+												<option>27: Reumatologia</option>
+												<option>29: Cardiochirurgia</option>
+												<option>30: Chirurgia generale</option>
+												<option>31: Chirurgia maxillo-facciale</option>
+												<option>32: Chirurgia pediatrica</option>
+												<option>33: Chirurgia plastica e ricostruttiva</option>
+												<option>34: Chirurgia toracica</option>
+												<option>35: Chirurgia vascolare</option>
+												<option>36: Ginecologia e ostetricia</option>
+												<option>37: Neurochirurgia</option>
+												<option>38: Oftalmologia</option>
+												<option>39: Ortopedia e traumatologia</option>
+												<option>40: Otorinolaringoiatria</option>
+												<option>41: Urologia</option>
+												<option>42: Anatomia patologica</option>
+												<option>43: Anestesia e rianimazione</option>
+												<option>44: Biochimica clinica</option>
+												<option>45: Farmacologia e tossicologia clinica</option>
+												<option>46: Laboratorio di genetica medica</option>
+												<option>47: Medicina trasfusionale</option>
+												<option>48: Medicina legale</option>
+												<option>49: Medicina nucleare</option>
+												<option>50: Microbiologia e virologia</option>
+												<option>51: Neurofisiopatologia</option>
+												<option>52: Neuroradiologia</option>
+												<option>53: Patologia clinica (laboratorio di
+													analisi chimico-cliniche e microbiologia)</option>
+												<option>54: Radiodiagnostica</option>
+												<option>55: Igiene, epidemiologia e sanità pubblica</option>
+												<option>56: Igiene degli alimenti e della
+													nutrizione</option>
+												<option>57: Medicina del lavoro e sicurezza degli
+													ambienti di lavoro</option>
+												<option>58: Medicina generale (medici di famiglia)</option>
+												<option>59: Continuità assistenziale</option>
+												<option>60: Pediatria (pediatri di libera scelta)</option>
+												<option>106: Scienza dell'alimentazione e dietetica</option>
+												<option>107: Direzione medica di presidio
+													ospedaliero</option>
+												<option>108: Organizzazione dei servizi sanitari di
+													base</option>
+												<option>111: Audiologia e foniatria</option>
+												<option>112: Psicoterapia</option>
+												<option>113: Privo di specializzazione</option>
+												<option>114: Cure palliative</option>
+												<option>115: Epidemiologia</option>
+												<option>116: Medicina di comunità</option>
+											</optgroup>
+											<optgroup label="Odontoiatra" disabled="disabled">
+												<option>64: Odontoiatria</option>
+											</optgroup>
+											<optgroup label="Farmacista" disabled="disabled">
+												<option>66: Farmacia ospedaliera</option>
+												<option>67: Farmacia territoriale</option>
+											</optgroup>
+											<optgroup label="Veterinario" disabled="disabled">
+												<option>61: Igiene degli allevamenti e delle
+													produzioni zootecniche</option>
+												<option>62: Igiene prod., trasf., commercial.,
+													conserv. E tras. Alimenti di origine animale e derivati</option>
+												<option>63: Sanità animale</option>
+											</optgroup>
+											<optgroup label="Psicologo" disabled="disabled">
+												<option>77: Psicoterapia</option>
+												<option>78: Psicologia</option>
+											</optgroup>
+											<optgroup label="Biologo" disabled="disabled">
+												<option>68: Biologo</option>
+											</optgroup>
+											<optgroup label="Chimico" disabled="disabled">
+												<option>76: Chimica analitica</option>
+											</optgroup>
+											<optgroup label="Fisico" disabled="disabled">
+												<option>79: Fisica sanitaria</option>
+											</optgroup>
+											<optgroup label="Assistente sanitario" disabled="disabled">
+												<option>80: Assistente sanitario</option>
+											</optgroup>
+											<optgroup label="Dietista" disabled="disabled">
+												<option>81: Dietista</option>
+											</optgroup>
+											<optgroup label="Educatore professionale" disabled="disabled">
+												<option>83: Educatore professionale</option>
+											</optgroup>
+											<optgroup label="Fisioterapista" disabled="disabled">
+												<option>82: Fisioterapista</option>
+											</optgroup>
+											<optgroup label="Igienista dentale" disabled="disabled">
+												<option>84: Igienista dentale</option>
+											</optgroup>
+											<optgroup label="Infermiere" disabled="disabled">
+												<option>85: Infermiere</option>
+											</optgroup>
+											<optgroup label="Infermiere pediatrico" disabled="disabled">
+												<option>86: Infermiere pediatrico</option>
+											</optgroup>
+											<optgroup label="Logopedista" disabled="disabled">
+												<option>87: Logopedista</option>
+											</optgroup>
+											<optgroup label="Ortottista/Assistente di oftalmologia"
+												disabled="disabled">
+												<option>88: Ortottista/Assistente di oftalmologia</option>
+											</optgroup>
+											<optgroup label="Ostetrica/o" disabled="disabled">
+												<option>89: Ostetrica/o</option>
+											</optgroup>
+											<optgroup label="Podologo" disabled="disabled">
+												<option>90: Podologo</option>
+											</optgroup>
+											<optgroup label="Tecnico audiometrista" disabled="disabled">
+												<option>95: Tecnico audiometrista</option>
+											</optgroup>
+											<optgroup label="Tecnico audioprotesista" disabled="disabled">
+												<option>96: Tecnico audioprotesista</option>
+											</optgroup>
+											<optgroup
+												label="Tecnico della fisiopatologia cardiocircolatoria e perfusione cardiovascolare"
+												disabled="disabled">
+												<option>92: Tecnico della fisiopatologia
+													cardiocircolatoria e perfusione cardiovascolare</option>
+											</optgroup>
+											<optgroup
+												label="Tecnico della prevenzione nell'ambiente e nei luoghi di lavoro"
+												disabled="disabled">
+												<option>105: Tecnico della prevenzione
+													nell'ambiente e nei luoghi di lavoro</option>
+											</optgroup>
+											<optgroup label="Tecnico della riabilitazione psichiatrica"
+												disabled="disabled">
+												<option>91: Tecnico della riabilitazione
+													psichiatrica</option>
+											</optgroup>
+											<optgroup label="Tecnico di neurofisiopatologia"
+												disabled="disabled">
+												<option>98: Tecnico di neurofisiopatologia</option>
+											</optgroup>
+											<optgroup label="Tecnico ortopedico" disabled="disabled">
+												<option>99: Tecnico ortopedico</option>
+											</optgroup>
+											<optgroup label="Tecnico sanitario di radiologia medica"
+												disabled="disabled">
+												<option>94: Tecnico sanitario di radiologia medica</option>
+											</optgroup>
+											<optgroup label="Tecnico sanitario laboratorio biomedico"
+												disabled="disabled">
+												<option>93: Tecnico sanitario laboratorio biomedico</option>
+											</optgroup>
+											<optgroup
+												label="Terapista della neuro e psicomotricità dell'età evolutiva"
+												disabled="disabled">
+												<option>100: Terapista della neuro e psicomotricità
+													dell'età evolutiva</option>
+											</optgroup>
+											<optgroup label="Terapista occupazionale" disabled="disabled">
+												<option>101: Terapista occupazionale</option>
+											</optgroup>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="divider-dashed"></div>
+							<div class="item form-group">
+								<label class="col-xs-1 text-right">5</label>
 								<label th:text="#{label.fatturato_complessivo_title}"
-									class="col-xs-12">Fatturato o Costi complessivi degli
+									class="col-xs-11">Fatturato o Costi complessivi degli
 									ultimi 3 anni (in migliaia di euro)</label> <label
-									class="control-label col-md-3 col-sm-3 col-xs-12"
+									class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="costi_complessivi_anno1">2013</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
+								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="costi_complessivi_anno1">
 									<input id="costi_complessivi_anno1_value"
 										name="costi_complessivi_anno1_value" required="required"
@@ -108,9 +359,9 @@
 								</div>
 							</div>
 							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-12"
+								<label class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="costi_complessivi_anno2">2014</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
+								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="costi_complessivi_anno2">
 									<input id="costi_complessivi_anno2_value"
 										name="costi_complessivi_anno2_value" required="required"
@@ -119,9 +370,9 @@
 								</div>
 							</div>
 							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-12"
+								<label class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="costi_complessivi_anno3">2015</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
+								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="costi_complessivi_anno3">
 									<input id="costi_complessivi_anno3_value"
 										name="costi_complessivi_anno3_value" required="required"
@@ -131,13 +382,14 @@
 							</div>
 							<div class="divider-dashed"></div>
 							<div class="item form-group">
+								<label class="col-xs-1 text-right">6</label>
 								<label th:text="#{label.fatturato_formazione_title}"
-									class="col-xs-12">Fatturato o Costi dedicati alla
+									class="col-xs-11">Fatturato o Costi dedicati alla
 									formazione del personale sanitario degli ultimi 3 anni (in
 									migliaia di euro)</label> <label
-									class="control-label col-md-3 col-sm-3 col-xs-12"
+									class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="costi_formazione_anno1">2013</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
+								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="costi_formazione_anno1">
 									<input id="costi_formazione_anno1_value"
 										name="costi_formazione_anno1_value" required="required"
@@ -146,9 +398,9 @@
 								</div>
 							</div>
 							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-12"
+								<label class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="costi_formazione_anno2">2014</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
+								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="costi_formazione_anno2">
 									<input id="costi_formazione_anno2_value"
 										name="costi_formazione_anno2_value" required="required"
@@ -157,9 +409,9 @@
 								</div>
 							</div>
 							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-12"
+								<label class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="costi_formazione_anno3">2015</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
+								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="costi_formazione_anno3">
 									<input id="costi_formazione_anno3_value"
 										name="costi_formazione_anno3_value" required="required"
@@ -169,12 +421,13 @@
 							</div>
 							<div class="divider-dashed"></div>
 							<div class="item form-group">
+								<label class="col-xs-1 text-right">7</label>
 								<label th:text="#{label.numero_dipendenti_title}"
-									class="col-xs-12">Numero dipendenti dedicati alla
+									class="col-xs-11">Numero dipendenti dedicati alla
 									formazione</label> <label th:text="#{label.tempo_indeterminato}"
-									class="control-label col-md-3 col-sm-3 col-xs-12"
+									class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="tempo_indeterminato">Tempo indeterminato</label>
-								<div class="col-md-6 col-sm-6 col-xs-12"
+								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="tempo_indeterminato">
 									<input id="tempo_indeterminato_value"
 										name="tempo_indeterminato_value" required="required"
@@ -184,9 +437,9 @@
 							</div>
 							<div class="item form-group">
 								<label th:text="#{label.altro_personale}"
-									class="control-label col-md-3 col-sm-3 col-xs-12"
+									class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="altro_personale">Altro personale</label>
-								<div class="col-md-6 col-sm-6 col-xs-12" id="altro_personale">
+								<div class="col-md-4 col-sm-4 col-xs-12" id="altro_personale">
 									<input id="altro_personale_value" name="altro_personale_value"
 										required="required" class="form-control col-md-7 col-xs-12"
 										type="text" pattern="numeric" />
@@ -196,6 +449,67 @@
 					</div>
 				</div>
 			</div>
+			<script>
+				//cambia la stringa per i pulsanti e il contatore
+				$(document).ready(function() {
+					$('select').selectpicker({
+						selectAllText : 'Seleziona tutti',
+						deselectAllText : 'Deseleziona tutti',
+						countSelectedText : '{0} selezionate'
+					});
+				});
+				
+				function abilitaDiscipline(professioni) {
+					//flag per capire se c'è almeno una professione
+					var almenoUna = false;
+					$.each(professioni.options, function(index, item) {
+						//toglie la parte relativa al codice della professione
+						prof = item.value;
+						prof = prof.substring(prof.indexOf(":") + 2);
+						//abilita/disabilita tutte le discipline delle professioni selezionate/deselezionate
+						if (item.selected) {
+							$('optgroup[label="' + prof + '"]').prop(
+									'disabled', false);
+							almenoUna = true;
+						} else {
+							$('optgroup[label="' + prof + '"]').prop(
+									'disabled', true);
+						}
+					});
+					//decide se disabilitare/abilitare tutta la select
+					if (almenoUna) {
+						$('#discipline').prop('disabled', false);
+					} else {
+						$('#discipline').prop('disabled', true);
+					}
+					//refresh della view
+					$('#discipline').selectpicker('refresh');
+				}
+				
+				//gestione generale/settoriale delle procedure formative 
+				$('#generaleTipologia').on('ifChecked', function(event){
+					$('input[name="procedure_formative"]').iCheck("disable");
+					$('input[name="procedure_formative"]').iCheck("check");
+					
+				});
+				
+				$('#settorialeTipologia').on('ifChecked', function(event){
+					$('input[name="procedure_formative"]').iCheck("enable");
+				});
+				
+				//gestione generale/settoriale delle professioni
+				$('#generaleProf').on('ifChecked', function(event){
+					$('.selectpicker').selectpicker('selectAll');
+					$('button[data-id="professioni"]').prop('disabled', true);
+					$('button[data-id="discipline"]').prop('disabled', true);
+				});
+				
+				$('#settorialeProf').on('ifChecked', function(event){
+					$('.selectpicker').selectpicker('deselectAll');
+					$('button[data-id="professioni"]').prop('disabled', false);
+					$('button[data-id="discipline"]').prop('disabled', false);
+				});
+			</script>
 		</div>
 	</div>
 </body>
