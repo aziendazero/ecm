@@ -230,7 +230,7 @@
 																
 							<!-- fragment degli allegati -->
 							<th:block th:fragment="allegati(tipoAllegato, counter)" th:remove="all">
-								<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.__${tipoAllegato}__.data')} ? 'bad'">
+								<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.__${tipoAllegato}__')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${counter}">11</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="__${tipoAllegato}___persona">
 									<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
@@ -259,7 +259,7 @@
 											th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}"></label>
 									</div>
 								</th:block>
-								<div th:if="${#fields.hasErrors('personaWrapper.__${tipoAllegato}__.data')}" class="alert" th:errors="${personaWrapper.__${tipoAllegato}__.data}"></div>
+								<div th:if="${#fields.hasErrors('personaWrapper.__${tipoAllegato}__')}" class="alert" th:errors="${personaWrapper.__${tipoAllegato}__}"></div>
 							</div>
 							</th:block>
 							
