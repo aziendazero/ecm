@@ -26,6 +26,7 @@ import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.validator.PersonaValidator;
 
@@ -102,7 +103,7 @@ public class PersonaController {
 	/***	SAVE PERSONA ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/save", method = RequestMethod.POST)
 	public String savePersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
-								RedirectAttributes redirectAttrs,
+								RedirectAttributes redirectAttrs, Model model,
 								@RequestParam(value = "attoNomina_persona", required = false) MultipartFile attoNomina_multiPartFile,
 								@RequestParam(value = "cv_persona", required = false) MultipartFile cv_multiPartFile,
 								@RequestParam(value = "delega_persona", required = false) MultipartFile delega_multiPartFile){
@@ -124,6 +125,7 @@ public class PersonaController {
 		
 		try{
 			if(result.hasErrors()){
+				model.addAttribute("message",new Message("Errore", "compilare correttamente i campi", "error"));
 				return EDIT;
 			}else{
 					personaService.save(personaWrapper.getPersona());
@@ -195,9 +197,17 @@ public class PersonaController {
 		//TODO logica per recuperare idEditabili ed idOffset
 		personaWrapper.setOffsetAndIds();
 		if(persona.isLegaleRappresentante())
-			personaWrapper.setIdEditabili(Arrays.asList(22,23,24,24,25,26,27,28,29,30));
+			personaWrapper.setIdEditabili(Arrays.asList(22,23,24,24,25,26,27,28,29));
 		else if(persona.isDelegatoLegaleRappresentante())
 			personaWrapper.setIdEditabili(Arrays.asList(30,31,32,33,34,35,36,37));
+		else if(persona.isResponsabileSegreteria())
+			personaWrapper.setIdEditabili(Arrays.asList(46,47,48,49,50,51,52));
+		else if(persona.isResponsabileAmministrativo())
+			personaWrapper.setIdEditabili(Arrays.asList(53,54,55,56,57,58,59,60));
+		else if(persona.isResponsabileSistemaInformatico())
+			personaWrapper.setIdEditabili(Arrays.asList(71,72,73,74,75,76,77,78));
+		else if(persona.isResponsabileQualita())
+			personaWrapper.setIdEditabili(Arrays.asList(79,80,81,82,83,84,85,86));
 
 		return personaWrapper;
 	}

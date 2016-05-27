@@ -21,5 +21,6 @@ public enum Ruolo {
 	private Ruolo(int id, String nome){
 		this.id = id;
 		this.nome = nome;
+		
 	}
 }

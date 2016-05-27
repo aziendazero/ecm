@@ -24,6 +24,20 @@ public class PersonaWrapper extends Wrapper {
 			setIdOffset(22);
 		else if(persona.isLegaleRappresentante())
 			setIdOffset(31);
+		else if(persona.isResponsabileSegreteria())
+			setIdOffset(46);
+		else if(persona.isResponsabileAmministrativo())
+			setIdOffset(53);
+		else if(persona.isResponsabileSistemaInformatico())
+			setIdOffset(71);
+		else if(persona.isResponsabileQualita())
+			setIdOffset(79);
+	}
+	
+	public PersonaWrapper(){
+		setAttoNomina(new File());
+		setCv(new File());
+		setDelega(new File());
 	}
 	
 	private File attoNomina;

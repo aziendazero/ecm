@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -10,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,15 +38,16 @@ public class Accreditamento extends BaseEntity{
 	@OneToOne(fetch = FetchType.LAZY)
 	private Provider provider;
 	
+	/***	DATI DA COMPILARE NELLA DOMANDA	***/
+	//private String tipologiaAccreditamento;//generale o settoriale
+	//private List<ProceduraFormativa> procedureFormative;//se generale tutte altrimenti selezionare quale
+	
 //	@Embedded
 //	private DatiEconomici datiEconomici;
 //	
 //	@OneToMany
 //	private List<File> allegati;
 	
-//	private String tipologiaAccreditamento;//generale o settoriale
-//	private List<ProceduraFormativa> procedureFormative;//se generale tutte altrimenti selezionare quale
-//	
 //	private List<Professione> professioniAccreditamento;//generale o settoriale
 //	private List<String> professioni;//se generale tutte altrimenti
 

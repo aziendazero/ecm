@@ -111,8 +111,8 @@
 	              $('form .alert').remove();
 	          }).prop('checked', false);
 	        
-	        if([[${notifica}]]){
-		    	  showNotifica([[${notifica}]],"registrazione ok",[[${notifica}]]);
+	        if([[${message}]]){
+	        	sendNotify();
 		      }
 	        
 			$('.datatable-responsive').DataTable({
