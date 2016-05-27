@@ -37,4 +37,5 @@ public class AccreditamentoWrapper {
 	private List<Persona> componentiComitatoScientifico = new ArrayList<Persona>();
 	private Persona responsabileSistemaInformatico;
 	private Persona responsabileQualita;
+	
 }

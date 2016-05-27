@@ -78,6 +78,12 @@ public class AccreditamentoController {
 		return goToAccreditamento(model, accreditamento);
 	}
 	
+	@RequestMapping("/accreditamento")
+	public String test(Model model){
+		return "provider/accreditamentoEdit";
+	}
+	
+	
 	private String goToAccreditamento(Model model, Accreditamento accreditamento){
 		if(accreditamento.isProvvisorio()){
 			AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapper(accreditamento);
@@ -103,11 +109,19 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setProvider(accreditamento.getProvider());
 		accreditamentoWrapper.setProviderStato(false);
 		
+		
+		
 		for(Persona p : accreditamento.getProvider().getPersone()){
 			if(p.isLegaleRappresentante())
 				accreditamentoWrapper.setLegaleRappresentante(p);
 			else if(p.isDelegatoLegaleRappresentante())
 				accreditamentoWrapper.setDelegatoLegaleRappresentante(p);
+			else if(p.isResponsabileSegreteria())
+				accreditamentoWrapper.setResponsabileQualita(p);
+			else if(p.isResponsabileSistemaInformatico())
+				accreditamentoWrapper.setResponsabileSistemaInformatico(p);
+			else if(p.isResponsabileQualita())
+				accreditamentoWrapper.setResponsabileQualita(p);
 		}
 		
 		Sede sede = accreditamento.getProvider().getSedeLegale();
