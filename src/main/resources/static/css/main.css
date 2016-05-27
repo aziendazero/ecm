@@ -9,6 +9,12 @@
 	text-shadow: none;
 }
 
+.login_content form div a {
+	margin-top: 13px;
+	margin-left: 10px !important;
+	margin-right: 10px !important;
+}
+
 /* template public */
 body.nav-md .container.body .right_col.main{
 	margin-left: 5%;
@@ -71,6 +77,10 @@ body.nav-md .container.body .right_col.main{
 	opacity: 1;
 	color: #bbb;
 	margin-bottom: 0;	
+}
+
+.allegato-link {
+	padding-left: 0px;
 }
 
 
