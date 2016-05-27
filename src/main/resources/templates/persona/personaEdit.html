@@ -256,8 +256,8 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label th:id="__${tipoAllegato}___persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-											th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}"></label>
+										<a th:id="__${tipoAllegato}___persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
+											th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}"></a>
 									</div>
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.__${tipoAllegato}__')}" class="alert" th:errors="${personaWrapper.__${tipoAllegato}__}"></div>
