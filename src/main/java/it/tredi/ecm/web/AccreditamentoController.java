@@ -15,6 +15,7 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.AccreditamentoWrapper;
@@ -49,6 +50,7 @@ public class AccreditamentoController {
 	public String getAllAccreditamentiForProvider(@PathVariable("providerId") Long providerId, Model model, RedirectAttributes redirectAttrs){
 		Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
 		model.addAttribute("accreditamentoList", listaAccreditamenti);
+		//model.addAttribute("nuovaDomanda", accreditamentoService.canProviderCreateAccreditamento(providerId,Costanti.))
 		return "provider/accreditamentoList";
 		
 		//TODO per reindirizzare direttamente sulla view è necessario creare un'altra request
@@ -109,8 +111,6 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setProvider(accreditamento.getProvider());
 		accreditamentoWrapper.setProviderStato(false);
 		
-		
-		
 		for(Persona p : accreditamento.getProvider().getPersone()){
 			if(p.isLegaleRappresentante())
 				accreditamentoWrapper.setLegaleRappresentante(p);
@@ -126,11 +126,9 @@ public class AccreditamentoController {
 		
 		Sede sede = accreditamento.getProvider().getSedeLegale();
 		accreditamentoWrapper.setSedeLegale( sede != null ? sede : new Sede());  
-		accreditamentoWrapper.setSedeLegaleStato(true);
 		
 		sede = accreditamento.getProvider().getSedeOperativa();
 		accreditamentoWrapper.setSedeOperativa( sede != null ? sede : new Sede());  
-		accreditamentoWrapper.setSedeOperativaStato(true);
 		
 		accreditamentoWrapper.setAccreditamento(accreditamento);
 		return accreditamentoWrapper;

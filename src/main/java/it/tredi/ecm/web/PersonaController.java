@@ -125,7 +125,7 @@ public class PersonaController {
 		
 		try{
 			if(result.hasErrors()){
-				model.addAttribute("message",new Message("Errore", "compilare correttamente i campi", "error"));
+				model.addAttribute("message",new Message("Errore", "message.conferma_registrazione", "error"));
 				return EDIT;
 			}else{
 					personaService.save(personaWrapper.getPersona());
