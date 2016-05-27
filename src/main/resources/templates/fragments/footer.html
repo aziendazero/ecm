@@ -52,6 +52,15 @@
 				
 		<script src="../static/js/main.js"
 				th:src="@{/js/main.js}"></script>	
+				
+		<!-- bootstrap-select -->
+		<script	src="../static/bootstrapSelect/js/bootstrapSelect.min.js"
+			th:src="@{/bootstrapSelect/js/bootstrapSelect.min.js}"></script>
+		
+		<script
+			src="../static/bootstrapSelect/js/bootstrapSelect.js"
+			th:src="@{/bootstrapSelect/js/bootstrapSelect.js}"></script>
+		
 		
 		<!-- initialize the validator.js  --> 		
 		<script th:inline="javascript">
@@ -117,7 +126,6 @@
 				"bFilter" : false			
 			});
 			
-		
 			function sendNotify(){
 				var notify = new PNotify({
 					title: [[${message?.titolo}]],

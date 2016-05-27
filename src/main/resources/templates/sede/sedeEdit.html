@@ -6,7 +6,7 @@
 
 </head>
 <body>
-	<div layout:fragment="content" id="test" th:fragment="content" >
+	<div layout:fragment="content" id="test" th:fragment="content" th:with="counter=${sedeWrapper.idOffset - 1}">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -31,10 +31,10 @@
 							
 							<!-- provincia -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.provincia')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset}">1</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">1</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="provincia_sede"><span th:text="#{label.provincia}">Provincia</span><span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset)}">	
+								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, counter)}">	
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<select id="provincia_sede" class="form-control required" th:field="${sedeWrapper.sede.provincia}">
 			                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
@@ -42,7 +42,7 @@
 			                        	</select>
 								  	</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset)}">
+								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="provincia_sede" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${sedeWrapper.sede.provincia}"></label>
@@ -53,17 +53,17 @@
 							
 							<!-- comune -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.comune')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 1}">2</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">2</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="comune_sede"><span th:text="#{label.comune}">Comune</span><span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 1)}">
+								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<select id="comune_sede" class="form-control required" th:field="${sedeWrapper.sede.comune}">
 											<option th:value="${sedeWrapper.sede.comune}" th:text="${sedeWrapper.sede.comune}"/>
 			                        	</select>
 								  	</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 1)}">
+								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="comune_sede" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${sedeWrapper.sede.comune}"></label>
@@ -74,17 +74,17 @@
 								
 							<!-- indirizzo -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.indirizzo')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 2}">3</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">3</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="indirizzo_sede"><span th:text="#{label.indirizzo}">Indirizzo</span><span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 2)}">
+								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<input id="indirizzo_sede" name="indirizzo_sede"
 											required="required" class="form-control col-md-7 col-xs-12"
 											type="text" th:field="${sedeWrapper.sede.indirizzo}" />
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 2)}">
+								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="indirizzo_sede" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${sedeWrapper.sede.indirizzo}"></label>
@@ -95,17 +95,17 @@
 							
 							<!-- CAP -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.cap')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 3}">4</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">4</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="CAP_sede"><span th:text="#{label.cap}">CAP</span><span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 3)}">
+								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<select id="CAP_sede" class="form-control required" th:field="${sedeWrapper.sede.cap}">
 											<option th:value="${sedeWrapper.sede.cap}" th:text="${sedeWrapper.sede.cap}"/>
 			                        	</select>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 3)}">
+								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="CAP_sede" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${sedeWrapper.sede.cap}"></label>
@@ -116,17 +116,17 @@
 							
 							<!-- telefono -->	
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.telefono')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 4}">5</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">5</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="telefono_sede"><span th:text="#{label.telefono}">Telefono</span><span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 4)}">
+								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<input id="telefono_sede" name="telefono_sede"
 											required="required" class="form-control col-md-7 col-xs-12"
 											type="tel" th:field="${sedeWrapper.sede.telefono}"/>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 4)}">
+								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="telefono_sede" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${sedeWrapper.sede.telefono}"></label>
@@ -137,16 +137,16 @@
 							
 							<!-- FAX -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.fax')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 5}">7</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">7</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="fax_sede"><span th:text="#{label.fax}">FAX</span><span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 5)}">
+								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<input id="fax_sede" name="fax_sede" required="required"
 											class="form-control col-md-7 col-xs-12" type="tel" th:field="${sedeWrapper.sede.fax}" />
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 5)}">
+								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="fax_sede" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${sedeWrapper.sede.fax}"></label>
@@ -157,17 +157,17 @@
 							
 							<!-- email -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.email')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${sedeWrapper.idOffset + 6}">8</label>
+								<label class="control-label col-xs-1" th:text="${++counter}">8</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="email_sede"><span th:text="#{label.email}">E-mail</span><span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 6)}">
+								<th:block th:if="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<input id="email_sede" name="email_sede"
 											required="required" class="form-control col-md-7 col-xs-12"
 											type="email" th:field="${sedeWrapper.sede.email}"/>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, sedeWrapper.idOffset + 6)}">
+								<th:block th:unless="${#lists.contains(sedeWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="email_sede" class="control-label left-align col-md-7 col-xs-12"
 											th:text="${sedeWrapper.sede.email}"></label>
