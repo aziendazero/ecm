@@ -63,6 +63,15 @@ body.nav-md .container.body .right_col.main{
 	margin-bottom: 10px;
 }
 
+.form-disabled-text {
+	font-weight: inherit;
+	padding: 6px 12px 6px 12px;
+	cursor: not-allowed;
+	background-color: #eee;
+	opacity: 1;
+	color: #bbb;
+	margin-bottom: 0;	
+}
 
 
 

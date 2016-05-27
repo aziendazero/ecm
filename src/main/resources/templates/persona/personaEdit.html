@@ -47,8 +47,8 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="cognome_persona"	
-											class="control-label left-align col-md-7 col-xs-12"
+										<label id="cognome_persona_disabled"	
+											class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.cognome}"></label>
 									</div>
 								</th:block>
@@ -69,7 +69,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="nome_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="nome_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											 th:text="${personaWrapper.persona.anagrafica.nome}"></label>
 									</div>
 								</th:block>
@@ -90,7 +90,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="codiceFiscale_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="codiceFiscale_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.codiceFiscale}"></label>
 									</div>
 								</th:block>
@@ -126,7 +126,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="telefono_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="telefono_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.telefono}"></label>
 									</div>
 								</th:block>								
@@ -151,7 +151,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="cellulare_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="cellulare_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.cellulare}"></label>
 									</div>
 								</th:block>					
@@ -172,7 +172,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="email_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="email_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.email}"></label>
 									</div>
 								</th:block>
@@ -195,7 +195,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="pec_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="pec_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.pec}"></label>
 									</div>
 								</th:block>
@@ -221,7 +221,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="professione_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="professione_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.professione}"></label>
 									</div>
 								</th:block>
@@ -255,7 +255,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="attoNomina_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="attoNomina_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.attoNomina.nomeFile}"></label>
 									</div>
 								</th:block>
@@ -289,7 +289,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="cv_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="cv_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.cv.nomeFile}"></label>
 									</div>
 								</th:block>
@@ -323,7 +323,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="delega_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="delega_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.delega.nomeFile}"></label>
 									</div>
 								</th:block>
