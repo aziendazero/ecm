@@ -19,10 +19,7 @@ public class AccreditamentoWrapper {
 	private boolean providerStato; 
 	
 	private Sede sedeLegale;
-	private boolean sedeLegaleStato; 
-	
 	private Sede sedeOperativa;
-	private boolean sedeOperativaStato; 
 	
 	private Persona legaleRappresentante;
 	private Persona delegatoLegaleRappresentante;

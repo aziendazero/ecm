@@ -12,4 +12,6 @@ public interface AccreditamentoService{
 	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId);
 	public Set<Accreditamento> getAccreditamentiAttviForProvider(Long providerId, String tipoTomanda);
 	public void save(Accreditamento accreditamento);
+	
+	public boolean canProviderCreateAccreditamento(Long providerId);
 }

@@ -77,5 +77,23 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug("Salvataggio domanda di accreditamento " + accreditamento.getTipoDomanda() + " per il provider " + accreditamento.getProvider().getId());
 		accreditamentoRepository.save(accreditamento);
 	}
+	
+	@Override
+	public boolean canProviderCreateAccreditamento(Long providerId) {
+		boolean canProvider = true;
+		
+		Set<Accreditamento> accreditamentoList = getAllAccreditamentiForProvider(providerId);
+		
+		for(Accreditamento accreditamento : accreditamentoList){
+			if(accreditamento.isBozza())
+				return false;
+			
+			if(accreditamento.isAttivo())
+				return false;
+		}
+		
+		return canProvider;
+		
+	}
 
 }

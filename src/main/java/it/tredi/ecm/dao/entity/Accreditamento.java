@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -59,6 +60,18 @@ public class Accreditamento extends BaseEntity{
 	
 	public boolean isProvvisorio(){
 		if(tipoDomanda.equals(Costanti.ACCREDITAMENTO_PROVVISORIO))
+			return true;
+		return false;
+	}
+	
+	public boolean isBozza(){
+		if(stato.equals(Costanti.ACCREDITAMENTO_STATO_BOZZA))
+			return true;
+		return false;
+	}
+	
+	public boolean isAttivo(){
+		if(dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now()))
 			return true;
 		return false;
 	}

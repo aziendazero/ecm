@@ -65,28 +65,37 @@
 																<tr>
 																	<td th:if="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/new?tipologiaSede=SedeLegale|}"></a></td>
 																	<td th:unless="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/${accreditamentoWrapper.sedeLegale.id}/edit?tipologiaSede=SedeLegale|}"></a></td>
-																	<td	th:if="${accreditamentoWrapper.sedeLegaleStato}">
-																		<span class="fa fa-check green"></span>
-																	</td>
-																	<td	th:unless="${accreditamentoWrapper.sedeLegaleStato}">
+																	<td	th:if="${accreditamentoWrapper.sedeLegale.new}">
 																		<span class="fa fa-remove red"></span>
+																	</td>
+																	<td	th:unless="${accreditamentoWrapper.sedeLegale.new}">
+																		<span class="fa fa-check green"></span>
 																	</td>
 																</tr>
 																
 																<tr>
 																	<td th:if="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/new?tipologiaSede=SedeOperativa|}"></a></td>
 																	<td th:unless="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sede/${accreditamentoWrapper.provider.sedeOperativa.id}/edit?tipologiaSede=SedeOperativa|}"></a></td>
-																	<td	th:if="${accreditamentoWrapper.sedeOperativaStato}">
-																		<span class="fa fa-check green"></span>
-																	</td>
-																	<td	th:unless="${accreditamentoWrapper.sedeOperativaStato}">
+																	<td	th:if="${accreditamentoWrapper.sedeOperativa.new}">
 																		<span class="fa fa-remove red"></span>
+																	</td>
+																	<td	th:unless="${accreditamentoWrapper.sedeOperativa.new}">
+																		<span class="fa fa-check green"></span>
 																	</td>
 																</tr>
 																
 																<tr>
 																	<td th:if="${accreditamentoWrapper.legaleRappresentante != null}"><a th:text="#{label.legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/edit|}"></a></td>
 																	<td th:if="${accreditamentoWrapper.legaleRappresentante == null}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=LEGALE_RAPPRESENTANTE|}"></a></td>
+																
+																	<td	th:if="${accreditamentoWrapper.legaleRappresentante == null} and ${accreditamentoWrapper.delegatoLegaleRappresentante == null}">
+																		<span class="fa fa-remove red"></span>
+																	</td>
+																	<td	th:if="${accreditamentoWrapper.legaleRappresentante != null} or ${accreditamentoWrapper.delegatoLegaleRappresentante != null}">
+																		<span class="fa fa-check green"></span>
+																	</td>
+																
+																
 																</tr>
 																<!-- 
 																<tr>
