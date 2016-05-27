@@ -99,7 +99,7 @@ public class ProviderController {
 									Model model, RedirectAttributes redirectAttrs){
 		try{
 			//validazione del provider
-			providerValidator.validateForAccreditamento(providerWrapper.getProvider(), result, "");	
+			providerValidator.validateForAccreditamento(providerWrapper.getProvider(), result, "provider.");	
 			
 			if(result.hasErrors()){
 				return EDIT;

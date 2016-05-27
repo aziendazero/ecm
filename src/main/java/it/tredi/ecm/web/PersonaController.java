@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,11 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Anagrafica;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.PersonaWrapper;
+import it.tredi.ecm.web.validator.PersonaValidator;
 
 @Controller
 public class PersonaController {
@@ -31,6 +38,11 @@ public class PersonaController {
 	private PersonaService personaService;
 	@Autowired
 	private ProviderService providerService;
+	@Autowired
+	private FileService fileService;
+	
+	@Autowired
+	private PersonaValidator personaValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -38,42 +50,95 @@ public class PersonaController {
 	}
 
 	@ModelAttribute("personaWrapper")
-	public PersonaWrapper getPersonaWrapper(@RequestParam(value="editId",required = false) Long id){
+	public PersonaWrapper getPersonaWrapper(@RequestParam(value="editId",required = false) Long id,
+											@RequestParam(value="editId_Anagrafica",required = false) Long anagraficaId){
 		PersonaWrapper personaWrapper = new PersonaWrapper();
 		if(id != null){
-			personaWrapper.setPersona(personaService.getPersona(id));
+			Persona persona = personaService.getPersona(id);
+			if(anagraficaId == null)
+				persona.setAnagrafica(null);
+				
+			personaWrapper = preparePersonaWrapper(persona); 			
 			return personaWrapper;
 		}
 		return new PersonaWrapper();
 	}
 	
+	/***	NUOVA PERSONA ***/
+	/* (passando ruolo e providerId) */	
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/new")
-	public String newPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model){
-		return goToEdit(model, preparePersonaWrapper(newPersona(providerId), accreditamentoId, providerId));
+	public String newPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
+								@RequestParam(name="ruolo", required = true) String ruolo){
+		
+		return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId));
+	}
+	
+	/***	NUOVA ANAGRAFICA ***/
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/newAnagrafica")
+	public String newAnagrafica(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
+									@RequestParam(name="ruolo", required = true) String ruolo){
+		
+		Persona persona = providerService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
+		if(persona == null){
+			persona = createPersona(providerId, ruolo);
+		}else{
+			persona.setAnagrafica(new Anagrafica());
+		}
+		
+		return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
 	}
 
+	/***	EDIT PERSONA ***/
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/edit")
 	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model){
 		Persona persona = personaService.getPersona(id);
 		if(persona == null){
-			persona = newPersona(providerId);
+			persona = createPersona(providerId);
 		}
 
 		return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
 	}
 
+	/***	SAVE PERSONA ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/save", method = RequestMethod.POST)
 	public String savePersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
 								RedirectAttributes redirectAttrs,
-								@RequestParam(value = "nomina_persona", required = false) MultipartFile multiPartFile){
-		//TODO validazione persona
+								@RequestParam(value = "attoNomina_persona", required = false) MultipartFile attoNomina_multiPartFile,
+								@RequestParam(value = "cv_persona", required = false) MultipartFile cv_multiPartFile,
+								@RequestParam(value = "delega_persona", required = false) MultipartFile delega_multiPartFile){
+		if(personaWrapper.getPersona().isNew()){
+			Persona persona = personaWrapper.getPersona(); 
+			persona.setRuolo(personaWrapper.getRuolo());
+			Provider provider = providerService.getProvider(personaWrapper.getProviderId());
+			persona.setProvider(provider);
+		}
+		
+		if(attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty())
+			personaWrapper.setAttoNomina(Utils.convertFromMultiPart(attoNomina_multiPartFile));
+		if(cv_multiPartFile != null && !cv_multiPartFile.isEmpty())
+			personaWrapper.setCv(Utils.convertFromMultiPart(cv_multiPartFile));
+		if(delega_multiPartFile != null && !delega_multiPartFile.isEmpty())
+			personaWrapper.setDelega(Utils.convertFromMultiPart(delega_multiPartFile));
+		
+		personaValidator.validate(personaWrapper.getPersona(), result, "persona.",personaWrapper.getFiles());
+		
 		try{
 			if(result.hasErrors()){
 				return EDIT;
 			}else{
-				personaService.save(personaWrapper.getPersona());
-				redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
-				return "redirect:/accreditamento/{accreditamentoId}";
+					personaService.save(personaWrapper.getPersona());
+					if(attoNomina_multiPartFile != null){
+						fileService.save(personaWrapper.getAttoNomina());
+					}
+					if(cv_multiPartFile != null){
+						fileService.save(personaWrapper.getCv());
+					}
+					if(delega_multiPartFile != null){
+						fileService.save(personaWrapper.getDelega());
+					}
+					
+					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
+					return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch(Exception ex){
 			//TODO Exception
@@ -82,16 +147,25 @@ public class PersonaController {
 		return EDIT;
 	}
 
-	private Persona newPersona(Long providerId){
-		Provider provider = providerService.getProvider(providerId);
+	/***	Metodi privati di supporto	***/
+	private Persona createPersona(Long providerId){
 		Persona persona = new Persona();
-		persona.setProvider(provider);
+		return persona;
+	}
+	
+	private Persona createPersona(Long providerId, String ruolo){
+		Persona persona = createPersona(providerId);
+		persona.setRuolo(Ruolo.valueOf(ruolo));
 		return persona;
 	}
 
 	private String goToEdit(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
 		return EDIT;
+	}
+	
+	private PersonaWrapper preparePersonaWrapper(Persona persona){
+		return preparePersonaWrapper(persona,0,0);
 	}
 
 	private PersonaWrapper preparePersonaWrapper(Persona persona, long accreditamentoId, long providerId){
@@ -100,11 +174,28 @@ public class PersonaController {
 		personaWrapper.setPersona(persona);
 		personaWrapper.setAccreditamentoId(accreditamentoId);
 		personaWrapper.setProviderId(providerId);
-
+		personaWrapper.setRuolo(persona.getRuolo());
+		
+		personaWrapper.setAttoNomina(new File());
+		personaWrapper.setCv(new File());
+		personaWrapper.setDelega(new File());
+		
+		if(!persona.isNew()){
+			Set<File> files = fileService.getFileFromPersona(persona.getId());
+			for(File file : files){
+				if(file.isCV())
+					personaWrapper.setCv(file);
+				else if(file.isDELEGA())
+					personaWrapper.setDelega(file);
+				else if(file.isATTONOMINA())
+					personaWrapper.setAttoNomina(file);
+			}
+		}
+		
 		//TODO logica per recuperare idEditabili ed idOffset
 		personaWrapper.setOffsetAndIds();
 		if(persona.isLegaleRappresentante())
-			personaWrapper.setIdEditabili(Arrays.asList(22,23,24,24,25,26,27,28,29));
+			personaWrapper.setIdEditabili(Arrays.asList(22,23,24,24,25,26,27,28,29,30));
 		else if(persona.isDelegatoLegaleRappresentante())
 			personaWrapper.setIdEditabili(Arrays.asList(30,31,32,33,34,35,36,37));
 
