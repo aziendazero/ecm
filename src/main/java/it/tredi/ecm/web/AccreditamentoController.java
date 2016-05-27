@@ -50,7 +50,7 @@ public class AccreditamentoController {
 	public String getAllAccreditamentiForProvider(@PathVariable("providerId") Long providerId, Model model, RedirectAttributes redirectAttrs){
 		Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
 		model.addAttribute("accreditamentoList", listaAccreditamenti);
-		//model.addAttribute("nuovaDomanda", accreditamentoService.canProviderCreateAccreditamento(providerId,Costanti.))
+		model.addAttribute("canProviderCreateAccreditamento", accreditamentoService.canProviderCreateAccreditamento(providerId));
 		return "provider/accreditamentoList";
 		
 		//TODO per reindirizzare direttamente sulla view è necessario creare un'altra request

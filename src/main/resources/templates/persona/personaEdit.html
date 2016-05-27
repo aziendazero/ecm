@@ -238,7 +238,7 @@
 								</label>
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-											<input  th:unless="${personaWrapper.__${tipoAllegato}__.data}" type="file" id="__${tipoAllegato}___persona" name="__${tipoAllegato}___persona" required="required"
+											<input  th:unless="${personaWrapper.__${tipoAllegato}__.data}" type="file" id="${__${tipoAllegato}__} + _persona" name="__${tipoAllegato}__persona" required="required"
 												class="form-control col-md-7 col-xs-12 btn" />
 												
 											<span th:if="${personaWrapper.__${tipoAllegato}__.data}" id="__${tipoAllegato}___persona" class="form-control col-md-5 col-xs-10">
