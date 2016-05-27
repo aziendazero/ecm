@@ -229,7 +229,7 @@
 							</div>
 																
 							<!-- allegato 1 (atto di nomina) -->
-							<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}"
+					<!-- 		<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}"
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.attoNomina')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">9</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="attoNomina_persona">
@@ -260,10 +260,10 @@
 									</div>
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.attoNomina')}" class="alert" th:errors="${personaWrapper.attoNomina}"></div>
-							</div>
-							
+							</div> 
+							-->
 							<!-- allegato 2 (curriculum vitae) -->
-							<div th:unless="${personaWrapper.persona.legaleRappresentante}"
+					<!-- 		<div th:unless="${personaWrapper.persona.legaleRappresentante}"
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.cv')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">10</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cv_persona">
@@ -295,9 +295,9 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.cv')}" class="alert" th:errors="${personaWrapper.cv}"></div>
 							</div>
-							
+							-->
 							<!-- allegato 3 (atto di delega) -->
-							<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}"
+					<!-- 		<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}"
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.delega')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">11</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="delega_persona">
@@ -329,6 +329,50 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.delega')}" class="alert" th:errors="${personaWrapper.delega}"></div>
 							</div>
+							-->
+							<!-- fragment allegati -->
+							<th:block th:fragment="allegati(tipoAllegato)" th:remove="all">
+								<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.__${tipoAllegato}__')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${++counter}">11</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="__${tipoAllegato}___persona">
+									<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
+									<span class="required">*</span>
+								</label>
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+											<input  th:unless="${personaWrapper.__${tipoAllegato}__.data}" type="file" id="__${tipoAllegato}___persona" name="__${tipoAllegato}___persona" required="required"
+												class="form-control col-md-7 col-xs-12 btn" />
+												
+											<span th:if="${personaWrapper.__${tipoAllegato}__.data}" id="__${tipoAllegato}___persona" class="form-control col-md-5 col-xs-10">
+												<span class="col-md-11 col-xs-11">
+													<a th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}"></a>
+												</span>
+												<span class="col-md-1 col-xs-1">
+													<a th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}/delete|}">
+														<i class="fa fa-remove red icon"></i>
+													</a>
+												</span>
+											</span>
+									</div>
+								</th:block>
+								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="__${tipoAllegato}___persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
+											th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}"></label>
+									</div>
+								</th:block>
+								<div th:if="${#fields.hasErrors('personaWrapper.__${tipoAllegato}__')}" class="alert" th:errors="${personaWrapper.__${tipoAllegato}__}"></div>
+							</div>
+							</th:block>
+							
+							<!-- allegato 1 (atto di nomina) -->
+							<th:block th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}" th:include="this :: allegati(attoNomina)" th:with="counter=${counter}"></th:block>
+							
+							<!-- allegato 2 (curriculum vitae) -->
+							<th:block th:unless="${personaWrapper.persona.legaleRappresentante}" th:include="this :: allegati(cv)" th:with="counter=${counter}"></th:block>
+							
+							<!-- allegato 3 (delega) -->
+							<th:block th:if="${personaWrapper.persona.delegatoLegaleRappresentante}" th:include="this :: allegati(delega)" th:with="counter=${counter}"></th:block>
 							
 							<!-- Registra Persona -->
 							<div class="item form-group text-right">
