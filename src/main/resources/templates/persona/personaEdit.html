@@ -228,93 +228,25 @@
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.professione')}" class="alert" th:errors="${personaWrapper.persona.professione}"></div>
 							</div>
 																
-							<!-- allegato 1 (atto di nomina) -->
-							<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}"
-								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.attoNomina')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${++counter}">9</label>
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="attoNomina_persona">
-									<span th:text="#{label.atto_nomina}">Atto di nomina</span>
+							<!-- fragment degli allegati -->
+							<th:block th:fragment="allegati(tipoAllegato, counter)" th:remove="all">
+								<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.__${tipoAllegato}__')} ? 'bad'">
+								<label class="control-label col-xs-1" th:text="${counter}">11</label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="__${tipoAllegato}___persona">
+									<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
 									<span class="required">*</span>
 								</label>
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-											<input th:unless="${personaWrapper.attoNomina.data}" type="file" id="attoNomina_persona" name="attoNomina_persona" required="required"
-												class="form-control col-md-7 col-xs-12 btn"/>
-												
-											<span th:if="${personaWrapper.attoNomina.data}" id="attoNomina_persona" class="form-control col-md-5 col-xs-10">
-												<span class="col-md-11 col-xs-11">
-													<a th:text="${personaWrapper.attoNomina.nomeFile}" th:href="@{|/files/${personaWrapper.attoNomina.id}|}"></a>
-												</span>
-												<span class="col-md-1 col-xs-1">
-													<a th:href="@{|/files/${personaWrapper.attoNomina.id}/delete|}">
-														<i class="fa fa-remove red icon"></i>
-													</a>
-												</span>
-											</span>
-									</div>
-								</th:block>
-								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
-									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="attoNomina_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-											th:text="${personaWrapper.attoNomina.nomeFile}"></label>
-									</div>
-								</th:block>
-								<div th:if="${#fields.hasErrors('personaWrapper.attoNomina')}" class="alert" th:errors="${personaWrapper.attoNomina}"></div>
-							</div>
-							
-							<!-- allegato 2 (curriculum vitae) -->
-							<div th:unless="${personaWrapper.persona.legaleRappresentante}"
-								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.cv')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${++counter}">10</label>
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cv_persona">
-									<span th:text="#{label.curriculum_vitae}">Curriculum vitae</span>
-									<span class="required">*</span>
-								</label>
-								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
-									<div class="col-md-4 col-sm-4 col-xs-12">
-											<input th:unless="${personaWrapper.cv.data}" type="file" id="cv_persona" name="cv_persona" required="required"
-												class="form-control col-md-7 col-xs-12 btn"/>
-												
-											<span th:if="${personaWrapper.cv.data}" id="cv_persona" class="form-control col-md-5 col-xs-10">
-												<span class="col-md-11 col-xs-11">
-													<a th:text="${personaWrapper.cv.nomeFile}" th:href="@{|/files/${personaWrapper.cv.id}|}"></a>
-												</span>
-												<span class="col-md-1 col-xs-1">
-													<a th:href="@{|/files/${personaWrapper.cv.id}/delete|}">
-														<i class="fa fa-remove red icon"></i>
-													</a>
-												</span>
-											</span>
-									</div>
-								</th:block>
-								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
-									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="cv_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-											th:text="${personaWrapper.cv.nomeFile}"></label>
-									</div>
-								</th:block>
-								<div th:if="${#fields.hasErrors('personaWrapper.cv')}" class="alert" th:errors="${personaWrapper.cv}"></div>
-							</div>
-							
-							<!-- allegato 3 (atto di delega) -->
-							<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}"
-								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.delega')} ? 'bad'">
-								<label class="control-label col-xs-1" th:text="${++counter}">11</label>
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="delega_persona">
-									<span th:text="#{label.atto_delega}">Atto di delega</span>
-									<span class="required">*</span>
-								</label>
-								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
-									<div class="col-md-4 col-sm-4 col-xs-12">
-											<input  th:unless="${personaWrapper.delega.data}" type="file" id="delega_persona" name="delega_persona" required="required"
+											<input  th:unless="${personaWrapper.__${tipoAllegato}__.data}" type="file" id="__${tipoAllegato}___persona" name="__${tipoAllegato}___persona" required="required"
 												class="form-control col-md-7 col-xs-12 btn" />
 												
-											<span th:if="${personaWrapper.delega.data}" id="delega_persona" class="form-control col-md-5 col-xs-10">
+											<span th:if="${personaWrapper.__${tipoAllegato}__.data}" id="__${tipoAllegato}___persona" class="form-control col-md-5 col-xs-10">
 												<span class="col-md-11 col-xs-11">
-													<a th:text="${personaWrapper.delega.nomeFile}" th:href="@{|/files/${personaWrapper.delega.id}|}"></a>
+													<a th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}"></a>
 												</span>
 												<span class="col-md-1 col-xs-1">
-													<a th:href="@{|/files/${personaWrapper.delega.id}/delete|}">
+													<a th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}/delete|}">
 														<i class="fa fa-remove red icon"></i>
 													</a>
 												</span>
@@ -323,12 +255,22 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="delega_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-											th:text="${personaWrapper.delega.nomeFile}"></label>
+										<label id="__${tipoAllegato}___persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
+											th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}"></label>
 									</div>
 								</th:block>
-								<div th:if="${#fields.hasErrors('personaWrapper.delega')}" class="alert" th:errors="${personaWrapper.delega}"></div>
+								<div th:if="${#fields.hasErrors('personaWrapper.__${tipoAllegato}__')}" class="alert" th:errors="${personaWrapper.__${tipoAllegato}__}"></div>
 							</div>
+							</th:block>
+							
+							<!-- allegato 1 (atto di nomina) -->
+							<th:block th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}" th:include="this :: allegati(attoNomina, ${++counter})"></th:block>
+							
+							<!-- allegato 2 (curriculum vitae) -->
+							<th:block th:unless="${personaWrapper.persona.legaleRappresentante}" th:include="this :: allegati(cv, ${++counter})"></th:block>
+							
+							<!-- allegato 3 (delega) -->
+							<th:block th:if="${personaWrapper.persona.delegatoLegaleRappresentante}" th:include="this :: allegati(delega, ${++counter})"></th:block>
 							
 							<!-- Registra Persona -->
 							<div class="item form-group text-right">
