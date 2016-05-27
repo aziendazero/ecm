@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
 	layout:decorator="fragments/template">
@@ -48,8 +47,8 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="cognome_persona"	
-											class="control-label left-align col-md-7 col-xs-12"
+										<label id="cognome_persona_disabled"	
+											class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.cognome}"></label>
 									</div>
 								</th:block>
@@ -70,7 +69,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="nome_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="nome_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											 th:text="${personaWrapper.persona.anagrafica.nome}"></label>
 									</div>
 								</th:block>
@@ -91,7 +90,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="codiceFiscale_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="codiceFiscale_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.codiceFiscale}"></label>
 									</div>
 								</th:block>
@@ -127,7 +126,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="telefono_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="telefono_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.telefono}"></label>
 									</div>
 								</th:block>								
@@ -152,7 +151,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="cellulare_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="cellulare_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.cellulare}"></label>
 									</div>
 								</th:block>					
@@ -173,7 +172,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="email_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="email_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.email}"></label>
 									</div>
 								</th:block>
@@ -196,7 +195,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="pec_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="pec_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.pec}"></label>
 									</div>
 								</th:block>
@@ -222,7 +221,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="professione_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="professione_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.professione}"></label>
 									</div>
 								</th:block>
@@ -242,7 +241,7 @@
 											<input th:unless="${personaWrapper.attoNomina.data}" type="file" id="attoNomina_persona" name="attoNomina_persona" required="required"
 												class="form-control col-md-7 col-xs-12 btn"/>
 												
-											<span th:if="${personaWrapper.attoNomina.data}" id="attoNominaFile" class="form-control col-md-5 col-xs-10">
+											<span th:if="${personaWrapper.attoNomina.data}" id="attoNomina_persona" class="form-control col-md-5 col-xs-10">
 												<span class="col-md-11 col-xs-11">
 													<a th:text="${personaWrapper.attoNomina.nomeFile}" th:href="@{|/files/${personaWrapper.attoNomina.id}|}"></a>
 												</span>
@@ -256,7 +255,7 @@
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="attoNomina_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="attoNomina_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.attoNomina.nomeFile}"></label>
 									</div>
 								</th:block>
@@ -265,7 +264,7 @@
 							
 							<!-- allegato 2 (curriculum vitae) -->
 							<div th:unless="${personaWrapper.persona.legaleRappresentante}"
-								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.cv.data')} ? 'bad'">
+								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.cv')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">10</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cv_persona">
 									<span th:text="#{label.curriculum_vitae}">Curriculum vitae</span>
@@ -273,22 +272,33 @@
 								</label>
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-											<input type="file" id="cv_persona" name="cv_persona" required="required"
-												class="form-control col-md-7 col-xs-12 btn" th:field="${personaWrapper.cv.nomeFile}"/>
+											<input th:unless="${personaWrapper.cv.data}" type="file" id="cv_persona" name="cv_persona" required="required"
+												class="form-control col-md-7 col-xs-12 btn"/>
+												
+											<span th:if="${personaWrapper.cv.data}" id="cv_persona" class="form-control col-md-5 col-xs-10">
+												<span class="col-md-11 col-xs-11">
+													<a th:text="${personaWrapper.cv.nomeFile}" th:href="@{|/files/${personaWrapper.cv.id}|}"></a>
+												</span>
+												<span class="col-md-1 col-xs-1">
+													<a th:href="@{|/files/${personaWrapper.cv.id}/delete|}">
+														<i class="fa fa-remove red icon"></i>
+													</a>
+												</span>
+											</span>
 									</div>
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="cv_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="cv_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.cv.nomeFile}"></label>
 									</div>
 								</th:block>
-								<div th:if="${#fields.hasErrors('personaWrapper.cv.data')}" class="alert" th:errors="${personaWrapper.cv.data}"></div>
+								<div th:if="${#fields.hasErrors('personaWrapper.cv')}" class="alert" th:errors="${personaWrapper.cv}"></div>
 							</div>
 							
 							<!-- allegato 3 (atto di delega) -->
 							<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}"
-								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.delega.data')} ? 'bad'">
+								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.delega')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">11</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="delega_persona">
 									<span th:text="#{label.atto_delega}">Atto di delega</span>
@@ -296,17 +306,28 @@
 								</label>
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-											<input type="file" id="delega_persona" name="delega_persona" required="required"
+											<input  th:unless="${personaWrapper.delega.data}" type="file" id="delega_persona" name="delega_persona" required="required"
 												class="form-control col-md-7 col-xs-12 btn" />
+												
+											<span th:if="${personaWrapper.delega.data}" id="delega_persona" class="form-control col-md-5 col-xs-10">
+												<span class="col-md-11 col-xs-11">
+													<a th:text="${personaWrapper.delega.nomeFile}" th:href="@{|/files/${personaWrapper.delega.id}|}"></a>
+												</span>
+												<span class="col-md-1 col-xs-1">
+													<a th:href="@{|/files/${personaWrapper.delega.id}/delete|}">
+														<i class="fa fa-remove red icon"></i>
+													</a>
+												</span>
+											</span>
 									</div>
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="delega_persona" class="control-label left-align col-md-7 col-xs-12"
+										<label id="delega_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.delega.nomeFile}"></label>
 									</div>
 								</th:block>
-								<div th:if="${#fields.hasErrors('personaWrapper.delega.data')}" class="alert" th:errors="${personaWrapper.delega.data}"></div>
+								<div th:if="${#fields.hasErrors('personaWrapper.delega')}" class="alert" th:errors="${personaWrapper.delega}"></div>
 							</div>
 							
 							<!-- Registra Persona -->
