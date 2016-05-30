@@ -14,8 +14,8 @@
 	    <div id="wrapper">
 	      <div id="login" class="animate form">
 	        <section class="login_content">
+	        <h1><img th:src="@{/images/logo.jpg}" /><span th:text="' ' + #{app.title}"></span> <img th:src="@{/images/main_image.png}" /></h1>
 	          <form th:action="@{/login}" method="post">
-	            <h1 th:text="#{label.accedi}">label.accedi</h1>
 	            <div th:if="${param.error}" th:text="#{label.errore_login}" class="alert alert-error"></div>   
 	            <div th:if="${param.error}" th:text="${error}" class="alert alert-error"></div>    
                 <div>
@@ -37,16 +37,13 @@
 	            </div>
 	            <div class="clearfix"></div>
 	            <div class="separator">
-             		<p class="change_link">
-                		<a href="#toreset" class="reset_pass" th:text="#{label.password_dimenticata}">label.password_dimenticata?</a>
+             		<p class="change_link row">
+             			<a th:href="@{/providerRegistration}" class="to_register col-xs-5" th:text="#{label.registrati}">label.registrati</a>
+                		<a href="#toreset" class="reset_pass col-xs-5" th:text="#{label.password_dimenticata}">label.password_dimenticata?</a>
               		</p>
-              		<p class="change_link">
-	               	 	<a th:href="@{/providerRegistration}" class="to_register" th:text="#{label.registrati}">label.registrati</a>
-	              	</p>	
 	              <div class="clearfix"></div>
 	              <br />
 	              <div>
-	                <h1><i class="fa fa-paw" style="font-size: 26px;"></i><span th:text="' ' + #{app.title}"></span></h1>
 	                <p th:text="#{label.diritti_riservati}">label.diritti_riservati</p>
 	              </div>
 	            </div>
@@ -77,7 +74,6 @@
 	              <div class="clearfix"></div>
 	              <br />
 	              <div>
-	                <h1><i class="fa fa-paw" style="font-size: 26px;"></i><span th:text="' ' + #{app.title}"></span></h1>
 	                <p th:text="#{label.diritti_riservati}">label.diritti_riservati</p>
 	              </div>
 	            </div>
