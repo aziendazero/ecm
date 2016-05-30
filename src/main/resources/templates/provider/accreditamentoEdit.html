@@ -14,29 +14,27 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<form id="formAccreditamento"
-							class="form-horizontal form-label-left">
+						<form id="formAccreditamento" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${accreditamentoId}/dati/save|}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
 							<div class="item form-group">
 								<label class="control-label col-xs-1 text-right">1</label>
 								<label th:text="#{label.accreditamento_tipologia}"
 									class="control-label col-md-3 col-sm-3 col-xs-11"
-									for="accreditamento_tipologia">Accreditamento per
-									tipologia</label>
+									for="accreditamento_tipologia">Accreditamento per tipologia</label>
 								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="accreditamento_tipologia">
 									<div class="radio">
-										<label> <input type="radio" class="flat"
-											id="generaleTipologia" name="tipologiaAccr" value="Generale" /> <span
-											th:text="#{label.generale}">
-												Generale </span>
+										<label>
+											<input type="radio" class="flat"
+												id="generaleTipologia" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
+												<span th:text="#{label.generale}">Generale </span>
 										</label>
 									</div>
 									<div class="radio">
-										<label> <input type="radio" class="flat"
-											id="settorialeTipologia"
-											name="tipologiaAccr" value="Settoriale" /> <span
-											th:text="#{label.settoriale}">
-												Settoriale </span>
+										<label>
+											<input type="radio" class="flat"
+												id="settorialeTipologia" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Settoriale" />
+											<span th:text="#{label.settoriale}">Settoriale </span>
 										</label>
 									</div>
 								</div>
@@ -47,28 +45,37 @@
 								<label th:text="#{label.procedure_formative}"
 									class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="procedure_formative_checkbox">Procedure formative</label>
-								<div class="col-md-4 col-sm-4 col-xs-12"
-									id="procedure_formative_checkbox">
-									<div class="checkbox">
-										<label> <input type="checkbox" class="flat"
+								<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_checkbox">
+									<!-- div class="checkbox">
+										<label>
+											<input type="checkbox" class="flat"
 											checked="checked" name="procedure_formative" value="FAD"
 											disabled="disabled" /> <span th:text="#{label.FAD}">formazione
 												a distanza (FAD)</span>
 										</label>
 									</div>
 									<div class="checkbox">
-										<label> <input type="checkbox" class="flat"
+										<label>
+											<input type="checkbox" class="flat"
 											checked="checked" name="procedure_formative" value="FSC"
 											disabled="disabled" /> <span th:text="#{label.FSC}">formazione
 												sul campo (FSC)</span>
 										</label>
 									</div>
 									<div class="checkbox">
-										<label> <input type="checkbox" class="flat"
+										<label>
+											<input type="checkbox" class="flat"
 											checked="checked" name="procedure_formative" value="RES"
 											disabled="disabled" /> <span th:text="#{label.RES}">formazione
 												residenziale (RES)</span>
-										</label>
+										</label> 
+									</div -->
+									<div class="checkbox" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
+										<label>
+											<input type="checkbox" class="flat" name="procedure_formative" th:field="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}" th:value="${proceduraFormativa}"
+											disabled="disabled" /> <span th:text="${proceduraFormativa.nome}">formazione
+												residenziale (RES)</span>
+										</label> 
 									</div>
 								</div>
 							</div>
@@ -347,13 +354,11 @@
 								<label class="col-xs-1 text-right">5</label>
 								<label th:text="#{label.fatturato_complessivo_title}"
 									class="col-xs-11">Fatturato o Costi complessivi degli
-									ultimi 3 anni (in migliaia di euro)</label> <label
-									class="control-label col-md-4 col-sm-4 col-xs-12"
-									for="costi_complessivi_anno1">2013</label>
-								<div class="col-md-4 col-sm-4 col-xs-12"
-									id="costi_complessivi_anno1">
+									ultimi 3 anni (in migliaia di euro)</label>
+								<label class="control-label col-md-4 col-sm-4 col-xs-12" th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno}" for="costi_complessivi_anno1">2013</label>
+								<div class="col-md-4 col-sm-4 col-xs-12" id="costi_complessivi_anno1">
 									<input id="costi_complessivi_anno1_value"
-										name="costi_complessivi_anno1_value" required="required"
+										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
 										pattern="numeric" />
 								</div>
@@ -364,7 +369,7 @@
 								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="costi_complessivi_anno2">
 									<input id="costi_complessivi_anno2_value"
-										name="costi_complessivi_anno2_value" required="required"
+										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
 										pattern="numeric" />
 								</div>
@@ -445,6 +450,10 @@
 										type="text" pattern="numeric" />
 								</div>
 							</div>
+							<!-- Registra Dati Accreditamento -->
+							<div class="item form-group text-right">
+								<input class="btn btn-primary right" type="submit" th:value="#{label.salva}"/>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -488,13 +497,13 @@
 				
 				//gestione generale/settoriale delle procedure formative 
 				$('#generaleTipologia').on('ifChecked', function(event){
-					$('input[name="procedure_formative"]').iCheck("disable");
-					$('input[name="procedure_formative"]').iCheck("check");
+					$('input[name="datiAccreditamento.procedureFormative"]').iCheck("disable");
+					$('input[name="datiAccreditamento.procedureFormative"]').iCheck("check");
 					
 				});
 				
 				$('#settorialeTipologia').on('ifChecked', function(event){
-					$('input[name="procedure_formative"]').iCheck("enable");
+					$('input[name="datiAccreditamento.procedureFormative"]').iCheck("enable");
 				});
 				
 				//gestione generale/settoriale delle professioni

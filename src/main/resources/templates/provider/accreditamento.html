@@ -94,70 +94,40 @@
 																	<td	th:if="${accreditamentoWrapper.legaleRappresentante != null} or ${accreditamentoWrapper.delegatoLegaleRappresentante != null}">
 																		<span class="fa fa-check green"></span>
 																	</td>
-																
-																
 																</tr>
-																<!-- 
-																<tr>
-																	<td>Dati Accreditamento</td>
-																	<td
-																		th:text="${accreditamentoWrapper.accreditamento.new} ? 'Inserisci' : 'Modifica'"></td>
-																</tr>
-																 -->
 															</tbody>
 														</table>
 													</div>
 												</div>
 											</div>
 										</div>
+										<!-- DATI RICHIESTA ACCREDITAMENTO -->
 										<div class="row">
 											<div class="col-xs-12">
 												<div class="x_panel">
 													<div class="x_title">
-														<h2>Dati anagrafiche interno provider</h2>
+														<h2 th:text="#{label.richiesta_accreditamento}">label.richiesta_accreditamento</h2>
 														<div class="clearfix"></div>
 													</div>
 													<div class="x_content col-xs-12">
 														<table class="datatable-responsive table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 															<thead>
 																<tr>
-																	<th>label</th>
-																	<th>value</th>
+																	<th th:text="#{label.sezione}">label.sezione</th>
+																	<th th:text="#{label.stato}">label.stato</th>
 																</tr>
 															</thead>
 															<tbody>
-															<!-- 
 																<tr>
-																	<td>Responsabile Segreteria</td>
-																	<td
-																		th:text="${accreditamentoWrapper.responsabileSegreteria.new} ? 'Inserisci' : 'Modifica'"></td>
-																</tr>
-																<tr>
-																	<td>Responsabile Amministrativo</td>
-																	<td
-																		th:text="${accreditamentoWrapper.responsabileAmministrativo.new} ? 'Inserisci' : 'Modifica'"></td>
-																</tr>
-																<tr>
-																	<td>Coordinatore Comitato Scientifico</td>
-																	<td
-																		th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.new} ? 'Inserisci' : 'Modifica'"></td>
-																</tr>
-																<tr>
-																	<td>Componenti Comitato Scientifico</td>
-																	<td
-																		th:text="${accreditamentoWrapper.componentiCOmitatoScientifico[0].new} ? 'Inserisci' : 'Modifica'"></td>
-																</tr>
-																<tr>
-																	<td>Responsabile Sistema Informatico</td>
-																	<td
-																		th:text="${accreditamentoWrapper.responsabileSistemaInformatico.new} ? 'Inserisci' : 'Modifica'"></td>
-																</tr>
-																<tr>
-																	<td>Responsabilità Qualità</td>
-																	<td
-																		th:text="${accreditamentoWrapper.responsabileQualita.new} ? 'Inserisci' : 'Modifica'"></td>
-																</tr>
-																 -->
+																	<td th:if="${accreditamentoWrapper.datiAccreditamento.new}"><a th:text="#{label.dati_accreditamento}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/new|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.datiAccreditamento.new}"><a th:text="#{label.dati_accreditamento}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/edit|}"></a></td>
+																	<td	th:if="${accreditamentoWrapper.datiAccreditamento.new}">
+																		<span class="fa fa-remove red"></span>
+																	</td>
+																	<td	th:unless="${accreditamentoWrapper.datiAccreditamento.new}">
+																		<span class="fa fa-check green"></span>
+																	</td>
+																</tr> 
 															</tbody>
 														</table>
 													</div>
@@ -172,15 +142,15 @@
 											<div class="col-xs-12">
 												<div class="x_panel">
 													<div class="x_title">
-														<h2>Pannello 1</h2>
+														<h2 th:text="#{label.responsabili}">Pannello 1</h2>
 														<div class="clearfix"></div>
 													</div>
 													<div class="x_content col-xs-12">
 														<table class="datatable-responsive table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 															<thead>
 																<tr>
-																	<th th:text="label.responsabile">Responsabile</th>
-																	<th th:text="label.stato_inserimento">Stato inserimento</th>
+																	<th th:text="#{label.responsabile}">Responsabile</th>
+																	<th th:text="#{label.stato_inserimento}">Stato inserimento</th>
 																</tr>
 															</thead>
 															<tbody>
