@@ -40,7 +40,7 @@
 							<!-- div sec:authentication="principal.authorities">roles</div-->
 						</h3>
 						<ul class="nav side-menu">
-							<li>
+							<li th:if="${#authorization.expression('hasAuthority(''PROVIDER_READ'')')}">
 								<a>
 									<i class="fa fa-home"></i> <span th:text="#{label.provider}">label.provider</span>
 									<span class="fa fa-chevron-down"></span>
@@ -48,9 +48,7 @@
 								<ul class="nav child_menu" style="display: none">
 									<li><a th:href="@{/providerRegistration/edit}" th:text="#{label.registrazione_provider}">label.registrazione_provider</a></li>
 									<li><a th:href="@{/provider/show}" th:text="#{label.info_provider}">label.info_provider</a></li>
-									<li><a th:href="@{/provider/accreditamento/list}" th:text="#{label.iter_accreditamento}">label.iter_accreditamento</a></li>
-									<li><a th:href="@{/provider/persona/list}" th:text="#{label.persone}">label.persone</a></li>
-									<li><a th:href="@{/provider/sedi}" th:text="#{label.sedi}">label.sedi</a></li>
+									<li><a th:href="@{/provider/accreditamento/list}" th:text="#{label.accreditamento}">label.iter_accreditamento</a></li>
 									<!--
 									<li><a href="#" th:text="#{label.eventi}">label.eventi</a></li>
 									<li><a href="#" th:text="#{label.piano_formativo}">label.piano_formativo</a></li>

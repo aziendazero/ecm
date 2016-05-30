@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet author="dpranteda (generated)" id="1464100310020-1">
+    <changeSet author="dpranteda (generated)" id="1464445624816-1">
         <createSequence sequenceName="hibernate_sequence"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-2">
+    <changeSet author="dpranteda (generated)" id="1464445624816-2">
         <createTable tableName="account">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="accountPK"/>
@@ -23,7 +23,7 @@
             <column name="username" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-3">
+    <changeSet author="dpranteda (generated)" id="1464445624816-3">
         <createTable tableName="account_profile">
             <column name="account_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -33,7 +33,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-4">
+    <changeSet author="dpranteda (generated)" id="1464445624816-4">
         <createTable tableName="accreditamento">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="accreditamentoPK"/>
@@ -43,11 +43,12 @@
             <column name="data_valutazione" type="date"/>
             <column name="stato" type="VARCHAR(255)"/>
             <column name="tipo_domanda" type="VARCHAR(255)"/>
+            <column name="dati_accreditamento_id" type="BIGINT"/>
             <column name="provider_id" type="BIGINT"/>
             <column name="valutato_da" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-5">
+    <changeSet author="dpranteda (generated)" id="1464445624816-5">
         <createTable tableName="anagrafica">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="anagraficaPK"/>
@@ -64,7 +65,45 @@
             <column name="telefono" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-6">
+    <changeSet author="dpranteda (generated)" id="1464445624816-6">
+        <createTable tableName="dati_accreditamento">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="dati_accreditamentoPK"/>
+            </column>
+            <column name="fatturato_complessivo_anno_due" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_complessivo_anno_tre" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_complessivo_anno_uno" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_complessivo_valore_due" type="FLOAT8"/>
+            <column name="fatturato_complessivo_valore_tre" type="FLOAT8"/>
+            <column name="fatturato_complessivo_valore_uno" type="FLOAT8"/>
+            <column name="fatturato_formazione_anno_due" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_formazione_anno_tre" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_formazione_anno_uno" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_formazione_valore_due" type="FLOAT8"/>
+            <column name="fatturato_formazione_valore_tre" type="FLOAT8"/>
+            <column name="fatturato_formazione_valore_uno" type="FLOAT8"/>
+            <column name="numero_dipendenti_formazione_altro" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="numero_dipendenti_formazione_tempo_indeterminato" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tipologia_accreditamento" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464445624816-7">
         <createTable tableName="file">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="filePK"/>
@@ -77,7 +116,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-7">
+    <changeSet author="dpranteda (generated)" id="1464445624816-8">
         <createTable tableName="persona">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="personaPK"/>
@@ -89,7 +128,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-8">
+    <changeSet author="dpranteda (generated)" id="1464445624816-9">
         <createTable tableName="profile">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="profilePK"/>
@@ -97,7 +136,7 @@
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-9">
+    <changeSet author="dpranteda (generated)" id="1464445624816-10">
         <createTable tableName="profile_role">
             <column name="profile_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -107,7 +146,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-10">
+    <changeSet author="dpranteda (generated)" id="1464445624816-11">
         <createTable tableName="provider">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="providerPK"/>
@@ -125,7 +164,7 @@
             <column name="sede_operativa_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-11">
+    <changeSet author="dpranteda (generated)" id="1464445624816-12">
         <createTable tableName="role">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="rolePK"/>
@@ -134,7 +173,7 @@
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-12">
+    <changeSet author="dpranteda (generated)" id="1464445624816-13">
         <createTable tableName="sede">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="sedePK"/>
@@ -149,7 +188,7 @@
             <column name="telefono" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-13">
+    <changeSet author="dpranteda (generated)" id="1464445624816-14">
         <createTable tableName="valutazione">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="valutazionePK"/>
@@ -165,58 +204,61 @@
             <column name="valutatore_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-14">
+    <changeSet author="dpranteda (generated)" id="1464445624816-15">
         <addPrimaryKey columnNames="account_id, profile_id" tableName="account_profile"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-15">
+    <changeSet author="dpranteda (generated)" id="1464445624816-16">
         <addPrimaryKey columnNames="profile_id, role_id" tableName="profile_role"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-16">
+    <changeSet author="dpranteda (generated)" id="1464445624816-17">
         <addUniqueConstraint columnNames="provider_id, ruolo" tableName="persona"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-17">
+    <changeSet author="dpranteda (generated)" id="1464445624816-18">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="accreditamento" constraintName="FK_2kedwkv8fm7anc6ehd8skrs3x" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-18">
+    <changeSet author="dpranteda (generated)" id="1464445624816-19">
         <addForeignKeyConstraint baseColumnNames="persona_id" baseTableName="file" constraintName="FK_4dnfubn8sj4d103fc6yvn88mc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-19">
+    <changeSet author="dpranteda (generated)" id="1464445624816-20">
         <addForeignKeyConstraint baseColumnNames="profile_id" baseTableName="profile_role" constraintName="FK_4gplwal6tlx22jbgd69rovkb5" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="profile"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-20">
+    <changeSet author="dpranteda (generated)" id="1464445624816-21">
         <addForeignKeyConstraint baseColumnNames="anagrafica_id" baseTableName="persona" constraintName="FK_4ou979c0a9ybt0n0jvw4x1s6f" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="anagrafica"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-21">
+    <changeSet author="dpranteda (generated)" id="1464445624816-22">
         <addForeignKeyConstraint baseColumnNames="sede_operativa_id" baseTableName="provider" constraintName="FK_6hh3990t9lo7bsa5x93qwlxmv" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="sede"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-22">
+    <changeSet author="dpranteda (generated)" id="1464445624816-23">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="valutazione" constraintName="FK_8smdd7q6xcwaa17172c20i5uj" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-23">
+    <changeSet author="dpranteda (generated)" id="1464445624816-24">
         <addForeignKeyConstraint baseColumnNames="valutatore_id" baseTableName="valutazione" constraintName="FK_bhla9b5d8qg95k85mhvnb78l6" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-24">
+    <changeSet author="dpranteda (generated)" id="1464445624816-25">
         <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="provider" constraintName="FK_d7b840ao003qsurqwhabnfnej" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-25">
+    <changeSet author="dpranteda (generated)" id="1464445624816-26">
         <addForeignKeyConstraint baseColumnNames="valutato_da" baseTableName="accreditamento" constraintName="FK_g0n9uj1e1gsh93dmc6nmppew2" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-26">
+    <changeSet author="dpranteda (generated)" id="1464445624816-27">
         <addForeignKeyConstraint baseColumnNames="profile_id" baseTableName="account_profile" constraintName="FK_k81l0bnjmx2aif52febo38dc7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="profile"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-27">
+    <changeSet author="dpranteda (generated)" id="1464445624816-28">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="file" constraintName="FK_kmfk7rxkmagvkuyna7gw7a85t" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-28">
+    <changeSet author="dpranteda (generated)" id="1464445624816-29">
         <addForeignKeyConstraint baseColumnNames="sede_legale_id" baseTableName="provider" constraintName="FK_n1tykstwcc24y063xpg8b3qxf" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="sede"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-29">
+    <changeSet author="dpranteda (generated)" id="1464445624816-30">
         <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="profile_role" constraintName="FK_ns7m0x44vs7ywdc8n5mk8yb9y" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="role"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-30">
+    <changeSet author="dpranteda (generated)" id="1464445624816-31">
         <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="account_profile" constraintName="FK_pfm098mqligo1wpd1403e4240" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1464100310020-31">
+    <changeSet author="dpranteda (generated)" id="1464445624816-32">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="persona" constraintName="FK_s8i45c7exu5kk6vnpt2y0mq2p" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1464445624816-33">
+        <addForeignKeyConstraint baseColumnNames="dati_accreditamento_id" baseTableName="accreditamento" constraintName="FK_td4rxgusqeo84kfo1eva6uvpc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dati_accreditamento"/>
     </changeSet>
 </databaseChangeLog>

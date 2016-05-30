@@ -19,6 +19,10 @@ public class PersonaWrapper extends Wrapper {
 	private Long accreditamentoId;
 	private Long providerId;
 	
+	private File attoNomina;
+	private File cv;
+	private File delega;
+	
 	public void setOffsetAndIds(){
 		if(persona.isLegaleRappresentante())
 			setIdOffset(22);
@@ -39,10 +43,6 @@ public class PersonaWrapper extends Wrapper {
 		setCv(new File());
 		setDelega(new File());
 	}
-	
-	private File attoNomina;
-	private File cv;
-	private File delega;
 	
 	public void setAttoNomina(File file){
 		attoNomina = file;

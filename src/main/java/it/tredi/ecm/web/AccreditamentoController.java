@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
@@ -129,6 +130,9 @@ public class AccreditamentoController {
 		
 		sede = accreditamento.getProvider().getSedeOperativa();
 		accreditamentoWrapper.setSedeOperativa( sede != null ? sede : new Sede());  
+		
+		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
+		accreditamentoWrapper.setDatiAccreditamento(datiAccreditamento != null ? datiAccreditamento : new DatiAccreditamento());
 		
 		accreditamentoWrapper.setAccreditamento(accreditamento);
 		return accreditamentoWrapper;

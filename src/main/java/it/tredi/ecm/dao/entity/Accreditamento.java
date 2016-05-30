@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -43,9 +44,10 @@ public class Accreditamento extends BaseEntity{
 	//private String tipologiaAccreditamento;//generale o settoriale
 	//private List<ProceduraFormativa> procedureFormative;//se generale tutte altrimenti selezionare quale
 	
-//	@Embedded
-//	private DatiEconomici datiEconomici;
-//	
+	@JoinColumn(name = "dati_accreditamento_id")
+	@OneToOne(fetch = FetchType.LAZY)
+	private DatiAccreditamento datiAccreditamento;
+	
 //	@OneToMany
 //	private List<File> allegati;
 	

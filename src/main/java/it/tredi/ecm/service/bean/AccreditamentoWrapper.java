@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.DatiEconomici;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
@@ -14,6 +16,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccreditamentoWrapper {
+	//dati domanda di accreditamento
+	private Accreditamento accreditamento;
+	
 	//dati provider
 	private Provider provider;
 	private boolean providerStato; 
@@ -24,8 +29,8 @@ public class AccreditamentoWrapper {
 	private Persona legaleRappresentante;
 	private Persona delegatoLegaleRappresentante;
 	
-	//dati domanda di accreditamento
-	private Accreditamento accreditamento;
+	//dati domanda accreditamento
+	private DatiAccreditamento datiAccreditamento;
 	
 	//dati anagrafiche interne provider
 	private Persona responsabileSegreteria;
