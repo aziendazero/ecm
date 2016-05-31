@@ -238,25 +238,24 @@
 								</label>
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-											<input  th:unless="${personaWrapper.__${tipoAllegato}__.data}" type="file" th:id="__${tipoAllegato}___persona" th:name="__${tipoAllegato}___persona" required="required"
-												class="form-control col-md-7 col-xs-12 btn" />
-												
-											<span th:if="${personaWrapper.__${tipoAllegato}__.data}" th:id="__${tipoAllegato}___persona" class="form-control col-md-5 col-xs-10">
-												<span class="col-md-11 col-xs-11 allegato-link">
-													<a th:unless="${personaWrapper.__${tipoAllegato}__.new}" th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}"></a>
-													<span th:if="${personaWrapper.__${tipoAllegato}__.new}" th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}"></span>
-												</span>
-												<span class="col-md-1 col-xs-1" th:unless="${personaWrapper.__${tipoAllegato}__.new}">
-													<a th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}/delete|}">
-														<i class="fa fa-remove red icon"></i>
-													</a>
-												</span>
-											</span>
+										<div class="form-control col-md-7 col-xs-12 btn" th:unless="${personaWrapper.__${tipoAllegato}__.data}">
+											<input type="file" th:id="__${tipoAllegato}___persona" th:name="__${tipoAllegato}___persona" required="required"
+												style="display: none;" />
+											<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}___persona');|" />
+											<div th:id="__${tipoAllegato}___persona_label" class="allegato-label" th:text="#{label.nessun_file_selezionato}">Nessun file selezionato</div>
+										</div>
+										<div class="form-control col-md-7 col-xs-12 btn" th:if="${personaWrapper.__${tipoAllegato}__.data}">
+											<input type="file" th:id="__${tipoAllegato}___persona" th:name="__${tipoAllegato}___persona" required="required"
+												style="display: none;" />
+											<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}___persona');|" />
+											<a th:id="__${tipoAllegato}___persona_label" th:unless="${personaWrapper.__${tipoAllegato}__.new}" th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}"></a>
+											<a th:id="__${tipoAllegato}___persona_label" th:if="${personaWrapper.__${tipoAllegato}__.new}" th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}"></a>
+										</div>
 									</div>
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<a th:id="__${tipoAllegato}___persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
+										<a th:id="__${tipoAllegato}___persona_disabled" class="form-control form-disabled-text clickable left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}"></a>
 									</div>
 								</th:block>
@@ -281,6 +280,16 @@
 					</div>
 				</div>
 			</div>
+			<script>
+				function setAllegato(idInput) {
+					$(idInput).click();
+				}
+				
+				$('input[type=file]').change(function() {
+					$("#"+this.name+"_label").text(this.value.split('\\').pop());
+					$("#"+this.name+"_label").removeAttr('href');
+				});
+			</script>
 		</div>
 	</div>
 </body>

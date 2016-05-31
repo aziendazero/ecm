@@ -79,6 +79,10 @@ body.nav-md .container.body .right_col.main{
 	margin-bottom: 0;	
 }
 
+.clickable {
+	cursor: pointer;
+}
+
 .allegato-link {
 	padding-left: 0px;
 }
@@ -108,5 +112,19 @@ body.nav-md .container.body .right_col.main{
 .site_title_name {
 	margin-left: 15px;
 }
+
+.allegato-btn {
+	margin-left: -9px;
+	margin-right: 5px;
+}
+
+.allegato-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-top: 5px;
+	text-align: left;
+}
+
+
 
 
