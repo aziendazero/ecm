@@ -91,7 +91,7 @@ public class DatiAccreditamentoController {
 		wrapper.setDatiAccreditamento(datiAccreditamento);
 		
 		wrapper.setOffsetAndIds();
-		wrapper.setIdEditabili(Arrays.asList(38,39,40,41,42,43));
+		wrapper.setIdEditabili(Arrays.asList(39,40,41,42,43,44,45));
 		
 		return wrapper;
 	};

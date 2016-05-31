@@ -83,5 +83,35 @@ body.nav-md .container.body .right_col.main{
 	padding-left: 0px;
 }
 
+.title {
+	margin-bottom: 20px;
+}
+
+.login-img {
+	margin-bottom: 20px;
+	max-height: 105px;
+	min-height: 105px;
+}
+
+.login_content {
+	padding: 0;
+	color: #2a3f54;
+}
+
+#wrapper {
+	min-width: 450px;
+}
+
+.remember-login-label {
+	padding: 0 !important;
+}
+
+.site_title {
+	height: 57px;
+}
+
+.site_title_name {
+	margin-left: 15px;
+}
 
 
