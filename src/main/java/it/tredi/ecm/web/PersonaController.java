@@ -195,8 +195,6 @@ public class PersonaController {
 		personaWrapper.setCv(new File());
 		personaWrapper.setDelega(new File());
 		
-		
-		
 		if(!persona.isNew()){
 			Set<File> files = fileService.getFileFromPersona(persona.getId());
 			for(File file : files){

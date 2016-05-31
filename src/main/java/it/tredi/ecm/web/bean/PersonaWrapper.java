@@ -48,10 +48,20 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setAttoNomina(File file){
+		if(file.getId() != null){
+			//file è quello letto da DB
+			attoNomina.setData(file.getData().clone());
+		}else if(attoNomina != null){
+			//file è quello ke sta arrivando da MultiPart
+			file.setId(attoNomina.getId());
+		}
+		
 		attoNomina = file;
+		attoNomina.setNomeFile(file.getNomeFile());
 		attoNomina.setTipo(Costanti.FILE_ATTO_NOMINA);
 		attoNomina.setPersona(persona);
 		attoNomina.setDataCreazione(LocalTime.now());
+		attoNomina.setProvider(file.getProvider());
 	}
 	
 	public void setCv(File file){
