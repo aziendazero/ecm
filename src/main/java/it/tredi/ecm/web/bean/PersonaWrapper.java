@@ -26,10 +26,6 @@ public class PersonaWrapper extends Wrapper {
 	private File cv;
 	private File delega;
 	
-	private MultipartFile attoNomina_persona;
-	private MultipartFile cv_persona;
-	private MultipartFile delega_persona;
-	
 	public void setOffsetAndIds(){
 		if(persona.isLegaleRappresentante())
 			setIdOffset(22);
@@ -52,11 +48,6 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setAttoNomina(File file){
-		if(file.getNomeFile().isEmpty())
-			attoNomina_persona = null;
-		else
-			attoNomina_persona = new MultiPartBuilder(file.getNomeFile(), file.getNomeFile(), "text/plain", file.getData());
-		
 		attoNomina = file;
 		attoNomina.setTipo(Costanti.FILE_ATTO_NOMINA);
 		attoNomina.setPersona(persona);
@@ -64,11 +55,6 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setCv(File file){
-		if(file.getNomeFile().isEmpty())
-			cv_persona = null;
-		else	
-			cv_persona = new MultiPartBuilder(file.getNomeFile(), file.getNomeFile(), "text/plain", file.getData());
-		
 		cv = file;
 		cv.setTipo(Costanti.FILE_CV);
 		cv.setPersona(persona);
@@ -76,11 +62,6 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setDelega(File file){
-		if(file.getNomeFile().isEmpty())
-			delega_persona = null;
-		else
-			delega_persona = new MultiPartBuilder(file.getNomeFile(), file.getNomeFile(), "text/plain", file.getData());
-		
 		delega = file;
 		delega.setTipo(Costanti.FILE_DELEGA);
 		delega.setPersona(persona);

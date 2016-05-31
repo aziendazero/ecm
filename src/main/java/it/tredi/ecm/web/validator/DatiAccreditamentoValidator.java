@@ -27,11 +27,11 @@ public class DatiAccreditamentoValidator {
 	
 	private void validateDatiAccreditamento(Object target, Errors errors, String prefix){
 		DatiAccreditamento datiAccreditamento = (DatiAccreditamento)target;
-		if(datiAccreditamento.getTipologiaAccreditamento().isEmpty())
+		if(datiAccreditamento.getTipologiaAccreditamento() == null || datiAccreditamento.getTipologiaAccreditamento().isEmpty())
 			errors.rejectValue(prefix + "tipologiaAccreditamento", "error.empty");
-		if(datiAccreditamento.getProcedureFormative().isEmpty())
+		if(datiAccreditamento.getProcedureFormative() == null || datiAccreditamento.getProcedureFormative().isEmpty())
 			errors.rejectValue(prefix + "procedureFormative", "error.empty");
-		if(datiAccreditamento.getProfessioniAccreditamento().isEmpty())
+		if(datiAccreditamento.getProfessioniAccreditamento() == null || datiAccreditamento.getProfessioniAccreditamento().isEmpty())
 			errors.rejectValue(prefix + "professioniAccreditamento", "error.empty");
 	}
 }

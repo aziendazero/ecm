@@ -118,7 +118,9 @@ public class AccreditamentoController {
 			else if(p.isDelegatoLegaleRappresentante())
 				accreditamentoWrapper.setDelegatoLegaleRappresentante(p);
 			else if(p.isResponsabileSegreteria())
-				accreditamentoWrapper.setResponsabileQualita(p);
+				accreditamentoWrapper.setResponsabileSegreteria(p);
+			else if(p.isResponsabileAmministrativo())
+				accreditamentoWrapper.setResponsabileAmministrativo(p);
 			else if(p.isResponsabileSistemaInformatico())
 				accreditamentoWrapper.setResponsabileSistemaInformatico(p);
 			else if(p.isResponsabileQualita())

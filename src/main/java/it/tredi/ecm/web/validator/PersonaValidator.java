@@ -65,7 +65,7 @@ public class PersonaValidator {
 		anagraficaValidator.validateBase(persona.getAnagrafica(), errors, prefix + "anagrafica.");
 	}
 	
-	private void validateFiles(Object target, Errors errors, String prefix, Ruolo ruolo){
+	public void validateFiles(Object target, Errors errors, String prefix, Ruolo ruolo){
 		LOGGER.debug("VALIDAZIONE ALLEGATI");
 		Set<File> files = null;
 		if(target != null)

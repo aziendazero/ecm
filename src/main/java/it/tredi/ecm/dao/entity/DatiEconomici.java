@@ -1,5 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
+import java.time.LocalDate;
+
 import javax.persistence.Embeddable;
 
 import lombok.Getter;
@@ -32,6 +34,10 @@ public class DatiEconomici {
 			fatturatoFormazioneValoreTre == 0.0)
 			return true;
 		return false;
+	}
+	
+	public DatiEconomici() {
+		init(LocalDate.now().getYear());
 	}
 	
 	public void init(int currentYear){

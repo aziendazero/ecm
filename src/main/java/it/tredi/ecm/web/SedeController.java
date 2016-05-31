@@ -165,7 +165,7 @@ public class SedeController {
 	public String saveSede(@ModelAttribute("sedeWrapper") SedeWrapper sedeWrapper, BindingResult result,  
 							Model model, RedirectAttributes redirectAttrs){
 
-		sedeValidator.validate(sedeWrapper.getSede(), result, "");
+		sedeValidator.validate(sedeWrapper.getSede(), result, "sede.");
 		try{
 			if(result.hasErrors()){
 				return EDIT;

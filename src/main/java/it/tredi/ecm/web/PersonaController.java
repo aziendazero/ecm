@@ -1,7 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -105,11 +103,10 @@ public class PersonaController {
 	/***	SAVE PERSONA ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/save", method = RequestMethod.POST)
 	public String savePersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
-								RedirectAttributes redirectAttrs, Model model
-								/*,
+								RedirectAttributes redirectAttrs, Model model,
 								@RequestParam(value = "attoNomina_persona", required = false) MultipartFile attoNomina_multiPartFile,
 								@RequestParam(value = "cv_persona", required = false) MultipartFile cv_multiPartFile,
-								@RequestParam(value = "delega_persona", required = false) MultipartFile delega_multiPartFile*/){
+								@RequestParam(value = "delega_persona", required = false) MultipartFile delega_multiPartFile){
 		if(personaWrapper.getPersona().isNew()){
 			Persona persona = personaWrapper.getPersona(); 
 			persona.setRuolo(personaWrapper.getRuolo());
@@ -117,40 +114,31 @@ public class PersonaController {
 			persona.setProvider(provider);
 		}
 		
-//		if(attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty())
-//			personaWrapper.setAttoNomina(Utils.convertFromMultiPart(attoNomina_multiPartFile));
-//		if(cv_multiPartFile != null && !cv_multiPartFile.isEmpty())
-//			personaWrapper.setCv(Utils.convertFromMultiPart(cv_multiPartFile));
-//		if(delega_multiPartFile != null && !delega_multiPartFile.isEmpty())
-//			personaWrapper.setDelega(Utils.convertFromMultiPart(delega_multiPartFile));
+		if(attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty())
+			personaWrapper.setAttoNomina(Utils.convertFromMultiPart(attoNomina_multiPartFile));
+		if(cv_multiPartFile != null && !cv_multiPartFile.isEmpty())
+			personaWrapper.setCv(Utils.convertFromMultiPart(cv_multiPartFile));
+		if(delega_multiPartFile != null && !delega_multiPartFile.isEmpty())
+			personaWrapper.setDelega(Utils.convertFromMultiPart(delega_multiPartFile));
 		
 		personaValidator.validate(personaWrapper.getPersona(), result, "persona.",personaWrapper.getFiles());
 		
 		try{
 			if(result.hasErrors()){
+				
+				if(!result.hasFieldErrors("delega*") && !result.hasFieldErrors("attoNomina*") && !result.hasFieldErrors("cv*")){
+					if(!personaWrapper.getPersona().isNew()){
+						//salvataggio dei file modificati per evitare che in casi di errore di validazione sui dati
+						//l'utente debba rifare l'upload
+						saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
+					}
+				}
+				
 				model.addAttribute("message",new Message("Errore", "message.conferma_registrazione", "error"));
 				return EDIT;
 			}else{
 					personaService.save(personaWrapper.getPersona());
-//					if(attoNomina_multiPartFile != null){
-//						fileService.save(personaWrapper.getAttoNomina());
-//					}
-//					if(cv_multiPartFile != null){
-//						fileService.save(personaWrapper.getCv());
-//					}
-//					if(delega_multiPartFile != null){
-//						fileService.save(personaWrapper.getDelega());
-//					}
-					if(personaWrapper.getAttoNomina_persona() != null){
-					fileService.save(personaWrapper.getAttoNomina());
-					}
-					if(personaWrapper.getCv_persona() != null){
-						fileService.save(personaWrapper.getCv());
-					}
-					if(personaWrapper.getDelega_persona() != null){
-						fileService.save(personaWrapper.getDelega());
-					}
-					
+					saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
 					
 					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
 					return "redirect:/accreditamento/{accreditamentoId}";
@@ -160,6 +148,18 @@ public class PersonaController {
 		}
 		
 		return EDIT;
+	}
+	
+	private void saveFiles(PersonaWrapper personaWrapper, MultipartFile attoNomina_multiPartFile, MultipartFile cv_multiPartFile, MultipartFile delega_multiPartFile){
+		if(attoNomina_multiPartFile != null){
+			fileService.save(personaWrapper.getAttoNomina());
+		}
+		if(cv_multiPartFile != null){
+			fileService.save(personaWrapper.getCv());
+		}
+		if(delega_multiPartFile != null){
+			fileService.save(personaWrapper.getDelega());
+		}
 	}
 
 	/***	Metodi privati di supporto	***/
