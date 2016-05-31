@@ -4,10 +4,13 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.web.multipart.MultipartFile;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.utils.MultiPartBuilder;
+import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +25,10 @@ public class PersonaWrapper extends Wrapper {
 	private File attoNomina;
 	private File cv;
 	private File delega;
+	
+	private MultipartFile attoNomina_persona;
+	private MultipartFile cv_persona;
+	private MultipartFile delega_persona;
 	
 	public void setOffsetAndIds(){
 		if(persona.isLegaleRappresentante())
@@ -45,6 +52,11 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setAttoNomina(File file){
+		if(file.getNomeFile().isEmpty())
+			attoNomina_persona = null;
+		else
+			attoNomina_persona = new MultiPartBuilder(file.getNomeFile(), file.getNomeFile(), "text/plain", file.getData());
+		
 		attoNomina = file;
 		attoNomina.setTipo(Costanti.FILE_ATTO_NOMINA);
 		attoNomina.setPersona(persona);
@@ -52,6 +64,11 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setCv(File file){
+		if(file.getNomeFile().isEmpty())
+			cv_persona = null;
+		else	
+			cv_persona = new MultiPartBuilder(file.getNomeFile(), file.getNomeFile(), "text/plain", file.getData());
+		
 		cv = file;
 		cv.setTipo(Costanti.FILE_CV);
 		cv.setPersona(persona);
@@ -59,6 +76,11 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setDelega(File file){
+		if(file.getNomeFile().isEmpty())
+			delega_persona = null;
+		else
+			delega_persona = new MultiPartBuilder(file.getNomeFile(), file.getNomeFile(), "text/plain", file.getData());
+		
 		delega = file;
 		delega.setTipo(Costanti.FILE_DELEGA);
 		delega.setPersona(persona);
@@ -71,5 +93,15 @@ public class PersonaWrapper extends Wrapper {
 		files.add(cv);
 		files.add(delega);
 		return files;
+	}
+	
+	public void setAttoNomina_persona(MultipartFile multiPartFile){
+		setAttoNomina(Utils.convertFromMultiPart(multiPartFile));
+	}
+	public void setCv_persona(MultipartFile multiPartFile){
+		setCv(Utils.convertFromMultiPart(multiPartFile));
+	}
+	public void setDelega_persona(MultipartFile multiPartFile){
+		setDelega(Utils.convertFromMultiPart(multiPartFile));
 	}
 }
