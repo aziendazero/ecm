@@ -79,18 +79,17 @@ body.nav-md .container.body .right_col.main{
 	margin-bottom: 0;	
 }
 
+.clickable {
+	cursor: pointer;
+}
+
 .allegato-link {
 	padding-left: 0px;
 }
 
-.title {
-	margin-bottom: 20px;
-}
-
 .login-img {
 	margin-bottom: 20px;
-	max-height: 105px;
-	min-height: 105px;
+	width: 100%;
 }
 
 .login_content {
@@ -113,5 +112,19 @@ body.nav-md .container.body .right_col.main{
 .site_title_name {
 	margin-left: 15px;
 }
+
+.allegato-btn {
+	margin-left: -9px;
+	margin-right: 5px;
+}
+
+.allegato-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-top: 5px;
+	text-align: left;
+}
+
+
 
 
