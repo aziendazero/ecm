@@ -248,8 +248,8 @@
 											<input type="file" th:id="__${tipoAllegato}___persona" th:name="__${tipoAllegato}___persona" required="required"
 												style="display: none;" />
 											<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}___persona');|" />
-											<a th:id="__${tipoAllegato}___persona_label" th:unless="${personaWrapper.__${tipoAllegato}__.new}" th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}"></a>
-											<a th:id="__${tipoAllegato}___persona_label" th:if="${personaWrapper.__${tipoAllegato}__.new}" th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}"></a>
+											<a th:id="__${tipoAllegato}___persona_label" th:unless="${personaWrapper.__${tipoAllegato}__.new}" th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${personaWrapper.__${tipoAllegato}__.id}|}" class="allegato-label"></a>
+											<a th:id="__${tipoAllegato}___persona_label" th:if="${personaWrapper.__${tipoAllegato}__.new}" th:text="${personaWrapper.__${tipoAllegato}__.nomeFile}" class="allegato-label"></a>
 										</div>
 									</div>
 								</th:block>
