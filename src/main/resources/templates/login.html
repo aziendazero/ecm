@@ -16,9 +16,7 @@
 	        <section class="login_content">
 	        <h1 class="title" th:text="' ' + #{app.title}"></h1>
 	        
-	        	<img class="col-xs-3 login-img" th:src="@{/images/logo.jpg}"/>
-	        	<span class="col-xs-1"></span>
-	        	<img class="col-xs-8 login-img" th:src="@{/images/main_image.png}" />
+	        	<img class="login-img" th:src="@{/images/logo_ecm.jpg}"/>
 	        
 	          <form th:action="@{/login}" method="post">
 	            <div th:if="${param.error}" th:text="#{label.errore_login}" class="alert alert-error"></div>   
