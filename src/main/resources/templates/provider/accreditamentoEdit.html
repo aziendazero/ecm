@@ -82,9 +82,12 @@
 										<div class="checkbox" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
 											<label>
 												<input type="checkbox" class="flat" th:field="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}" th:value="${proceduraFormativa}"
-												disabled="disabled" /> 
+													th:disabled="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Generale'  or
+																	(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null)}" /> 
 												<span th:text="${proceduraFormativa.nome}">formazione residenziale (RES)</span>
-												<input type="hidden" name="datiAccreditamento.procedureFormative" th:value="${proceduraFormativa}" />
+												<input type="hidden" name="datiAccreditamento.procedureFormative" th:value="${proceduraFormativa}"
+													th:disabled="${(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Settoriale') or
+																	(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null)}"/>
 											</label> 
 										</div>
 									</div>
