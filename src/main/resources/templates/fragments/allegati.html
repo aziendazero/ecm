@@ -45,6 +45,8 @@
 			if(this.value) {
 				$("#"+this.name+"_label").text(this.value.split('\\').pop());
 				$("#"+this.name+"_label").removeAttr('href');
+				$("#"+this.name+"_label").css('text-decoration', 'none');
+				$("#"+this.name+"_label").css('color', 'inherit');
 			}
 			else {
 				$("#"+this.name+"_label").text([[#{label.nessun_file_selezionato}]]);
