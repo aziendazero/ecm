@@ -128,8 +128,8 @@
 			
 			function sendNotify(){
 				var notify = new PNotify({
-					title: [[${message?.titolo}]],
-					text: [[${message?.testo}]],
+					title: [[${message} == null ? '' : #{${message?.titolo}}]],
+					text:  [[${message} == null ? '' : #{${message?.testo}}]],
 					type: [[${message?.tipo}]],
 					hide: false,
                     buttons: {
