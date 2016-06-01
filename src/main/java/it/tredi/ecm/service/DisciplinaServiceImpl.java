@@ -22,6 +22,7 @@ public class DisciplinaServiceImpl implements DisciplinaService {
 		LOGGER.debug("Recupero lista discipline");
 		return disciplinaRepository.findAll();
 	}
+<<<<<<< HEAD
 	
 	@Override
 	public void save(Disciplina disciplina) {
@@ -34,4 +35,6 @@ public class DisciplinaServiceImpl implements DisciplinaService {
 		LOGGER.debug("Salvataggio lista disciplina");
 		disciplinaRepository.save(disciplinaList);
 	}
+=======
+>>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 }

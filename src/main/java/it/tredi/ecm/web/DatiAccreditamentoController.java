@@ -55,12 +55,21 @@ public class DatiAccreditamentoController {
 		return ProceduraFormativa.values();
 	}
 	
+<<<<<<< HEAD
 	@ModelAttribute("professioneList")
 	public Set<Professione> getAllProfessioni(){
 		return professioneService.getAllProfessioni();
 	}
 	
 	@ModelAttribute("disciplinaList")
+=======
+	@ModelAttribute("professioneLista")
+	public Set<Professione> getAllProfessioni(){
+		return professioneService.getAllProfessioni();
+	}
+	
+	@ModelAttribute("disciplinaLista")
+>>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 	public Set<Disciplina> getAllDiscipline(){
 		return disciplinaService.getAllDiscipline();
 	}
