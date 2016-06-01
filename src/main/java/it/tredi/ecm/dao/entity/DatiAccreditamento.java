@@ -25,11 +25,7 @@ public class DatiAccreditamento extends BaseEntity {
 	private String professioniAccreditamento;
 	
 	@OneToMany 
-<<<<<<< HEAD
 	@JoinTable(name = "dati_accreditamento_discipline_selezionate",
-=======
-	@JoinTable(name = "pippo",
->>>>>>> refs/remotes/origin/master
 				joinColumns = @JoinColumn(name = "dati_accreditamento_id"),
 				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
 	)
