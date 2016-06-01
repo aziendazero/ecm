@@ -1,0 +1,58 @@
+<!-- fragment degli allegati -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+</head>
+<body>
+<th:block th:fragment="allegati(wrapper, tipoAllegato, counter)">
+	<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+		<label class="control-label col-xs-1" th:text="${counter}">11</label>
+		<label class="control-label col-md-3 col-sm-3 col-xs-11" th:for="__${tipoAllegato}__">
+			<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
+			<span class="required">*</span>
+		</label>
+		<th:block th:if="${#lists.contains(__${wrapper}__.idEditabili, counter)}">
+			<div class="col-md-4 col-sm-4 col-xs-12">
+				<div class="form-control col-md-7 col-xs-12 btn" th:unless="${__${wrapper}__.__${tipoAllegato}__.data}">
+					<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}__" required="required"
+						style="display: none;" />
+					<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
+					<div th:id="__${tipoAllegato}___label" class="allegato-label" th:text="#{label.nessun_file_selezionato}">Nessun file selezionato</div>
+				</div>
+				<div class="form-control col-md-7 col-xs-12 btn" th:if="${__${wrapper}__.__${tipoAllegato}__.data}">
+					<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}__" required="required"
+						style="display: none;" />
+					<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
+					<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
+					<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:if="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" class="allegato-label"></a></div>
+				</div>
+			</div>
+		</th:block>
+		<th:block th:unless="${#lists.contains(__${wrapper}__.idEditabili, counter)}">
+			<div class="col-md-4 col-sm-4 col-xs-12">
+				<div class="allegato-label"><a th:id="__${tipoAllegato}___disabled" class="form-control form-disabled-text clickable left-align col-md-7 col-xs-12"
+					th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
+			</div>
+		</th:block>
+		<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
+	</div>
+	<script th:inline="javascript">
+		function setAllegato(idInput) {
+			$(idInput).click();
+		}
+				
+		$('input[type=file]').change(function() {
+			if(this.value) {
+				$("#"+this.name+"_label").text(this.value.split('\\').pop());
+				$("#"+this.name+"_label").removeAttr('href');
+				$("#"+this.name+"_label").css('text-decoration', 'none');
+				$("#"+this.name+"_label").css('color', 'inherit');
+			}
+			else {
+				$("#"+this.name+"_label").text([[#{label.nessun_file_selezionato}]]);
+			}
+		});
+	</script>
+</th:block>
+</body>
+</html>
