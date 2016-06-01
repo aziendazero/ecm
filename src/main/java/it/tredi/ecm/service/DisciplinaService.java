@@ -6,4 +6,6 @@ import it.tredi.ecm.dao.entity.Disciplina;
 
 public interface DisciplinaService {
 	public Set<Disciplina> getAllDiscipline();
+	public void save(Disciplina disciplina);
+	public void saveAll(Set<Disciplina> disciplinaList);
 }

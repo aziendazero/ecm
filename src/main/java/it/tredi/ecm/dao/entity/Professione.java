@@ -1,6 +1,8 @@
 package it.tredi.ecm.dao.entity;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -15,5 +17,16 @@ public class Professione extends BaseEntity{
 	private String nome;
 	
 	@OneToMany
-	private List<Disciplina> discipline;
+	private Set<Disciplina> discipline = new HashSet<Disciplina>();
+	
+	public Professione(){}
+	public Professione(String nome){
+		this.nome = nome;
+	}
+	
+	/* UTILS */
+	public void addDisciplina(Disciplina d){
+		this.discipline.add(d);
+		d.setProfessione(this);
+	}
 }

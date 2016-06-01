@@ -14,4 +14,9 @@ public class Disciplina extends BaseEntity{
 	
 	@OneToOne
 	private Professione professione;
+	
+	public Disciplina(){}
+	public Disciplina(String nome){
+		this.nome = nome;
+	}
 }

@@ -33,4 +33,11 @@ public class DatiAccreditamento extends BaseEntity {
 	/*** INFO RELATIVE AL PERSONALE ***/
 	private int numeroDipendentiFormazioneTempoIndeterminato;
 	private int numeroDipendentiFormazioneAltro;
+	
+	public Set<Professione> getProfessioniSelezionate(){
+		Set<Professione> professioniSelezionate = new HashSet<Professione>();
+		for(Disciplina d : discipline)
+			professioniSelezionate.add(d.getProfessione());
+		return professioniSelezionate;
+	}
 }
