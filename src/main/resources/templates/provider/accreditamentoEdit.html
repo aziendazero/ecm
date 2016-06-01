@@ -623,8 +623,7 @@
 					var almenoUna = false;
 					$.each(professioni.options, function(index, item) {
 						//toglie la parte relativa al codice della professione
-						prof = item.value;
-						//prof = prof.substring(prof.indexOf(":") + 2);
+						prof = item.text;
 						//abilita/disabilita tutte le discipline delle professioni selezionate/deselezionate
 						if (item.selected) {
 							$('optgroup[label="' + prof + '"]').prop(
