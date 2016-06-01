@@ -16,7 +16,7 @@ import lombok.Setter;
 public class Professione extends BaseEntity{
 	private String nome;
 	
-	@OneToMany
+	@OneToMany(mappedBy="professione")
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
 	
 	public Professione(){}

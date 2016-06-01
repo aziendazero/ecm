@@ -7,6 +7,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
@@ -23,7 +24,11 @@ public class DatiAccreditamento extends BaseEntity {
 	private Set<ProceduraFormativa> procedureFormative = new HashSet<ProceduraFormativa>();
 	private String professioniAccreditamento;
 	
-	@OneToMany @JoinColumn(name = "disciplina_id")
+	@OneToMany 
+	@JoinTable(name = "dati_accreditamento_discipline_selezionate",
+				joinColumns = @JoinColumn(name = "dati_accreditamento_id"),
+				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
+	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
 	
 	/*** DATI ECONOMICI ***/
