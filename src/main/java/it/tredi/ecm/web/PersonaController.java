@@ -102,9 +102,9 @@ public class PersonaController {
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/save", method = RequestMethod.POST)
 	public String savePersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
 								RedirectAttributes redirectAttrs, Model model,
-								@RequestParam(value = "attoNomina_persona", required = false) MultipartFile attoNomina_multiPartFile,
-								@RequestParam(value = "cv_persona", required = false) MultipartFile cv_multiPartFile,
-								@RequestParam(value = "delega_persona", required = false) MultipartFile delega_multiPartFile){
+								@RequestParam(value = "attoNomina", required = false) MultipartFile attoNomina_multiPartFile,
+								@RequestParam(value = "cv", required = false) MultipartFile cv_multiPartFile,
+								@RequestParam(value = "delega", required = false) MultipartFile delega_multiPartFile){
 		if(personaWrapper.getPersona().isNew()){
 			Persona persona = personaWrapper.getPersona(); 
 			persona.setRuolo(personaWrapper.getRuolo());
@@ -220,7 +220,7 @@ public class PersonaController {
 		else if(persona.isDelegatoLegaleRappresentante())
 			personaWrapper.setIdEditabili(Arrays.asList(30,31,32,33,34,35,36,37));
 		else if(persona.isResponsabileSegreteria())
-			personaWrapper.setIdEditabili(Arrays.asList(46,47,48,49,50,51,52));
+			personaWrapper.setIdEditabili(Arrays.asList(46,47,48,49,50,52));
 		else if(persona.isResponsabileAmministrativo())
 			personaWrapper.setIdEditabili(Arrays.asList(53,54,55,56,57,58,59,60));
 		else if(persona.isResponsabileSistemaInformatico())

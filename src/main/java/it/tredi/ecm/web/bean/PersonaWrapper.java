@@ -4,13 +4,10 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.web.multipart.MultipartFile;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.utils.MultiPartBuilder;
-import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -66,6 +63,17 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setCv(File file){
+		if(file.getData() != null && file.getData().length > 0){
+			//file e' pieno
+			if(file.getId() == null){
+				//il file passato è un file nuovo
+				if(cv != null){
+					//c'era gia' un file...stiamo sovrascrivendo
+					file.setId(cv.getId());
+				}
+			}
+		}
+		
 		cv = file;
 		cv.setTipo(Costanti.FILE_CV);
 		cv.setPersona(persona);
@@ -73,6 +81,17 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setDelega(File file){
+		if(file.getData() != null && file.getData().length > 0){
+			//file e' pieno
+			if(file.getId() == null){
+				//il file passato è un file nuovo
+				if(delega != null){
+					//c'era gia' un file...stiamo sovrascrivendo
+					file.setId(delega.getId());
+				}
+			}
+		}
+		
 		delega = file;
 		delega.setTipo(Costanti.FILE_DELEGA);
 		delega.setPersona(persona);
@@ -86,14 +105,4 @@ public class PersonaWrapper extends Wrapper {
 		files.add(delega);
 		return files;
 	}
-	
-//	public void setAttoNomina_persona(MultipartFile multiPartFile){
-//		setAttoNomina(Utils.convertFromMultiPart(multiPartFile));
-//	}
-//	public void setCv_persona(MultipartFile multiPartFile){
-//		setCv(Utils.convertFromMultiPart(multiPartFile));
-//	}
-//	public void setDelega_persona(MultipartFile multiPartFile){
-//		setDelega(Utils.convertFromMultiPart(multiPartFile));
-//	}
 }
