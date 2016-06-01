@@ -155,7 +155,7 @@
 															</thead>
 															<tbody>
 																<tr>
-																	<td th:if="${accreditamentoWrapper.responsabileSegreteria != null}"><a th:text="#{label.responsabile_segreteria}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.responsabileSegreteria != null}"><a th:text="#{label.responsabile_segreteria}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria.id}/edit|}"></a></td>
 																	<td th:if="${accreditamentoWrapper.responsabileSegreteria == null}"><a th:text="#{label.responsabile_segreteria}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=RESPONSABILE_SEGRETERIA|}"></a></td>
 																	
 																	<td	th:if="${accreditamentoWrapper.responsabileSegreteria != null}">

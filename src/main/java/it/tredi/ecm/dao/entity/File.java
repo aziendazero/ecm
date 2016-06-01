@@ -1,5 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import javax.persistence.Column;
@@ -20,7 +21,7 @@ public class File extends BaseEntity {
 	private byte[] data;
 	
 	@Column(name = "creato")
-	private LocalTime dataCreazione;
+	private LocalDate dataCreazione;
 	
 	private String tipo;
 	@ManyToOne

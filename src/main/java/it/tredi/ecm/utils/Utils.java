@@ -1,6 +1,7 @@
 package it.tredi.ecm.utils;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -38,6 +39,7 @@ public class Utils {
 				File file = new File();
 				file.setNomeFile(multiPartFile.getOriginalFilename());
 				file.setData(multiPartFile.getBytes());
+				file.setDataCreazione(LocalDate.now());
 				return file;
 			}
 		}catch (IOException ioException){
