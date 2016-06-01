@@ -55,12 +55,12 @@ public class DatiAccreditamentoController {
 		return ProceduraFormativa.values();
 	}
 	
-	@ModelAttribute("professioneLista")
+	@ModelAttribute("professioneList")
 	public Set<Professione> getAllProfessioni(){
 		return professioneService.getAllProfessioni();
 	}
 	
-	@ModelAttribute("disciplinaLista")
+	@ModelAttribute("disciplinaList")
 	public Set<Disciplina> getAllDiscipline(){
 		return disciplinaService.getAllDiscipline();
 	}
