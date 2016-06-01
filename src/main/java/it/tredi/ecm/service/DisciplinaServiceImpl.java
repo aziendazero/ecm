@@ -20,5 +20,4 @@ public class DisciplinaServiceImpl implements DisciplinaService {
 		LOGGER.debug("Recupero lista discipline");
 		return disciplinaRepository.findAll();
 	}
-
 }

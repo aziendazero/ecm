@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,8 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.Disciplina;
+import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.service.DatiAccreditamentoService;
+import it.tredi.ecm.service.DisciplinaService;
+import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.web.bean.DatiAccreditamentoWrapper;
 import it.tredi.ecm.web.validator.DatiAccreditamentoValidator;
 
@@ -27,6 +32,10 @@ public class DatiAccreditamentoController {
 	private DatiAccreditamentoService datiAccreditamentoService;
 	@Autowired
 	private DatiAccreditamentoValidator datiAccreditamentoValidator;
+	@Autowired
+	private DisciplinaService disciplinaService;
+	@Autowired
+	private ProfessioneService professioneService;
 	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -46,6 +55,16 @@ public class DatiAccreditamentoController {
 		return ProceduraFormativa.values();
 	}
 	
+	@ModelAttribute("professioneLista")
+	public Set<Professione> getAllProfessioni(){
+		return professioneService.getAllProfessioni();
+	}
+	
+	@ModelAttribute("disciplinaLista")
+	public Set<Disciplina> getAllDiscipline(){
+		return disciplinaService.getAllDiscipline();
+	}
+
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/new")
 	public String newDatiAccreditamento(@PathVariable Long accreditamentoId, Model model){
 		return goToEdit(model, prepareDatiAccreditamentoWrapper(new DatiAccreditamento(),accreditamentoId));
