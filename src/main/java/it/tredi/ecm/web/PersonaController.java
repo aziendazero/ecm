@@ -53,14 +53,12 @@ public class PersonaController {
 	@ModelAttribute("personaWrapper")
 	public PersonaWrapper getPersonaWrapper(@RequestParam(value="editId",required = false) Long id,
 											@RequestParam(value="editId_Anagrafica",required = false) Long anagraficaId){
-		PersonaWrapper personaWrapper = new PersonaWrapper();
 		if(id != null){
 			Persona persona = personaService.getPersona(id);
 			if(anagraficaId == null)
 				persona.setAnagrafica(null);
 				
-			personaWrapper = preparePersonaWrapper(persona); 			
-			return personaWrapper;
+			return preparePersonaWrapper(persona); 	
 		}
 		return new PersonaWrapper();
 	}
@@ -126,11 +124,19 @@ public class PersonaController {
 		try{
 			if(result.hasErrors()){
 				
-				if(!result.hasFieldErrors("delega*") && !result.hasFieldErrors("attoNomina*") && !result.hasFieldErrors("cv*")){
-					if(!personaWrapper.getPersona().isNew()){
-						//salvataggio dei file modificati per evitare che in casi di errore di validazione sui dati
-						//l'utente debba rifare l'upload
-						saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
+				if(!personaWrapper.getPersona().isNew()){
+					//salvataggio dei file modificati per evitare che in casi di errore di validazione sui dati
+					//l'utente debba rifare l'upload
+					if(!result.hasFieldErrors("delega*") && delega_multiPartFile != null && !delega_multiPartFile.isEmpty()){
+						fileService.save(personaWrapper.getDelega());
+					}
+					
+					if(!result.hasFieldErrors("attoNomina*") && attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty()){
+						fileService.save(personaWrapper.getAttoNomina());
+					}
+					
+					if(!result.hasFieldErrors("cv*") && cv_multiPartFile != null && !cv_multiPartFile.isEmpty()){
+						fileService.save(personaWrapper.getCv());
 					}
 				}
 				
@@ -151,13 +157,13 @@ public class PersonaController {
 	}
 	
 	private void saveFiles(PersonaWrapper personaWrapper, MultipartFile attoNomina_multiPartFile, MultipartFile cv_multiPartFile, MultipartFile delega_multiPartFile){
-		if(attoNomina_multiPartFile != null){
+		if(attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty()){
 			fileService.save(personaWrapper.getAttoNomina());
 		}
-		if(cv_multiPartFile != null){
+		if(cv_multiPartFile != null && !cv_multiPartFile.isEmpty()){
 			fileService.save(personaWrapper.getCv());
 		}
-		if(delega_multiPartFile != null){
+		if(delega_multiPartFile != null && !delega_multiPartFile.isEmpty()){
 			fileService.save(personaWrapper.getDelega());
 		}
 	}
@@ -191,9 +197,9 @@ public class PersonaController {
 		personaWrapper.setProviderId(providerId);
 		personaWrapper.setRuolo(persona.getRuolo());
 		
-		personaWrapper.setAttoNomina(new File());
-		personaWrapper.setCv(new File());
-		personaWrapper.setDelega(new File());
+//		personaWrapper.setAttoNomina(new File());
+//		personaWrapper.setCv(new File());
+//		personaWrapper.setDelega(new File());
 		
 		if(!persona.isNew()){
 			Set<File> files = fileService.getFileFromPersona(persona.getId());
