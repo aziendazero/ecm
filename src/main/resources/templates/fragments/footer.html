@@ -128,13 +128,8 @@
 			
 			function sendNotify(){
 				var notify = new PNotify({
-<<<<<<< HEAD
 					title: [[${message} == null ? '' : #{${message?.titolo}}]],
 					text:  [[${message} == null ? '' : #{${message?.testo}}]],
-=======
-					title: [[${message?.titolo}]],
-					text: [[#{${message?.testo}}]],
->>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 					type: [[${message?.tipo}]],
 					hide: false,
                     buttons: {
