@@ -146,10 +146,9 @@ public class DatiAccreditamentoController {
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
 		wrapper.setDatiAccreditamento(datiAccreditamento);
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId); 
-		wrapper.setProvider(accreditamento.getProvider());
+		wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
 		
-		Set<File> files = fileService.getFileFromProvider(accreditamento.getProvider().getId());
+		Set<File> files = fileService.getFileFromProvider(datiAccreditamento.getAccreditamento().getProvider().getId());
 		for(File file : files){
 			if(file.isESTRATTOBILANCIOFORMAZIONE())
 				wrapper.setEstrattoBilancioFormazione(file);
@@ -158,7 +157,7 @@ public class DatiAccreditamentoController {
 		}
 		
 		wrapper.setOffsetAndIds();
-		wrapper.setIdEditabili(Arrays.asList(39,40,41,42,43,44,45));
+		wrapper.setIdEditabili(Arrays.asList(39,40,41,42,43,44,45,46));
 		
 		return wrapper;
 	};
