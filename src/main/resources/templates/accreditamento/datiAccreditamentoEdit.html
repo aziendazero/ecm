@@ -401,8 +401,14 @@
 						deselectAllText : 'Deseleziona tutti',
 						countSelectedText : '{0} selezionate'
 					});
+				
+					abilitaDiscipline($("#professioni")[0]);
 					
-					abilitaDiscipline("#professioni");
+					
+					if($('#generaleProf').is(':checked')) {
+						$('button[data-id="professioni"]').prop('disabled', true);
+						$('button[data-id="discipline"]').prop('disabled', true);
+					}		
 				});
 				
 				function abilitaDiscipline(professioni) {
