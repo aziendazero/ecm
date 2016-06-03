@@ -46,7 +46,7 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		
 		estrattoBilancioFormazione = file;
 		estrattoBilancioFormazione.setTipo(Costanti.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
-		//estrattoBilancioFormazione.setProvider(/*MANCA PROVIDER*/); //TODO settare provider
+		estrattoBilancioFormazione.setProvider(provider); //TODO settare provider
 		estrattoBilancioFormazione.setDataCreazione(LocalDate.now());
 	}
 	
@@ -64,7 +64,7 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		
 		budgetPrevisionale = file;
 		budgetPrevisionale.setTipo(Costanti.FILE_BUDGET_PREVISIONALE);
-		//budgetPrevisionale.setProvider(/*MANCA PROVIDER*/); //TODO settare provider
+		budgetPrevisionale.setProvider(provider); //TODO settare provider
 		budgetPrevisionale.setDataCreazione(LocalDate.now());
 	}
 	

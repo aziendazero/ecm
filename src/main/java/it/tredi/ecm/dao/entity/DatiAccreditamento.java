@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import lombok.Getter;
@@ -45,4 +46,7 @@ public class DatiAccreditamento extends BaseEntity {
 			professioniSelezionate.add(d.getProfessione());
 		return professioniSelezionate;
 	}
+	
+	@OneToOne(mappedBy="datiAccreditamento")
+	private Accreditamento accreditamento;
 }
