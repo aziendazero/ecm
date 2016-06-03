@@ -123,7 +123,17 @@
 			});
 			
 			$('.datatable-responsive-ordering').DataTable({
-				"bFilter" : false			
+				"bFilter" : false,
+			});
+			
+			$('.datatable-responsive-form').DataTable({
+				"bFilter" : false,
+				"bPaginate": false,
+				"bInfo" : false,
+				scrollY: 300,
+			    scroller: true,
+			    "columnDefs": [ { "targets": [ '_all' ], "orderable": false }, { "targets": [ 0 ], "orderData": [ 0, 1 ] } ],
+			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
 			});
 			
 			function sendNotify(){

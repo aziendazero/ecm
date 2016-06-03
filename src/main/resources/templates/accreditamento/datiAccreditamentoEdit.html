@@ -175,7 +175,7 @@
 												th:remove="all-but-first">
 												<option th:each="professione, row: ${professioneList}"
 													th:value="${professione.id}" th:text="${professione.nome}" 
-													th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniSelezionate}">Medico chirurgo</option>
+													th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniSelezionate}">Professione selezionata</option>
 											</select>
 										</div>
 										<div class="col-xs-12">
@@ -192,14 +192,36 @@
 													th:remove="all-but-first">
 													<option th:each="disciplina, row: ${disciplinaList}"
 													th:if="${disciplina.professione == professione}"
-													th:value="${disciplina.id}" th:text="${disciplina.nome}">Discipilna test</option>
+													th:value="${disciplina.id}" th:text="${disciplina.nome}">Disciplina selezionata</option>
 												</optgroup>
 											</select>
 										</div>
 									</div>
 								</th:block>
 								<th:block th:unless="${#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
-									<!--  QUA VA FATTA LA TABELLONA PROFESSIONI->DISCIPLINE SELEZIONATE NON EDITABIL ... GLHF! -->
+									<div class="row" style="clear:both; padding:10px;"></div>
+									<div class="row" style="clear:both">
+										<div class="col-md-3 col-sm-3 col-xs-12"></div>
+										<div class="col-md-6 col-sm-6 col-xs-12"
+											id="accreditamento_professioni">
+											<table id="professioni-discipline"
+												class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-form"
+												cellspacing="0" width="100%">
+												<thead>
+													<tr>
+														<th th:text="#{label.professione}">Professione</th>
+														<th th:text="#{label.disciplina}">Disciplina</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr th:each="disciplina, row: ${datiAccreditamentoWrapper.datiAccreditamento.discipline}">
+														<td th:text="${disciplina.professione.nome}"></td>
+														<td th:text="${disciplina.nome}"></td>
+													</tr>
+												</tbody>
+											</table>										
+										</div>
+									</div>
 								</th:block>
 							</div>
 							
@@ -271,6 +293,11 @@
 							
 							<div class="divider-dashed"></div>
 							
+							<!-- allegato 1 (etratto bilancio relativo formazione) -->
+							<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, estrattoBilancioFormazione, ${++counter})" ></th:block>
+							
+							<div class="divider-dashed"></div>
+							
 							<!-- fatturato formazione -->
 							<div class="item">
 								<label class="col-xs-1 text-right" th:text="${++counter}">6</label>
@@ -337,6 +364,11 @@
 							
 							<div class="divider-dashed"></div>
 							
+							<!-- allegato 2 (budget previsionale) -->
+							<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, budgetPrevisionale, ${++counter})" ></th:block>
+							
+							<div class="divider-dashed"></div>
+							
 							<!-- numero dipendenti -->
 							<div class="item">
 								<label class="col-xs-1 text-right" th:text="${++counter}">7</label>
@@ -399,8 +431,17 @@
 					$('select').selectpicker({
 						selectAllText : 'Seleziona tutti',
 						deselectAllText : 'Deseleziona tutti',
-						countSelectedText : '{0} selezionate'
+						countSelectedText : '{0} selezionate'						
 					});
+					
+					if($("#professioni")[0]) {
+						abilitaDiscipline($("#professioni")[0]);
+					}
+			
+					if($('#generaleProf').is(':checked')) {
+						$('button[data-id="professioni"]').prop('disabled', true);
+						$('button[data-id="discipline"]').prop('disabled', true);
+					}		
 				});
 				
 				function abilitaDiscipline(professioni) {
