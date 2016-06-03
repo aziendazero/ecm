@@ -29,7 +29,6 @@ import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.DatiAccreditamentoWrapper;
-import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.validator.DatiAccreditamentoValidator;
 
 @Controller
@@ -97,12 +96,18 @@ public class DatiAccreditamentoController {
 	public String saveDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
 											@PathVariable Long accreditamentoId, Model model,
 											@RequestParam(value = "estrattoBilancioFormazione_multipart", required = false) MultipartFile estrattoBilancioFormazione_multipart,
-											@RequestParam(value = "budgetPrevisionale_multipart", required = false) MultipartFile budgetPrevisionale_multipart){
+											@RequestParam(value = "budgetPrevisionale_multipart", required = false) MultipartFile budgetPrevisionale_multipart,
+											@RequestParam(value = "funzionigramma_multipart", required = false) MultipartFile funzionigramma_multipart,
+											@RequestParam(value = "organigramma_multipart", required = false) MultipartFile organigramma_multipart){
 
 		if(estrattoBilancioFormazione_multipart != null && !estrattoBilancioFormazione_multipart.isEmpty())
 			wrapper.setEstrattoBilancioFormazione(Utils.convertFromMultiPart(estrattoBilancioFormazione_multipart));
 		if(budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty())
 			wrapper.setBudgetPrevisionale(Utils.convertFromMultiPart(budgetPrevisionale_multipart));
+		if(funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty())
+			wrapper.setFunzionigramma(Utils.convertFromMultiPart(funzionigramma_multipart));
+		if(organigramma_multipart != null && !organigramma_multipart.isEmpty())
+			wrapper.setOrganigramma(Utils.convertFromMultiPart(organigramma_multipart));
 		
 		datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
 		
@@ -114,22 +119,35 @@ public class DatiAccreditamentoController {
 			if(!result.hasFieldErrors("budgetPrevisionale*") && budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty()){
 				fileService.save(wrapper.getBudgetPrevisionale());
 			}
+			if(!result.hasFieldErrors("funzionigramma*") && funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty()){
+				fileService.save(wrapper.getFunzionigramma());
+			}
+			if(!result.hasFieldErrors("organigramma*") && organigramma_multipart != null && !organigramma_multipart.isEmpty()){
+				fileService.save(wrapper.getOrganigramma());
+			}
 			
 			return EDIT;
 		}else{
 			datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), accreditamentoId);
-			saveFiles(wrapper, estrattoBilancioFormazione_multipart, budgetPrevisionale_multipart);
+			saveFiles(wrapper, estrattoBilancioFormazione_multipart, budgetPrevisionale_multipart, funzionigramma_multipart, organigramma_multipart);
 			
 			return "redirect:/accreditamento/" + accreditamentoId;
 		}
 	}
 	
-	private void saveFiles(DatiAccreditamentoWrapper wrapper, MultipartFile estrattoBilancioFormazione_multipart, MultipartFile budgetPrevisionale_multipart){
+	private void saveFiles(DatiAccreditamentoWrapper wrapper, MultipartFile estrattoBilancioFormazione_multipart, MultipartFile budgetPrevisionale_multipart,
+			MultipartFile funzionigramma_multipart, MultipartFile organigramma_multipart){
 		if(estrattoBilancioFormazione_multipart != null && !estrattoBilancioFormazione_multipart.isEmpty()){
 			fileService.save(wrapper.getEstrattoBilancioFormazione());
 		}
 		if(budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty()){
 			fileService.save(wrapper.getBudgetPrevisionale());
+		}
+		if(funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty()){
+			fileService.save(wrapper.getFunzionigramma());
+		}
+		if(organigramma_multipart != null && !organigramma_multipart.isEmpty()){
+			fileService.save(wrapper.getOrganigramma());
 		}
 	}
 	
@@ -166,7 +184,7 @@ public class DatiAccreditamentoController {
 		}
 		
 		wrapper.setOffsetAndIds();
-		wrapper.setIdEditabili(Arrays.asList(39,40,41,42,43,44,45,46));
+		wrapper.setIdEditabili(Arrays.asList(39,40,41,42,43,44,45,46,47,48,49));
 		
 		return wrapper;
 	};
