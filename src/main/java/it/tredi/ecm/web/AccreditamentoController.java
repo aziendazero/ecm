@@ -16,7 +16,6 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.AccreditamentoWrapper;
@@ -52,7 +51,7 @@ public class AccreditamentoController {
 		Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
 		model.addAttribute("accreditamentoList", listaAccreditamenti);
 		model.addAttribute("canProviderCreateAccreditamento", accreditamentoService.canProviderCreateAccreditamento(providerId));
-		return "provider/accreditamentoList";
+		return "accreditamento/accreditamentoList";
 		
 		//TODO per reindirizzare direttamente sulla view è necessario creare un'altra request
 		// che non faccia il ricaricamento da db
@@ -81,18 +80,12 @@ public class AccreditamentoController {
 		return goToAccreditamento(model, accreditamento);
 	}
 	
-	@RequestMapping("/accreditamento")
-	public String test(Model model){
-		return "provider/accreditamentoEdit";
-	}
-	
-	
 	private String goToAccreditamento(Model model, Accreditamento accreditamento){
 		if(accreditamento.isProvvisorio()){
 			AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapper(accreditamento);
 			model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		}//TODO gestire differenza con Accreditamento STANDARD
-		return "provider/accreditamento";
+		return "accreditamento/accreditamentoShow";
 	}
 	
 	/***	Nuova domanda accreditamento per provider corrente	***/
