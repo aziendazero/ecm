@@ -26,7 +26,7 @@ import it.tredi.ecm.web.validator.DatiAccreditamentoValidator;
 
 @Controller
 public class DatiAccreditamentoController {
-	private final String EDIT = "provider/accreditamentoEdit";
+	private final String EDIT = "accreditamento/datiAccreditamentoEdit";
 	
 	@Autowired
 	private DatiAccreditamentoService datiAccreditamentoService;
