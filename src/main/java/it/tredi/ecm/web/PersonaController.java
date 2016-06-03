@@ -102,9 +102,9 @@ public class PersonaController {
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/save", method = RequestMethod.POST)
 	public String savePersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
 								RedirectAttributes redirectAttrs, Model model,
-								@RequestParam(value = "attoNomina", required = false) MultipartFile attoNomina_multiPartFile,
-								@RequestParam(value = "cv", required = false) MultipartFile cv_multiPartFile,
-								@RequestParam(value = "delega", required = false) MultipartFile delega_multiPartFile){
+								@RequestParam(value = "attoNomina_multipart", required = false) MultipartFile attoNomina_multiPartFile,
+								@RequestParam(value = "cv_multipart", required = false) MultipartFile cv_multiPartFile,
+								@RequestParam(value = "delega_multipart", required = false) MultipartFile delega_multiPartFile){
 		if(personaWrapper.getPersona().isNew()){
 			Persona persona = personaWrapper.getPersona(); 
 			persona.setRuolo(personaWrapper.getRuolo());
@@ -196,10 +196,6 @@ public class PersonaController {
 		personaWrapper.setAccreditamentoId(accreditamentoId);
 		personaWrapper.setProviderId(providerId);
 		personaWrapper.setRuolo(persona.getRuolo());
-		
-//		personaWrapper.setAttoNomina(new File());
-//		personaWrapper.setCv(new File());
-//		personaWrapper.setDelega(new File());
 		
 		if(!persona.isNew()){
 			Set<File> files = fileService.getFileFromPersona(persona.getId());

@@ -14,13 +14,13 @@
 		<th:block th:if="${#lists.contains(__${wrapper}__.idEditabili, counter)}">
 			<div class="col-md-4 col-sm-4 col-xs-12">
 				<div class="form-control col-md-7 col-xs-12 btn" th:unless="${__${wrapper}__.__${tipoAllegato}__.data}">
-					<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}__" required="required"
+					<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
 						style="display: none;" />
 					<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
 					<div th:id="__${tipoAllegato}___label" class="allegato-label" th:text="#{label.nessun_file_selezionato}">Nessun file selezionato</div>
 				</div>
 				<div class="form-control col-md-7 col-xs-12 btn" th:if="${__${wrapper}__.__${tipoAllegato}__.data}">
-					<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}__" required="required"
+					<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
 						style="display: none;" />
 					<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
 					<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
@@ -43,13 +43,13 @@
 				
 		$('input[type=file]').change(function() {
 			if(this.value) {
-				$("#"+this.name+"_label").text(this.value.split('\\').pop());
-				$("#"+this.name+"_label").removeAttr('href');
-				$("#"+this.name+"_label").css('text-decoration', 'none');
-				$("#"+this.name+"_label").css('color', 'inherit');
+				$("#"+this.id+"_label").text(this.value.split('\\').pop());
+				$("#"+this.id+"_label").removeAttr('href');
+				$("#"+this.id+"_label").css('text-decoration', 'none');
+				$("#"+this.id+"_label").css('color', 'inherit');
 			}
 			else {
-				$("#"+this.name+"_label").text([[#{label.nessun_file_selezionato}]]);
+				$("#"+this.id+"_label").text([[#{label.nessun_file_selezionato}]]);
 			}
 		});
 	</script>

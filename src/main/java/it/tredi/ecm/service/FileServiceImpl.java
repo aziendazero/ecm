@@ -32,6 +32,12 @@ public class FileServiceImpl implements FileService{
 	}
 	
 	@Override
+	public Set<File> getFileFromProvider(Long providerId) {
+		LOGGER.debug("Getting files for provider: " + providerId);
+		return fileRepository.findByProviderId(providerId);
+	}
+	
+	@Override
 	public File getFileFromPersonaByTipo(Long personaId, String tipo) {
 		LOGGER.debug("Getting files " + tipo + " for user: " + personaId);
 		return fileRepository.findOneByPersonaIdAndTipo(personaId, tipo);

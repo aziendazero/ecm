@@ -1,8 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -45,4 +43,11 @@ public class File extends BaseEntity {
 	public boolean isATTONOMINA(){
 		return this.tipo.equals(Costanti.FILE_ATTO_NOMINA);
 	}
+	public boolean isESTRATTOBILANCIOFORMAZIONE(){
+		return this.tipo.equals(Costanti.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
+	}
+	public boolean isBUDGETPREVISIONALE(){
+		return this.tipo.equals(Costanti.FILE_BUDGET_PREVISIONALE);
+	}
+	
 }
