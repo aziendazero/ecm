@@ -1,5 +1,6 @@
 package it.tredi.ecm.web.validator;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.DatiEconomici;
 import it.tredi.ecm.dao.entity.File;
 
 @Component
@@ -21,8 +23,7 @@ public class DatiAccreditamentoValidator {
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
 		LOGGER.debug("Validazione Dati Accreditamento");
 		validateDatiAccreditamento(target, errors, prefix);
-		//TODO file validators
-		//validateFiles(files, errors, "", ((Persona)target).getRuolo());
+		validateFilesEconomici(files, errors, "", ((DatiAccreditamento) target).getDatiEconomici());
 	}
 	
 	private void validateDatiAccreditamento(Object target, Errors errors, String prefix){
@@ -33,5 +34,29 @@ public class DatiAccreditamentoValidator {
 			errors.rejectValue(prefix + "procedureFormative", "error.empty");
 		if(datiAccreditamento.getProfessioniAccreditamento() == null || datiAccreditamento.getProfessioniAccreditamento().isEmpty())
 			errors.rejectValue(prefix + "professioniAccreditamento", "error.empty");
+	}
+	
+	public void validateFilesEconomici(Object target, Errors errors, String prefix, DatiEconomici datiEconomici){
+		LOGGER.debug("VALIDAZIONE ALLEGATI ECONOMICI");
+		if(!datiEconomici.isEmpty()){
+			Set<File> files = null;
+			if(target != null)
+				files = (Set<File>) target;
+			else
+				files = new HashSet<File>();
+			File estrattoBilancioFormazione = null;
+			File budgetPrevisionale = null;
+			
+			for(File file : files){
+				if(file != null){
+					if(file.isESTRATTOBILANCIOFORMAZIONE())
+						estrattoBilancioFormazione = file;
+					else if(file.isBUDGETPREVISIONALE())
+						budgetPrevisionale = file;
+				}
+			}
+			fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione");
+			fileValidator.validate(budgetPrevisionale, errors, prefix + "budgetPrevisionale");
+		}
 	}
 }

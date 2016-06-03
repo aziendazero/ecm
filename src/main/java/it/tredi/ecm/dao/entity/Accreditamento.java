@@ -1,19 +1,13 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
 import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.Costanti;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import lombok.Getter;
 import lombok.Setter;
 
