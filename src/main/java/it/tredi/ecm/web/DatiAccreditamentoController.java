@@ -47,7 +47,7 @@ public class DatiAccreditamentoController {
 	@Autowired
 	private FileService fileService;
 	@Autowired
-	private AccreditamentoService accreditamentoService;	
+	private AccreditamentoService accreditamentoService;
 	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -146,14 +146,23 @@ public class DatiAccreditamentoController {
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
 		wrapper.setDatiAccreditamento(datiAccreditamento);
-		wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
 		
-		Set<File> files = fileService.getFileFromProvider(datiAccreditamento.getAccreditamento().getProvider().getId());
-		for(File file : files){
-			if(file.isESTRATTOBILANCIOFORMAZIONE())
-				wrapper.setEstrattoBilancioFormazione(file);
-			else if(file.isBUDGETPREVISIONALE())
-				wrapper.setBudgetPrevisionale(file);
+		if(datiAccreditamento.isNew()){
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			wrapper.setProvider(accreditamento.getProvider());
+		}else{
+			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
+			Set<File> files = fileService.getFileFromProvider(datiAccreditamento.getAccreditamento().getProvider().getId());
+			for(File file : files){
+				if(file.isESTRATTOBILANCIOFORMAZIONE())
+					wrapper.setEstrattoBilancioFormazione(file);
+				else if(file.isBUDGETPREVISIONALE())
+					wrapper.setBudgetPrevisionale(file);
+				else if(file.isFUNZIONIGRAMMA())
+					wrapper.setFunzionigramma(file);
+				else if(file.isORGANIGRAMMA())
+					wrapper.setOrganigramma(file);
+			}
 		}
 		
 		wrapper.setOffsetAndIds();

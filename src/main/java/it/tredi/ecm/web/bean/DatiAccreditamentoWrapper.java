@@ -26,6 +26,8 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 	public DatiAccreditamentoWrapper() {
 		setEstrattoBilancioFormazione(new File());
 		setBudgetPrevisionale(new File());
+		setFunzionigramma(new File());
+		setOrganigramma(new File());
 	}
 	
 	public void setOffsetAndIds(){
@@ -46,7 +48,7 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		
 		estrattoBilancioFormazione = file;
 		estrattoBilancioFormazione.setTipo(Costanti.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
-		estrattoBilancioFormazione.setProvider(provider); //TODO settare provider
+		estrattoBilancioFormazione.setProvider(provider);
 		estrattoBilancioFormazione.setDataCreazione(LocalDate.now());
 	}
 	
@@ -64,14 +66,52 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		
 		budgetPrevisionale = file;
 		budgetPrevisionale.setTipo(Costanti.FILE_BUDGET_PREVISIONALE);
-		budgetPrevisionale.setProvider(provider); //TODO settare provider
+		budgetPrevisionale.setProvider(provider);
 		budgetPrevisionale.setDataCreazione(LocalDate.now());
+	}
+	
+	public void setFunzionigramma(File file){
+		if(file.getData() != null && file.getData().length > 0){
+			//file e' pieno
+			if(file.getId() == null){
+				//il file passato è un file nuovo
+				if(funzionigramma != null){
+					//c'era gia' un file...stiamo sovrascrivendo
+					file.setId(funzionigramma.getId());
+				}
+			}
+		}
+		
+		funzionigramma = file;
+		funzionigramma.setTipo(Costanti.FILE_FUNZIONIGRAMMA);
+		funzionigramma.setProvider(provider);
+		funzionigramma.setDataCreazione(LocalDate.now());
+	}
+	
+	public void setOrganigramma(File file){
+		if(file.getData() != null && file.getData().length > 0){
+			//file e' pieno
+			if(file.getId() == null){
+				//il file passato è un file nuovo
+				if(organigramma != null){
+					//c'era gia' un file...stiamo sovrascrivendo
+					file.setId(organigramma.getId());
+				}
+			}
+		}
+		
+		organigramma = file;
+		organigramma.setTipo(Costanti.FILE_ORGANIGRAMMA);
+		organigramma.setProvider(provider);
+		organigramma.setDataCreazione(LocalDate.now());
 	}
 	
 	public Set<File> getFiles(){
 		Set<File> files = new HashSet<File>();
 		files.add(estrattoBilancioFormazione);
 		files.add(budgetPrevisionale);
+		files.add(funzionigramma);
+		files.add(organigramma);
 		return files;
 	}
 }

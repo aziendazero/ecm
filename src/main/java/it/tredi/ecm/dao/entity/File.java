@@ -20,13 +20,11 @@ public class File extends BaseEntity {
 	
 	@Column(name = "creato")
 	private LocalDate dataCreazione;
-	
 	private String tipo;
-	@ManyToOne
+	
+	@ManyToOne /* ci sono allegati della persona */
 	private Persona persona;
-	//TODO probabilmente non serve...esiste una sola persona per provider
-	// avrebbe senso solo in ottica di ottimizzazione delle performance
-	@ManyToOne
+	@ManyToOne /* ci sono allegati del provider */
 	private Provider provider;
 	
 	public File(){
@@ -48,6 +46,12 @@ public class File extends BaseEntity {
 	}
 	public boolean isBUDGETPREVISIONALE(){
 		return this.tipo.equals(Costanti.FILE_BUDGET_PREVISIONALE);
+	}
+	public boolean isFUNZIONIGRAMMA(){
+		return this.tipo.equals(Costanti.FILE_FUNZIONIGRAMMA);
+	}
+	public boolean isORGANIGRAMMA(){
+		return this.tipo.equals(Costanti.FILE_ORGANIGRAMMA);
 	}
 	
 }
