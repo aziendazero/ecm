@@ -26,18 +26,18 @@
 							<!-- allegato 1 (atto costitutivo e statuto) -->
 							<th:block th:include="fragments/allegati :: allegati(allegatiWrapper, attoCostitutivo, ${++counter}, null)" ></th:block>
 							<div class="row">
-								<label th:text="#{label.esempio}+' '+#{attoCostitutivo}"
+								<label th:text="#{label.esempio}"
 									class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="esempio_attoCostitutivo">esempio attoCostitutivo</label>
 								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_attoCostitutivo">
-									<a id="attoCostitutivo_esempio_link" th:href="${LINK ESEMPIO ATTOCOSTITUTIVO}"></a>
+									<a id="attoCostitutivo_esempio_link" th:text="#{}" th:href="${LINK ESEMPIO ATTOCOSTITUTIVO}"></a>
 								</div>
 							</div>
 														
 							<!-- allegato 2 (esperienza formazione in ambito sanitario) -->
 							<th:block th:include="fragments/allegati :: allegati(allegatiWrapper, esperienzaFormazione, ${++counter}, null)" ></th:block>
 							<div class="row">
-								<label th:text="#{label.esempio}+' '+#{esperienzaFormazione}"
+								<label th:text="#{label.esempio}"
 									class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="esempio_esperienzaFormazione">esempio esperienzaFormazione</label>
 								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_esperienzaFormazione">
@@ -48,7 +48,7 @@
 							<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
 							<th:block th:include="fragments/allegati :: allegati(allegatiWrapper, utilizzo, ${++counter}, null)" ></th:block>
 							<div class="row">
-								<label th:text="#{label.esempio}+' '+#{utilizzo}"
+								<label th:text="#{label.esempio}"
 									class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="esempio_utilizzo">esempio utilizzo</label>
 								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_utilizzo">
@@ -59,7 +59,7 @@
 							<!-- allegato 4 (sistema informatico dedicato alla formazione in ambito sanitario) -->
 							<th:block th:include="fragments/allegati :: allegati(allegatiWrapper, sistemaInformatico, ${++counter}, null)" ></th:block>
 							<div class="row">
-								<label th:text="#{label.esempio}+' '+#{sistemaInformatico}"
+								<label th:text="#{label.esempio}"
 									class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="esempio_sistemaInformatico">esempio sistemaInformatico</label>
 								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_sistemaInformatico">
@@ -68,20 +68,20 @@
 							</div>
 							
 							<!-- allegato 5 (piano di qualità) -->
-							<th:block th:include="fragments/allegati :: allegati(allegatiWrapper, pianoQualità, ${++counter}, null)" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(allegatiWrapper, pianoQualita, ${++counter}, null)" ></th:block>
 							<div class="row">
-								<label th:text="#{label.esempio}+' '+#{pianoQualità}"
+								<label th:text="#{label.esempio}"
 									class="control-label col-md-4 col-sm-4 col-xs-12"
-									for="esempio_pianoQualità">esempio pianoQualità</label>
-								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_pianoQualità">
-									<a id="pianoQualità_esempio_link" th:href="${LINK ESEMPIO PIANOQUALITÀ"></a>
+									for="esempio_pianoQualita">esempio pianoQualità</label>
+								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_pianoQualita">
+									<a id="pianoQualita_esempio_link" th:href="${LINK ESEMPIO PIANOQUALITÀ"></a>
 								</div>
 							</div>
 							
 							<!-- allegato 6 (dichiarazione del legale rappresentante) -->
 							<th:block th:include="fragments/allegati :: allegati(allegatiWrapper, dichiarazioneLegale, ${++counter}, null)" ></th:block>
 							<div class="row">
-								<label th:text="#{label.esempio}+' '+#{dichiarazioneLegale}"
+								<label th:text="#{label.esempio}"
 									class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="esempio_dichiarazioneLegale">esempio dichiarazioneLegale</label>
 								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_dichiarazioneLegale">
