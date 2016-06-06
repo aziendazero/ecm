@@ -229,13 +229,13 @@
 							</div>
 							
 							<!-- allegato 1 (atto di nomina) -->
-							<th:block th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}" th:include="fragments/allegati :: allegati(personaWrapper, attoNomina, ${++counter})" ></th:block>
+							<th:block th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}" th:include="fragments/allegati :: allegati(personaWrapper, attoNomina, ${++counter}, null)" ></th:block>
 							
 							<!-- allegato 2 (curriculum vitae) -->
-							<th:block th:unless="${personaWrapper.persona.legaleRappresentante}" th:include="fragments/allegati :: allegati(personaWrapper, cv, ${++counter})"></th:block>
+							<th:block th:unless="${personaWrapper.persona.legaleRappresentante}" th:include="fragments/allegati :: allegati(personaWrapper, cv, ${++counter}, null)"></th:block>
 							
 							<!-- allegato 3 (delega) -->
-							<th:block th:if="${personaWrapper.persona.delegatoLegaleRappresentante}" th:include="fragments/allegati :: allegati(personaWrapper, delega, ${++counter})"></th:block>
+							<th:block th:if="${personaWrapper.persona.delegatoLegaleRappresentante}" th:include="fragments/allegati :: allegati(personaWrapper, delega, ${++counter}, null)"></th:block>
 							
 							<!-- Registra Persona -->
 							<div class="item form-group text-right">
