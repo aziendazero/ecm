@@ -46,7 +46,7 @@ public class AccreditamentoWrapper {
 	private File esperienzaFormazione;
 	private File utilizzo;
 	private File sistemaInformatico;
-	private File pianoQualità;
+	private File pianoQualita;
 	private File dichiarazioneLegale;
 	
 }
