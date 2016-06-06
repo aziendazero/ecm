@@ -268,13 +268,13 @@
 																	</td>
 																</tr>
 																<tr>
-																	<td th:if="${accreditamentoWrapper.pianoQualità != null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
-																	<td th:if="${accreditamentoWrapper.pianoQualità == null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.pianoQualita != null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.pianoQualita == null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
 																	
-																	<td	th:if="${accreditamentoWrapper.pianoQualità != null}">
+																	<td	th:if="${accreditamentoWrapper.pianoQualita != null}">
 																		<span class="fa fa-check green"></span>
 																	</td>
-																	<td	th:if="${accreditamentoWrapper.pianoQualità == null}">
+																	<td	th:if="${accreditamentoWrapper.pianoQualita == null}">
 																		<span class="fa fa-remove red"></span>
 																	</td>
 																</tr>
