@@ -53,5 +53,23 @@ public class File extends BaseEntity {
 	public boolean isORGANIGRAMMA(){
 		return this.tipo.equals(Costanti.FILE_ORGANIGRAMMA);
 	}
+	public boolean isATTOCOSTITUTIVO(){
+		return this.tipo.equals(Costanti.FILE_ATTO_COSTITUTIVO);
+	}
+	public boolean isESPERIENZAFORMAZIONE(){
+		return this.tipo.equals(Costanti.FILE_ESPERIENZA_FORMAZIONE);
+	}
+	public boolean isUTILIZZO(){
+		return this.tipo.equals(Costanti.FILE_UTILIZZO);
+	}
+	public boolean isSISTEMAINFORMATICO(){
+		return this.tipo.equals(Costanti.FILE_SISTEMA_INFORMATICO);
+	}
+	public boolean isPIANOQUALITA(){
+		return this.tipo.equals(Costanti.FILE_PIANO_QUALITA);
+	}
+	public boolean isDICHIARAZIONELEGALE(){
+		return this.tipo.equals(Costanti.FILE_DICHIARAZIONE_LEGALE);
+	}
 	
 }

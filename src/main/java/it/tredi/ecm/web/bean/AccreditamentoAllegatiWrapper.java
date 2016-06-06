@@ -39,7 +39,7 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 	}
 	
 	public void setOffsetAndIds(){
-		setIdOffset(87);//fino a 92
+		setIdOffset(87);
 	}
 	
 	public void setAttoCostitutivo(File file){
