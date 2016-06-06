@@ -14,6 +14,7 @@ public class Costanti {
 	public static final String FILE_BUDGET_PREVISIONALE = "Budget previsionale";
 	public static final String FILE_FUNZIONIGRAMMA = "Funzionigramma";
 	public static final String FILE_ORGANIGRAMMA = "Organigramma";
+	public static final String FILE_ATTO_COSTITUTIVO = "Atto Costituivo";
 	
 	public static final String ACCREDITAMENTO_PROVVISORIO = "Provvisorio";
 	public static final String ACCREDITAMENTO_STANDARD = "Standard";

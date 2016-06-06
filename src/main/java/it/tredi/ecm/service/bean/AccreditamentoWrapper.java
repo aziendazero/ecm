@@ -42,11 +42,11 @@ public class AccreditamentoWrapper {
 	private Persona responsabileQualita;
 	
 	//allegati
-	private File attoCostitutivo;
-	private File esperienzaFormazione;
-	private File utilizzo;
-	private File sistemaInformatico;
-	private File pianoQualita;
-	private File dichiarazioneLegale;
+	private boolean attoCostitutivo;
+	private boolean esperienzaFormazione;
+	private boolean utilizzo;
+	private boolean sistemaInformatico;
+	private boolean pianoQualita;
+	private boolean dichiarazioneLegale;
 	
 }
