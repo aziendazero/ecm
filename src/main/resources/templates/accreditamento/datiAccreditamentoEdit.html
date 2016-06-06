@@ -231,7 +231,7 @@
 							<div class="item">
 								<label class="col-xs-1 text-right" th:text="${++counter}">5</label>
 								<label class="col-xs-11"><span th:text="#{label.fatturato_complessivo_title}">Fatturato o Costi complessivi degli
-									ultimi 3 anni (in migliaia di euro)</span><span class="required">*</span></label>
+									ultimi 3 anni (in migliaia di euro)</span></label>
 							</div>
 							<!-- anno 1 -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')} ? 'bad'">
@@ -294,7 +294,7 @@
 							<div class="divider-dashed"></div>
 							
 							<!-- allegato 1 (etratto bilancio relativo formazione) -->
-							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, estrattoBilancioFormazione, ${++counter})" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, estrattoBilancioFormazione, ${++counter}, #{label.required_fatturato})" ></th:block>
 							
 							<div class="divider-dashed"></div>
 							
@@ -302,7 +302,7 @@
 							<div class="item">
 								<label class="col-xs-1 text-right" th:text="${++counter}">6</label>
 								<label class="col-xs-11"><span th:text="#{label.fatturato_formazione_title}">Fatturato o Costi dedicati alla formazione del personale
-									sanitario degli ultimi 3 anni (in migliaia di euro)</span><span class="required">*</span></label>
+									sanitario degli ultimi 3 anni (in migliaia di euro)</span></label>
 							</div>
 							<!-- anno 1 -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')} ? 'bad'">
@@ -365,7 +365,7 @@
 							<div class="divider-dashed"></div>
 							
 							<!-- allegato 2 (budget previsionale) -->
-							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, budgetPrevisionale, ${++counter})" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, budgetPrevisionale, ${++counter}, #{label.required_fatturato})" ></th:block>
 							
 							<div class="divider-dashed"></div>
 							
@@ -416,6 +416,14 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
 							</div>
+							
+							<div class="divider-dashed"></div>
+							
+							<!-- allegato 3 (organigramma) -->
+							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, organigramma, ${++counter}, null)" ></th:block>
+							
+							<!-- allegato 4 (funzionigramma) -->
+							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, funzionigramma, ${++counter}, null)" ></th:block>
 							
 							<!-- Registra Dati Accreditamento -->
 							<div class="item form-group text-right">

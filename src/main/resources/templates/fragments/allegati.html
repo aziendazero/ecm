@@ -4,12 +4,12 @@
 <head>
 </head>
 <body>
-<th:block th:fragment="allegati(wrapper, tipoAllegato, counter)">
+<th:block th:fragment="allegati(wrapper, tipoAllegato, counter, note)">
 	<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
-		<label class="control-label col-xs-1" th:text="${counter}">11</label>
+		<label class="control-label col-xs-1" th:text="${counter}">numero indice</label>
 		<label class="control-label col-md-3 col-sm-3 col-xs-11" th:for="__${tipoAllegato}__">
-			<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
-			<span class="required">*</span>
+			<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span><span th:if="${note == null}" class="required">*</span>
+			<span class="small" style="display: block;" th:unless="${note == null}" th:text="${note}">messaggio aggiuntivo</span>
 		</label>
 		<th:block th:if="${#lists.contains(__${wrapper}__.idEditabili, counter)}">
 			<div class="col-md-4 col-sm-4 col-xs-12">
