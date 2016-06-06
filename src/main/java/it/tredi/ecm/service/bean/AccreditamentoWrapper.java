@@ -7,6 +7,7 @@ import java.util.List;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DatiEconomici;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
@@ -39,5 +40,13 @@ public class AccreditamentoWrapper {
 	private List<Persona> componentiComitatoScientifico = new ArrayList<Persona>();
 	private Persona responsabileSistemaInformatico;
 	private Persona responsabileQualita;
+	
+	//allegati
+	private File attoCostitutivo;
+	private File esperienzaFormazione;
+	private File utilizzo;
+	private File sistemaInformatico;
+	private File pianoQualità;
+	private File dichiarazioneLegale;
 	
 }
