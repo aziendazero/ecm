@@ -24,6 +24,7 @@ public class DatiAccreditamentoValidator {
 		LOGGER.debug("Validazione Dati Accreditamento");
 		validateDatiAccreditamento(target, errors, prefix);
 		validateFilesEconomici(files, errors, "", ((DatiAccreditamento) target).getDatiEconomici());
+		validateFilesStrutturaPersonale(files, errors, "");
 	}
 	
 	private void validateDatiAccreditamento(Object target, Errors errors, String prefix){
@@ -58,5 +59,27 @@ public class DatiAccreditamentoValidator {
 			fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione");
 			fileValidator.validate(budgetPrevisionale, errors, prefix + "budgetPrevisionale");
 		}
+	}
+	
+	public void validateFilesStrutturaPersonale(Object target, Errors errors, String prefix){
+		LOGGER.debug("VALIDAZIONE ALLEGATI STRUTTARA PERSONALE");
+		Set<File> files = null;
+		if(target != null)
+			files = (Set<File>) target;
+		else
+			files = new HashSet<File>();
+		File funzionigramma = null;
+		File organigramma = null;
+		
+		for(File file : files){
+			if(file != null){
+				if(file.isFUNZIONIGRAMMA())
+					funzionigramma = file;
+				else if(file.isORGANIGRAMMA())
+					organigramma = file;
+			}
+		}
+		fileValidator.validate(funzionigramma, errors, prefix + "funzionigramma");
+		fileValidator.validate(organigramma, errors, prefix + "organigramma");
 	}
 }
