@@ -206,7 +206,7 @@
 									</div>
 									<div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="tab3">
 										<p>
-											<!--  TAB 3 -->
+										<!--  TAB 3 -->
 										<div class="row">
 											<div class="col-xs-12">
 												<div class="x_panel">
@@ -224,68 +224,68 @@
 															</thead>
 															<tbody>
 																<tr>
-																	<td th:if="${accreditamentoWrapper.attoCostitutivo != null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
-																	<td th:if="${accreditamentoWrapper.attoCostitutivo == null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.attoCostitutivo}"><a th:text="#{label.attoCostitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.attoCostitutivo}"><a th:text="#{label.attoCostitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
 																	
-																	<td	th:if="${accreditamentoWrapper.attoCostitutivo != null}">
+																	<td	th:if="${accreditamentoWrapper.attoCostitutivo}">
 																		<span class="fa fa-check green"></span>
 																	</td>
-																	<td	th:if="${accreditamentoWrapper.attoCostitutivo == null}">
+																	<td	th:unless="${accreditamentoWrapper.attoCostitutivo}">
 																		<span class="fa fa-remove red"></span>
 																	</td>
 																</tr>
 																<tr>
-																	<td th:if="${accreditamentoWrapper.esperienzaFormazione != null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
-																	<td th:if="${accreditamentoWrapper.esperienzaFormazione == null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.esperienzaFormazione}"><a th:text="#{label.esperienzaFormazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.esperienzaFormazione}"><a th:text="#{label.esperienzaFormazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/new|}"></a></td>
 																	
-																	<td	th:if="${accreditamentoWrapper.esperienzaFormazione != null}">
+																	<td	th:if="${accreditamentoWrapper.esperienzaFormazione}">
 																		<span class="fa fa-check green"></span>
 																	</td>
-																	<td	th:if="${accreditamentoWrapper.esperienzaFormazione == null}">
+																	<td	th:unless="${accreditamentoWrapper.esperienzaFormazione}">
 																		<span class="fa fa-remove red"></span>
 																	</td>
 																</tr>
 																<tr>
-																	<td th:if="${accreditamentoWrapper.utilizzo != null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
-																	<td th:if="${accreditamentoWrapper.utilizzo == null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.utilizzo}"><a th:text="#{label.utilizzo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.utilizzo}"><a th:text="#{label.utilizzo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
 																	
-																	<td	th:if="${accreditamentoWrapper.utilizzo != null}">
+																	<td	th:if="${accreditamentoWrapper.utilizzo}">
 																		<span class="fa fa-check green"></span>
 																	</td>
-																	<td	th:if="${accreditamentoWrapper.utilizzo == null}">
+																	<td	th:unless="${accreditamentoWrapper.utilizzo}">
 																		<span class="fa fa-remove red"></span>
 																	</td>
 																</tr>
 																<tr>
-																	<td th:if="${accreditamentoWrapper.sistemaInformatico != null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
-																	<td th:if="${accreditamentoWrapper.sistemaInformatico == null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.sistemaInformatico}"><a th:text="#{label.sistemaInformatico}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.sistemaInformatico}"><a th:text="#{label.sistemaInformatico}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
 																	
-																	<td	th:if="${accreditamentoWrapper.sistemaInformatico != null}">
+																	<td	th:if="${accreditamentoWrapper.sistemaInformatico}">
 																		<span class="fa fa-check green"></span>
 																	</td>
-																	<td	th:if="${accreditamentoWrapper.sistemaInformatico == null}">
+																	<td	th:unless="${accreditamentoWrapper.sistemaInformatico}">
 																		<span class="fa fa-remove red"></span>
 																	</td>
 																</tr>
 																<tr>
-																	<td th:if="${accreditamentoWrapper.pianoQualita != null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
-																	<td th:if="${accreditamentoWrapper.pianoQualita == null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.pianoQualita}"><a th:text="#{label.pianoQualita}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.pianoQualita}"><a th:text="#{label.pianoQualita}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
 																	
-																	<td	th:if="${accreditamentoWrapper.pianoQualita != null}">
+																	<td	th:if="${accreditamentoWrapper.pianoQualita}">
 																		<span class="fa fa-check green"></span>
 																	</td>
-																	<td	th:if="${accreditamentoWrapper.pianoQualita == null}">
+																	<td	th:unless="${accreditamentoWrapper.pianoQualita}">
 																		<span class="fa fa-remove red"></span>
 																	</td>
 																</tr>
 																<tr>
-																	<td th:if="${accreditamentoWrapper.dichiarazioneLegale != null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
-																	<td th:if="${accreditamentoWrapper.dichiarazioneLegale == null}"><a th:text="#{label.atto_costitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.dichiarazioneLegale}"><a th:text="#{label.dichiarazioneLegale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/${IdALLEGATI}/edit|}"></a></td>
+																	<td th:unless="${accreditamentoWrapper.dichiarazioneLegale}"><a th:text="#{label.dichiarazioneLegale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/allegati/new|}"></a></td>
 																	
-																	<td	th:if="${accreditamentoWrapper.dichiarazioneLegale != null}">
+																	<td	th:if="${accreditamentoWrapper.dichiarazioneLegale}">
 																		<span class="fa fa-check green"></span>
 																	</td>
-																	<td	th:if="${accreditamentoWrapper.dichiarazioneLegale == null}">
+																	<td	th:unless="${accreditamentoWrapper.dichiarazioneLegale}">
 																		<span class="fa fa-remove red"></span>
 																	</td>
 																</tr>
