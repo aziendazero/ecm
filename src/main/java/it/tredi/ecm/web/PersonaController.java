@@ -152,15 +152,14 @@ public class PersonaController {
 							fileService.save(personaWrapper.getCv());
 						}
 					}
-					
-					model.addAttribute("message",new Message("Errore", "message.conferma_registrazione", "error"));
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 					return EDIT;
 				}else{
-						personaService.save(personaWrapper.getPersona());
-						saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
-						
-						redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
-						return "redirect:/accreditamento/{accreditamentoId}";
+					personaService.save(personaWrapper.getPersona());
+					saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
+					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
+					return "redirect:/accreditamento/{accreditamentoId}";
 				}
 			}catch(Exception ex){
 				//TODO gestione eccezione

@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.service.ProfileAndRoleService;
+import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.ProfileValidator;
 
 @Controller
@@ -64,14 +66,16 @@ public class ProfileController {
 	}
 	
 	@RequestMapping(value = "profile/save", method = RequestMethod.POST)
-	public String saveProfile(@ModelAttribute("profile") Profile profile, BindingResult result, Model model){
+	public String saveProfile(@ModelAttribute("profile") Profile profile, BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		try {
 			profileValidator.validate(profile, result);
 			if(result.hasErrors()){
 				model.addAttribute("roleList", profileAndRoleService.getAllRole());
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return "user/editProfile";
 			}else{
 				profileAndRoleService.saveProfile(profile);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.profilo_salvato", "success"));
 				return "redirect:/profile/list";
 			}
 		}catch (Exception ex){

@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoAllegatiWrapper;
-import it.tredi.ecm.web.bean.DatiAccreditamentoWrapper;
+import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.AccreditamentoAllegatiValidator;
 
 @Controller
@@ -62,7 +62,7 @@ public class AccreditamentoAllegatiController {
 
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/save", method = RequestMethod.POST)
 	public String saveDatiAccreditamento(@ModelAttribute("accreditamentoAllegatiWrapper") AccreditamentoAllegatiWrapper wrapper, BindingResult result,
-			@PathVariable Long accreditamentoId, Model model,
+			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model,
 			@RequestParam(value = "attoCostitutivo_multipart", required = false) MultipartFile attoCostitutivo_multipart,
 			@RequestParam(value = "esperienzaFormazione_multipart", required = false) MultipartFile esperienzaFormazione_multipart,
 			@RequestParam(value = "utilizzo_multipart", required = false) MultipartFile utilizzo_multipart,
@@ -106,11 +106,11 @@ public class AccreditamentoAllegatiController {
 				if(!result.hasFieldErrors("dichiarazioneLegale*") && dichiarazioneLegale_multipart != null && !dichiarazioneLegale_multipart.isEmpty()){
 					fileService.save(wrapper.getDichiarazioneLegale());
 				}
-	
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return EDIT;
 			}else{
 				saveFiles(wrapper, attoCostitutivo_multipart, esperienzaFormazione_multipart, utilizzo_multipart, sistemaInformatico_multipart, pianoQualita_multipart, dichiarazioneLegale_multipart);
-				//NOTIFY
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.allegati_inseriti", "success"));
 				return "redirect:/accreditamento/" + accreditamentoId;
 			}
 		}catch (Exception ex){
