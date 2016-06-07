@@ -25,42 +25,42 @@
 							<!-- allegato 1 (atto costitutivo e statuto) -->
 							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_attoCostitutivo">
 								<i class="fa fa-file-text"></i>
-								<a id="attoCostitutivo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.attoCostitutivoModel}}"></a>
+								<a id="attoCostitutivo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoWrapper.attoCostitutivoModel}|}"></a>
 							</div>
 							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, attoCostitutivo, ${++counter}, null)" ></th:block>
 														
 							<!-- allegato 2 (esperienza formazione in ambito sanitario) -->
 							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_esperienzaFormazione">
 								<i class="fa fa-file-text"></i>
-								<a id="esperienzaFormazione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.esperienzaFormazioneModel}}"></a>
+								<a id="esperienzaFormazione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoWrapper.esperienzaFormazioneModel}|}"></a>
 							</div>
 							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, esperienzaFormazione, ${++counter}, null)" ></th:block>
 							
 							<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
 							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_utilizzo">
 								<i class="fa fa-file-text"></i>
-								<a id="utilizzo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.utilizzoModel}}"></a>
+								<a id="utilizzo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoWrapper.utilizzoModel}|}"></a>
 							</div>
 							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, utilizzo, ${++counter}, null)" ></th:block>
 							
 							<!-- allegato 4 (sistema informatico dedicato alla formazione in ambito sanitario) -->
 							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_sistemaInformatico">
 								<i class="fa fa-file-text"></i>
-								<a id="sistemaInformatico_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.sistemaInformaticoModel}}"></a>
+								<a id="sistemaInformatico_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoWrapper.sistemaInformaticoModel}|}"></a>
 							</div>
 							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, sistemaInformatico, ${++counter}, null)" ></th:block>
 							
 							<!-- allegato 5 (piano di qualità) -->
 							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_pianoQualita">
 								<i class="fa fa-file-text"></i>
-								<a id="pianoQualita_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.pianoQualitaModel}}"></a>
+								<a id="pianoQualita_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoWrapper.pianoQualitaModel}|}"></a>
 							</div>
 							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, pianoQualita, ${++counter}, null)" ></th:block>
 								
 							<!-- allegato 6 (dichiarazione del legale rappresentante) -->
 							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_dichiarazioneLegale">
 								<i class="fa fa-file-text"></i>
-								<a id="dichiarazioneLegale_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.dichiarazioneLegaleModel}}"></a>
+								<a id="dichiarazioneLegale_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoWrapper.dichiarazioneLegaleModel}|}"></a>
 							</div>
 							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, dichiarazioneLegale, ${++counter}, null)" ></th:block>
 								
