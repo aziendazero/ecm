@@ -1,11 +1,16 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Type;
 
 import it.tredi.ecm.dao.enumlist.Costanti;
 import lombok.Getter;
@@ -34,24 +39,20 @@ public class Accreditamento extends BaseEntity{
 	@OneToOne(fetch = FetchType.LAZY)
 	private Provider provider;
 	
-	/***	DATI DA COMPILARE NELLA DOMANDA	***/
-	//private String tipologiaAccreditamento;//generale o settoriale
-	//private List<ProceduraFormativa> procedureFormative;//se generale tutte altrimenti selezionare quale
-	
 	@JoinColumn(name = "dati_accreditamento_id")
 	@OneToOne(fetch = FetchType.LAZY)
 	private DatiAccreditamento datiAccreditamento;
 	
-//	@OneToMany
-//	private List<File> allegati;
+	@Type(type = "serializable")
+	private List<Integer> idEditabili = new ArrayList<Integer>();
 	
-//	private List<Professione> professioniAccreditamento;//generale o settoriale
-//	private List<String> professioni;//se generale tutte altrimenti
-
 	public Accreditamento(){}
 	public Accreditamento(String tipoDomanda){
 		this.tipoDomanda = tipoDomanda;
 		this.stato = Costanti.ACCREDITAMENTO_STATO_BOZZA;
+		
+		for (int i = 0; i<100; i++)
+			idEditabili.add(new Integer(i));
 	}
 	
 	public boolean isProvvisorio(){

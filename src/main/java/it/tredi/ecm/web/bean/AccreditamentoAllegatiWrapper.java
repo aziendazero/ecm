@@ -1,7 +1,9 @@
 package it.tredi.ecm.web.bean;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
@@ -17,17 +19,18 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 	private Provider provider;
 	
 	private File attoCostitutivo;
-	private long attoCostitutivoModel;
 	private File esperienzaFormazione;
-	private long esperienzaFormazioneModel;
 	private File utilizzo;
-	private long utilizzoModel;
 	private File sistemaInformatico;
-	private long sistemaInformaticoModel;
 	private File pianoQualita;
-	private long pianoQualitaModel;
 	private File dichiarazioneLegale;
-	private long dichiarazioneLegaleModel;
+	
+	private Long attoCostitutivoModel;
+	private Long esperienzaFormazioneModel;
+	private Long utilizzoModel;
+	private Long sistemaInformaticoModel;
+	private Long pianoQualitaModel;
+	private Long dichiarazioneLegaleModel;
 	
 	public AccreditamentoAllegatiWrapper(){
 		setAttoCostitutivo(new File());
@@ -36,6 +39,15 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 		setSistemaInformatico(new File());
 		setPianoQualita(new File());
 		setDichiarazioneLegale(new File());
+	}
+	
+	public void setModelIds(HashMap<String, Long> modelIds){
+		attoCostitutivoModel = modelIds.get("model_" + Costanti.FILE_ATTO_COSTITUTIVO);
+		esperienzaFormazioneModel = modelIds.get("model_" + Costanti.FILE_ESPERIENZA_FORMAZIONE);
+		utilizzoModel = modelIds.get("model_" + Costanti.FILE_UTILIZZO);
+		sistemaInformaticoModel = modelIds.get("model_" + Costanti.FILE_SISTEMA_INFORMATICO);
+		pianoQualitaModel = modelIds.get("model_" + Costanti.FILE_PIANO_QUALITA);
+		dichiarazioneLegaleModel = modelIds.get("model_" + Costanti.FILE_DICHIARAZIONE_LEGALE);
 	}
 	
 	public void setOffsetAndIds(){

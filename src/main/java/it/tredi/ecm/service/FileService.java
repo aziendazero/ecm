@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
@@ -11,4 +12,6 @@ public interface FileService {
 	public File getFileFromPersonaByTipo(Long personaId, String tipo);
 	public Set<File> getAll();
 	public void save(File file);
+	
+	public HashMap<String,Long> getModelIds();
 }
