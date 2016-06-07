@@ -35,39 +35,59 @@ public class AccountController {
 
 	@RequestMapping("user/list")
 	public String showAll(Model model){
-		model.addAttribute("accountList", accountService.getAllUsers());
-		return "user/userList";
+		try {
+			model.addAttribute("accountList", accountService.getAllUsers());
+			return "user/userList";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/home";
+		}
 	}
 	
 	@RequestMapping("user/{id}/edit")
 	public String editUser(@PathVariable Long id, Model model){
-		model.addAttribute("account", accountService.getUserById(id));
-		model.addAttribute("profileList", profileAndRoleService.getAllProfile());
-		return "user/editUser";
+		try{
+			model.addAttribute("account", accountService.getUserById(id));
+			model.addAttribute("profileList", profileAndRoleService.getAllProfile());
+			return "user/editUser";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/user/list";
+		}
 	}
 	
 	@RequestMapping("user/new")
 	public String newUser(Model model){
-		model.addAttribute("account", new Account());
-		model.addAttribute("profileList", profileAndRoleService.getAllProfile());
-		return "user/editUser";
+		try {
+			model.addAttribute("account", new Account());
+			model.addAttribute("profileList", profileAndRoleService.getAllProfile());
+			return "user/editUser";
+		}catch (Exception ex) {
+			//TODO gestione eccezione
+			return "redirect:/user/list";
+		}
 	}
 	
 	@RequestMapping(value = "user/save", method = RequestMethod.POST)
 	public String saveUser(@ModelAttribute("account") Account account, BindingResult result, Model model){
-		accountValidator.validate(account, result);
-		if(result.hasErrors()){
-			model.addAttribute("profileList", profileAndRoleService.getAllProfile());
-			return "user/editUser";
-		}else{
+		try {
+			accountValidator.validate(account, result);
+			if(result.hasErrors()){
+				model.addAttribute("profileList", profileAndRoleService.getAllProfile());
+				return "user/editUser";
+			}else{
 				try{
-				accountService.save(account);
+					accountService.save(account);
+					return "redirect:/user/list";
 				}catch (Exception ex){
 					model.addAttribute("errore",ex.getMessage());
 					model.addAttribute("profileList", profileAndRoleService.getAllProfile());
 					return "user/editUser"; 
 				}
-			return "redirect:/user/list";
+			}
+		}catch (Exception ex) {
+			//TODO gestione eccezione
+			return "user/editUser";
 		}
 	}
 	
@@ -84,26 +104,36 @@ public class AccountController {
 	
 	@RequestMapping("/user/changePassword")
 	public String changePassword(Model model){
-		model.addAttribute("accountChangePassword", new AccountChangePassword());
-		return "user/changePassword";
+		try {
+			model.addAttribute("accountChangePassword", new AccountChangePassword());
+			return "user/changePassword";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/home";
+		}
 	}
 	
 	@RequestMapping(value = "/user/changePassword", method = RequestMethod.POST)
 	public String changePassword(@ModelAttribute("accountChangePassword") AccountChangePassword accountChangePassword, 
 									BindingResult result, Model model){
 		
-		Account userAccount = accountService.getUserById(Utils.getAuthenticatedUser().getAccount().getId());
-		accountValidator.validateChangePassword(accountChangePassword, result, userAccount);
-		if(result.hasErrors()){
-			model.addAttribute("accountChangePassword", accountChangePassword);
-			return "user/changePassword";
-		}else{
-			try{
-				accountService.changePassword(userAccount.getId(), accountChangePassword.getNewPassword());
-			}catch (Exception ex){
-				//TODO gestione exception controller
+		try {
+			Account userAccount = accountService.getUserById(Utils.getAuthenticatedUser().getAccount().getId());
+			accountValidator.validateChangePassword(accountChangePassword, result, userAccount);
+			if(result.hasErrors()){
+				model.addAttribute("accountChangePassword", accountChangePassword);
+				return "user/changePassword";
+			}else{
+				try{
+					accountService.changePassword(userAccount.getId(), accountChangePassword.getNewPassword());
+				}catch (Exception ex){
+					//TODO gestione exception controller
+				}
+				return "redirect:/home";
 			}
-			return "redirect:/home";
+		}catch (Exception ex) {
+			//TODO gestione eccezione
+			return "redirect:/user/changePassword/";
 		}
 	}
 	

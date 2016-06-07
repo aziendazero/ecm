@@ -47,16 +47,26 @@ public class ProviderRegistrationController {
 	/** Public provider registration form. */
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.GET)
 	public String providerRegistration(Model model) {
-		model.addAttribute("providerForm", providerService.getProviderRegistrationWrapper());
-		model.addAttribute("stepToShow", 0);
-		return "providerRegistration";
+		try {
+			model.addAttribute("providerForm", providerService.getProviderRegistrationWrapper());
+			model.addAttribute("stepToShow", 0);
+			return "providerRegistration";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/home";
+		}
 	}
 	
 	/** Private provider registration form for authenticated users. */
 	@RequestMapping("/providerRegistration/edit")
 	public String editProviderRegistration(Model model){
-		model.addAttribute("providerForm", providerService.getProviderRegistrationWrapper());
-		return "provider/editProvider";
+		try {
+			model.addAttribute("providerForm", providerService.getProviderRegistrationWrapper());
+			return "provider/editProvider";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/home";
+		}
 	}
 
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.POST)
@@ -84,7 +94,7 @@ public class ProviderRegistrationController {
 			}else{
 				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper, saveMinimal);
 				model.addAttribute("notifica", "success");
-				return "redirect:home";
+				return "redirect:/home";
 			}
 		}catch (Exception ex){
 			model.addAttribute("stepToShow", evaluateErrorStep(result));

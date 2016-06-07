@@ -119,19 +119,24 @@ public class SedeController {
 	
 	@RequestMapping("/accreditamento/{accreditamentoId}/sede/copia")
 	public String getCopiaSedeLegale(@PathVariable Long accreditamentoId, Model model){
-		//recupero sede legale del provider corrente
-		Sede sedeLegale = new Sede();
-		Provider currentProvider = providerService.getProvider();
-		if(currentProvider != null){
-			sedeLegale = currentProvider.getSedeLegale();
+		try {
+			//recupero sede legale del provider corrente
+			Sede sedeLegale = new Sede();
+			Provider currentProvider = providerService.getProvider();
+			if(currentProvider != null){
+				sedeLegale = currentProvider.getSedeLegale();
+			}
+			
+			//preparo il wrapper specificando che è una sedeOperativa
+			SedeWrapper sedeWrapper = prepareSedeWrapper(sedeLegale, Costanti.SEDE_OPERATIVA, accreditamentoId);
+			sedeWrapper.setIdEditabili(new ArrayList<>());
+			
+			//refresh solo del fragment della view
+			return goToEditWhitFragment(model, sedeWrapper, "content");
+		}catch (Exception ex) {
+			//TODO gestione eccezione
+			return EDIT;
 		}
-		
-		//preparo il wrapper specificando che è una sedeOperativa
-		SedeWrapper sedeWrapper = prepareSedeWrapper(sedeLegale, Costanti.SEDE_OPERATIVA, accreditamentoId);
-		sedeWrapper.setIdEditabili(new ArrayList<>());
-		
-		//refresh solo del fragment della view
-		return goToEditWhitFragment(model, sedeWrapper, "content");
 	}
 	
 	/***	NEW / EDIT 	***/
@@ -139,46 +144,55 @@ public class SedeController {
 	public String getNewSedeCurrentProvider(@PathVariable Long accreditamentoId, @RequestParam("tipologiaSede") String tipologiaSede, 
 												Model model) throws Exception{
 		
-		return goToEdit(model, prepareSedeWrapper(new Sede(), tipologiaSede, accreditamentoId));
+		try {
+			return goToEdit(model, prepareSedeWrapper(new Sede(), tipologiaSede, accreditamentoId));
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/accreditamento" + accreditamentoId;
+		}
 	}
 	
 	@RequestMapping("/accreditamento/{accreditamentoId}/sede/{id}/edit")
 	public String editSede(@PathVariable Long accreditamentoId, @PathVariable Long id, 
 							@RequestParam("tipologiaSede") String tipologiaSede, Model model){
 		
-		SedeWrapper sedeWrapper = prepareSedeWrapper(sedeService.getSede(id), tipologiaSede, accreditamentoId);
-		
-		if(tipologiaSede.equals(Costanti.SEDE_OPERATIVA)){
-			Provider currentProvider = providerService.getProvider();
-			if(currentProvider != null){
-				if(currentProvider.getSedeLegale() != null && currentProvider.getSedeOperativa() != null){
-					if(currentProvider.getSedeLegale().getId() == currentProvider.getSedeOperativa().getId())
-						sedeWrapper.setIdEditabili(new ArrayList<>());
+		try {
+			SedeWrapper sedeWrapper = prepareSedeWrapper(sedeService.getSede(id), tipologiaSede, accreditamentoId);
+			
+			if(tipologiaSede.equals(Costanti.SEDE_OPERATIVA)){
+				Provider currentProvider = providerService.getProvider();
+				if(currentProvider != null){
+					if(currentProvider.getSedeLegale() != null && currentProvider.getSedeOperativa() != null){
+						if(currentProvider.getSedeLegale().getId() == currentProvider.getSedeOperativa().getId())
+							sedeWrapper.setIdEditabili(new ArrayList<>());
+					}
 				}
 			}
+			return goToEdit(model, sedeWrapper);
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return EDIT;
 		}
-		return goToEdit(model, sedeWrapper);
 	}
 	
 	/***	SAVE 	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/sede/save", method = RequestMethod.POST)
 	public String saveSede(@ModelAttribute("sedeWrapper") SedeWrapper sedeWrapper, BindingResult result,  
 							Model model, RedirectAttributes redirectAttrs){
-
-		sedeValidator.validate(sedeWrapper.getSede(), result, "sede.");
-		try{
-			if(result.hasErrors()){
-				return EDIT;
-			}else{
-					sedeService.save(sedeWrapper.getSede(), providerService.getProvider(), sedeWrapper.getTipologiaSede());	
-					redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
-					return "redirect:/accreditamento/{accreditamentoId}";
-			}
-		}catch(Exception ex){
-			//TODO Exception
-		}
 		
-		return EDIT;
+			try{
+				sedeValidator.validate(sedeWrapper.getSede(), result, "sede.");
+				if(result.hasErrors()){
+					return EDIT;
+				}else{
+						sedeService.save(sedeWrapper.getSede(), providerService.getProvider(), sedeWrapper.getTipologiaSede());	
+						redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
+						return "redirect:/accreditamento/{accreditamentoId}";
+				}
+			}catch(Exception ex){
+				//TODO gestione eccezione
+				return EDIT;
+			}
 	}
 	
 	private String goToEdit(Model model, SedeWrapper sedeWrapper){

@@ -78,7 +78,12 @@ public class DatiAccreditamentoController {
 
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/new")
 	public String newDatiAccreditamento(@PathVariable Long accreditamentoId, Model model){
-		return goToEdit(model, prepareDatiAccreditamentoWrapper(new DatiAccreditamento(),accreditamentoId));
+		try {
+			return goToEdit(model, prepareDatiAccreditamentoWrapper(new DatiAccreditamento(),accreditamentoId));
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/accreditamento/" + accreditamentoId;
+		}
 	}
 	
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/{id}/edit")
@@ -87,9 +92,8 @@ public class DatiAccreditamentoController {
 			return goToEdit(model, prepareDatiAccreditamentoWrapper(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			return "redirect:/accreditamento/" + accreditamentoId;
 		}
-		
-		return "redirect:/accreditamento/" + accreditamentoId;
 	};
 	
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/save", method = RequestMethod.POST)
@@ -99,39 +103,44 @@ public class DatiAccreditamentoController {
 											@RequestParam(value = "budgetPrevisionale_multipart", required = false) MultipartFile budgetPrevisionale_multipart,
 											@RequestParam(value = "funzionigramma_multipart", required = false) MultipartFile funzionigramma_multipart,
 											@RequestParam(value = "organigramma_multipart", required = false) MultipartFile organigramma_multipart){
-
-		if(estrattoBilancioFormazione_multipart != null && !estrattoBilancioFormazione_multipart.isEmpty())
-			wrapper.setEstrattoBilancioFormazione(Utils.convertFromMultiPart(estrattoBilancioFormazione_multipart));
-		if(budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty())
-			wrapper.setBudgetPrevisionale(Utils.convertFromMultiPart(budgetPrevisionale_multipart));
-		if(funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty())
-			wrapper.setFunzionigramma(Utils.convertFromMultiPart(funzionigramma_multipart));
-		if(organigramma_multipart != null && !organigramma_multipart.isEmpty())
-			wrapper.setOrganigramma(Utils.convertFromMultiPart(organigramma_multipart));
 		
-		datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
-		
-		if(result.hasErrors()){
+		try {
+			if(estrattoBilancioFormazione_multipart != null && !estrattoBilancioFormazione_multipart.isEmpty())
+				wrapper.setEstrattoBilancioFormazione(Utils.convertFromMultiPart(estrattoBilancioFormazione_multipart));
+			if(budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty())
+				wrapper.setBudgetPrevisionale(Utils.convertFromMultiPart(budgetPrevisionale_multipart));
+			if(funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty())
+				wrapper.setFunzionigramma(Utils.convertFromMultiPart(funzionigramma_multipart));
+			if(organigramma_multipart != null && !organigramma_multipart.isEmpty())
+				wrapper.setOrganigramma(Utils.convertFromMultiPart(organigramma_multipart));
 			
-			if(!result.hasFieldErrors("estrattoBilancioFormazione*") && estrattoBilancioFormazione_multipart != null && !estrattoBilancioFormazione_multipart.isEmpty()){
-				fileService.save(wrapper.getEstrattoBilancioFormazione());
-			}
-			if(!result.hasFieldErrors("budgetPrevisionale*") && budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty()){
-				fileService.save(wrapper.getBudgetPrevisionale());
-			}
-			if(!result.hasFieldErrors("funzionigramma*") && funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty()){
-				fileService.save(wrapper.getFunzionigramma());
-			}
-			if(!result.hasFieldErrors("organigramma*") && organigramma_multipart != null && !organigramma_multipart.isEmpty()){
-				fileService.save(wrapper.getOrganigramma());
-			}
+			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
 			
+			if(result.hasErrors()){
+				
+				if(!result.hasFieldErrors("estrattoBilancioFormazione*") && estrattoBilancioFormazione_multipart != null && !estrattoBilancioFormazione_multipart.isEmpty()){
+					fileService.save(wrapper.getEstrattoBilancioFormazione());
+				}
+				if(!result.hasFieldErrors("budgetPrevisionale*") && budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty()){
+					fileService.save(wrapper.getBudgetPrevisionale());
+				}
+				if(!result.hasFieldErrors("funzionigramma*") && funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty()){
+					fileService.save(wrapper.getFunzionigramma());
+				}
+				if(!result.hasFieldErrors("organigramma*") && organigramma_multipart != null && !organigramma_multipart.isEmpty()){
+					fileService.save(wrapper.getOrganigramma());
+				}
+				
+				return EDIT;
+			}else{
+				datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), accreditamentoId);
+				saveFiles(wrapper, estrattoBilancioFormazione_multipart, budgetPrevisionale_multipart, funzionigramma_multipart, organigramma_multipart);
+				
+				return "redirect:/accreditamento/" + accreditamentoId;
+			}
+		}catch (Exception ex){
+			//TODO gestione eccezione
 			return EDIT;
-		}else{
-			datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), accreditamentoId);
-			saveFiles(wrapper, estrattoBilancioFormazione_multipart, budgetPrevisionale_multipart, funzionigramma_multipart, organigramma_multipart);
-			
-			return "redirect:/accreditamento/" + accreditamentoId;
 		}
 	}
 	

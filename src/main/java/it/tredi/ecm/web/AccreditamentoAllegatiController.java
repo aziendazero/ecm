@@ -56,9 +56,8 @@ public class AccreditamentoAllegatiController {
 			return goToEdit(model, prepareAccreditamentoAllegatiWrapper(accreditamentoId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			return "redirect:/accreditamento/" + accreditamentoId;
 		}
-
-		return "redirect:/accreditamento/" + accreditamentoId;
 	}
 
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/save", method = RequestMethod.POST)
@@ -71,47 +70,52 @@ public class AccreditamentoAllegatiController {
 			@RequestParam(value = "pianoQualita_multipart", required = false) MultipartFile pianoQualita_multipart,
 			@RequestParam(value = "dichiarazioneLegale_multipart", required = false) MultipartFile dichiarazioneLegale_multipart){
 
-		if(attoCostitutivo_multipart != null && !attoCostitutivo_multipart.isEmpty())
-			wrapper.setAttoCostitutivo(Utils.convertFromMultiPart(attoCostitutivo_multipart));
-		if(esperienzaFormazione_multipart != null && !esperienzaFormazione_multipart.isEmpty())
-			wrapper.setEsperienzaFormazione(Utils.convertFromMultiPart(esperienzaFormazione_multipart));
-		if(utilizzo_multipart != null && !utilizzo_multipart.isEmpty())
-			wrapper.setUtilizzo(Utils.convertFromMultiPart(utilizzo_multipart));
-		if(sistemaInformatico_multipart != null && !sistemaInformatico_multipart.isEmpty())
-			wrapper.setSistemaInformatico(Utils.convertFromMultiPart(sistemaInformatico_multipart));
-		if(pianoQualita_multipart != null && !pianoQualita_multipart.isEmpty())
-			wrapper.setPianoQualita(Utils.convertFromMultiPart(pianoQualita_multipart));
-		if(dichiarazioneLegale_multipart != null && !dichiarazioneLegale_multipart.isEmpty())
-			wrapper.setDichiarazioneLegale(Utils.convertFromMultiPart(dichiarazioneLegale_multipart));
-
-		accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles());
-		
-		if(result.hasErrors()){
-
-			if(!result.hasFieldErrors("attoCostitutivo*") && attoCostitutivo_multipart != null && !attoCostitutivo_multipart.isEmpty()){
-				fileService.save(wrapper.getAttoCostitutivo());
+		try {
+			if(attoCostitutivo_multipart != null && !attoCostitutivo_multipart.isEmpty())
+				wrapper.setAttoCostitutivo(Utils.convertFromMultiPart(attoCostitutivo_multipart));
+			if(esperienzaFormazione_multipart != null && !esperienzaFormazione_multipart.isEmpty())
+				wrapper.setEsperienzaFormazione(Utils.convertFromMultiPart(esperienzaFormazione_multipart));
+			if(utilizzo_multipart != null && !utilizzo_multipart.isEmpty())
+				wrapper.setUtilizzo(Utils.convertFromMultiPart(utilizzo_multipart));
+			if(sistemaInformatico_multipart != null && !sistemaInformatico_multipart.isEmpty())
+				wrapper.setSistemaInformatico(Utils.convertFromMultiPart(sistemaInformatico_multipart));
+			if(pianoQualita_multipart != null && !pianoQualita_multipart.isEmpty())
+				wrapper.setPianoQualita(Utils.convertFromMultiPart(pianoQualita_multipart));
+			if(dichiarazioneLegale_multipart != null && !dichiarazioneLegale_multipart.isEmpty())
+				wrapper.setDichiarazioneLegale(Utils.convertFromMultiPart(dichiarazioneLegale_multipart));
+	
+			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles());
+			
+			if(result.hasErrors()){
+	
+				if(!result.hasFieldErrors("attoCostitutivo*") && attoCostitutivo_multipart != null && !attoCostitutivo_multipart.isEmpty()){
+					fileService.save(wrapper.getAttoCostitutivo());
+				}
+				if(!result.hasFieldErrors("esperienzaFormazione*") && esperienzaFormazione_multipart != null && !esperienzaFormazione_multipart.isEmpty()){
+					fileService.save(wrapper.getEsperienzaFormazione());
+				}
+				if(!result.hasFieldErrors("utilizzo*") && utilizzo_multipart != null && !utilizzo_multipart.isEmpty()){
+					fileService.save(wrapper.getUtilizzo());
+				}
+				if(!result.hasFieldErrors("sistemaInformatico*") && sistemaInformatico_multipart != null && !sistemaInformatico_multipart.isEmpty()){
+					fileService.save(wrapper.getSistemaInformatico());
+				}
+				if(!result.hasFieldErrors("pianoQualita*") && pianoQualita_multipart != null && !pianoQualita_multipart.isEmpty()){
+					fileService.save(wrapper.getPianoQualita());
+				}
+				if(!result.hasFieldErrors("dichiarazioneLegale*") && dichiarazioneLegale_multipart != null && !dichiarazioneLegale_multipart.isEmpty()){
+					fileService.save(wrapper.getDichiarazioneLegale());
+				}
+	
+				return EDIT;
+			}else{
+				saveFiles(wrapper, attoCostitutivo_multipart, esperienzaFormazione_multipart, utilizzo_multipart, sistemaInformatico_multipart, pianoQualita_multipart, dichiarazioneLegale_multipart);
+				//NOTIFY
+				return "redirect:/accreditamento/" + accreditamentoId;
 			}
-			if(!result.hasFieldErrors("esperienzaFormazione*") && esperienzaFormazione_multipart != null && !esperienzaFormazione_multipart.isEmpty()){
-				fileService.save(wrapper.getEsperienzaFormazione());
-			}
-			if(!result.hasFieldErrors("utilizzo*") && utilizzo_multipart != null && !utilizzo_multipart.isEmpty()){
-				fileService.save(wrapper.getUtilizzo());
-			}
-			if(!result.hasFieldErrors("sistemaInformatico*") && sistemaInformatico_multipart != null && !sistemaInformatico_multipart.isEmpty()){
-				fileService.save(wrapper.getSistemaInformatico());
-			}
-			if(!result.hasFieldErrors("pianoQualita*") && pianoQualita_multipart != null && !pianoQualita_multipart.isEmpty()){
-				fileService.save(wrapper.getPianoQualita());
-			}
-			if(!result.hasFieldErrors("dichiarazioneLegale*") && dichiarazioneLegale_multipart != null && !dichiarazioneLegale_multipart.isEmpty()){
-				fileService.save(wrapper.getDichiarazioneLegale());
-			}
-
+		}catch (Exception ex){
+			//TODO gestione eccezione
 			return EDIT;
-		}else{
-			saveFiles(wrapper, attoCostitutivo_multipart, esperienzaFormazione_multipart, utilizzo_multipart, sistemaInformatico_multipart, pianoQualita_multipart, dichiarazioneLegale_multipart);
-			//NOTIFY
-			return "redirect:/accreditamento/" + accreditamentoId;
 		}
 	}
 	

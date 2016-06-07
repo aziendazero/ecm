@@ -69,33 +69,45 @@ public class PersonaController {
 	public String newPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
 								@RequestParam(name="ruolo", required = true) String ruolo){
 		
-		return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId));
+		try {
+			return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId));
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/accreditamento" + accreditamentoId;
+		}
 	}
 	
 	/***	NUOVA ANAGRAFICA ***/
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/newAnagrafica")
 	public String newAnagrafica(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
 									@RequestParam(name="ruolo", required = true) String ruolo){
-		
-		Persona persona = providerService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
-		if(persona == null){
-			persona = createPersona(providerId, ruolo);
-		}else{
-			persona.setAnagrafica(new Anagrafica());
+		try {
+			Persona persona = providerService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
+			if(persona == null){
+				persona = createPersona(providerId, ruolo);
+			}else{
+				persona.setAnagrafica(new Anagrafica());
+			}
+			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return EDIT;
 		}
-		
-		return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
 	}
 
 	/***	EDIT PERSONA ***/
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/edit")
 	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model){
-		Persona persona = personaService.getPersona(id);
-		if(persona == null){
-			persona = createPersona(providerId);
+		try {	
+			Persona persona = personaService.getPersona(id);
+			if(persona == null){
+				persona = createPersona(providerId);
+			}
+			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return EDIT;
 		}
-
-		return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
 	}
 
 	/***	SAVE PERSONA ***/
@@ -105,55 +117,61 @@ public class PersonaController {
 								@RequestParam(value = "attoNomina_multipart", required = false) MultipartFile attoNomina_multiPartFile,
 								@RequestParam(value = "cv_multipart", required = false) MultipartFile cv_multiPartFile,
 								@RequestParam(value = "delega_multipart", required = false) MultipartFile delega_multiPartFile){
-		if(personaWrapper.getPersona().isNew()){
-			Persona persona = personaWrapper.getPersona(); 
-			persona.setRuolo(personaWrapper.getRuolo());
-			Provider provider = providerService.getProvider(personaWrapper.getProviderId());
-			persona.setProvider(provider);
-		}
-		
-		if(attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty())
-			personaWrapper.setAttoNomina(Utils.convertFromMultiPart(attoNomina_multiPartFile));
-		if(cv_multiPartFile != null && !cv_multiPartFile.isEmpty())
-			personaWrapper.setCv(Utils.convertFromMultiPart(cv_multiPartFile));
-		if(delega_multiPartFile != null && !delega_multiPartFile.isEmpty())
-			personaWrapper.setDelega(Utils.convertFromMultiPart(delega_multiPartFile));
-		
-		personaValidator.validate(personaWrapper.getPersona(), result, "persona.",personaWrapper.getFiles());
-		
-		try{
-			if(result.hasErrors()){
-				
-				if(!personaWrapper.getPersona().isNew()){
-					//salvataggio dei file modificati per evitare che in casi di errore di validazione sui dati
-					//l'utente debba rifare l'upload
-					if(!result.hasFieldErrors("delega*") && delega_multiPartFile != null && !delega_multiPartFile.isEmpty()){
-						fileService.save(personaWrapper.getDelega());
-					}
-					
-					if(!result.hasFieldErrors("attoNomina*") && attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty()){
-						fileService.save(personaWrapper.getAttoNomina());
-					}
-					
-					if(!result.hasFieldErrors("cv*") && cv_multiPartFile != null && !cv_multiPartFile.isEmpty()){
-						fileService.save(personaWrapper.getCv());
-					}
-				}
-				
-				model.addAttribute("message",new Message("Errore", "message.conferma_registrazione", "error"));
-				return EDIT;
-			}else{
-					personaService.save(personaWrapper.getPersona());
-					saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
-					
-					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
-					return "redirect:/accreditamento/{accreditamentoId}";
+		try {
+			if(personaWrapper.getPersona().isNew()){
+				Persona persona = personaWrapper.getPersona(); 
+				persona.setRuolo(personaWrapper.getRuolo());
+				Provider provider = providerService.getProvider(personaWrapper.getProviderId());
+				persona.setProvider(provider);
 			}
-		}catch(Exception ex){
-			//TODO Exception
+			
+			if(attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty())
+				personaWrapper.setAttoNomina(Utils.convertFromMultiPart(attoNomina_multiPartFile));
+			if(cv_multiPartFile != null && !cv_multiPartFile.isEmpty())
+				personaWrapper.setCv(Utils.convertFromMultiPart(cv_multiPartFile));
+			if(delega_multiPartFile != null && !delega_multiPartFile.isEmpty())
+				personaWrapper.setDelega(Utils.convertFromMultiPart(delega_multiPartFile));
+			
+			personaValidator.validate(personaWrapper.getPersona(), result, "persona.",personaWrapper.getFiles());
+			
+			try{
+				if(result.hasErrors()){
+					
+					if(!personaWrapper.getPersona().isNew()){
+						//salvataggio dei file modificati per evitare che in casi di errore di validazione sui dati
+						//l'utente debba rifare l'upload
+						if(!result.hasFieldErrors("delega*") && delega_multiPartFile != null && !delega_multiPartFile.isEmpty()){
+							fileService.save(personaWrapper.getDelega());
+						}
+						
+						if(!result.hasFieldErrors("attoNomina*") && attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty()){
+							fileService.save(personaWrapper.getAttoNomina());
+						}
+						
+						if(!result.hasFieldErrors("cv*") && cv_multiPartFile != null && !cv_multiPartFile.isEmpty()){
+							fileService.save(personaWrapper.getCv());
+						}
+					}
+					
+					model.addAttribute("message",new Message("Errore", "message.conferma_registrazione", "error"));
+					return EDIT;
+				}else{
+						personaService.save(personaWrapper.getPersona());
+						saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
+						
+						redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
+						return "redirect:/accreditamento/{accreditamentoId}";
+				}
+			}catch(Exception ex){
+				//TODO gestione eccezione
+				return EDIT;
+			}
+			
+			
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return EDIT;
 		}
-		
-		return EDIT;
 	}
 	
 	private void saveFiles(PersonaWrapper personaWrapper, MultipartFile attoNomina_multiPartFile, MultipartFile cv_multiPartFile, MultipartFile delega_multiPartFile){
