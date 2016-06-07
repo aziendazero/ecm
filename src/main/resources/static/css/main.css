@@ -136,4 +136,10 @@ table.datatable-responsive-form thead .sorting_asc:after {
 	margin-bottom: 5px;
 }
 
+.model-link {
+	float: right;
+	font-size: 14px;
+	padding-top: 10px;
+}
+
 

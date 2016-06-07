@@ -36,48 +36,68 @@ public class AccreditamentoController {
 	/***	Get Accreditamenti per provider corrente	***/
 	@RequestMapping("/provider/accreditamento/list")
 	public String getAllAccreditamentiForCurrentProvider(RedirectAttributes redirectAttrs) throws Exception{
-		Provider currentProvider = providerService.getProvider();
-		if(currentProvider.isNew()){
-			throw new Exception("Provider non registrato");
-		}else{
-			redirectAttrs.addAttribute("providerId",currentProvider.getId());
-			return "redirect:/provider/{providerId}/accreditamento/list";
+		try {
+			Provider currentProvider = providerService.getProvider();
+			if(currentProvider.isNew()){
+				throw new Exception("Provider non registrato");
+			}else{
+				redirectAttrs.addAttribute("providerId",currentProvider.getId());
+				return "redirect:/provider/{providerId}/accreditamento/list";
+			}
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/home";
 		}
 	}
 	
 	/***	Get Lista Accreditamenti per {providerID}	***/
 	@RequestMapping("/provider/{providerId}/accreditamento/list")
 	public String getAllAccreditamentiForProvider(@PathVariable("providerId") Long providerId, Model model, RedirectAttributes redirectAttrs){
-		Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
-		model.addAttribute("accreditamentoList", listaAccreditamenti);
-		model.addAttribute("canProviderCreateAccreditamento", accreditamentoService.canProviderCreateAccreditamento(providerId));
-		return "accreditamento/accreditamentoList";
-		
-		//TODO per reindirizzare direttamente sulla view è necessario creare un'altra request
-		// che non faccia il ricaricamento da db
-		/*
-	  		if(listaAccreditamenti.size() == 1){
-	 
-				Accreditamento accreditamento = listaAccreditamenti.iterator().next();
-				redirectAttrs.addAttribute("id",accreditamento.getId())
-								.addFlashAttribute("accreditamento", accreditamento);
-				return "redirect:/provider/accreditamento/{id}";
-			}
-		*/
+		try {
+			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
+			model.addAttribute("accreditamentoList", listaAccreditamenti);
+			model.addAttribute("canProviderCreateAccreditamento", accreditamentoService.canProviderCreateAccreditamento(providerId));
+			return "accreditamento/accreditamentoList";
+			
+			//TODO per reindirizzare direttamente sulla view è necessario creare un'altra request
+			// che non faccia il ricaricamento da db
+			/*
+		  		if(listaAccreditamenti.size() == 1){
+		 
+					Accreditamento accreditamento = listaAccreditamenti.iterator().next();
+					redirectAttrs.addAttribute("id",accreditamento.getId())
+									.addFlashAttribute("accreditamento", accreditamento);
+					return "redirect:/provider/accreditamento/{id}";
+				}
+			*/
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/home";
+		}
 	}
 	
 	/***	Get Accreditamento ***/
 	@RequestMapping("/provider/accreditamento")
 	public String getAccreditamentoAttivo(Model model){
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento();
-		return goToAccreditamento(model, accreditamento);
+		try {
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento();
+			return goToAccreditamento(model, accreditamento);
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/home";
+		}
 	}
 	
 	/***	Get Accreditamento {ID}	***/
 	@RequestMapping("/accreditamento/{id}")
 	public String getAccreditamento(@PathVariable Long id, Model model){
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
-		return goToAccreditamento(model, accreditamento);
+		try {
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
+			return goToAccreditamento(model, accreditamento);
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "accreditamento/accreditamentoList";
+		}
 	}
 	
 	private String goToAccreditamento(Model model, Accreditamento accreditamento){
@@ -95,7 +115,7 @@ public class AccreditamentoController {
 			redirectAttrs.addAttribute("id", accreditamentoService.getNewAccreditamentoForCurrentProvider().getId());
 			return "redirect:/accreditamento/{id}";
 		}catch (Exception ex){
-			//TODO exception
+			//TODO gestione eccezione
 			return "redirect:/provider/accreditamento/list";
 		}
 	}

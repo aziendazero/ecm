@@ -30,33 +30,53 @@ public class ProfileController {
 
 	@RequestMapping("profile/list")
 	public String showAll(Model model){
-		model.addAttribute("profileList", profileAndRoleService.getAllProfile());
-		return "user/profileList";
+		try {
+			model.addAttribute("profileList", profileAndRoleService.getAllProfile());
+			return "user/profileList";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/home";
+		}
 	}
 	
 	@RequestMapping("profile/{id}/edit")
 	public String editProfile(@PathVariable Long id, Model model){
-		model.addAttribute("profile", profileAndRoleService.getProfile(id));
-		model.addAttribute("roleList", profileAndRoleService.getAllRole());
-		return "user/editProfile";
+		try {
+			model.addAttribute("profile", profileAndRoleService.getProfile(id));
+			model.addAttribute("roleList", profileAndRoleService.getAllRole());
+			return "user/editProfile";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/profile/list";
+		}
 	}
 	
 	@RequestMapping("profile/new")
 	public String newProfile(Model model){
-		model.addAttribute("profile", new Profile());
-		model.addAttribute("roleList", profileAndRoleService.getAllRole());
-		return "user/editProfile";
+		try {
+			model.addAttribute("profile", new Profile());
+			model.addAttribute("roleList", profileAndRoleService.getAllRole());
+			return "user/editProfile";
+		}catch (Exception ex) {
+			//TODO gestione eccezione
+			return "redirect:/profile/list";
+		}
 	}
 	
 	@RequestMapping(value = "profile/save", method = RequestMethod.POST)
 	public String saveProfile(@ModelAttribute("profile") Profile profile, BindingResult result, Model model){
-		profileValidator.validate(profile, result);
-		if(result.hasErrors()){
-			model.addAttribute("roleList", profileAndRoleService.getAllRole());
+		try {
+			profileValidator.validate(profile, result);
+			if(result.hasErrors()){
+				model.addAttribute("roleList", profileAndRoleService.getAllRole());
+				return "user/editProfile";
+			}else{
+				profileAndRoleService.saveProfile(profile);
+				return "redirect:/profile/list";
+			}
+		}catch (Exception ex){
+			//TODO gestione eccezione
 			return "user/editProfile";
-		}else{
-			profileAndRoleService.saveProfile(profile);
-			return "redirect:/profile/list";
 		}
 	}
 	

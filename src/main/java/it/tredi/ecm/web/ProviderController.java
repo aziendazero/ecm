@@ -68,12 +68,22 @@ public class ProviderController {
 	/***	SHOW	***/
 	@RequestMapping("provider/show")
 	public String showProviderFromCurrentUser(Model model){
-		return goToShowProvider(model, providerService.getProvider());
+		try {
+			return goToShowProvider(model, providerService.getProvider());
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:provider/list";
+		}
 	}
 	
 	@RequestMapping("provider/{id}/show")
 	public String showProvider(@PathVariable Long id, Model model){
-		return goToShowProvider(model, providerService.getProvider(id));
+		try {
+			return goToShowProvider(model, providerService.getProvider(id));
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:provider/list";
+		}
 	}
 	
 	private String goToShowProvider(Model model, Provider provider){
@@ -84,13 +94,23 @@ public class ProviderController {
 	/***	EDIT	***/
 	@RequestMapping("provider/{id}/edit")
 	public String editProvider(@PathVariable Long id, Model model){
-		model.addAttribute("provider",providerService.getProvider(id));
-		return "provider/providerEdit";
+		try {	
+			model.addAttribute("provider",providerService.getProvider(id));
+			return "provider/providerEdit";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "TODO";
+		}
 	}
 	
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/edit")
 	public String editProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model){
-		return goToEdit(model, prepareProviderWrapper(providerService.getProvider(id), accreditamentoId));
+		try {
+			return goToEdit(model, prepareProviderWrapper(providerService.getProvider(id), accreditamentoId));
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			return "redirect:/accreditamento/" + accreditamentoId;
+		}
 	}
 	
 	/***	SAVE	***/
@@ -110,14 +130,19 @@ public class ProviderController {
 			}
 		}catch (Exception ex){
 			model.addAttribute("accreditamentoId",providerWrapper.getAccreditamentoId());
-			return "provider/providerEdit";
+			return EDIT;
 		}
 	}
 	
 	@RequestMapping("/provider/list")
 	public String showAll(Model model){
-		model.addAttribute("providerList", providerService.getAll());
-		return "provider/providerList";
+		try {
+			model.addAttribute("providerList", providerService.getAll());
+			return "provider/providerList";
+		}catch (Exception ex) {
+			//TODO gestione eccezione
+			return "redirect:/home";
+		}
 	}
 	
 	private String goToEdit(Model model, ProviderWrapper providerWrapper){
