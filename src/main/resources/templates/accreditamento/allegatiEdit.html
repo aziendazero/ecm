@@ -23,71 +23,47 @@
 							<input type="hidden" th:field="${accreditamentoAllegatiWrapper.idOffset}" />	
 							
 							<!-- allegato 1 (atto costitutivo e statuto) -->
-							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, attoCostitutivo, ${++counter}, null)" ></th:block>
-							<div class="row">
-								<label th:text="#{label.esempio}"
-									class="control-label col-md-4 col-sm-4 col-xs-12"
-									for="esempio_attoCostitutivo">esempio attoCostitutivo</label>
-								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_attoCostitutivo">
-									<a id="attoCostitutivo_esempio_link" th:text="#{label.attoCostitutivo}" th:href="@{files/${accreditamentoWrapper.attoCostitutivoModel}}"></a>
-								</div>
+							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_attoCostitutivo">
+								<i class="fa fa-file-text"></i>
+								<a id="attoCostitutivo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.attoCostitutivoModel}}"></a>
 							</div>
+							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, attoCostitutivo, ${++counter}, null)" ></th:block>
 														
 							<!-- allegato 2 (esperienza formazione in ambito sanitario) -->
-							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, esperienzaFormazione, ${++counter}, null)" ></th:block>
-							<div class="row">
-								<label th:text="#{label.esempio}"
-									class="control-label col-md-4 col-sm-4 col-xs-12"
-									for="esempio_esperienzaFormazione">esempio esperienzaFormazione</label>
-								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_esperienzaFormazione">
-									<a id="esperienzaFormazione_esempio_link" th:text="#{label.esperienzaFormazione}" th:href="@{files/${accreditamentoWrapper.esperienzaFormazioneModel}}"></a>
-								</div>
+							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_esperienzaFormazione">
+								<i class="fa fa-file-text"></i>
+								<a id="esperienzaFormazione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.esperienzaFormazioneModel}}"></a>
 							</div>
+							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, esperienzaFormazione, ${++counter}, null)" ></th:block>
 							
 							<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
-							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, utilizzo, ${++counter}, null)" ></th:block>
-							<div class="row">
-								<label th:text="#{label.esempio}"
-									class="control-label col-md-4 col-sm-4 col-xs-12"
-									for="esempio_utilizzo">esempio utilizzo</label>
-								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_utilizzo">
-									<a id="utilizzo_esempio_link" th:text="#{label.utilizzo}" th:href="@{files/${accreditamentoWrapper.utilizzoModel}}"></a>
-								</div>
+							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_utilizzo">
+								<i class="fa fa-file-text"></i>
+								<a id="utilizzo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.utilizzoModel}}"></a>
 							</div>
+							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, utilizzo, ${++counter}, null)" ></th:block>
 							
 							<!-- allegato 4 (sistema informatico dedicato alla formazione in ambito sanitario) -->
-							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, sistemaInformatico, ${++counter}, null)" ></th:block>
-							<div class="row">
-								<label th:text="#{label.esempio}"
-									class="control-label col-md-4 col-sm-4 col-xs-12"
-									for="esempio_sistemaInformatico">esempio sistemaInformatico</label>
-								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_sistemaInformatico">
-									<a id="sistemaInformatico_esempio_link" th:text="#{label.sistemaInformatico}" th:href="@{files/${accreditamentoWrapper.sistemaInformaticoModel}}"></a>
-								</div>
+							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_sistemaInformatico">
+								<i class="fa fa-file-text"></i>
+								<a id="sistemaInformatico_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.sistemaInformaticoModel}}"></a>
 							</div>
+							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, sistemaInformatico, ${++counter}, null)" ></th:block>
 							
 							<!-- allegato 5 (piano di qualità) -->
+							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_pianoQualita">
+								<i class="fa fa-file-text"></i>
+								<a id="pianoQualita_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.pianoQualitaModel}}"></a>
+							</div>
 							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, pianoQualita, ${++counter}, null)" ></th:block>
-							<div class="row">
-								<label th:text="#{label.esempio}"
-									class="control-label col-md-4 col-sm-4 col-xs-12"
-									for="esempio_pianoQualita">esempio pianoQualità</label>
-								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_pianoQualita">
-									<a id="pianoQualita_esempio_link" th:text="#{label.pianoQualita}" th:href="@{files/${accreditamentoWrapper.pianoQualitaModel}}"></a>
-								</div>
-							</div>
-							
+								
 							<!-- allegato 6 (dichiarazione del legale rappresentante) -->
-							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, dichiarazioneLegale, ${++counter}, null)" ></th:block>
-							<div class="row">
-								<label th:text="#{label.esempio}"
-									class="control-label col-md-4 col-sm-4 col-xs-12"
-									for="esempio_dichiarazioneLegale">esempio dichiarazioneLegale</label>
-								<div class="col-md-4 col-sm-4 col-xs-12" id="esempio_dichiarazioneLegale">
-									<a id="dichiarazioneLegale_esempio_link" th:text="#{label.dichiarazioneLegale}" th:href="@{files/${accreditamentoWrapper.dichiarazioneLegaleModel}}"></a>
-								</div>
+							<div class="col-md-3 col-sm-3 col-xs-4 model-link" id="esempio_dichiarazioneLegale">
+								<i class="fa fa-file-text"></i>
+								<a id="dichiarazioneLegale_esempio_link" th:text="#{label.esempio_modello}" th:href="@{files/${accreditamentoWrapper.dichiarazioneLegaleModel}}"></a>
 							</div>
-							
+							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, dichiarazioneLegale, ${++counter}, null)" ></th:block>
+								
 							<!-- Registra allegati -->
 							<div class="item form-group text-right">
 								<input class="btn btn-primary right" name="save_persona" type="submit" th:value="#{label.salva}"/>
