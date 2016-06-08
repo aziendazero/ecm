@@ -98,6 +98,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 	
 	@Override
+	public List<Integer> getIdEditabili(Long accreditamentoId) {
+		return accreditamentoRepository.findOne(accreditamentoId).getIdEditabili();
+	}
+	
+	@Override
 	@Transactional
 	public void removeIdEditabili(Long accrediatementoId, List<Integer> idEditabiliToRemove) {
 		LOGGER.debug("Rimozione Ideditabili " +  idEditabiliToRemove + "dalla domanda : " + accrediatementoId);
