@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,13 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.AccreditamentoWrapper;
+import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.validator.AccreditamentoValidator;
 
 @Controller
 public class AccreditamentoController {
@@ -26,6 +32,11 @@ public class AccreditamentoController {
 	private ProviderService providerService;
 	@Autowired
 	private AccreditamentoService accreditamentoService;
+	@Autowired
+	private FileService fileService;
+	
+	@Autowired
+	private AccreditamentoValidator accreditamentoValidator;
 	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -46,6 +57,7 @@ public class AccreditamentoController {
 			}
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
@@ -72,30 +84,33 @@ public class AccreditamentoController {
 			*/
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
 	
 	/***	Get Accreditamento ***/
 	@RequestMapping("/provider/accreditamento")
-	public String getAccreditamentoAttivo(Model model){
+	public String getAccreditamentoAttivo(Model model, RedirectAttributes redirectAttrs){
 		try {
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento();
 			return goToAccreditamento(model, accreditamento);
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
 	
 	/***	Get Accreditamento {ID}	***/
 	@RequestMapping("/accreditamento/{id}")
-	public String getAccreditamento(@PathVariable Long id, Model model){
+	public String getAccreditamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try {
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
 			return goToAccreditamento(model, accreditamento);
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "accreditamento/accreditamentoList";
 		}
 	}
@@ -116,15 +131,48 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{id}";
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/provider/accreditamento/list";
 		}
 	}
 	
+	@RequestMapping("/accreditamento/{id}/provider/{providerId}/send")
+	public String inviaDomandaAccreditamento(@PathVariable Long id, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
+		try{
+			accreditamentoService.inviaDomandaAccreditamento(id);
+			redirectAttrs.addAttribute("providerId",providerId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.domanda_inviata", "success"));
+			return "redirect:/provider/{providerId}/accreditamento/list";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			redirectAttrs.addAttribute("id",id);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/accreditamento/{id}";
+		}
+		
+		
+	}
+	
 	private AccreditamentoWrapper prepareAccreditamentoWrapper(Accreditamento accreditamento){
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper();
-		accreditamentoWrapper.setProvider(accreditamento.getProvider());
-		accreditamentoWrapper.setProviderStato(false);
+		accreditamentoWrapper.setAccreditamento(accreditamento);
 		
+		// PROVIDER
+		accreditamentoWrapper.setProvider(accreditamento.getProvider());
+		
+		//SEDE LEGALE
+		Sede sede = accreditamento.getProvider().getSedeLegale();
+		accreditamentoWrapper.setSedeLegale( sede != null ? sede : new Sede());  
+		
+		//SEDE OPERATIVA
+		sede = accreditamento.getProvider().getSedeOperativa();
+		accreditamentoWrapper.setSedeOperativa( sede != null ? sede : new Sede());  
+		
+		//DATI ACCREDITAMENTO
+		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
+		accreditamentoWrapper.setDatiAccreditamento(datiAccreditamento != null ? datiAccreditamento : new DatiAccreditamento());
+		
+		// LEGALE RAPPRESENTANTE E RESPONSABILI
 		for(Persona p : accreditamento.getProvider().getPersone()){
 			if(p.isLegaleRappresentante())
 				accreditamentoWrapper.setLegaleRappresentante(p);
@@ -140,16 +188,13 @@ public class AccreditamentoController {
 				accreditamentoWrapper.setResponsabileQualita(p);
 		}
 		
-		Sede sede = accreditamento.getProvider().getSedeLegale();
-		accreditamentoWrapper.setSedeLegale( sede != null ? sede : new Sede());  
+		//ALLEGATI
+		List<String> listOfFiles = Arrays.asList(Costanti.FILE_ATTO_COSTITUTIVO, Costanti.FILE_ESPERIENZA_FORMAZIONE, Costanti.FILE_UTILIZZO, Costanti.FILE_SISTEMA_INFORMATICO, Costanti.FILE_PIANO_QUALITA, Costanti.FILE_DICHIARAZIONE_LEGALE);
+		Set<String> existFiles = fileService.checkFileExists(accreditamento.getProvider().getId(), listOfFiles);
+
+		accreditamentoWrapper.checkStati(existFiles);
+		accreditamentoWrapper.checkCanSend();
 		
-		sede = accreditamento.getProvider().getSedeOperativa();
-		accreditamentoWrapper.setSedeOperativa( sede != null ? sede : new Sede());  
-		
-		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
-		accreditamentoWrapper.setDatiAccreditamento(datiAccreditamento != null ? datiAccreditamento : new DatiAccreditamento());
-		
-		accreditamentoWrapper.setAccreditamento(accreditamento);
 		return accreditamentoWrapper;
 	}
 }

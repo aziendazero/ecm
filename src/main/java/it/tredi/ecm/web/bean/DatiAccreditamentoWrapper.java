@@ -30,10 +30,6 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		setOrganigramma(new File());
 	}
 	
-	public void setOffsetAndIds(){
-		setIdOffset(39);
-	}
-	
 	public void setEstrattoBilancioFormazione(File file){
 		if(file.getData() != null && file.getData().length > 0){
 			//file e' pieno

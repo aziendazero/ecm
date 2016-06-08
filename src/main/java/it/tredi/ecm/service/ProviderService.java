@@ -17,6 +17,4 @@ public interface ProviderService {
 	
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper, boolean saveTypeMinimal);
-	
-	public Persona getPersonaByRuolo(Ruolo ruolo, Long providerId);
 }

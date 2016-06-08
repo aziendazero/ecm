@@ -29,7 +29,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Autowired
 	private ProviderRepository providerRepository;
 	@Autowired
-	private PersonaRepository personaRepository;
+	private PersonaService personaService;
 	@Autowired
 	private ProfileAndRoleService profileAndRoleService;
 	@Autowired
@@ -93,13 +93,6 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 	
 	@Override
-	public Persona getPersonaByRuolo(Ruolo ruolo, Long providerId) {
-		LOGGER.info("Retrieving " + ruolo + " for provider " + providerId);
-		Persona persona = personaRepository.findOneByRuoloAndProviderId(ruolo, providerId);
-		return persona;
-	}
-
-	@Override
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper() {
 		ProviderRegistrationWrapper providerRegistrationWrapper = new ProviderRegistrationWrapper();
 		Provider provider = getProvider();
@@ -109,13 +102,13 @@ public class ProviderServiceImpl implements ProviderService {
 			providerRegistrationWrapper.setRichiedente(new Persona(Ruolo.RICHIEDENTE));
 			providerRegistrationWrapper.setLegale(new Persona(Ruolo.LEGALE_RAPPRESENTANTE));
 		}else{
-			Persona richiedente = getPersonaByRuolo(Ruolo.RICHIEDENTE, provider.getId());
+			Persona richiedente = personaService.getPersonaByRuolo(Ruolo.RICHIEDENTE, provider.getId());
 			if(richiedente == null){
 				richiedente = new Persona(Ruolo.RICHIEDENTE);
 				provider.addPersona(richiedente);
 			}
 			
-			Persona legale = getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE, provider.getId());
+			Persona legale = personaService.getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE, provider.getId());
 			if(legale == null){
 				legale = new Persona(Ruolo.LEGALE_RAPPRESENTANTE);
 				provider.addPersona(legale);
@@ -151,9 +144,9 @@ public class ProviderServiceImpl implements ProviderService {
 		save(provider);
 		if(!saveTypeMinimal){
 			provider.addPersona(richiedente);
-			personaRepository.save(richiedente);
+			personaService.save(richiedente);
 			provider.addPersona(legale);
-			personaRepository.save(legale);
+			personaService.save(legale);
 			
 			delegaRichiedente.setTipo(Costanti.FILE_DELEGA);
 			delegaRichiedente.setPersona(richiedente);

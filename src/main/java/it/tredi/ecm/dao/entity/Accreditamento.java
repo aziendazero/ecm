@@ -68,7 +68,13 @@ public class Accreditamento extends BaseEntity{
 	}
 	
 	public boolean isAttivo(){
-		if(dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now()))
+		if( dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
+			return true;
+		return false;
+	}
+	
+	public boolean isInviato(){
+		if(stato.equals(Costanti.ACCREDITAMENTO_STATO_INVIATO))
 			return true;
 		return false;
 	}

@@ -1,6 +1,8 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
@@ -30,6 +33,9 @@ public class ProviderController {
 	
 	@Autowired
 	private ProviderService providerService;
+	@Autowired
+	private AccreditamentoService accreditamentoService;
+	
 	@Autowired
 	private ProviderValidator providerValidator;
 	
@@ -68,21 +74,23 @@ public class ProviderController {
 	
 	/***	SHOW	***/
 	@RequestMapping("provider/show")
-	public String showProviderFromCurrentUser(Model model){
+	public String showProviderFromCurrentUser(Model model, RedirectAttributes redirectAttrs){
 		try {
 			return goToShowProvider(model, providerService.getProvider());
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:provider/list";
 		}
 	}
 	
 	@RequestMapping("provider/{id}/show")
-	public String showProvider(@PathVariable Long id, Model model){
+	public String showProvider(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try {
 			return goToShowProvider(model, providerService.getProvider(id));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:provider/list";
 		}
 	}
@@ -105,11 +113,12 @@ public class ProviderController {
 	}
 	
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/edit")
-	public String editProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model){
+	public String editProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try {
 			return goToEdit(model, prepareProviderWrapper(providerService.getProvider(id), accreditamentoId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento/" + accreditamentoId;
 		}
 	}
@@ -138,12 +147,13 @@ public class ProviderController {
 	}
 	
 	@RequestMapping("/provider/list")
-	public String showAll(Model model){
+	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		try {
 			model.addAttribute("providerList", providerService.getAll());
 			return "provider/providerList";
 		}catch (Exception ex) {
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
@@ -157,6 +167,8 @@ public class ProviderController {
 		ProviderWrapper providerWrapper = new ProviderWrapper();
 		providerWrapper.setProvider(provider);
 		providerWrapper.setAccreditamentoId(accreditamentoId);
+		providerWrapper.setOffsetAndIds(1, new LinkedList<Integer>(Arrays.asList(1,2,5,6,7)), accreditamentoService.getIdEditabili(accreditamentoId));
+		
 		return providerWrapper;
 	}
 	

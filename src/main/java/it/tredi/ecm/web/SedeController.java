@@ -3,6 +3,7 @@ package it.tredi.ecm.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
 import it.tredi.ecm.web.bean.Message;
@@ -37,6 +39,8 @@ public class SedeController {
 	private SedeService sedeService;
 	@Autowired
 	private ProviderService providerService;
+	@Autowired
+	private AccreditamentoService accreditamentoService;
 	
 	/***	GLOBAL MODEL ATTRIBUTES	***/
 	@ModelAttribute("elencoProvince")
@@ -136,6 +140,7 @@ public class SedeController {
 			return goToEditWhitFragment(model, sedeWrapper, "content");
 		}catch (Exception ex) {
 			//TODO gestione eccezione
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
 	}
@@ -143,12 +148,13 @@ public class SedeController {
 	/***	NEW / EDIT 	***/
 	@RequestMapping("/accreditamento/{accreditamentoId}/sede/new")
 	public String getNewSedeCurrentProvider(@PathVariable Long accreditamentoId, @RequestParam("tipologiaSede") String tipologiaSede, 
-												Model model) throws Exception{
+												Model model, RedirectAttributes redirectAttrs) throws Exception{
 		
 		try {
 			return goToEdit(model, prepareSedeWrapper(new Sede(), tipologiaSede, accreditamentoId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento" + accreditamentoId;
 		}
 	}
@@ -172,6 +178,7 @@ public class SedeController {
 			return goToEdit(model, sedeWrapper);
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
 	}
@@ -194,6 +201,7 @@ public class SedeController {
 				}
 			}catch(Exception ex){
 				//TODO gestione eccezione
+				model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				return EDIT;
 			}
 	}
@@ -212,16 +220,14 @@ public class SedeController {
 		SedeWrapper sedeWrapper = new SedeWrapper();
 		
 		sedeWrapper.setSede(sede);
-		
-		//TODO logica per recuperare idEditabili ed idOffset
 		sedeWrapper.setTipologiaSede(tipologiaSede);
+		
 		if(tipologiaSede.equals(Costanti.SEDE_LEGALE)) 
-			sedeWrapper.setIdEditabili(Arrays.asList(8,9,10,11,12,13,14)); 
+			sedeWrapper.setOffsetAndIds(8, new LinkedList<Integer>(Arrays.asList(8,9,10,11,12,13,14)), accreditamentoService.getIdEditabili(accreditamentoId));
 		else 
-			sedeWrapper.setIdEditabili(Arrays.asList(15,16,17,18,19,20,21));
+			sedeWrapper.setOffsetAndIds(15, new LinkedList<Integer>(Arrays.asList(15,16,17,18,19,20,21)), accreditamentoService.getIdEditabili(accreditamentoId));
 		
 		sedeWrapper.setAccreditamentoId(accreditamentoId);
-		
 		return sedeWrapper;
 	}
 }

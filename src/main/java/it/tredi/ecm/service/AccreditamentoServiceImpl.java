@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
@@ -48,9 +48,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 	
 	@Override
-	public Accreditamento getAccreditamento(Long id) {
-		LOGGER.debug("Caricamento domanda di accreditamento: " + id);
-		return accreditamentoRepository.findOne(id);
+	public Accreditamento getAccreditamento(Long accreditamentoId) {
+		LOGGER.debug("Caricamento domanda di accreditamento: " + accreditamentoId);
+		return accreditamentoRepository.findOne(accreditamentoId);
 	};
 	
 	@Override
@@ -62,8 +62,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId) {
 		LOGGER.debug("Recupero domande di accreditamento per il provider " + providerId);
-		Set<Accreditamento> l = accreditamentoRepository.findByProviderId(providerId);
-		return l;
+		return accreditamentoRepository.findByProviderId(providerId);
 	}
 	
 	@Override
@@ -92,6 +91,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			
 			if(accreditamento.isAttivo())
 				return false;
+			
+			if(accreditamento.isInviato())
+				return false;
 		}
 		
 		return canProvider;
@@ -99,17 +101,44 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	
 	@Override
 	public List<Integer> getIdEditabili(Long accreditamentoId) {
-		return accreditamentoRepository.findOne(accreditamentoId).getIdEditabili();
+		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
+		if(accreditamento != null)
+			return accreditamento.getIdEditabili();
+		return new ArrayList<Integer>();
 	}
 	
 	@Override
 	@Transactional
-	public void removeIdEditabili(Long accrediatementoId, List<Integer> idEditabiliToRemove) {
-		LOGGER.debug("Rimozione Ideditabili " +  idEditabiliToRemove + "dalla domanda : " + accrediatementoId);
+	public void removeIdEditabili(Long accreditamentoId, List<Integer> idEditabiliToRemove) {
+		LOGGER.debug("Rimozione idEditabili " +  idEditabiliToRemove + "dalla domanda : " + accreditamentoId);
 
-		Accreditamento accreditamento = accreditamentoRepository.findOne(accrediatementoId);
+		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
 		accreditamento.getIdEditabili().removeAll(idEditabiliToRemove);
 		accreditamentoRepository.save(accreditamento);
 	}
+	
+	@Override
+	@Transactional
+	public void addIdEditabili(Long accreditamentoId, List<Integer> idEditabiliToAdd) {
+		LOGGER.debug("Aggiunta idEditabili " +  idEditabiliToAdd + "alla domanda : " + accreditamentoId);
+		
+		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
+		accreditamento.getIdEditabili().addAll(idEditabiliToAdd);
+		accreditamentoRepository.save(accreditamento);
+	}
 
+	@Override
+	@Transactional
+	public void inviaDomandaAccreditamento(Long accreditamentoId) {
+		LOGGER.debug("Invio domanda di Accreditamento " + accreditamentoId + " alla segreteria");
+		
+		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
+		//TODO Data Invio ??? cosa succede se la domanda è tornata indietro? bisogna mantenere la data originale?
+		if(accreditamento.getDataInvio() == null)
+			accreditamento.setDataInvio(LocalDate.now());
+		accreditamento.setStato(Costanti.ACCREDITAMENTO_STATO_INVIATO);
+		accreditamento.getIdEditabili().clear();
+		
+		accreditamentoRepository.save(accreditamento);
+	}
 }

@@ -6,6 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -30,7 +31,8 @@ public class Persona extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	private Ruolo ruolo;
 	private String incarico = "";
-	private String professione;
+	@OneToOne
+	private Professione professione;
 	
 	public Persona(){}
 	public Persona(Ruolo ruolo){this.ruolo = ruolo;}

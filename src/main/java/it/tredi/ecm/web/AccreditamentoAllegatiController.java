@@ -2,6 +2,7 @@ package it.tredi.ecm.web;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +53,12 @@ public class AccreditamentoAllegatiController {
 	}
 
 	@RequestMapping("/accreditamento/{accreditamentoId}/allegati/edit")
-	public String editAllegati(@PathVariable Long accreditamentoId, Model model){
+	public String editAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		try{
 			return goToEdit(model, prepareAccreditamentoAllegatiWrapper(accreditamentoId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento/" + accreditamentoId;
 		}
 	}
@@ -116,6 +118,7 @@ public class AccreditamentoAllegatiController {
 			}
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
 	}
@@ -170,9 +173,7 @@ public class AccreditamentoAllegatiController {
 
 		HashMap<String, Long> modelIds = fileService.getModelIds();
 		wrapper.setModelIds(modelIds);
-		
-		wrapper.setOffsetAndIds();
-		wrapper.setIdEditabili(accreditamento.getIdEditabili());
+		wrapper.setOffsetAndIds(87, new LinkedList<Integer>(Arrays.asList(87,88,89,90,91,92)), accreditamento.getIdEditabili());
 
 		return wrapper;
 	}

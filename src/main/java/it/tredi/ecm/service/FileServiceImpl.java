@@ -1,6 +1,8 @@
 package it.tredi.ecm.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -62,6 +64,19 @@ public class FileServiceImpl implements FileService{
 		
 		return fileIds;
 	}
+	
+	@Override
+	public Set<String> checkFileExists(Long providerId, List<String> tipoFile) {
+		Set<File> files = fileRepository.findByProviderId(providerId);
+		Set<String> existsFile = new HashSet<String>();
+		for (File file : files){
+			if(tipoFile.contains(file.getTipo()))
+				existsFile.add(file.getTipo());
+		}
+		return existsFile;
+	}
+	
+	
 
 	@Override
 	@Transactional

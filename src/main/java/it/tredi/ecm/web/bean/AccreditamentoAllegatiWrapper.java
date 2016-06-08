@@ -3,7 +3,6 @@ package it.tredi.ecm.web.bean;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
@@ -48,10 +47,6 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 		sistemaInformaticoModel = modelIds.get("model_" + Costanti.FILE_SISTEMA_INFORMATICO);
 		pianoQualitaModel = modelIds.get("model_" + Costanti.FILE_PIANO_QUALITA);
 		dichiarazioneLegaleModel = modelIds.get("model_" + Costanti.FILE_DICHIARAZIONE_LEGALE);
-	}
-	
-	public void setOffsetAndIds(){
-		setIdOffset(87);
 	}
 	
 	public void setAttoCostitutivo(File file){

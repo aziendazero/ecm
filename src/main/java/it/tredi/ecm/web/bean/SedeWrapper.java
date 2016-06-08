@@ -1,7 +1,6 @@
 package it.tredi.ecm.web.bean;
 
 import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,9 +13,5 @@ public class SedeWrapper extends Wrapper{
 	
 	public void setTipologiaSede(String tipologiaSede){
 		this.tipologiaSede = tipologiaSede;
-		if(tipologiaSede.equals(Costanti.SEDE_LEGALE))
-			setIdOffset(8);
-		else
-			setIdOffset(15);
 	}
 }

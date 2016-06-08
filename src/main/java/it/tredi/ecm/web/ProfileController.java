@@ -31,36 +31,39 @@ public class ProfileController {
     }
 
 	@RequestMapping("profile/list")
-	public String showAll(Model model){
+	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		try {
 			model.addAttribute("profileList", profileAndRoleService.getAllProfile());
 			return "user/profileList";
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
 	
 	@RequestMapping("profile/{id}/edit")
-	public String editProfile(@PathVariable Long id, Model model){
+	public String editProfile(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try {
 			model.addAttribute("profile", profileAndRoleService.getProfile(id));
 			model.addAttribute("roleList", profileAndRoleService.getAllRole());
 			return "user/editProfile";
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/profile/list";
 		}
 	}
 	
 	@RequestMapping("profile/new")
-	public String newProfile(Model model){
+	public String newProfile(Model model, RedirectAttributes redirectAttrs){
 		try {
 			model.addAttribute("profile", new Profile());
 			model.addAttribute("roleList", profileAndRoleService.getAllRole());
 			return "user/editProfile";
 		}catch (Exception ex) {
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/profile/list";
 		}
 	}
@@ -80,6 +83,7 @@ public class ProfileController {
 			}
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "user/editProfile";
 		}
 	}

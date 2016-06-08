@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.repository.PersonaRepository;
 
 @Service
@@ -20,6 +21,12 @@ public class PersonaServiceImpl implements PersonaService {
 	@Override
 	public Persona getPersona(Long id) {
 		return personaRepository.findOne(id);
+	}
+	
+	@Override
+	public Persona getPersonaByRuolo(Ruolo ruolo, Long providerId) {
+		LOGGER.info("Recupero " + ruolo + " del provider " + providerId);
+		return personaRepository.findOneByRuoloAndProviderId(ruolo, providerId);
 	}
 	
 	@Override

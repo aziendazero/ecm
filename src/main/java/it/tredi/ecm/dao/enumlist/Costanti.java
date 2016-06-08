@@ -24,5 +24,6 @@ public class Costanti {
 	public static final String ACCREDITAMENTO_PROVVISORIO = "Provvisorio";
 	public static final String ACCREDITAMENTO_STANDARD = "Standard";
 	public static final String ACCREDITAMENTO_STATO_BOZZA = "Bozza";
+	public static final String ACCREDITAMENTO_STATO_INVIATO = "Inviato";
 	
 }

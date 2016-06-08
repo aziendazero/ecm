@@ -215,7 +215,7 @@
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<select id="professione_persona" class="form-control required" th:field="${personaWrapper.persona.professione}">
 			                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
-			                          			<option th:each="professione : ${elencoProfessioni}" th:value="${professione}" th:text="${professione}">Choose option</option>
+			                          			<option th:each="professione : ${professioneList}" th:value="${professione.id}" th:text="${professione.nome}">Choose option</option>
 			                        	</select>
 								  	</div>
 								</th:block>

@@ -37,36 +37,39 @@ public class AccountController {
     }
 
 	@RequestMapping("user/list")
-	public String showAll(Model model){
+	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		try {
 			model.addAttribute("accountList", accountService.getAllUsers());
 			return "user/userList";
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
 	
 	@RequestMapping("user/{id}/edit")
-	public String editUser(@PathVariable Long id, Model model){
+	public String editUser(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try{
 			model.addAttribute("account", accountService.getUserById(id));
 			model.addAttribute("profileList", profileAndRoleService.getAllProfile());
 			return "user/editUser";
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/user/list";
 		}
 	}
 	
 	@RequestMapping("user/new")
-	public String newUser(Model model){
+	public String newUser(Model model, RedirectAttributes redirectAttrs){
 		try {
 			model.addAttribute("account", new Account());
 			model.addAttribute("profileList", profileAndRoleService.getAllProfile());
 			return "user/editUser";
 		}catch (Exception ex) {
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/user/list";
 		}
 	}
@@ -92,7 +95,8 @@ public class AccountController {
 			}
 		}catch (Exception ex) {
 			//TODO gestione eccezione
-			return "user/editUser";
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/user/list";
 		}
 	}
 	
@@ -108,12 +112,13 @@ public class AccountController {
 	}
 	
 	@RequestMapping("/user/changePassword")
-	public String changePassword(Model model){
+	public String changePassword(Model model, RedirectAttributes redirectAttrs){
 		try {
 			model.addAttribute("accountChangePassword", new AccountChangePassword());
 			return "user/changePassword";
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
@@ -134,12 +139,14 @@ public class AccountController {
 					accountService.changePassword(userAccount.getId(), accountChangePassword.getNewPassword());
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.password_cambiata", "success"));
 				}catch (Exception ex){
-					//TODO gestione exception controller
+					//TODO gestione eccezione
+					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				}
 				return "redirect:/home";
 			}
 		}catch (Exception ex) {
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/user/changePassword/";
 		}
 	}

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
-import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -47,7 +46,7 @@ public class PersonaValidator {
 		//PROFESSIONE (RSI - RQ - CCS - ComCS)
 		if(persona.isResponsabileSistemaInformatico() || persona.isResponsabileQualita() || 
 			persona.isCoordinatoreComitatoScientifico() || persona.isComponenteComitatoScientifico()){
-			if(persona.getProfessione().isEmpty())
+			if(persona.getProfessione() == null || persona.getProfessione().getNome().isEmpty())
 				errors.rejectValue(prefix + "professione", "error.empty");
 		}
 		

@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,21 +80,23 @@ public class DatiAccreditamentoController {
 	}
 
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/new")
-	public String newDatiAccreditamento(@PathVariable Long accreditamentoId, Model model){
+	public String newDatiAccreditamento(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		try {
 			return goToEdit(model, prepareDatiAccreditamentoWrapper(new DatiAccreditamento(),accreditamentoId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento/" + accreditamentoId;
 		}
 	}
 	
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/{id}/edit")
-	public String editDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model){
+	public String editDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		try{
 			return goToEdit(model, prepareDatiAccreditamentoWrapper(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento/" + accreditamentoId;
 		}
 	};
@@ -142,6 +145,7 @@ public class DatiAccreditamentoController {
 			}
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
 	}
@@ -194,8 +198,7 @@ public class DatiAccreditamentoController {
 			}
 		}
 		
-		wrapper.setOffsetAndIds();
-		wrapper.setIdEditabili(Arrays.asList(39,40,41,42,43,44,45,46,47,48,49));
+		wrapper.setOffsetAndIds(39, new LinkedList<Integer>(Arrays.asList(38,39,40,41,42,43,44,45,46,47,48,49)), accreditamentoService.getIdEditabili(accreditamentoId));
 		
 		return wrapper;
 	};
