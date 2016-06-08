@@ -156,8 +156,7 @@ public class PersonaController {
 							fileService.save(personaWrapper.getCv());
 						}
 					}
-					
-					model.addAttribute("message",new Message("Errore", "message.conferma_registrazione", "error"));
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 					return EDIT;
 				}else{
 						personaService.save(personaWrapper.getPersona());
@@ -166,6 +165,7 @@ public class PersonaController {
 						if(personaWrapper.getPersona().isResponsabileAmministrativo())
 							accreditamentoService.removeIdEditabili(personaWrapper.getAccreditamentoId(), Arrays.asList(22,23,24,24,25,26,27,28,29));
 						redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
+						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
 						return "redirect:/accreditamento/{accreditamentoId}";
 				}
 			}catch(Exception ex){

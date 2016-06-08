@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
@@ -18,6 +19,7 @@ import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.ProviderRegistrationWrapperValidator;
 
 @Controller
@@ -71,7 +73,7 @@ public class ProviderRegistrationController {
 
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.POST)
 	public String registraProvider(@ModelAttribute("providerForm") ProviderRegistrationWrapper providerRegistrationWrapper, 
-									BindingResult result, Model model, 
+									BindingResult result, RedirectAttributes redirectAttrs, Model model, 
 									@RequestParam( value="saveTypeMinimal",required = false) String saveTypeMinimal,
 									@RequestParam( value="saveTypeFull",required = false) String saveTypeFull,
 									@RequestParam( value="delegaRichiedente",required = false) MultipartFile multiPartFile){
@@ -89,11 +91,11 @@ public class ProviderRegistrationController {
 			
 			if(result.hasErrors()){
 				model.addAttribute("stepToShow", evaluateErrorStep(result));
-				model.addAttribute("notifica", "success");
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return returnToProviderRegistrationForm();
 			}else{
 				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper, saveMinimal);
-				model.addAttribute("notifica", "success");
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.provider_salvato", "success"));
 				return "redirect:/home";
 			}
 		}catch (Exception ex){

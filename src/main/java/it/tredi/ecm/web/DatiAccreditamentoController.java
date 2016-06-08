@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
@@ -29,6 +30,7 @@ import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.DatiAccreditamentoWrapper;
+import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.DatiAccreditamentoValidator;
 
 @Controller
@@ -98,7 +100,7 @@ public class DatiAccreditamentoController {
 	
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/save", method = RequestMethod.POST)
 	public String saveDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
-											@PathVariable Long accreditamentoId, Model model,
+											@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model,
 											@RequestParam(value = "estrattoBilancioFormazione_multipart", required = false) MultipartFile estrattoBilancioFormazione_multipart,
 											@RequestParam(value = "budgetPrevisionale_multipart", required = false) MultipartFile budgetPrevisionale_multipart,
 											@RequestParam(value = "funzionigramma_multipart", required = false) MultipartFile funzionigramma_multipart,
@@ -130,12 +132,12 @@ public class DatiAccreditamentoController {
 				if(!result.hasFieldErrors("organigramma*") && organigramma_multipart != null && !organigramma_multipart.isEmpty()){
 					fileService.save(wrapper.getOrganigramma());
 				}
-				
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return EDIT;
 			}else{
 				datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), accreditamentoId);
 				saveFiles(wrapper, estrattoBilancioFormazione_multipart, budgetPrevisionale_multipart, funzionigramma_multipart, organigramma_multipart);
-				
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.dati_attivita_inseriti", "success"));
 				return "redirect:/accreditamento/" + accreditamentoId;
 			}
 		}catch (Exception ex){

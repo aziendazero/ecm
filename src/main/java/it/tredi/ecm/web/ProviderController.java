@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
 
@@ -122,10 +123,12 @@ public class ProviderController {
 			providerValidator.validateForAccreditamento(providerWrapper.getProvider(), result, "provider.");	
 			
 			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return EDIT;
 			}else{
 				providerService.save(providerWrapper.getProvider());
 				redirectAttrs.addAttribute("accreditamentoId", providerWrapper.getAccreditamentoId());
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.provider_salvato", "success"));
 				return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch (Exception ex){

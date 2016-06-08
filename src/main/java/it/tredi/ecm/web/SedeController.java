@@ -22,6 +22,7 @@ import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
+import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.SedeWrapper;
 import it.tredi.ecm.web.validator.SedeValidator;
 
@@ -183,11 +184,13 @@ public class SedeController {
 			try{
 				sedeValidator.validate(sedeWrapper.getSede(), result, "sede.");
 				if(result.hasErrors()){
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 					return EDIT;
 				}else{
-						sedeService.save(sedeWrapper.getSede(), providerService.getProvider(), sedeWrapper.getTipologiaSede());	
-						redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
-						return "redirect:/accreditamento/{accreditamentoId}";
+					sedeService.save(sedeWrapper.getSede(), providerService.getProvider(), sedeWrapper.getTipologiaSede());	
+					redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.sede_salvata", "success"));
+					return "redirect:/accreditamento/{accreditamentoId}";
 				}
 			}catch(Exception ex){
 				//TODO gestione eccezione

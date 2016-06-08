@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.ProfileAndRoleService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccountChangePassword;
+import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.AccountValidator;
 
 @Controller
@@ -69,15 +72,17 @@ public class AccountController {
 	}
 	
 	@RequestMapping(value = "user/save", method = RequestMethod.POST)
-	public String saveUser(@ModelAttribute("account") Account account, BindingResult result, Model model){
+	public String saveUser(@ModelAttribute("account") Account account, BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		try {
 			accountValidator.validate(account, result);
 			if(result.hasErrors()){
 				model.addAttribute("profileList", profileAndRoleService.getAllProfile());
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return "user/editUser";
 			}else{
 				try{
 					accountService.save(account);
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
 					return "redirect:/user/list";
 				}catch (Exception ex){
 					model.addAttribute("errore",ex.getMessage());
@@ -115,17 +120,19 @@ public class AccountController {
 	
 	@RequestMapping(value = "/user/changePassword", method = RequestMethod.POST)
 	public String changePassword(@ModelAttribute("accountChangePassword") AccountChangePassword accountChangePassword, 
-									BindingResult result, Model model){
+									BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		
 		try {
 			Account userAccount = accountService.getUserById(Utils.getAuthenticatedUser().getAccount().getId());
 			accountValidator.validateChangePassword(accountChangePassword, result, userAccount);
 			if(result.hasErrors()){
 				model.addAttribute("accountChangePassword", accountChangePassword);
+				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
 				return "user/changePassword";
 			}else{
 				try{
 					accountService.changePassword(userAccount.getId(), accountChangePassword.getNewPassword());
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.password_cambiata", "success"));
 				}catch (Exception ex){
 					//TODO gestione exception controller
 				}
