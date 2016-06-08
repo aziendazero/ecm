@@ -38,7 +38,7 @@ body.nav-md .container.body .right_col.main{
 }
 
 .icon{
-	font-size: 18px;
+	font-size: 20px;
 }
 
 .control-label.left-align {
@@ -142,4 +142,17 @@ table.datatable-responsive-form thead .sorting_asc:after {
 	padding-top: 10px;
 }
 
+.buttons-header {
+	padding: 0;
+	margin-left: 10px;
+}
+
+.table-btn {
+	margin: 0;
+	border: 0;
+}
+
+.table>tbody>tr>td {
+	vertical-align: middle;
+}
 

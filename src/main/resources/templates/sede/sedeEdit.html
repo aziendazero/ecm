@@ -6,7 +6,7 @@
 
 </head>
 <body>
-	<div layout:fragment="content" id="test" th:fragment="content" th:with="counter=${sedeWrapper.idOffset - 1}">
+	<div layout:fragment="content" id="main-container" th:fragment="content" th:with="counter=${sedeWrapper.idOffset - 1}">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -216,8 +216,7 @@
 			
 			function loadSedeLegale(){
 				var url = "/accreditamento/" + [[${sedeWrapper.accreditamentoId}]] + "/sede/copia";
-				
-				$("#test").load(url);
+				$("#main-container").load(url);
 			}
 			
 			$(document).ready(
