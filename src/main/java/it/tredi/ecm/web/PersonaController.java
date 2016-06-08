@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -26,6 +28,7 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.AnagraficaService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
@@ -42,6 +45,8 @@ public class PersonaController {
 
 	@Autowired
 	private PersonaService personaService;
+	@Autowired
+	private AnagraficaService anagraficaService;
 	@Autowired
 	private ProviderService providerService;
 	@Autowired
@@ -110,6 +115,13 @@ public class PersonaController {
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
+	}
+	
+	@RequestMapping("/anagrafiche")
+	@ResponseBody
+	public Set<Anagrafica>getElencoComuni(@RequestParam Long provider){
+		Set<Anagrafica> anagrafiche = anagraficaService.getAllAnagraficheFromProvider(provider); 
+		return anagrafiche;
 	}
 
 	/***	EDIT PERSONA ***/

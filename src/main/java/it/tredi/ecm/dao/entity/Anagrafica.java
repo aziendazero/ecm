@@ -3,6 +3,8 @@ package it.tredi.ecm.dao.entity;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +21,7 @@ public class Anagrafica extends BaseEntity{
 	private String email;
 	private String pec;
 	
+	@JsonIgnore
 	@OneToOne
 	private Provider provider;
 }

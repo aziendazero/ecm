@@ -148,7 +148,22 @@
 				} ],
 			});
 			
+			/**********
+			 BLOCCO DA SOSTITUIRE E/O SITEMARE
+			 ***********/
 			$('.modal').on('shown.bs.modal', function () {
+				$('.datatable-responsive-search').DataTable({
+					"bInfo" : false,
+					"bPaginate" : false,
+					//colonna del pulsante seleziona
+					"columnDefs": [ {
+						"targets": 3,
+						"orderable": false,
+						"width": "1px",
+					} ],
+				});
+				
+				
 		        $($.fn.dataTable.tables(true)).DataTable()
 		           .columns.adjust()
 		           .responsive.recalc();

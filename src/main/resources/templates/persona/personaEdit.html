@@ -287,15 +287,15 @@
 				$.get( "/anagrafiche?provider=" + [[${personaWrapper.providerId}]], function(data){
 					for(item in data){
 						console.log(item);
-						var obj = jQuery.parseJSON(data[item]);
+						var obj = data[item];
 						console.log(obj);
-						var row = '	<tr>																										\
+						var row = '	<tr role="row">																										\
 										<td>'+ obj.codiceFiscale +'</td>																		\
 										<td>'+ obj.nome + '</td>																				\
 										<td>'+ obj.cognome + '</td>																				\
-										<td><button th:text="#{label.seleziona}" onclick="loadPersona('+ obj.id +')"></button></td>	\
+										<td><button class="btn btn-primary" th:text="#{label.seleziona}" onclick="loadPersona('+ obj.id +')"></button></td>	\
 									</tr>'
-						$("#persona-modal > tbody").append(row);
+						$("#tabella-modale > tbody").append(row);
 					}
 				});      
 			});
