@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -94,7 +95,21 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 		
 		return canProvider;
-		
+	}
+	
+	@Override
+	public List<Integer> getIdEditabili(Long accreditamentoId) {
+		return accreditamentoRepository.findOne(accreditamentoId).getIdEditabili();
+	}
+	
+	@Override
+	@Transactional
+	public void removeIdEditabili(Long accrediatementoId, List<Integer> idEditabiliToRemove) {
+		LOGGER.debug("Rimozione Ideditabili " +  idEditabiliToRemove + "dalla domanda : " + accrediatementoId);
+
+		Accreditamento accreditamento = accreditamentoRepository.findOne(accrediatementoId);
+		accreditamento.getIdEditabili().removeAll(idEditabiliToRemove);
+		accreditamentoRepository.save(accreditamento);
 	}
 
 }

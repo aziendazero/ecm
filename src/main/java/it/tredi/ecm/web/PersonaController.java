@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
@@ -41,6 +43,8 @@ public class PersonaController {
 	private ProviderService providerService;
 	@Autowired
 	private FileService fileService;
+	@Autowired
+	private AccreditamentoService accreditamentoService;
 	
 	@Autowired
 	private PersonaValidator personaValidator;
@@ -155,11 +159,14 @@ public class PersonaController {
 					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 					return EDIT;
 				}else{
-					personaService.save(personaWrapper.getPersona());
-					saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
-					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
-					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
-					return "redirect:/accreditamento/{accreditamentoId}";
+						personaService.save(personaWrapper.getPersona());
+						saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
+						
+						if(personaWrapper.getPersona().isResponsabileAmministrativo())
+							accreditamentoService.removeIdEditabili(personaWrapper.getAccreditamentoId(), Arrays.asList(22,23,24,24,25,26,27,28,29));
+						redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
+						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
+						return "redirect:/accreditamento/{accreditamentoId}";
 				}
 			}catch(Exception ex){
 				//TODO gestione eccezione
@@ -228,8 +235,11 @@ public class PersonaController {
 		
 		//TODO logica per recuperare idEditabili ed idOffset
 		personaWrapper.setOffsetAndIds();
-		if(persona.isLegaleRappresentante())
-			personaWrapper.setIdEditabili(Arrays.asList(22,23,24,24,25,26,27,28,29));
+		if(persona.isLegaleRappresentante()){
+			List<Integer> idEditabili = Arrays.asList(22,23,24,24,25,26,27,28,29);
+			idEditabili.retainAll(accreditamentoService.getIdEditabili(accreditamentoId));
+			personaWrapper.setIdEditabili(idEditabili);			
+		}
 		else if(persona.isDelegatoLegaleRappresentante())
 			personaWrapper.setIdEditabili(Arrays.asList(30,31,32,33,34,35,36,37));
 		else if(persona.isResponsabileSegreteria())

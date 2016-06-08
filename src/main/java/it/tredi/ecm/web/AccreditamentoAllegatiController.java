@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,8 +168,11 @@ public class AccreditamentoAllegatiController {
 				wrapper.setSistemaInformatico(file);
 		}
 
+		HashMap<String, Long> modelIds = fileService.getModelIds();
+		wrapper.setModelIds(modelIds);
+		
 		wrapper.setOffsetAndIds();
-		wrapper.setIdEditabili(Arrays.asList(87,88,89,90,91,92));
+		wrapper.setIdEditabili(accreditamento.getIdEditabili());
 
 		return wrapper;
 	}

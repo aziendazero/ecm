@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -47,6 +48,19 @@ public class FileServiceImpl implements FileService{
 	public Set<File> getAll() {
 		LOGGER.debug("Getting all files");
 		return fileRepository.findAll();
+	}
+	
+	@Override
+	public HashMap<String, Long> getModelIds() {
+		LOGGER.debug("Getting Model ids");
+		Set<File> files = fileRepository.findModelFiles("model_");
+		HashMap<String, Long> fileIds = new HashMap<String, Long>();
+		
+		for(File file : files){
+			fileIds.put(file.getTipo(), file.getId());
+		}
+		
+		return fileIds;
 	}
 
 	@Override
