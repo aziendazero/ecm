@@ -142,4 +142,8 @@ table.datatable-responsive-form thead .sorting_asc:after {
 	padding-top: 10px;
 }
 
+.close-modal{
+	margin: 0;
+}
+
 
