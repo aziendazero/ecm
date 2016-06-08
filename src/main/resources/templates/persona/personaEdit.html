@@ -5,61 +5,46 @@
 <head lang="it">
 </head>
 <body>
-	<div layout:fragment="content" th:with="counter=${personaWrapper.idOffset - 1}">
+	<div layout:fragment="content" id="main-container" th:fragment="content" th:with="counter=${personaWrapper.idOffset - 1}">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
-						<button class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
-						<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/newAnagrafica?ruolo=${personaWrapper.persona.ruolo}|}"></a>
-						<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
+						<div class="pull-right buttons-header">
+							<button id="cerca-persona-btn" class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
+							<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/newAnagrafica?ruolo=${personaWrapper.persona.ruolo}|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
+						</div>
 						<div class="clearfix"></div>
 					</div>
 					
 					<!-- finestra modale di lookup delle anagrafiche -->
-					<div class="modal fade modal-lookup" tabindex="-1" role="dialog" aria-hidden="true">
+					<div id="persona-modal" class="modal fade modal-lookup" tabindex="-1" role="dialog" aria-hidden="true">
 						<div class="modal-dialog modal-lg">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
 									</button>
-									<h4 class="modal-title" id="myModalLabel" th:text="#{label.cerca_anagrafica}">Cerca anagrafica</h4>
+									<h4 class="modal-title" id="myModalLabel" th:text="#{label.cerca_persona}">Cerca anagrafica</h4>
 								</div>
 								<div class="modal-body">
-									<table class="datatable-responsive-search table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+									<table id="tabella-modale" class="datatable-responsive-search table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 										<thead>
 											<tr>
 												<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
 												<th th:text="#{label.nome}">Nome</th>
 												<th th:text="#{label.cognome}">Cognome</th>
-												<th th:text="#{label.seleziona}"></th>
+												<th></th>
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
-												<td></td>
-												<td></td>
-												<td></td>
-												<td><button th:text="#{label.seleziona}"></button></td>
-											</tr>
-											<tr>
-												<td></td>
-												<td></td>
-												<td></td>
-												<td><button th:text="#{label.seleziona}"></button></td>
-											</tr>
-											<tr>
-												<td></td>
-												<td></td>
-												<td></td>
-												<td><button th:text="#{label.seleziona}"></button></td>
-											</tr>
+											<!-- popolata con una request ajax -->
 										</tbody>
 									</table>
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-primary close-modal" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+									<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 								</div>
 							</div>
 						</div>
@@ -83,7 +68,7 @@
 							<input type="hidden" name="editIdFileCV" th:value="${personaWrapper.curriculumVitae.id}" />
 							<input type="hidden" name="editIdFileDelega" th:value="${personaWrapper.delega.id}" />
 							 -->
-							
+							 
 							<!-- cognome -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">1</label>
@@ -296,12 +281,31 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<script th:inline="javascript">
-			function openSearchPopup(){
-				
+			<script th:inline="javascript">
+			$("#cerca-persona-btn").one("click", function(){
+				console.log("sto facendo l'ajax request!");
+				$.get( "/anagrafiche?provider=" + [[${personaWrapper.providerId}]], function(data){
+					for(item in data){
+						console.log(item);
+						var obj = jQuery.parseJSON(data[item]);
+						console.log(obj);
+						var row = '	<tr>																										\
+										<td>'+ obj.codiceFiscale +'</td>																		\
+										<td>'+ obj.nome + '</td>																				\
+										<td>'+ obj.cognome + '</td>																				\
+										<td><button th:text="#{label.seleziona}" onclick="loadPersona('+ obj.id +')"></button></td>	\
+									</tr>'
+						$("#persona-modal > tbody").append(row);
+					}
+				});      
+			});
+			
+			function loadPersona(id){
+				var url = "/accreditamento/"+ [[${personaWrapper.accreditamentoId}]] +"/provider/"+ [[${personaWrapper.providerId}]] +"/anagrafica/"+ id +"/copia";
+				$("#main-container").load(url);
 			}
-		</script>
+			</script>
+		</div>
 	</div>
 </body>
 </html>
