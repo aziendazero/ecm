@@ -261,7 +261,7 @@ public class PersonaController {
 			else if(persona.isDelegatoLegaleRappresentante())
 				personaWrapper.setOffsetAndIds(30, new LinkedList<Integer>(Arrays.asList(30,31,32,33,34,35,36,37)), accreditamentoIdEditabili);
 			else if(persona.isResponsabileSegreteria())
-				personaWrapper.setOffsetAndIds(46, new LinkedList<Integer>(Arrays.asList(46,47,48,49,50,52)), accreditamentoIdEditabili);
+				personaWrapper.setOffsetAndIds(46, new LinkedList<Integer>(Arrays.asList(46,47,48,49,50,51,52)), accreditamentoIdEditabili);
 			else if(persona.isResponsabileAmministrativo())
 				personaWrapper.setOffsetAndIds(53, new LinkedList<Integer>(Arrays.asList(53,54,55,56,57,58,59,60)), accreditamentoIdEditabili);
 			else if(persona.isResponsabileSistemaInformatico())
