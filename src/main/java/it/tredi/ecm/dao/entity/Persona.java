@@ -37,6 +37,11 @@ public class Persona extends BaseEntity{
 	public Persona(){}
 	public Persona(Ruolo ruolo){this.ruolo = ruolo;}
 	
+	public void setProvider(Provider provider){
+		this.provider = provider;
+		this.getAnagrafica().setProvider(provider);
+	}
+	
 	/***	CHECK RUOLO DELLA PERSONA	***/
 	public boolean isResponsabileSegreteria(){
 		return ruolo.equals(Ruolo.RESPONSABILE_SEGRETERIA);
@@ -65,5 +70,4 @@ public class Persona extends BaseEntity{
 	public boolean isComponenteComitatoScientifico(){
 		return ruolo.equals(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
 	}
-	
 }

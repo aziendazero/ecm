@@ -33,6 +33,8 @@ public class PersonaServiceImpl implements PersonaService {
 	@Transactional
 	public void save(Persona persona) {
 		LOGGER.debug("Saving Persona");
+		if(persona.getAnagrafica().getProvider() == null)
+			persona.getAnagrafica().setProvider(persona.getProvider());
 		personaRepository.save(persona);
 	}
 

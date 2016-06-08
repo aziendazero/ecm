@@ -1,6 +1,8 @@
 package it.tredi.ecm.dao.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,4 +18,7 @@ public class Anagrafica extends BaseEntity{
 	private String cellulare;
 	private String email;
 	private String pec;
+	
+	@OneToOne
+	private Provider provider;
 }
