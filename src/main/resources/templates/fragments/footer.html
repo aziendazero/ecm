@@ -134,6 +134,18 @@
 				} ],
 			});
 			
+			$('.datatable-responsive-componenti-comitato').DataTable({
+				"bFilter" : false,
+				"bInfo" : false,
+				"bPaginate" : false,
+				"ordering" : false,
+				"columnDefs": [ {
+					"targets": 3,
+					"width": "1px",
+					"sClass": "center"
+				} ],
+			});
+			
 			$('.datatable-responsive-ordering').DataTable({
 				"bFilter" : false,
 			});

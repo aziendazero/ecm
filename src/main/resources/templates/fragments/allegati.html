@@ -5,6 +5,7 @@
 </head>
 <body>
 <th:block th:fragment="allegati(wrapper, tipoAllegato, counter, note)">
+	<div th:if="${__${wrapper}__.__${tipoAllegato}__.id != null or #lists.contains(__${wrapper}__.idEditabili, counter)}" class="divider-dashed"></div>
 	<div th:if="${__${wrapper}__.__${tipoAllegato}__.id != null or #lists.contains(__${wrapper}__.idEditabili, counter)}" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
 		<label class="control-label col-xs-1" th:text="${counter}">numero indice</label>
 		<label class="control-label col-md-3 col-sm-3 col-xs-7" th:for="__${tipoAllegato}__">
@@ -36,7 +37,6 @@
 		</th:block>
 		<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 	</div>
-	<div th:if="${__${wrapper}__.__${tipoAllegato}__.id != null or #lists.contains(__${wrapper}__.idEditabili, counter)}" class="divider-dashed"></div>
 	<script th:inline="javascript">
 		function setAllegato(idInput) {
 			$(idInput).click();

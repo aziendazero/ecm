@@ -159,3 +159,9 @@ table.datatable-responsive-form thead .sorting_asc:after {
 .center {
 	text-align: center;
 }
+
+.form-disabled-text {
+	cursor: not-allowed;
+	background-color: #eee;
+	color: #bbb;
+}
