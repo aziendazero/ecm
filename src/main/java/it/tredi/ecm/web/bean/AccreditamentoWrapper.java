@@ -1,7 +1,8 @@
-package it.tredi.ecm.service.bean;
+package it.tredi.ecm.web.bean;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ import org.hibernate.type.TrueFalseType;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
@@ -54,6 +56,7 @@ public class AccreditamentoWrapper {
 	private boolean responsabileSegreteriaStato;
 	private boolean responsabileAmministrativoStato;
 	private boolean comitatoScientificoStato;
+	private String comitatoScientificoErrorMessage;
 	private boolean responsabileSistemaInformaticoStato;
 	private boolean responsabileQualitaStato;
 	
@@ -88,10 +91,54 @@ public class AccreditamentoWrapper {
 		responsabileSistemaInformaticoStato = (responsabileSistemaInformatico != null && !responsabileSistemaInformatico.isNew()) ? true : false;
 		responsabileQualitaStato = (responsabileQualita != null && !responsabileQualita.isNew()) ? true : false;
 		
-		//TODO comitatoScientificoStato
-		
+		checkComitatoScientifico();
 		setFilesStato(existFiles);
 		checkCompleta();
+	}
+	
+	/*
+	 * [A] Almeno 5 componenti (coordinatore incluso) 
+	 * [B] Almeno 5 professionisti Sanitari ??? //TODO controllo comitato scientifico
+	 * [C] Se settato "Generale" -> Almeno 2 professioni diverse tra i componenti
+	 * [D] Se settato "Settoriale" -> Almeno 2 professioni analoghe a quelle selezionate (almeno che non sia stata selezionate solo 1 professione)
+	 * */
+	private void checkComitatoScientifico(){
+		comitatoScientificoStato = true;
+		//[A]
+		if(componentiComitatoScientifico.size() < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
+			comitatoScientificoStato = false;
+			comitatoScientificoErrorMessage = "error.numero_minimo_comitato";
+		}
+		else{
+			// mi assicuro che sono stati gia' inseriti i dati relativi all'accreditamento
+			if(datiAccreditamentoStato){
+				//Individuo distintamente le professioni dei componenti del comitato
+				Set<Professione> professioniDeiComponenti = new HashSet<Professione>();
+				for(Persona p : componentiComitatoScientifico){
+					professioniDeiComponenti.add(p.getProfessione());
+				}
+				
+				//[C]
+				if(datiAccreditamento.getProfessioniAccreditamento().equalsIgnoreCase("generale")){
+					if(professioniDeiComponenti.size() < 2){
+						comitatoScientificoStato = false;
+						comitatoScientificoErrorMessage = "error.numero_minimo_professioni";
+					}
+				}//[D]
+				else{
+					if(datiAccreditamento.getProfessioniSelezionate().size() > 1){
+						professioniDeiComponenti.retainAll(datiAccreditamento.getProfessioniSelezionate());
+						if(professioniDeiComponenti.size() < 2){
+							comitatoScientificoStato = false;
+							comitatoScientificoErrorMessage = "error.numero_minimo_professioni_settoriale";
+						}
+					}
+				}
+			}else{
+				comitatoScientificoStato = false;
+				comitatoScientificoErrorMessage = "error.datiaccreditamento_mancanti";
+			}
+		}
 	}
 	
 	private void setFilesStato(Set<String> existFiles){

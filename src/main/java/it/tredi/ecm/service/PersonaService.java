@@ -12,4 +12,5 @@ public interface PersonaService {
 	public void save(Persona persona);
 	
 	public Set<Anagrafica> getAllAnagraficheByProviderId(Long providerId);
+	Set<Persona> getComitatoScientifico(Long providerId);
 }

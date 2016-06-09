@@ -1,6 +1,7 @@
 package it.tredi.ecm.web.validator;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.validation.Errors;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.service.PersonaService;
 
 @Component
 public class PersonaValidator {
@@ -21,6 +23,8 @@ public class PersonaValidator {
 	private AnagraficaValidator anagraficaValidator;
 	@Autowired
 	private FileValidator fileValidator;
+	@Autowired
+	private PersonaService personaService;
 	
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
 		validatePersona(target, errors, prefix);
@@ -50,11 +54,25 @@ public class PersonaValidator {
 				errors.rejectValue(prefix + "professione", "error.empty");
 		}
 		
-		//ATTO DI NOMINA (LR - RS - RF - RA - CCS - ComCS - RSI - RQ)
+		//COMPONENTE COMITATO SCIENTIFICO
+		boolean cfPresente = false;
+		boolean coordinatorePresente = false;
+		if(persona.isComponenteComitatoScientifico()){
+			//non e' possibile inserire piu' volte la stessa persona nel comitato
+			Set<Persona> componenti = personaService.getComitatoScientifico(persona.getProvider().getId());
+			for(Persona p : componenti){
+				if(persona.getAnagrafica().getCodiceFiscale().equalsIgnoreCase(p.getAnagrafica().getCodiceFiscale()))
+						cfPresente = true;
+				if(p.isCoordinatoreComitatoScientifico())
+					coordinatorePresente = true;
+			}
+		}
+		if(cfPresente)
+			errors.rejectValue(prefix + "", "error.componente_presente");
 		
-		//CV per tutti (DLR - RS - RF - RA - CCS - ComCS - RSI - RQ)
+		if(coordinatorePresente)
+			errors.rejectValue(prefix + "coordinatoreComitatoScientifico", "error.coordinatore_presente");
 		
-		//ATTO DI DELEGA (DLR) 
 		
 	}
 	
