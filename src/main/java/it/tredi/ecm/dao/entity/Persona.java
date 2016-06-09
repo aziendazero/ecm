@@ -33,6 +33,7 @@ public class Persona extends BaseEntity{
 	private String incarico = "";
 	@OneToOne
 	private Professione professione;
+	Boolean coordinatoreComitatoScientifico; 
 	
 	public Persona(){}
 	public Persona(Ruolo ruolo){this.ruolo = ruolo;}
@@ -65,7 +66,7 @@ public class Persona extends BaseEntity{
 		return ruolo.equals(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
 	}
 	public boolean isCoordinatoreComitatoScientifico(){
-		return ruolo.equals(Ruolo.COORDINATORE_COMITATO_SCIENTIFICO);
+		return isComponenteComitatoScientifico() && this.coordinatoreComitatoScientifico;
 	}
 	public boolean isComponenteComitatoScientifico(){
 		return ruolo.equals(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);

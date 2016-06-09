@@ -13,7 +13,7 @@
 						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
 						<div class="pull-right buttons-header">
 							<button id="cerca-persona-btn" class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
-							<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/setAnagrafica?ruolo=${personaWrapper.persona.ruolo}|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/${personaWrapper.persona.ruolo}/setAnagrafica|}"></a>
 							<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
 						</div>
 						<div class="clearfix"></div>
@@ -285,13 +285,18 @@
 			$("#cerca-persona-btn").one("click", function(){
 				var table = $('#tabella-modale').DataTable();
 				$.get( "/provider/" + [[${personaWrapper.providerId}]] + "/anagraficaList", function(data){
+					var accreditamentoId = [[${personaWrapper.accreditamentoId}]];
+					var providerId = [[${personaWrapper.providerId}]];
+					var ruolo = [[${personaWrapper.persona.ruolo}]].$name;
+					
 					for(item in data){
 						var obj = data[item];
 						table.row.add([
 							obj.codiceFiscale,
 							obj.nome,
 							obj.cognome,
-							'<button class="btn btn-primary" th:text="#{label.seleziona}" onclick="loadPersona('+ obj.id +')"></button>'
+							//'<a class="btn btn-primary" th:text="#{label.seleziona}" href="loadPersona('+ obj.id +')"></a>'
+							'<a class="btn btn-primary" th:text="#{label.seleziona}" href="/accreditamento/' + accreditamentoId + '/provider/' + providerId + '/persona/' + ruolo + '/setAnagrafica?anagraficaId=' + obj.id +'"></a>'
 						]).draw(false);
 					}
 				});      
@@ -300,8 +305,10 @@
 			function loadPersona(id){
 				//var url = "/accreditamento/" + [[${personaWrapper.accreditamentoId}]] + "/provider/" + [[${personaWrapper.providerId}]] + "/anagrafica/" + id +"/copia";
 				var RUOLO = [[${personaWrapper.persona.ruolo}]];
-				var url = "/accreditamento/" + [[${personaWrapper.accreditamentoId}]] + "/provider/" + [[${personaWrapper.providerId}]] + "/persona/setAnagrafica?ruolo=" + RUOLO.$name + "&anagraficaId;=" + id;
-				$("#main-container").load(url);
+				var url = "/accreditamento/" + [[${personaWrapper.accreditamentoId}]] + "/provider/" + [[${personaWrapper.providerId}]] + "/persona/" + RUOLO.$name + "/setAnagrafica?anagraficaId=" + id;
+				//$("#main-container").load(url);
+				//$("#persona-modal").modal('hide');
+				return url;
 			}
 			</script>
 		</div>
