@@ -283,19 +283,16 @@
 			</div>
 			<script th:inline="javascript">
 			$("#cerca-persona-btn").one("click", function(){
-				console.log("sto facendo l'ajax request!");
+				var table = $('#tabella-modale').DataTable();
 				$.get( "/anagrafiche?provider=" + [[${personaWrapper.providerId}]], function(data){
 					for(item in data){
-						console.log(item);
 						var obj = data[item];
-						console.log(obj);
-						var row = '	<tr role="row">																										\
-										<td>'+ obj.codiceFiscale +'</td>																		\
-										<td>'+ obj.nome + '</td>																				\
-										<td>'+ obj.cognome + '</td>																				\
-										<td><button class="btn btn-primary" th:text="#{label.seleziona}" onclick="loadPersona('+ obj.id +')"></button></td>	\
-									</tr>'
-						$("#tabella-modale > tbody").append(row);
+						table.row.add([
+							obj.codiceFiscale,
+							obj.nome,
+							obj.cognome,
+							'<button class="btn btn-primary" th:text="#{label.seleziona}" onclick="loadPersona('+ obj.id +')"></button>'
+						]).draw(false);
 					}
 				});      
 			});
