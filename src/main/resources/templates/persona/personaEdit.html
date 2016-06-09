@@ -13,7 +13,7 @@
 						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
 						<div class="pull-right buttons-header">
 							<button id="cerca-persona-btn" class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
-							<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/newAnagrafica?ruolo=${personaWrapper.persona.ruolo}|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/setAnagrafica?ruolo=${personaWrapper.persona.ruolo}|}"></a>
 							<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
 						</div>
 						<div class="clearfix"></div>
@@ -284,7 +284,7 @@
 			<script th:inline="javascript">
 			$("#cerca-persona-btn").one("click", function(){
 				var table = $('#tabella-modale').DataTable();
-				$.get( "/anagrafiche?provider=" + [[${personaWrapper.providerId}]], function(data){
+				$.get( "/provider/" + [[${personaWrapper.providerId}]] + "/anagraficaList", function(data){
 					for(item in data){
 						var obj = data[item];
 						table.row.add([
@@ -298,7 +298,9 @@
 			});
 			
 			function loadPersona(id){
-				var url = "/accreditamento/"+ [[${personaWrapper.accreditamentoId}]] +"/provider/"+ [[${personaWrapper.providerId}]] +"/anagrafica/"+ id +"/copia";
+				//var url = "/accreditamento/" + [[${personaWrapper.accreditamentoId}]] + "/provider/" + [[${personaWrapper.providerId}]] + "/anagrafica/" + id +"/copia";
+				var RUOLO = [[${personaWrapper.persona.ruolo}]];
+				var url = "/accreditamento/" + [[${personaWrapper.accreditamentoId}]] + "/provider/" + [[${personaWrapper.providerId}]] + "/persona/setAnagrafica?ruolo=" + RUOLO.$name + "&anagraficaId;=" + id;
 				$("#main-container").load(url);
 			}
 			</script>

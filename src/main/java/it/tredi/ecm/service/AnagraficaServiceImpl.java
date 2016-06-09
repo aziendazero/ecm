@@ -18,9 +18,14 @@ public class AnagraficaServiceImpl implements AnagraficaService {
 	private AnagraficaRepository anagraficaRepository;
 	
 	@Override
-	public Set<Anagrafica> getAllAnagraficheFromProvider(Long providerId) {
+	public Set<Anagrafica> getAllAnagraficheByProviderId(Long providerId) {
 		LOGGER.debug("Recupero tutte le anagrafiche del provider " + providerId);
 		return anagraficaRepository.findAllByProviderId(providerId);
 	}
 
+	@Override
+	public Anagrafica getAnagrafica(Long id) {
+		LOGGER.debug("Recupero anagrafica " + id);
+		return anagraficaRepository.findOne(id);
+	}
 }
