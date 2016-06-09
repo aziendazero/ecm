@@ -156,3 +156,6 @@ table.datatable-responsive-form thead .sorting_asc:after {
 	vertical-align: middle;
 }
 
+.center {
+	text-align: center;
+}
