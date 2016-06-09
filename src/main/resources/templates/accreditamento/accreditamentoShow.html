@@ -206,6 +206,39 @@
 												</div>
 											</div>
 										</div>
+										<div class="row">
+											<div class="col-xs-12">
+												<div class="x_panel">
+													<div class="x_title">
+														<h2 th:text="#{label.comitato_scientifico}">Comitato Scientifico</h2>
+														<div class="clearfix"></div>
+													</div>
+													<div class="x_content col-xs-12">
+														<table class="datatable-responsive table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+															<thead>
+																<tr>
+																	<th th:text="#{label.componenti_comitato_scientifico}">Componenti COmitato Scientifico</th>
+																	<th th:text="#{label.stato_inserimento}">Stato inserimento</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td th:if="${accreditamentoWrapper.responsabileSegreteria != null}"><a th:text="#{label.responsabile_segreteria}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria.id}/edit|}"></a></td>
+																	<td th:if="${accreditamentoWrapper.responsabileSegreteria == null}"><a th:text="#{label.responsabile_segreteria}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=RESPONSABILE_SEGRETERIA|}"></a></td>
+																	
+																	<td	th:if="${accreditamentoWrapper.responsabileSegreteriaStato}">
+																		<span class="fa fa-check green"></span>
+																	</td>
+																	<td	th:unless="${accreditamentoWrapper.responsabileSegreteriaStato}">
+																		<span class="fa fa-remove red"></span>
+																	</td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>
 										<!--  /TAB 2 -->
 									</div>
 									<div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="tab3">
