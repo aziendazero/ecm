@@ -52,6 +52,7 @@ public class AccreditamentoAllegatiController {
 		return new AccreditamentoAllegatiWrapper();
 	}
 
+	/***	EDIT	***/
 	@RequestMapping("/accreditamento/{accreditamentoId}/allegati/edit")
 	public String editAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		try{
@@ -63,6 +64,7 @@ public class AccreditamentoAllegatiController {
 		}
 	}
 
+	/***	SAVE	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/save", method = RequestMethod.POST)
 	public String saveDatiAccreditamento(@ModelAttribute("accreditamentoAllegatiWrapper") AccreditamentoAllegatiWrapper wrapper, BindingResult result,
 			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model,
@@ -123,7 +125,9 @@ public class AccreditamentoAllegatiController {
 		}
 	}
 	
-	public void saveFiles(AccreditamentoAllegatiWrapper wrapper, MultipartFile attoCostitutivo_multipart, MultipartFile esperienzaFormazione_multipart, MultipartFile utilizzo_multipart, MultipartFile sistemaInformatico_multipart, MultipartFile pianoQualita_multipart, MultipartFile dichiarazioneLegale_multipart){
+	
+	/***	METODI PRIVATI PER SUPPORTO	***/
+	private void saveFiles(AccreditamentoAllegatiWrapper wrapper, MultipartFile attoCostitutivo_multipart, MultipartFile esperienzaFormazione_multipart, MultipartFile utilizzo_multipart, MultipartFile sistemaInformatico_multipart, MultipartFile pianoQualita_multipart, MultipartFile dichiarazioneLegale_multipart){
 		if(attoCostitutivo_multipart != null && !attoCostitutivo_multipart.isEmpty()){
 			fileService.save(wrapper.getAttoCostitutivo());
 		}
@@ -143,6 +147,7 @@ public class AccreditamentoAllegatiController {
 			fileService.save(wrapper.getDichiarazioneLegale());
 		}
 	}
+	
 	private String goToEdit(Model model, AccreditamentoAllegatiWrapper wrapper){
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
 		return EDIT;

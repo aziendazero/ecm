@@ -44,7 +44,7 @@ public class AccreditamentoController {
 	}
 	
 	
-	/***	Get Accreditamenti per provider corrente	***/
+	/***	Get Lista Accreditamenti per provider CORRENTE	***/
 	@RequestMapping("/provider/accreditamento/list")
 	public String getAllAccreditamentiForCurrentProvider(RedirectAttributes redirectAttrs) throws Exception{
 		try {
@@ -89,7 +89,7 @@ public class AccreditamentoController {
 		}
 	}
 	
-	/***	Get Accreditamento ***/
+	/***	Get Accreditamento ATTIVO per provider CORRENTE ***/
 	@RequestMapping("/provider/accreditamento")
 	public String getAccreditamentoAttivo(Model model, RedirectAttributes redirectAttrs){
 		try {
@@ -123,7 +123,7 @@ public class AccreditamentoController {
 		return "accreditamento/accreditamentoShow";
 	}
 	
-	/***	Nuova domanda accreditamento per provider corrente	***/
+	/*** NEW 	Nuova domanda accreditamento per provider corrente	***/
 	@RequestMapping("/provider/accreditamento/new")
 	public String getNewAccreditamentoForCurrentProvider(Model model, RedirectAttributes redirectAttrs) {
 		try{
@@ -136,6 +136,7 @@ public class AccreditamentoController {
 		}
 	}
 	
+	/***	INVIA DOMANDA ALLA SEGRETERIA	***/
 	@RequestMapping("/accreditamento/{id}/provider/{providerId}/send")
 	public String inviaDomandaAccreditamento(@PathVariable Long id, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
 		try{
@@ -149,10 +150,9 @@ public class AccreditamentoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento/{id}";
 		}
-		
-		
 	}
 	
+	/*** METODI PRIVATI PER IL SUPPORTO ***/
 	private AccreditamentoWrapper prepareAccreditamentoWrapper(Accreditamento accreditamento){
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper();
 		accreditamentoWrapper.setAccreditamento(accreditamento);

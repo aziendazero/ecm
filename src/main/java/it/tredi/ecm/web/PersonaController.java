@@ -1,7 +1,6 @@
 package it.tredi.ecm.web;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -72,6 +71,11 @@ public class PersonaController {
 		return anagrafiche;
 	}
 	
+	@ModelAttribute("professioneList")
+	public Set<Professione> getAllProfessioni(){
+		return professioneService.getAllProfessioni();
+	}
+	
 	@ModelAttribute("personaWrapper")
 	public PersonaWrapper getPersonaWrapper(@RequestParam(value="editId",required = false) Long id,
 			@RequestParam(value="editId_Anagrafica",required = false) Long anagraficaId){
@@ -81,18 +85,13 @@ public class PersonaController {
 				//NUOVA ANGARFICA
 				persona.setAnagrafica(null);
 			}else if(anagraficaId != persona.getAnagrafica().getId()){
-				//LOOKUP ANGARFICA ESISTENTE
+				//LOOKUP ANAGRAFICA ESISTENTE
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
 			}
 
 			return preparePersonaWrapper(persona); 	
 		}
 		return new PersonaWrapper();
-	}
-
-	@ModelAttribute("professioneList")
-	public Set<Professione> getAllProfessioni(){
-		return professioneService.getAllProfessioni();
 	}
 
 	/***	NUOVA PERSONA ***/
@@ -111,10 +110,15 @@ public class PersonaController {
 	}
 
 	/***	SET ANAGRAFICA	***/
-	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/setAnagrafica")
-	public String newAnagrafica(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
-			@RequestParam(name="ruolo", required = true) String ruolo,
-			@RequestParam(name="anagraficaId", required = false) Long anagraficaId){
+	/*
+	 * Agganciamo una Angrafica diversa alla Persona
+	 * 
+	 * */
+	//@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/setAnagrafica")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{ruolo}/setAnagrafica")
+	public String setAnagrafica(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
+									@PathVariable("ruolo") String ruolo,
+										@RequestParam(name="anagraficaId", required = false) Long anagraficaId){
 		try {
 			Persona persona = personaService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
 			if(persona == null){
@@ -131,26 +135,6 @@ public class PersonaController {
 			return EDIT;
 		}
 	}
-
-//	/***	SET ANAGRAFICA	***/
-//	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/setAnagrafica/{anagraficaId}")
-//	public String setAnagrafica(@PathVariable Long accreditamentoId, @PathVariable Long providerId, 
-//									@PathVariable Long personaId, @PathVariable Long anagraficaId, Model model,
-//									@RequestParam(name="ruolo", required = true) String ruolo){
-//		try {
-//			Persona persona = personaService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
-//			if(persona == null){
-//				persona = createPersona(providerId, ruolo);
-//			}else{
-//				persona.setAnagrafica(new Anagrafica());
-//			}
-//			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
-//		}catch (Exception ex){
-//			//TODO gestione eccezione
-//			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-//			return EDIT;
-//		}
-//	}
 
 	/***	EDIT PERSONA ***/
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/edit")
