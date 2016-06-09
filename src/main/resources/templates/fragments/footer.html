@@ -122,6 +122,18 @@
 				"ordering" : false,
 			});
 			
+			$('.datatable-responsive-check').DataTable({
+				"bFilter" : false,
+				"bInfo" : false,
+				"bPaginate" : false,
+				"ordering" : false,
+				"columnDefs": [ {
+					"targets": 1,
+					"width": "1px",
+					"sClass": "center"
+				} ],
+			});
+			
 			$('.datatable-responsive-ordering').DataTable({
 				"bFilter" : false,
 			});
@@ -149,10 +161,16 @@
 			});
 			
 			$('.modal').on('shown.bs.modal', function () {
-		        $($.fn.dataTable.tables(true)).DataTable()
+		    	$($.fn.dataTable.tables(true)).DataTable()
+		    		.columns.adjust()
+		    		.responsive.recalc();
+		    }); 
+			
+			$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+				$($.fn.dataTable.tables(true)).DataTable()
 		           	.columns.adjust()
 		           	.responsive.recalc();
-		    });    
+		    }); 
 			
 			function sendNotify(){
 				var notify = new PNotify({
