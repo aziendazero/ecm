@@ -290,9 +290,7 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></div>
 							</div>
-							
-							<div class="divider-dashed"></div>
-							
+
 							<!-- allegato 1 (etratto bilancio relativo formazione) -->
 							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, estrattoBilancioFormazione, ${++counter}, #{label.required_fatturato})" ></th:block>
 							
@@ -361,8 +359,6 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></div>
 							</div>
-							
-							<div class="divider-dashed"></div>
 							
 							<!-- allegato 2 (budget previsionale) -->
 							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, budgetPrevisionale, ${++counter}, #{label.required_fatturato})" ></th:block>
