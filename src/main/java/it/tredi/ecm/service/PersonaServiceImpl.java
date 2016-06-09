@@ -37,7 +37,7 @@ public class PersonaServiceImpl implements PersonaService {
 	@Override
 	@Transactional
 	public void save(Persona persona) {
-		LOGGER.debug("Saving Persona");
+		LOGGER.debug("Salvataggio Persona (" + persona.getRuolo() + ")");
 		if(persona.getAnagrafica().getProvider() == null)
 			persona.getAnagrafica().setProvider(persona.getProvider());
 		personaRepository.save(persona);
@@ -45,7 +45,14 @@ public class PersonaServiceImpl implements PersonaService {
 	
 	@Override
 	public Set<Anagrafica> getAllAnagraficheByProviderId(Long providerId) {
+		LOGGER.debug("Recupero Anagrafiche del Provider " + providerId);
 		return anagraficaService.getAllAnagraficheByProviderId(providerId);
+	}
+	
+	@Override
+	public Set<Persona> getComitatoScientifico(Long providerId) {
+		LOGGER.debug("Recupero Comitato Scientifico del Provider " + providerId);
+		return personaRepository.findAllByRuolo(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
 	}
 
 }

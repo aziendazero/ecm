@@ -22,7 +22,7 @@ import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
-import it.tredi.ecm.service.bean.AccreditamentoWrapper;
+import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.AccreditamentoValidator;
 
