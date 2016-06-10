@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -79,8 +80,8 @@ public class PersonaController {
 	@ModelAttribute("personaWrapper")
 	public PersonaWrapper getPersonaWrapper(@RequestParam(value="editId",required = false) Long id,
 			@RequestParam(value="editId_Anagrafica",required = false) Long anagraficaId){
-		if(id != null){
-			Persona persona = personaService.getPersona(id);
+		if(id != null || anagraficaId != null){
+			Persona persona = (id != null) ? personaService.getPersona(id) : new Persona();
 			if(anagraficaId == null){
 				//NUOVA ANGARFICA
 				persona.setAnagrafica(null);
@@ -120,10 +121,15 @@ public class PersonaController {
 									@PathVariable("ruolo") String ruolo,
 										@RequestParam(name="anagraficaId", required = false) Long anagraficaId){
 		try {
-			Persona persona = personaService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
+			Persona persona = null;
+			
+			if(!ruolo.equals(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO.name()))
+				persona = personaService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
+
 			if(persona == null){
 				persona = createPersona(providerId, ruolo);
-			}else if(anagraficaId == null){
+			}
+			if(anagraficaId == null){
 				persona.setAnagrafica(new Anagrafica());
 			}else{
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
@@ -224,7 +230,22 @@ public class PersonaController {
 			return EDIT;
 		}
 	}
-
+	
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/remove")
+	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId, 
+														Model model, RedirectAttributes redirectAttrs){
+		try{
+			personaService.delete(personaId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.componente_comitato_eliminato", "success"));
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+		}
+		
+		redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+		return "redirect:/accreditamento/{accreditamentoId}";
+	}
+	
 	private void saveFiles(PersonaWrapper personaWrapper, MultipartFile attoNomina_multiPartFile, MultipartFile cv_multiPartFile, MultipartFile delega_multiPartFile){
 		if(attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty()){
 			fileService.save(personaWrapper.getAttoNomina());
@@ -288,6 +309,8 @@ public class PersonaController {
 				personaWrapper.setOffsetAndIds(46, new LinkedList<Integer>(Arrays.asList(46,47,48,49,50,51,52)), accreditamentoIdEditabili);
 			else if(persona.isResponsabileAmministrativo())
 				personaWrapper.setOffsetAndIds(53, new LinkedList<Integer>(Arrays.asList(53,54,55,56,57,58,59,60)), accreditamentoIdEditabili);
+			else if(persona.isComponenteComitatoScientifico())
+				personaWrapper.setOffsetAndIds(61, new LinkedList<Integer>(Arrays.asList(61,62,63,64,65,66,67,68,69,70)), accreditamentoIdEditabili);
 			else if(persona.isResponsabileSistemaInformatico())
 				personaWrapper.setOffsetAndIds(71, new LinkedList<Integer>(Arrays.asList(71,72,73,74,75,76,77,78)), accreditamentoIdEditabili);
 			else if(persona.isResponsabileQualita())

@@ -143,7 +143,7 @@
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="isStraniero_persona" name="isStraniero_persona" 
 										class="form-control col-md-7 col-xs-12"
-										type="checkbox" th:checked="${personaWrapper.persona.anagrafica.isStraniero}" />
+										type="checkbox" th:checked="${personaWrapper.persona.anagrafica.straniero}" />
 								</div>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
 							</div>

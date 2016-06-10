@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,7 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.service.AccountServiceImpl;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
@@ -28,6 +31,9 @@ import it.tredi.ecm.web.validator.AccreditamentoValidator;
 
 @Controller
 public class AccreditamentoController {
+	
+	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoController.class);
+	
 	@Autowired
 	private ProviderService providerService;
 	@Autowired
@@ -57,6 +63,7 @@ public class AccreditamentoController {
 			}
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -84,6 +91,7 @@ public class AccreditamentoController {
 			*/
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -97,6 +105,7 @@ public class AccreditamentoController {
 			return goToAccreditamento(model, accreditamento);
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -110,6 +119,7 @@ public class AccreditamentoController {
 			return goToAccreditamento(model, accreditamento);
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "accreditamento/accreditamentoList";
 		}
@@ -131,6 +141,7 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{id}";
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/provider/accreditamento/list";
 		}
@@ -146,6 +157,7 @@ public class AccreditamentoController {
 			return "redirect:/provider/{providerId}/accreditamento/list";
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			redirectAttrs.addAttribute("id",id);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento/{id}";

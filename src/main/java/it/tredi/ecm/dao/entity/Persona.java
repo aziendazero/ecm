@@ -15,11 +15,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name="persona",
-		uniqueConstraints = {
-								@UniqueConstraint(columnNames={"provider_id", "ruolo"})
-								}
-)
+//@Table(name="persona",
+//		uniqueConstraints = {
+//								@UniqueConstraint(columnNames={"provider_id", "ruolo"})
+//								}
+//)
 @Getter
 @Setter
 public class Persona extends BaseEntity{
@@ -33,7 +33,7 @@ public class Persona extends BaseEntity{
 	private String incarico = "";
 	@OneToOne
 	private Professione professione;
-	Boolean coordinatoreComitatoScientifico; 
+	private Boolean coordinatoreComitatoScientifico; 
 	
 	public Persona(){}
 	public Persona(Ruolo ruolo){this.ruolo = ruolo;}
@@ -66,7 +66,7 @@ public class Persona extends BaseEntity{
 		return ruolo.equals(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
 	}
 	public boolean isCoordinatoreComitatoScientifico(){
-		return isComponenteComitatoScientifico() && this.coordinatoreComitatoScientifico;
+		return isComponenteComitatoScientifico() && (this.coordinatoreComitatoScientifico != null) && this.coordinatoreComitatoScientifico.booleanValue();
 	}
 	public boolean isComponenteComitatoScientifico(){
 		return ruolo.equals(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);

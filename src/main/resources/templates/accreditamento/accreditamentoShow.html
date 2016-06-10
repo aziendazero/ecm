@@ -214,6 +214,7 @@
 														<div class="clearfix"></div>
 													</div>
 													<div class="x_content">
+														<div th:unless="${accreditamentoWrapper.comitatoScientificoStato}" th:text="#{${accreditamentoWrapper.comitatoScientificoErrorMessage}}" class="alert alert-error"></div>
 														<table id="comitato-table" class="datatable-responsive-componenti-comitato table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 															<thead>
 																<tr>
