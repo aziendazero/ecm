@@ -87,7 +87,7 @@ public class PersonaController {
 			if(anagraficaId == null){
 				//NUOVA ANGARFICA
 				persona.setAnagrafica(null);
-			}else if(anagraficaId != persona.getAnagrafica().getId()){
+			}else if(!anagraficaId.equals(persona.getAnagrafica().getId())){
 				//LOOKUP ANAGRAFICA ESISTENTE
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
 			}
@@ -243,7 +243,7 @@ public class PersonaController {
 		}
 	}
 	
-	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/remove")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/delete")
 	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId, 
 														Model model, RedirectAttributes redirectAttrs){
 		try{

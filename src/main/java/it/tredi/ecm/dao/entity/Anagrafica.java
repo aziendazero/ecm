@@ -1,5 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
@@ -24,4 +26,21 @@ public class Anagrafica extends BaseEntity{
 	@JsonIgnore
 	@OneToOne
 	private Provider provider;
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Anagrafica entitapiatta = (Anagrafica) o;
+        return Objects.equals(id, entitapiatta.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

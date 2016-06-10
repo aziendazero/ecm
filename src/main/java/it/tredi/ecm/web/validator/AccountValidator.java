@@ -66,7 +66,7 @@ public class AccountValidator {
 				if(account.isNew()){
 					errors.rejectValue(prefix + "username", "error.username.duplicated");
 				}else{
-					if(account.getId() != user.get().getId())
+					if(!account.getId().equals(user.get().getId()))
 						errors.rejectValue(prefix + "username", "error.username.duplicated");
 				}
 			}
@@ -81,7 +81,7 @@ public class AccountValidator {
 				if(account.isNew()){
 					errors.rejectValue(prefix + "email", "error.email.duplicated");
 				}else{
-					if(account.getId() != user.get().getId())
+					if(!account.getId().equals(user.get().getId()))
 						errors.rejectValue(prefix + "email", "error.email.duplicated");
 				}
 			}

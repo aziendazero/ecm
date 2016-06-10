@@ -25,15 +25,36 @@ public class PersonaServiceImpl implements PersonaService {
 	
 	@Override
 	public Persona getPersona(Long id) {
-		return personaRepository.findOne(id);
+		LOGGER.debug("Recupero Persona " + id);
+		Persona persona = personaRepository.findOne(id);
+		log(persona);
+		return persona;
 	}
 	
 	@Override
 	public Persona getPersonaByRuolo(Ruolo ruolo, Long providerId) {
 		LOGGER.info("Recupero " + ruolo + " del provider " + providerId);
-		return personaRepository.findOneByRuoloAndProviderId(ruolo, providerId);
+		Persona persona =  personaRepository.findOneByRuoloAndProviderId(ruolo, providerId);
+		log(persona);
+		return persona;
 	}
 	
+	@Override
+	public Persona getPersonaByRuoloAndCodiceFiscale(Ruolo ruolo, String codiceFiscale, Long providerId) {
+		LOGGER.debug("Recupero Persona (" + ruolo.name() + ") con codice fiscale " + codiceFiscale + " del provider (" + providerId + ")");
+		Persona persona = personaRepository.findOneByRuoloAndAnagraficaCodiceFiscaleAndProviderId(ruolo, codiceFiscale, providerId);
+		log(persona);
+		return persona;
+	}
+	
+	@Override
+	public Persona getCoordinatoreComitatoScientifico(Long providerId) {
+		LOGGER.debug("Recupero Persona (" + Ruolo.COMPONENTE_COMITATO_SCIENTIFICO.name() + ") del provider (" + providerId + ")");
+		Persona persona = personaRepository.findOneByRuoloAndCoordinatoreComitatoScientificoAndProviderId(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, true, providerId);
+		log(persona);
+		return persona;
+	}
+		
 	@Override
 	@Transactional
 	public void save(Persona persona) {
@@ -61,5 +82,11 @@ public class PersonaServiceImpl implements PersonaService {
 		LOGGER.debug("Eliminazione Persona " + id);
 		personaRepository.delete(id);
 	}
-
+	
+	private void log(Persona persona){
+		if(persona == null)
+			LOGGER.debug("Persona non trovata");
+		else
+			LOGGER.debug("Persona trovata (" + persona.getId() + ")");
+	}
 }

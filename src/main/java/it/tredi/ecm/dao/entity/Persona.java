@@ -1,5 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
+import java.util.Objects;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -68,4 +70,21 @@ public class Persona extends BaseEntity{
 	public boolean isComponenteComitatoScientifico(){
 		return ruolo.equals(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Persona entitapiatta = (Persona) o;
+        return Objects.equals(id, entitapiatta.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

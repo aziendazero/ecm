@@ -29,6 +29,10 @@ public class PersonaWrapper extends Wrapper {
 		setDelega(new File());
 	}
 	
+	public void setPersona(Persona p){
+		this.persona = p;
+	}
+	
 	public void setAttoNomina(File file){
 		if(file.getData() != null && file.getData().length > 0){
 			//file e' pieno
