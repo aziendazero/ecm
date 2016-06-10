@@ -10,6 +10,7 @@ public interface PersonaService {
 	public Persona getPersona(Long id); 
 	public Persona getPersonaByRuolo(Ruolo ruolo, Long providerId);
 	public void save(Persona persona);
+	public void delete(Long id);
 	
 	public Set<Anagrafica> getAllAnagraficheByProviderId(Long providerId);
 	Set<Persona> getComitatoScientifico(Long providerId);

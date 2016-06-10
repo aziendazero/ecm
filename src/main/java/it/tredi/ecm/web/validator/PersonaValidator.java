@@ -61,14 +61,16 @@ public class PersonaValidator {
 			//non e' possibile inserire piu' volte la stessa persona nel comitato
 			Set<Persona> componenti = personaService.getComitatoScientifico(persona.getProvider().getId());
 			for(Persona p : componenti){
+				System.out.println(p.getId() + " - " + p.getAnagrafica().getId());
 				if(persona.getAnagrafica().getCodiceFiscale().equalsIgnoreCase(p.getAnagrafica().getCodiceFiscale()))
 						cfPresente = true;
 				if(p.isCoordinatoreComitatoScientifico())
 					coordinatorePresente = true;
+				cfPresente = true;
 			}
 		}
 		if(cfPresente)
-			errors.rejectValue(prefix + "", "error.componente_presente");
+			errors.rejectValue(prefix + "codiceFiscale", "error.componente_presente");
 		
 		if(coordinatorePresente)
 			errors.rejectValue(prefix + "coordinatoreComitatoScientifico", "error.coordinatore_presente");

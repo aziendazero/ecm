@@ -52,7 +52,14 @@ public class PersonaServiceImpl implements PersonaService {
 	@Override
 	public Set<Persona> getComitatoScientifico(Long providerId) {
 		LOGGER.debug("Recupero Comitato Scientifico del Provider " + providerId);
-		return personaRepository.findAllByRuolo(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
+		return personaRepository.findAllByRuoloAndProviderId(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, providerId);
+	}
+	
+	@Override
+	@Transactional
+	public void delete(Long id) {
+		LOGGER.debug("Eliminazione Persona " + id);
+		personaRepository.delete(id);
 	}
 
 }
