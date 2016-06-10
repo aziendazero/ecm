@@ -257,7 +257,7 @@
 																</tr>
 															</tbody>
 														</table>
-														<button th:if="${accreditamentoWrapper.comitatoScientificoEditabile}" th:text="#{label.aggiungi_componente}" class="btn btn-primary with-margin-top" onclick="aggiungiComponente()"></button>
+														<a th:if="${accreditamentoWrapper.comitatoScientificoEditabile}" th:text="#{label.aggiungi_componente}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=COMPONENTE_COMITATO_SCIENTIFICO|}"></a>
 													</div>
 												</div>
 											</div>
@@ -358,35 +358,18 @@
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
-			     
-			           
 				$(document).ready(function() {
-					var table = $('#comitato-table').DataTable();     
-					
 					if ([[${currentTab}]] != null && [[${currentTab}]] != "tab1")
 						$('#'+[[${currentTab}]]).tab('show');
 					
+					var table = $('#comitato-table').DataTable();
 					function checkRemove() {
 						if (table.rows().count() >= 6) 
 							table.column(4).visible(true);
 						else
 							table.column(4).visible(false);
 					}
-					
-					function aggiungiComponente() {
-						var nd = [[#{label.nd}]];
-						var componente = [[#{label.componente_comitato}]];
-						table.row.add([
-							'<td><a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=COMPONENTE_COMITATO_SCIENTIFICO|}">'+ componente +'</a></td>',
-							'<td>'+ nd +'</td>',
-							'<td>'+ nd +'</td>',
-							'<td>							\
-								<a><span class="fa fa-trash disabled"></span></a>	\
-							</td>'
-						]).draw(false);
-					}
-					
-					checkRemove();				
+					checkRemove();
 				});
 			/*]]>*/	
 			</script>
