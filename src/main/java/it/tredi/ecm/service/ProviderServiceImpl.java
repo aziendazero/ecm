@@ -15,7 +15,6 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.dao.repository.PersonaRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;

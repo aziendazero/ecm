@@ -15,6 +15,7 @@ public class AnagraficaValidator {
 	private static final String PATTERN_CODICE_FISCALE = "[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]";
 	
 	public void validateBase(Object target, Errors errors, String prefix){
+		LOGGER.debug("VALIDAZIONE ANAGRAFICA");
 		Anagrafica anagrafica = (Anagrafica)target;
 		if(anagrafica.getCognome().isEmpty())
 			errors.rejectValue(prefix + "cognome", "error.empty");
@@ -33,7 +34,6 @@ public class AnagraficaValidator {
 					errors.rejectValue(prefix + "codiceFiscale", "error.invalid");
 			}
 		}
-		
 	}
 	
 	public void validateCellulare(Object target, Errors errors, String prefix){

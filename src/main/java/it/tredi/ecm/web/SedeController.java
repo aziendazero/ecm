@@ -1,7 +1,6 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -223,9 +222,9 @@ public class SedeController {
 		sedeWrapper.setTipologiaSede(tipologiaSede);
 		
 		if(tipologiaSede.equals(Costanti.SEDE_LEGALE)) 
-			sedeWrapper.setOffsetAndIds(8, new LinkedList<Integer>(Arrays.asList(8,9,10,11,12,13,14)), accreditamentoService.getIdEditabili(accreditamentoId));
+			sedeWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_SEDE_LEGALE), accreditamentoService.getIdEditabili(accreditamentoId));
 		else 
-			sedeWrapper.setOffsetAndIds(15, new LinkedList<Integer>(Arrays.asList(15,16,17,18,19,20,21)), accreditamentoService.getIdEditabili(accreditamentoId));
+			sedeWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_SEDE_OPERATIVA), accreditamentoService.getIdEditabili(accreditamentoId));
 		
 		sedeWrapper.setAccreditamentoId(accreditamentoId);
 		return sedeWrapper;

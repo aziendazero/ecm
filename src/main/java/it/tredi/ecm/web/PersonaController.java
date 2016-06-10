@@ -1,6 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +26,7 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AnagraficaService;
@@ -109,7 +109,8 @@ public class PersonaController {
 			//TODO gestione eccezione
 			LOGGER.error(ex.getMessage(),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/accreditamento" + accreditamentoId;
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	}
 
@@ -217,11 +218,13 @@ public class PersonaController {
 					if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() || 
 							personaWrapper.getPersona().isComponenteComitatoScientifico() || personaWrapper.getPersona().isCoordinatoreComitatoScientifico()|| 
 							personaWrapper.getPersona().isResponsabileSistemaInformatico() || personaWrapper.getPersona().isResponsabileQualita())
-						accreditamentoService.removeIdEditabili(personaWrapper.getAccreditamentoId(), Arrays.asList(22,23,24,24,25,26,27,28,29));
+						accreditamentoService.removeIdEditabili(personaWrapper.getAccreditamentoId(), Costanti.IDS_LEGALE_RAPPRESENTANTE);
 
 					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
-					redirectAttrs.addFlashAttribute("currentTab","tab2");
+					
+					if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())
+						redirectAttrs.addFlashAttribute("currentTab","tab2");
 					return "redirect:/accreditamento/{accreditamentoId}";
 				}
 			}catch(Exception ex){
@@ -313,19 +316,19 @@ public class PersonaController {
 		if(accreditamentoId != 0){
 			List<Integer> accreditamentoIdEditabili = accreditamentoService.getIdEditabili(accreditamentoId);
 			if(persona.isLegaleRappresentante())
-				personaWrapper.setOffsetAndIds(22, new LinkedList<Integer>(Arrays.asList(22,23,24,24,25,26,27,28,29)), accreditamentoIdEditabili);		
+				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_LEGALE_RAPPRESENTANTE), accreditamentoIdEditabili);		
 			else if(persona.isDelegatoLegaleRappresentante())
-				personaWrapper.setOffsetAndIds(30, new LinkedList<Integer>(Arrays.asList(30,31,32,33,34,35,36,37)), accreditamentoIdEditabili);
+				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_DELEGATO_LEGALE_RAPPRESENTANTE), accreditamentoIdEditabili);
 			else if(persona.isResponsabileSegreteria())
-				personaWrapper.setOffsetAndIds(46, new LinkedList<Integer>(Arrays.asList(46,47,48,49,50,51,52)), accreditamentoIdEditabili);
+				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_RESPONSABILE_SEGRETERIA), accreditamentoIdEditabili);
 			else if(persona.isResponsabileAmministrativo())
-				personaWrapper.setOffsetAndIds(53, new LinkedList<Integer>(Arrays.asList(53,54,55,56,57,58,59,60)), accreditamentoIdEditabili);
+				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_RESPONSABILE_AMMINISTRATIVO), accreditamentoIdEditabili);
 			else if(persona.isComponenteComitatoScientifico())
-				personaWrapper.setOffsetAndIds(61, new LinkedList<Integer>(Arrays.asList(61,62,63,64,65,66,67,68,69,70)), accreditamentoIdEditabili);
+				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_COMPONENTE_COMITATO_SCIENTIFICO), accreditamentoIdEditabili);
 			else if(persona.isResponsabileSistemaInformatico())
-				personaWrapper.setOffsetAndIds(71, new LinkedList<Integer>(Arrays.asList(71,72,73,74,75,76,77,78)), accreditamentoIdEditabili);
+				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_RESPONSABILE_SISTEMA_INFORMATICO), accreditamentoIdEditabili);
 			else if(persona.isResponsabileQualita())
-				personaWrapper.setOffsetAndIds(79, new LinkedList<Integer>(Arrays.asList(79,80,81,82,83,84,85,86)), accreditamentoIdEditabili);
+				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_RESPONSABILE_QUALITA), accreditamentoIdEditabili);
 		}
 
 		return personaWrapper;

@@ -26,7 +26,6 @@ import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.validator.AccreditamentoValidator;
 
 @Controller
 public class AccreditamentoController {
@@ -211,7 +210,7 @@ public class AccreditamentoController {
 		Set<String> existFiles = fileService.checkFileExists(accreditamento.getProvider().getId(), listOfFiles);
 
 		accreditamentoWrapper.checkStati(existFiles);
-		accreditamentoWrapper.checkCanSend();
+		//accreditamentoWrapper.checkCanSend();
 		
 		return accreditamentoWrapper;
 	}

@@ -1,7 +1,6 @@
 package it.tredi.ecm.dao.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Set;
 
 import org.springframework.data.repository.CrudRepository;

@@ -1,6 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
@@ -21,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.utils.Utils;
@@ -61,7 +61,8 @@ public class AccreditamentoAllegatiController {
 			//TODO gestione eccezione
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addFlashAttribute("currentTab","tab3");
-			return "redirect:/accreditamento/" + accreditamentoId;
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	}
 
@@ -118,7 +119,8 @@ public class AccreditamentoAllegatiController {
 				saveFiles(wrapper, attoCostitutivo_multipart, esperienzaFormazione_multipart, utilizzo_multipart, sistemaInformatico_multipart, pianoQualita_multipart, dichiarazioneLegale_multipart);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.allegati_inseriti", "success"));
 				redirectAttrs.addFlashAttribute("currentTab","tab3");
-				return "redirect:/accreditamento/" + accreditamentoId;
+				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+				return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch (Exception ex){
 			//TODO gestione eccezione
@@ -180,7 +182,7 @@ public class AccreditamentoAllegatiController {
 
 		HashMap<String, Long> modelIds = fileService.getModelIds();
 		wrapper.setModelIds(modelIds);
-		wrapper.setOffsetAndIds(87, new LinkedList<Integer>(Arrays.asList(87,88,89,90,91,92)), accreditamento.getIdEditabili());
+		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_ALLEGATI), accreditamento.getIdEditabili());
 
 		return wrapper;
 	}

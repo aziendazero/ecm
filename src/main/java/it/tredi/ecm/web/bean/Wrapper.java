@@ -11,8 +11,8 @@ public class Wrapper {
 	private int idOffset;
 	private List<Integer> idEditabili;
 	
-	public void setOffsetAndIds(int idOffset, List<Integer> idEditabili, List<Integer> accreditamentoIdEditabili){
-		setIdOffset(idOffset);
+	public void setOffsetAndIds(List<Integer> idEditabili, List<Integer> accreditamentoIdEditabili){
+		setIdOffset(idEditabili.get(0));
 		
 		idEditabili.retainAll(accreditamentoIdEditabili);//vedo se effettivamente gli id sono modificabili
 		setIdEditabili(idEditabili);

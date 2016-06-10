@@ -1,7 +1,6 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
@@ -167,7 +167,7 @@ public class ProviderController {
 		ProviderWrapper providerWrapper = new ProviderWrapper();
 		providerWrapper.setProvider(provider);
 		providerWrapper.setAccreditamentoId(accreditamentoId);
-		providerWrapper.setOffsetAndIds(1, new LinkedList<Integer>(Arrays.asList(1,2,5,6,7)), accreditamentoService.getIdEditabili(accreditamentoId));
+		providerWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_PROVIDER), accreditamentoService.getIdEditabili(accreditamentoId));
 		
 		return providerWrapper;
 	}

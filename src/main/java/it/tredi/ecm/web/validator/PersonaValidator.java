@@ -1,7 +1,6 @@
 package it.tredi.ecm.web.validator;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -85,9 +84,9 @@ public class PersonaValidator {
 			}
 		}
 		if(cfPresente)
-			errors.rejectValue(prefix + "codiceFiscale", "error.componente_presente");
+			errors.rejectValue(prefix + "anagrafica.codiceFiscale", "error.componente_presente");
 		
-		if(coordinatorePresente)
+		if(coordinatorePresente && persona.isCoordinatoreComitatoScientifico())
 			errors.rejectValue(prefix + "coordinatoreComitatoScientifico", "error.coordinatore_presente");
 	}
 	
@@ -97,6 +96,7 @@ public class PersonaValidator {
 		anagraficaValidator.validateBase(persona.getAnagrafica(), errors, prefix + "anagrafica.");
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void validateFiles(Object target, Errors errors, String prefix, Ruolo ruolo){
 		LOGGER.debug("VALIDAZIONE ALLEGATI");
 		Set<File> files = null;

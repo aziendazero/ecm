@@ -1,6 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -23,6 +22,7 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Professione;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
@@ -87,7 +87,8 @@ public class DatiAccreditamentoController {
 		}catch (Exception ex){
 			//TODO gestione eccezione
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/accreditamento/" + accreditamentoId;
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	}
 	
@@ -99,7 +100,8 @@ public class DatiAccreditamentoController {
 		}catch (Exception ex){
 			//TODO gestione eccezione
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/accreditamento/" + accreditamentoId;
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	};
 	
@@ -144,7 +146,8 @@ public class DatiAccreditamentoController {
 				datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), accreditamentoId);
 				saveFiles(wrapper, estrattoBilancioFormazione_multipart, budgetPrevisionale_multipart, funzionigramma_multipart, organigramma_multipart);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.dati_attivita_inseriti", "success"));
-				return "redirect:/accreditamento/" + accreditamentoId;
+				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+				return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch (Exception ex){
 			//TODO gestione eccezione
@@ -202,7 +205,7 @@ public class DatiAccreditamentoController {
 			}
 		}
 		
-		wrapper.setOffsetAndIds(39, new LinkedList<Integer>(Arrays.asList(38,39,40,41,42,43,44,45,46,47,48,49)), accreditamentoService.getIdEditabili(accreditamentoId));
+		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_DATI_ACCREDITAMENTO), accreditamentoService.getIdEditabili(accreditamentoId));
 		
 		return wrapper;
 	};

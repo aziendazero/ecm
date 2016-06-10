@@ -72,15 +72,16 @@
 							<!-- checkbox flag coordinatore -->
 							<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
 										${personaWrapper.persona.componenteComitatoScientifico}"
-								class="item form-group">
+								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')} ? 'bad'">
 								<label class="control-label col-md-4 col-sm-4 col-xs-12"
 									for="isCoordinatore_comitato"><span th:text="#{label.is_coordinatore}">Inserisci come Coordinatore del Comitato Scientifico</span></label>
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<div class="checkbox">
 										<input id="isCoordinatore_comitato" name="isCoordinatore_comitato" 
-											class="flat" type="checkbox" th:checked="${personaWrapper.persona.coordinatoreComitatoScientifico}" />
+											class="flat" type="checkbox" th:field="${personaWrapper.persona.coordinatoreComitatoScientifico}" />
 									</div>
 								</div>
+								<div th:if="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')}" class="alert" th:errors="${personaWrapper.persona.coordinatoreComitatoScientifico}"></div>
 							</div> 
 							 							 
 							<!-- cognome -->
@@ -165,7 +166,7 @@
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<div class="checkbox">
 											<input id="isStraniero_persona" name="isStraniero_persona" disabled="disabled"
-												class="flat" type="checkbox" th:checked="${personaWrapper.persona.anagrafica.straniero}" />
+												class="flat" type="checkbox" th:field="${personaWrapper.persona.anagrafica.straniero}" />
 										</div>
 									</div>
 								</th:block>
