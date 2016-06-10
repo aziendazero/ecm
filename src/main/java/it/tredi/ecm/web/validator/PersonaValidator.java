@@ -61,12 +61,27 @@ public class PersonaValidator {
 			//non e' possibile inserire piu' volte la stessa persona nel comitato
 			Set<Persona> componenti = personaService.getComitatoScientifico(persona.getProvider().getId());
 			for(Persona p : componenti){
-				System.out.println(p.getId() + " - " + p.getAnagrafica().getId());
-				if(persona.getAnagrafica().getCodiceFiscale().equalsIgnoreCase(p.getAnagrafica().getCodiceFiscale()))
+				/*
+				 * //TODO Da approfondire per capire meglio!!!
+				 * Dal momento che non abbiamo accesso diretto alla sessione di hibernate...non si capisce bene cosa succede...ma sta di fatto che:
+				 * 
+				 * se sul DB: Persona(315)_anagraficaId(316)...e stiamo sostituendo l'anagrafica (attraverso lookup ad esempio) con l'anagrafica(309)...
+				 * in questo punto...la Persona(315) arriva già con anagraficaId(309)[facendo una chiamata al repository]!!!!
+				 * 
+				 * La mia 'spiegazione' sta nel fatto che, hibernate mantiene in sessione il refernce dell'oggetto e quindi restituisce quello e non la versione originale
+				 * su DB...(la cosa strana è che dai log vedo partire la query e soprattutto NON sto usando @Transactional)  
+				 * 
+				 * -------------------
+				 * Tenendo conto di quanto scritto sopra, se devo controllare che non esista già un componente con quel codice fiscale devo controllare gli altri
+				 * tranne il componente che sto modificando, altrimenti mi da sempre true (perchè mi arriva già con i dati nuovi)
+				 * 
+				 * */
+				if(p.getId() != persona.getId()){
+					if(persona.getAnagrafica().getCodiceFiscale().equalsIgnoreCase(p.getAnagrafica().getCodiceFiscale()))
 						cfPresente = true;
-				if(p.isCoordinatoreComitatoScientifico())
-					coordinatorePresente = true;
-				cfPresente = true;
+					if(p.isCoordinatoreComitatoScientifico())
+						coordinatorePresente = true;
+				}
 			}
 		}
 		if(cfPresente)
@@ -74,8 +89,6 @@ public class PersonaValidator {
 		
 		if(coordinatorePresente)
 			errors.rejectValue(prefix + "coordinatoreComitatoScientifico", "error.coordinatore_presente");
-		
-		
 	}
 	
 	private void validateBase(Object target, Errors errors, String prefix){

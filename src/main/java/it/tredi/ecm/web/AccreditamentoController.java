@@ -21,7 +21,6 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
-import it.tredi.ecm.service.AccountServiceImpl;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
@@ -41,14 +40,10 @@ public class AccreditamentoController {
 	@Autowired
 	private FileService fileService;
 	
-	@Autowired
-	private AccreditamentoValidator accreditamentoValidator;
-	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
-	
 	
 	/***	Get Lista Accreditamenti per provider CORRENTE	***/
 	@RequestMapping("/provider/accreditamento/list")

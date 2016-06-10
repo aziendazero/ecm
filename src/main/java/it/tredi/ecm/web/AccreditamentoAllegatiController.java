@@ -60,6 +60,7 @@ public class AccreditamentoAllegatiController {
 		}catch (Exception ex){
 			//TODO gestione eccezione
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			redirectAttrs.addFlashAttribute("currentTab","tab3");
 			return "redirect:/accreditamento/" + accreditamentoId;
 		}
 	}
@@ -116,6 +117,7 @@ public class AccreditamentoAllegatiController {
 			}else{
 				saveFiles(wrapper, attoCostitutivo_multipart, esperienzaFormazione_multipart, utilizzo_multipart, sistemaInformatico_multipart, pianoQualita_multipart, dichiarazioneLegale_multipart);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.allegati_inseriti", "success"));
+				redirectAttrs.addFlashAttribute("currentTab","tab3");
 				return "redirect:/accreditamento/" + accreditamentoId;
 			}
 		}catch (Exception ex){
