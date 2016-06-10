@@ -11,11 +11,14 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.allegati}">allegati</h2>
-						<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${accreditamentoAllegatiWrapper.accreditamentoId}|}"></a>
+						<th:block th:unless="${#lists.isEmpty(accreditamentoAllegatiWrapper.idEditabili)}">
+							<button class="btn btn-primary pull-right" th:text="#{label.salva}" form="formAllegati" type="submit"></button>
+						</th:block>
+						<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoAllegatiWrapper.accreditamentoId}|}"></a>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<form id="formAccreditamento" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${accreditamentoId}/allegati/save|}"
+						<form id="formAllegati" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${accreditamentoId}/allegati/save|}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
 							
 							<input type="hidden" name="editId" th:value="${accreditamentoAllegatiWrapper.accreditamentoId}" /> 
@@ -63,11 +66,6 @@
 								<a id="dichiarazioneLegale_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.dichiarazioneLegaleModel}|}"></a>
 							</div>
 							<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, dichiarazioneLegale, ${++counter}, null)" ></th:block>
-								
-							<!-- Registra allegati -->
-							<div class="item form-group text-right">
-								<input class="btn btn-primary right" name="save_persona" type="submit" th:value="#{label.salva}"/>
-							</div>
 						</form>
 					</div>
 				</div>

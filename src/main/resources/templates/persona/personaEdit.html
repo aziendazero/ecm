@@ -12,9 +12,12 @@
 					<div class="x_title">
 						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
 						<div class="pull-right buttons-header">
-							<button id="cerca-persona-btn" class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
-							<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/${personaWrapper.persona.ruolo}/setAnagrafica|}"></a>
-							<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
+							<th:block th:unless="${#lists.isEmpty(personaWrapper.idEditabili)}">
+								<button class="btn btn-primary pull-right" th:text="#{label.salva}" form="formPersona" type="submit"></button>
+								<button id="cerca-persona-btn" class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
+								<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/${personaWrapper.persona.ruolo}/setAnagrafica|}"></a>
+							</th:block>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
@@ -281,7 +284,7 @@
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="professione_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-											th:text="${personaWrapper.persona.professione}"></label>
+											th:text="${personaWrapper.persona.professione.nome}"></label>
 									</div>
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.professione')}" class="alert" th:errors="${personaWrapper.persona.professione}"></div>
@@ -295,11 +298,6 @@
 							
 							<!-- allegato 3 (delega) -->
 							<th:block th:if="${personaWrapper.persona.delegatoLegaleRappresentante}" th:include="fragments/allegati :: allegati(personaWrapper, delega, ${++counter}, null)"></th:block>
-							
-							<!-- Registra Persona -->
-							<div class="item form-group text-right">
-								<input class="btn btn-primary right" name="save_persona" type="submit" th:value="#{label.salva}"/>
-							</div>							
 						</form>
 					</div>
 				</div>
@@ -330,7 +328,7 @@
 				var RUOLO = [[${personaWrapper.persona.ruolo}]];
 				var url = "/accreditamento/" + [[${personaWrapper.accreditamentoId}]] + "/provider/" + [[${personaWrapper.providerId}]] + "/persona/" + RUOLO.$name + "/setAnagrafica?anagraficaId=" + id;
 				//$("#main-container").load(url);
-				//$("#persona-modal").modal('hide');
+				//$("#persona-modal").modal('hide');<!-- Registra Dati Accreditamento -->
 				return url;
 			}
 			</script>

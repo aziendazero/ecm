@@ -11,7 +11,10 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.info_provider}">label.info_provider</h2>
-						<a class="btn btn-primary pull-right" th:text="#{label.annulla}" th:href="@{|/accreditamento/${accreditamentoId}|}"></a>
+						<th:block th:unless="${#lists.isEmpty(providerWrapper.idEditabili)}">
+							<button class="btn btn-primary pull-right" th:text="#{label.salva}" form="formInfo" type="submit"></button>
+						</th:block>
+						<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoId}|}"></a>
 						<div class="clearfix"></div>
 					</div>
 
@@ -198,11 +201,6 @@
 										</div>
 									</th:block>
 								<div th:if="${#fields.hasErrors('providerWrapper.provider.noProfit')}" class="alert" th:errors="${providerWrapper.provider.noProfit}"></div>
-							</div>
-							
-							<!-- Registra solo Provider -->
-							<div class="item form-group text-right">
-								<input class="btn btn-primary right" type="submit" th:value="#{label.salva}"/>
 							</div>
 						</form>
 					</div>

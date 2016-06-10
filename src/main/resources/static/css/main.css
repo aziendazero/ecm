@@ -168,3 +168,19 @@ table.datatable-responsive-form thead .sorting_asc:after {
 .label-disabled {
 	cursor: not-allowed !important;
 }
+
+.with-margin-top {
+	margin-top: 10px;
+}
+
+.with-margin-bottom {
+	margin-bottom: 10px;
+}
+
+.with-margin-left {
+	margin-left: 10px;
+}
+
+.with-margin-right {
+	margin-right: 10px;
+}
