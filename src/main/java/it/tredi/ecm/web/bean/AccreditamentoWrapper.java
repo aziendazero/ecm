@@ -3,6 +3,7 @@ package it.tredi.ecm.web.bean;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -209,9 +210,11 @@ public class AccreditamentoWrapper {
 	}
 	
 	public boolean isComitatoScientificoEditabile(){
-		if(getAccreditamento().getIdEditabili().contains(Costanti.IDS_COMPONENTE_COMITATO_SCIENTIFICO))
-			return true;
-		else
+		LinkedList<Integer> ids = new LinkedList<Integer>(Costanti.IDS_COMPONENTE_COMITATO_SCIENTIFICO);
+		ids.retainAll(getAccreditamento().getIdEditabili());
+		if(ids.isEmpty())
 			return false;
+		else
+			return true;
 	}
 }
