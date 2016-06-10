@@ -23,6 +23,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 		validateFiles(files, errors, "");
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void validateFiles(Object target, Errors errors, String prefix){
 		LOGGER.debug("VALIDAZIONE ALLEGATI ACCREDITAMENTO");
 		Set<File> files = null;

@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.type.TrueFalseType;
-
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
@@ -44,7 +42,7 @@ public class AccreditamentoWrapper {
 	private Persona responsabileSistemaInformatico;
 	private Persona responsabileQualita;
 	
-	//flag per stato avanzamento domanda
+	/*	flag per stato avanzamento domanda	*/
 	private boolean providerStato;
 	private boolean sedeLegaleStato;
 	private boolean sedeOperativaStato;
@@ -55,10 +53,11 @@ public class AccreditamentoWrapper {
 	
 	private boolean responsabileSegreteriaStato;
 	private boolean responsabileAmministrativoStato;
-	private boolean comitatoScientificoStato;
-	private String comitatoScientificoErrorMessage;
 	private boolean responsabileSistemaInformaticoStato;
 	private boolean responsabileQualitaStato;
+	
+	private boolean comitatoScientificoStato;
+	private String comitatoScientificoErrorMessage;
 	
 	private boolean attoCostitutivoStato;
 	private boolean esperienzaFormazioneStato;
@@ -67,8 +66,8 @@ public class AccreditamentoWrapper {
 	private boolean pianoQualitaStato;
 	private boolean dichiarazioneLegaleStato;
 	
-	private boolean completa;
-	private boolean canSend;
+	//private boolean completa;//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
+	//private boolean canSend;
 	
 	public void checkStati(Set<String> existFiles){
 		//TODO migliorare la logica per evitare di fare troppi if
@@ -93,7 +92,7 @@ public class AccreditamentoWrapper {
 		
 		checkComitatoScientifico();
 		setFilesStato(existFiles);
-		checkCompleta();
+		//checkCompleta();
 	}
 	
 	/*
@@ -156,32 +155,63 @@ public class AccreditamentoWrapper {
 			dichiarazioneLegaleStato = true;
 	}
 	
-	private void checkCompleta(){
+//	private void checkCompleta(){
+//		if(providerStato &&
+//			 sedeLegaleStato &&
+//			 sedeOperativaStato &&
+//			 (legaleRappresentanteStato || delegatoLegaleRappresentanteStato) &&
+//			 datiAccreditamentoStato &&
+//			 responsabileSegreteriaStato &&
+//			 responsabileAmministrativoStato &&
+//			 comitatoScientificoStato &&
+//			 responsabileSistemaInformaticoStato &&
+//			 responsabileQualitaStato &&
+//			 attoCostitutivoStato &&
+//			 esperienzaFormazioneStato &&
+//			 utilizzoStato &&
+//			 sistemaInformaticoStato &&
+//			 pianoQualitaStato &&
+//			 dichiarazioneLegaleStato)
+//			completa = true;
+//		else
+//			completa = false;
+//	}
+	
+	//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
+	public boolean isCompleta(){
 		if(providerStato &&
-			 sedeLegaleStato &&
-			 sedeOperativaStato &&
-			 (legaleRappresentanteStato || delegatoLegaleRappresentanteStato) &&
-			 datiAccreditamentoStato &&
-			 responsabileSegreteriaStato &&
-			 responsabileAmministrativoStato &&
-			 comitatoScientificoStato &&
-			 responsabileSistemaInformaticoStato &&
-			 responsabileQualitaStato &&
-			 attoCostitutivoStato &&
-			 esperienzaFormazioneStato &&
-			 utilizzoStato &&
-			 sistemaInformaticoStato &&
-			 pianoQualitaStato &&
-			 dichiarazioneLegaleStato)
-			completa = true;
-		else
-			completa = false;
+				 sedeLegaleStato &&
+				 sedeOperativaStato &&
+				 (legaleRappresentanteStato || delegatoLegaleRappresentanteStato) &&
+				 datiAccreditamentoStato &&
+				 responsabileSegreteriaStato &&
+				 responsabileAmministrativoStato &&
+				 comitatoScientificoStato &&
+				 responsabileSistemaInformaticoStato &&
+				 responsabileQualitaStato &&
+				 attoCostitutivoStato &&
+				 esperienzaFormazioneStato &&
+				 utilizzoStato &&
+				 sistemaInformaticoStato &&
+				 pianoQualitaStato &&
+				 dichiarazioneLegaleStato)
+				return true;
+			else
+				return false;
 	}
 	
-	public void checkCanSend(){
-		if(accreditamento.getStato().equals(Costanti.ACCREDITAMENTO_STATO_BOZZA) && completa)
-			canSend = true;
+	//la domanda può essere inviata alla segreteria
+	public boolean isCanSend(){
+		if(isCompleta() && accreditamento.getStato().equals(Costanti.ACCREDITAMENTO_STATO_BOZZA))
+			return true;
 		else
-			canSend = false;
+			return false;
+	}
+	
+	public boolean isComitatoScientificoEditabile(){
+		if(getAccreditamento().getIdEditabili().contains(Costanti.IDS_COMPONENTE_COMITATO_SCIENTIFICO))
+			return true;
+		else
+			return false;
 	}
 }

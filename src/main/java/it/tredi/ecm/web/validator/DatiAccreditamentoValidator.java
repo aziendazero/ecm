@@ -37,6 +37,7 @@ public class DatiAccreditamentoValidator {
 			errors.rejectValue(prefix + "professioniAccreditamento", "error.empty");
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void validateFilesEconomici(Object target, Errors errors, String prefix, DatiEconomici datiEconomici){
 		LOGGER.debug("VALIDAZIONE ALLEGATI ECONOMICI");
 		if(!datiEconomici.isEmpty()){
@@ -61,6 +62,7 @@ public class DatiAccreditamentoValidator {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void validateFilesStrutturaPersonale(Object target, Errors errors, String prefix){
 		LOGGER.debug("VALIDAZIONE ALLEGATI STRUTTARA PERSONALE");
 		Set<File> files = null;

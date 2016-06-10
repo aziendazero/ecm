@@ -2,9 +2,7 @@ package it.tredi.ecm.service;
 
 import java.util.Set;
 
-import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 
 public interface ProviderService {
