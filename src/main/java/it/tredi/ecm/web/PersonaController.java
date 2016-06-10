@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -40,7 +41,8 @@ import it.tredi.ecm.web.validator.PersonaValidator;
 
 @Controller
 public class PersonaController {
-
+	private static Logger LOGGER = LoggerFactory.getLogger(PersonaController.class);
+	
 	private final String EDIT = "persona/personaEdit";
 
 	@Autowired
@@ -105,6 +107,7 @@ public class PersonaController {
 			return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento" + accreditamentoId;
 		}
@@ -123,6 +126,7 @@ public class PersonaController {
 		try {
 			Persona persona = null;
 			
+			//Ogni provider HA più persone con il ruolo COMPONENTE_COMITATO_SCIENTIFICO...mentre per tutti gli altri ruoli esiste solo 1 persona
 			if(!ruolo.equals(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO.name()))
 				persona = personaService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
 
@@ -137,6 +141,7 @@ public class PersonaController {
 			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
@@ -153,6 +158,7 @@ public class PersonaController {
 			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
@@ -215,10 +221,12 @@ public class PersonaController {
 
 					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
+					redirectAttrs.addFlashAttribute("currentTab","tab2");
 					return "redirect:/accreditamento/{accreditamentoId}";
 				}
 			}catch(Exception ex){
 				//TODO gestione eccezione
+				LOGGER.error(ex.getMessage(),ex);
 				model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				return EDIT;
 			}
@@ -226,6 +234,7 @@ public class PersonaController {
 
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
@@ -239,10 +248,12 @@ public class PersonaController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.componente_comitato_eliminato", "success"));
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 		}
 		
 		redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+		redirectAttrs.addFlashAttribute("currentTab","tab2");
 		return "redirect:/accreditamento/{accreditamentoId}";
 	}
 	

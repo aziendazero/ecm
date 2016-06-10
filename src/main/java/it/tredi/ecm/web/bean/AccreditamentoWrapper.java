@@ -164,7 +164,7 @@ public class AccreditamentoWrapper {
 			 datiAccreditamentoStato &&
 			 responsabileSegreteriaStato &&
 			 responsabileAmministrativoStato &&
-			 //TODO comitatoScientificoStato /*comitatoScientificoStato &&*/
+			 comitatoScientificoStato &&
 			 responsabileSistemaInformaticoStato &&
 			 responsabileQualitaStato &&
 			 attoCostitutivoStato &&
