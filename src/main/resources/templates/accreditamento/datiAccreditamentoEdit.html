@@ -51,7 +51,7 @@
 									<div class="col-md-4 col-sm-4 col-xs-12"
 										id="accreditamento_tipologia">
 										<div class="radio">
-											<label>
+											<label class="label-disabled">
 												<input type="radio" class="flat" disabled="disabled"
 													id="generaleTipologia" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
 													<span th:text="#{label.generale}">Generale </span>
@@ -59,7 +59,7 @@
 											<input type="hidden" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
 										</div>
 										<div class="radio">
-											<label>
+											<label class="label-disabled">
 												<input type="radio" class="flat" disabled="disabled"
 													id="settorialeTipologia" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Settoriale" />
 												<span th:text="#{label.settoriale}">Settoriale </span>
@@ -95,7 +95,7 @@
 								<th:block th:unless="${#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_checkbox">
 										<div class="checkbox" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
-											<label>
+											<label class="label-disabled">
 												<input type="checkbox" class="flat" th:field="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}"
 												th:value="${proceduraFormativa}"
 												disabled="disabled" /> <span th:text="${proceduraFormativa.nome}">formazione
@@ -137,14 +137,14 @@
 									<div class="col-md-4 col-sm-4 col-xs-12"
 										id="accreditamento_professioni">
 										<div class="radio">
-											<label> <input type="radio" class="flat" id="generaleProf"
+											<label class="label-disabled"> <input type="radio" class="flat" id="generaleProf"
 												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}" value="Generale" disabled="disabled" /> <span
 												th:text="#{label.generale}">
 													Generale </span>
 											</label>
 										</div>
 										<div class="radio">
-											<label> <input type="radio" class="flat" id="settorialeProf"
+											<label class="label-disabled"> <input type="radio" class="flat" id="settorialeProf"
 												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}" value="Settoriale" disabled="disabled" /> <span
 												th:text="#{label.settoriale}">
 													Settoriale </span>

@@ -22,7 +22,7 @@
 							<div class="" role="tabpanel" data-example-id="togglable-tabs">
 								<ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
 									<li role="presentation" class="active">
-										<a href="#tab_content1" id="active-tab1" role="tab" data-toggle="tab" aria-expanded="true" th:text="#{label.dati_del_organizzatore}">
+										<a href="#tab_content1" role="tab" id="tab1" data-toggle="tab" aria-expanded="true" th:text="#{label.dati_del_organizzatore}">
 											Dati dell'organizzatore
 										</a>
 									</li>
@@ -350,6 +350,9 @@
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 				$(document).ready(function() {
+					if ([[${currentTab}]] != null && [[${currentTab}]] != "tab1")
+						$('#'+[[${currentTab}]]).tab('show');
+					
 					var table = $('#comitato-table').DataTable();
 					function checkRemove() {
 						if (table.rows().count() >= 6) 

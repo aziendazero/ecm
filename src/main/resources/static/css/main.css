@@ -161,6 +161,10 @@ table.datatable-responsive-form thead .sorting_asc:after {
 }
 
 .disabled {
-	cursor: not-allowed;
+	cursor: not-allowed !important;
 	color: #bbb;
+}
+
+.label-disabled {
+	cursor: not-allowed !important;
 }
