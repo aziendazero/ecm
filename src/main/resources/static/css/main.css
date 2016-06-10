@@ -129,6 +129,10 @@ table.datatable-responsive-form thead .sorting_asc:after {
 	visibility: hidden;
 }
 
+table.datatable-responsive-search thead .sorting_asc:after {
+	visibility: hidden;
+}
+
 .dropdown-header {
 	background-color: #5cb85c;
 	color: white;
@@ -170,17 +174,17 @@ table.datatable-responsive-form thead .sorting_asc:after {
 }
 
 .with-margin-top {
-	margin-top: 10px;
+	margin-top: 20px;
 }
 
 .with-margin-bottom {
-	margin-bottom: 10px;
+	margin-bottom: 20px;
 }
 
 .with-margin-left {
-	margin-left: 10px;
+	margin-left: 20px;
 }
 
 .with-margin-right {
-	margin-right: 10px;
+	margin-right: 20px;
 }

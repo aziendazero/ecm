@@ -243,7 +243,7 @@ public class PersonaController {
 		}
 	}
 	
-	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/remove")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/delete")
 	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId, 
 														Model model, RedirectAttributes redirectAttrs){
 		try{

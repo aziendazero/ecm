@@ -164,12 +164,17 @@
 			$('.datatable-responsive-search').DataTable({
 				"bInfo" : false,
 				"bPaginate" : false,
+				scrollY: 300,
+				"bScrollCollapse": true,
+			    scroller: true,
 				//colonna del pulsante seleziona
-				"columnDefs": [ {
-					"targets": 3,
-					"orderable": false,
-					"width": "1px",
-				} ],
+			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+			    "columnDefs": [ 
+			                   	{"targets": [ '_all' ], "orderable": false },
+			                    {"targets": 3, "orderable": false, "width": "1px"},
+			                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
+			                  ],
+			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
 			});
 			
 			$('.modal').on('shown.bs.modal', function () {
