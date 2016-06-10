@@ -233,7 +233,7 @@
 																	<td	th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico}" th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.cognome}"></td>
 																	<td	th:unless="${accreditamentoWrapper.coordinatoreComitatoScientifico}" th:text="#{label.nd}">N/D</td>
 																	<td>
-																		<span class="fa fa-trash disabled"></span>
+																		<a><span class="fa fa-trash disabled"></span></a>
 																	</td>
 																</tr>
 																<tr th:each="componente, row : ${accreditamentoWrapper.componentiComitatoScientifico}">
