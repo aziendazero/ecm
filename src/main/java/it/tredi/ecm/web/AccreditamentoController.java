@@ -23,8 +23,6 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
-import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.dao.repository.PersonaRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
@@ -219,17 +217,17 @@ public class AccreditamentoController {
 		Long providerId = accreditamento.getProvider().getId();
 		Set<Professione> professioniSelezionate = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? datiAccreditamento.getProfessioniSelezionate() : new HashSet<Professione>();
 		
-		LOGGER.info("-----------------NUMERO COMPONENTI: " + personaService.numeroComponentiComitatoScientifico(providerId));
-		LOGGER.info("-----------------NUMERO PROFESSIONISTI SANITARI: " + personaService.numeroComponentiComitatoScientificoConProfessioneSanitaria(providerId));
-		LOGGER.info("-----------------NUMERO PROFESSIONI DISTINTE: " + personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId));
-		LOGGER.info("-----------------NUMERO PROFESSIONI ANALOGHE: " + personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate));
+		int numeroComponentiComitatoScientifico = personaService.numeroComponentiComitatoScientifico(providerId);
+		int numeroProfessionistiSanitarie 		= personaService.numeroComponentiComitatoScientificoConProfessioneSanitaria(providerId);
+		int professioniDeiComponenti 			= personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
+		int professioniDeiComponentiAnaloghe 	= (professioniSelezionate.size() > 0) ? personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate) : 0;
 		
+		LOGGER.info("-----------------NUMERO COMPONENTI: " 				+ numeroComponentiComitatoScientifico);
+		LOGGER.info("-----------------NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie);
+		LOGGER.info("-----------------NUMERO PROFESSIONI DISTINTE: " 	+ professioniDeiComponenti);
+		LOGGER.info("-----------------NUMERO PROFESSIONI ANALOGHE: "	+ professioniDeiComponentiAnaloghe);
 		
-		accreditamentoWrapper.checkStati(personaService.numeroComponentiComitatoScientifico(providerId), 
-											personaService.numeroComponentiComitatoScientificoConProfessioneSanitaria(providerId), 
-											personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId),
-											personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate), 
-											existFiles);
+		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, existFiles);
 		
 		//accreditamentoWrapper.checkCanSend();
 		return accreditamentoWrapper;
