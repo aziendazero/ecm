@@ -271,6 +271,7 @@ public class ProfessioniDisciplineLoader implements ApplicationListener<ContextR
 			disciplinaService.saveAll(discipline);
 			
 			Professione p1 = new Professione("Medico chirurgo");
+			p1.setSanitaria(true);
 			p1.addDisciplina(d1);
 			p1.addDisciplina(d2);	
 			p1.addDisciplina(d3);	
@@ -341,18 +342,22 @@ public class ProfessioniDisciplineLoader implements ApplicationListener<ContextR
 			p1.addDisciplina(d116);
 			professioneService.save(p1);
 			Professione p2 = new Professione("Odontoiatra");
+			p2.setSanitaria(true);
 			p2.addDisciplina(d64);	
 			professioneService.save(p2);
 			Professione p3 = new Professione("Farmacista");
+			p3.setSanitaria(true);
 			p3.addDisciplina(d66);	
 			p3.addDisciplina(d67);	
 			professioneService.save(p3);
 			Professione p4 = new Professione("Veterinario");
+			p4.setSanitaria(true);
 			p4.addDisciplina(d61);	
 			p4.addDisciplina(d62);	
 			p4.addDisciplina(d63);	
 			professioneService.save(p4);
 			Professione p5 = new Professione("Psicologo");
+			p5.setSanitaria(true);
 			p5.addDisciplina(d77);	
 			p5.addDisciplina(d78);	
 			professioneService.save(p5);
