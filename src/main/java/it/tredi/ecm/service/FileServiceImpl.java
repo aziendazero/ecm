@@ -75,8 +75,6 @@ public class FileServiceImpl implements FileService{
 		}
 		return existsFile;
 	}
-	
-	
 
 	@Override
 	@Transactional
@@ -89,5 +87,12 @@ public class FileServiceImpl implements FileService{
 			LOGGER.error("Errore durante salvataggio file", ex);
 			throw ex;
 		}
+	}
+	
+	@Override
+	@Transactional
+	public void deleteByPersonaId(Long personaId) {
+		LOGGER.debug("Eliminazione degli allegati della persona " + personaId);
+		fileRepository.deleteByPersonaId(personaId);
 	}
 }

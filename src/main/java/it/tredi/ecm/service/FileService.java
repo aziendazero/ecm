@@ -13,6 +13,7 @@ public interface FileService {
 	public File getFileFromPersonaByTipo(Long personaId, String tipo);
 	public Set<File> getAll();
 	public void save(File file);
+	public void deleteByPersonaId(Long personaId);
 	
 	public HashMap<String,Long> getModelIds();
 	public Set<String> checkFileExists(Long providerId, List<String> tipoFile);

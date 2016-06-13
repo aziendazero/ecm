@@ -2,11 +2,13 @@ package it.tredi.ecm.web;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -61,6 +63,9 @@ public class PersonaController {
 
 	@Autowired
 	private PersonaValidator personaValidator;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -221,6 +226,11 @@ public class PersonaController {
 						accreditamentoService.removeIdEditabili(personaWrapper.getAccreditamentoId(), Costanti.IDS_LEGALE_RAPPRESENTANTE);
 
 					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
+					
+					String message = messageSource.getMessage("message.inserito", new Object[]{personaWrapper.getPersona().getRuolo().getNome()},Locale.ITALY);
+					
+					System.out.println(message);
+					
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
 					
 					if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())

@@ -15,4 +15,5 @@ public interface FileRepository extends CrudRepository<File, Long> {
 	Set<File> findAll();
 	@Query("SELECT f FROM File f WHERE f.tipo LIKE :prefix%")
     public Set<File> findModelFiles(@Param("prefix") String prefix);
+	void deleteByPersonaId(Long id);
 }
