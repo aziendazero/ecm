@@ -76,27 +76,22 @@ public class ProviderRegistrationController {
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.POST)
 	public String registraProvider(@ModelAttribute("providerForm") ProviderRegistrationWrapper providerRegistrationWrapper, 
 									BindingResult result, RedirectAttributes redirectAttrs, Model model, 
-									@RequestParam( value="saveTypeMinimal",required = false) String saveTypeMinimal,
-									@RequestParam( value="saveTypeFull",required = false) String saveTypeFull,
 									@RequestParam( value="delegaRichiedente",required = false) MultipartFile multiPartFile){
 		try{
-			//validazione solo del provider oppure dell'intero form?
-			boolean saveMinimal = (saveTypeMinimal != null && saveTypeFull == null) ? true : false; 
 			
-			if(!saveMinimal){
-				File delegaRichiedenteFile = Utils.convertFromMultiPart(multiPartFile);
-				if(delegaRichiedenteFile != null)
-					providerRegistrationWrapper.setDelegaRichiedenteFile(delegaRichiedenteFile);
-			}
+			//TODO allegato richiedente solo per alcuni tipi di provider
+			File delegaRichiedenteFile = Utils.convertFromMultiPart(multiPartFile);
+			if(delegaRichiedenteFile != null)
+				providerRegistrationWrapper.setDelegaRichiedenteFile(delegaRichiedenteFile);
 			
-			providerRegistrationValidator.validate(providerRegistrationWrapper, result, saveMinimal);	
+			providerRegistrationValidator.validate(providerRegistrationWrapper, result);	
 			
 			if(result.hasErrors()){
 				model.addAttribute("stepToShow", evaluateErrorStep(result));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return returnToProviderRegistrationForm();
 			}else{
-				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper, saveMinimal);
+				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.provider_salvato", "success"));
 				return "redirect:/home";
 			}

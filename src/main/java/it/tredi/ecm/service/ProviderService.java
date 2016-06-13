@@ -14,5 +14,5 @@ public interface ProviderService {
 	public void save(Provider provider);
 	
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
-	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper, boolean saveTypeMinimal);
+	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper);
 }

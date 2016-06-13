@@ -19,42 +19,17 @@ public class ProviderRegistrationWrapperValidator{
 	@Autowired
 	private ProviderValidator providerValidator;
 	
-	public void validate(Object target, Errors errors,boolean saveMinimal) {
+	public void validate(Object target, Errors errors) {
 		LOGGER.debug("Validating ProviderRegistrationWrapper");
 		ProviderRegistrationWrapper providerForm = (ProviderRegistrationWrapper)target;
 		accountValidator.validate(providerForm.getProvider().getAccount(), errors, "provider.account.");
 		
 		providerValidator.validateForRegistrazione(providerForm.getProvider(), errors, "provider.");
-		//validateProvider(providerForm.getProvider(), errors);
-		if(!saveMinimal){
-			validateRichiedente(providerForm.getRichiedente(), errors);
-			validateLegale(providerForm.getLegale(), errors);
-			fileValidator.validate(providerForm.getDelegaRichiedenteFile(), errors, "delegaRichiedenteFile");
-		}
+		//TODO Richiedente e allegato solo per alcuni tipi di provider
+		validateRichiedente(providerForm.getRichiedente(), errors);
+		validateLegale(providerForm.getLegale(), errors);
+		fileValidator.validate(providerForm.getDelegaRichiedenteFile(), errors, "delegaRichiedenteFile");
 	}
-	
-//	private void validateProvider(Provider providerForm, Errors errors){
-//		if(providerForm.getDenominazioneLegale().isEmpty())
-//			errors.rejectValue("provider.denominazioneLegale", "error.empty");
-//		if(providerForm.getTipoOrganizzatore() == null || providerForm.getTipoOrganizzatore().getNome().isEmpty())
-//			errors.rejectValue("provider.tipoOrganizzatore", "error.empty");
-//		
-//		//Presenza e univocità di codiceFIscale e/o partitaIva
-//		if(providerForm.getPartitaIva().isEmpty())
-//			errors.rejectValue("provider.partitaIva", "error.empty");
-//		else{
-//			Provider provider = providerService.getProviderByPartitaIva((providerForm.getPartitaIva()));
-//			if(provider != null){
-//				if(providerForm.isNew()){
-//					errors.rejectValue("provider.partitaIva", "error.partitaIva.duplicated");
-//				}else{
-//					if(provider.getId() != providerForm.getId()){
-//						errors.rejectValue("provider.partitaIva", "error.partitaIva.duplicated");
-//					}
-//				}
-//			}
-//		}
-//	}
 	
 	private void validateRichiedente(Persona richiedente, Errors errors){
 		if(richiedente.getAnagrafica().getCognome().isEmpty())
@@ -63,8 +38,6 @@ public class ProviderRegistrationWrapperValidator{
 			errors.rejectValue("richiedente.anagrafica.nome", "error.empty");
 		if(richiedente.getAnagrafica().getCodiceFiscale().isEmpty())
 			errors.rejectValue("richiedente.anagrafica.codiceFiscale", "error.empty");
-		if(richiedente.getAnagrafica().getPec().isEmpty())
-			errors.rejectValue("richiedente.anagrafica.pec", "error.empty");
 		if(richiedente.getIncarico().isEmpty())
 			errors.rejectValue("richiedente.incarico", "error.empty");
 		if(richiedente.getAnagrafica().getTelefono().isEmpty())

@@ -127,7 +127,7 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	@Transactional
-	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerRegistrationWrapper, boolean saveTypeMinimal) {
+	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerRegistrationWrapper) {
 		Provider provider = providerRegistrationWrapper.getProvider();
 		Persona richiedente = providerRegistrationWrapper.getRichiedente();
 		Persona legale = providerRegistrationWrapper.getLegale();
@@ -141,16 +141,15 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 		
 		save(provider);
-		if(!saveTypeMinimal){
-			provider.addPersona(richiedente);
-			personaService.save(richiedente);
-			provider.addPersona(legale);
-			personaService.save(legale);
-			
-			delegaRichiedente.setTipo(Costanti.FILE_DELEGA);
-			delegaRichiedente.setPersona(richiedente);
-			delegaRichiedente.setProvider(provider);
-			fileService.save(delegaRichiedente);
-		}
+		provider.addPersona(richiedente);
+		personaService.save(richiedente);
+		provider.addPersona(legale);
+		personaService.save(legale);
+		
+		//TODO delega richiedente solo per alcuni tipi di organizzatore
+		delegaRichiedente.setTipo(Costanti.FILE_DELEGA);
+		delegaRichiedente.setPersona(richiedente);
+		delegaRichiedente.setProvider(provider);
+		fileService.save(delegaRichiedente);
 	}
 }
