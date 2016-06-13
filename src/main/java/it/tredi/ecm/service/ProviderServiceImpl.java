@@ -146,10 +146,12 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.addPersona(legale);
 		personaService.save(legale);
 		
-		//TODO delega richiedente solo per alcuni tipi di organizzatore
-		delegaRichiedente.setTipo(Costanti.FILE_DELEGA);
-		delegaRichiedente.setPersona(richiedente);
-		delegaRichiedente.setProvider(provider);
-		fileService.save(delegaRichiedente);
+		//TODO Delegato consentito solo per alcuni tipi di Provider
+		if(providerRegistrationWrapper.isDelegato()){
+			delegaRichiedente.setTipo(Costanti.FILE_DELEGA);
+			delegaRichiedente.setPersona(richiedente);
+			delegaRichiedente.setProvider(provider);
+			fileService.save(delegaRichiedente);
+		}
 	}
 }

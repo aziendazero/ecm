@@ -25,10 +25,14 @@ public class ProviderRegistrationWrapperValidator{
 		accountValidator.validate(providerForm.getProvider().getAccount(), errors, "provider.account.");
 		
 		providerValidator.validateForRegistrazione(providerForm.getProvider(), errors, "provider.");
-		//TODO Richiedente e allegato solo per alcuni tipi di provider
 		validateRichiedente(providerForm.getRichiedente(), errors);
 		validateLegale(providerForm.getLegale(), errors);
-		fileValidator.validate(providerForm.getDelegaRichiedenteFile(), errors, "delegaRichiedenteFile");
+		
+		//TODO Delegato consentito solo per alcuni tipi di Provider
+		//allegato obbligatorio solo se e' stato selezionato il flag delegato
+		if(providerForm.isDelegato()){
+			fileValidator.validate(providerForm.getDelegaRichiedenteFile(), errors, "delegaRichiedenteFile");
+		}
 	}
 	
 	private void validateRichiedente(Persona richiedente, Errors errors){

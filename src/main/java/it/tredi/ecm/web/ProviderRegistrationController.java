@@ -25,6 +25,8 @@ import it.tredi.ecm.web.validator.ProviderRegistrationWrapperValidator;
 @Controller
 public class ProviderRegistrationController {
 	
+	public final String EDIT = "providerRegistration"; 
+	
 	@Autowired
 	private ProviderService providerService;
 	
@@ -79,45 +81,40 @@ public class ProviderRegistrationController {
 									@RequestParam( value="delegaRichiedente",required = false) MultipartFile multiPartFile){
 		try{
 			
-			//TODO allegato richiedente solo per alcuni tipi di provider
-			File delegaRichiedenteFile = Utils.convertFromMultiPart(multiPartFile);
-			if(delegaRichiedenteFile != null)
-				providerRegistrationWrapper.setDelegaRichiedenteFile(delegaRichiedenteFile);
+			//TODO Delegato consentito solo per alcuni tipi di Provider
+			if(providerRegistrationWrapper.isDelegato()){
+				File delegaRichiedenteFile = Utils.convertFromMultiPart(multiPartFile);
+				if(delegaRichiedenteFile != null)
+					providerRegistrationWrapper.setDelegaRichiedenteFile(delegaRichiedenteFile);
+			}
 			
 			providerRegistrationValidator.validate(providerRegistrationWrapper, result);	
 			
 			if(result.hasErrors()){
 				model.addAttribute("stepToShow", evaluateErrorStep(result));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				return returnToProviderRegistrationForm();
+				return EDIT;
 			}else{
 				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper);
-				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.provider_salvato", "success"));
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.conferma_registrazione", "success"));
 				return "redirect:/home";
 			}
 		}catch (Exception ex){
 			model.addAttribute("stepToShow", evaluateErrorStep(result));
-			return returnToProviderRegistrationForm();
+			return EDIT;
 		}
 		
 	}
 	
 	private int evaluateErrorStep(BindingResult result){
-		if(result.hasFieldErrors("provider*"))
+		if(result.hasFieldErrors("provider.account*"))
 			return 0;
+		if(result.hasFieldErrors("provider*"))
+			return 2;
 		if(result.hasFieldErrors("richiedente*") || result.hasFieldErrors("delegaRichiedente*"))
 			return 1;
 		if(result.hasFieldErrors("legale*"))
 			return 2;
 		return 0;
-	}
-			
-	private String returnToProviderRegistrationForm(){
-		CurrentUser currentUser = Utils.getAuthenticatedUser();
-		if(currentUser != null){
-			return "provider/editProvider";
-		}else{
-			return "providerRegistration";
-		}
 	}
 }
