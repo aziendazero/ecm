@@ -138,16 +138,31 @@
 										<div th:if="${#fields.hasErrors('richiedente.anagrafica.telefono')}" class="alert" th:errors="*{richiedente.anagrafica.telefono}"></div>
 									</div>
 									
+									<div class="divider-dashed"></div>
+									
+									<!-- checkbox delegato -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('delegato')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12"
+											for="delega_checkbox"><span th:text="#{label.delega_checkbox}">label.delega_checkbox</span><span class="required">*</span></label>
+										<div class="col-md-6 col-sm-6 col-xs-12" id="delega_checkbox">
+											<div class="checkbox">
+												<label>
+													<input type="checkbox" class="flat" th:field="${delegato}" /> 
+												</label> 
+											</div>
+										</div>
+										<div th:if="${#fields.hasErrors('delegato')}" class="alert" th:errors="${delegato}"></div>
+									</div>
+									
 									<!-- delega -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('delegaRichiedenteFile')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delegaRichiedente">
-											<span class="required" th:text="#{label.delega}">label.delega</span>
-											<span class="required">*</span>
+											<span th:text="#{label.delega}">label.delega</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
 											
 											<input th:unless="*{delegaRichiedenteFile}" type="file" id="delegaRichiedente" name="delegaRichiedente"
-												required="required" class="form-control col-md-7 col-xs-12 btn" />
+												class="form-control col-md-7 col-xs-12 btn" />
 											
 											
 											<span th:if="*{delegaRichiedenteFile}" id="delegaRichiedenteFile" class="form-control col-md-5 col-xs-10">

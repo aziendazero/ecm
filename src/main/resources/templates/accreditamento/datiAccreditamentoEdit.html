@@ -416,8 +416,6 @@
 								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
 							</div>
 							
-							<div class="divider-dashed"></div>
-							
 							<!-- allegato 3 (organigramma) -->
 							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, organigramma, ${++counter}, null)" ></th:block>
 							
