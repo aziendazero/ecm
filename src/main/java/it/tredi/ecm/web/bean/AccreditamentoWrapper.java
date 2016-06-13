@@ -77,7 +77,7 @@ public class AccreditamentoWrapper {
 		// cosi facendo valid è settato in automatico senza rifare tutti i controlli
 		// 
 		//NON lo faccio adesso perchè voglio capire in fase di validazione della domanda come gestiremo i vari stati
-		providerStato = (!provider.getRagioneSociale().isEmpty()) ? true : false;
+		providerStato = (provider.getRagioneSociale()!= null && !provider.getRagioneSociale().isEmpty()) ? true : false;
 		
 		sedeLegaleStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
 		sedeOperativaStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
