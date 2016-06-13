@@ -221,7 +221,7 @@ public class PersonaController {
 						accreditamentoService.removeIdEditabili(personaWrapper.getAccreditamentoId(), Costanti.IDS_LEGALE_RAPPRESENTANTE);
 
 					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
-					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito('"+ personaWrapper.getPersona().getRuolo().getNome() +"')", "success"));
 					
 					if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())
 						redirectAttrs.addFlashAttribute("currentTab","tab2");
