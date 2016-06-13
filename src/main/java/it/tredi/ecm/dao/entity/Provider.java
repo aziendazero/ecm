@@ -62,7 +62,7 @@ public class Provider extends BaseEntity{
 	
 	public boolean isSedeCoincide(){
 		if(sedeLegale != null && sedeOperativa != null){
-			return sedeLegale.getId() == sedeOperativa.getId();
+			return sedeLegale.getId().equals(sedeOperativa.getId());
 		}else{
 			return false;
 		}
