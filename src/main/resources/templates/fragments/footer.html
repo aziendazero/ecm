@@ -192,7 +192,7 @@
 			function sendNotify(){
 				var notify = new PNotify({
 					title: [[${message} == null ? '' : #{${message?.titolo}}]],
-					text:  [[${message} == null ? '' : #{${message?.testo}}]],
+					text:  [[${message} == null ? '' : #{__${message?.testo}__}]],
 					type: [[${message?.tipo}]],
 					hide: false,
                     buttons: {

@@ -231,7 +231,7 @@ public class PersonaController {
 					
 					System.out.println(message);
 					
-					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito('"+ personaWrapper.getPersona().getRuolo().getNome() +"')", "success"));
 					
 					if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())
 						redirectAttrs.addFlashAttribute("currentTab","tab2");
