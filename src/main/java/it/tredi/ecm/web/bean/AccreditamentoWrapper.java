@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
@@ -14,12 +17,16 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.dao.repository.PersonaRepository;
+import it.tredi.ecm.service.PersonaService;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class AccreditamentoWrapper {
+	
 	//dati domanda di accreditamento
 	private Accreditamento accreditamento;
 	
@@ -70,7 +77,7 @@ public class AccreditamentoWrapper {
 	//private boolean completa;//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
 	//private boolean canSend;
 	
-	public void checkStati(Set<String> existFiles){
+	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> existFiles){
 		//TODO migliorare la logica per evitare di fare troppi if
 		// ad esempio inizializzare gli stati a true e poi ad ogni controllo se fallisce si mette il false sia allo stato che al valid
 		// cosi facendo valid è settato in automatico senza rifare tutti i controlli
@@ -91,9 +98,46 @@ public class AccreditamentoWrapper {
 		responsabileSistemaInformaticoStato = (responsabileSistemaInformatico != null && !responsabileSistemaInformatico.isNew()) ? true : false;
 		responsabileQualitaStato = (responsabileQualita != null && !responsabileQualita.isNew()) ? true : false;
 		
-		checkComitatoScientifico();
+		//checkComitatoScientifico();
+		checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe);
 		setFilesStato(existFiles);
 		//checkCompleta();
+	}
+	
+	public void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe){
+		comitatoScientificoStato = true;
+		
+		//[A]
+		if(numeroComponentiComitatoScientifico < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
+			comitatoScientificoStato = false;
+			comitatoScientificoErrorMessage = "error.numero_minimo_comitato";
+		}//[B]
+		else if(numeroProfessionistiSanitarie < 5){
+			comitatoScientificoStato = false;
+			comitatoScientificoErrorMessage = "error.numero_minimo_professionisti_sanitari";
+		}else{
+			// mi assicuro che sono stati gia' inseriti i dati relativi all'accreditamento
+			if(datiAccreditamentoStato){
+				//[C]
+				if(datiAccreditamento.getProfessioniAccreditamento().equalsIgnoreCase("generale")){
+					if(professioniDeiComponenti < 2){
+						comitatoScientificoStato = false;
+						comitatoScientificoErrorMessage = "error.numero_minimo_professioni";
+					}
+				}//[D]
+				else{
+					if(datiAccreditamento.getProfessioniSelezionate().size() > 1){
+						if(professioniDeiComponentiAnaloghe < 2){
+							comitatoScientificoStato = false;
+							comitatoScientificoErrorMessage = "error.numero_minimo_professioni_settoriale";
+						}
+					}
+				}
+			}else{
+				comitatoScientificoStato = false;
+				comitatoScientificoErrorMessage = "error.datiaccreditamento_mancanti";
+			}
+		}
 	}
 	
 	/*
@@ -104,6 +148,7 @@ public class AccreditamentoWrapper {
 	 * */
 	private void checkComitatoScientifico(){
 		comitatoScientificoStato = true;
+		
 		//[A]
 		if(componentiComitatoScientifico.size() < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
 			comitatoScientificoStato = false;

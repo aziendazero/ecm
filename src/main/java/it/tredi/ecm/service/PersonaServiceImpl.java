@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.repository.PersonaRepository;
 
@@ -76,6 +77,30 @@ public class PersonaServiceImpl implements PersonaService {
 	public Set<Persona> getComitatoScientifico(Long providerId) {
 		LOGGER.debug("Recupero Comitato Scientifico del Provider " + providerId);
 		return personaRepository.findAllByRuoloAndProviderId(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, providerId);
+	}
+	
+	@Override
+	public int numeroComponentiComitatoScientifico(Long providerId) {
+		LOGGER.debug("Recupero numero componenti Comitato Scientifico del Provider " + providerId);
+		return personaRepository.countByRuoloAndProviderId(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, providerId);
+	}
+	
+	@Override
+	public int numeroComponentiComitatoScientificoConProfessioneSanitaria(Long providerId) {
+		LOGGER.debug("Recupero numero componenti Comitato Scientifico con professione sanitaria del Provider " + providerId);
+		return personaRepository.countByRuoloAndProviderIdAndProfessioneSanitaria(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, providerId, true);
+	}
+	
+	@Override
+	public int numeroProfessioniDistinteDeiComponentiComitatoScientifico(Long providerId) {
+		LOGGER.debug("Recupero numero di professioni distinte dei componenti del Comitato Scientifico del Provider " + providerId);
+		return personaRepository.countDistinctProfessioneByRuoloAndProviderId(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, providerId);
+	}
+	
+	@Override
+	public int numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(Long providerId, Set<Professione> professioniSelezionate) {
+		LOGGER.debug("Recupero numero di professioni distinte analoghe a qulle selezionate dei componenti del Comitato Scientifico del Provider " + providerId);
+		return personaRepository.countDistinctProfessioneByRuoloAndProviderIdInProfessioniSelezionate(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, providerId, professioniSelezionate);
 	}
 	
 	@Override

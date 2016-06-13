@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,11 +19,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.dao.repository.PersonaRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
+import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -32,6 +37,8 @@ public class AccreditamentoController {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoController.class);
 	
+	@Autowired
+	private PersonaService personaService;
 	@Autowired
 	private ProviderService providerService;
 	@Autowired
@@ -209,9 +216,22 @@ public class AccreditamentoController {
 		List<String> listOfFiles = Arrays.asList(Costanti.FILE_ATTO_COSTITUTIVO, Costanti.FILE_ESPERIENZA_FORMAZIONE, Costanti.FILE_UTILIZZO, Costanti.FILE_SISTEMA_INFORMATICO, Costanti.FILE_PIANO_QUALITA, Costanti.FILE_DICHIARAZIONE_LEGALE);
 		Set<String> existFiles = fileService.checkFileExists(accreditamento.getProvider().getId(), listOfFiles);
 
-		accreditamentoWrapper.checkStati(existFiles);
-		//accreditamentoWrapper.checkCanSend();
+		Long providerId = accreditamento.getProvider().getId();
+		Set<Professione> professioniSelezionate = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? datiAccreditamento.getProfessioniSelezionate() : new HashSet<Professione>();
 		
+		LOGGER.info("-----------------NUMERO COMPONENTI: " + personaService.numeroComponentiComitatoScientifico(providerId));
+		LOGGER.info("-----------------NUMERO PROFESSIONISTI SANITARI: " + personaService.numeroComponentiComitatoScientificoConProfessioneSanitaria(providerId));
+		LOGGER.info("-----------------NUMERO PROFESSIONI DISTINTE: " + personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId));
+		LOGGER.info("-----------------NUMERO PROFESSIONI ANALOGHE: " + personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate));
+		
+		
+		accreditamentoWrapper.checkStati(personaService.numeroComponentiComitatoScientifico(providerId), 
+											personaService.numeroComponentiComitatoScientificoConProfessioneSanitaria(providerId), 
+											personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId),
+											personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate), 
+											existFiles);
+		
+		//accreditamentoWrapper.checkCanSend();
 		return accreditamentoWrapper;
 	}
 }
