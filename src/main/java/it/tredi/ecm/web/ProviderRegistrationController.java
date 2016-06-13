@@ -109,11 +109,11 @@ public class ProviderRegistrationController {
 	private int evaluateErrorStep(BindingResult result){
 		if(result.hasFieldErrors("provider.account*"))
 			return 0;
-		if(result.hasFieldErrors("provider*"))
-			return 2;
-		if(result.hasFieldErrors("richiedente*") || result.hasFieldErrors("delegaRichiedente*"))
-			return 1;
 		if(result.hasFieldErrors("legale*"))
+			return 1;
+		if(result.hasFieldErrors("provider*"))
+			return 1;
+		if(result.hasFieldErrors("richiedente*") || result.hasFieldErrors("delegaRichiedente*"))
 			return 2;
 		return 0;
 	}

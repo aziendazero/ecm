@@ -26,7 +26,7 @@
 								<a href="#step-2" class="disabled" isdone="0" rel="2">
 									<span class="step_no">2</span>
 									<span class="step_descr">Step 2
-										<br/><small th:text="#{label.dati_del_richiedente}">label.dati_del_richiedente</small>
+										<br/><small th:text="#{label.dati_del_legale_rappresentante}">label.dati_del_legale_rappresentante</small>
 									</span>
 								</a>
 							</li>
@@ -34,7 +34,7 @@
 								<a href="#step-3" class="disabled" isdone="0" rel="3">
 									<span class="step_no">3</span>
 									<span class="step_descr">Step 3
-										<br/><small th:text="#{label.dati_del_legale_rappresentante}">label.dati_del_legale_rappresentante</small>
+										<br/><small th:text="#{label.dati_del_richiedente}">label.dati_del_richiedente</small>
 									</span>
 								</a>
 							</li>
@@ -73,115 +73,6 @@
 									</div>
 								</div>
 								<div id="step-2" class="wizard_content" style="display: none;">
-									<!-- nome -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.anagrafica.nome')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeRichiedente">
-											<span class="required" th:text="#{label.nome}">label.nome</span> 
-											<span class="required">*</span>
-										</label>
-										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="nomeRichiedente" name="nomeRichiedente" th:field="*{richiedente.anagrafica.nome}" 
-											required="required"	class="form-control col-md-7 col-xs-12" />
-										</div>
-										<div th:if="${#fields.hasErrors('richiedente.anagrafica.nome')}" class="alert" th:errors="*{richiedente.anagrafica.nome}"></div>
-									</div>
-									
-									<!-- cognome -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.anagrafica.cognome')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cognomeRichiedente">
-											<span class="required" th:text="#{label.cognome}">label.nome</span>
-											<span class="required">*</span>
-										</label>
-										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="cognomeRichiedente" th:field="*{richiedente.anagrafica.cognome}"
-											required="required" class="form-control col-md-7 col-xs-12" />
-										</div>
-										<div th:if="${#fields.hasErrors('richiedente.anagrafica.cognome')}" class="alert" th:errors="*{richiedente.anagrafica.cognome}"></div>
-									</div>
-									
-									<!-- codice fiscale -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.anagrafica.codiceFiscale')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cfRichiedente">
-											<span class="required" th:text="#{label.codice_fiscale}">#{label.codice_fiscale}</span>
-											<span class="required">*</span>
-										</label>
-										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="cfRichiedente" name="cfRichiedente" pattern="codiceFiscale" th:field="*{richiedente.anagrafica.codiceFiscale}"
-												required="required" class="form-control col-md-7 col-xs-12" />
-										</div>
-										<div th:if="${#fields.hasErrors('richiedente.anagrafica.codiceFiscale')}" class="alert" th:errors="*{richiedente.anagrafica.codiceFiscale}"></div>
-									</div>
-									
-									<!-- incarico -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.incarico')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="incaricoRichiedente">
-											<span class="required" th:text="#{label.incarico_presso_la_struttura}">label.incarico_presso_la_struttura</span>
-											<span class="required">*</span>
-										</label>
-										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="incaricoRichiedente" name="incaricoRichiedente" th:field="*{richiedente.incarico}"
-												required="required" class="form-control col-md-7 col-xs-12" />
-										</div>
-										<div th:if="${#fields.hasErrors('richiedente.incarico')}" class="alert" th:errors="*{richiedente.incarico}"></div>
-									</div>
-									
-									<!-- telefono -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.anagrafica.telefono')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="telefonoRichiedente">
-											<span class="required"  th:text="#{label.telefono}">label.telefono</span>
-											<span class="required">*</span>
-										</label>
-										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="tel" id="telefonoRichiedente" name="telefonoRichiedente" th:field="*{richiedente.anagrafica.telefono}"
-												required="required" class="form-control col-md-7 col-xs-12" />
-										</div>
-										<div th:if="${#fields.hasErrors('richiedente.anagrafica.telefono')}" class="alert" th:errors="*{richiedente.anagrafica.telefono}"></div>
-									</div>
-									
-									<div class="divider-dashed"></div>
-									
-									<!-- checkbox delegato -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('delegato')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12"
-											for="delega_checkbox"><span th:text="#{label.delega_checkbox}">label.delega_checkbox</span><span class="required">*</span></label>
-										<div class="col-md-6 col-sm-6 col-xs-12" id="delega_checkbox">
-											<div class="checkbox">
-												<label>
-													<input type="checkbox" class="flat" th:field="${delegato}" /> 
-												</label> 
-											</div>
-										</div>
-										<div th:if="${#fields.hasErrors('delegato')}" class="alert" th:errors="${delegato}"></div>
-									</div>
-									
-									<!-- delega -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('delegaRichiedenteFile')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delegaRichiedente">
-											<span th:text="#{label.delega}">label.delega</span>
-										</label>
-										<div class="col-md-6 col-sm-6 col-xs-12">
-											
-											<input th:unless="*{delegaRichiedenteFile}" type="file" id="delegaRichiedente" name="delegaRichiedente"
-												class="form-control col-md-7 col-xs-12 btn" />
-											
-											
-											<span th:if="*{delegaRichiedenteFile}" id="delegaRichiedenteFile" class="form-control col-md-5 col-xs-10">
-												<span class="col-md-11 col-xs-11">
-													<a th:text="*{delegaRichiedenteFile.nomeFile}" th:href="@{|/files/*{delegaRichiedenteFile.id}|}"></a>
-												</span>
-												<span class="col-md-1 col-xs-1">
-													<a th:href="@{|/files/*{delegaRichiedenteFile.id}|/delete}">
-														<i class="fa fa-remove red icon"></i>
-													</a>
-												</span>
-											</span>
-										</div>
-										<div th:if="${#fields.hasErrors('delegaRichiedenteFile')}" class="alert" th:errors="*{delegaRichiedenteFile}"></div>
-									</div>
-									
-								</div>
-							
-								<div id="step-3" class="wizard_content" style="display: none;">
 									<!-- nome -->
 										<div class="item form-group" th:classappend="${#fields.hasErrors('legale.anagrafica.nome')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeLegaleRappresentante">
@@ -302,7 +193,111 @@
 										</div>
 										<div th:if="${#fields.hasErrors('provider.codiceFiscale')}" class="alert" th:errors="*{provider.codiceFiscale}"></div>
 									</div>
+								</div>
+								<div id="step-3" class="wizard_content" style="display: none;">
+									<!-- nome -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.anagrafica.nome')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeRichiedente">
+											<span class="required" th:text="#{label.nome}">label.nome</span> 
+											<span class="required">*</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<input type="text" id="nomeRichiedente" name="nomeRichiedente" th:field="*{richiedente.anagrafica.nome}" 
+											required="required"	class="form-control col-md-7 col-xs-12" />
+										</div>
+										<div th:if="${#fields.hasErrors('richiedente.anagrafica.nome')}" class="alert" th:errors="*{richiedente.anagrafica.nome}"></div>
+									</div>
 									
+									<!-- cognome -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.anagrafica.cognome')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cognomeRichiedente">
+											<span class="required" th:text="#{label.cognome}">label.nome</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<input type="text" id="cognomeRichiedente" th:field="*{richiedente.anagrafica.cognome}"
+											required="required" class="form-control col-md-7 col-xs-12" />
+										</div>
+										<div th:if="${#fields.hasErrors('richiedente.anagrafica.cognome')}" class="alert" th:errors="*{richiedente.anagrafica.cognome}"></div>
+									</div>
+									
+									<!-- codice fiscale -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.anagrafica.codiceFiscale')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cfRichiedente">
+											<span class="required" th:text="#{label.codice_fiscale}">#{label.codice_fiscale}</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<input type="text" id="cfRichiedente" name="cfRichiedente" pattern="codiceFiscale" th:field="*{richiedente.anagrafica.codiceFiscale}"
+												required="required" class="form-control col-md-7 col-xs-12" />
+										</div>
+										<div th:if="${#fields.hasErrors('richiedente.anagrafica.codiceFiscale')}" class="alert" th:errors="*{richiedente.anagrafica.codiceFiscale}"></div>
+									</div>
+									
+									<!-- incarico -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.incarico')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="incaricoRichiedente">
+											<span class="required" th:text="#{label.incarico_presso_la_struttura}">label.incarico_presso_la_struttura</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<input type="text" id="incaricoRichiedente" name="incaricoRichiedente" th:field="*{richiedente.incarico}"
+												required="required" class="form-control col-md-7 col-xs-12" />
+										</div>
+										<div th:if="${#fields.hasErrors('richiedente.incarico')}" class="alert" th:errors="*{richiedente.incarico}"></div>
+									</div>
+									
+									<!-- telefono -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('richiedente.anagrafica.telefono')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="telefonoRichiedente">
+											<span class="required"  th:text="#{label.telefono}">label.telefono</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<input type="tel" id="telefonoRichiedente" name="telefonoRichiedente" th:field="*{richiedente.anagrafica.telefono}"
+												required="required" class="form-control col-md-7 col-xs-12" />
+										</div>
+										<div th:if="${#fields.hasErrors('richiedente.anagrafica.telefono')}" class="alert" th:errors="*{richiedente.anagrafica.telefono}"></div>
+									</div>
+									
+									<div class="divider-dashed"></div>
+									
+									<!-- checkbox delegato -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('delegato')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12"
+											for="delega_checkbox"><span th:text="#{label.delega_checkbox}">label.delega_checkbox</span><span class="required">*</span></label>
+										<div class="col-md-6 col-sm-6 col-xs-12" id="delega_checkbox">
+											<div class="checkbox">
+												<input name="isDelegato" type="checkbox" class="flat" th:field="*{delegato}" /> 
+											</div>
+										</div>
+										<div th:if="${#fields.hasErrors('delegato')}" class="alert" th:errors="*{delegato}"></div>
+									</div>
+									
+									<!-- delega -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('delegaRichiedenteFile')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delegaRichiedente">
+											<span th:text="#{label.delega}">label.delega</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											
+											<input th:unless="*{delegaRichiedenteFile}" type="file" id="delegaRichiedente" name="delegaRichiedente"
+												class="form-control col-md-7 col-xs-12 btn" />
+											
+											
+											<span th:if="*{delegaRichiedenteFile}" id="delegaRichiedenteFile" class="form-control col-md-5 col-xs-10">
+												<span class="col-md-11 col-xs-11">
+													<a th:text="*{delegaRichiedenteFile.nomeFile}" th:href="@{|/files/*{delegaRichiedenteFile.id}|}"></a>
+												</span>
+												<span class="col-md-1 col-xs-1">
+													<a th:href="@{|/files/*{delegaRichiedenteFile.id}|/delete}">
+														<i class="fa fa-remove red icon"></i>
+													</a>
+												</span>
+											</span>
+										</div>
+										<div th:if="${#fields.hasErrors('delegaRichiedenteFile')}" class="alert" th:errors="*{delegaRichiedenteFile}"></div>
+									</div>
 									<!-- Invia dati -->
 									<div class="item form-group text-right">
 										<input class="btn btn-primary right" type="submit" name="saveTypeFull" value="full" th:value="#{label.crea_account}"/>
