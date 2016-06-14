@@ -85,7 +85,7 @@ public class AccountController {
 			}else{
 				try{
 					accountService.save(account);
-					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito", "success"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.utente_salvato", "success"));
 					return "redirect:/user/list";
 				}catch (Exception ex){
 					model.addAttribute("errore",ex.getMessage());
