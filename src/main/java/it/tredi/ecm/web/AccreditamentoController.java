@@ -229,7 +229,6 @@ public class AccreditamentoController {
 		
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, existFiles);
 		
-		//accreditamentoWrapper.checkCanSend();
 		return accreditamentoWrapper;
 	}
 }
