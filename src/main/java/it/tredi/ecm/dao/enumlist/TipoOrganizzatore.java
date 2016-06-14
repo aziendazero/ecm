@@ -23,12 +23,12 @@ public enum TipoOrganizzatore {
 	private int id;
 	private String nome;
 	private String gruppo;
-	private boolean tipoP;
+	private boolean isTipoP;
 	
-	private TipoOrganizzatore(int id, String nome, String gruppo, boolean tipoP){
+	private TipoOrganizzatore(int id, String nome, String gruppo, boolean isTipoP){
 		this.id = id;
 		this.nome = nome;
 		this.gruppo = gruppo;
-		this.tipoP = tipoP;
+		this.isTipoP = isTipoP;
 	}
 }

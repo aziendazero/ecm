@@ -188,3 +188,13 @@ table.datatable-responsive-search thead .sorting_asc:after {
 .with-margin-right {
 	margin-right: 20px;
 }
+
+.wizard_steps {
+	padding: 0;
+}
+
+.step_descr {
+	display: block;
+	min-width: 100px;
+}
+

@@ -15,7 +15,7 @@
 					<div id="providerWizard" class="form_wizard wizard_horizontal">
 						<ul class="wizard_steps anchor">
 							<li>
-								<a href="#step-1" class="selected" isdone="1" rel="1">
+								<a href="#step-1" class="selected wizard-element" isdone="1" rel="1">
 									<span class="step_no">1</span>
 									<span class="step_descr">Step 1
 										<br/><small th:text="#{label.credenziali_accesso}">label.credenziali_accesso</small>
@@ -23,7 +23,7 @@
 								</a>
 							</li>
 							<li>
-								<a href="#step-2" class="disabled" isdone="0" rel="2">
+								<a href="#step-2" class="disabled wizard-element" isdone="0" rel="2">
 									<span class="step_no">2</span>
 									<span class="step_descr">Step 2
 										<br/><small th:text="#{label.dati_del_legale_rappresentante}">label.dati_del_legale_rappresentante</small>
@@ -31,7 +31,7 @@
 								</a>
 							</li>
 							<li>
-								<a href="#step-3" class="disabled" isdone="0" rel="3">
+								<a href="#step-3" class="disabled wizard-element" isdone="0" rel="3">
 									<span class="step_no">3</span>
 									<span class="step_descr">Step 3
 										<br/><small th:text="#{label.dati_del_richiedente}">label.dati_del_richiedente</small>
@@ -160,9 +160,9 @@
 				                      	<span class="required">*</span>
 				                      </label>
 				                      <div class="col-md-6 col-sm-6 col-xs-12">
-				                        <select class="form-control required" th:field="*{provider.tipoOrganizzatore}">
+				                        <select id="tipoOrganizzatore_select" class="form-control required" th:field="*{provider.tipoOrganizzatore}" onchange="inputDelegaControl()">
 				                          <option value="" th:text="#{label.seleziona}">label.seleziona</option>
-				                          <option th:each="tipo : ${tipoOrganizzatoreList}" th:value="${tipo}" th:text="${tipo.nome}">Choose option</option>
+				                          <option th:each="tipo : ${tipoOrganizzatoreList}" th:attr="tipop=${tipo.tipoP}" th:value="${tipo}" th:text="${tipo.nome}">Choose option</option>
 				                        </select>
 				                      </div>
 				                      <div th:if="${#fields.hasErrors('provider.tipoOrganizzatore')}" class="alert" th:errors="*{provider.tipoOrganizzatore}"></div>
@@ -260,22 +260,22 @@
 										<div th:if="${#fields.hasErrors('richiedente.anagrafica.telefono')}" class="alert" th:errors="*{richiedente.anagrafica.telefono}"></div>
 									</div>
 									
-									<div class="divider-dashed"></div>
+									<div id="divider" class="divider-dashed"></div>
 									
 									<!-- checkbox delegato -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('delegato')} ? 'bad'">
+									<div id="checkbox_delegato" class="item form-group" th:classappend="${#fields.hasErrors('delegato')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12"
 											for="delega_checkbox"><span th:text="#{label.delega_checkbox}">label.delega_checkbox</span><span class="required">*</span></label>
 										<div class="col-md-6 col-sm-6 col-xs-12" id="delega_checkbox">
 											<div class="checkbox">
-												<input name="isDelegato" type="checkbox" class="flat" th:field="*{delegato}" /> 
+												<input id="isDelegato" name="isDelegato" type="checkbox" class="flat" th:field="*{delegato}" /> 
 											</div>
 										</div>
 										<div th:if="${#fields.hasErrors('delegato')}" class="alert" th:errors="*{delegato}"></div>
 									</div>
 									
 									<!-- delega -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('delegaRichiedenteFile')} ? 'bad'">
+									<div id="input_delegato" class="item form-group" th:classappend="${#fields.hasErrors('delegaRichiedenteFile')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delegaRichiedente">
 											<span th:text="#{label.delega}">label.delega</span>
 										</label>
@@ -321,8 +321,9 @@
 		    	  onLeaveStep:leaveAStepCallback,
 		    	  selected: [[ ${stepToShow} ]],
 		    	  enableAllSteps: true
-		    	  
 		      });
+		      
+		      inputDelegaControl() 
 		      
 		      function leaveAStepCallback(obj, context){
 		          if(context.toStep > context.fromStep)
@@ -331,6 +332,28 @@
 		          return true;
 		      };
 		    });
+		    
+		    function inputDelegaControl() {
+		    	// converte la stringa in boolean e poi fa un check se l'org è di tipo P, (mostra la checkbox e la delega)
+		    	var check = ($('#tipoOrganizzatore_select option:selected').attr('tipop') === "true");
+		    	console.log(check);
+			    if (check) {
+			    	$('#checkbox_delegato').show();
+			    	$('#isDelegato').iCheck("enable");
+			    	$('#input_delegato').show();
+			    	$('#delegaRichiedente').prop('disabled', false);
+			    	$('#divider').show()
+			    } 
+		    	// altrimenti la nasconde
+			    else {
+			    	$('#checkbox_delegato').hide();
+			    	$('#isDelegato').iCheck("disable");
+			    	$('#input_delegato').hide();
+			    	$('#delegaRichiedente').prop( "disabled", true);
+			    	$('#divider').hide();
+			    	
+			    }
+	      	}
     	</script>
 	</div>
 </body>
