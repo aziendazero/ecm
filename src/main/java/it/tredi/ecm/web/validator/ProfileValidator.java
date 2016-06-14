@@ -34,7 +34,7 @@ public class ProfileValidator {
 				if(profile.isNew()){
 					errors.rejectValue("name", "error.name.duplicated");
 				}else{
-					if(profile.getId() != profileLoaded.get().getId())
+					if(!profile.getId().equals(profileLoaded.get().getId()))
 						errors.rejectValue("name", "error.name.duplicated");
 				}
 			}

@@ -40,7 +40,7 @@ public class ProviderValidator {
 				if(providerForm.isNew()){
 					errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
 				}else{
-					if(provider.getId() != providerForm.getId()){
+					if(!provider.getId().equals(providerForm.getId())){
 						errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
 					}
 				}

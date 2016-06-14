@@ -169,7 +169,7 @@ public class SedeController {
 				Provider currentProvider = providerService.getProvider();
 				if(currentProvider != null){
 					if(currentProvider.getSedeLegale() != null && currentProvider.getSedeOperativa() != null){
-						if(currentProvider.getSedeLegale().getId() == currentProvider.getSedeOperativa().getId())
+						if(currentProvider.getSedeLegale().getId().equals(currentProvider.getSedeOperativa().getId()))
 							sedeWrapper.setIdEditabili(new ArrayList<>());
 					}
 				}

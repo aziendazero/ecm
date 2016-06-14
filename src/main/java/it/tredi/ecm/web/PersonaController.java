@@ -104,6 +104,8 @@ public class PersonaController {
 			@RequestParam(name="ruolo", required = true) String ruolo, RedirectAttributes redirectAttrs){
 
 		try {
+			if(ruolo.startsWith("RESPONSABILE"))
+				model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
 			return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId));
 		}catch (Exception ex){
 			//TODO gestione eccezione
