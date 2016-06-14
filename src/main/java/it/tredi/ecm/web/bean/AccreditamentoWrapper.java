@@ -68,6 +68,10 @@ public class AccreditamentoWrapper {
 	private boolean pianoQualitaStato;
 	private boolean dichiarazioneLegaleStato;
 	
+	private boolean sezione1Stato;
+	private boolean sezione2Stato;
+	private boolean sezione3Stato;
+	
 	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> existFiles){
 		//TODO migliorare la logica per evitare di fare troppi if
 		// ad esempio inizializzare gli stati a true e poi ad ogni controllo se fallisce si mette il false sia allo stato che al valid
@@ -92,6 +96,10 @@ public class AccreditamentoWrapper {
 		
 		checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe);
 		setFilesStato(existFiles);
+		
+		sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
+		sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
+		sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false; 
 	}
 	
 	public void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe){
@@ -193,25 +201,30 @@ public class AccreditamentoWrapper {
 	
 	//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
 	public boolean isCompleta(){
-		if(providerStato &&
-				 sedeLegaleStato &&
-				 sedeOperativaStato &&
-				 legaleRappresentanteStato &&
-				 datiAccreditamentoStato &&
-				 responsabileSegreteriaStato &&
-				 responsabileAmministrativoStato &&
-				 comitatoScientificoStato &&
-				 responsabileSistemaInformaticoStato &&
-				 responsabileQualitaStato &&
-				 attoCostitutivoStato &&
-				 esperienzaFormazioneStato &&
-				 utilizzoStato &&
-				 sistemaInformaticoStato &&
-				 pianoQualitaStato &&
-				 dichiarazioneLegaleStato)
-				return true;
-			else
-				return false;
+//		if(providerStato &&
+//				 sedeLegaleStato &&
+//				 sedeOperativaStato &&
+//				 legaleRappresentanteStato &&
+//				 datiAccreditamentoStato &&
+//				 responsabileSegreteriaStato &&
+//				 responsabileAmministrativoStato &&
+//				 comitatoScientificoStato &&
+//				 responsabileSistemaInformaticoStato &&
+//				 responsabileQualitaStato &&
+//				 attoCostitutivoStato &&
+//				 esperienzaFormazioneStato &&
+//				 utilizzoStato &&
+//				 sistemaInformaticoStato &&
+//				 pianoQualitaStato &&
+//				 dichiarazioneLegaleStato)
+//				return true;
+//			else
+//				return false;
+		
+		if(sezione1Stato && sezione2Stato && sezione3Stato)
+			return true;
+		else
+			return false;
 	}
 	
 	//la domanda può essere inviata alla segreteria
