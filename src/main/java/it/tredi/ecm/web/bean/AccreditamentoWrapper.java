@@ -82,7 +82,7 @@ public class AccreditamentoWrapper {
 		providerStato = (provider.getRagioneSociale()!= null && !provider.getRagioneSociale().isEmpty()) ? true : false;
 		
 		sedeLegaleStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
-		sedeOperativaStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
+		sedeOperativaStato = (sedeOperativa != null && !sedeOperativa.isNew()) ? true : false;
 		
 		legaleRappresentanteStato = (legaleRappresentante != null && !legaleRappresentante.isNew() && legaleRappresentante.getAnagrafica().getTelefono() != null && !legaleRappresentante.getAnagrafica().getTelefono().isEmpty()) ? true : false;
 		delegatoLegaleRappresentanteStato = (delegatoLegaleRappresentante != null && !delegatoLegaleRappresentante.isNew() && delegatoLegaleRappresentante.getAnagrafica().getPec() != null && !delegatoLegaleRappresentante.getAnagrafica().getPec().isEmpty()) ? true : false;
