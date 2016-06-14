@@ -292,13 +292,19 @@
 							</div>
 							
 							<!-- allegato 1 (atto di nomina) -->
-							<th:block th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}" th:replace="fragments/allegati :: allegati(personaWrapper, attoNomina, ${++counter}, null)" ></th:block>
+							<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}">
+								<th:block th:replace="fragments/allegati :: allegati(personaWrapper, attoNomina, ${++counter}, null)" ></th:block>
+							</div>
 							
 							<!-- allegato 2 (curriculum vitae) -->
-							<th:block th:unless="${personaWrapper.persona.legaleRappresentante}" th:replace="fragments/allegati :: allegati(personaWrapper, cv, ${++counter}, null)"></th:block>
+							<div th:unless="${personaWrapper.persona.legaleRappresentante}">
+								<th:block th:replace="fragments/allegati :: allegati(personaWrapper, cv, ${++counter}, null)"></th:block>
+							</div>
 							
 							<!-- allegato 3 (delega) -->
-							<th:block th:if="${personaWrapper.persona.delegatoLegaleRappresentante}" th:replace="fragments/allegati :: allegati(personaWrapper, delega, ${++counter}, null)"></th:block>
+							<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}">
+								<th:block th:replace="fragments/allegati :: allegati(personaWrapper, delega, ${++counter}, null)"></th:block>
+							</div>
 						</form>
 					</div>
 				</div>
