@@ -68,22 +68,20 @@ public class AccreditamentoWrapper {
 	private boolean pianoQualitaStato;
 	private boolean dichiarazioneLegaleStato;
 	
-	//private boolean completa;//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
-	//private boolean canSend;
-	
 	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> existFiles){
 		//TODO migliorare la logica per evitare di fare troppi if
 		// ad esempio inizializzare gli stati a true e poi ad ogni controllo se fallisce si mette il false sia allo stato che al valid
 		// cosi facendo valid è settato in automatico senza rifare tutti i controlli
 		// 
 		//NON lo faccio adesso perchè voglio capire in fase di validazione della domanda come gestiremo i vari stati
+		
 		providerStato = (provider.getRagioneSociale()!= null && !provider.getRagioneSociale().isEmpty()) ? true : false;
 		
 		sedeLegaleStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
 		sedeOperativaStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
 		
-		legaleRappresentanteStato = (legaleRappresentante != null && !legaleRappresentante.isNew()) ? true : false;
-		delegatoLegaleRappresentanteStato = (delegatoLegaleRappresentante != null && !delegatoLegaleRappresentante.isNew()) ? true : false;
+		legaleRappresentanteStato = (legaleRappresentante != null && !legaleRappresentante.isNew() && legaleRappresentante.getAnagrafica().getTelefono() != null && !legaleRappresentante.getAnagrafica().getTelefono().isEmpty()) ? true : false;
+		delegatoLegaleRappresentanteStato = (delegatoLegaleRappresentante != null && !delegatoLegaleRappresentante.isNew() && delegatoLegaleRappresentante.getAnagrafica().getPec() != null && !delegatoLegaleRappresentante.getAnagrafica().getPec().isEmpty()) ? true : false;
 		
 		datiAccreditamentoStato = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? true : false;
 		
@@ -92,10 +90,8 @@ public class AccreditamentoWrapper {
 		responsabileSistemaInformaticoStato = (responsabileSistemaInformatico != null && !responsabileSistemaInformatico.isNew()) ? true : false;
 		responsabileQualitaStato = (responsabileQualita != null && !responsabileQualita.isNew()) ? true : false;
 		
-		//checkComitatoScientifico();
 		checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe);
 		setFilesStato(existFiles);
-		//checkCompleta();
 	}
 	
 	public void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe){
@@ -195,34 +191,12 @@ public class AccreditamentoWrapper {
 			dichiarazioneLegaleStato = true;
 	}
 	
-//	private void checkCompleta(){
-//		if(providerStato &&
-//			 sedeLegaleStato &&
-//			 sedeOperativaStato &&
-//			 (legaleRappresentanteStato || delegatoLegaleRappresentanteStato) &&
-//			 datiAccreditamentoStato &&
-//			 responsabileSegreteriaStato &&
-//			 responsabileAmministrativoStato &&
-//			 comitatoScientificoStato &&
-//			 responsabileSistemaInformaticoStato &&
-//			 responsabileQualitaStato &&
-//			 attoCostitutivoStato &&
-//			 esperienzaFormazioneStato &&
-//			 utilizzoStato &&
-//			 sistemaInformaticoStato &&
-//			 pianoQualitaStato &&
-//			 dichiarazioneLegaleStato)
-//			completa = true;
-//		else
-//			completa = false;
-//	}
-	
 	//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
 	public boolean isCompleta(){
 		if(providerStato &&
 				 sedeLegaleStato &&
 				 sedeOperativaStato &&
-				 (legaleRappresentanteStato || delegatoLegaleRappresentanteStato) &&
+				 legaleRappresentanteStato &&
 				 datiAccreditamentoStato &&
 				 responsabileSegreteriaStato &&
 				 responsabileAmministrativoStato &&

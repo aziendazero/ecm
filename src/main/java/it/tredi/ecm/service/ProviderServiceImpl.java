@@ -130,6 +130,8 @@ public class ProviderServiceImpl implements ProviderService {
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerRegistrationWrapper) {
 		Provider provider = providerRegistrationWrapper.getProvider();
 		Persona richiedente = providerRegistrationWrapper.getRichiedente();
+		if(providerRegistrationWrapper.isDelegato())
+			richiedente.setRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
 		Persona legale = providerRegistrationWrapper.getLegale();
 		File delegaRichiedente = providerRegistrationWrapper.getDelegaRichiedenteFile(); 
 		
