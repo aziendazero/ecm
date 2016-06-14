@@ -19,7 +19,7 @@
 							<div class="clearfix"></div>
 						</div>
 						<div class="x_content">
-							<div class="" role="tabpanel" data-example-id="togglable-tabs">
+							<div id="tabs" class="" role="tabpanel" data-example-id="togglable-tabs">
 								<ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
 									<li role="presentation" class="active">
 										<a href="#tab_content1" role="tab" id="tab1" data-toggle="tab" aria-expanded="true" th:text="#{label.dati_del_organizzatore}">
@@ -371,6 +371,7 @@
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 				$(document).ready(function() {
+					
 					if ([[${currentTab}]] != null && [[${currentTab}]] != "tab1")
 						$('#'+[[${currentTab}]]).tab('show');
 					
@@ -382,6 +383,61 @@
 							table.column(4).visible(false);
 					}
 					checkRemove();
+					
+					$('a[data-toggle="tab"]').on('click', function (e) {
+						// tab selezionata
+						var tab = $(e.target).attr('id');
+						// check se la sezione è stata compilata (procede in caso affermativo, nega l'apertura della tab e manda un warn altrimenti)
+						// controlla anche se il warning è già aperto e in caso lo anima
+						if (tab == "tab2") {
+							if (![[${accreditamentoWrapper.sezione1Stato}]]) {
+								var exists = false;
+						        $(".ui-pnotify-text").each(function() {
+						            if ($(this).html() == [[#{message.compilare_tab1}]]) {
+						                exists = true;
+						                animate($(this).parent().parent());
+						            }
+						        });
+						        if (!exists) {
+						        	var notify = new PNotify({
+										title: [[#{message.warning}]],
+										text:  [[#{message.compilare_tab1}]],
+										type: "warning",
+										hide: false,
+					                    buttons: {
+					                    	sticker: false
+					                    }                             
+					            	});
+						        }
+						        return false; 
+							}
+							else return true;
+						}
+						if (tab == "tab3") {
+							if (![[${accreditamentoWrapper.sezione2Stato}]]) {
+								var exists = false;
+						        $(".ui-pnotify-text").each(function() {
+						            if ($(this).html() == [[#{message.compilare_tab2}]]) {
+						                exists = true;
+						                animate($(this).parent().parent());
+						            }
+						        });
+						        if (!exists) {
+						        	var notify = new PNotify({
+										title: [[#{message.warning}]],
+										text:  [[#{message.compilare_tab2}]],
+										type: "warning",
+										hide: false,
+					                    buttons: {
+					                    	sticker: false
+					                    }                             
+					            	});
+						        }
+						        return false; 
+							}
+							else return true;
+						}
+					});
 				});
 			/*]]>*/	
 			</script>

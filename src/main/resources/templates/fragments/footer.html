@@ -199,7 +199,13 @@
                     	sticker: false
                     }                             
             	});
-			};		
+			};
+			
+			function animate(element){
+				element.addClass('tada animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+				      $(this).removeClass('tada animated');
+				});
+			}
 		</script>
 	</body>
 </html>
