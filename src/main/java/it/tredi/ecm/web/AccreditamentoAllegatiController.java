@@ -30,7 +30,7 @@ import it.tredi.ecm.web.validator.AccreditamentoAllegatiValidator;
 
 @Controller
 public class AccreditamentoAllegatiController {
-	private final String EDIT = "accreditamento/allegatiEdit";
+	private final String EDIT = "accreditamento/accreditamentoAllegatiEdit";
 
 	@Autowired
 	private AccreditamentoAllegatiValidator accreditamentoAllegatiValidator;
