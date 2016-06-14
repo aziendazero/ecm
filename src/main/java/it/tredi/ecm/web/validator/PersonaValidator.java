@@ -34,6 +34,7 @@ public class PersonaValidator {
 		Persona persona = (Persona)target;
 		validateBase(persona, errors, prefix);
 		
+		
 		//CELLULARE (LR - DLR - CCS - ComCS - RA)
 		if(	persona.isLegaleRappresentante() || persona.isDelegatoLegaleRappresentante() || 
 			persona.isCoordinatoreComitatoScientifico() || persona.isComponenteComitatoScientifico() || 
@@ -60,6 +61,8 @@ public class PersonaValidator {
 			//non e' possibile inserire piu' volte la stessa persona nel comitato
 			Persona personaCF = personaService.getPersonaByRuoloAndCodiceFiscale(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, persona.getAnagrafica().getCodiceFiscale(), persona.getProvider().getId()); 
 			Persona personaCoord = personaService.getCoordinatoreComitatoScientifico(persona.getProvider().getId());
+			
+			//TODO validate in base all'id della persona e non solo in base al codice fiscale
 			
 			if(personaCF != null){
 				if(persona.isNew() || !persona.getId().equals(personaCF.getId()))
