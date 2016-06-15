@@ -198,12 +198,5 @@ table.datatable-responsive-search thead .sorting_asc:after {
 	min-width: 100px;
 }
 
-.btn-primary:active:focus, .btn-primary:active:hover {
-	background-color: #1A82C3;
-  	border-color: #1A82C3;
-  }
- 
-.bg-green:hover, .bg-green:active:focus, .bg-green:active:hover, .bg-green:focus  {
-	color: #fff;
-}
+
 

@@ -13,7 +13,7 @@
 						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
 						<div class="pull-right buttons-header">
 							<th:block th:unless="${#lists.isEmpty(personaWrapper.idEditabili)}">
-								<button class="btn bg-green pull-right" th:text="#{label.salva}" form="formPersona" type="submit"></button>
+								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formPersona" type="submit"></button>
 								<button id="cerca-persona-btn" class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
 								<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/${personaWrapper.persona.ruolo}/setAnagrafica|}"></a>
 							</th:block>

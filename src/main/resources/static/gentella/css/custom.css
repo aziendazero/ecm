@@ -2870,7 +2870,7 @@ ul.bar_tabs > li.active {
 }
 ul.bar_tabs > li.active a {
   background: #fff;
-  border-color: transparent;
+
 }
 ul.bar_tabs > li a {
   padding: 10px 17px;

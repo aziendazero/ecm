@@ -12,7 +12,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.dati_attività}">Dati relativi all’attività</h2>
 						<th:block th:unless="${#lists.isEmpty(datiAccreditamentoWrapper.idEditabili)}">
-							<button class="btn bg-green pull-right" th:text="#{label.salva}" form="formAccreditamento" type="submit"></button>
+							<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formAccreditamento" type="submit"></button>
 						</th:block>
 						<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}|}"></a>
 						<div class="clearfix"></div>
