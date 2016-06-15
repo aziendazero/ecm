@@ -203,7 +203,7 @@ table.datatable-responsive-search thead .sorting_asc:after {
   	border-color: #1A82C3;
   }
  
-.btn:hover, .btn:active:focus, .btn:active:hover, .btn:focus  {
+.bg-green:hover, .bg-green:active:focus, .bg-green:active:hover, .bg-green:focus  {
 	color: #fff;
 }
 
