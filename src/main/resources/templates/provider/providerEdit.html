@@ -12,7 +12,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.info_provider}">label.info_provider</h2>
 						<th:block th:unless="${#lists.isEmpty(providerWrapper.idEditabili)}">
-							<button class="btn btn-primary pull-right" th:text="#{label.salva}" form="formInfo" type="submit"></button>
+							<button class="btn bg-green pull-right" th:text="#{label.salva}" form="formInfo" type="submit"></button>
 						</th:block>
 						<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoId}|}"></a>
 						<div class="clearfix"></div>
