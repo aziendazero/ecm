@@ -133,7 +133,10 @@ public class SedeController {
 			
 			//preparo il wrapper specificando che è una sedeOperativa
 			SedeWrapper sedeWrapper = prepareSedeWrapper(sedeLegale, Costanti.SEDE_OPERATIVA, accreditamentoId);
-			sedeWrapper.setIdEditabili(new ArrayList<>());
+			List<Integer> list = new ArrayList<Integer>();
+			// magic number (rende non editabili tutti i campi della sede operativa, ma consente ugualmente il salvataggio)
+			list.add(0); 
+			sedeWrapper.setIdEditabili(list);
 			
 			//refresh solo del fragment della view
 			return goToEditWhitFragment(model, sedeWrapper, "content");

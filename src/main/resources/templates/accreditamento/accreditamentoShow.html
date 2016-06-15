@@ -389,17 +389,20 @@
 					$('a[data-toggle="tab"]').on('click', function (e) {
 						// tab selezionata
 						var tab = $(e.target).attr('id');
-						// check se la sezione è stata compilata (procede in caso affermativo, nega l'apertura della tab e manda un warn altrimenti)
-						// controlla anche se il warning è già aperto e in caso lo anima
+						
 						if (tab == "tab2") {
+							// check se la sezione è stata compilata (procede in caso affermativo, nega l'apertura della tab e manda un warn altrimenti)
+							// controlla anche se il warning è già aperto e in caso lo anima
 							if (![[${accreditamentoWrapper.sezione1Stato}]]) {
 								var exists = false;
+								//se è già aperto il pnotify chiama l'animate (attention seeker)
 						        $(".ui-pnotify-text").each(function() {
 						            if ($(this).html() == [[#{message.compilare_tab1}]]) {
 						                exists = true;
 						                animate($(this).parent().parent());
 						            }
 						        });
+								//altrimenti apre un nuovo pnotify
 						        if (!exists) {
 						        	var notify = new PNotify({
 										title: [[#{message.warning}]],
@@ -413,8 +416,35 @@
 					            	});
 						        }
 						        return false; 
+							} else {
+								//check se non sia stato inserito alcun responsabile (altrimenti warn legale non modificabile)
+								if ([[${accreditamentoWrapper.responsabileSegreteria == null} and
+								      ${accreditamentoWrapper.responsabileAmministrativo == null} and
+								      ${accreditamentoWrapper.responsabileSistemaInformatico == null} and
+								      ${accreditamentoWrapper.responsabileQualita == null}]]) {
+									var exists = false;
+							        $(".ui-pnotify-text").each(function() {
+							            if ($(this).html() == [[#{message.legale_non_piu_modificabile}]]) {
+							                exists = true;
+							                animate($(this).parent().parent());
+							            }
+							        });
+							        if (!exists) {
+							        	var notify = new PNotify({
+											title: [[#{message.warning}]],
+											text:  [[#{message.legale_non_piu_modificabile}]],
+											type: "warning",
+											hide: false,
+											stack: stack_topright,
+						                    buttons: {
+						                    	sticker: false
+						                    }                             
+						            	});
+							        }
+								}
+								//in ogni caso non è bloccante
+								return true;
 							}
-							else return true;
 						}
 						if (tab == "tab3") {
 							if (![[${accreditamentoWrapper.sezione2Stato}]]) {
