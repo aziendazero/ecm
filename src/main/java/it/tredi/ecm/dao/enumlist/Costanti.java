@@ -10,6 +10,9 @@ public class Costanti {
 	public static final String SEDE_LEGALE = "SedeLegale";
 	public static final String SEDE_OPERATIVA = "SedeOperativa";
 	
+	/*
+	 * FileEnum
+	 * */
 	public static final String FILE_DELEGA = "Delega";
 	public static final String FILE_CV = "CV";
 	public static final String FILE_ATTO_NOMINA = "Atto di nomina";
@@ -24,6 +27,11 @@ public class Costanti {
 	public static final String FILE_PIANO_QUALITA = "Piano di Qualità";
 	public static final String FILE_DICHIARAZIONE_LEGALE = "Dichiarazione del Legale Rappresentante attestante la veridicità della documentazione";
 	
+	/*
+	 * AccreditamentoEnum
+	 * ACCREDITAMENTO_TIPO_PROVVISORIO
+	 * ACCREDITAMENTO_TIPO_STANDARD
+	 * */
 	public static final String ACCREDITAMENTO_PROVVISORIO = "Provvisorio";
 	public static final String ACCREDITAMENTO_STANDARD = "Standard";
 	public static final String ACCREDITAMENTO_STATO_BOZZA = "Bozza";

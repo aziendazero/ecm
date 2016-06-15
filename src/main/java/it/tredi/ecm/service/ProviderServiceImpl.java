@@ -136,7 +136,7 @@ public class ProviderServiceImpl implements ProviderService {
 		File delegaRichiedente = providerRegistrationWrapper.getDelegaRichiedenteFile(); 
 		
 		if(provider.getAccount().getProfiles().isEmpty()){
-			//assegno profilo PROVIDER
+			//assegno profilo PROVIDER TODO 
 			Optional<Profile> providerProfile = profileAndRoleService.getProfileByName(Costanti.PROFILO_PROVIDER);
 			if(providerProfile.isPresent())
 				provider.getAccount().getProfiles().add(providerProfile.get());
