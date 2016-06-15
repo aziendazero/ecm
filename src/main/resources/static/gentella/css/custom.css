@@ -676,7 +676,7 @@ footer {
   text-decoration: none;
 }
 a.btn-success, a.btn-primary, a.btn-warning, a.btn-danger {
-  color: #fff !important;
+  color: #fff;
 }
 .btn {
   border-radius: 3px;
