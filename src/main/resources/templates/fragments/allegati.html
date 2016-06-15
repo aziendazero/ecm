@@ -4,39 +4,60 @@
 <head>
 </head>
 <body>
-<th:block th:fragment="allegati(wrapper, tipoAllegato, counter, note)">
-	<div th:if="${__${wrapper}__.__${tipoAllegato}__.id != null or #lists.contains(__${wrapper}__.idEditabili, counter)}" class="divider-dashed"></div>
-	<div th:if="${__${wrapper}__.__${tipoAllegato}__.id != null or #lists.contains(__${wrapper}__.idEditabili, counter)}" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
-		<label class="control-label col-xs-1" th:text="${counter}">numero indice</label>
-		<label class="control-label col-md-3 col-sm-3 col-xs-7" th:for="__${tipoAllegato}__">
-			<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span><span th:if="${note == null}" class="required">*</span>
-			<span class="small" style="display: block;" th:unless="${note == null}" th:text="${note}">messaggio aggiuntivo</span>
-		</label>
-		<th:block th:if="${#lists.contains(__${wrapper}__.idEditabili, counter) or counter == null}">
-			<div class="col-md-4 col-sm-4 col-xs-12">
-				<div class="form-control col-md-7 col-xs-12 btn" th:unless="${__${wrapper}__.__${tipoAllegato}__.data}">
-					<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
-						style="display: none;" />
-					<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
-					<div th:id="__${tipoAllegato}___label" class="allegato-label" th:text="#{label.nessun_file_selezionato}">Nessun file selezionato</div>
-				</div>
-				<div class="form-control col-md-7 col-xs-12 btn" th:if="${__${wrapper}__.__${tipoAllegato}__.data}">
-					<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
-						style="display: none;" />
-					<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
-					<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
-					<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:if="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" class="allegato-label"></a></div>
-				</div>
+<th:block th:fragment="allegati(wrapper, withIdEditabili, tipoAllegato, counter, note)">
+
+	<!-- wrapper con idEditabili -->
+	<th:block th:if="${__withIdEditabili__}"> 
+		<th:block th:if="${!__${wrapper}__.__${tipoAllegato}__.new} or
+			${#lists.contains(__${wrapper}__.idEditabili, counter)}">
+			<div class="divider-dashed"></div>
+			<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+				<label class="control-label col-xs-1" th:text="${counter}">numero indice</label>
+				<label class="control-label col-md-3 col-sm-3 col-xs-7" th:for="__${tipoAllegato}__">
+					<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span><span th:if="${note == null}" class="required">*</span>
+					<span class="small" style="display: block;" th:unless="${note == null}" th:text="${note}">messaggio aggiuntivo</span>
+				</label>
+				<th:block th:if="${#lists.contains(__${wrapper}__.idEditabili, counter) or counter == null}">
+					<div class="col-md-4 col-sm-4 col-xs-12">
+						<div class="form-control col-md-7 col-xs-12 btn" th:unless="${__${wrapper}__.__${tipoAllegato}__.data}">
+							<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
+								style="display: none;" />
+							<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
+							<div th:id="__${tipoAllegato}___label" class="allegato-label" th:text="#{label.nessun_file_selezionato}">Nessun file selezionato</div>
+						</div>
+						<div class="form-control col-md-7 col-xs-12 btn" th:if="${__${wrapper}__.__${tipoAllegato}__.data}">
+							<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
+								style="display: none;" />
+							<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
+							<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
+							<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:if="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" class="allegato-label"></a></div>
+						</div>
+					</div>
+				</th:block>
+				<th:block th:unless="${#lists.contains(__${wrapper}__.idEditabili, counter) or counter == null}">
+					<div class="col-md-4 col-sm-4 col-xs-12">
+						<div class="allegato-label"><a th:id="__${tipoAllegato}___disabled" class="form-control form-disabled-text clickable left-align col-md-7 col-xs-12"
+							th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
+					</div>
+				</th:block>
+				<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 			</div>
 		</th:block>
-		<th:block th:unless="${#lists.contains(__${wrapper}__.idEditabili, counter) or counter == null}">
-			<div class="col-md-4 col-sm-4 col-xs-12">
-				<div class="allegato-label"><a th:id="__${tipoAllegato}___disabled" class="form-control form-disabled-text clickable left-align col-md-7 col-xs-12"
-					th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/files/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
+	</th:block>
+	
+	<!-- wrapper senza idEditabili -->
+	<th:block th:unless="${__withIdEditabili__}">
+		<div th:id="__${tipoAllegato}__-parent" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+			<label class="control-label col-md-3 col-sm-3 col-xs-12" th:for="__${tipoAllegato}__">
+				<span th:text="#{label.__${tipoAllegato}__}">label.tipoAllegato</span>
+			</label>
+			<div class="col-md-6 col-sm-6 col-xs-12">
+				<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}__"
+					class="form-control col-md-7 col-xs-12 btn" />
 			</div>
-		</th:block>
-		<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
-	</div>
+			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
+		</div>
+	</th:block>
 	<script th:inline="javascript">
 		function setAllegato(idInput) {
 			$(idInput).click();
