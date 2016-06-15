@@ -142,6 +142,7 @@ public class ProviderController {
 			}
 		}catch (Exception ex){
 			model.addAttribute("accreditamentoId",providerWrapper.getAccreditamentoId());
+			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
 	}

@@ -98,6 +98,8 @@ public class ProviderServiceImpl implements ProviderService {
 		providerRegistrationWrapper.setProvider(provider);
 		
 		if(provider.isNew()){
+			File delega = new File();
+			providerRegistrationWrapper.setDelegaRichiedenteFile(delega);
 			providerRegistrationWrapper.setRichiedente(new Persona(Ruolo.RICHIEDENTE));
 			providerRegistrationWrapper.setLegale(new Persona(Ruolo.LEGALE_RAPPRESENTANTE));
 		}else{
@@ -113,11 +115,8 @@ public class ProviderServiceImpl implements ProviderService {
 				provider.addPersona(legale);
 			}
 			
-			if(!richiedente.isNew()){
-				File delega = fileService.getFileFromPersonaByTipo(richiedente.getId(), Costanti.FILE_DELEGA);
-				providerRegistrationWrapper.setDelegaRichiedenteFile(delega);
-			}
-			
+			File delega = new File();
+			providerRegistrationWrapper.setDelegaRichiedenteFile(delega);
 			providerRegistrationWrapper.setRichiedente(richiedente);
 			providerRegistrationWrapper.setLegale(legale);
 		}
