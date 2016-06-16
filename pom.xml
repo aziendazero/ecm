@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>it.tredi.ecm</groupId>
+	<groupId>it.tredi</groupId>
 	<artifactId>ecm</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>war</packaging>
@@ -21,6 +21,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<!-- tomcat.version>7.0.69</tomcat.version -->
 		<tomcat.version>8.0.8</tomcat.version>
 		<servlet-api.version>3.0.0</servlet-api.version>
@@ -128,6 +130,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>ecm</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -165,7 +168,6 @@
 				</dependencies>
 			</plugin>
 		</plugins>
-		<finalName>ecm</finalName>
 	</build>
 
 	<profiles>
@@ -251,6 +253,34 @@
 			</build>
 		</profile>
 	</profiles>
-
-
+	
+	<distributionManagement>
+		<repository>
+			<id>deployment</id>
+			<name>Internal Releases</name>
+			<url>http://ecatonchiro.bo.priv:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>deployment</id>
+			<name>Internal Releases</name>
+			<url>http://ecatonchiro.bo.priv:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<site>
+			<id>site-deploy</id>
+			<url>dav:http://ecatonchiro.bo.priv:8081/nexus/content/sites/${project.groupId}.${project.artifactId}</url>
+		</site>
+	</distributionManagement>
+	<scm>
+		<url>http://git.bo.priv/?p=${project.groupId}.${project.artifactId}</url>
+		<connection>scm:git:ssh://${git.username}@git.3di.it:/opt/git/${project.groupId}.${project.artifactId}</connection>
+		<developerConnection>scm:git:ssh://${git.username}@git.3di.it:/opt/git/${project.groupId}.${project.artifactId}</developerConnection>
+	</scm>
+	<issueManagement>
+		<system>Redmine</system>
+		<url>https://easyredmine.3di.it</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://ecatonchiro.bo.priv:8080/jenkins/view/Ecm/job/${project.groupId}.${project.artifactId}</url>
+	</ciManagement>
 </project>
