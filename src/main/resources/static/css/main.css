@@ -231,4 +231,10 @@ table.datatable-responsive-search thead .sorting_asc:after {
     color: #FFFFFF;
 }
 
+.firma {
+	float: left;
+	min-height: 34px;
+	min-width: 34px;
+	margin-left: 12px;
+}
 

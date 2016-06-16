@@ -4,7 +4,7 @@
 <head>
 </head>
 <body>
-<th:block th:fragment="allegati(wrapper, withIdEditabili, tipoAllegato, counter, note)">
+<th:block th:fragment="allegati(wrapper, withIdEditabili, tipoAllegato, counter, note, withFirma)">
 
 	<!-- wrapper con idEditabili -->
 	<th:block th:if="${__withIdEditabili__}"> 
@@ -33,6 +33,10 @@
 							<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:if="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" class="allegato-label"></a></div>
 						</div>
 					</div>
+					<!-- pulsante per aggiungere firma -->
+					<th:block th:if="${withFirma}">
+						<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma" th:title="#{label.firma_digitalmente}"><span class="fa fa-pencil"></span></button>
+					</th:block>
 				</th:block>
 				<th:block th:unless="${#lists.contains(__${wrapper}__.idEditabili, counter) or counter == null}">
 					<div class="col-md-4 col-sm-4 col-xs-12">
