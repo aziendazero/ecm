@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 	<head lang="it" th:fragment="head">
+
 		<!-- Meta, CSS, favicons, etc. -->
 			<meta http-equiv="Content-Type" content="charset=UTF-8" />
 			<meta charset="utf-8"/>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			
+		<!-- back to top CSS-->
+			<link rel="stylesheet"
+				href="..static/backToTop/css/reset.css"
+				th:href="@{/backToTop/css/reset.css}" />
+			
+			<link rel="stylesheet"
+				href="..static/backToTop/css/style.css"
+				th:href="@{/backToTop/css/style.css}" />
 		
 		<!-- Bootstrap core CSS -->
 			<link rel="stylesheet"
@@ -68,7 +78,6 @@
 			<link rel="stylesheet"
 				href="..static/bootstrapSelect/css/bootstrapSelect.min.css"
 				th:href="@{/bootstrapSelect/css/bootstrapSelect.min.css}" />
-			
 				
 			<!-- css personalizzato per ECM -->
 			<link rel="stylesheet"
