@@ -2045,7 +2045,7 @@ input.parsley-error, textarea.parsley-error, select.parsley-error {
   border-radius: 3px 4px 4px 3px;
   background-color: #CE5454;
   max-width: 170px;
-  white-space: pre;
+  white-space: inherit;
   position: relative;
   left: -15px;
   opacity: 0;
