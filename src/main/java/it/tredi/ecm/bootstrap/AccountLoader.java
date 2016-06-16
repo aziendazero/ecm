@@ -35,7 +35,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		LOGGER.info("Initializing ACL...");
+		LOGGER.info("BOOTSTRAP ECM - Initializing ACL...");
 		
 		Set<Account> accounts = accountService.getAllUsers();
 			
@@ -109,7 +109,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				ex.printStackTrace();
 			}
 		}else{
-			LOGGER.info("ACL NOT EMPTY...");
+			LOGGER.info("BOOTSTRAP ECM - Acl not empty...");
 		}
 	}
 }

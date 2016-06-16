@@ -39,7 +39,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 	@Override
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		LOGGER.info("Initializing DATABASE...");
+		LOGGER.info("BOOTSTRAP ECM - Initializing DATABASE...");
 		
 		Set<Provider> providers = providerRepository.findAll();
 		
@@ -87,7 +87,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			
 			LOGGER.info("Provider " + provider.getId() + " created");
 		}else{
-			LOGGER.info("DATABASE NOT EMPTY...");
+			LOGGER.info("bootstrap ecm - database not empty...");
 		}
 	}
 }
