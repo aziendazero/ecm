@@ -101,6 +101,7 @@ public class ProviderRegistrationController {
 			}
 		}catch (Exception ex){
 			model.addAttribute("stepToShow", evaluateErrorStep(result));
+			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
 		

@@ -12,7 +12,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.dati_attività}">Dati relativi all’attività</h2>
 						<th:block th:unless="${#lists.isEmpty(datiAccreditamentoWrapper.idEditabili)}">
-							<button class="btn btn-primary pull-right" th:text="#{label.salva}" form="formAccreditamento" type="submit"></button>
+							<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formAccreditamento" type="submit"></button>
 						</th:block>
 						<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}|}"></a>
 						<div class="clearfix"></div>
@@ -295,7 +295,7 @@
 							</div>
 
 							<!-- allegato 1 (etratto bilancio relativo formazione) -->
-							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, estrattoBilancioFormazione, ${++counter}, #{label.required_fatturato})" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${++counter}, #{label.required_fatturato})" ></th:block>
 							
 							<div class="divider-dashed"></div>
 							
@@ -364,7 +364,7 @@
 							</div>
 							
 							<!-- allegato 2 (budget previsionale) -->
-							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, budgetPrevisionale, ${++counter}, #{label.required_fatturato})" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, budgetPrevisionale, ${++counter}, #{label.required_fatturato})" ></th:block>
 							
 							<div class="divider-dashed"></div>
 							
@@ -417,10 +417,10 @@
 							</div>
 							
 							<!-- allegato 3 (organigramma) -->
-							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, organigramma, ${++counter}, null)" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma, ${++counter}, null)" ></th:block>
 							
 							<!-- allegato 4 (funzionigramma) -->
-							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, funzionigramma, ${++counter}, null)" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma, ${++counter}, null)" ></th:block>
 						</form>
 					</div>
 				</div>
