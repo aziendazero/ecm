@@ -11,8 +11,10 @@
 					<div class="x_panel">
 						<div class="x_title">
 							<h2 th:text="#{label.modelli_allegato}">label.modifica_modelli</h2>
-							<button class="btn btn-primary pull-right" th:text="#{label.salva}" form="formModelli" type="submit"></button>
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+							<div class="pull-right buttons-header">
+								<button class="btn btn-primary pull-right" th:text="#{label.salva}" form="formModelli" type="submit"></button>
+								<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+							</div>
 							<div class="clearfix"></div>
 						</div>
 					<div class="x_content">
