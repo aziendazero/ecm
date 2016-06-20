@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.ElementCollection;
@@ -49,4 +50,16 @@ public class DatiAccreditamento extends BaseEntity {
 	
 	@OneToOne(mappedBy="datiAccreditamento")
 	private Accreditamento accreditamento;
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        DatiAccreditamento entitapiatta = (DatiAccreditamento) o;
+        return Objects.equals(id, entitapiatta.id);
+    }
 }

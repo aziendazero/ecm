@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -33,4 +34,16 @@ public class Profile extends BaseEntity{
 	public void setName(String name){
 		this.name = name.toUpperCase();
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Profile entitapiatta = (Profile) o;
+        return Objects.equals(id, entitapiatta.id);
+    }
 }

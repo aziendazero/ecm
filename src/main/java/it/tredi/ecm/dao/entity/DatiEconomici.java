@@ -1,7 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
-
 import javax.persistence.Embeddable;
 
 import lombok.Getter;

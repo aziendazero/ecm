@@ -3,6 +3,7 @@ package it.tredi.ecm.dao.entity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,5 +79,17 @@ public class Accreditamento extends BaseEntity{
 			return true;
 		return false;
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Accreditamento entitapiatta = (Accreditamento) o;
+        return Objects.equals(id, entitapiatta.id);
+    }
 	
 }

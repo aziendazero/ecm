@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.entity;
 
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -60,4 +61,16 @@ public class Account extends BaseEntity{
 		
 		return result;
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Account entitapiatta = (Account) o;
+        return Objects.equals(id, entitapiatta.id);
+    }
 }

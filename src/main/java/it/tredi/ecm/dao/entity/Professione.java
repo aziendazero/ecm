@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -29,4 +30,16 @@ public class Professione extends BaseEntity{
 		this.discipline.add(d);
 		d.setProfessione(this);
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Professione entitapiatta = (Professione) o;
+        return Objects.equals(id, entitapiatta.id);
+    }
 }

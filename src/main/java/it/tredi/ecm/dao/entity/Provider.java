@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -67,4 +68,16 @@ public class Provider extends BaseEntity{
 			return false;
 		}
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Provider entitapiatta = (Provider) o;
+        return Objects.equals(id, entitapiatta.id);
+    }
 }

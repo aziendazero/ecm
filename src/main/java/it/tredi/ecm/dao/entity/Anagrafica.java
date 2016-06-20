@@ -38,9 +38,4 @@ public class Anagrafica extends BaseEntity{
         Anagrafica entitapiatta = (Anagrafica) o;
         return Objects.equals(id, entitapiatta.id);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
 }
