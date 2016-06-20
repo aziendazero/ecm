@@ -1,6 +1,8 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -22,13 +24,16 @@ public class File extends BaseEntity {
 	private LocalDate dataCreazione;
 	private String tipo;
 	
-	@ManyToOne /* ci sono allegati della persona */
-	private Persona persona;
 	@ManyToOne /* ci sono allegati del provider */
 	private Provider provider;
 	
 	public File(){
 		this.tipo = "";
+		this.nomeFile = "";
+	}
+	
+	public File(String tipo){
+		this.tipo = tipo;
 		this.nomeFile = "";
 	}
 	
@@ -72,4 +77,15 @@ public class File extends BaseEntity {
 		return this.tipo.equals(Costanti.FILE_DICHIARAZIONE_LEGALE);
 	}
 	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        File entitapiatta = (File) o;
+        return Objects.equals(id, entitapiatta.id);
+    }
 }

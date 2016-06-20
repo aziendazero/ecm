@@ -210,9 +210,9 @@ public class PersonaController {
 					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 					return EDIT;
 				}else{
-					personaService.save(personaWrapper.getPersona());
 					saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
-
+					personaService.save(personaWrapper.getPersona());
+					
 					// Durante la compilazione della domanda di accreditamento, se si inizia l'inserimento dei responsabili non e' piu'
 					// consentita la modifica del legale rappresentante 
 					if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() || 
@@ -302,7 +302,7 @@ public class PersonaController {
 		personaWrapper.setRuolo(persona.getRuolo());
 
 		if(!persona.isNew()){
-			Set<File> files = fileService.getFileFromPersona(persona.getId());
+			Set<File> files = persona.getFiles();
 			for(File file : files){
 				if(file.isCV())
 					personaWrapper.setCv(file);

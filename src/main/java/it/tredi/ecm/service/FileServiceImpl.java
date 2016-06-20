@@ -29,21 +29,9 @@ public class FileServiceImpl implements FileService{
 	}
 
 	@Override
-	public Set<File> getFileFromPersona(Long personaId) {
-		LOGGER.debug("Getting files for user: " + personaId);
-		return fileRepository.findByPersonaId(personaId);
-	}
-	
-	@Override
 	public Set<File> getFileFromProvider(Long providerId) {
 		LOGGER.debug("Getting files for provider: " + providerId);
 		return fileRepository.findByProviderId(providerId);
-	}
-	
-	@Override
-	public File getFileFromPersonaByTipo(Long personaId, String tipo) {
-		LOGGER.debug("Getting files " + tipo + " for user: " + personaId);
-		return fileRepository.findOneByPersonaIdAndTipo(personaId, tipo);
 	}
 
 	@Override
@@ -77,7 +65,7 @@ public class FileServiceImpl implements FileService{
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
 	public void save(File file) {
 		LOGGER.debug("Saving file: " + file.getNomeFile());
 		LOGGER.debug("Saving file: " + file.getData().length + " bytes");
@@ -93,6 +81,6 @@ public class FileServiceImpl implements FileService{
 	@Transactional
 	public void deleteByPersonaId(Long personaId) {
 		LOGGER.debug("Eliminazione degli allegati della persona " + personaId);
-		fileRepository.deleteByPersonaId(personaId);
+		//fileRepository.deleteByPersonaId(personaId);
 	}
 }

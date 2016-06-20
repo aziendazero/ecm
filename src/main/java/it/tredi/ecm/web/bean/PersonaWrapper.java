@@ -47,7 +47,8 @@ public class PersonaWrapper extends Wrapper {
 		
 		attoNomina = file;
 		attoNomina.setTipo(Costanti.FILE_ATTO_NOMINA);
-		attoNomina.setPersona(persona);
+		if(persona != null)
+			persona.addFile(attoNomina);
 		attoNomina.setDataCreazione(LocalDate.now());
 	}
 	
@@ -65,7 +66,8 @@ public class PersonaWrapper extends Wrapper {
 		
 		cv = file;
 		cv.setTipo(Costanti.FILE_CV);
-		cv.setPersona(persona);
+		if(persona != null)
+			persona.addFile(cv);
 		cv.setDataCreazione(LocalDate.now());
 	}
 	
@@ -83,7 +85,8 @@ public class PersonaWrapper extends Wrapper {
 		
 		delega = file;
 		delega.setTipo(Costanti.FILE_DELEGA);
-		delega.setPersona(persona);
+		if(persona != null)
+			persona.addFile(delega);
 		delega.setDataCreazione(LocalDate.now());
 	}
 	

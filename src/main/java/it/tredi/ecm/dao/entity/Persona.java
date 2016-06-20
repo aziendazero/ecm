@@ -1,6 +1,8 @@
 package it.tredi.ecm.dao.entity;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -8,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import lombok.Getter;
@@ -32,7 +35,10 @@ public class Persona extends BaseEntity{
 	private String incarico = "";
 	@OneToOne
 	private Professione professione;
-	private Boolean coordinatoreComitatoScientifico; 
+	private Boolean coordinatoreComitatoScientifico;
+	
+	@OneToMany
+	Set<File> files = new HashSet<File>();
 	
 	public Persona(){}
 	public Persona(Ruolo ruolo){this.ruolo = ruolo;}
@@ -40,6 +46,10 @@ public class Persona extends BaseEntity{
 	public void setProvider(Provider provider){
 		this.provider = provider;
 		this.getAnagrafica().setProvider(provider);
+	}
+	
+	public void addFile(File file){
+		this.getFiles().add(file);
 	}
 	
 	/***	CHECK RUOLO DELLA PERSONA	***/
@@ -81,10 +91,5 @@ public class Persona extends BaseEntity{
         }
         Persona entitapiatta = (Persona) o;
         return Objects.equals(id, entitapiatta.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }
