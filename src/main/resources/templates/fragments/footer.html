@@ -163,6 +163,18 @@
 				"bFilter" : false,
 			});
 			
+			$('.datatable-responsive-validate').DataTable({
+				"bFilter" : false,
+				"bInfo" : false,
+				"bPaginate" : false,
+				"ordering" : false,
+				"columnDefs": [ {
+					"targets": 4,
+					"width": "1px",
+					"sClass": "center"
+				} ],
+			});
+			
 			$('.datatable-responsive-form').DataTable({
 				"bFilter" : false,
 				"bPaginate": false,
@@ -190,16 +202,31 @@
 			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
 			});
 			
+			$('.datatable-responsive-search-validation').DataTable({
+				"bInfo" : false,
+				"bPaginate" : false,
+				scrollY: 300,
+				"bScrollCollapse": true,
+			    scroller: true,
+				//colonna del pulsante seleziona
+			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+			    "columnDefs": [ 
+			                   	{"targets": [ '_all' ], "orderable": false, "width": "1px" },
+			                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
+			                  ],
+			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+			});
+			
 			$('.modal').on('shown.bs.modal', function () {
-		    	$($.fn.dataTable.tables(true)).DataTable()
-		    		.columns.adjust()
-		    		.responsive.recalc();
+				$("#tabella-modale").DataTable()
+	           		.responsive.recalc()
+	           		.columns.adjust();
 		    }); 
 			
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 				$($.fn.dataTable.tables(true)).DataTable()
-		           	.columns.adjust()
-		           	.responsive.recalc();
+		           	.responsive.recalc()
+		           	.columns.adjust();
 		    }); 
 			
 			function sendNotify(){

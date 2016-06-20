@@ -133,6 +133,10 @@ table.datatable-responsive-search thead .sorting_asc:after {
 	visibility: hidden;
 }
 
+table.datatable-responsive-search-validation thead .sorting_asc:after {
+	visibility: hidden;
+}
+
 .dropdown-header {
 	background-color: #1abc9c;
 	color: white;
@@ -231,4 +235,46 @@ table.datatable-responsive-search thead .sorting_asc:after {
     color: #FFFFFF;
 }
 
+.firma {
+	float: left;
+	min-height: 34px;
+	min-width: 34px;
+	margin-left: 12px;
+}
 
+.radioValutazione {
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+	padding-top: 0 !important;
+	text-align: center;
+}
+
+.tdRadioValutazione {
+	text-align: center;
+}
+
+.labelRadioValutazione {
+	padding: 0 !important;
+	min-width: 40px;
+}
+
+.textRadioValutazione {
+	min-width: 17px;
+}
+
+.otherValidationCheck {
+	text-align: center;
+}
+
+.note {
+	margin-left: -20px !important;
+	margin-bottom: 0;
+	margin-top: 0;
+	margin-right: 0;
+	background: transparent;
+    border: none;
+}
+
+.tooltip {
+	z-index: 99;
+}

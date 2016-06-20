@@ -12,10 +12,12 @@
 					<div class="x_title">
 						<h2 th:text="#{label.accreditamenti_lista}">Lista degli
 							accreditamenti</h2>
-						<a class="btn btn-primary pull-right"
-								th:if="${canProviderCreateAccreditamento}"
-								th:href="@{/provider/accreditamento/new}"
-								th:text="#{label.nuova_domanda}">label.nuova_domanda</a>
+						<div class="pull-right buttons-header">	
+							<a class="btn btn-primary pull-right"
+									th:if="${canProviderCreateAccreditamento}"
+									th:href="@{/provider/accreditamento/new}"
+									th:text="#{label.nuova_domanda}">label.nuova_domanda</a>
+						</div>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
@@ -33,12 +35,12 @@
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(accreditamentoList)}" th:remove="all-but-first">
 								<tr th:each="accreditamento : ${accreditamentoList}">
-									<th><a th:text="${accreditamento.tipoDomanda}"
-										th:href="@{|/accreditamento/${accreditamento.id}|}">Provvisorio/Standard</a></th>
-									<th th:text="${accreditamento.stato}">Accettata</th>
-									<th th:text="${accreditamento.dataInvio}">22/05/2014</th>
-									<th th:text="${accreditamento.dataValutazione}">24/05/2014</th>
-									<th th:text="${accreditamento.dataScadenza}">24/05/2016</th>
+									<td><a th:text="${accreditamento.tipoDomanda}"
+										th:href="@{|/accreditamento/${accreditamento.id}|}">Provvisorio/Standard</a></td>
+									<td th:text="${accreditamento.stato}">Accettata</td>
+									<td th:text="${accreditamento.dataInvio}">22/05/2014</td>
+									<td th:text="${accreditamento.dataValutazione}">24/05/2014</td>
+									<td th:text="${accreditamento.dataScadenza}">24/05/2016</td>
 								</tr>
 							</tbody>
 						</table>
