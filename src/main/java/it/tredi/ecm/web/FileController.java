@@ -14,9 +14,13 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.service.FileService;
+import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 
 @Controller
@@ -26,7 +30,7 @@ public class FileController {
 	@Autowired
 	private FileService fileService;
 	
-	@RequestMapping(value = "/files/{fileId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/file/{fileId}", method = RequestMethod.GET)
 	public void getFile(@PathVariable("fileId") Long id, HttpServletResponse response, Model model) throws IOException {
 		try {
 			if(id == null){
@@ -59,5 +63,24 @@ public class FileController {
 		}catch (Exception ex) {
 			//TODO gestione eccezione
 		}
+	}
+	
+	@RequestMapping("/file/upload")
+	@ResponseBody
+	public File uploadFile(@RequestParam(value = "multiPartFile", required = false) MultipartFile multiPartFile,
+							@RequestParam(value = "fileId", required = true) Long fileId,
+							@RequestParam(value = "tipo", required = true) String tipo){
+		
+		File file = new File(tipo);
+		
+		if(multiPartFile != null && !multiPartFile.isEmpty()){
+			file = Utils.convertFromMultiPart(multiPartFile);
+			file.setTipo(tipo);
+			if(fileId != null)
+				file.setId(fileId);
+			fileService.save(file);
+		}
+		
+		return file;
 	}
 }
