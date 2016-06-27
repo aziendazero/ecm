@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.web.bean.PersonaWrapper;
@@ -142,7 +143,7 @@ public class PersonaTest {
 				.file(multiPartFile)
 				.contentType(MediaType.MULTIPART_FORM_DATA)
 				.param("fileId", "156")
-				.param("tipo", Costanti.FILE_DELEGA)
+				.param("tipo", FileEnum.FILE_DELEGA.name())
 				);
 
 		String response = actions.andReturn().getResponse().getContentAsString();
