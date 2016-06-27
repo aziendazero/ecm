@@ -40,7 +40,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 		File dichiarazioneLegale = null;
 		
 		for(File file : files){
-			if(file != null){
+			if(file != null && !file.isNew()){
 				if(file.isATTOCOSTITUTIVO())
 					attoCostitutivo = file;
 				else if(file.isESPERIENZAFORMAZIONE())

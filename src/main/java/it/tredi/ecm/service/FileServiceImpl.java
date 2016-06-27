@@ -1,9 +1,9 @@
 package it.tredi.ecm.service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.FileRepository;
 
 @Service
@@ -24,48 +25,30 @@ public class FileServiceImpl implements FileService{
 	
 	@Override
 	public File getFile(Long id) {
-		LOGGER.debug("Getting file with id: " + id);
+		LOGGER.debug("Recupero file id: " + id);
 		return fileRepository.findOne(id);
 	}
 
 	@Override
-	public Set<File> getFileFromProvider(Long providerId) {
-		LOGGER.debug("Getting files for provider: " + providerId);
-		return fileRepository.findByProviderId(providerId);
-	}
-
-	@Override
-	public Set<File> getAll() {
-		LOGGER.debug("Getting all files");
-		return fileRepository.findAll();
-	}
-	
-	@Override
-	public HashMap<String, Long> getModelIds() {
-		LOGGER.debug("Getting Model ids");
-		Set<File> files = fileRepository.findModelFiles("model_");
-		HashMap<String, Long> fileIds = new HashMap<String, Long>();
-		
-		for(File file : files){
-			fileIds.put(file.getTipo(), file.getId());
-		}
-		
-		return fileIds;
+	public HashMap<FileEnum, Long> getModelFileIds() {
+		LOGGER.debug("Caricamento degli id dei modelli dei file");
+		List<Object[]> resultSet = fileRepository.findModelFilesIds(new HashSet<FileEnum>(Arrays.asList(FileEnum.FILE_MODELLO_ATTO_COSTITUTIVO,
+																										FileEnum.FILE_MODELLO_ATTO_COSTITUTIVO, 
+																										FileEnum.FILE_MODELLO_DICHIARAZIONE_LEGALE, 
+																										FileEnum.FILE_MODELLO_ESPERIENZA_FORMAZIONE,
+																										FileEnum.FILE_MODELLO_PIANO_QUALITA,
+																										FileEnum.FILE_MODELLO_SISTEMA_INFORMATICO,
+																										FileEnum.FILE_MODELLO_UTILIZZO)));
+		 HashMap<FileEnum, Long> fileIds = new HashMap<FileEnum, Long>();
+		 for(Object[] obj : resultSet){
+			 fileIds.put((FileEnum)obj[0], (Long)obj[1]);		 
+		 }
+		 
+		 return fileIds;
 	}
 	
 	@Override
-	public Set<String> checkFileExists(Long providerId, List<String> tipoFile) {
-		Set<File> files = fileRepository.findByProviderId(providerId);
-		Set<String> existsFile = new HashSet<String>();
-		for (File file : files){
-			if(tipoFile.contains(file.getTipo()))
-				existsFile.add(file.getTipo());
-		}
-		return existsFile;
-	}
-
-	@Override
-	//@Transactional
+	@Transactional
 	public void save(File file) {
 		LOGGER.debug("Saving file: " + file.getNomeFile());
 		LOGGER.debug("Saving file: " + file.getData().length + " bytes");
@@ -75,12 +58,5 @@ public class FileServiceImpl implements FileService{
 			LOGGER.error("Errore durante salvataggio file", ex);
 			throw ex;
 		}
-	}
-	
-	@Override
-	@Transactional
-	public void deleteByPersonaId(Long personaId) {
-		LOGGER.debug("Eliminazione degli allegati della persona " + personaId);
-		//fileRepository.deleteByPersonaId(personaId);
 	}
 }

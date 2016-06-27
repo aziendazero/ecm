@@ -1,13 +1,12 @@
 package it.tredi.ecm.web.bean;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,129 +31,57 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 	private Long dichiarazioneLegaleModel;
 	
 	public AccreditamentoAllegatiWrapper(){
-		setAttoCostitutivo(new File());
-		setEsperienzaFormazione(new File());
-		setUtilizzo(new File());
-		setSistemaInformatico(new File());
-		setPianoQualita(new File());
-		setDichiarazioneLegale(new File());
+		setAttoCostitutivo(new File(FileEnum.FILE_ATTO_COSTITUTIVO));
+		setEsperienzaFormazione(new File(FileEnum.FILE_ESPERIENZA_FORMAZIONE));
+		setUtilizzo(new File(FileEnum.FILE_UTILIZZO));
+		setSistemaInformatico(new File(FileEnum.FILE_SISTEMA_INFORMATICO));
+		setPianoQualita(new File(FileEnum.FILE_PIANO_QUALITA));
+		setDichiarazioneLegale(new File(FileEnum.FILE_DICHIARAZIONE_LEGALE));
 	}
 	
-	public void setModelIds(HashMap<String, Long> modelIds){
-		attoCostitutivoModel = modelIds.get("model_" + Costanti.FILE_ATTO_COSTITUTIVO);
-		esperienzaFormazioneModel = modelIds.get("model_" + Costanti.FILE_ESPERIENZA_FORMAZIONE);
-		utilizzoModel = modelIds.get("model_" + Costanti.FILE_UTILIZZO);
-		sistemaInformaticoModel = modelIds.get("model_" + Costanti.FILE_SISTEMA_INFORMATICO);
-		pianoQualitaModel = modelIds.get("model_" + Costanti.FILE_PIANO_QUALITA);
-		dichiarazioneLegaleModel = modelIds.get("model_" + Costanti.FILE_DICHIARAZIONE_LEGALE);
+	public void setModelIds(HashMap<FileEnum, Long> modelIds){
+		attoCostitutivoModel = modelIds.get(FileEnum.FILE_MODELLO_ATTO_COSTITUTIVO);
+		esperienzaFormazioneModel = modelIds.get(FileEnum.FILE_MODELLO_ESPERIENZA_FORMAZIONE);
+		utilizzoModel = modelIds.get(FileEnum.FILE_MODELLO_UTILIZZO);
+		sistemaInformaticoModel = modelIds.get(FileEnum.FILE_MODELLO_SISTEMA_INFORMATICO);
+		pianoQualitaModel = modelIds.get(FileEnum.FILE_MODELLO_PIANO_QUALITA);
+		dichiarazioneLegaleModel = modelIds.get(FileEnum.FILE_MODELLO_DICHIARAZIONE_LEGALE);
 	}
 	
 	public void setAttoCostitutivo(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(attoCostitutivo != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(attoCostitutivo.getId());
-				}
-			}
-		}
-		
 		attoCostitutivo = file;
-		attoCostitutivo.setTipo(Costanti.FILE_ATTO_COSTITUTIVO);
-		attoCostitutivo.setProvider(provider);
-		attoCostitutivo.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(attoCostitutivo);
 	}
 	
 	public void setEsperienzaFormazione(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(esperienzaFormazione != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(esperienzaFormazione.getId());
-				}
-			}
-		}
-		
 		esperienzaFormazione = file;
-		esperienzaFormazione.setTipo(Costanti.FILE_ESPERIENZA_FORMAZIONE);
-		esperienzaFormazione.setProvider(provider);
-		esperienzaFormazione.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(esperienzaFormazione);
 	}
 	
 	public void setUtilizzo(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(utilizzo != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(utilizzo.getId());
-				}
-			}
-		}
-		
 		utilizzo = file;
-		utilizzo.setTipo(Costanti.FILE_UTILIZZO);
-		utilizzo.setProvider(provider);
-		utilizzo.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(utilizzo);
 	}
 	
 	public void setSistemaInformatico(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(sistemaInformatico != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(sistemaInformatico.getId());
-				}
-			}
-		}
-		
 		sistemaInformatico = file;
-		sistemaInformatico.setTipo(Costanti.FILE_SISTEMA_INFORMATICO);
-		sistemaInformatico.setProvider(provider);
-		sistemaInformatico.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(sistemaInformatico);
 	}
 	
 	public void setPianoQualita(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(pianoQualita != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(pianoQualita.getId());
-				}
-			}
-		}
-		
 		pianoQualita = file;
-		pianoQualita.setTipo(Costanti.FILE_PIANO_QUALITA);
-		pianoQualita.setProvider(provider);
-		pianoQualita.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(pianoQualita);
 	}
 	
 	public void setDichiarazioneLegale(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(dichiarazioneLegale != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(dichiarazioneLegale.getId());
-				}
-			}
-		}
-		
 		dichiarazioneLegale = file;
-		dichiarazioneLegale.setTipo(Costanti.FILE_DICHIARAZIONE_LEGALE);
-		dichiarazioneLegale.setProvider(provider);
-		dichiarazioneLegale.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(dichiarazioneLegale);
 	}
 
 	public Set<File> getFiles(){

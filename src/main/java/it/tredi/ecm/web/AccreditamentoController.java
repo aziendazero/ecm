@@ -1,8 +1,6 @@
 package it.tredi.ecm.web;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -22,9 +20,7 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.AccreditamentoService;
-import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
@@ -41,8 +37,6 @@ public class AccreditamentoController {
 	private ProviderService providerService;
 	@Autowired
 	private AccreditamentoService accreditamentoService;
-	@Autowired
-	private FileService fileService;
 	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -211,9 +205,9 @@ public class AccreditamentoController {
 		}
 		
 		//ALLEGATI
-		List<String> listOfFiles = Arrays.asList(Costanti.FILE_ATTO_COSTITUTIVO, Costanti.FILE_ESPERIENZA_FORMAZIONE, Costanti.FILE_UTILIZZO, Costanti.FILE_SISTEMA_INFORMATICO, Costanti.FILE_PIANO_QUALITA, Costanti.FILE_DICHIARAZIONE_LEGALE);
-		Set<String> existFiles = fileService.checkFileExists(accreditamento.getProvider().getId(), listOfFiles);
-
+		
+		Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(accreditamento.getProvider().getId());
+		
 		Long providerId = accreditamento.getProvider().getId();
 		Set<Professione> professioniSelezionate = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? datiAccreditamento.getProfessioniSelezionate() : new HashSet<Professione>();
 		
@@ -227,7 +221,7 @@ public class AccreditamentoController {
 		LOGGER.info("-----------------NUMERO PROFESSIONI DISTINTE: " 	+ professioniDeiComponenti);
 		LOGGER.info("-----------------NUMERO PROFESSIONI ANALOGHE: "	+ professioniDeiComponentiAnaloghe);
 		
-		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, existFiles);
+		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
 		
 		return accreditamentoWrapper;
 	}

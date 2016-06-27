@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +20,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.validator.FileValidator;
 
 @Controller
 //TODO sistemare meglio la gestione dei metadati degli allegati
 public class FileController {
-	
+
+	@Autowired
+	private FileValidator fileValidator;
 	@Autowired
 	private FileService fileService;
-	
+
 	@RequestMapping(value = "/file/{fileId}", method = RequestMethod.GET)
 	public void getFile(@PathVariable("fileId") Long id, HttpServletResponse response, Model model) throws IOException {
 		try {
@@ -38,25 +43,25 @@ public class FileController {
 			}
 			else{
 				File file = fileService.getFile(id); 
-				
+
 				if(file == null){
 					throw new FileNotFoundException();
 				}
-		
+
 				//response.setContentType(mimeType);
-		
+
 				/* "Content-Disposition : inline" will show viewable types [like images/text/pdf/anything viewable by browser] right on browser 
 		            while others(zip e.g) will be directly downloaded [may provide save as popup, based on your browser setting.]*/
 				response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + file.getNomeFile() +"\""));
-		
-		
+
+
 				/* "Content-Disposition : attachment" will be directly download, may provide save as popup, based on your browser setting*/
 				//response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-		
+
 				response.setContentLength((int)file.getData().length);
-		
+
 				InputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(file.getData()));
-		
+
 				//Copy bytes from source to destination(outputstream in this example), closes both streams.
 				FileCopyUtils.copy(inputStream, response.getOutputStream());
 			}
@@ -64,23 +69,30 @@ public class FileController {
 			//TODO gestione eccezione
 		}
 	}
-	
-	@RequestMapping("/file/upload")
+
+	@RequestMapping(value = "/file/upload", method = RequestMethod.POST)
 	@ResponseBody
-	public File uploadFile(@RequestParam(value = "multiPartFile", required = false) MultipartFile multiPartFile,
-							@RequestParam(value = "fileId", required = true) Long fileId,
-							@RequestParam(value = "tipo", required = true) String tipo){
-		
-		File file = new File(tipo);
-		
-		if(multiPartFile != null && !multiPartFile.isEmpty()){
-			file = Utils.convertFromMultiPart(multiPartFile);
-			file.setTipo(tipo);
-			if(fileId != null)
-				file.setId(fileId);
-			fileService.save(file);
+	public Object uploadFile(@RequestParam(value = "multiPartFile", required = false) MultipartFile multiPartFile,
+			@RequestParam(value = "fileId", required = false) Long fileId,
+			@RequestParam(value = "tipo", required = true) String tipo){
+		File file = new File(FileEnum.valueOf(tipo));
+		try{
+
+			if(multiPartFile != null && !multiPartFile.isEmpty()){
+				file = Utils.convertFromMultiPart(multiPartFile);
+				file.setTipo(FileEnum.valueOf(tipo));
+				if(fileId != null && !fileId.equals(0L))
+					file.setId(fileId);
+
+				String error = fileValidator.validate(file);
+				if(error.isEmpty())
+					fileService.save(file);
+				else
+					return error;
+			}
+		}catch (Exception ex){
+			//TODO gestione eccezione
 		}
-		
 		return file;
 	}
 }

@@ -16,7 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.service.ProviderService;
-import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;

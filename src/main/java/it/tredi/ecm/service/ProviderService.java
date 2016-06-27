@@ -13,6 +13,8 @@ public interface ProviderService {
 	public Set<Provider> getAll();
 	public void save(Provider provider);
 	
+	public Set<String> getFileTypeUploadedByProviderId(Long id);
+	
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper);
 }

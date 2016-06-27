@@ -16,7 +16,13 @@ public enum FileEnum {
 	FILE_UTILIZZO (10, "Utilizzo di sedi, strutture ed attrezzature di altro soggetto"),
 	FILE_SISTEMA_INFORMATICO (11, "Sistema informatico dedicato alla formazione"),
 	FILE_PIANO_QUALITA (12, "Piano di Qualità"),
-	FILE_DICHIARAZIONE_LEGALE (13, "Dichiarazione del Legale Rappresentante attestante la veridicità della documentazione");
+	FILE_DICHIARAZIONE_LEGALE (13, "Dichiarazione del Legale Rappresentante attestante la veridicità della documentazione"),
+	FILE_MODELLO_ATTO_COSTITUTIVO (14, ""),
+	FILE_MODELLO_ESPERIENZA_FORMAZIONE (15, ""),
+	FILE_MODELLO_UTILIZZO (16, ""),
+	FILE_MODELLO_SISTEMA_INFORMATICO (17, ""),
+	FILE_MODELLO_PIANO_QUALITA (18, ""),
+	FILE_MODELLO_DICHIARAZIONE_LEGALE (19, "");
 	
 	private int id;
 	private String nome;

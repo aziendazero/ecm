@@ -22,8 +22,6 @@ public class PersonaServiceImpl implements PersonaService {
 	@Autowired
 	private PersonaRepository personaRepository;
 	@Autowired
-	private FileService fileService;
-	@Autowired
 	private AnagraficaService anagraficaService;
 	
 	@Override
@@ -107,7 +105,6 @@ public class PersonaServiceImpl implements PersonaService {
 	@Transactional
 	public void delete(Long id) {
 		LOGGER.debug("Eliminazione Persona " + id);
-		fileService.deleteByPersonaId(id);
 		personaRepository.delete(id);
 	}
 	

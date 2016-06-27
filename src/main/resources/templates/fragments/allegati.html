@@ -12,6 +12,10 @@
 			${#lists.contains(__${wrapper}__.idEditabili, counter)}">
 			<div class="divider-dashed"></div>
 			<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+				
+				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
+				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
+				
 				<label class="control-label col-xs-1" th:text="${counter}">numero indice</label>
 				<label class="control-label col-md-3 col-sm-3 col-xs-7" th:for="__${tipoAllegato}__">
 					<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span><span th:if="${note == null}" class="required">*</span>
@@ -19,18 +23,19 @@
 				</label>
 				<th:block th:if="${#lists.contains(__${wrapper}__.idEditabili, counter) or counter == null}">
 					<div class="col-md-4 col-sm-4 col-xs-12">
-						<div class="form-control col-md-7 col-xs-12 btn" th:unless="${__${wrapper}__.__${tipoAllegato}__.data}">
-							<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
+						<!-- div class="form-control col-md-7 col-xs-12 btn" th:unless="${__${wrapper}__.__${tipoAllegato}__.data}">
+							<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
 								style="display: none;" />
 							<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
 							<div th:id="__${tipoAllegato}___label" class="allegato-label" th:text="#{label.nessun_file_selezionato}">Nessun file selezionato</div>
 						</div>
-						<div class="form-control col-md-7 col-xs-12 btn" th:if="${__${wrapper}__.__${tipoAllegato}__.data}">
-							<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
+						<div class="form-control col-md-7 col-xs-12 btn" th:if="${__${wrapper}__.__${tipoAllegato}__.data}" -->
+						<div class="form-control col-md-7 col-xs-12 btn">
+							<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
 								style="display: none;" />
 							<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
 							<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
-							<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:if="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" class="allegato-label"></a></div>
+							<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:if="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="#{label.nessun_file_selezionato}" class="allegato-label"></a></div>
 						</div>
 					</div>
 					<!-- pulsante per aggiungere firma -->
@@ -56,28 +61,96 @@
 				<span th:text="#{label.__${tipoAllegato}__}">label.tipoAllegato</span>
 			</label>
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<input type="file" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}__"
+				<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}__"
 					class="form-control col-md-7 col-xs-12 btn" />
 			</div>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 		</div>
 	</th:block>
 	<script th:inline="javascript">
+	/*<![CDATA[*/
 		function setAllegato(idInput) {
 			$(idInput).click();
 		}
-				
-		$('input[type=file]').change(function() {
-			if(this.value) {
-				$("#"+this.id+"_label").text(this.value.split('\\').pop());
-				$("#"+this.id+"_label").removeAttr('href');
-				$("#"+this.id+"_label").css('text-decoration', 'none');
-				$("#"+this.id+"_label").css('color', 'inherit');
+		
+		function submitFile(element){
+			var tipoAllegato = $(element).attr("id");
+			var fileId = $("#"+tipoAllegato+"\\.id").attr('value');
+			switch(tipoAllegato){
+				case 'cv' : 							tipoAllegato = 'FILE_CV'; break;
+				case 'delega' : 						tipoAllegato = 'FILE_DELEGA'; break;
+				case 'attoNomina' : 					tipoAllegato = 'FILE_ATTO_NOMINA'; break;
+				case 'organigramma' : 					tipoAllegato = 'FILE_ORGANIGRAMMA'; break;
+				case 'funzionigramma' :					tipoAllegato = 'FILE_FUNZIONIGRAMMA'; break;
+				case 'estrattoBilancioFormazione' : 	tipoAllegato = 'FILE_ESTRATTO_BILANCIO_FORMAZIONE'; break;
+				case 'budgetPrevisionale' : 			tipoAllegato = 'FILE_BUDGET_PREVISIONALE'; break; 
+				case 'attoCostitutivo' : 				tipoAllegato = 'FILE_ATTO_COSTITUTIVO'; break; 
+				case 'esperienzaFormazione' : 		tipoAllegato = 'FILE_ESPERIENZA_FORMAZIONE'; break; 
+				case 'utilizzo' : 						tipoAllegato = 'FILE_UTILIZZO'; break; 
+				case 'sistemaInformatico' : 			tipoAllegato = 'FILE_SISTEMA_INFORMATICO'; break; 
+				case 'pianoQualita' : 					tipoAllegato = 'FILE_PIANO_QUALITA'; break; 
+				case 'dichiarazioneLegale' : 			tipoAllegato = 'FILE_DICHIARAZIONE_LEGALE'; break; 
 			}
-			else {
-				$("#"+this.id+"_label").text([[#{label.nessun_file_selezionato}]]);
-			}
-		});
+			
+	 		var oMyForm = new FormData();
+            oMyForm.append("multiPartFile", $(element)[0].files[0]);
+            oMyForm.append("fileId", (!fileId) ? 0 : fileId );
+            oMyForm.append("tipo",tipoAllegato);
+            oMyForm.append([[${_csrf.parameterName}]],[[${_csrf.token}]]);
+            
+            console.log('tipoAllegato: ' + tipoAllegato + ' - fileId: ' + fileId);
+            
+           	$.ajax({
+                  	url : "/file/upload",
+                  	data : oMyForm,
+                  	type : "POST",
+                  	enctype: 'multipart/form-data',
+                  	processData: false, 
+                  	contentType:false,
+                  	success : function(result) {
+                  		setFile(result);
+                  	},
+                  	error : function(result){
+                  		sendNotifyStatic([[#{message.errore}]], [[#{message.errore_fileupload}]], "error");
+                  	}
+              	}); 
+		}
+		
+		function setFile(response){
+				if(response.id != null && response.id != 0) {
+					var inputName = '';
+					
+					switch (response.tipo) {
+						case 'FILE_CV': 							inputName = 'cv'; break;
+						case 'FILE_DELEGA': 						inputName = 'delega'; break;
+						case 'FILE_ATTO_NOMINA': 					inputName = 'attoNomina'; break;
+						case 'FILE_ORGANIGRAMMA' : 					inputName = 'organigramma'; break;
+						case 'FILE_FUNZIONIGRAMMA' :				inputName = 'funzionigramma'; break;
+						case 'FILE_ESTRATTO_BILANCIO_FORMAZIONE' : 	inputName = 'estrattoBilancioFormazione'; break;
+						case 'FILE_BUDGET_PREVISIONALE' : 			inputName = 'budgetPrevisionale'; break; 
+						case 'FILE_ATTO_COSTITUTIVO' : 				inputName = 'attoCostitutivo'; break; 
+						case 'FILE_ESPERIENZA_FORMAZIONE' : 		inputName = 'esperienzaFormazione'; break; 
+						case 'FILE_UTILIZZO' : 						inputName = 'utilizzo'; break; 
+						case 'FILE_SISTEMA_INFORMATICO' : 			inputName = 'sistemaInformatico'; break; 
+						case 'FILE_PIANO_QUALITA' : 				inputName = 'pianoQualita'; break; 
+						case 'FILE_DICHIARAZIONE_LEGALE' : 			inputName = 'dichiarazioneLegale'; break; 
+					default: break;
+						}
+					
+					$("#"+inputName+"_label").text(response.nomeFile);
+					$("#"+inputName+"_label").attr('href',"/file/" + response.id);
+					$("#"+inputName+"_label").css('text-decoration', 'none');
+					$("#"+inputName+"_label").css('color', 'inherit');
+					
+					$("#"+inputName+"\\.id").attr('value', response.id);
+					$("#"+inputName+"\\.nomeFile").attr('value', response.nomeFile);
+				}
+				else {
+					//$("#"+inputName+"_label").text([[#{label.nessun_file_selezionato}]]);
+					sendNotifyStatic([[#{message.errore}]], response, "error");
+				}
+		}
+		/*]]>*/
 	</script>
 </th:block>
 </body>

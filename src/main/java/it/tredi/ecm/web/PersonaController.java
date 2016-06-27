@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Anagrafica;
@@ -34,7 +35,6 @@ import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
-import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.validator.PersonaValidator;
@@ -150,7 +150,7 @@ public class PersonaController {
 
 	/***	EDIT PERSONA ***/
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/edit")
-	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model){
+	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
 		try {	
 			Persona persona = personaService.getPersona(id);
 			if(persona == null){
@@ -168,10 +168,7 @@ public class PersonaController {
 	/***	SAVE PERSONA ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/save", method = RequestMethod.POST)
 	public String savePersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
-			RedirectAttributes redirectAttrs, Model model,
-			@RequestParam(value = "attoNomina_multipart", required = false) MultipartFile attoNomina_multiPartFile,
-			@RequestParam(value = "cv_multipart", required = false) MultipartFile cv_multiPartFile,
-			@RequestParam(value = "delega_multipart", required = false) MultipartFile delega_multiPartFile){
+			RedirectAttributes redirectAttrs, Model model){
 		try {
 			if(personaWrapper.getPersona().isNew()){
 				Persona persona = personaWrapper.getPersona(); 
@@ -179,38 +176,28 @@ public class PersonaController {
 				Provider provider = providerService.getProvider(personaWrapper.getProviderId());
 				persona.setProvider(provider);
 			}
+			
+			//TODO getFile da testare se funziona anche senza reload
+			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a personaId
+			for(File file : personaWrapper.getFiles()){
+				if(file != null && !file.isNew()){
+					if(file.isCV())
+						personaWrapper.setCv(fileService.getFile(file.getId()));
+					else if(file.isDELEGA())
+						personaWrapper.setDelega(fileService.getFile(file.getId()));
+					else if(file.isATTONOMINA())
+						personaWrapper.setAttoNomina(fileService.getFile(file.getId()));
+				}
+			}
 
-			if(attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty())
-				personaWrapper.setAttoNomina(Utils.convertFromMultiPart(attoNomina_multiPartFile));
-			if(cv_multiPartFile != null && !cv_multiPartFile.isEmpty())
-				personaWrapper.setCv(Utils.convertFromMultiPart(cv_multiPartFile));
-			if(delega_multiPartFile != null && !delega_multiPartFile.isEmpty())
-				personaWrapper.setDelega(Utils.convertFromMultiPart(delega_multiPartFile));
-
-			personaValidator.validate(personaWrapper.getPersona(), result, "persona.",personaWrapper.getFiles());
+			personaValidator.validate(personaWrapper.getPersona(), result, "persona.", personaWrapper.getFiles());
 
 			try{
 				if(result.hasErrors()){
-
-					if(!personaWrapper.getPersona().isNew()){
-						//salvataggio dei file modificati per evitare che in casi di errore di validazione sui dati
-						//l'utente debba rifare l'upload
-						if(!result.hasFieldErrors("delega*") && delega_multiPartFile != null && !delega_multiPartFile.isEmpty()){
-							fileService.save(personaWrapper.getDelega());
-						}
-
-						if(!result.hasFieldErrors("attoNomina*") && attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty()){
-							fileService.save(personaWrapper.getAttoNomina());
-						}
-
-						if(!result.hasFieldErrors("cv*") && cv_multiPartFile != null && !cv_multiPartFile.isEmpty()){
-							fileService.save(personaWrapper.getCv());
-						}
-					}
-					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+					model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
 					return EDIT;
 				}else{
-					saveFiles(personaWrapper, attoNomina_multiPartFile, cv_multiPartFile, delega_multiPartFile);
+					
 					personaService.save(personaWrapper.getPersona());
 					
 					// Durante la compilazione della domanda di accreditamento, se si inizia l'inserimento dei responsabili non e' piu'
@@ -258,18 +245,6 @@ public class PersonaController {
 		redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 		redirectAttrs.addFlashAttribute("currentTab","tab2");
 		return "redirect:/accreditamento/{accreditamentoId}";
-	}
-	
-	private void saveFiles(PersonaWrapper personaWrapper, MultipartFile attoNomina_multiPartFile, MultipartFile cv_multiPartFile, MultipartFile delega_multiPartFile){
-		if(attoNomina_multiPartFile != null && !attoNomina_multiPartFile.isEmpty()){
-			fileService.save(personaWrapper.getAttoNomina());
-		}
-		if(cv_multiPartFile != null && !cv_multiPartFile.isEmpty()){
-			fileService.save(personaWrapper.getCv());
-		}
-		if(delega_multiPartFile != null && !delega_multiPartFile.isEmpty()){
-			fileService.save(personaWrapper.getDelega());
-		}
 	}
 
 	/***	Metodi privati di supporto	***/

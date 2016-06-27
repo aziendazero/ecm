@@ -9,6 +9,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -19,9 +26,16 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NamedEntityGraph(name="graph.provider.files",
+					attributeNodes = @NamedAttributeNode(value="files", subgraph="minimalFileInfo"),
+					subgraphs = @NamedSubgraph(name="minimalFileInfo", attributeNodes={
+								@NamedAttributeNode("id"),
+								@NamedAttributeNode("nomeFile"),
+								@NamedAttributeNode("tipo")
+							}))
 public class Provider extends BaseEntity{
 	/*	ACCOUNT LEGATO AL PROFILO PROVIDER	*/
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	private Account account;
 	
 	/*	INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE	*/
@@ -53,6 +67,17 @@ public class Provider extends BaseEntity{
 	public void setTipoOrganizzatore(TipoOrganizzatore tipoOrganizzatore){
 		this.tipoOrganizzatore = tipoOrganizzatore;
 		this.gruppo = tipoOrganizzatore.getGruppo();
+	}
+	
+	@ManyToMany
+	@JoinTable(name="provider_files", 
+				joinColumns={@JoinColumn(name="provider_id")},
+				inverseJoinColumns={@JoinColumn(name="files_id")}
+	)
+	Set<File> files = new HashSet<File>();
+	
+	public void addFile(File file){
+		this.getFiles().add(file);
 	}
 	
 	/** UTILS **/

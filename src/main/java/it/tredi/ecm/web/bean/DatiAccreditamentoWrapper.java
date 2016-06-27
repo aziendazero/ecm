@@ -1,13 +1,12 @@
 package it.tredi.ecm.web.bean;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,82 +23,34 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 	private File organigramma;
 	
 	public DatiAccreditamentoWrapper() {
-		setEstrattoBilancioFormazione(new File());
-		setBudgetPrevisionale(new File());
-		setFunzionigramma(new File());
-		setOrganigramma(new File());
+		setEstrattoBilancioFormazione(new File(FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE));
+		setBudgetPrevisionale(new File(FileEnum.FILE_BUDGET_PREVISIONALE));
+		setFunzionigramma(new File(FileEnum.FILE_FUNZIONIGRAMMA));
+		setOrganigramma(new File(FileEnum.FILE_ORGANIGRAMMA));
 	}
 	
 	public void setEstrattoBilancioFormazione(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(estrattoBilancioFormazione != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(estrattoBilancioFormazione.getId());
-				}
-			}
-		}
-		
 		estrattoBilancioFormazione = file;
-		estrattoBilancioFormazione.setTipo(Costanti.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
-		estrattoBilancioFormazione.setProvider(provider);
-		estrattoBilancioFormazione.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(estrattoBilancioFormazione);
 	}
 	
 	public void setBudgetPrevisionale(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(budgetPrevisionale != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(budgetPrevisionale.getId());
-				}
-			}
-		}
-		
 		budgetPrevisionale = file;
-		budgetPrevisionale.setTipo(Costanti.FILE_BUDGET_PREVISIONALE);
-		budgetPrevisionale.setProvider(provider);
-		budgetPrevisionale.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(budgetPrevisionale);
 	}
 	
 	public void setFunzionigramma(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(funzionigramma != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(funzionigramma.getId());
-				}
-			}
-		}
-		
 		funzionigramma = file;
-		funzionigramma.setTipo(Costanti.FILE_FUNZIONIGRAMMA);
-		funzionigramma.setProvider(provider);
-		funzionigramma.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(funzionigramma);
 	}
 	
 	public void setOrganigramma(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(organigramma != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(organigramma.getId());
-				}
-			}
-		}
-		
 		organigramma = file;
-		organigramma.setTipo(Costanti.FILE_ORGANIGRAMMA);
-		organigramma.setProvider(provider);
-		organigramma.setDataCreazione(LocalDate.now());
+		if(provider != null)
+			provider.addFile(organigramma);
 	}
 	
 	public Set<File> getFiles(){

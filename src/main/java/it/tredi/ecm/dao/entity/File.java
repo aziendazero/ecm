@@ -5,10 +5,13 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
-import it.tredi.ecm.dao.enumlist.Costanti;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,63 +21,67 @@ import lombok.Setter;
 @Setter
 public class File extends BaseEntity {
 	private String nomeFile;
-	private byte[] data;
 	
+	@JsonIgnore 
+	private byte[] data;
+
+	@JsonIgnore
 	@Column(name = "creato")
 	private LocalDate dataCreazione;
-	private String tipo;
 	
-	@ManyToOne /* ci sono allegati del provider */
-	private Provider provider;
+	@Enumerated(EnumType.STRING)
+	private FileEnum tipo;
 	
 	public File(){
-		this.tipo = "";
+		this.tipo = null;
 		this.nomeFile = "";
+		this.dataCreazione = LocalDate.now();
 	}
 	
-	public File(String tipo){
+	public File(FileEnum tipo){
 		this.tipo = tipo;
 		this.nomeFile = "";
+		this.dataCreazione = LocalDate.now();
 	}
 	
-	public boolean isCV(){
-		return this.tipo.equals(Costanti.FILE_CV);
+	@JsonIgnore	public boolean isCV(){
+		return this.tipo.equals(FileEnum.FILE_CV);
 	}
-	public boolean isDELEGA(){
-		return this.tipo.equals(Costanti.FILE_DELEGA);
+	@JsonIgnore	public boolean isDELEGA(){
+		return this.tipo.equals(FileEnum.FILE_DELEGA);
 	}
-	public boolean isATTONOMINA(){
-		return this.tipo.equals(Costanti.FILE_ATTO_NOMINA);
+	@JsonIgnore	public boolean isATTONOMINA(){
+		return this.tipo.equals(FileEnum.FILE_ATTO_NOMINA);
 	}
-	public boolean isESTRATTOBILANCIOFORMAZIONE(){
-		return this.tipo.equals(Costanti.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
+	@JsonIgnore	public boolean isESTRATTOBILANCIOFORMAZIONE(){
+		return this.tipo.equals(FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
 	}
-	public boolean isBUDGETPREVISIONALE(){
-		return this.tipo.equals(Costanti.FILE_BUDGET_PREVISIONALE);
+	@JsonIgnore	public boolean isBUDGETPREVISIONALE(){
+		return this.tipo.equals(FileEnum.FILE_BUDGET_PREVISIONALE);
 	}
-	public boolean isFUNZIONIGRAMMA(){
-		return this.tipo.equals(Costanti.FILE_FUNZIONIGRAMMA);
+	@JsonIgnore	public boolean isFUNZIONIGRAMMA(){
+		return this.tipo.equals(FileEnum.FILE_FUNZIONIGRAMMA);
 	}
-	public boolean isORGANIGRAMMA(){
-		return this.tipo.equals(Costanti.FILE_ORGANIGRAMMA);
+	@JsonIgnore	public boolean isORGANIGRAMMA(){
+		return this.tipo.equals(FileEnum.FILE_ORGANIGRAMMA);
 	}
-	public boolean isATTOCOSTITUTIVO(){
-		return this.tipo.equals(Costanti.FILE_ATTO_COSTITUTIVO);
+	@JsonIgnore	public boolean isATTOCOSTITUTIVO(){
+		return this.tipo.equals(FileEnum.FILE_ATTO_COSTITUTIVO);
 	}
-	public boolean isESPERIENZAFORMAZIONE(){
-		return this.tipo.equals(Costanti.FILE_ESPERIENZA_FORMAZIONE);
+	@JsonIgnore	public boolean isESPERIENZAFORMAZIONE(){
+		return this.tipo.equals(FileEnum.FILE_ESPERIENZA_FORMAZIONE);
 	}
-	public boolean isUTILIZZO(){
-		return this.tipo.equals(Costanti.FILE_UTILIZZO);
+	@JsonIgnore	public boolean isUTILIZZO(){
+		return this.tipo.equals(FileEnum.FILE_UTILIZZO);
 	}
-	public boolean isSISTEMAINFORMATICO(){
-		return this.tipo.equals(Costanti.FILE_SISTEMA_INFORMATICO);
+	@JsonIgnore	public boolean isSISTEMAINFORMATICO(){
+		return this.tipo.equals(FileEnum.FILE_SISTEMA_INFORMATICO);
 	}
-	public boolean isPIANOQUALITA(){
-		return this.tipo.equals(Costanti.FILE_PIANO_QUALITA);
+	@JsonIgnore	public boolean isPIANOQUALITA(){
+		return this.tipo.equals(FileEnum.FILE_PIANO_QUALITA);
 	}
-	public boolean isDICHIARAZIONELEGALE(){
-		return this.tipo.equals(Costanti.FILE_DICHIARAZIONE_LEGALE);
+	@JsonIgnore	public boolean isDICHIARAZIONELEGALE(){
+		return this.tipo.equals(FileEnum.FILE_DICHIARAZIONE_LEGALE);
 	}
 	
 	@Override

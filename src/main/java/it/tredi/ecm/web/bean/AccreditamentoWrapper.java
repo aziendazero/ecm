@@ -1,6 +1,5 @@
 package it.tredi.ecm.web.bean;
 
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,6 +13,7 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -72,7 +72,7 @@ public class AccreditamentoWrapper {
 	private boolean sezione2Stato;
 	private boolean sezione3Stato;
 	
-	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> existFiles){
+	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider){
 		//TODO migliorare la logica per evitare di fare troppi if
 		// ad esempio inizializzare gli stati a true e poi ad ogni controllo se fallisce si mette il false sia allo stato che al valid
 		// cosi facendo valid è settato in automatico senza rifare tutti i controlli
@@ -95,7 +95,7 @@ public class AccreditamentoWrapper {
 		responsabileQualitaStato = (responsabileQualita != null && !responsabileQualita.isNew()) ? true : false;
 		
 		checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe);
-		setFilesStato(existFiles);
+		setFilesStato(filesDelProvider);
 		
 		sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
 		sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
@@ -184,18 +184,18 @@ public class AccreditamentoWrapper {
 		}
 	}
 	
-	private void setFilesStato(Set<String> existFiles){
-		if(existFiles.contains(Costanti.FILE_ATTO_COSTITUTIVO))
+	private void setFilesStato(Set<String> filesDelProvider){
+		if(filesDelProvider.contains(FileEnum.FILE_ATTO_COSTITUTIVO))
 			attoCostitutivoStato = true;
-		if(existFiles.contains(Costanti.FILE_ESPERIENZA_FORMAZIONE))
+		if(filesDelProvider.contains(FileEnum.FILE_ESPERIENZA_FORMAZIONE))
 			esperienzaFormazioneStato = true;
-		if(existFiles.contains(Costanti.FILE_UTILIZZO))
+		if(filesDelProvider.contains(FileEnum.FILE_UTILIZZO))
 			utilizzoStato = true;
-		if(existFiles.contains(Costanti.FILE_SISTEMA_INFORMATICO))
+		if(filesDelProvider.contains(FileEnum.FILE_SISTEMA_INFORMATICO))
 			sistemaInformaticoStato = true;
-		if(existFiles.contains(Costanti.FILE_PIANO_QUALITA))
+		if(filesDelProvider.contains(FileEnum.FILE_PIANO_QUALITA))
 			pianoQualitaStato = true;
-		if(existFiles.contains(Costanti.FILE_DICHIARAZIONE_LEGALE))
+		if(filesDelProvider.contains(FileEnum.FILE_DICHIARAZIONE_LEGALE))
 			dichiarazioneLegaleStato = true;
 	}
 	

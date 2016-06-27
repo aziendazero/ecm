@@ -14,6 +14,7 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.repository.ProviderRepository;
 import it.tredi.ecm.service.bean.CurrentUser;
@@ -92,6 +93,12 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 	
 	@Override
+	public Set<String> getFileTypeUploadedByProviderId(Long id) {
+		LOGGER.debug("Recupero i tipi di file presenti per il provider: " + id);
+		return providerRepository.findAllFileTipoByProviderId(id);
+	}
+	
+	@Override
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper() {
 		ProviderRegistrationWrapper providerRegistrationWrapper = new ProviderRegistrationWrapper();
 		Provider provider = getProvider();
@@ -145,8 +152,7 @@ public class ProviderServiceImpl implements ProviderService {
 		
 		//TODO Delegato consentito solo per alcuni tipi di Provider
 		if(providerRegistrationWrapper.isDelegato()){
-			delegaRichiedente.setTipo(Costanti.FILE_DELEGA);
-			delegaRichiedente.setProvider(provider);
+			delegaRichiedente.setTipo(FileEnum.FILE_DELEGA);
 			fileService.save(delegaRichiedente);
 			richiedente.addFile(delegaRichiedente);
 		}

@@ -3,6 +3,8 @@ package it.tredi.ecm.web;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
@@ -29,13 +30,15 @@ import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProfessioneService;
-import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.web.bean.DatiAccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.DatiAccreditamentoValidator;
 
 @Controller
 public class DatiAccreditamentoController {
+	private static Logger LOGGER = LoggerFactory.getLogger(DatiAccreditamentoController.class);
+	
 	private final String EDIT = "accreditamento/datiAccreditamentoEdit";
 	
 	@Autowired
@@ -48,6 +51,8 @@ public class DatiAccreditamentoController {
 	private ProfessioneService professioneService;
 	@Autowired
 	private FileService fileService;
+	@Autowired
+	private ProviderService providerService;
 	@Autowired
 	private AccreditamentoService accreditamentoService;
 	
@@ -108,68 +113,40 @@ public class DatiAccreditamentoController {
 	/*** SAVE ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/save", method = RequestMethod.POST)
 	public String saveDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
-											@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model,
-											@RequestParam(value = "estrattoBilancioFormazione_multipart", required = false) MultipartFile estrattoBilancioFormazione_multipart,
-											@RequestParam(value = "budgetPrevisionale_multipart", required = false) MultipartFile budgetPrevisionale_multipart,
-											@RequestParam(value = "funzionigramma_multipart", required = false) MultipartFile funzionigramma_multipart,
-											@RequestParam(value = "organigramma_multipart", required = false) MultipartFile organigramma_multipart){
-		
+											@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
 		try {
-			if(estrattoBilancioFormazione_multipart != null && !estrattoBilancioFormazione_multipart.isEmpty())
-				wrapper.setEstrattoBilancioFormazione(Utils.convertFromMultiPart(estrattoBilancioFormazione_multipart));
-			if(budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty())
-				wrapper.setBudgetPrevisionale(Utils.convertFromMultiPart(budgetPrevisionale_multipart));
-			if(funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty())
-				wrapper.setFunzionigramma(Utils.convertFromMultiPart(funzionigramma_multipart));
-			if(organigramma_multipart != null && !organigramma_multipart.isEmpty())
-				wrapper.setOrganigramma(Utils.convertFromMultiPart(organigramma_multipart));
+			//TODO getFile da testare se funziona anche senza reload
+			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
+			for(File file : wrapper.getFiles()){
+				if(file != null && !file.isNew()){
+					if(file.isESTRATTOBILANCIOFORMAZIONE())
+						wrapper.setEstrattoBilancioFormazione(fileService.getFile(file.getId()));
+					else if(file.isBUDGETPREVISIONALE())
+						wrapper.setBudgetPrevisionale(fileService.getFile(file.getId()));
+					else if(file.isFUNZIONIGRAMMA())
+						wrapper.setFunzionigramma(fileService.getFile(file.getId()));
+					else if(file.isORGANIGRAMMA())
+						wrapper.setOrganigramma(fileService.getFile(file.getId()));
+				}
+			}
 			
 			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
 			
 			if(result.hasErrors()){
-				
-				if(!result.hasFieldErrors("estrattoBilancioFormazione*") && estrattoBilancioFormazione_multipart != null && !estrattoBilancioFormazione_multipart.isEmpty()){
-					fileService.save(wrapper.getEstrattoBilancioFormazione());
-				}
-				if(!result.hasFieldErrors("budgetPrevisionale*") && budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty()){
-					fileService.save(wrapper.getBudgetPrevisionale());
-				}
-				if(!result.hasFieldErrors("funzionigramma*") && funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty()){
-					fileService.save(wrapper.getFunzionigramma());
-				}
-				if(!result.hasFieldErrors("organigramma*") && organigramma_multipart != null && !organigramma_multipart.isEmpty()){
-					fileService.save(wrapper.getOrganigramma());
-				}
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return EDIT;
 			}else{
+				providerService.save(wrapper.getProvider());
 				datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), accreditamentoId);
-				saveFiles(wrapper, estrattoBilancioFormazione_multipart, budgetPrevisionale_multipart, funzionigramma_multipart, organigramma_multipart);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.dati_attivita_inseriti", "success"));
 				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 				return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch (Exception ex){
 			//TODO gestione eccezione
+			LOGGER.error("Errore Salvataggio", ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
-		}
-	}
-	
-	/***	METODI PRIVATI DI SUPPORTO	***/
-	private void saveFiles(DatiAccreditamentoWrapper wrapper, MultipartFile estrattoBilancioFormazione_multipart, MultipartFile budgetPrevisionale_multipart,
-			MultipartFile funzionigramma_multipart, MultipartFile organigramma_multipart){
-		if(estrattoBilancioFormazione_multipart != null && !estrattoBilancioFormazione_multipart.isEmpty()){
-			fileService.save(wrapper.getEstrattoBilancioFormazione());
-		}
-		if(budgetPrevisionale_multipart != null && !budgetPrevisionale_multipart.isEmpty()){
-			fileService.save(wrapper.getBudgetPrevisionale());
-		}
-		if(funzionigramma_multipart != null && !funzionigramma_multipart.isEmpty()){
-			fileService.save(wrapper.getFunzionigramma());
-		}
-		if(organigramma_multipart != null && !organigramma_multipart.isEmpty()){
-			fileService.save(wrapper.getOrganigramma());
 		}
 	}
 	
@@ -192,7 +169,7 @@ public class DatiAccreditamentoController {
 			wrapper.setProvider(accreditamento.getProvider());
 		}else{
 			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
-			Set<File> files = fileService.getFileFromProvider(datiAccreditamento.getAccreditamento().getProvider().getId());
+			Set<File> files = wrapper.getProvider().getFiles();
 			for(File file : files){
 				if(file.isESTRATTOBILANCIOFORMAZIONE())
 					wrapper.setEstrattoBilancioFormazione(file);

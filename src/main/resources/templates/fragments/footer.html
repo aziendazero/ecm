@@ -241,6 +241,18 @@
             	});
 			};
 			
+			function sendNotifyStatic(titolo, testo, tipo){
+				var notify = new PNotify({
+					title: titolo,
+					text:  testo,
+					type: tipo,
+					hide: false,
+                    buttons: {
+                    	sticker: false
+                    }                             
+            	});
+			};
+			
 			function animate(element){
 				element.addClass('tada animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
 				      $(this).removeClass('tada animated');

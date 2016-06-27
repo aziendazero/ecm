@@ -96,12 +96,13 @@ public class PersonaValidator {
 			files = (Set<File>) target;
 		else
 			files = new HashSet<File>();
+		
 		File attoNomina = null;
 		File cv = null;
 		File delega = null;
 		
 		for(File file : files){
-			if(file != null){
+			if(file != null && !file.isNew()){
 				if(file.isATTONOMINA())
 					attoNomina = file;
 				else if(file.isCV())

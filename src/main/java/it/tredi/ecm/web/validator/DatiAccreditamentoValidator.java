@@ -74,7 +74,7 @@ public class DatiAccreditamentoValidator {
 		File organigramma = null;
 		
 		for(File file : files){
-			if(file != null){
+			if(file != null && !file.isNew()){
 				if(file.isFUNZIONIGRAMMA())
 					funzionigramma = file;
 				else if(file.isORGANIGRAMMA())

@@ -9,19 +9,26 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToOne;
+
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-//@Table(name="persona",
-//		uniqueConstraints = {
-//								@UniqueConstraint(columnNames={"provider_id", "ruolo"})
-//								}
-//)
+@NamedEntityGraph(name="graph.persona.files",
+					attributeNodes = @NamedAttributeNode(value="files", subgraph="minimalFileInfo"),
+					subgraphs = @NamedSubgraph(name="minimalFileInfo", attributeNodes={
+							@NamedAttributeNode("id"),
+							@NamedAttributeNode("nomeFile"),
+							@NamedAttributeNode("tipo")
+					}))
 @Getter
 @Setter
 public class Persona extends BaseEntity{
@@ -36,22 +43,26 @@ public class Persona extends BaseEntity{
 	@OneToOne
 	private Professione professione;
 	private Boolean coordinatoreComitatoScientifico;
-	
-	@OneToMany
+
+	@ManyToMany(cascade= CascadeType.REMOVE)
+	@JoinTable(name="persona_files", 
+				joinColumns={@JoinColumn(name="persona_id")}, 
+				inverseJoinColumns={@JoinColumn(name="files_id")}
+	)
 	Set<File> files = new HashSet<File>();
-	
+
 	public Persona(){}
 	public Persona(Ruolo ruolo){this.ruolo = ruolo;}
-	
+
 	public void setProvider(Provider provider){
 		this.provider = provider;
 		this.getAnagrafica().setProvider(provider);
 	}
-	
+
 	public void addFile(File file){
 		this.getFiles().add(file);
 	}
-	
+
 	/***	CHECK RUOLO DELLA PERSONA	***/
 	public boolean isResponsabileSegreteria(){
 		return ruolo.equals(Ruolo.RESPONSABILE_SEGRETERIA);
@@ -80,16 +91,16 @@ public class Persona extends BaseEntity{
 	public boolean isComponenteComitatoScientifico(){
 		return ruolo.equals(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
 	}
-	
+
 	@Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Persona entitapiatta = (Persona) o;
-        return Objects.equals(id, entitapiatta.id);
-    }
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Persona entitapiatta = (Persona) o;
+		return Objects.equals(id, entitapiatta.id);
+	}
 }

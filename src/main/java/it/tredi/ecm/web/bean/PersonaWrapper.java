@@ -1,12 +1,11 @@
 package it.tredi.ecm.web.bean;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
-import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,9 +23,9 @@ public class PersonaWrapper extends Wrapper {
 	private File delega;
 	
 	public PersonaWrapper(){
-		setAttoNomina(new File());
-		setCv(new File());
-		setDelega(new File());
+		setAttoNomina(new File(FileEnum.FILE_ATTO_NOMINA));
+		setCv(new File(FileEnum.FILE_CV));
+		setDelega(new File(FileEnum.FILE_DELEGA));
 	}
 	
 	public void setPersona(Persona p){
@@ -34,60 +33,21 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setAttoNomina(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(attoNomina != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(attoNomina.getId());
-				}
-			}
-		}
-		
 		attoNomina = file;
-		attoNomina.setTipo(Costanti.FILE_ATTO_NOMINA);
 		if(persona != null)
 			persona.addFile(attoNomina);
-		attoNomina.setDataCreazione(LocalDate.now());
 	}
 	
 	public void setCv(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(cv != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(cv.getId());
-				}
-			}
-		}
-		
 		cv = file;
-		cv.setTipo(Costanti.FILE_CV);
 		if(persona != null)
 			persona.addFile(cv);
-		cv.setDataCreazione(LocalDate.now());
 	}
 	
 	public void setDelega(File file){
-		if(file.getData() != null && file.getData().length > 0){
-			//file e' pieno
-			if(file.getId() == null){
-				//il file passato è un file nuovo
-				if(delega != null){
-					//c'era gia' un file...stiamo sovrascrivendo
-					file.setId(delega.getId());
-				}
-			}
-		}
-		
 		delega = file;
-		delega.setTipo(Costanti.FILE_DELEGA);
 		if(persona != null)
 			persona.addFile(delega);
-		delega.setDataCreazione(LocalDate.now());
 	}
 	
 	public Set<File> getFiles(){
