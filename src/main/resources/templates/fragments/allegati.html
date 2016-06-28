@@ -10,7 +10,6 @@
 	<th:block th:if="${__withIdEditabili__}"> 
 		<th:block th:if="${!__${wrapper}__.__${tipoAllegato}__.new} or
 			${#lists.contains(__${wrapper}__.idEditabili, counter)}">
-			<div class="divider-dashed"></div>
 			<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
 				
 				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
@@ -23,13 +22,6 @@
 				</label>
 				<th:block th:if="${#lists.contains(__${wrapper}__.idEditabili, counter) or counter == null}">
 					<div class="col-md-4 col-sm-4 col-xs-12">
-						<!-- div class="form-control col-md-7 col-xs-12 btn" th:unless="${__${wrapper}__.__${tipoAllegato}__.data}">
-							<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
-								style="display: none;" />
-							<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
-							<div th:id="__${tipoAllegato}___label" class="allegato-label" th:text="#{label.nessun_file_selezionato}">Nessun file selezionato</div>
-						</div>
-						<div class="form-control col-md-7 col-xs-12 btn" th:if="${__${wrapper}__.__${tipoAllegato}__.data}" -->
 						<div class="form-control col-md-7 col-xs-12 btn">
 							<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
 								style="display: none;" />
@@ -139,9 +131,6 @@
 					
 					$("#"+inputName+"_label").text(response.nomeFile);
 					$("#"+inputName+"_label").attr('href',"/file/" + response.id);
-					$("#"+inputName+"_label").css('text-decoration', 'none');
-					$("#"+inputName+"_label").css('color', 'inherit');
-					
 					$("#"+inputName+"\\.id").attr('value', response.id);
 					$("#"+inputName+"\\.nomeFile").attr('value', response.nomeFile);
 				}
