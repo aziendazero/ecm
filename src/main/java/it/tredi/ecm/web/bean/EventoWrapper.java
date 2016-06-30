@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EventoWrapper {
+public class EventoWrapper extends Wrapper {
 	private Evento evento;
 	private Long providerId;
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();

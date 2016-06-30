@@ -138,7 +138,6 @@ table.datatable-responsive-search-validation thead .sorting_asc:after {
 }
 
 .dropdown-header {
-	background-color: #1abc9c;
 	color: white;
 	font-weight: bold;
 	margin-bottom: 5px;
@@ -299,4 +298,15 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before, table.dataT
 	display: block;
 	line-height: 1;
 }
+
+textarea {
+	width: 100%;
+}
  
+.dropdown-header.optgroup-primary {
+	background-color: #337ab7;	
+} 
+
+.dropdown-header.optgroup-success {
+	background-color: #1abc9c;	
+} 

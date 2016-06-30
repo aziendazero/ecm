@@ -209,6 +209,18 @@
 				} ],
 			});
 			
+			$('.datatable-responsive-piano-formativo').DataTable({
+				"bFilter" : false,
+				"bInfo" : false,
+				"bPaginate" : false,
+				"ordering" : false,
+				"columnDefs": [ {
+					"targets": 1,
+					"width": "1px",
+					"sClass": "center"
+				} ],
+			});
+			
 			$('.datatable-responsive-ordering').DataTable({
 				"bFilter" : false,
 			});
