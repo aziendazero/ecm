@@ -162,7 +162,7 @@
 							
 							<div class="divider-dashed"></div>
 							
-							<!-- professioni -->
+							<!-- professioni/discipline -->
 							<div class="item form-group">
 								<label class="control-label col-xs-1 text-right" th:text="${++counter}">4</label>
 								<label th:text="#{label.professioni}"
@@ -191,7 +191,7 @@
 												title="Seleziona una disciplina..." disabled="disabled"
 												data-selected-text-format="count"
 												th:remove="all-but-first">
-												<optgroup disabled="disabled"
+												<optgroup class="optgroup-success" disabled="disabled"
 													th:each="professione, row: ${professioneList}"
 													th:label="${professione.nome}"
 													th:remove="all-but-first">
