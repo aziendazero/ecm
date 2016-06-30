@@ -31,9 +31,9 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
-	public Set<Evento> getAllEventiFromProviderInPianoFormativo(Long providerId, Integer anno) {
-		LOGGER.debug("Recupero eventi del provider " + providerId + " relativi al piano formativo " + anno);
-		return eventoRepository.findAllByProviderIdAndPianoFormativo(providerId, anno);
+	public Set<Evento> getAllEventiFromProviderInPianoFormativo(Long providerId, Integer pianoFormativo) {
+		LOGGER.debug("Recupero eventi del provider " + providerId + " relativi al piano formativo " + pianoFormativo);
+		return eventoRepository.findAllByProviderIdAndPianoFormativo(providerId, pianoFormativo);
 	}
 
 	@Override

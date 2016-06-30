@@ -30,15 +30,29 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider() throws Exception{
 		Provider currentProvider = providerService.getProvider();
-		if(currentProvider.isNew()){
+		return getNewAccreditamento(currentProvider);
+	}
+	
+	@Override
+	public Accreditamento getNewAccreditamentoForProvider(Long providerId) throws Exception {
+		Provider provider = providerService.getProvider(providerId);
+		return getNewAccreditamento(provider);
+	}
+	
+	private Accreditamento getNewAccreditamento(Provider provider) throws Exception{
+		if(provider == null){
+			throw new Exception("Provider non puoò essere NULL");
+		}
+		
+		if(provider.isNew()){
 			throw new Exception("Provider non registrato");
 		}else{
 			
-			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(currentProvider.getId(), AccreditamentoEnum.ACCREDITAMENTO_TIPO_PROVVISORIO);
+			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(provider.getId(), AccreditamentoEnum.ACCREDITAMENTO_TIPO_PROVVISORIO);
 			
 			if(accreditamentiAttivi.isEmpty()){
 				Accreditamento accreditamento = new Accreditamento(AccreditamentoEnum.ACCREDITAMENTO_TIPO_PROVVISORIO);
-				accreditamento.setProvider(currentProvider);
+				accreditamento.setProvider(provider);
 				save(accreditamento);
 				return accreditamento;
 			}else{

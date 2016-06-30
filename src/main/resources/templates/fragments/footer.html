@@ -4,6 +4,9 @@
 	</head>
 	<body th:fragment="footer">
 	
+		<!-- loading image div -->
+		<div id="loadingImg"></div>
+	
 		<!-- link back to top -->
 		<a href="#0" class="cd-top"></a>
 	
@@ -54,6 +57,7 @@
 		<script src="../static/gentella/js/notify/pnotify.nonblock.js"
 				th:src="@{/gentella/js/notify/pnotify.nonblock.js}"></script>
 				
+		<!-- ECM js -->
 		<script src="../static/js/main.js"
 				th:src="@{/js/main.js}"></script>	
 				
@@ -69,11 +73,14 @@
 		<script
 			src="../static/backToTop/js/main.js"
 			th:src="@{/backToTop/js/main.js}"></script>
-			
 		<script
 			src="../static/backToTop/js/modernizr.js"
-			th:src="@{/backToTop/js/modernizr.js}"></script>	
-		
+			th:src="@{/backToTop/js/modernizr.js}"></script>
+			
+		<!-- spin.js loading spinner -->
+		<script
+			src="../static/spinJS/spin.js"
+			th:src="@{/spinJS/spin.js}"></script>	
 		
 		<!-- initialize the validator.js  --> 		
 		<script th:inline="javascript">
@@ -92,8 +99,39 @@
 	        validator.message['repeat'] = [[#{error.repeat}]];
 	        validator.message['complete'] = [[#{error.complete}]];
 	        validator.message['select'] = [[#{error.select}]];
-	        /*]]>*/
-
+	        
+	       /* loading image spinner */
+			var opts = {
+  				lines: 15, // The number of lines to draw
+				length: 20, // The length of each line
+ 				width: 7, // The line thickness
+ 				radius: 57, // The radius of the inner circle
+ 				scale: 0.50, // Scales overall size of the spinner
+				corners: 1, // Corner roundness (0..1)
+ 				color: '#1abc9c', // #rgb or #rrggbb or array of colors
+ 				opacity: 0.15, // Opacity of the lines
+ 				rotate: 0, // The rotation offset
+ 				direction: 1, // 1: clockwise, -1: counterclockwise
+ 				speed: 1, // Rounds per second
+ 				trail: 55, // Afterglow percentage
+ 				fps: 20, // Frames per second when using setTimeout() as a fallback for CSS
+ 				zIndex: 2e9, // The z-index (defaults to 2000000000)
+ 				className: 'spinner', // The CSS class to assign to the spinner
+ 				top: '50%', // Top position relative to parent
+ 				left: '50%', // Left position relative to parent
+ 				shadow: true, // Whether to render a shadow
+ 				hwaccel: false, // Whether to use hardware acceleration
+ 				position: 'absolute', // Element positioning
+			}
+			var target = document.getElementById('loadingImg');
+			var spinner = new Spinner(opts).spin(target);
+			
+			/* show/hide loading spinner */
+			var $loading = $('#loadingImg').hide();
+			$(document)
+			.ajaxStart(function () {$loading.show();})
+  			.ajaxStop(function () {$loading.hide();});
+			
 	        /* validate a field on "blur" event, a 'select' on 'change' event and a '.required' classed multifield on 'keyup':*/
 	        $('form')
 	            .on('blur', 'input[required], input.optional, select.required, input[required][pattern]', validator.checkField)
@@ -128,6 +166,18 @@
 	        	sendNotify();
 		      }
 	        
+	        $('.datatable-responsive-validate').DataTable({
+				"bFilter" : false,
+				"bInfo" : false,
+				"bPaginate" : false,
+				"ordering" : false,
+				"columnDefs": [ {
+					"targets": 4,
+					"width": "1px",
+					"sClass": "center"
+				} ],
+			});
+			
 			$('.datatable-responsive').DataTable({
 				"bFilter" : false,
 				"bInfo" : false,
@@ -161,18 +211,6 @@
 			
 			$('.datatable-responsive-ordering').DataTable({
 				"bFilter" : false,
-			});
-			
-			$('.datatable-responsive-validate').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-				"columnDefs": [ {
-					"targets": 4,
-					"width": "1px",
-					"sClass": "center"
-				} ],
 			});
 			
 			$('.datatable-responsive-form').DataTable({
@@ -213,10 +251,9 @@
 			    "columnDefs": [ 
 			                   	{"targets": [ '_all' ], "orderable": false, "width": "1px" },
 			                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
-			                  ],
-			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+			                  ]
 			});
-			
+	        
 			$('.modal').on('shown.bs.modal', function () {
 				$("#tabella-modale").DataTable()
 	           		.responsive.recalc()
@@ -258,6 +295,14 @@
 				      $(this).removeClass('tada animated');
 				});
 			}
+			
+			$(document).ready(function(){ 
+				$('body').tooltip({
+				    selector: '[data-toggle="tooltip"]'
+				});
+			});
+			
+			/*]]>*/
 		</script>
 	</body>
 </html>

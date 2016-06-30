@@ -102,7 +102,6 @@ public class PersonaController {
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/new")
 	public String newPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
 			@RequestParam(name="ruolo", required = true) String ruolo, RedirectAttributes redirectAttrs){
-
 		try {
 			return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId));
 		}catch (Exception ex){
