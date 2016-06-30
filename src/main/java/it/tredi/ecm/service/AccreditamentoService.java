@@ -8,6 +8,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
 
 public interface AccreditamentoService{
 	public Accreditamento getNewAccreditamentoForCurrentProvider() throws Exception;
+	public Accreditamento getNewAccreditamentoForProvider(Long providerId) throws Exception;
 	public Accreditamento getAccreditamento(Long id);
 	
 	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId);

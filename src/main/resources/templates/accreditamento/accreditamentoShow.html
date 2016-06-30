@@ -11,7 +11,7 @@
 					<div class="x_panel">
 						<div class="x_title">
 							<h2 th:if="${accreditamentoWrapper.accreditamento.new}" th:text="#{label.nuova_domanda}">label.nuova_domanda</h2>
-							<h2 th:unless="${accreditamentoWrapper.accreditamento.new}" th:text="${accreditamentoWrapper.accreditamento.tipoDomanda} + ' - ' + ${accreditamentoWrapper.accreditamento.stato}">Provvisorio - bozza</h2>
+							<h2 th:unless="${accreditamentoWrapper.accreditamento.new}" th:text="${accreditamentoWrapper.accreditamento.tipoDomanda.nome} + ' - ' + ${accreditamentoWrapper.accreditamento.stato.nome}">Provvisorio - bozza</h2>
 							<div class="pull-right buttons-header">	
 								<a class="btn btn-primary pull-right"
 								th:if="${accreditamentoWrapper.canSend}"
