@@ -15,10 +15,10 @@ public class Costanti {
 	 * ACCREDITAMENTO_TIPO_PROVVISORIO
 	 * ACCREDITAMENTO_TIPO_STANDARD
 	 * */
-	public static final String ACCREDITAMENTO_PROVVISORIO = "Provvisorio";
-	public static final String ACCREDITAMENTO_STANDARD = "Standard";
-	public static final String ACCREDITAMENTO_STATO_BOZZA = "Bozza";
-	public static final String ACCREDITAMENTO_STATO_INVIATO = "Inviato";
+//	public static final String ACCREDITAMENTO_PROVVISORIO = "Provvisorio";
+//	public static final String ACCREDITAMENTO_STANDARD = "Standard";
+//	public static final String ACCREDITAMENTO_STATO_BOZZA = "Bozza";
+//	public static final String ACCREDITAMENTO_STATO_INVIATO = "Inviato";
 	
 	
 	public static final List<Integer> IDS_PROVIDER = Arrays.asList(1,2,5,6,7);

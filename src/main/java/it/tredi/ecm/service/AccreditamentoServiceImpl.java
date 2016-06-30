@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 
 @Service
@@ -34,10 +34,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			throw new Exception("Provider non registrato");
 		}else{
 			
-			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAttviForProvider(currentProvider.getId(), Costanti.ACCREDITAMENTO_PROVVISORIO);
+			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(currentProvider.getId(), AccreditamentoEnum.ACCREDITAMENTO_TIPO_PROVVISORIO);
 			
 			if(accreditamentiAttivi.isEmpty()){
-				Accreditamento accreditamento = new Accreditamento(Costanti.ACCREDITAMENTO_PROVVISORIO);
+				Accreditamento accreditamento = new Accreditamento(AccreditamentoEnum.ACCREDITAMENTO_TIPO_PROVVISORIO);
 				accreditamento.setProvider(currentProvider);
 				save(accreditamento);
 				return accreditamento;
@@ -54,22 +54,34 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	};
 	
 	@Override
-	public Accreditamento getAccreditamento() {
-		LOGGER.debug("Caricamento domanda di accreditamento corrente");
-		return null;
-	};
-	
-	@Override
 	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId) {
 		LOGGER.debug("Recupero domande di accreditamento per il provider " + providerId);
-		return accreditamentoRepository.findByProviderId(providerId);
+		Set<Accreditamento> accreditamenti = accreditamentoRepository.findByProviderId(providerId);
+		if(accreditamenti != null) 
+			LOGGER.debug("Trovati " + accreditamenti.size() + " accreditamenti");
+		return accreditamenti;
 	}
 	
+	/**
+	 * Restituisce tutte le domande di accreditamento che hanno una data di scadenza "attiva"
+	 * */
 	@Override
-	public Set<Accreditamento> getAccreditamentiAttviForProvider(Long providerId, String tipoDomanda) {
-		LOGGER.debug("Recupero domande di accreditamento attive per il provider " + providerId);
-		LOGGER.debug("Ricerca domande di accreditamento di tipo: " + tipoDomanda + "con data di scadenza posteriore a: " + LocalDate.now());
+	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(Long providerId, AccreditamentoEnum tipoDomanda) {
+		LOGGER.debug("Recupero domande di accreditamento avviate per il provider " + providerId);
+		LOGGER.debug("Ricerca domande di accreditamento di tipo: " + tipoDomanda.name() + "con data di scadenza posteriore a: " + LocalDate.now());
 		return accreditamentoRepository.findByProviderIdAndTipoDomandaAndDataScadenzaAfter(providerId, tipoDomanda, LocalDate.now());
+	}
+	
+	/**
+	 * Restituisce l'unica domanda di accreditamento che ha una data di scadenza "attiva" e che è in stato "APPROVATO"
+	 * */	
+	@Override
+	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId) {
+		LOGGER.debug("Recupero eventuale accreditamento attivo per il provider: " + providerId);
+		Accreditamento accreditamento = accreditamentoRepository.findOneByProviderIdAndStatoAndDataScadenzaAfter(providerId, AccreditamentoEnum.ACCREDITAMENTO_STATO_APPROVATO, LocalDate.now());
+		if(accreditamento != null)
+			LOGGER.debug("Trovato accreditamento attivo: " + accreditamento.getId() + "  per il provider: " + providerId);
+		return accreditamento;
 	}
 	
 	@Override
@@ -84,7 +96,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		boolean canProvider = true;
 		
 		Set<Accreditamento> accreditamentoList = getAllAccreditamentiForProvider(providerId);
-		
 		for(Accreditamento accreditamento : accreditamentoList){
 			if(accreditamento.isBozza())
 				return false;
@@ -136,7 +147,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//TODO Data Invio ??? cosa succede se la domanda è tornata indietro? bisogna mantenere la data originale?
 		if(accreditamento.getDataInvio() == null)
 			accreditamento.setDataInvio(LocalDate.now());
-		accreditamento.setStato(Costanti.ACCREDITAMENTO_STATO_INVIATO);
+		accreditamento.setStato(AccreditamentoEnum.ACCREDITAMENTO_STATO_INVIATO);
 		accreditamento.getIdEditabili().clear();
 		
 		accreditamentoRepository.save(accreditamento);
