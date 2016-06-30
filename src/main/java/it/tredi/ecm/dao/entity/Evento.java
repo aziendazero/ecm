@@ -26,7 +26,7 @@ public class Evento extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	private ProceduraFormativa tipologia;
 	private String titolo;
-
+	
 	@OneToOne
 	private Obiettivo obiettivoNazionale;
 	@OneToOne
