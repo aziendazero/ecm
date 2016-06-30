@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import it.tredi.ecm.dao.enumlist.StatusProvider;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,6 +69,9 @@ public class Provider extends BaseEntity{
 		this.tipoOrganizzatore = tipoOrganizzatore;
 		this.gruppo = tipoOrganizzatore.getGruppo();
 	}
+	
+	@Enumerated(EnumType.STRING)
+	private StatusProvider status;
 	
 	@ManyToMany
 	@JoinTable(name="provider_files", 

@@ -90,20 +90,6 @@ public class AccreditamentoController {
 		}
 	}
 	
-	/***	Get Accreditamento ATTIVO per provider CORRENTE ***/
-	@RequestMapping("/provider/accreditamento")
-	public String getAccreditamentoAttivo(Model model, RedirectAttributes redirectAttrs){
-		try {
-			Accreditamento accreditamento = accreditamentoService.getAccreditamento();
-			return goToAccreditamento(model, accreditamento);
-		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
-		}
-	}
-	
 	/***	Get Accreditamento {ID}	***/
 	@RequestMapping("/accreditamento/{id}")
 	public String getAccreditamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){

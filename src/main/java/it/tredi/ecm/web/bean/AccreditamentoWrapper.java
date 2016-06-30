@@ -1,7 +1,6 @@
 package it.tredi.ecm.web.bean;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -9,9 +8,9 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
-import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
@@ -102,7 +101,13 @@ public class AccreditamentoWrapper {
 		sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false; 
 	}
 	
-	public void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe){
+	/*
+	 * [A] Almeno 5 componenti (coordinatore incluso) 
+	 * [B] Almeno 5 professionisti Sanitari
+	 * [C] Se settato "Generale" -> Almeno 2 professioni diverse tra i componenti
+	 * [D] Se settato "Settoriale" -> Almeno 2 professioni analoghe a quelle selezionate (almeno che non sia stata selezionate solo 1 professione)
+	 * */
+	public void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitari, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe){
 		comitatoScientificoStato = true;
 		
 		//[A]
@@ -110,7 +115,7 @@ public class AccreditamentoWrapper {
 			comitatoScientificoStato = false;
 			comitatoScientificoErrorMessage = "error.numero_minimo_comitato";
 		}//[B]
-		else if(numeroProfessionistiSanitarie < 5){
+		else if(numeroProfessionistiSanitari < 5){
 			comitatoScientificoStato = false;
 			comitatoScientificoErrorMessage = "error.numero_minimo_professionisti_sanitari";
 		}else{
@@ -144,45 +149,45 @@ public class AccreditamentoWrapper {
 	 * [C] Se settato "Generale" -> Almeno 2 professioni diverse tra i componenti
 	 * [D] Se settato "Settoriale" -> Almeno 2 professioni analoghe a quelle selezionate (almeno che non sia stata selezionate solo 1 professione)
 	 * */
-	private void checkComitatoScientifico(){
-		comitatoScientificoStato = true;
-		
-		//[A]
-		if(componentiComitatoScientifico.size() < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
-			comitatoScientificoStato = false;
-			comitatoScientificoErrorMessage = "error.numero_minimo_comitato";
-		}
-		else{
-			// mi assicuro che sono stati gia' inseriti i dati relativi all'accreditamento
-			if(datiAccreditamentoStato){
-				//Individuo distintamente le professioni dei componenti del comitato
-				Set<Professione> professioniDeiComponenti = new HashSet<Professione>();
-				for(Persona p : componentiComitatoScientifico){
-					professioniDeiComponenti.add(p.getProfessione());
-				}
-				
-				//[C]
-				if(datiAccreditamento.getProfessioniAccreditamento().equalsIgnoreCase("generale")){
-					if(professioniDeiComponenti.size() < 2){
-						comitatoScientificoStato = false;
-						comitatoScientificoErrorMessage = "error.numero_minimo_professioni";
-					}
-				}//[D]
-				else{
-					if(datiAccreditamento.getProfessioniSelezionate().size() > 1){
-						professioniDeiComponenti.retainAll(datiAccreditamento.getProfessioniSelezionate());
-						if(professioniDeiComponenti.size() < 2){
-							comitatoScientificoStato = false;
-							comitatoScientificoErrorMessage = "error.numero_minimo_professioni_settoriale";
-						}
-					}
-				}
-			}else{
-				comitatoScientificoStato = false;
-				comitatoScientificoErrorMessage = "error.datiaccreditamento_mancanti";
-			}
-		}
-	}
+//	private void checkComitatoScientifico(){
+//		comitatoScientificoStato = true;
+//		
+//		//[A]
+//		if(componentiComitatoScientifico.size() < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
+//			comitatoScientificoStato = false;
+//			comitatoScientificoErrorMessage = "error.numero_minimo_comitato";
+//		}
+//		else{
+//			// mi assicuro che sono stati gia' inseriti i dati relativi all'accreditamento
+//			if(datiAccreditamentoStato){
+//				//Individuo distintamente le professioni dei componenti del comitato
+//				Set<Professione> professioniDeiComponenti = new HashSet<Professione>();
+//				for(Persona p : componentiComitatoScientifico){
+//					professioniDeiComponenti.add(p.getProfessione());
+//				}
+//				
+//				//[C]
+//				if(datiAccreditamento.getProfessioniAccreditamento().equalsIgnoreCase("generale")){
+//					if(professioniDeiComponenti.size() < 2){
+//						comitatoScientificoStato = false;
+//						comitatoScientificoErrorMessage = "error.numero_minimo_professioni";
+//					}
+//				}//[D]
+//				else{
+//					if(datiAccreditamento.getProfessioniSelezionate().size() > 1){
+//						professioniDeiComponenti.retainAll(datiAccreditamento.getProfessioniSelezionate());
+//						if(professioniDeiComponenti.size() < 2){
+//							comitatoScientificoStato = false;
+//							comitatoScientificoErrorMessage = "error.numero_minimo_professioni_settoriale";
+//						}
+//					}
+//				}
+//			}else{
+//				comitatoScientificoStato = false;
+//				comitatoScientificoErrorMessage = "error.datiaccreditamento_mancanti";
+//			}
+//		}
+//	}
 	
 	private void setFilesStato(Set<String> filesDelProvider){
 		if(filesDelProvider.contains(FileEnum.FILE_ATTO_COSTITUTIVO))
@@ -201,26 +206,6 @@ public class AccreditamentoWrapper {
 	
 	//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
 	public boolean isCompleta(){
-//		if(providerStato &&
-//				 sedeLegaleStato &&
-//				 sedeOperativaStato &&
-//				 legaleRappresentanteStato &&
-//				 datiAccreditamentoStato &&
-//				 responsabileSegreteriaStato &&
-//				 responsabileAmministrativoStato &&
-//				 comitatoScientificoStato &&
-//				 responsabileSistemaInformaticoStato &&
-//				 responsabileQualitaStato &&
-//				 attoCostitutivoStato &&
-//				 esperienzaFormazioneStato &&
-//				 utilizzoStato &&
-//				 sistemaInformaticoStato &&
-//				 pianoQualitaStato &&
-//				 dichiarazioneLegaleStato)
-//				return true;
-//			else
-//				return false;
-		
 		if(sezione1Stato && sezione2Stato && sezione3Stato)
 			return true;
 		else
@@ -229,7 +214,7 @@ public class AccreditamentoWrapper {
 	
 	//la domanda può essere inviata alla segreteria
 	public boolean isCanSend(){
-		if(isCompleta() && accreditamento.getStato().equals(Costanti.ACCREDITAMENTO_STATO_BOZZA))
+		if(isCompleta() && accreditamento.getStato().equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_BOZZA))
 			return true;
 		else
 			return false;

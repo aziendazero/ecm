@@ -7,13 +7,15 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
 
-import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,8 +25,10 @@ import lombok.Setter;
 public class Accreditamento extends BaseEntity{
 	
 	@Column(name = "tipo_domanda")
-	private String tipoDomanda;
-	private String stato;
+	@Enumerated(EnumType.STRING)
+	private AccreditamentoEnum tipoDomanda;
+	@Enumerated(EnumType.STRING)
+	private AccreditamentoEnum stato;
 	@Column(name = "data_invio")
 	private LocalDate dataInvio;
 	@Column(name = "data_valutazione")
@@ -48,24 +52,20 @@ public class Accreditamento extends BaseEntity{
 	private List<Integer> idEditabili = new ArrayList<Integer>();
 	
 	public Accreditamento(){}
-	public Accreditamento(String tipoDomanda){
+	public Accreditamento(AccreditamentoEnum tipoDomanda){
 		this.tipoDomanda = tipoDomanda;
-		this.stato = Costanti.ACCREDITAMENTO_STATO_BOZZA;
+		this.stato = AccreditamentoEnum.ACCREDITAMENTO_STATO_BOZZA;
 		
 		for (int i = 0; i<100; i++)
 			idEditabili.add(new Integer(i));
 	}
 	
 	public boolean isProvvisorio(){
-		if(tipoDomanda.equals(Costanti.ACCREDITAMENTO_PROVVISORIO))
-			return true;
-		return false;
+		return tipoDomanda.equals(AccreditamentoEnum.ACCREDITAMENTO_TIPO_PROVVISORIO);
 	}
 	
 	public boolean isBozza(){
-		if(stato.equals(Costanti.ACCREDITAMENTO_STATO_BOZZA))
-			return true;
-		return false;
+		return stato.equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_BOZZA);
 	}
 	
 	public boolean isAttivo(){
@@ -75,9 +75,7 @@ public class Accreditamento extends BaseEntity{
 	}
 	
 	public boolean isInviato(){
-		if(stato.equals(Costanti.ACCREDITAMENTO_STATO_INVIATO))
-			return true;
-		return false;
+		return stato.equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_INVIATO);
 	}
 	
 	@Override

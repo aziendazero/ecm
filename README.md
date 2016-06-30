@@ -10,3 +10,4 @@
 * [Thymeleaf](http://www.thymeleaf.org/)
 * [Gentella Admin - Bootstrap admin template](https://github.com/puikinsh/gentelella)
 * [Lombok](https://projectlombok.org/)
+**	è necessario installare il plugin nell'IDE

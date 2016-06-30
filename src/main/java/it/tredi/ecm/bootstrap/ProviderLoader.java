@@ -15,6 +15,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.dao.enumlist.StatusProvider;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.PersonaRepository;
@@ -79,6 +80,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			
 			//provider.addPersona(richiedente);
 			provider.addPersona(legale);
+			provider.setStatus(StatusProvider.INSERITO);
 			
 			provider.setAccount(account);
 			providerRepository.save(provider);
