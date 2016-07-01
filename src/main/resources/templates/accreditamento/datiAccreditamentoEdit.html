@@ -25,6 +25,7 @@
 							
 							<input type="hidden" name="editId" th:value="${datiAccreditamentoWrapper.datiAccreditamento.id}" />
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.accreditamentoId}" /> 
+							<input type="hidden" th:field="${datiAccreditamentoWrapper.provider.id}" /> 
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.idEditabili}" />
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.idOffset}" />	
 							
@@ -32,7 +33,7 @@
 							<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')} ? 'bad'">
 								<label class="control-label col-xs-1 text-right" th:text="${++counter}">1</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
-									for="accreditamento_tipologia"><span th:text="#{label.accreditamento_tipologia}">Accreditamento per tipologia</span><span class="required">*</span></label>
+									for="accreditamento_tipologia"><span th:text="#{label.tipologiaAccreditamento}">Accreditamento per tipologia</span><span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12"
 										id="accreditamento_tipologia">
@@ -118,7 +119,7 @@
 							<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')} ? 'bad'">
 								<label class="control-label col-xs-1 text-right" th:text="${++counter}">3</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
-									for="accreditamento_professioni"><span th:text="#{label.accreditamento_professioni}">Accreditamento per professioni</span><span class="required">*</span></label>
+									for="accreditamento_professioni"><span th:text="#{label.professioniAccreditamento}">Accreditamento per professioni</span><span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12"
 										id="accreditamento_professioni">
@@ -165,7 +166,7 @@
 							<!-- professioni/discipline -->
 							<div class="item form-group">
 								<label class="control-label col-xs-1 text-right" th:text="${++counter}">4</label>
-								<label th:text="#{label.professioni}"
+								<label th:text="#{label.professioni_discipline}"
 									class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="accreditamento_professioni">Professioni</label>
 								<th:block th:if="${#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">

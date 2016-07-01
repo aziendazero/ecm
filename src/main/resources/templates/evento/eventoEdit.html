@@ -15,16 +15,17 @@
 							<th:block th:unless="${#lists.isEmpty(eventoWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formEvento" type="submit"></button>
 							</th:block>
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${eventoWrapper.providerId}/XXX|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/evento/save|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<form id="formEvento" class="form-horizontal form-label-left" th:action="@{|/provider/${eventoWrapper.providerId}/evento/save|}"
+						<form id="formEvento" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/evento/save|}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
 								
 							<input type="hidden" name="editId" th:value="${eventoWrapper.evento.id}" /> 
 							<input type="hidden" th:field="${eventoWrapper.providerId}" /> 
+							<input type="hidden" th:field="${eventoWrapper.accreditamentoId}" /> 
 							<input type="hidden" th:field="${eventoWrapper.idEditabili}" />
 							<input type="hidden" th:field="${eventoWrapper.idOffset}" />
 
@@ -32,7 +33,7 @@
 							<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.proceduraFormativa')} ? 'bad'">
 								<label class="control-label col-xs-1 text-right" th:text="${++counter}">1</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
-									for="procedure_formative_radio"><span th:text="#{label.procedure_formative_indicare}">Indicare il tipo di formativo scelto per l’evento:<span class="required">*</span></span></label>
+									for="procedure_formative_radio"><span th:text="#{label.procedure_formative}">Indicare il tipo di formativo scelto per l’evento:<span class="required">*</span></span></label>
 								<th:block th:if="${#lists.contains(eventoWrapper.idEditabili, counter)}">	
 									<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_radio">
 										<div class="radio" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
@@ -67,7 +68,7 @@
 									for="procedure_formative_titolo"><span th:text="#{label.titolo_programma_formativo}">Titolo del programma formativo<span class="required">*</span></span></label>
 								<th:block th:if="${#lists.contains(eventoWrapper.idEditabili, counter)}"> 
 									<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_titolo">
-										<textarea maxlength="3000" id="title" rows="3" name="titolo" style="resize: none;"></textarea> 
+										<textarea maxlength="3000" id="title" rows="3" name="titolo" style="resize: none;" th:field="${eventoWrapper.evento.titolo}"></textarea> 
 										<div id="counter"></div>											
 									</div>
 								</th:block>
@@ -103,6 +104,7 @@
 													th:label="${categoriaObiettivoNazionale.nome}"
 													th:remove="all-but-first">
 													<option th:each="obiettivoNazionale, row: ${obiettivoNazionaleList}"
+														th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
 														th:value="${obiettivoNazionale.id}" th:text="${obiettivoNazionale.nome}">Obiettivo selezionato</option>
 												</optgroup>
 											</select>
@@ -197,7 +199,7 @@
 									<div class="col-md-4 col-sm-4 col-xs-12"
 										id="evento_professioni-select">
 										<div class="col-xs-12">
-											<select id="professioni" class="selectpicker"
+											<select id="professioni" class="selectpicker multi"
 												multiple="multiple" data-width="100%"
 												data-style="btn-primary" data-actions-box="true"
 												data-size="10" title="Seleziona una professione..."
@@ -209,7 +211,7 @@
 											</select>
 										</div>
 										<div class="col-xs-12">
-											<select id="discipline" class="selectpicker" th:field="${eventoWrapper.evento.discipline}"
+											<select id="discipline" class="selectpicker multi" th:field="${eventoWrapper.evento.discipline}"
 												multiple="multiple" data-width="100%"
 												data-style="btn-success" data-actions-box="true"
 												data-size="10" data-hide-disabled="true"
@@ -315,13 +317,13 @@
 				
 				//gestione generale/settoriale delle professioni
 				$('#generaleProf').on('ifChecked', function(event){
-					$('.selectpicker').selectpicker('selectAll');
+					$('.selectpicker.multi').selectpicker('selectAll');
 					$('button[data-id="professioni"]').prop('disabled', true);
 					$('button[data-id="discipline"]').prop('disabled', true);
 				});
 				
 				$('#settorialeProf').on('ifChecked', function(event){
-					$('.selectpicker').selectpicker('deselectAll');
+					$('.selectpicker.multi').selectpicker('deselectAll');
 					$('button[data-id="professioni"]').prop('disabled', false);
 					$('button[data-id="discipline"]').prop('disabled', false);
 				});
