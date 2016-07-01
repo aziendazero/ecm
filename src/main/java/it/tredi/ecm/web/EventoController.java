@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.hibernate.validator.internal.util.privilegedactions.GetMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Obiettivo;
+import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.EventoService;
@@ -53,6 +52,12 @@ public class EventoController {
 		dataBinder.setDisallowedFields("id");
 	}
 
+	@ModelAttribute("categoriaObiettivoNazionaleList")
+	public CategoriaObiettivoNazionale[] getCategoriaObiettivoNazionaleList(){
+		return CategoriaObiettivoNazionale.values();
+	}
+	
+	
 	@ModelAttribute("obiettivoNazionaleList")
 	public Set<Obiettivo> getObiettiviNazionali(){
 		return obietivoService.getObiettiviNazionali();
@@ -111,6 +116,7 @@ public class EventoController {
 			if(wrapper.getEvento().isNew()){
 				Evento evento = wrapper.getEvento();
 				evento.setProvider(providerService.getProvider(wrapper.getProviderId()));
+				evento.setAccreditamento(accreditamentoService.getAccreditamento(wrapper.getAccreditamentoId()));
 			}
 
 			//validazione
@@ -121,9 +127,10 @@ public class EventoController {
 				return EDIT;
 			}else{
 				eventoService.save(wrapper.getEvento());
+				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
 				redirectAttrs.addAttribute("providerId", wrapper.getProviderId());
-				redirectAttrs.addAttribute("providerId", wrapper.getEvento().getPianoFormativo());
-				return "redirect:/provider/{providerId}/pianoFormativo/{pianoFormativo}";
+				redirectAttrs.addAttribute("pianoFormativo", wrapper.getEvento().getPianoFormativo());
+				return "redirect:/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit";
 			}
 		}catch (Exception ex){
 			LOGGER.error(ex.getMessage(), ex);

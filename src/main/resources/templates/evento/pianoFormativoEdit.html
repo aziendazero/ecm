@@ -29,10 +29,9 @@
 							</thead>
 							<tbody>
 								<tr th:each="evento, row : ${pianoFormativoWrapper?.listaEventi}">
-									<td th:unless="${evento.new}"><a th:text="#{evento.titolo}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/provider/${pianoFormativoWrapper?.providerId}/evento/${evento.id}/edit|}"></a></td>
-									<td th:if="${evento.new}"><a th:text="#{label.evento_comitato}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/provider/${pianoFormativoWrapper?.providerId}/evento/new|}"></a></td>
+									<td><a th:text="${evento.titolo}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/provider/${pianoFormativoWrapper?.providerId}/evento/${evento.id}/edit|}"></a></td>
 									<td th:unless="${evento.new}">
-										<a th:href="@{|/accreditamento/${/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/provider/${pianoFormativoWrapper?.providerId}/evento/delete|}"><span class="fa fa-trash" th:title="#{label.rimuovi_evento}"></span></a>
+										<a th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/provider/${pianoFormativoWrapper?.providerId}/evento/${evento.id}/delete|}"><span class="fa fa-trash" th:title="#{label.rimuovi_evento}"></span></a>
 									</td>
 									<td th:if="${evento.new}">
 										<a><span class="fa fa-trash disabled"></span></a>
