@@ -6,7 +6,6 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 
 public interface AccreditamentoService{
 	public Accreditamento getNewAccreditamentoForCurrentProvider() throws Exception;
@@ -24,6 +23,7 @@ public interface AccreditamentoService{
 	public void removeIdEditabili(Long accrediatementoId, List<Integer> idEditabiliToRemove);
 	public void addIdEditabili(Long accrediatementoId, List<Integer> idEditabiliToAdd);
 	public void inviaDomandaAccreditamento(Long accreditamentoId);
+	public void inserisciPianoFormativo(Long accreditamentoId);
 	
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception;
 }

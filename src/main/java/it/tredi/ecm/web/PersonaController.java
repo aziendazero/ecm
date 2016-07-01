@@ -196,7 +196,6 @@ public class PersonaController {
 					model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
 					return EDIT;
 				}else{
-					
 					personaService.save(personaWrapper.getPersona());
 					
 					// Durante la compilazione della domanda di accreditamento, se si inizia l'inserimento dei responsabili non e' piu'

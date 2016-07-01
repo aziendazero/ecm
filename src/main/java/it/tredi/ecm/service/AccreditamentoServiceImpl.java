@@ -167,6 +167,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		
 		accreditamentoRepository.save(accreditamento);
 	}
+	
+	@Override
+	@Transactional
+	public void inserisciPianoFormativo(Long accreditamentoId) {
+		LOGGER.debug("Inserimento piano formativo per la domanda di Accreditamento " + accreditamentoId);
+		
+		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
+		accreditamento.getIdEditabili().clear();
+		accreditamentoRepository.save(accreditamento);
+	}
 
 	@Override
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception{

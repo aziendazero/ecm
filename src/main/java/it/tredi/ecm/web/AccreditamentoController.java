@@ -128,17 +128,17 @@ public class AccreditamentoController {
 	}
 	
 	/***	INVIA DOMANDA ALLA SEGRETERIA	***/
-	@RequestMapping("/accreditamento/{id}/provider/{providerId}/send")
-	public String inviaDomandaAccreditamento(@PathVariable Long id, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/send")
+	public String inviaDomandaAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
 		try{
-			accreditamentoService.inviaDomandaAccreditamento(id);
+			accreditamentoService.inviaDomandaAccreditamento(accreditamentoId);
 			redirectAttrs.addAttribute("providerId",providerId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.domanda_inviata", "success"));
 			return "redirect:/provider/{providerId}/accreditamento/list";
 		}catch (Exception ex){
 			//TODO gestione eccezione
 			LOGGER.error(ex.getMessage(),ex);
-			redirectAttrs.addAttribute("id",id);
+			redirectAttrs.addAttribute("id",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento/{id}";
 		}
@@ -148,6 +148,7 @@ public class AccreditamentoController {
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/insertPianoFormativo")
 	public String inserisciPianoFormativo(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
 		try{
+			accreditamentoService.inserisciPianoFormativo(accreditamentoId);
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 			redirectAttrs.addAttribute("providerId", providerId);
 			redirectAttrs.addAttribute("pianoFormativo", LocalDate.now().getYear());

@@ -15,7 +15,7 @@
 							<th:block th:unless="${#lists.isEmpty(eventoWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formEvento" type="submit"></button>
 							</th:block>
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/evento/save|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/pianoFormativo/${eventoWrapper.evento.pianoFormativo}/edit|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
@@ -28,6 +28,26 @@
 							<input type="hidden" th:field="${eventoWrapper.accreditamentoId}" /> 
 							<input type="hidden" th:field="${eventoWrapper.idEditabili}" />
 							<input type="hidden" th:field="${eventoWrapper.idOffset}" />
+							<input type="hidden" th:field="${eventoWrapper.evento.pianoFormativo}" /> 
+							
+							<!-- pianoFormativo -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12" for="pianoFormativo" th:text="#{label.piano_formativo}">Piano formativo</label>
+								<th:block th:unless="${eventoWrapper.evento.pianoFormativo}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="pianoFormativo" class="form-control left-align col-md-7 col-xs-12"
+											 th:text="#{label.evento_non_in_piano_formativo}"></label>
+									</div>
+								</th:block>
+								<th:block th:if="${eventoWrapper.evento.pianoFormativo}">
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<label id="pianoFormativo" class="form-control left-align col-md-7 col-xs-12"
+											 th:text="#{label.anno(${#numbers.formatInteger(eventoWrapper.evento.pianoFormativo,0)})} "></label>
+									</div>
+								</th:block>
+							</div>
+							
+							<div class="divider-dashed"></div>
 
 							<!-- procedure formative -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.proceduraFormativa')} ? 'bad'">
@@ -184,7 +204,7 @@
 										</div>
 									</div>
 								</th:block>
-								<div th:if="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')}" class="alert" th:errors="${eventoWrapper.professioniEvento}"></div>								
+								<div th:if="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')}" class="alert" th:errors="${eventoWrapper.evento.professioniEvento}"></div>								
 							</div>
 							
 							<div class="divider-dashed"></div>

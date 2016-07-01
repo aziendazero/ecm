@@ -13,7 +13,9 @@
 						<h2 th:text="#{label.inserimento_piano_formativo(${pianoFormativoWrapper.pianoFormativo})}">Piano formativo relativo all'anno xxx</h2>
 						<div class="pull-right buttons-header">
 							<th:block th:if="${pianoFormativoWrapper.editabile}">
-								<a class="btn btn-success pull-right" th:text="#{label.invia_domanda}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/pianoFormativo/save|}"></a>
+								<a class="btn btn-success pull-right" th:text="#{label.invia_domanda}" 
+								th:if="${pianoFormativoWrapper.canSend}"
+								th:href="@{|/accreditamento/${pianoFormativoWrapper.accreditamentoId}/provider/${pianoFormativoWrapper.providerId}/send|}"></a>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}|}"></a>
 						</div>

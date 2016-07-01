@@ -13,7 +13,7 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DatiEconomici;
 import it.tredi.ecm.dao.entity.File;
 
-@Component
+	@Component
 public class DatiAccreditamentoValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatiAccreditamentoValidator.class);
 	
