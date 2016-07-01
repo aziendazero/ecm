@@ -115,6 +115,10 @@ public class DatiAccreditamentoController {
 	public String saveDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
 											@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
 		try {
+			if(wrapper.getDatiAccreditamento().isNew()){
+				wrapper.setProvider(providerService.getProvider(wrapper.getProvider().getId()));
+			}
+			
 			//TODO getFile da testare se funziona anche senza reload
 			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
 			for(File file : wrapper.getFiles()){
@@ -161,8 +165,8 @@ public class DatiAccreditamentoController {
 	
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapper(DatiAccreditamento datiAccreditamento, long accreditamentoId){
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
-		wrapper.setAccreditamentoId(accreditamentoId);
 		wrapper.setDatiAccreditamento(datiAccreditamento);
+		wrapper.setAccreditamentoId(accreditamentoId);
 		
 		if(datiAccreditamento.isNew()){
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
