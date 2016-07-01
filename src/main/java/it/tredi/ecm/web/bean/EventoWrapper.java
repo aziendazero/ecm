@@ -15,16 +15,8 @@ import lombok.Setter;
 public class EventoWrapper extends Wrapper {
 	private Evento evento;
 	private Long providerId;
-	private Set<Disciplina> discipline = new HashSet<Disciplina>();
-	private Set<ProceduraFormativa> procedureFormative = new HashSet<ProceduraFormativa>();
+	private Long accreditamentoId;
 	
 	public EventoWrapper(){
-	}
-	
-	public Set<Professione> getProfessioniSelezionate(){
-		Set<Professione> professioniSelezionate = new HashSet<Professione>();
-		for(Disciplina d : discipline)
-			professioniSelezionate.add(d.getProfessione());
-		return professioniSelezionate;
 	}
 }

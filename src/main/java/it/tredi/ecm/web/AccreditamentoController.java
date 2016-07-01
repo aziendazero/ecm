@@ -1,5 +1,6 @@
 package it.tredi.ecm.web;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -140,6 +141,23 @@ public class AccreditamentoController {
 			redirectAttrs.addAttribute("id",id);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento/{id}";
+		}
+	}
+	
+	/***	INSERISCI PIANO FORMATIVO	***/
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/insertPianoFormativo")
+	public String inserisciPianoFormativo(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
+		try{
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			redirectAttrs.addAttribute("providerId", providerId);
+			redirectAttrs.addAttribute("pianoFormativo", LocalDate.now().getYear());
+			return "redirect:/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			LOGGER.error(ex.getMessage(),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	}
 	

@@ -1,6 +1,8 @@
 package it.tredi.ecm.dao.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -14,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.Type;
+
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +28,7 @@ import lombok.Setter;
 public class Evento extends BaseEntity{
 	
 	@Enumerated(EnumType.STRING)
-	private ProceduraFormativa tipologia;
+	private ProceduraFormativa proceduraFormativa;
 	private String titolo;
 	
 	@OneToOne
@@ -37,13 +41,32 @@ public class Evento extends BaseEntity{
 
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;
+	@ManyToOne @JoinColumn(name = "accreditamento_id")
+	private Accreditamento accreditamento;
 	
+	private String professioniEvento;
 	@OneToMany 
 	@JoinTable(name = "evento_discipline",
 				joinColumns = @JoinColumn(name = "evento_id"),
 				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
+	
+	@Type(type = "serializable")
+	private List<Integer> idEditabili = new ArrayList<Integer>();
+	
+	public Evento() {
+		for (int i = 0; i<10; i++)
+			idEditabili.add(new Integer(i));
+	}
+	
+	public Set<Professione> getProfessioniSelezionate(){
+		Set<Professione> professioniSelezionate = new HashSet<Professione>();
+		for(Disciplina d : discipline)
+			professioniSelezionate.add(d.getProfessione());
+		return professioniSelezionate;
+	}
+	
 	
 	@Override
     public boolean equals(Object o) {

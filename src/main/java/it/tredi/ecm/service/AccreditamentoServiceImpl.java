@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
@@ -165,5 +166,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.getIdEditabili().clear();
 		
 		accreditamentoRepository.save(accreditamento);
+	}
+
+	@Override
+	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception{
+		LOGGER.debug("Recupero datiAccreditamento per la domanda " + accreditamentoId);
+		DatiAccreditamento datiAccreditamento = accreditamentoRepository.getDatiAccreditamentoForAccreditamento(accreditamentoId);
+		if(datiAccreditamento == null)
+				throw new Exception("Dati non presenti");
+				
+		return datiAccreditamento;
 	}
 }

@@ -1,8 +1,10 @@
 package it.tredi.ecm.web;
 
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.hibernate.validator.internal.util.privilegedactions.GetMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,7 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Obiettivo;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ObiettivoService;
@@ -68,24 +71,14 @@ public class EventoController {
 		return new EventoWrapper();
 	}
 
-	@RequestMapping("/provider/{providerId}/pianoFormativo/{anno}")
-	public String showPianoFormativo(@PathVariable Long providerId, @PathVariable int pianoFormativo, 
+	/*
+	 * INSERIMENTO EVENTO IN PIANO FORMATIVO
+	 * */
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/evento/new")
+	public String newEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @RequestParam(name="pianoFormativo", required = true) int pianoFormativo,
 			Model model, RedirectAttributes redirectAttrs){
 		try{
-			model.addAttribute("eventiPianoFormativo", eventoService.getAllEventiFromProviderInPianoFormativo(providerId, pianoFormativo));
-			return "evento/pianoFormativoShow";
-		}catch (Exception ex){
-			LOGGER.error("showPianoFormativo: " + pianoFormativo + " del provider: " + providerId, ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
-		}
-	}
-
-	@RequestMapping("/provider/{providerId}/evento/new")
-	public String newEvento(@PathVariable Long providerId, @RequestParam(name="pianoFormativo", required = false) int pianoFormativo,
-			Model model, RedirectAttributes redirectAttrs){
-		try{
-			return goToEdit(model, prepareEventoWrapper(createEvento(pianoFormativo), providerId));
+			return goToEdit(model, prepareEventoWrapper(createEvento(pianoFormativo), providerId, accreditamentoId),redirectAttrs);
 		}catch (Exception ex){
 			LOGGER.error(ex.getMessage(), ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -93,11 +86,14 @@ public class EventoController {
 		}
 	}
 
-	@RequestMapping("/provider/{providerId}/evento/{id}/edit")
-	public String editEvento(@PathVariable Long providerId, @PathVariable Long id,
+	/*
+	 * MODIFICA EVENTO IN PIANO FORMATIVO
+	 * */
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/evento/{id}/edit")
+	public String editEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
 		try{
-			return goToEdit(model, prepareEventoWrapper(eventoService.getEvento(id)));
+			return goToEdit(model, prepareEventoWrapper(eventoService.getEvento(id),0L,accreditamentoId),redirectAttrs);
 		}catch (Exception ex){
 			LOGGER.error(ex.getMessage(), ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -105,7 +101,10 @@ public class EventoController {
 		}
 	}
 
-	@RequestMapping(value = "/provider/{providerId}/evento/save", method=RequestMethod.POST)
+	/*
+	 * SALVATAGGIO EVENTO IN PIANO FORMATIVO
+	 * */
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/evento/save", method=RequestMethod.POST)
 	public String saveEvento(@ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result, 
 			Model model, RedirectAttributes redirectAttrs){
 		try{
@@ -118,6 +117,7 @@ public class EventoController {
 
 			if(result.hasErrors()){
 				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
+				populateListFromAccreditamento(model, wrapper.getAccreditamentoId());
 				return EDIT;
 			}else{
 				eventoService.save(wrapper.getEvento());
@@ -128,13 +128,27 @@ public class EventoController {
 		}catch (Exception ex){
 			LOGGER.error(ex.getMessage(), ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return EDIT;
+			return EDIT;//TODO tornare in home...non in EDIT
 		}
 	}
 
-	private String goToEdit(Model model, EventoWrapper wrapper){
-		model.addAttribute("eventoWrapper", wrapper);
-		return EDIT;
+	private String goToEdit(Model model, EventoWrapper wrapper, RedirectAttributes redirectAttrs){
+		try {
+			model.addAttribute("eventoWrapper", wrapper);
+			populateListFromAccreditamento(model, wrapper.getAccreditamentoId());
+			return EDIT;
+		}catch (Exception ex){
+			LOGGER.error(ex.getMessage(),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+	
+	private void populateListFromAccreditamento(Model model, Long accreditamentoId) throws Exception{
+		DatiAccreditamento datiAccreditamento = accreditamentoService.getDatiAccreditamentoForAccreditamento(accreditamentoId);
+		model.addAttribute("proceduraFormativaList", datiAccreditamento.getProcedureFormative());
+		model.addAttribute("professioneList", datiAccreditamento.getProfessioniSelezionate());
+		model.addAttribute("disciplinaList", datiAccreditamento.getDiscipline());
 	}
 
 	private Evento createEvento(Integer pianoFormativo){
@@ -146,11 +160,15 @@ public class EventoController {
 
 	//utilizzato nel caso di save
 	private EventoWrapper prepareEventoWrapper(Evento evento){
-		return prepareEventoWrapper(evento, 0);
+		return prepareEventoWrapper(evento, 0L, 0L);
+	}
+
+	private EventoWrapper prepareEventoWrapper(Evento evento, long providerId){
+		return prepareEventoWrapper(evento, providerId, 0L);
 	}
 
 	//utilizzato nel caso di edit e new
-	private EventoWrapper prepareEventoWrapper(Evento evento, long providerId){
+	private EventoWrapper prepareEventoWrapper(Evento evento, long providerId, long accreditamentoId){
 		EventoWrapper wrapper = new EventoWrapper();
 		wrapper.setEvento(evento);
 
@@ -159,13 +177,16 @@ public class EventoController {
 		}else{
 			wrapper.setProviderId(evento.getProvider().getId());
 		}
-
-		Accreditamento accreditamento = accreditamentoService.getAccreditamentoAttivoForProvider(wrapper.getProviderId());
-		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
-
-		wrapper.setDiscipline(datiAccreditamento.getDiscipline());
-		wrapper.setProcedureFormative(datiAccreditamento.getProcedureFormative());
-
+		
+		if(accreditamentoId != 0){
+			wrapper.setAccreditamentoId(accreditamentoId);
+			wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_EVENTO_PIANO_FORMATIVO), evento.getIdEditabili());
+		}
+		else{
+			wrapper.setAccreditamentoId(evento.getAccreditamento().getId());
+			wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_EVENTO), evento.getIdEditabili());
+		}
+		
 		return wrapper;
 	}
 

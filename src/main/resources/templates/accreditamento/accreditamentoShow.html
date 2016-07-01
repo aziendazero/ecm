@@ -14,9 +14,9 @@
 							<h2 th:unless="${accreditamentoWrapper.accreditamento.new}" th:text="${accreditamentoWrapper.accreditamento.tipoDomanda.nome} + ' - ' + ${accreditamentoWrapper.accreditamento.stato.nome}">Provvisorio - bozza</h2>
 							<div class="pull-right buttons-header">	
 								<a class="btn btn-primary pull-right"
-								th:if="${accreditamentoWrapper.canSend}"
-								th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"
-								th:text="#{label.invia_domanda}">label.invia_domanda</a>
+								th:if="${accreditamentoWrapper.canInsertPianoFormativo}"
+								th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/insertPianoFormativo|}"
+								th:text="#{label.inserisci_piano_formativo}">label.inserisci_piano_formativo</a>
 							</div>
 							<div class="clearfix"></div>
 						</div>

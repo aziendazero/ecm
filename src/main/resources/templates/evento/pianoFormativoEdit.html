@@ -10,10 +10,10 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.inserimento_piano_formativo}">Piano formativo relativo all'anno xxx</h2>
+						<h2 th:text="#{label.inserimento_piano_formativo(${pianoFormativoWrapper.pianoFormativo})}">Piano formativo relativo all'anno xxx</h2>
 						<div class="pull-right buttons-header">
-							<th:block th:unless="${#lists.isEmpty(pianoFormativoWrapper?.idEditabili)}">
-								<a class="btn btn-success pull-right" th:text="#{label.salva}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/pianoFormativo/save|}"></a>
+							<th:block th:if="${pianoFormativoWrapper.editabile}">
+								<a class="btn btn-success pull-right" th:text="#{label.invia_domanda}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/pianoFormativo/save|}"></a>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}|}"></a>
 						</div>
@@ -29,10 +29,10 @@
 							</thead>
 							<tbody>
 								<tr th:each="evento, row : ${pianoFormativoWrapper?.listaEventi}">
-									<td th:unless="${evento.new}"><a th:text="#{evento.titolo}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamento.id}/provider/${pianoFormativoWrapper?.provider.id}/evento/${evento.id}/edit|}"></a></td>
-									<td th:if="${evento.new}"><a th:text="#{label.evento_comitato}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamento.id}/provider/${pianoFormativoWrapper?.provider.id}/evento/new|}"></a></td>
+									<td th:unless="${evento.new}"><a th:text="#{evento.titolo}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/provider/${pianoFormativoWrapper?.providerId}/evento/${evento.id}/edit|}"></a></td>
+									<td th:if="${evento.new}"><a th:text="#{label.evento_comitato}" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/provider/${pianoFormativoWrapper?.providerId}/evento/new|}"></a></td>
 									<td th:unless="${evento.new}">
-										<a th:href="@{|/accreditamento/${/accreditamento/${pianoFormativoWrapper?.accreditamento.id}/provider/${pianoFormativoWrapper?.provider.id}/evento/delete|}"><span class="fa fa-trash" th:title="#{label.elimina}"></span></a>
+										<a th:href="@{|/accreditamento/${/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/provider/${pianoFormativoWrapper?.providerId}/evento/delete|}"><span class="fa fa-trash" th:title="#{label.rimuovi_evento}"></span></a>
 									</td>
 									<td th:if="${evento.new}">
 										<a><span class="fa fa-trash disabled"></span></a>
@@ -40,7 +40,7 @@
 								</tr>
 							</tbody>
 						</table>
-						<a th:if="${pianoFormativoWrapper?.pianoFormativoEditabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamento.id}/provider/${pianoFormativoWrapper?.provider.id}/evento/new|}"></a>
+						<a th:if="${pianoFormativoWrapper.editabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${pianoFormativoWrapper?.accreditamentoId}/provider/${pianoFormativoWrapper?.providerId}/evento/new?pianoFormativo=${pianoFormativoWrapper?.pianoFormativo}|}"></a>
 					</div>
 				</div>
 			</div>

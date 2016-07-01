@@ -10,17 +10,6 @@ public class Costanti {
 	public static final String SEDE_LEGALE = "SedeLegale";
 	public static final String SEDE_OPERATIVA = "SedeOperativa";
 	
-	/*
-	 * AccreditamentoEnum
-	 * ACCREDITAMENTO_TIPO_PROVVISORIO
-	 * ACCREDITAMENTO_TIPO_STANDARD
-	 * */
-//	public static final String ACCREDITAMENTO_PROVVISORIO = "Provvisorio";
-//	public static final String ACCREDITAMENTO_STANDARD = "Standard";
-//	public static final String ACCREDITAMENTO_STATO_BOZZA = "Bozza";
-//	public static final String ACCREDITAMENTO_STATO_INVIATO = "Inviato";
-	
-	
 	public static final List<Integer> IDS_PROVIDER = Arrays.asList(1,2,5,6,7);
 	public static final List<Integer> IDS_SEDE_LEGALE = Arrays.asList(8,9,10,11,12,13,14);
 	public static final List<Integer> IDS_SEDE_OPERATIVA = Arrays.asList(15,16,17,18,19,20,21);
@@ -33,5 +22,8 @@ public class Costanti {
 	public static final List<Integer> IDS_RESPONSABILE_SISTEMA_INFORMATICO = Arrays.asList(74,75,76,77,78,79,80,81);
 	public static final List<Integer> IDS_RESPONSABILE_QUALITA = Arrays.asList(82,83,84,85,86,87,88,89);
 	public static final List<Integer> IDS_ALLEGATI = Arrays.asList(90,91,92,93,94,95);
+	
+	public static final List<Integer> IDS_EVENTO_PIANO_FORMATIVO = Arrays.asList(1,2,3,4,5,6);
+	public static final List<Integer> IDS_EVENTO = Arrays.asList(1,2,3,4,5,6,7,8,9);
 	
 }
