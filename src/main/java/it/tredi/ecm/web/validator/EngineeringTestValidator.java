@@ -34,6 +34,4 @@ public class EngineeringTestValidator {
 
 		fileValidator.validate(fileDaFirmare, errors, prefix + "fileDaFirmare");
 	}
-
-	//TODO validate mypay
 }

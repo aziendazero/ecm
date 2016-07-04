@@ -1,6 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.web.bean.EngineeringWrapper;
@@ -35,6 +34,8 @@ public class EngineeringController {
 	private ProviderService providerService;
 	@Autowired
 	private FileService fileService;
+	@Autowired
+	private EventoService eventoService;
 	@Autowired
 	private EngineeringTestValidator engineeringTestValidator;
 
@@ -69,7 +70,7 @@ public class EngineeringController {
 	@RequestMapping("/engineering/test/mypay")
 	public String engineeringTestMypay(Model model, RedirectAttributes redirectAttrs){
 		try {
-			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(providerService.getProvider()));
+			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
 			return "engineering/mypayTest";
 		}catch (Exception ex){
 			//TODO gestione eccezione
@@ -111,11 +112,6 @@ public class EngineeringController {
 		}
 	}
 
-	//TODO mypaySave
-
-
-
-
 	private EngineeringWrapper prepareEngineeringWrapper(Provider provider) {
 		EngineeringWrapper wrapper = new EngineeringWrapper();
 		wrapper.setProvider(provider);
@@ -126,7 +122,6 @@ public class EngineeringController {
 				wrapper.setFileDaFirmare(file);
 		}
 
-		wrapper.setListaEventiDaPagare(new HashSet<Evento>());
 		return wrapper;
 	}
 

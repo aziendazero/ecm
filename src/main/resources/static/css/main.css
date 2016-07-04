@@ -24,17 +24,17 @@ body.nav-md .container.body .right_col.main{
 /* immagini logo nella barra e nel footer */
 .logo-64{
 	height: 64px;
-	width: 64px; 
+	width: 64px;
 }
 
 .logo-32{
 	height: 32px;
-	width: 32px; 
+	width: 32px;
 }
 
 /* rimuovo la scroll bar dentro al form */
 .form_wizard .stepContainer {
-	overflow-x: visible; 
+	overflow-x: visible;
 }
 
 .icon{
@@ -49,17 +49,17 @@ body.nav-md .container.body .right_col.main{
 	body.nav-md .container.body .right_col.main{
 	margin-left: 0;
 	margin-right: 0;
-	} 
+	}
 }
 
 .dropdown-menu {
 	max-width: 100%;
-	min-width: 100%;	
+	min-width: 100%;
 }
 
 .dropdown-menu span {
-	max-width: 95%; 
-    overflow: hidden; 
+	max-width: 95%;
+    overflow: hidden;
     text-overflow: ellipsis;
     display: block;
    	margin-right: 0 !important; /* TODO: trovare modo per togliere important*/
@@ -76,7 +76,7 @@ body.nav-md .container.body .right_col.main{
 	background-color: #eee;
 	opacity: 1;
 	color: #bbb;
-	margin-bottom: 0;	
+	margin-bottom: 0;
 }
 
 .clickable {
@@ -273,7 +273,7 @@ table.datatable-responsive-search-validation thead .sorting_asc:after {
 	margin-right: 0;
 	background: transparent;
     border: none;
-    
+
 }
 
 .tooltip {
@@ -302,11 +302,24 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before, table.dataT
 textarea {
 	width: 100%;
 }
- 
+
 .dropdown-header.optgroup-primary {
-	background-color: #337ab7;	
-} 
+	background-color: #337ab7;
+}
 
 .dropdown-header.optgroup-success {
-	background-color: #1abc9c;	
-} 
+	background-color: #1abc9c;
+}
+
+.label-pagato {
+	color: #73879C;
+	font-weight: bold;
+}
+
+.btn-mypay {
+	margin: 0;
+}
+
+th.center {
+	text-align: left;
+}
