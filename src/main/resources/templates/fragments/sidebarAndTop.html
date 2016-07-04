@@ -39,7 +39,8 @@
 							<!-- div sec:authentication="principal.authorities">roles</div-->
 						</h3>
 						<ul class="nav side-menu">
-							<li th:if="${#authorization.expression('hasAuthority(''PROVIDER_READ'')')}">
+							<!-- li th:if="${#authorization.expression('hasAuthority(''PROVIDER_READ'')')}" -->
+							<li th:if="${#authentication.principal.hasProfile('PROVIDER')}">
 								<a>
 									<i class="fa fa-home"></i> <span th:text="#{label.provider}">label.provider</span>
 									<span class="fa fa-chevron-down"></span>
@@ -58,7 +59,7 @@
 									 -->
 								</ul>
 							</li>
-							<li>
+							<li th:if="${#authentication.principal.hasProfile('ADMIN')}">
 								<a>
 									<i class="fa fa-edit"></i> <span th:text="#{label.segreteria}">label.segreteria</span> 
 									<span class="fa fa-chevron-down"></span>

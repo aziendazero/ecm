@@ -10,6 +10,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import it.tredi.ecm.dao.entity.Role;
+import it.tredi.ecm.dao.enumlist.RoleEnum;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.repository.ProfileRepository;
@@ -41,27 +42,27 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			
 		if(accounts.isEmpty()){
 			Role role_readProvider = new Role();
-			role_readProvider.setName("PROVIDER_READ");
+			role_readProvider.setName(RoleEnum.PROVIDER_SHOW.name());
 			role_readProvider.setDescription("PROVIDER (LETTURA)");
 			roleRepository.save(role_readProvider);
 			
 			Role role_writeProvider = new Role();
-			role_writeProvider.setName("PROVIDER_WRITE");
+			role_writeProvider.setName(RoleEnum.PROVIDER_EDIT.name());
 			role_writeProvider.setDescription("PROVIDER (SCRITTURA)");
 			roleRepository.save(role_writeProvider);
 			
 			Role role_readUser = new Role();
-			role_readUser.setName("USER_READ");
+			role_readUser.setName(RoleEnum.USER_SHOW.name());
 			role_readUser.setDescription("UTENTI (LETTURA)");
 			roleRepository.save(role_readUser);
 			
 			Role role_writeUser = new Role();
-			role_writeUser.setName("USER_WRITE");
+			role_writeUser.setName(RoleEnum.USER_EDIT.name());
 			role_writeUser.setDescription("UTENTI (SCRITTURA)");
 			roleRepository.save(role_writeUser);
 			
 			Role role_readUserAll = new Role();
-			role_readUserAll.setName("USER_READ_ALL");
+			role_readUserAll.setName(RoleEnum.USER_SHOW_ALL.name());
 			role_readUserAll.setDescription("UTENTI (LETTURA TUTTI)");
 			roleRepository.save(role_readUserAll);
 			

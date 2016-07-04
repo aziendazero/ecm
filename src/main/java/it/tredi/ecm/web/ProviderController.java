@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -84,6 +85,7 @@ public class ProviderController {
 		}
 	}
 	
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#id)")
 	@RequestMapping("provider/{id}/show")
 	public String showProvider(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try {
@@ -101,6 +103,7 @@ public class ProviderController {
 	}
 	
 	/***	EDIT	***/
+	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
 	@RequestMapping("provider/{id}/edit")
 	public String editProvider(@PathVariable Long id, Model model){
 		try {	
@@ -112,6 +115,7 @@ public class ProviderController {
 		}
 	}
 	
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#id)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/edit")
 	public String editProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try {
@@ -147,6 +151,7 @@ public class ProviderController {
 		}
 	}
 	
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping("/provider/list")
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		try {

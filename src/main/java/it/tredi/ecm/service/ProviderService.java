@@ -17,4 +17,6 @@ public interface ProviderService {
 	
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper);
+	
+	public Long getAccountIdForProvider(Long providerId);
 }

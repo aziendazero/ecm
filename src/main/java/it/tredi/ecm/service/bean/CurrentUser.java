@@ -2,6 +2,7 @@ package it.tredi.ecm.service.bean;
 
 import java.util.Collection;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import it.tredi.ecm.dao.entity.Profile;
@@ -30,6 +31,22 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 
 		result += "]";
 		return result;
+	}
+	
+	public boolean hasProfile(String profileName){
+		for(Profile profile : account.getProfiles()){
+			if(profile.getName().equals(profileName))
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean hasRole(String roleName){
+		for(GrantedAuthority role : getAuthorities()){
+			if(role.getAuthority().equals(roleName))
+				return true;
+		}
+		return false;
 	}
 
 }

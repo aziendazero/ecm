@@ -163,6 +163,10 @@ public class ProviderServiceImpl implements ProviderService {
 		personaService.save(richiedente);
 		provider.addPersona(legale);
 		personaService.save(legale);
-		
+	}
+	
+	@Override
+	public Long getAccountIdForProvider(Long providerId) {
+		return providerRepository.getAccountIdById(providerId);
 	}
 }
