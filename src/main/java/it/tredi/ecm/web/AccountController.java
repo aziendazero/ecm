@@ -36,7 +36,7 @@ public class AccountController {
         dataBinder.setDisallowedFields("id");
     }
 
-	@RequestMapping("user/list")
+	@RequestMapping("/user/list")
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		try {
 			model.addAttribute("accountList", accountService.getAllUsers());
@@ -48,7 +48,7 @@ public class AccountController {
 		}
 	}
 	
-	@RequestMapping("user/{id}/edit")
+	@RequestMapping("/user/{id}/edit")
 	public String editUser(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try{
 			model.addAttribute("account", accountService.getUserById(id));
@@ -61,7 +61,7 @@ public class AccountController {
 		}
 	}
 	
-	@RequestMapping("user/new")
+	@RequestMapping("/user/new")
 	public String newUser(Model model, RedirectAttributes redirectAttrs){
 		try {
 			model.addAttribute("account", new Account());
@@ -74,7 +74,7 @@ public class AccountController {
 		}
 	}
 	
-	@RequestMapping(value = "user/save", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/save", method = RequestMethod.POST)
 	public String saveUser(@ModelAttribute("account") Account account, BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		try {
 			accountValidator.validate(account, result);
@@ -100,7 +100,7 @@ public class AccountController {
 		}
 	}
 	
-	@RequestMapping(value = "user/resetPassword", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST)
 	public String resetPassword(@RequestParam("reset_email") String email){
 		if(!email.isEmpty())
 			try{

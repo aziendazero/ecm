@@ -2,6 +2,7 @@ package it.tredi.ecm.web;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ public class PianoFormativoController {
 	@Autowired
 	private EventoService eventoService;
 
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit")
 	public String editPianoFormativo(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Integer pianoFormativo, 
 			Model model, RedirectAttributes redirectAttrs){
@@ -33,6 +35,7 @@ public class PianoFormativoController {
 		}
 	}
 
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativo}")
 	public String showPianoFormativo(@PathVariable Long providerId, @PathVariable Integer pianoFormativo, 
 			Model model, RedirectAttributes redirectAttrs){

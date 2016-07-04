@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +29,7 @@ import it.tredi.ecm.web.bean.SedeWrapper;
 import it.tredi.ecm.web.validator.SedeValidator;
 
 @Controller
+//TODO modificare evitando di chiamare getCurrentProvider
 public class SedeController {
 	
 	private final String EDIT = "sede/sedeEdit";
@@ -121,6 +123,7 @@ public class SedeController {
 		return new SedeWrapper();
 	}
 	
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/sede/copia")
 	public String getCopiaSedeLegale(@PathVariable Long accreditamentoId, Model model){
 		try {
@@ -148,6 +151,7 @@ public class SedeController {
 	}
 	
 	/***	NEW / EDIT 	***/
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/sede/new")
 	public String getNewSedeCurrentProvider(@PathVariable Long accreditamentoId, @RequestParam("tipologiaSede") String tipologiaSede, 
 												Model model, RedirectAttributes redirectAttrs) throws Exception{
@@ -161,6 +165,7 @@ public class SedeController {
 		}
 	}
 	
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/sede/{id}/edit")
 	public String editSede(@PathVariable Long accreditamentoId, @PathVariable Long id, 
 							@RequestParam("tipologiaSede") String tipologiaSede, Model model){

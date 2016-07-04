@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -67,6 +68,7 @@ public class PersonaController {
 		dataBinder.setDisallowedFields("id");
 	}
 
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/anagraficaList")
 	@ResponseBody
 	public Set<Anagrafica>getElencoComuni(@PathVariable Long providerId){
@@ -99,6 +101,7 @@ public class PersonaController {
 
 	/***	NUOVA PERSONA ***/
 	/* (passando ruolo e providerId) */	
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/new")
 	public String newPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
 			@RequestParam(name="ruolo", required = true) String ruolo, RedirectAttributes redirectAttrs){
@@ -118,7 +121,7 @@ public class PersonaController {
 	 * Agganciamo una Angrafica diversa alla Persona
 	 * 
 	 * */
-	//@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/setAnagrafica")
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{ruolo}/setAnagrafica")
 	public String setAnagrafica(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
 									@PathVariable("ruolo") String ruolo,
@@ -148,6 +151,7 @@ public class PersonaController {
 	}
 
 	/***	EDIT PERSONA ***/
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/edit")
 	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
 		try {	
@@ -228,6 +232,7 @@ public class PersonaController {
 		}
 	}
 	
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/delete")
 	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId, 
 														Model model, RedirectAttributes redirectAttrs){
