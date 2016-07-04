@@ -42,7 +42,7 @@ import it.tredi.ecm.web.validator.PersonaValidator;
 @Controller
 public class PersonaController {
 	private static Logger LOGGER = LoggerFactory.getLogger(PersonaController.class);
-	
+
 	private final String EDIT = "persona/personaEdit";
 
 	@Autowired
@@ -70,40 +70,43 @@ public class PersonaController {
 	@RequestMapping("/provider/{providerId}/anagraficaList")
 	@ResponseBody
 	public Set<Anagrafica>getElencoComuni(@PathVariable Long providerId){
-		Set<Anagrafica> anagrafiche = personaService.getAllAnagraficheByProviderId(providerId); 
+		Set<Anagrafica> anagrafiche = personaService.getAllAnagraficheByProviderId(providerId);
 		return anagrafiche;
 	}
-	
+
 	@ModelAttribute("professioneList")
 	public Set<Professione> getAllProfessioni(){
 		return professioneService.getAllProfessioni();
 	}
-	
+
 	@ModelAttribute("personaWrapper")
 	public PersonaWrapper getPersonaWrapper(@RequestParam(value="editId",required = false) Long id,
 			@RequestParam(value="editId_Anagrafica",required = false) Long anagraficaId){
 		if(id != null || anagraficaId != null){
 			Persona persona = (id != null) ? personaService.getPersona(id) : new Persona();
+			boolean isLookup = false;
 			if(anagraficaId == null){
 				//NUOVA ANGARFICA
 				persona.setAnagrafica(null);
+				isLookup = false;
 			}else if(!anagraficaId.equals(persona.getAnagrafica().getId())){
 				//LOOKUP ANAGRAFICA ESISTENTE
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
+				isLookup = true;
 			}
 
-			return preparePersonaWrapper(persona); 	
+			return preparePersonaWrapper(persona, isLookup);
 		}
 		return new PersonaWrapper();
 	}
 
 	/***	NUOVA PERSONA ***/
-	/* (passando ruolo e providerId) */	
+	/* (passando ruolo e providerId) */
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/new")
 	public String newPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
 			@RequestParam(name="ruolo", required = true) String ruolo, RedirectAttributes redirectAttrs){
 		try {
-			return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId));
+			return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId, false));
 		}catch (Exception ex){
 			//TODO gestione eccezione
 			LOGGER.error(ex.getMessage(),ex);
@@ -116,7 +119,7 @@ public class PersonaController {
 	/***	SET ANAGRAFICA	***/
 	/*
 	 * Agganciamo una Angrafica diversa alla Persona
-	 * 
+	 *
 	 * */
 	//@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/setAnagrafica")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{ruolo}/setAnagrafica")
@@ -125,7 +128,8 @@ public class PersonaController {
 										@RequestParam(name="anagraficaId", required = false) Long anagraficaId){
 		try {
 			Persona persona = null;
-			
+			boolean isLookup = false;
+
 			//Ogni provider HA più persone con il ruolo COMPONENTE_COMITATO_SCIENTIFICO...mentre per tutti gli altri ruoli esiste solo 1 persona
 			if(!ruolo.equals(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO.name()))
 				persona = personaService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
@@ -135,10 +139,12 @@ public class PersonaController {
 			}
 			if(anagraficaId == null){
 				persona.setAnagrafica(new Anagrafica());
+				isLookup = false;
 			}else{
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
+				isLookup = true;
 			}
-			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
+			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId, isLookup));
 		}catch (Exception ex){
 			//TODO gestione eccezione
 			LOGGER.error(ex.getMessage(),ex);
@@ -150,12 +156,12 @@ public class PersonaController {
 	/***	EDIT PERSONA ***/
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/edit")
 	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
-		try {	
+		try {
 			Persona persona = personaService.getPersona(id);
 			if(persona == null){
 				persona = createPersona(providerId);
 			}
-			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId));
+			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId, false));
 		}catch (Exception ex){
 			//TODO gestione eccezione
 			LOGGER.error(ex.getMessage(),ex);
@@ -170,12 +176,12 @@ public class PersonaController {
 			RedirectAttributes redirectAttrs, Model model){
 		try {
 			if(personaWrapper.getPersona().isNew()){
-				Persona persona = personaWrapper.getPersona(); 
+				Persona persona = personaWrapper.getPersona();
 				persona.setRuolo(personaWrapper.getRuolo());
 				Provider provider = providerService.getProvider(personaWrapper.getProviderId());
 				persona.setProvider(provider);
 			}
-			
+
 			//TODO getFile da testare se funziona anche senza reload
 			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a personaId
 			for(File file : personaWrapper.getFiles()){
@@ -197,17 +203,17 @@ public class PersonaController {
 					return EDIT;
 				}else{
 					personaService.save(personaWrapper.getPersona());
-					
+
 					// Durante la compilazione della domanda di accreditamento, se si inizia l'inserimento dei responsabili non e' piu'
-					// consentita la modifica del legale rappresentante 
-					if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() || 
-							personaWrapper.getPersona().isComponenteComitatoScientifico() || personaWrapper.getPersona().isCoordinatoreComitatoScientifico()|| 
+					// consentita la modifica del legale rappresentante
+					if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() ||
+							personaWrapper.getPersona().isComponenteComitatoScientifico() || personaWrapper.getPersona().isCoordinatoreComitatoScientifico()||
 							personaWrapper.getPersona().isResponsabileSistemaInformatico() || personaWrapper.getPersona().isResponsabileQualita())
 						accreditamentoService.removeIdEditabili(personaWrapper.getAccreditamentoId(), Costanti.IDS_LEGALE_RAPPRESENTANTE);
 
 					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito('"+ personaWrapper.getPersona().getRuolo().getNome() +"')", "success"));
-					
+
 					if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())
 						redirectAttrs.addFlashAttribute("currentTab","tab2");
 					return "redirect:/accreditamento/{accreditamentoId}";
@@ -227,9 +233,9 @@ public class PersonaController {
 			return EDIT;
 		}
 	}
-	
+
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/delete")
-	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId, 
+	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId,
 														Model model, RedirectAttributes redirectAttrs){
 		try{
 			personaService.delete(personaId);
@@ -239,7 +245,7 @@ public class PersonaController {
 			LOGGER.error(ex.getMessage(),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 		}
-		
+
 		redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 		redirectAttrs.addFlashAttribute("currentTab","tab2");
 		return "redirect:/accreditamento/{accreditamentoId}";
@@ -262,11 +268,11 @@ public class PersonaController {
 		return EDIT;
 	}
 
-	private PersonaWrapper preparePersonaWrapper(Persona persona){
-		return preparePersonaWrapper(persona,0,0);
+	private PersonaWrapper preparePersonaWrapper(Persona persona, boolean isLookup){
+		return preparePersonaWrapper(persona,0,0, isLookup);
 	}
 
-	private PersonaWrapper preparePersonaWrapper(Persona persona, long accreditamentoId, long providerId){
+	private PersonaWrapper preparePersonaWrapper(Persona persona, long accreditamentoId, long providerId, boolean isLookup){
 		PersonaWrapper personaWrapper = new PersonaWrapper();
 
 		personaWrapper.setPersona(persona);
@@ -289,7 +295,7 @@ public class PersonaController {
 		if(accreditamentoId != 0){
 			List<Integer> accreditamentoIdEditabili = accreditamentoService.getIdEditabili(accreditamentoId);
 			if(persona.isLegaleRappresentante())
-				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_LEGALE_RAPPRESENTANTE), accreditamentoIdEditabili);		
+				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_LEGALE_RAPPRESENTANTE), accreditamentoIdEditabili);
 			else if(persona.isDelegatoLegaleRappresentante())
 				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_DELEGATO_LEGALE_RAPPRESENTANTE), accreditamentoIdEditabili);
 			else if(persona.isResponsabileSegreteria())
@@ -303,6 +309,8 @@ public class PersonaController {
 			else if(persona.isResponsabileQualita())
 				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_RESPONSABILE_QUALITA), accreditamentoIdEditabili);
 		}
+
+		personaWrapper.setIsLookup(isLookup);
 
 		return personaWrapper;
 	}
