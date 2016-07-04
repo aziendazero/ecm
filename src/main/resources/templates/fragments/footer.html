@@ -3,13 +3,13 @@
 	<head>
 	</head>
 	<body th:fragment="footer">
-	
+
 		<!-- loading image div -->
 		<div id="loadingImg"></div>
-	
+
 		<!-- link back to top -->
 		<a href="#0" class="cd-top"></a>
-	
+
 		<!-- Bootstrap -->
 		<script src="../static/gentella/js/bootstrap.min.js"
 				th:src="@{/gentella/js/bootstrap.min.js}"></script>
@@ -22,7 +22,7 @@
 		<!-- form wizard -->
 		<script src="../static/gentella/js/wizard/jquery.smartWizard.js"
 				th:src="@{/gentella/js/wizard/jquery.smartWizard.js}"></script>
-				
+
 		<!-- DataTable -->
 		<script src="../static/gentella/js/datatables/jquery.dataTables.min.js"
 				th:src="@{/gentella/js/datatables/jquery.dataTables.min.js}"></script>
@@ -32,23 +32,23 @@
 				th:src="@{/gentella/js/datatables/dataTables.buttons.min.js}"></script>
 		<script src="../static/gentella/js/datatables/buttons.bootstrap.min.js"
 				th:src="@{/gentella/js/datatables/buttons.bootstrap.min.js}"></script>
-			
+
 		<!--  DataTable responsive -->
 		<script src="../static/gentella/js/datatables/dataTables.responsive.min.js"
-				th:src="@{/gentella/js/datatables/dataTables.responsive.min.js}"></script>	
-			
+				th:src="@{/gentella/js/datatables/dataTables.responsive.min.js}"></script>
+
 		<!-- iCheck -->
 		<script src="../static/gentella/js/icheck/icheck.min.js"
-				th:src="@{/gentella/js/icheck/icheck.min.js}"></script>		
-				
+				th:src="@{/gentella/js/icheck/icheck.min.js}"></script>
+
 		<!-- Switch dei form -->
 		<script src="../static/gentella/js/switchery/switchery.min.js"
 				th:src="@{/gentella/js/switchery/switchery.min.js}"></script>
-				
-		<!-- Custom -->			
+
+		<!-- Custom -->
 		<script src="../static/gentella/js/custom.js"
 				th:src="@{/gentella/js/custom.js}"></script>
-				
+
 		<!-- PNotify -->
 		<script src="../static/gentella/js/notify/pnotify.core.js"
 				th:src="@{/gentella/js/notify/pnotify.core.js}"></script>
@@ -56,33 +56,33 @@
 				th:src="@{/gentella/js/notify/pnotify.buttons.js}"></script>
 		<script src="../static/gentella/js/notify/pnotify.nonblock.js"
 				th:src="@{/gentella/js/notify/pnotify.nonblock.js}"></script>
-				
+
 		<!-- ECM js -->
 		<script src="../static/js/main.js"
-				th:src="@{/js/main.js}"></script>	
-				
+				th:src="@{/js/main.js}"></script>
+
 		<!-- bootstrap-select -->
 		<script	src="../static/bootstrapSelect/js/bootstrapSelect.min.js"
 			th:src="@{/bootstrapSelect/js/bootstrapSelect.min.js}"></script>
-		
+
 		<script
 			src="../static/bootstrapSelect/js/bootstrapSelect.js"
 			th:src="@{/bootstrapSelect/js/bootstrapSelect.js}"></script>
-		
-		<!-- back to top -->	
+
+		<!-- back to top -->
 		<script
 			src="../static/backToTop/js/main.js"
 			th:src="@{/backToTop/js/main.js}"></script>
 		<script
 			src="../static/backToTop/js/modernizr.js"
 			th:src="@{/backToTop/js/modernizr.js}"></script>
-			
+
 		<!-- spin.js loading spinner -->
 		<script
 			src="../static/spinJS/spin.js"
-			th:src="@{/spinJS/spin.js}"></script>	
-		
-		<!-- initialize the validator.js  --> 		
+			th:src="@{/spinJS/spin.js}"></script>
+
+		<!-- initialize the validator.js  -->
 		<script th:inline="javascript">
 	        /*<![CDATA[*/
 	        validator.message['invalid'] = [[#{error.invalid}]];
@@ -99,7 +99,7 @@
 	        validator.message['repeat'] = [[#{error.repeat}]];
 	        validator.message['complete'] = [[#{error.complete}]];
 	        validator.message['select'] = [[#{error.select}]];
-	        
+
 	       /* loading image spinner */
 			var opts = {
   				lines: 15, // The number of lines to draw
@@ -125,13 +125,13 @@
 			}
 			var target = document.getElementById('loadingImg');
 			var spinner = new Spinner(opts).spin(target);
-			
+
 			/* show/hide loading spinner */
 			var $loading = $('#loadingImg').hide();
 			$(document)
 			.ajaxStart(function () {$loading.show();})
   			.ajaxStop(function () {$loading.hide();});
-			
+
 	        /* validate a field on "blur" event, a 'select' on 'change' event and a '.required' classed multifield on 'keyup':*/
 	        $('form')
 	            .on('blur', 'input[required], input.optional, select.required, input[required][pattern]', validator.checkField)
@@ -150,22 +150,22 @@
 	            if (!validator.checkAll($(this))) {
 	                submit = false;
 	            }
-	
+
 	            if (submit)
 	                this.submit();
 	            return false;
 	        }); */
-        
+
 	        $('#alerts').change(function() {
 	            validator.defaults.alerts = (this.checked) ? false : true;
 	            if (this.checked)
 	              $('form .alert').remove();
 	          }).prop('checked', false);
-	        
+
 	        if([[${message}]]){
 	        	sendNotify();
 		      }
-	        
+
 	        $('.datatable-responsive-validate').DataTable({
 				"bFilter" : false,
 				"bInfo" : false,
@@ -177,14 +177,14 @@
 					"sClass": "center"
 				} ],
 			});
-			
+
 			$('.datatable-responsive').DataTable({
 				"bFilter" : false,
 				"bInfo" : false,
 				"bPaginate" : false,
 				"ordering" : false,
 			});
-			
+
 			$('.datatable-responsive-check').DataTable({
 				"bFilter" : false,
 				"bInfo" : false,
@@ -196,7 +196,7 @@
 					"sClass": "center"
 				} ],
 			});
-			
+
 			$('.datatable-responsive-componenti-comitato').DataTable({
 				"bFilter" : false,
 				"bInfo" : false,
@@ -208,7 +208,7 @@
 					"sClass": "center"
 				} ],
 			});
-			
+
 			$('.datatable-responsive-piano-formativo').DataTable({
 				"bFilter" : false,
 				"bInfo" : false,
@@ -220,11 +220,11 @@
 					"sClass": "center"
 				} ],
 			});
-			
+
 			$('.datatable-responsive-ordering').DataTable({
 				"bFilter" : false,
 			});
-			
+
 			$('.datatable-responsive-form').DataTable({
 				"bFilter" : false,
 				"bPaginate": false,
@@ -235,7 +235,7 @@
 			    "columnDefs": [ { "targets": [ '_all' ], "orderable": false }, { "targets": [ 0 ], "orderData": [ 0, 1 ] } ],
 			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
 			});
-			
+
 			$('.datatable-responsive-search').DataTable({
 				"bInfo" : false,
 				"bPaginate" : false,
@@ -244,14 +244,14 @@
 			    scroller: true,
 				//colonna del pulsante seleziona
 			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
-			    "columnDefs": [ 
+			    "columnDefs": [
 			                   	{"targets": [ '_all' ], "orderable": false },
 			                    {"targets": 3, "orderable": false, "width": "1px"},
 			                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
 			                  ],
 			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
 			});
-			
+
 			$('.datatable-responsive-search-validation').DataTable({
 				"bInfo" : false,
 				"bPaginate" : false,
@@ -260,24 +260,36 @@
 			    scroller: true,
 				//colonna del pulsante seleziona
 			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
-			    "columnDefs": [ 
+			    "columnDefs": [
 			                   	{"targets": [ '_all' ], "orderable": false, "width": "1px" },
 			                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
 			                  ]
 			});
-	        
+
+			$('.datatable-responsive-mypay').DataTable({
+				"bFilter" : false,
+				"bInfo" : false,
+				"bPaginate" : false,
+				"ordering" : false,
+				"columnDefs": [ {
+					"targets": 4,
+					"width": "1px",
+					"sClass": "center"
+				} ]
+			});
+
 			$('.modal').on('shown.bs.modal', function () {
 				$("#tabella-modale").DataTable()
 	           		.responsive.recalc()
 	           		.columns.adjust();
-		    }); 
-			
+		    });
+
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 				$($.fn.dataTable.tables(true)).DataTable()
 		           	.responsive.recalc()
 		           	.columns.adjust();
-		    }); 
-			
+		    });
+
 			function sendNotify(){
 				var notify = new PNotify({
 					title: [[${message} == null ? '' : #{${message?.titolo}}]],
@@ -286,10 +298,10 @@
 					hide: false,
                     buttons: {
                     	sticker: false
-                    }                             
+                    }
             	});
 			};
-			
+
 			function sendNotifyStatic(titolo, testo, tipo){
 				var notify = new PNotify({
 					title: titolo,
@@ -298,22 +310,22 @@
 					hide: false,
                     buttons: {
                     	sticker: false
-                    }                             
+                    }
             	});
 			};
-			
+
 			function animate(element){
 				element.addClass('tada animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
 				      $(this).removeClass('tada animated');
 				});
 			}
-			
-			$(document).ready(function(){ 
+
+			$(document).ready(function(){
 				$('body').tooltip({
 				    selector: '[data-toggle="tooltip"]'
 				});
 			});
-			
+
 			/*]]>*/
 		</script>
 	</body>

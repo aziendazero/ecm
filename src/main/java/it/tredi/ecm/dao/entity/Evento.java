@@ -26,16 +26,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Evento extends BaseEntity{
-	
+
 	@Enumerated(EnumType.STRING)
 	private ProceduraFormativa proceduraFormativa;
 	private String titolo;
-	
+
 	@OneToOne
 	private Obiettivo obiettivoNazionale;
 	@OneToOne
-	private Obiettivo obiettivoRegionale; 
-	
+	private Obiettivo obiettivoRegionale;
+
 	@Column(name="anno_piano_formativo")
 	private Integer pianoFormativo;
 
@@ -43,30 +43,34 @@ public class Evento extends BaseEntity{
 	private Provider provider;
 	@ManyToOne @JoinColumn(name = "accreditamento_id")
 	private Accreditamento accreditamento;
-	
+
 	private String professioniEvento;
-	@OneToMany 
+	@OneToMany
 	@JoinTable(name = "evento_discipline",
 				joinColumns = @JoinColumn(name = "evento_id"),
 				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
-	
+
+	private Double costo = 0.00;
+
+	private Boolean pagato = false;
+
 	@Type(type = "serializable")
 	private List<Integer> idEditabili = new ArrayList<Integer>();
-	
+
 	public Evento() {
 		for (int i = 0; i<10; i++)
 			idEditabili.add(new Integer(i));
 	}
-	
+
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
 		for(Disciplina d : discipline)
 			professioniSelezionate.add(d.getProfessione());
 		return professioniSelezionate;
 	}
-	
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
