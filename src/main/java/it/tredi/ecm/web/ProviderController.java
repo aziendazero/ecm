@@ -74,7 +74,7 @@ public class ProviderController {
 	/*** GLOBAL MODEL ATTRIBUTES***/
 	
 	/***	SHOW	***/
-	@RequestMapping("provider/show")
+	@RequestMapping("/provider/show")
 	public String showProviderFromCurrentUser(Model model, RedirectAttributes redirectAttrs){
 		try {
 			return goToShowProvider(model, providerService.getProvider());
@@ -86,7 +86,7 @@ public class ProviderController {
 	}
 	
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#id)")
-	@RequestMapping("provider/{id}/show")
+	@RequestMapping("/provider/{id}/show")
 	public String showProvider(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try {
 			return goToShowProvider(model, providerService.getProvider(id));
@@ -104,7 +104,7 @@ public class ProviderController {
 	
 	/***	EDIT	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
-	@RequestMapping("provider/{id}/edit")
+	@RequestMapping("/provider/{id}/edit")
 	public String editProvider(@PathVariable Long id, Model model){
 		try {	
 			model.addAttribute("provider",providerService.getProvider(id));

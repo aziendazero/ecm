@@ -7,6 +7,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -64,6 +65,7 @@ public class AccreditamentoController {
 	}
 	
 	/***	Get Lista Accreditamenti per {providerID}	***/
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/accreditamento/list")
 	public String getAllAccreditamentiForProvider(@PathVariable("providerId") Long providerId, Model model, RedirectAttributes redirectAttrs){
 		try {
@@ -92,6 +94,7 @@ public class AccreditamentoController {
 	}
 	
 	/***	Get Accreditamento {ID}	***/
+	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#id)")
 	@RequestMapping("/accreditamento/{id}")
 	public String getAccreditamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try {
@@ -128,6 +131,7 @@ public class AccreditamentoController {
 	}
 	
 	/***	INVIA DOMANDA ALLA SEGRETERIA	***/
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/send")
 	public String inviaDomandaAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
 		try{
@@ -145,6 +149,7 @@ public class AccreditamentoController {
 	}
 	
 	/***	INSERISCI PIANO FORMATIVO	***/
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/insertPianoFormativo")
 	public String inserisciPianoFormativo(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
 		try{

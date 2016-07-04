@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -79,6 +80,7 @@ public class EventoController {
 	/*
 	 * INSERIMENTO EVENTO IN PIANO FORMATIVO
 	 * */
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/evento/new")
 	public String newEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @RequestParam(name="pianoFormativo", required = true) int pianoFormativo,
 			Model model, RedirectAttributes redirectAttrs){
@@ -94,6 +96,7 @@ public class EventoController {
 	/*
 	 * MODIFICA EVENTO IN PIANO FORMATIVO
 	 * */
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/evento/{id}/edit")
 	public String editEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
@@ -142,6 +145,7 @@ public class EventoController {
 	/*
 	 * ELIMINAZIONE DI UN EVENTO IN PIANO FORMATIVO
 	 * */
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/evento/{id}/delete")
 	public String removeEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
