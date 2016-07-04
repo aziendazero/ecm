@@ -26,4 +26,5 @@ public interface AccreditamentoService{
 	public void inserisciPianoFormativo(Long accreditamentoId);
 	
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception;
+	public Long getProviderIdForAccreditamento(Long accreditamentoId);
 }

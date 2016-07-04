@@ -187,4 +187,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				
 		return datiAccreditamento;
 	}
+	
+	@Override
+	public Long getProviderIdForAccreditamento(Long accreditamentoId) {
+		return accreditamentoRepository.getProviderIdById(accreditamentoId);
+	}
 }
