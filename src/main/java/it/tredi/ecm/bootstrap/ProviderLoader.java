@@ -42,9 +42,9 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		LOGGER.info("BOOTSTRAP ECM - Initializing DATABASE...");
 		
-		Set<Provider> providers = providerRepository.findAll();
+		Provider provider = providerRepository.findOneByPartitaIva("00578261208");
 		
-		if(providers.isEmpty()){
+		if(provider == null){
 			Persona richiedente = new Persona();
 			richiedente.getAnagrafica().setCognome("Rossi");
 			richiedente.getAnagrafica().setNome("Mario");
@@ -73,9 +73,9 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
 			Account account = accountRepository.findOneByUsername("admin").orElse(null);
 			
-			Provider provider = new Provider();
+			provider = new Provider();
 			provider.setDenominazioneLegale("3D Informatica");
-			provider.setCodiceFiscale("00578261208");
+			provider.setPartitaIva("00578261208");
 			provider.setTipoOrganizzatore(TipoOrganizzatore.AZIENDE_SANITARIE);
 			
 			//provider.addPersona(richiedente);

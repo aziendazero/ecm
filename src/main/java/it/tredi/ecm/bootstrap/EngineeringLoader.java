@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.StatusProvider;
@@ -20,6 +21,7 @@ import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PersonaRepository;
+import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
 
 @Component
@@ -34,6 +36,8 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 		private EventoRepository eventoRepository;
 		@Autowired
 		private AccountRepository accountRepository;
+		@Autowired
+		private ProfileRepository profileRepository;
 
 		@Override
 		@Transactional
@@ -43,6 +47,10 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 			Provider provider = providerRepository.findOneByPartitaIva("01234567890");
 
 			if(provider == null) {
+				Profile engineeringProfile = new Profile();
+				engineeringProfile.setName("ENGINEERING");
+				profileRepository.save(engineeringProfile);
+				
 				//Account
 				Account account = new Account();
 				account.setEmail("demo@eng.it");
@@ -53,7 +61,8 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				account.setChangePassword(false);
 				account.setExpiresDate(null);
 				account.setLocked(false);
-
+				account.getProfiles().add(engineeringProfile);
+				
 				accountRepository.save(account);
 
 				//Provider

@@ -30,6 +30,9 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 			result = result.substring(0,x);
 
 		result += "]";
+		if(result.length() == 2)
+			result = "nessun profilo";
+		
 		return result;
 	}
 	
