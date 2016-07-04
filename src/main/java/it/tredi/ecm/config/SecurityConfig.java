@@ -16,25 +16,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-	
+
 	@Autowired
 	private UserDetailsService userDetailsService;
-	
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		 .antMatchers("/", "/gentella/**", "/shared/**", "/main", "/providerRegistration", "/user/resetPassword", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**").permitAll()
-		 
+		 .antMatchers("/", "/gentella/**", "/engineering/**", "/shared/**", "/main", "/providerRegistration", "/user/resetPassword", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**").permitAll()
+
 //		 .antMatchers("/user/{id}/edit").hasAuthority("USER_EDIT")
 //		 .antMatchers("/user/save").hasAuthority("USER_EDIT")
 //		 .antMatchers("/user/list").hasAuthority("USER_READ_ALL")
-		 
+
 		 .antMatchers("/admin/**").hasAuthority("ADMIN")
          .anyRequest().fullyAuthenticated()
          .and()
 			 .formLogin()
 			 	.loginPage("/login").failureUrl("/login?error")
-			 	.usernameParameter("username").passwordParameter("password")	
+			 	.usernameParameter("username").passwordParameter("password")
 			 	.permitAll()
          .and()
 	         .logout()
@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	     .and()
 	     	.rememberMe();
 	}
-	
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth
