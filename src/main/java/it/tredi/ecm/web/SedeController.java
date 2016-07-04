@@ -177,8 +177,11 @@ public class SedeController {
 				Provider currentProvider = providerService.getProvider();
 				if(currentProvider != null){
 					if(currentProvider.getSedeLegale() != null && currentProvider.getSedeOperativa() != null){
-						if(currentProvider.getSedeLegale().getId().equals(currentProvider.getSedeOperativa().getId()))
-							sedeWrapper.setIdEditabili(new ArrayList<>());
+						if(currentProvider.getSedeLegale().getId().equals(currentProvider.getSedeOperativa().getId())){
+							List<Integer> list = new ArrayList<Integer>();
+							list.add(0);
+							sedeWrapper.setIdEditabili(list);
+						}
 					}
 				}
 			}
@@ -235,6 +238,7 @@ public class SedeController {
 			sedeWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_SEDE_OPERATIVA), accreditamentoService.getIdEditabili(accreditamentoId));
 		
 		sedeWrapper.setAccreditamentoId(accreditamentoId);
+		
 		return sedeWrapper;
 	}
 }
