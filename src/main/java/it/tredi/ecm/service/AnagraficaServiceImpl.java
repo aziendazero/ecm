@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -27,5 +28,11 @@ public class AnagraficaServiceImpl implements AnagraficaService {
 	public Anagrafica getAnagrafica(Long id) {
 		LOGGER.debug("Recupero anagrafica " + id);
 		return anagraficaRepository.findOne(id);
+	}
+	
+	@Override
+	public Optional<Long> getAnagraficaIdWithCodiceFiscaleForProvider(String codiceFiscale, Long providerId) {
+		LOGGER.debug("Controllo univocità dell'anagrafica con codice fiscale " + codiceFiscale + " per il provider " + providerId);
+		return anagraficaRepository.findOneByCodiceFiscaleAndProviderId(codiceFiscale, providerId);
 	}
 }
