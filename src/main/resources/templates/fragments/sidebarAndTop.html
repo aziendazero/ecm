@@ -60,13 +60,25 @@
 							</li>
 							<li>
 								<a>
-									<i class="fa fa-edit"></i> <span th:text="#{label.segreteria}">label.segreteria</span> 
+									<i class="fa fa-edit"></i> <span th:text="#{label.segreteria}">label.segreteria</span>
 									<span class="fa fa-chevron-down"></span>
 								</a>
 								<ul class="nav child_menu" style="display: none">
 									<li><a th:href="@{/provider/list}" th:text="#{label.provider}">label.provider</a></li>
 									<li><a th:href="@{/user/list}" th:text="#{label.utenti}">label.utenti</a></li>
 									<li><a th:href="@{/profile/list}" th:text="#{label.profili}">label.profili</a></li>
+								</ul>
+							</li>
+
+							<!-- ENGEENERING TEST firma & mypay -->
+							<li>
+								<a>
+									<i class="fa fa-wheelchair"></i> <span th:text="#{engineering.engineering}">label.engineering</span>
+									<span class="fa fa-chevron-down"></span>
+								</a>
+								<ul class="nav child_menu" style="display: none">
+									<li><a th:href="@{/engineering/test/firma}" th:text="#{engineering.test_firma}">engineering.test_firma</a></li>
+									<li><a th:href="@{/engineering/test/mypay}" th:text="#{engineering.test_mypay}">engineering.test_mypay</a></li>
 								</ul>
 							</li>
 						</ul>
@@ -84,7 +96,7 @@
 					<div class="nav toggle">
 						<a id="menu_toggle"><i class="fa fa-bars"></i></a>
 					</div>
-					
+
 					<ul class="nav navbar-nav navbar-right">
 		              <li class="">
 		                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">

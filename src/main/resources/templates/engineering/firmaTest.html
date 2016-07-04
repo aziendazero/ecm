@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{engineering.test_firma}">engineering.test_firma</h2>
+						<div class="pull-right buttons-header">
+							<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formFirma" type="submit"></button>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<form id="formFirma" class="form-horizontal form-label-left" th:action="@{|/engineering/test/firma/save|}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+
+							<input type="hidden" name="editId" th:value="${engineeringWrapper.provider.id}" />
+
+							<!-- firma 1 -->
+							<th:block th:include="fragments/allegati :: allegati(engineeringWrapper, false, fileDaFirmare, null, null, true)" ></th:block>
+
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -38,9 +38,9 @@ import it.tredi.ecm.web.validator.DatiAccreditamentoValidator;
 @Controller
 public class DatiAccreditamentoController {
 	private static Logger LOGGER = LoggerFactory.getLogger(DatiAccreditamentoController.class);
-	
+
 	private final String EDIT = "accreditamento/datiAccreditamentoEdit";
-	
+
 	@Autowired
 	private DatiAccreditamentoService datiAccreditamentoService;
 	@Autowired
@@ -55,12 +55,12 @@ public class DatiAccreditamentoController {
 	private ProviderService providerService;
 	@Autowired
 	private AccreditamentoService accreditamentoService;
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
-	
+
 	@ModelAttribute("datiAccreditamentoWrapper")
 	public DatiAccreditamentoWrapper getDatiAccreditamentoWrapper(@RequestParam(value="editId",required = false) Long id){
 		if(id != null){
@@ -68,17 +68,17 @@ public class DatiAccreditamentoController {
 		}
 		return new DatiAccreditamentoWrapper();
 	}
-	
+
 	@ModelAttribute("proceduraFormativaList")
 	public ProceduraFormativa[] getListaProceduraFormativa(){
 		return ProceduraFormativa.values();
 	}
-	
+
 	@ModelAttribute("professioneList")
 	public Set<Professione> getAllProfessioni(){
 		return professioneService.getAllProfessioni();
 	}
-	
+
 	@ModelAttribute("disciplinaList")
 	public Set<Disciplina> getAllDiscipline(){
 		return disciplinaService.getAllDiscipline();
@@ -96,7 +96,7 @@ public class DatiAccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	}
-	
+
 	/*** EDIT ***/
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/{id}/edit")
 	public String editDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
@@ -109,7 +109,7 @@ public class DatiAccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	};
-	
+
 	/*** SAVE ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/save", method = RequestMethod.POST)
 	public String saveDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
@@ -118,7 +118,7 @@ public class DatiAccreditamentoController {
 			if(wrapper.getDatiAccreditamento().isNew()){
 				wrapper.setProvider(providerService.getProvider(wrapper.getProvider().getId()));
 			}
-			
+
 			//TODO getFile da testare se funziona anche senza reload
 			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
 			for(File file : wrapper.getFiles()){
@@ -133,9 +133,9 @@ public class DatiAccreditamentoController {
 						wrapper.setOrganigramma(fileService.getFile(file.getId()));
 				}
 			}
-			
+
 			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
-			
+
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return EDIT;
@@ -153,21 +153,21 @@ public class DatiAccreditamentoController {
 			return EDIT;
 		}
 	}
-	
+
 	private String goToEdit(Model model, DatiAccreditamentoWrapper wrapper){
 		model.addAttribute("datiAccreditamentoWrapper", wrapper);
 		return EDIT;
 	}
-	
+
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapper(DatiAccreditamento datiAccreditamento){
 		return prepareDatiAccreditamentoWrapper(datiAccreditamento, 0);
 	}
-	
+
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapper(DatiAccreditamento datiAccreditamento, long accreditamentoId){
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
 		wrapper.setDatiAccreditamento(datiAccreditamento);
 		wrapper.setAccreditamentoId(accreditamentoId);
-		
+
 		if(datiAccreditamento.isNew()){
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 			wrapper.setProvider(accreditamento.getProvider());
@@ -185,9 +185,9 @@ public class DatiAccreditamentoController {
 					wrapper.setOrganigramma(file);
 			}
 		}
-		
+
 		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_DATI_ACCREDITAMENTO), accreditamentoService.getIdEditabili(accreditamentoId));
-		
+
 		return wrapper;
 	};
 }
