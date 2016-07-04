@@ -16,10 +16,10 @@ import it.tredi.ecm.web.bean.PianoFormativoWrapper;
 public class PianoFormativoController {
 
 	private static final Logger LOGGER = Logger.getLogger(PianoFormativoController.class); 
-	
+
 	@Autowired
 	private EventoService eventoService;
-		
+
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit")
 	public String editPianoFormativo(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Integer pianoFormativo, 
 			Model model, RedirectAttributes redirectAttrs){
@@ -32,7 +32,7 @@ public class PianoFormativoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativo}")
 	public String showPianoFormativo(@PathVariable Long providerId, @PathVariable Integer pianoFormativo, 
 			Model model, RedirectAttributes redirectAttrs){
@@ -45,15 +45,15 @@ public class PianoFormativoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	private PianoFormativoWrapper preparePianoFormativoWrapper(Long providerId, Integer pianoFormativo, Long accreditamentoId){
 		PianoFormativoWrapper wrapper = new PianoFormativoWrapper();
-		
+
 		wrapper.setAccreditamentoId(accreditamentoId);
 		wrapper.setProviderId(providerId);
 		wrapper.setListaEventi(eventoService.getAllEventiFromProviderInPianoFormativo(providerId, pianoFormativo));
 		wrapper.setPianoFormativo(String.valueOf(pianoFormativo));
-		
+
 		return wrapper;
 	}
 }

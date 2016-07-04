@@ -19,4 +19,11 @@ public class PianoFormativoWrapper{
 	public boolean isEditabile(){
 		return true;
 	}
+	
+	public boolean isCanSend(){
+		if(listaEventi != null && !listaEventi.isEmpty())
+			return true;
+		else
+			return false;
+	}
 }

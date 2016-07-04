@@ -213,15 +213,6 @@ public class AccreditamentoWrapper {
 	}
 
 	//la domanda può essere inviata alla segreteria
-	//TODO cambiare logica
-	public boolean isCanSend(){
-		if(isCompleta() && accreditamento.getStato().equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_BOZZA))
-			return true;
-		else
-			return false;
-	}
-
-	//la domanda può essere inviata alla segreteria
 	public boolean isCanInsertPianoFormativo(){
 		if(isCompleta() && accreditamento.getStato().equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_BOZZA))
 			return true;

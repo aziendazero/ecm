@@ -28,6 +28,7 @@ import it.tredi.ecm.service.ObiettivoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.validator.EventoValidator;
 
 @Controller
 public class EventoController {
@@ -43,9 +44,8 @@ public class EventoController {
 	@Autowired
 	private ObiettivoService obietivoService;
 
-	//TODO
-	//	@Autowired
-	//	private EventoValidator eventoValidator;
+	@Autowired
+	private EventoValidator eventoValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -119,7 +119,7 @@ public class EventoController {
 				evento.setAccreditamento(accreditamentoService.getAccreditamento(wrapper.getAccreditamentoId()));
 			}
 
-			//validazione
+			eventoValidator.validate(wrapper.getEvento(), result, "evento.", true);
 
 			if(result.hasErrors()){
 				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
@@ -136,6 +136,22 @@ public class EventoController {
 			LOGGER.error(ex.getMessage(), ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;//TODO tornare in home...non in EDIT
+		}
+	}
+	
+	/*
+	 * ELIMINAZIONE DI UN EVENTO IN PIANO FORMATIVO
+	 * */
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/evento/{id}/delete")
+	public String removeEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
+			Model model, RedirectAttributes redirectAttrs){
+		try{
+			eventoService.delete(id);
+			return "redirect:/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit";
+		}catch (Exception ex){
+			LOGGER.error(ex.getMessage(), ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
 		}
 	}
 

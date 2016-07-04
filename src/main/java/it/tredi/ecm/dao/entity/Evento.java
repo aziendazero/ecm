@@ -67,7 +67,6 @@ public class Evento extends BaseEntity{
 		return professioniSelezionate;
 	}
 	
-	
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
