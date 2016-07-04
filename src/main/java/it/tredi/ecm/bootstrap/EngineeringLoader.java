@@ -1,7 +1,5 @@
 package it.tredi.ecm.bootstrap;
 
-import java.util.Set;
-
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -20,7 +18,6 @@ import it.tredi.ecm.dao.enumlist.StatusProvider;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
-import it.tredi.ecm.dao.repository.PersonaRepository;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
 
@@ -47,9 +44,10 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 			Provider provider = providerRepository.findOneByPartitaIva("01234567890");
 
 			if(provider == null) {
-				Profile engineeringProfile = new Profile();
-				engineeringProfile.setName("ENGINEERING");
-				profileRepository.save(engineeringProfile);
+				//Profilo
+				Profile profile = new Profile();
+				profile.setName("ENGINEERING");
+				profileRepository.save(profile);
 				
 				//Account
 				Account account = new Account();
@@ -57,12 +55,10 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				account.setUsername("engineering");
 				account.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
 				account.setEnabled(true);
-
 				account.setChangePassword(false);
 				account.setExpiresDate(null);
 				account.setLocked(false);
-				account.getProfiles().add(engineeringProfile);
-				
+				account.getProfiles().add(profile);
 				accountRepository.save(account);
 
 				//Provider
@@ -72,7 +68,6 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				provider.setPartitaIva("01234567890");
 				provider.setTipoOrganizzatore(TipoOrganizzatore.AZIENDE_SANITARIE);
 				provider.setStatus(StatusProvider.INSERITO);
-
 				provider.setAccount(account);
 				providerRepository.save(provider);
 
@@ -83,7 +78,6 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				evento.setProceduraFormativa(ProceduraFormativa.FAD);
 				evento.setPagato(false);
 				evento.setProvider(provider);
-
 				eventoRepository.save(evento);
 
 				Evento evento2 = new Evento();
@@ -92,7 +86,6 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				evento2.setProceduraFormativa(ProceduraFormativa.RES);
 				evento2.setPagato(false);
 				evento2.setProvider(provider);
-
 				eventoRepository.save(evento2);
 
 				Evento evento3 = new Evento();
@@ -101,7 +94,6 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				evento3.setProceduraFormativa(ProceduraFormativa.FSC);
 				evento3.setPagato(true);
 				evento3.setProvider(provider);
-
 				eventoRepository.save(evento3);
 			}
 			else {

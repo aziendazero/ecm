@@ -16,7 +16,6 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.RoleRepository;
-import it.tredi.ecm.service.AccountService;
 
 @Component
 @org.springframework.context.annotation.Profile("dev")
@@ -82,24 +81,24 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			role_writeUser.setDescription("UTENTI (SCRITTURA)");
 			roleRepository.save(role_writeUser);
 			
-			Role role_readUserAll = new Role();
-			role_readUserAll.setName(RoleEnum.USER_SHOW_ALL.name());
-			role_readUserAll.setDescription("UTENTI (LETTURA TUTTI)");
-			roleRepository.save(role_readUserAll);
+			Role role_readAllUser = new Role();
+			role_readAllUser.setName(RoleEnum.USER_SHOW_ALL.name());
+			role_readAllUser.setDescription("UTENTI (LETTURA TUTTI)");
+			roleRepository.save(role_readAllUser);
 			
 			Profile profile_provider = new Profile();
 			profile_provider.setName("PROVIDER");
 			profile_provider.getRoles().add(role_readProvider);
 			profile_provider.getRoles().add(role_writeProvider);
-			profile_provider.getRoles().add(role_writeAccreditamento);
 			profile_provider.getRoles().add(role_readAccreditamento);
+			profile_provider.getRoles().add(role_writeAccreditamento);
 			profileRepository.save(profile_provider);
 			
 			Profile profile_admin = new Profile();
 			profile_admin.setName("ADMIN");
 			profile_admin.getRoles().add(role_readUser);
 			profile_admin.getRoles().add(role_writeUser);
-			profile_admin.getRoles().add(role_readUserAll);
+			profile_admin.getRoles().add(role_readAllUser);
 			profileRepository.save(profile_admin);
 			
 			Account provider = new Account();
