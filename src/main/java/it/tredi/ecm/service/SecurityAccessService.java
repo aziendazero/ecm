@@ -10,7 +10,4 @@ public interface SecurityAccessService {
 	boolean canShowAccreditamento(CurrentUser currentUser, Long providerId);
 	boolean canShowAllAccreditamento(CurrentUser currentUser);
 	boolean canEditAccreditamento(CurrentUser currentUser, Long providerId);
-	
-	boolean canShowPersona(CurrentUser currentUser, Long providerId);
-	boolean canEditPersona(CurrentUser currentUser, Long providerId);
 }

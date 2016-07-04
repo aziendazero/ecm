@@ -88,18 +88,6 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		return false;
 	}
 
-	@Override
-	public boolean canShowPersona(CurrentUser currentUser, Long personaId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean canEditPersona(CurrentUser currentUser, Long personaId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	private boolean isProviderOwner(Long currentUserAccountId, Long providerId){
 		Long accountId = providerService.getAccountIdForProvider(providerId);
 		return accountId.equals(currentUserAccountId);
