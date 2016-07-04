@@ -41,9 +41,9 @@ public class PersonaServiceImpl implements PersonaService {
 	}
 	
 	@Override
-	public Persona getPersonaByRuoloAndCodiceFiscale(Ruolo ruolo, String codiceFiscale, Long providerId) {
-		LOGGER.debug("Recupero Persona (" + ruolo.name() + ") con codice fiscale " + codiceFiscale + " del provider (" + providerId + ")");
-		Persona persona = personaRepository.findOneByRuoloAndAnagraficaCodiceFiscaleAndProviderId(ruolo, codiceFiscale, providerId);
+	public Persona getPersonaByRuoloAndAnagraficaId(Ruolo ruolo, Long anagraficaId, Long providerId) {
+		LOGGER.debug("Recupero Persona (" + ruolo.name() + ") con angrafica " + anagraficaId + " del provider (" + providerId + ")");
+		Persona persona = personaRepository.findOneByRuoloAndAnagraficaIdAndProviderId(ruolo, anagraficaId, providerId);
 		log(persona);
 		return persona;
 	}

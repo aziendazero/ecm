@@ -59,10 +59,8 @@ public class PersonaValidator {
 		boolean coordinatorePresente = false;
 		if(persona.isComponenteComitatoScientifico()){
 			//non e' possibile inserire piu' volte la stessa persona nel comitato
-			Persona personaCF = personaService.getPersonaByRuoloAndCodiceFiscale(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, persona.getAnagrafica().getCodiceFiscale(), persona.getProvider().getId()); 
+			Persona personaCF = personaService.getPersonaByRuoloAndAnagraficaId(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, persona.getAnagrafica().getId(), persona.getProvider().getId());
 			Persona personaCoord = personaService.getCoordinatoreComitatoScientifico(persona.getProvider().getId());
-			
-			//TODO validate in base all'id della persona e non solo in base al codice fiscale
 			
 			if(personaCF != null){
 				if(persona.isNew() || !persona.getId().equals(personaCF.getId()))
@@ -85,7 +83,7 @@ public class PersonaValidator {
 	private void validateBase(Object target, Errors errors, String prefix){
 		LOGGER.debug("VALIDAZIONE PERSONA");
 		Persona persona = (Persona)target;
-		anagraficaValidator.validateBase(persona.getAnagrafica(), errors, prefix + "anagrafica.");
+		anagraficaValidator.validateBase(persona.getAnagrafica(), errors, prefix + "anagrafica.", persona.getProvider().getId());
 	}
 	
 	@SuppressWarnings("unchecked")

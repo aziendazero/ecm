@@ -10,7 +10,7 @@ import it.tredi.ecm.dao.enumlist.Ruolo;
 public interface PersonaService {
 	public Persona getPersona(Long id);
 	public Persona getPersonaByRuolo(Ruolo ruolo, Long providerId);
-	public Persona getPersonaByRuoloAndCodiceFiscale(Ruolo ruolo, String codiceFiscale, Long providerId);
+	public Persona getPersonaByRuoloAndAnagraficaId(Ruolo ruolo, Long anagraficaId, Long providerId);
 	public Persona getCoordinatoreComitatoScientifico(Long providerId);
 	public void save(Persona persona);
 	public void delete(Long id);
