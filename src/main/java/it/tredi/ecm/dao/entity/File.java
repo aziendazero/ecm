@@ -21,29 +21,29 @@ import lombok.Setter;
 @Setter
 public class File extends BaseEntity {
 	private String nomeFile;
-	
-	@JsonIgnore 
+
+	@JsonIgnore
 	private byte[] data;
 
 	@JsonIgnore
 	@Column(name = "creato")
 	private LocalDate dataCreazione;
-	
+
 	@Enumerated(EnumType.STRING)
 	private FileEnum tipo;
-	
+
 	public File(){
 		this.tipo = null;
 		this.nomeFile = "";
 		this.dataCreazione = LocalDate.now();
 	}
-	
+
 	public File(FileEnum tipo){
 		this.tipo = tipo;
 		this.nomeFile = "";
 		this.dataCreazione = LocalDate.now();
 	}
-	
+
 	@JsonIgnore	public boolean isCV(){
 		return this.tipo.equals(FileEnum.FILE_CV);
 	}
@@ -83,7 +83,12 @@ public class File extends BaseEntity {
 	@JsonIgnore	public boolean isDICHIARAZIONELEGALE(){
 		return this.tipo.equals(FileEnum.FILE_DICHIARAZIONE_LEGALE);
 	}
-	
+
+	//ENGINEERING TEST FILE
+	@JsonIgnore	public boolean isFILEDAFIRMARE(){
+		return this.tipo.equals(FileEnum.FILE_DA_FIRMARE);
+	}
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -95,4 +100,5 @@ public class File extends BaseEntity {
         File entitapiatta = (File) o;
         return Objects.equals(id, entitapiatta.id);
     }
+
 }

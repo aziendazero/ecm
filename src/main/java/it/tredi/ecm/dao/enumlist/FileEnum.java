@@ -22,11 +22,14 @@ public enum FileEnum {
 	FILE_MODELLO_UTILIZZO (16, ""),
 	FILE_MODELLO_SISTEMA_INFORMATICO (17, ""),
 	FILE_MODELLO_PIANO_QUALITA (18, ""),
-	FILE_MODELLO_DICHIARAZIONE_LEGALE (19, "");
-	
+	FILE_MODELLO_DICHIARAZIONE_LEGALE (19, ""),
+
+	//ENGINEERING TEST FILE
+	FILE_DA_FIRMARE(20, "");
+
 	private int id;
 	private String nome;
-	
+
 	private FileEnum(int id, String nome){
 		this.id = id;
 		this.nome = nome;

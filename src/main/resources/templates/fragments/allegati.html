@@ -7,14 +7,14 @@
 <th:block th:fragment="allegati(wrapper, withIdEditabili, tipoAllegato, counter, note, withFirma)">
 
 	<!-- wrapper con idEditabili -->
-	<th:block th:if="${__withIdEditabili__}"> 
+	<th:block th:if="${__withIdEditabili__}">
 		<th:block th:if="${!__${wrapper}__.__${tipoAllegato}__.new} or
 			${#lists.contains(__${wrapper}__.idEditabili, counter)}">
 			<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
-				
+
 				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
-				
+
 				<label class="control-label col-xs-1" th:text="${counter}">numero indice</label>
 				<label class="control-label col-md-3 col-sm-3 col-xs-7" th:for="__${tipoAllegato}__">
 					<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span><span th:if="${note == null}" class="required">*</span>
@@ -30,10 +30,6 @@
 							<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:if="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="#{label.nessun_file_selezionato}" class="allegato-label"></a></div>
 						</div>
 					</div>
-					<!-- pulsante per aggiungere firma -->
-					<th:block th:if="${withFirma}">
-						<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma" th:title="#{label.firma_digitalmente}"><span class="fa fa-pencil"></span></button>
-					</th:block>
 				</th:block>
 				<th:block th:unless="${#lists.contains(__${wrapper}__.idEditabili, counter) or counter == null}">
 					<div class="col-md-4 col-sm-4 col-xs-12">
@@ -41,21 +37,38 @@
 							th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
 					</div>
 				</th:block>
+				<!-- pulsante per aggiungere firma -->
+				<th:block th:if="${withFirma}">
+					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma" th:title="#{label.firma_digitalmente}"><span class="fa fa-pencil"></span></button>
+				</th:block>
 				<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 			</div>
 		</th:block>
 	</th:block>
-	
+
 	<!-- wrapper senza idEditabili -->
 	<th:block th:unless="${__withIdEditabili__}">
 		<div th:id="__${tipoAllegato}__-parent" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
-			<label class="control-label col-md-3 col-sm-3 col-xs-12" th:for="__${tipoAllegato}__">
+
+			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
+			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
+
+			<label class="control-label col-md-4 col-sm-4 col-xs-7" th:for="__${tipoAllegato}__">
 				<span th:text="#{label.__${tipoAllegato}__}">label.tipoAllegato</span>
 			</label>
-			<div class="col-md-6 col-sm-6 col-xs-12">
-				<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}__"
-					class="form-control col-md-7 col-xs-12 btn" />
+			<div class="col-md-4 col-sm-4 col-xs-12">
+				<div class="form-control col-md-7 col-xs-12 btn">
+					<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
+						style="display: none;" />
+					<input type="button" class="pull-left allegato-btn" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
+					<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
+					<div class="allegato-label"><a th:id="__${tipoAllegato}___label" th:if="${__${wrapper}__.__${tipoAllegato}__.new}" th:text="#{label.nessun_file_selezionato}" class="allegato-label"></a></div>
+				</div>
 			</div>
+			<!-- pulsante per aggiungere firma -->
+			<th:block th:if="${withFirma}">
+				<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma" th:title="#{label.firma_digitalmente}"><span class="fa fa-pencil"></span></button>
+			</th:block>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 		</div>
 	</th:block>
@@ -64,7 +77,7 @@
 		function setAllegato(idInput) {
 			$(idInput).click();
 		}
-		
+
 		function submitFile(element){
 			var tipoAllegato = $(element).attr("id");
 			var fileId = $("#"+tipoAllegato+"\\.id").attr('value');
@@ -75,29 +88,32 @@
 				case 'organigramma' : 					tipoAllegato = 'FILE_ORGANIGRAMMA'; break;
 				case 'funzionigramma' :					tipoAllegato = 'FILE_FUNZIONIGRAMMA'; break;
 				case 'estrattoBilancioFormazione' : 	tipoAllegato = 'FILE_ESTRATTO_BILANCIO_FORMAZIONE'; break;
-				case 'budgetPrevisionale' : 			tipoAllegato = 'FILE_BUDGET_PREVISIONALE'; break; 
-				case 'attoCostitutivo' : 				tipoAllegato = 'FILE_ATTO_COSTITUTIVO'; break; 
-				case 'esperienzaFormazione' : 		tipoAllegato = 'FILE_ESPERIENZA_FORMAZIONE'; break; 
-				case 'utilizzo' : 						tipoAllegato = 'FILE_UTILIZZO'; break; 
-				case 'sistemaInformatico' : 			tipoAllegato = 'FILE_SISTEMA_INFORMATICO'; break; 
-				case 'pianoQualita' : 					tipoAllegato = 'FILE_PIANO_QUALITA'; break; 
-				case 'dichiarazioneLegale' : 			tipoAllegato = 'FILE_DICHIARAZIONE_LEGALE'; break; 
+				case 'budgetPrevisionale' : 			tipoAllegato = 'FILE_BUDGET_PREVISIONALE'; break;
+				case 'attoCostitutivo' : 				tipoAllegato = 'FILE_ATTO_COSTITUTIVO'; break;
+				case 'esperienzaFormazione' : 			tipoAllegato = 'FILE_ESPERIENZA_FORMAZIONE'; break;
+				case 'utilizzo' : 						tipoAllegato = 'FILE_UTILIZZO'; break;
+				case 'sistemaInformatico' : 			tipoAllegato = 'FILE_SISTEMA_INFORMATICO'; break;
+				case 'pianoQualita' : 					tipoAllegato = 'FILE_PIANO_QUALITA'; break;
+				case 'dichiarazioneLegale' : 			tipoAllegato = 'FILE_DICHIARAZIONE_LEGALE'; break;
+
+				//File da firmare per engineering
+				case 'fileDaFirmare' :					tipoAllegato = 'FILE_DA_FIRMARE'; break;
 			}
-			
+
 	 		var oMyForm = new FormData();
             oMyForm.append("multiPartFile", $(element)[0].files[0]);
             oMyForm.append("fileId", (!fileId) ? 0 : fileId );
             oMyForm.append("tipo",tipoAllegato);
             oMyForm.append([[${_csrf.parameterName}]],[[${_csrf.token}]]);
-            
+
             console.log('tipoAllegato: ' + tipoAllegato + ' - fileId: ' + fileId);
-            
+
            	$.ajax({
                   	url : "/file/upload",
                   	data : oMyForm,
                   	type : "POST",
                   	enctype: 'multipart/form-data',
-                  	processData: false, 
+                  	processData: false,
                   	contentType:false,
                   	success : function(result) {
                   		setFile(result);
@@ -105,13 +121,13 @@
                   	error : function(result){
                   		sendNotifyStatic([[#{message.errore}]], [[#{message.errore_fileupload}]], "error");
                   	}
-              	}); 
+              	});
 		}
-		
+
 		function setFile(response){
 				if(response.id != null && response.id != 0) {
 					var inputName = '';
-					
+
 					switch (response.tipo) {
 						case 'FILE_CV': 							inputName = 'cv'; break;
 						case 'FILE_DELEGA': 						inputName = 'delega'; break;
@@ -119,16 +135,19 @@
 						case 'FILE_ORGANIGRAMMA' : 					inputName = 'organigramma'; break;
 						case 'FILE_FUNZIONIGRAMMA' :				inputName = 'funzionigramma'; break;
 						case 'FILE_ESTRATTO_BILANCIO_FORMAZIONE' : 	inputName = 'estrattoBilancioFormazione'; break;
-						case 'FILE_BUDGET_PREVISIONALE' : 			inputName = 'budgetPrevisionale'; break; 
-						case 'FILE_ATTO_COSTITUTIVO' : 				inputName = 'attoCostitutivo'; break; 
-						case 'FILE_ESPERIENZA_FORMAZIONE' : 		inputName = 'esperienzaFormazione'; break; 
-						case 'FILE_UTILIZZO' : 						inputName = 'utilizzo'; break; 
-						case 'FILE_SISTEMA_INFORMATICO' : 			inputName = 'sistemaInformatico'; break; 
-						case 'FILE_PIANO_QUALITA' : 				inputName = 'pianoQualita'; break; 
-						case 'FILE_DICHIARAZIONE_LEGALE' : 			inputName = 'dichiarazioneLegale'; break; 
+						case 'FILE_BUDGET_PREVISIONALE' : 			inputName = 'budgetPrevisionale'; break;
+						case 'FILE_ATTO_COSTITUTIVO' : 				inputName = 'attoCostitutivo'; break;
+						case 'FILE_ESPERIENZA_FORMAZIONE' : 		inputName = 'esperienzaFormazione'; break;
+						case 'FILE_UTILIZZO' : 						inputName = 'utilizzo'; break;
+						case 'FILE_SISTEMA_INFORMATICO' : 			inputName = 'sistemaInformatico'; break;
+						case 'FILE_PIANO_QUALITA' : 				inputName = 'pianoQualita'; break;
+						case 'FILE_DICHIARAZIONE_LEGALE' : 			inputName = 'dichiarazioneLegale'; break;
+
+						//File da firmare per engineering
+						case 'FILE_DA_FIRMARE' :					inputName = 'fileDaFirmare'; break;
 					default: break;
 						}
-					
+
 					$("#"+inputName+"_label").text(response.nomeFile);
 					$("#"+inputName+"_label").attr('href',"/file/" + response.id);
 					$("#"+inputName+"\\.id").attr('value', response.id);
