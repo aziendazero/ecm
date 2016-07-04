@@ -29,17 +29,17 @@ import it.tredi.ecm.web.validator.ProviderValidator;
 
 @Controller
 public class ProviderController {
-	
+
 	private final String EDIT = "provider/providerEdit";
-	
+
 	@Autowired
 	private ProviderService providerService;
 	@Autowired
 	private AccreditamentoService accreditamentoService;
-	
+
 	@Autowired
 	private ProviderValidator providerValidator;
-	
+
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
@@ -56,12 +56,12 @@ public class ProviderController {
 		ragioniSociali.add("sas");
 		return ragioniSociali;
 	}
-	
+
 	@ModelAttribute("tipoOrganizzatoreList")
 	public TipoOrganizzatore[] getListTipoOrganizzatore(){
 		return TipoOrganizzatore.values();
 	}
-	
+
 	@ModelAttribute("providerWrapper")
 	public ProviderWrapper getProvider(@RequestParam(name = "editId", required = false) Long id){
 		if(id != null){
@@ -72,7 +72,7 @@ public class ProviderController {
 		return new ProviderWrapper();
 	}
 	/*** GLOBAL MODEL ATTRIBUTES***/
-	
+
 	/***	SHOW	***/
 	@RequestMapping("/provider/show")
 	public String showProviderFromCurrentUser(Model model, RedirectAttributes redirectAttrs){
@@ -84,7 +84,7 @@ public class ProviderController {
 			return "redirect:provider/list";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#id)")
 	@RequestMapping("/provider/{id}/show")
 	public String showProvider(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
@@ -96,17 +96,17 @@ public class ProviderController {
 			return "redirect:provider/list";
 		}
 	}
-	
+
 	private String goToShowProvider(Model model, Provider provider){
 		model.addAttribute("provider",provider);
-		return "provider/showProvider";
+		return "provider/providerShow";
 	}
-	
+
 	/***	EDIT	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
 	@RequestMapping("/provider/{id}/edit")
 	public String editProvider(@PathVariable Long id, Model model){
-		try {	
+		try {
 			model.addAttribute("provider",providerService.getProvider(id));
 			return "provider/providerEdit";
 		}catch (Exception ex){
@@ -114,7 +114,7 @@ public class ProviderController {
 			return "TODO";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#id)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/edit")
 	public String editProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
@@ -126,15 +126,15 @@ public class ProviderController {
 			return "redirect:/accreditamento/" + accreditamentoId;
 		}
 	}
-	
+
 	/***	SAVE	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/save", method = RequestMethod.POST)
-	public String salvaProvider(@ModelAttribute("providerWrapper") ProviderWrapper providerWrapper, BindingResult result, 
+	public String salvaProvider(@ModelAttribute("providerWrapper") ProviderWrapper providerWrapper, BindingResult result,
 									Model model, RedirectAttributes redirectAttrs){
 		try{
 			//validazione del provider
-			providerValidator.validateForAccreditamento(providerWrapper.getProvider(), result, "provider.");	
-			
+			providerValidator.validateForAccreditamento(providerWrapper.getProvider(), result, "provider.");
+
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return EDIT;
@@ -150,7 +150,7 @@ public class ProviderController {
 			return EDIT;
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping("/provider/list")
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
@@ -163,19 +163,19 @@ public class ProviderController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	private String goToEdit(Model model, ProviderWrapper providerWrapper){
 		model.addAttribute("providerWrapper",providerWrapper);
 		return EDIT;
 	}
-	
+
 	private ProviderWrapper prepareProviderWrapper(Provider provider, Long accreditamentoId){
 		ProviderWrapper providerWrapper = new ProviderWrapper();
 		providerWrapper.setProvider(provider);
 		providerWrapper.setAccreditamentoId(accreditamentoId);
 		providerWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_PROVIDER), accreditamentoService.getIdEditabili(accreditamentoId));
-		
+
 		return providerWrapper;
 	}
-	
+
 }

@@ -15,13 +15,13 @@
 							<th:block th:unless="${#lists.isEmpty(personaWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formPersona" type="submit"></button>
 								<button id="cerca-persona-btn" class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
-								<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/${personaWrapper.persona.ruolo}/setAnagrafica|}"></a>
+								<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" onclick="unsetIsLookup()" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/${personaWrapper.persona.ruolo}/setAnagrafica|}"></a>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
-					
+
 					<!-- finestra modale di lookup delle anagrafiche -->
 					<div id="persona-modal" class="modal fade modal-lookup" tabindex="-1" role="dialog" aria-hidden="true">
 						<div class="modal-dialog modal-lg">
@@ -52,26 +52,27 @@
 							</div>
 						</div>
 					</div>
-					
+
 					<!-- panel con il form -->
 					<div class="x_content">
 						<form id="formPersona" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/save|}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
-								
+
 							<input type="hidden" name="editId" th:value="${personaWrapper.persona.id}" />
-							<input type="hidden" name="editId_Anagrafica" th:value="${personaWrapper.persona.anagrafica.id}" /> 
-							<input type="hidden" th:field="${personaWrapper.accreditamentoId}" /> 
-							<input type="hidden" th:field="${personaWrapper.providerId}" /> 
-							<input type="hidden" th:field="${personaWrapper.ruolo}" /> 
+							<input type="hidden" name="editId_Anagrafica" th:value="${personaWrapper.persona.anagrafica.id}" />
+							<input type="hidden" th:field="${personaWrapper.accreditamentoId}" />
+							<input type="hidden" th:field="${personaWrapper.providerId}" />
+							<input type="hidden" th:field="${personaWrapper.ruolo}" />
 							<input type="hidden" th:field="${personaWrapper.idEditabili}" />
 							<input type="hidden" th:field="${personaWrapper.idOffset}" />
-							
-							<!--	
+							<input id="hidden-lookup" type="hidden" th:field="${personaWrapper.isLookup}" />
+
+							<!--
 							<input type="hidden" name="editIdFileAtto" th:value="${personaWrapper.nomina.id}" />
 							<input type="hidden" name="editIdFileCV" th:value="${personaWrapper.curriculumVitae.id}" />
 							<input type="hidden" name="editIdFileDelega" th:value="${personaWrapper.delega.id}" />
 							 -->
-							 
+
 							<!-- checkbox flag coordinatore -->
 							<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
 										${personaWrapper.persona.componenteComitatoScientifico}"
@@ -80,13 +81,13 @@
 									for="isCoordinatore_comitato"><span th:text="#{label.is_coordinatore}">Inserisci come Coordinatore del Comitato Scientifico</span></label>
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<div class="checkbox">
-										<input id="isCoordinatore_comitato" name="isCoordinatore_comitato" 
+										<input id="isCoordinatore_comitato" name="isCoordinatore_comitato"
 											class="flat" type="checkbox" th:field="${personaWrapper.persona.coordinatoreComitatoScientifico}" />
 									</div>
 								</div>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')}" class="alert" th:errors="${personaWrapper.persona.coordinatoreComitatoScientifico}"></div>
-							</div> 
-							 							 
+							</div>
+
 							<!-- cognome -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">1</label>
@@ -94,21 +95,21 @@
 									for="cognome_persona"><span th:text="#{label.cognome}">Cognome</span> <span	class="required">*</span></label>
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<input id="cognome_persona"	name="cognome_persona" 
+										<input id="cognome_persona"	name="cognome_persona"
 											required="required"	class="form-control col-md-7 col-xs-12"
 											type="text" th:field="${personaWrapper.persona.anagrafica.cognome}" />
 									</div>
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="cognome_persona_disabled"	
+										<label id="cognome_persona_disabled"
 											class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.cognome}"></label>
 									</div>
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.cognome}"></div>
 							</div>
-							
+
 							<!-- nome -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">2</label>
@@ -116,7 +117,7 @@
 									for="cognome_persona"><span th:text="#{label.nome}">Nome</span> <span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<input id="nome_persona" name="nome_persona" 
+										<input id="nome_persona" name="nome_persona"
 											required="required"	class="form-control col-md-7 col-xs-12"
 											type="text" th:field="${personaWrapper.persona.anagrafica.nome}" />
 									</div>
@@ -129,17 +130,17 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.nome}"></div>
 							</div>
-							
+
 							<!-- codice fiscale -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">3</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="codiceFiscale_persona"><span th:text="#{label.codice_fiscale}">Codice Fiscale</span> <span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">									
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<input id="codiceFiscale_persona" name="codiceFiscale_persona" 
+										<input id="codiceFiscale_persona" name="codiceFiscale_persona"
 											required="required"	class="form-control col-md-7 col-xs-12"
-											type="text" th:field="${personaWrapper.persona.anagrafica.codiceFiscale}" />
+											type="text" th:field="${personaWrapper.persona.anagrafica.codiceFiscale}" th:disabled="${personaWrapper.isLookup}" />
 									</div>
 								</th:block>
 								<th:block th:unless="${#lists.contains(personaWrapper.idEditabili, counter)}">
@@ -150,7 +151,7 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
 							</div>
-							
+
 							<!-- checkbox flag straniero -->
 							<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
 										${personaWrapper.persona.componenteComitatoScientifico}"
@@ -160,7 +161,7 @@
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<div class="checkbox">
-											<input id="isStraniero_persona" name="isStraniero_persona" 
+											<input id="isStraniero_persona" name="isStraniero_persona"
 												class="flat" type="checkbox" th:field="${personaWrapper.persona.anagrafica.straniero}" />
 										</div>
 									</div>
@@ -174,15 +175,15 @@
 									</div>
 								</th:block>
 							</div>
-							
+
 							<!-- telefono -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">4</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="telefono_persona"><span th:text="#{label.telefono}">Telefono</span> <span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">																	
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<input id="telefono_persona" name="telefono_persona" 
+										<input id="telefono_persona" name="telefono_persona"
 											required="required"	class="form-control col-md-7 col-xs-12"
 											type="tel" th:field="${personaWrapper.persona.anagrafica.telefono}" />
 									</div>
@@ -192,22 +193,22 @@
 										<label id="telefono_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.telefono}"></label>
 									</div>
-								</th:block>								
+								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.telefono}"></div>
 							</div>
-							
+
 							<!-- cellulare -->
-							<div th:unless="${personaWrapper.persona.responsabileSegreteria} or 
+							<div th:unless="${personaWrapper.persona.responsabileSegreteria} or
 											${personaWrapper.persona.responsabileFormazione} or
 											${personaWrapper.persona.responsabileSistemaInformatico} or
-											${personaWrapper.persona.responsabileQualita}" 
+											${personaWrapper.persona.responsabileQualita}"
 								class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">5</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="cellulare_persona"><span th:text="#{label.cellulare}">Cellulare</span> <span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">																									
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<input id="cellulare_persona" name="cellulare_persona" 
+										<input id="cellulare_persona" name="cellulare_persona"
 											required="required"	class="form-control col-md-7 col-xs-12"
 											type="tel" th:field="${personaWrapper.persona.anagrafica.cellulare}" />
 									</div>
@@ -217,18 +218,18 @@
 										<label id="cellulare_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${personaWrapper.persona.anagrafica.cellulare}"></label>
 									</div>
-								</th:block>					
+								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.cellulare}"></div>
 							</div>
-							
+
 							<!-- email -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')} ? 'bad'">
 								<label class="control-label col-xs-1" th:text="${++counter}">6</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="email_persona"><span th:text="#{label.email}">Email</span> <span class="required">*</span></label>
-								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">									
+								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<input id="email_persona" name="email_persona" 
+										<input id="email_persona" name="email_persona"
 											required="required"	class="form-control col-md-7 col-xs-12"
 											type="email" th:field="${personaWrapper.persona.anagrafica.email}" />
 									</div>
@@ -241,7 +242,7 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.email}"></div>
 							</div>
-							
+
 							<!-- posta elettronica certificata (PEC) -->
 							<div th:if="${personaWrapper.persona.legaleRappresentante} or
 										${personaWrapper.persona.delegatoLegaleRappresentante}"
@@ -251,7 +252,7 @@
 									for="pec_persona"><span th:text="#{label.posta_elettronica_certificata}">Posta elettronica certificata (PEC)</span> <span class="required">*</span></label>
 								<th:block th:if="${#lists.contains(personaWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<input id="pec_persona" name="pec_persona" 
+										<input id="pec_persona" name="pec_persona"
 											required="required"	class="form-control col-md-7 col-xs-12"
 											type="email" th:field="${personaWrapper.persona.anagrafica.pec}" />
 									</div>
@@ -264,8 +265,8 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.pec}"></div>
 							</div>
-							
-							<!-- professione -->	
+
+							<!-- professione -->
 							<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
 										${personaWrapper.persona.componenteComitatoScientifico} or
 										${personaWrapper.persona.responsabileSistemaInformatico} or
@@ -290,19 +291,19 @@
 								</th:block>
 								<div th:if="${#fields.hasErrors('personaWrapper.persona.professione')}" class="alert" th:errors="${personaWrapper.persona.professione}"></div>
 							</div>
-							
+
 							<!-- allegato 1 (atto di nomina) -->
 							<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}">
 								<div class="divider-dashed"></div>
 								<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, attoNomina, ${++counter}, null, true)" ></th:block>
 							</div>
-							
+
 							<!-- allegato 2 (curriculum vitae) -->
 							<div th:unless="${personaWrapper.persona.legaleRappresentante}">
 								<div class="divider-dashed"></div>
 								<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${++counter}, null, true)"></th:block>
 							</div>
-							
+
 							<!-- allegato 3 (delega) -->
 							<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}">
 								<div class="divider-dashed"></div>
@@ -319,7 +320,7 @@
 					var accreditamentoId = [[${personaWrapper.accreditamentoId}]];
 					var providerId = [[${personaWrapper.providerId}]];
 					var ruolo = [[${personaWrapper.persona.ruolo}]].$name;
-					
+
 					for(item in data){
 						var obj = data[item];
 						table.row.add([
@@ -327,12 +328,12 @@
 							obj.nome,
 							obj.cognome,
 							//'<a class="btn btn-primary" th:text="#{label.seleziona}" href="loadPersona('+ obj.id +')"></a>'
-							'<a class="btn btn-primary" th:text="#{label.seleziona}" href="/accreditamento/' + accreditamentoId + '/provider/' + providerId + '/persona/' + ruolo + '/setAnagrafica?anagraficaId=' + obj.id +'"></a>'
+							'<a class="btn btn-primary btn-lookup" onclick="setIsLookup()" th:text="#{label.seleziona}" href="/accreditamento/' + accreditamentoId + '/provider/' + providerId + '/persona/' + ruolo + '/setAnagrafica?anagraficaId=' + obj.id +'"></a>'
 						]).draw(false);
 					}
-				});      
+				});
 			});
-			
+
 			function loadPersona(id){
 				//var url = "/accreditamento/" + [[${personaWrapper.accreditamentoId}]] + "/provider/" + [[${personaWrapper.providerId}]] + "/anagrafica/" + id +"/copia";
 				var RUOLO = [[${personaWrapper.persona.ruolo}]];
@@ -341,6 +342,17 @@
 				//$("#persona-modal").modal('hide');<!-- Registra Dati Accreditamento -->
 				return url;
 			}
+
+			function setIsLookup() {
+				$("#hidden-lookup").val(true);
+				$("codiceFiscale_persona").prop('disabled', 'disabled');
+			}
+
+			function unsetIsLookup() {
+				$("#hidden-lookup").val(false);
+				$("codiceFiscale_persona").removeProp('disabled');
+			}
+
 			</script>
 		</div>
 	</div>
