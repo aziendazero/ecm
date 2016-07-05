@@ -60,7 +60,6 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			legale.getAnagrafica().setNome("Giuseppe");
 			legale.getAnagrafica().setCodiceFiscale("VRDGPP80H17D969I");
 			legale.getAnagrafica().setCellulare("123456789");
-			legale.getAnagrafica().setTelefono("051987321");
 			legale.getAnagrafica().setEmail("gverdi@3di.it");
 			legale.getAnagrafica().setPec("gverdi@pec.it");
 			personaRepository.save(legale);
