@@ -31,7 +31,7 @@ public class ProviderRegistrationWrapperValidator{
 		//TODO Delegato consentito solo per alcuni tipi di Provider
 		//allegato obbligatorio solo se e' stato selezionato il flag delegato
 		if(providerForm.isDelegato()){
-			fileValidator.validate(providerForm.getDelegaRichiedenteFile(), errors, "delegaRichiedenteFile");
+			fileValidator.validate(providerForm.getDelega(), errors, "delegaRichiedenteFile");
 		}
 	}
 	

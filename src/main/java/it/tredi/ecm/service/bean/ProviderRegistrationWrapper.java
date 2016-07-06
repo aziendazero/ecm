@@ -12,6 +12,6 @@ public class ProviderRegistrationWrapper {
 	private Provider provider;
 	private Persona richiedente;
 	private boolean delegato = false;
-	private File delegaRichiedenteFile;
+	private File delega;
 	private Persona legale;
 }

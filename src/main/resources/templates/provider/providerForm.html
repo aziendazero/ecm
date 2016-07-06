@@ -278,7 +278,7 @@
 									</div>
 									
 									<!-- delega -->
-									<th:block th:include="fragments/allegati :: allegati(providerForm, false, delegaRichiedenteFile, null, null, true)" ></th:block>
+									<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, true)" ></th:block>
 									
 									<!-- Invia dati -->
 									<div class="item form-group text-right">
@@ -322,16 +322,16 @@
 			    if (check) {
 			    	$('#checkbox_delegato').show();
 			    	$('#isDelegato').iCheck("enable");
-			    	$('#delegaRichiedenteFile-parent').show();
-			    	$('#delegaRichiedenteFile').prop('disabled', false);
+			    	$('#delega-parent').show();
+			    	$('#delega').prop('disabled', false);
 			    	$('#divider').show()
 			    } 
 		    	// altrimenti la nasconde
 			    else {
 			    	$('#checkbox_delegato').hide();
 			    	$('#isDelegato').iCheck("disable");
-			    	$('#delegaRichiedenteFile-parent').hide();
-			    	$('#delegaRichiedenteFile').prop( "disabled", true);
+			    	$('#delega-parent').hide();
+			    	$('#delega').prop( "disabled", true);
 			    	$('#divider').hide();
 			    }
 	      	}
