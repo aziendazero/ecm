@@ -37,14 +37,10 @@ public class AccreditamentoAllegatiController {
 	
 	private final String EDIT = "accreditamento/accreditamentoAllegatiEdit";
 
-	@Autowired
-	private AccreditamentoAllegatiValidator accreditamentoAllegatiValidator;
-	@Autowired
-	private FileService fileService;
-	@Autowired
-	private AccreditamentoService accreditamentoService;
-	@Autowired
-	private ProviderService providerService;
+	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private ProviderService providerService;
+	@Autowired private FileService fileService;
+	@Autowired private AccreditamentoAllegatiValidator accreditamentoAllegatiValidator;
 	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -63,10 +59,11 @@ public class AccreditamentoAllegatiController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/allegati/edit")
 	public String editAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info("GET /accreditamento/"+ accreditamentoId +"/allegati/edit");
 		try{
 			return goToEdit(model, prepareAccreditamentoAllegatiWrapper(accreditamentoId));
 		}catch (Exception ex){
-			LOGGER.error("AccreditamentoAllegatiController:editAllegati()", ex);
+			LOGGER.error("GET /accreditamento/"+ accreditamentoId +"/allegati/edit",ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addFlashAttribute("currentTab","tab3");
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
@@ -78,7 +75,7 @@ public class AccreditamentoAllegatiController {
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/save", method = RequestMethod.POST)
 	public String saveDatiAccreditamento(@ModelAttribute("accreditamentoAllegatiWrapper") AccreditamentoAllegatiWrapper wrapper, BindingResult result,
 			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
-
+		LOGGER.info("POST /accreditamento/"+ accreditamentoId +"/allegati/save");
 		try {
 				//TODO getFile da testare se funziona anche senza reload
 				//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
@@ -102,9 +99,11 @@ public class AccreditamentoAllegatiController {
 			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles());
 			
 			if(result.hasErrors()){
+				LOGGER.debug("Validazione fallita");
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return EDIT;
 			}else{
+				LOGGER.debug("Salvataggio allegati al provider");
 				providerService.save(wrapper.getProvider());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.allegati_inseriti", "success"));
 				redirectAttrs.addFlashAttribute("currentTab","tab3");
@@ -112,7 +111,7 @@ public class AccreditamentoAllegatiController {
 				return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch (Exception ex){
-			LOGGER.error("AccreditamentoAllegatiController:saveDatiAccreditamento()", ex);
+			LOGGER.error("POST /accreditamento/"+ accreditamentoId +"/allegati/save", ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return EDIT;
 		}
@@ -120,10 +119,12 @@ public class AccreditamentoAllegatiController {
 	
 	private String goToEdit(Model model, AccreditamentoAllegatiWrapper wrapper){
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
+		LOGGER.info("VIEW: " + EDIT);
 		return EDIT;
 	}
 
 	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapper(Long accreditamentoId){
+		LOGGER.info("prepareAccreditamentoAllegatiWrapper(" + accreditamentoId + ") - entering");
 		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
 
@@ -150,6 +151,7 @@ public class AccreditamentoAllegatiController {
 		wrapper.setModelIds(modelIds);
 		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_ALLEGATI), accreditamento.getIdEditabili());
 
+		LOGGER.info("prepareAccreditamentoAllegatiWrapper(" + accreditamentoId + ") - exiting");
 		return wrapper;
 	}
 

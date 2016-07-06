@@ -11,10 +11,11 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.service.AccountService;
+import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccountChangePassword;
 
 @Component
-public class AccountValidator {
+public class AccountValidator extends Validator{
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccountValidator.class);
 
 	@Autowired
@@ -25,13 +26,14 @@ public class AccountValidator {
 	}
 	
 	public void validate(Object target, Errors errors, String prefix) {
-		LOGGER.debug("Validating Account");
+		Utils.logInfo(LOGGER, "Validazione Account");
 		Account account = (Account)target;
 		validateAccount(account, errors, prefix);
+		logDebugErrorFields(LOGGER, errors);
 	}
 	
 	public void validateChangePassword(Object target, Errors errors, Account account){
-		LOGGER.debug("Validating Account Change Password");
+		Utils.logInfo(LOGGER, "Validzione Account per ChangePassword");
 		AccountChangePassword accountChangePassword = (AccountChangePassword)target;
 		if(accountChangePassword.getOldPassword().isEmpty())
 			errors.rejectValue("oldPassword", "error.empty");
@@ -53,7 +55,7 @@ public class AccountValidator {
 				errors.rejectValue("confirmNewPassword", "error.password_repeat");
 			}
 		}
-		
+		logDebugErrorFields(LOGGER, errors);
 	}
 	
 	private void validateAccount(Account account, Errors errors, String prefix){
