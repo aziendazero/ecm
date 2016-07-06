@@ -328,3 +328,89 @@ th.center {
 	text-align: left;
 }
 
+.italic {
+	font-style: italic;
+}
+
+.count {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.tile-stats .count{
+	font-size: 30px;
+	min-height: 70px;
+}
+
+.count-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.well.profile_view .bottom {
+	margin: 0;
+}
+
+.fa-persona-show {
+	font-size: 100px;
+}
+
+.v-center {
+	line-height: 230px;
+}
+
+
+.profile_anagrafica {
+	height: 230px;
+	white-space:nowrap;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.fa-laptop.fa-persona-show {
+	margin-left: -15px;
+}
+
+.fa-fax.fa-persona-show {
+	margin-left: -15px;
+}
+
+.fa-sitemap.fa-persona-show {
+	margin-left: -15px;
+}
+
+.fa-gavel.fa-persona-show {
+	margin-left: -15px;
+}
+
+.fa-search.fa-persona-show {
+	margin-left: -10px;
+}
+
+h2 {
+	white-space: normal !important;
+}
+
+.row.animated.fadeInDown {
+	margin-top: 60px;
+}
+
+.allegato-download {
+	margin-bottom: 10px;
+}
+
+.excerpt {
+	font-size: 17px;
+}
+
+.timeline h2.title {
+	font-size: 22px;
+}
+
+.file-widget-container {
+	border: 1px solid gray;
+	border-radius: 5px;
+}

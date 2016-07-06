@@ -319,4 +319,20 @@ public class PersonaController {
 
 		return personaWrapper;
 	}
+
+	//TODO domenico (check se fa la query di tutto il provider)
+	/*** LIST PERSONA ***/
+	@RequestMapping("/provider/{providerId}/persona/list")
+	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		try {
+			Provider provider = providerService.getProvider(providerId);
+			model.addAttribute("personaList", provider.getPersone());
+			model.addAttribute("titolo", provider.getDenominazioneLegale());
+			return "persona/personaList";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:provider/show";
+		}
+	}
 }

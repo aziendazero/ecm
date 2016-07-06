@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.lista_persone(${titolo})}">Lista delle
+							persone del (denominazioneLegale)</h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content" th:remove="all-but-first">
+
+						<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 profile_details" th:each="persona, row : ${personaList}">
+							<div class="well profile_view">
+								<div class="col-xs-12 profile_anagrafica">
+									<h4 class="brief italic" th:text="${persona.ruolo.nome}">Ruolo</h4>
+									<div class="left col-xs-7">
+										<h2 th:text="${persona.anagrafica.nome + ' ' + persona.anagrafica.cognome}">Nome Cognome</h2>
+										<ul class="list-unstyled">
+											<li th:unless="${#strings.isEmpty(persona.anagrafica.codiceFiscale)}" style="white-space: normal"><span class="fa fa-credit-card"></span> <span th:text="#{label.codice_fiscale}">Codice fiscale</span>: <span th:text="${persona.anagrafica.codiceFiscale}"></span></li>
+											<li th:unless="${#strings.isEmpty(persona.anagrafica.telefono)}"><span class="glyphicon glyphicon-phone-alt"></span> <span th:text="#{label.telefono}">Telefono</span>: <span th:text="${persona.anagrafica.telefono}"></span></li>
+											<li th:unless="${#strings.isEmpty(persona.anagrafica.cellulare)}"><span class="glyphicon glyphicon-phone"></span> <span th:text="#{label.cellulare}">Cellulare</span>: <span th:text="${persona.anagrafica.cellulare}"></span></li>
+											<li th:unless="${#strings.isEmpty(persona.anagrafica.email)}"><span class="fa fa-envelope"></span> <span th:text="#{label.email}">Email</span>: <span th:text="${persona.anagrafica.email}"></span></li>
+											<li th:unless="${#strings.isEmpty(persona.anagrafica.pec)}"><span class="fa fa-envelope-o"></span> <span th:text="#{label.pec}">PEC</span>: <span th:text="${persona.anagrafica.pec}"></span></li>
+											<li><span class="glyphicon glyphicon-flag"></span> <span th:text="#{label.nazionalita}">Telefono</span>: <span th:text="${persona.anagrafica.straniero} ? #{label.straniera} : #{label.italiana}"></span></li>
+										</ul>
+									</div>
+									<div th:if="${persona.ruolo.nome == 'Componente Comitato Scientifico' or
+												persona.ruolo.nome == 'Coordinatore Comitato Scientifico'}" class="pull-right col-xs-4 text-center v-center">
+										<span class="fa fa-user-md fa-persona-show"></span>
+									</div>
+									<div th:if="${persona.ruolo.nome == 'Responsabile Amministrativo'}" class="pull-right col-xs-4 text-center v-center">
+										<span class="fa fa-sitemap fa-persona-show"></span>
+									</div>
+									<div th:if="${persona.ruolo.nome == 'Responsabile Qualità'}" class="pull-right col-xs-4 text-center v-center">
+										<span class="fa fa-search fa-persona-show"></span>
+									</div>
+									<div th:if="${persona.ruolo.nome == 'Responsabile Segreteria'}" class="pull-right col-xs-4 text-center v-center">
+										<span class="fa fa-fax fa-persona-show"></span>
+									</div>
+									<div th:if="${persona.ruolo.nome == 'Responsabile Sistema Informatico'}" class="pull-right col-xs-4 text-center v-center">
+										<span class="fa fa-laptop fa-persona-show"></span>
+									</div>
+									<div th:if="${persona.ruolo.nome == 'Legale Rappresentante' or
+												persona.ruolo.nome == 'Delegato Legale Rappresentante'}" class="pull-right col-xs-4 text-center v-center">
+										<span class="fa fa-gavel fa-persona-show"></span>
+									</div>
+								</div>
+								<div class="col-xs-12 bottom"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
