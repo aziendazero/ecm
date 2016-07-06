@@ -34,19 +34,19 @@ import it.tredi.ecm.web.validator.AccreditamentoAllegatiValidator;
 @Controller
 public class AccreditamentoAllegatiController {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAllegatiController.class);
-	
+
 	private final String EDIT = "accreditamento/accreditamentoAllegatiEdit";
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
 	@Autowired private AccreditamentoAllegatiValidator accreditamentoAllegatiValidator;
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
-	
+
 	@ModelAttribute("accreditamentoAllegatiWrapper")
 	public AccreditamentoAllegatiWrapper getAccreditamentoAllegatiWrapper(@RequestParam(value="editId",required = false) Long id){
 		if(id != null){

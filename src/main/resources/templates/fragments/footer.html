@@ -278,6 +278,18 @@
 				} ]
 			});
 
+			$('.datatable-responsive-eventi').DataTable({
+				"bFilter" : false,
+				"bInfo" : false,
+				"bPaginate" : false,
+				"ordering" : false,
+				"columnDefs": [ {
+					"targets": 4,
+					"width": "1px",
+					"sClass": "center"
+				} ]
+			});
+
 			$('.modal').on('shown.bs.modal', function () {
 				$("#tabella-modale").DataTable()
 	           		.responsive.recalc()

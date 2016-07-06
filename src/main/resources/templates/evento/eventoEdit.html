@@ -15,21 +15,21 @@
 							<th:block th:unless="${#lists.isEmpty(eventoWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formEvento" type="submit"></button>
 							</th:block>
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/pianoFormativo/${eventoWrapper.evento.pianoFormativo}/edit|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${eventoWrapper.accreditamentoId}/|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
 						<form id="formEvento" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/evento/save|}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
-								
-							<input type="hidden" name="editId" th:value="${eventoWrapper.evento.id}" /> 
-							<input type="hidden" th:field="${eventoWrapper.providerId}" /> 
-							<input type="hidden" th:field="${eventoWrapper.accreditamentoId}" /> 
+
+							<input type="hidden" name="editId" th:value="${eventoWrapper.evento.id}" />
+							<input type="hidden" th:field="${eventoWrapper.providerId}" />
+							<input type="hidden" th:field="${eventoWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${eventoWrapper.idEditabili}" />
 							<input type="hidden" th:field="${eventoWrapper.idOffset}" />
-							<input type="hidden" th:field="${eventoWrapper.evento.pianoFormativo}" /> 
-							
+							<input type="hidden" th:field="${eventoWrapper.evento.pianoFormativo}" />
+
 							<!-- pianoFormativo -->
 							<div class="item form-group">
 								<label class="control-label col-md-4 col-sm-4 col-xs-12" for="pianoFormativo" th:text="#{label.piano_formativo}">Piano formativo</label>
@@ -46,7 +46,7 @@
 									</div>
 								</th:block>
 							</div>
-							
+
 							<div class="divider-dashed"></div>
 
 							<!-- procedure formative -->
@@ -54,13 +54,13 @@
 								<label class="control-label col-xs-1 text-right" th:text="${++counter}">1</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="procedure_formative_radio"><span th:text="#{label.procedure_formative}">Indicare il tipo di formativo scelto per l’evento:<span class="required">*</span></span></label>
-								<th:block th:if="${#lists.contains(eventoWrapper.idEditabili, counter)}">	
+								<th:block th:if="${#lists.contains(eventoWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_radio">
 										<div class="radio" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
 											<label>
-												<input type="radio" class="flat" th:field="${eventoWrapper.evento.proceduraFormativa}" th:value="${proceduraFormativa}"/> 
+												<input type="radio" class="flat" th:field="${eventoWrapper.evento.proceduraFormativa}" th:value="${proceduraFormativa}"/>
 												<span th:text="${proceduraFormativa.nome}">formativo residenziale (RES)</span>
-											</label> 
+											</label>
 										</div>
 									</div>
 								</th:block>
@@ -72,38 +72,38 @@
 												th:value="${proceduraFormativa}"
 												disabled="disabled" /> <span th:text="${proceduraFormativa.nome}">formativo
 													residenziale (RES)</span>
-											</label> 
+											</label>
 										</div>
 									</div>
 								</th:block>
 								<div th:if="${#fields.hasErrors('eventoWrapper.evento.proceduraFormativa')}" class="alert" th:errors="${eventoWrapper.evento.proceduraFormativa}"></div>
 							</div>
-							
+
 							<div class="divider-dashed"></div>
-							
+
 							<!-- titolo programma formativo -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.titolo')} ? 'bad'">
-								<label class="control-label col-xs-1 text-right" th:text="${++counter}">2</label> 
+								<label class="control-label col-xs-1 text-right" th:text="${++counter}">2</label>
 								<label class="control-label col-md-3 col-sm-3 col-xs-11"
 									for="procedure_formative_titolo"><span th:text="#{label.titolo_programma_formativo}">Titolo del programma formativo<span class="required">*</span></span></label>
-								<th:block th:if="${#lists.contains(eventoWrapper.idEditabili, counter)}"> 
+								<th:block th:if="${#lists.contains(eventoWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_titolo">
-										<textarea maxlength="3000" id="title" rows="3" name="titolo" style="resize: none;" th:field="${eventoWrapper.evento.titolo}"></textarea> 
-										<div id="counter"></div>											
+										<textarea maxlength="3000" id="title" rows="3" name="titolo" style="resize: none;" th:field="${eventoWrapper.evento.titolo}"></textarea>
+										<div id="counter"></div>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(eventoWrapper.idEditabili, counter)}">	
+								<th:block th:unless="${#lists.contains(eventoWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_titolo">
-										<label id="procedure_formative_titolo_disabled"	
+										<label id="procedure_formative_titolo_disabled"
 											class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-											th:text="${eventoWrapper.evento.titolo}"></label> 
+											th:text="${eventoWrapper.evento.titolo}"></label>
 									</div>
 								</th:block>
 								<div th:if="${#fields.hasErrors('eventoWrapper.evento.titolo')}" class="alert" th:errors="${eventoWrapper.evento.titolo}"></div>
 							</div>
-							
+
 							<div class="divider-dashed"></div>
-							
+
 							<!-- obiettivo formativo nazionale-->
 							<div class="item form-group">
 								<label class="control-label col-xs-1 text-right" th:text="${++counter}">3</label>
@@ -118,7 +118,7 @@
 												data-width="100%"
 												data-style="btn-primary" data-actions-box="true"
 												data-size="10" data-hide-disabled="true"
-												title="Seleziona un obiettivo..." 
+												title="Seleziona un obiettivo..."
 												th:remove="all-but-first">
 												<optgroup class="optgroup-primary" th:each="categoriaObiettivoNazionale, row: ${categoriaObiettivoNazionaleList}"
 													th:label="${categoriaObiettivoNazionale.nome}"
@@ -132,7 +132,7 @@
 									</div>
 								</th:block>
 							</div>
-							
+
 							<div class="divider-dashed"></div>
 
 							<!-- obiettivo formativo regionale-->
@@ -149,7 +149,7 @@
 												data-width="100%"
 												data-style="btn-primary" data-actions-box="true"
 												data-size="10" data-hide-disabled="true"
-												title="Seleziona un obiettivo..." 
+												title="Seleziona un obiettivo..."
 												th:remove="all-but-first">
 												<option th:each="obiettivoRegionale, row: ${obiettivoRegionaleList}"
 														th:value="${obiettivoRegionale.id}" th:text="${obiettivoRegionale.nome}">Obiettivo selezionato</option>
@@ -158,7 +158,7 @@
 									</div>
 								</th:block>
 							</div>
-							
+
 							<div class="divider-dashed"></div>
 
 							<!-- professioni evento -->
@@ -204,11 +204,11 @@
 										</div>
 									</div>
 								</th:block>
-								<div th:if="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')}" class="alert" th:errors="${eventoWrapper.evento.professioniEvento}"></div>								
+								<div th:if="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')}" class="alert" th:errors="${eventoWrapper.evento.professioniEvento}"></div>
 							</div>
-							
+
 							<div class="divider-dashed"></div>
-							
+
 							<!-- professioni/discipline -->
 							<div class="item form-group">
 								<label class="control-label col-xs-1 text-right" th:text="${++counter}">6</label>
@@ -226,7 +226,7 @@
 												onchange="abilitaDiscipline(this)" data-selected-text-format="count"
 												th:remove="all-but-first">
 												<option th:each="professione, row: ${professioneList}"
-													th:value="${professione.id}" th:text="${professione.nome}" 
+													th:value="${professione.id}" th:text="${professione.nome}"
 													th:field="${eventoWrapper.evento.professioniSelezionate}">Professione selezionata</option>
 											</select>
 										</div>
@@ -271,7 +271,7 @@
 														<td th:text="${disciplina.nome}"></td>
 													</tr>
 												</tbody>
-											</table>										
+											</table>
 										</div>
 									</div>
 								</th:block>
@@ -283,32 +283,32 @@
 			<script th:inline="javascript">
 				var text_max = 3000;
 				$('#counter').html(text_max + ' '+[[#{label.caratteri_rimanenti}]]);
-	
+
 				$('#title').keyup(function() {
 				  var text_length = $('#title').val().length;
 				  var text_remaining = text_max - text_length;
-				  
+
 				  $('#counter').html(text_remaining + ' '+[[#{label.caratteri_rimanenti}]]);
 				});
-				
+
 				//cambia la stringa per i pulsanti e il contatore
 				$(document).ready(function() {
 					$('select').selectpicker({
 						selectAllText : 'Seleziona tutti',
 						deselectAllText : 'Deseleziona tutti',
-						countSelectedText : '{0} selezionate'						
+						countSelectedText : '{0} selezionate'
 					});
-					
+
 					if($("#professioni")[0]) {
 						abilitaDiscipline($("#professioni")[0]);
 					}
-			
+
 					if($('#generaleProf').is(':checked')) {
 						$('button[data-id="professioni"]').prop('disabled', true);
 						$('button[data-id="discipline"]').prop('disabled', true);
-					}		
+					}
 				});
-				
+
 				function abilitaDiscipline(professioni) {
 					//flag per capire se c'è almeno una professione
 					var almenoUna = false;
@@ -334,14 +334,14 @@
 					//refresh della view
 					$('#discipline').selectpicker('refresh');
 				}
-				
+
 				//gestione generale/settoriale delle professioni
 				$('#generaleProf').on('ifChecked', function(event){
 					$('.selectpicker.multi').selectpicker('selectAll');
 					$('button[data-id="professioni"]').prop('disabled', true);
 					$('button[data-id="discipline"]').prop('disabled', true);
 				});
-				
+
 				$('#settorialeProf').on('ifChecked', function(event){
 					$('.selectpicker.multi').selectpicker('deselectAll');
 					$('button[data-id="professioni"]').prop('disabled', false);

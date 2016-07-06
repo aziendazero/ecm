@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.service.FileService;
+import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.FileValidator;
@@ -34,6 +37,8 @@ public class FileController {
 	private FileValidator fileValidator;
 	@Autowired
 	private FileService fileService;
+	@Autowired
+	private ProviderService providerService;
 
 	@RequestMapping(value = "/file/{fileId}", method = RequestMethod.GET)
 	public void getFile(@PathVariable("fileId") Long id, HttpServletResponse response, Model model) throws IOException {
@@ -42,7 +47,7 @@ public class FileController {
 				model.addAttribute("message",new Message("A","B","C"));
 			}
 			else{
-				File file = fileService.getFile(id); 
+				File file = fileService.getFile(id);
 
 				if(file == null){
 					throw new FileNotFoundException();
@@ -50,7 +55,7 @@ public class FileController {
 
 				//response.setContentType(mimeType);
 
-				/* "Content-Disposition : inline" will show viewable types [like images/text/pdf/anything viewable by browser] right on browser 
+				/* "Content-Disposition : inline" will show viewable types [like images/text/pdf/anything viewable by browser] right on browser
 		            while others(zip e.g) will be directly downloaded [may provide save as popup, based on your browser setting.]*/
 				response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + file.getNomeFile() +"\""));
 
@@ -95,4 +100,21 @@ public class FileController {
 		}
 		return file;
 	}
+
+	//TODO domenico (check se fa la query di tutto il provider)
+	/*** LIST PERSONA ***/
+	@RequestMapping("/provider/{providerId}/allegato/list")
+	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		try {
+			Provider provider = providerService.getProvider(providerId);
+			model.addAttribute("allegatoList", provider.getFiles());
+			model.addAttribute("titolo", provider.getDenominazioneLegale());
+			return "allegato/allegatoList";
+		}catch (Exception ex){
+			//TODO gestione eccezione
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:provider/show";
+		}
+	}
+
 }

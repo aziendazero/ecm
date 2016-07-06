@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.list_eventi(${titolo})}">Lista degli eventi del provider (denominazioneLegale)</h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<table class="datatable-responsive-eventi table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.id}">label.id</th>
+									<th th:text="#{label.titolo}">label.titolo</th>
+									<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
+									<th th:text="#{label.prezzo}">label.prezzo</th>
+									<th th:text="#{label.stato}">label.stato</th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="evento, row : ${eventoList}">
+									<td th:text="${evento.id}"></td>
+									<td th:text="${evento.titolo}"></td>
+									<td th:text="${evento.proceduraFormativa.nome}"></td>
+									<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
+									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
+									<td th:unless="${evento.pagato}"><button type="button" class="btn btn-primary btn-mypay" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per il pagamento con MYPAY!')">Paga con MYPAY!</button></td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
