@@ -116,7 +116,7 @@ public class EventoController {
 	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		try {
 			Provider provider = providerService.getProvider(providerId);
-			model.addAttribute("eventiList", eventoService.getAllEventiFromProvider(providerId));
+			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerId));
 			model.addAttribute("titolo", provider.getDenominazioneLegale());
 			return "evento/eventoList";
 		}catch (Exception ex){
@@ -150,7 +150,9 @@ public class EventoController {
 				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
 				redirectAttrs.addAttribute("providerId", wrapper.getProviderId());
 				redirectAttrs.addAttribute("pianoFormativo", wrapper.getEvento().getPianoFormativo());
-				return "redirect:/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit";
+//				return "redirect:/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit";
+				redirectAttrs.addFlashAttribute("currentTab", "tab4");
+				return "redirect:/accreditamento/{accreditamentoId}/";
 			}
 		}catch (Exception ex){
 			LOGGER.error(ex.getMessage(), ex);

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
@@ -71,11 +72,26 @@ public class AccreditamentoWrapper {
 	private boolean sezione2Stato;
 	private boolean sezione3Stato;
 
+	//Piano Formativo
+	private Set<Evento> listaEventi;
+	private String pianoFormativo;
+
+	public boolean isEditabile(){
+		return true;
+	}
+
+	public boolean isCanSend(){
+		if(listaEventi != null && !listaEventi.isEmpty())
+			return true;
+		else
+			return false;
+	}
+
 	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider){
 		//TODO migliorare la logica per evitare di fare troppi if
 		// ad esempio inizializzare gli stati a true e poi ad ogni controllo se fallisce si mette il false sia allo stato che al valid
 		// cosi facendo valid è settato in automatico senza rifare tutti i controlli
-		// 
+		//
 		//NON lo faccio adesso perchè voglio capire in fase di validazione della domanda come gestiremo i vari stati
 
 		providerStato = (provider.getRagioneSociale()!= null && !provider.getRagioneSociale().isEmpty()) ? true : false;
@@ -98,11 +114,11 @@ public class AccreditamentoWrapper {
 
 		sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
 		sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
-		sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false; 
+		sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
 	}
 
 	/*
-	 * [A] Almeno 5 componenti (coordinatore incluso) 
+	 * [A] Almeno 5 componenti (coordinatore incluso)
 	 * [B] Almeno 5 professionisti Sanitari
 	 * [C] Se settato "Generale" -> Almeno 2 professioni diverse tra i componenti
 	 * [D] Se settato "Settoriale" -> Almeno 2 professioni analoghe a quelle selezionate (almeno che non sia stata selezionate solo 1 professione)
@@ -144,14 +160,14 @@ public class AccreditamentoWrapper {
 	}
 
 	/*
-	 * [A] Almeno 5 componenti (coordinatore incluso) 
+	 * [A] Almeno 5 componenti (coordinatore incluso)
 	 * [B] Almeno 5 professionisti Sanitari ??? //TODO controllo comitato scientifico
 	 * [C] Se settato "Generale" -> Almeno 2 professioni diverse tra i componenti
 	 * [D] Se settato "Settoriale" -> Almeno 2 professioni analoghe a quelle selezionate (almeno che non sia stata selezionate solo 1 professione)
 	 * */
 	//	private void checkComitatoScientifico(){
 	//		comitatoScientificoStato = true;
-	//		
+	//
 	//		//[A]
 	//		if(componentiComitatoScientifico.size() < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
 	//			comitatoScientificoStato = false;
@@ -165,7 +181,7 @@ public class AccreditamentoWrapper {
 	//				for(Persona p : componentiComitatoScientifico){
 	//					professioniDeiComponenti.add(p.getProfessione());
 	//				}
-	//				
+	//
 	//				//[C]
 	//				if(datiAccreditamento.getProfessioniAccreditamento().equalsIgnoreCase("generale")){
 	//					if(professioniDeiComponenti.size() < 2){
@@ -228,4 +244,8 @@ public class AccreditamentoWrapper {
 		else
 			return true;
 	}
+
+
+
+
 }
