@@ -10,6 +10,7 @@ public class SedeWrapper extends Wrapper{
 	private Sede sede;
 	private String tipologiaSede; 
 	private Long accreditamentoId;
+	private Long providerId;
 	
 	public void setTipologiaSede(String tipologiaSede){
 		this.tipologiaSede = tipologiaSede;

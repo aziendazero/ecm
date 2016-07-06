@@ -16,7 +16,7 @@
 							<th:block th:unless="${#lists.isEmpty(sedeWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formSede" type="submit"></button>
 								<button class="btn btn-primary pull-right" onclick="loadSedeLegale()" th:if="${sedeWrapper.tipologiaSede == 'SedeOperativa'}" th:text="#{label.coincide_con_sede_legale}"></button>
-								<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/sede/new?tipologiaSede=${sedeWrapper.tipologiaSede}|}"></a>
+								<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/provider/${sedeWrapper.providerId}/sede/new?tipologiaSede=${sedeWrapper.tipologiaSede}|}"></a>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}|}"></a>
 						</div>
@@ -24,7 +24,7 @@
 					</div>
 					
 					<div class="x_content">
-						<form id="formSede" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${sedeWrapper.accreditamentoId}/sede/save|}"
+						<form id="formSede" class="form-horizontal form-label-left" th:action="@{|/accreditamento/${sedeWrapper.accreditamentoId}/provider/${sedeWrapper.providerId}/sede/save|}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
 								
 							<input type="hidden" name="editId" th:value="${sedeWrapper.sede.id}" />
@@ -213,7 +213,7 @@
 			
 			
 			function loadSedeLegale(){
-				var url = "/accreditamento/" + [[${sedeWrapper.accreditamentoId}]] + "/sede/copia";
+				var url = "/accreditamento/" + [[${sedeWrapper.accreditamentoId}]] + "/provider/" + [[${sedeWrapper.providerId}]] + "/sede/copia";
 				$("#main-container").load(url);
 			}
 			
