@@ -39,7 +39,7 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 		@Override
 		@Transactional
 		public void onApplicationEvent(ContextRefreshedEvent event) {
-			LOGGER.info("ENGINEERING DATABASE - Initializing...");
+			LOGGER.info("BOOTSTRAP ECM - Inizializzazione ENGINEERING...");
 
 			Provider provider = providerRepository.findOneByPartitaIva("01234567890");
 
@@ -95,9 +95,10 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				evento3.setPagato(true);
 				evento3.setProvider(provider);
 				eventoRepository.save(evento3);
+				LOGGER.info("BOOTSTRAP ECM - ENGINEERING creato...");
 			}
 			else {
-				LOGGER.info("Engineering Database not EMPTY");
+				LOGGER.info("BOOTSTRAP ECM - ENGINEERING trovato...");
 			}
 		}
 }

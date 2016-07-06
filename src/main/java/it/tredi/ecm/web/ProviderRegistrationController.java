@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 import it.tredi.ecm.utils.Utils;
@@ -28,6 +29,8 @@ public class ProviderRegistrationController {
 	
 	@Autowired
 	private ProviderService providerService;
+	@Autowired
+	private FileService fileService;
 	
 	@Autowired
 	private ProviderRegistrationWrapperValidator providerRegistrationValidator;
@@ -76,15 +79,14 @@ public class ProviderRegistrationController {
 
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.POST)
 	public String registraProvider(@ModelAttribute("providerForm") ProviderRegistrationWrapper providerRegistrationWrapper, 
-									BindingResult result, RedirectAttributes redirectAttrs, Model model, 
-									@RequestParam( value="delegaRichiedente",required = false) MultipartFile multiPartFile){
+									BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		try{
 			
 			//TODO Delegato consentito solo per alcuni tipi di Provider
 			if(providerRegistrationWrapper.isDelegato()){
-				File delegaRichiedenteFile = Utils.convertFromMultiPart(multiPartFile);
-				if(delegaRichiedenteFile != null)
-					providerRegistrationWrapper.setDelegaRichiedenteFile(delegaRichiedenteFile);
+				File file = providerRegistrationWrapper.getDelega();
+				if(file != null && !file.isNew())
+					providerRegistrationWrapper.setDelega(fileService.getFile(file.getId()));
 			}
 			
 			providerRegistrationValidator.validate(providerRegistrationWrapper, result);	

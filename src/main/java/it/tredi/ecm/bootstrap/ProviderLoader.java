@@ -38,7 +38,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 	@Override
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		LOGGER.info("BOOTSTRAP ECM - Initializing DATABASE...");
+		LOGGER.info("BOOTSTRAP ECM - Inizializzazione PROVIDER...");
 		
 		Provider provider = providerRepository.findOneByPartitaIva("00578261208");
 		
@@ -60,7 +60,6 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			legale.getAnagrafica().setNome("Giuseppe");
 			legale.getAnagrafica().setCodiceFiscale("VRDGPP80H17D969I");
 			legale.getAnagrafica().setCellulare("123456789");
-			legale.getAnagrafica().setTelefono("051987321");
 			legale.getAnagrafica().setEmail("gverdi@3di.it");
 			legale.getAnagrafica().setPec("gverdi@pec.it");
 			personaRepository.save(legale);
@@ -85,9 +84,9 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			
 			personaRepository.save(legale);
 			
-			LOGGER.info("Provider " + provider.getId() + " created");
+			LOGGER.info("BOOTSTRAP ECM - PROVIDER creato");
 		}else{
-			LOGGER.info("bootstrap ecm - database not empty...");
+			LOGGER.info("BOOTSTRAP ECM - PROVIDER trovato");
 		}
 	}
 }

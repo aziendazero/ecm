@@ -102,12 +102,12 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper() {
 		ProviderRegistrationWrapper providerRegistrationWrapper = new ProviderRegistrationWrapper();
-		Provider provider = getProvider();
+		Provider provider = new Provider();
 		providerRegistrationWrapper.setProvider(provider);
 		
 		if(provider.isNew()){
 			File delega = new File();
-			providerRegistrationWrapper.setDelegaRichiedenteFile(delega);
+			providerRegistrationWrapper.setDelega(delega);
 			providerRegistrationWrapper.setRichiedente(new Persona(Ruolo.RICHIEDENTE));
 			providerRegistrationWrapper.setLegale(new Persona(Ruolo.LEGALE_RAPPRESENTANTE));
 		}else{
@@ -124,7 +124,7 @@ public class ProviderServiceImpl implements ProviderService {
 			}
 			
 			File delega = new File();
-			providerRegistrationWrapper.setDelegaRichiedenteFile(delega);
+			providerRegistrationWrapper.setDelega(delega);
 			providerRegistrationWrapper.setRichiedente(richiedente);
 			providerRegistrationWrapper.setLegale(legale);
 		}
@@ -140,7 +140,7 @@ public class ProviderServiceImpl implements ProviderService {
 		if(providerRegistrationWrapper.isDelegato())
 			richiedente.setRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
 		Persona legale = providerRegistrationWrapper.getLegale();
-		File delegaRichiedente = providerRegistrationWrapper.getDelegaRichiedenteFile(); 
+		File delegaRichiedente = providerRegistrationWrapper.getDelega();
 		
 		if(provider.getAccount().getProfiles().isEmpty()){
 			//assegno profilo PROVIDER TODO 

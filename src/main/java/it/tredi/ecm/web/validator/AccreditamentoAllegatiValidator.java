@@ -10,22 +10,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.utils.Utils;
 
 @Component
-public class AccreditamentoAllegatiValidator {
+public class AccreditamentoAllegatiValidator{
 private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAllegatiValidator.class);
 	
 	@Autowired
 	private FileValidator fileValidator;
 	
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
-		LOGGER.debug("Validazione Allegati Accreditamento");
+		Utils.logInfo(LOGGER, "Validazione Allegati Accreditamento");
 		validateFiles(files, errors, "");
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void validateFiles(Object target, Errors errors, String prefix){
-		LOGGER.debug("VALIDAZIONE ALLEGATI ACCREDITAMENTO");
 		Set<File> files = null;
 		if(target != null)
 			files = (Set<File>) target;

@@ -26,7 +26,7 @@ public class ObiettiviLoader implements ApplicationListener<ContextRefreshedEven
 	@Override
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
-		LOGGER.info("Bootsrap ECM - Initializing OBIETTIVI EVENTI...");
+		LOGGER.info("BOOTSTRAP ECM - Inizializzazione OBIETTIVI/EVENTI...");
 		
 		Set<Obiettivo> obiettivi = obiettivoService.getAllObiettivi();
 		
@@ -87,8 +87,10 @@ public class ObiettiviLoader implements ApplicationListener<ContextRefreshedEven
 			obiettivi.add(new Obiettivo("Tematiche speciali del SSN e SSR ed a carattere urgente e/o straordinario individuate dalla commissione nazionale ECM e dalle regioni/province autonome per far fronte a specifiche emergenze sanitarie. (20)", nazionale, CategoriaObiettivoNazionale.DI_SISTEMA));
 						
 			obiettivoService.save(obiettivi);
+			
+			LOGGER.info("BOOTSTRAP ECM - OBIETTIVI/EVENTI creati");
 		}else{
-			LOGGER.info("Bootsrap ECM - OBIETTIVI EVENTI not empty");
+			LOGGER.info("BOOTSTRAP ECM - OBIETTIVI/EVENTI trovati (" + obiettivi.size() +")");
 		}
 	}
 }

@@ -12,6 +12,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
 
+	/**		PROVIDER	**/
 	@Override
 	public boolean canShowAllProvider(CurrentUser currentUser) {
 		if(currentUser == null)
@@ -49,7 +50,13 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		
 		return false;
 	}
+	
+	private boolean isProviderOwner(Long currentUserAccountId, Long providerId){
+		Long accountId = providerService.getAccountIdForProvider(providerId);
+		return accountId.equals(currentUserAccountId);
+	}
 
+	/**		ACCREDITAMENTO	**/
 	@Override
 	public boolean canShowAllAccreditamento(CurrentUser currentUser) {
 		if(currentUser == null)
@@ -87,15 +94,63 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		
 		return false;
 	}
-
-	private boolean isProviderOwner(Long currentUserAccountId, Long providerId){
-		Long accountId = providerService.getAccountIdForProvider(providerId);
-		return accountId.equals(currentUserAccountId);
-	}
 	
 	private boolean isAccreditamentoOwner(Long currentUserAccountId, Long accreditamentoId){
 		Long providerId = accreditamentoService.getProviderIdForAccreditamento(accreditamentoId);
 		return isProviderOwner(currentUserAccountId, providerId);
 	}
 	
+	/**		USER	**/
+	@Override
+	public boolean canShowAllUser(CurrentUser currentUser) {
+		if(currentUser == null)
+			return false;
+		
+		if(currentUser.hasRole(RoleEnum.USER_SHOW_ALL.name()))
+			return true;
+		
+		return false;
+	}
+	
+	@Override
+	public boolean canShowUser(CurrentUser currentUser, Long userId) {
+		if(canShowAllUser(currentUser))
+			return true;
+		
+		if(currentUser.hasRole(RoleEnum.USER_SHOW.name())){
+			return isUserOwner(currentUser.getAccount().getId(), userId);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean canEditUser(CurrentUser currentUser, Long userId) {
+		if(currentUser == null)
+			return false;
+		
+		if(currentUser.hasRole(RoleEnum.USER_EDIT_ALL.name()))
+			return true;
+		
+		if(currentUser.hasRole(RoleEnum.USER_EDIT.name())){
+			return isUserOwner(currentUser.getAccount().getId(), userId);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean canCreateUser(CurrentUser currentUser) {
+		if(currentUser == null)
+			return false;
+		
+		if(currentUser.hasRole(RoleEnum.USER_CREATE.name()))
+			return true;
+		
+		return false;
+	}
+	
+	private boolean isUserOwner(Long currentUserAccountId, Long userId){
+		return userId.equals(currentUserAccountId);
+	}
 }
