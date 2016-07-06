@@ -29,7 +29,7 @@ public class ProfessioniDisciplineLoader implements ApplicationListener<ContextR
 	@Override
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
-		LOGGER.info("Bootsrap ECM - Initializing PROFESSIONI / DISCIPLINE...");
+		LOGGER.info("BOOTSTRAP ECM - Inizializzazione PROFESSIONI/DISCIPLINE...");
 		
 		//Set<Professione> professioni = professioneService.getAllProfessioni();
 		Set<Disciplina> disciplinea = disciplinaService.getAllDiscipline();
@@ -504,8 +504,9 @@ public class ProfessioniDisciplineLoader implements ApplicationListener<ContextR
 			Professione p30 = new Professione("Terapista occupazionale");
 			p30.addDisciplina(d101);	
 			professioneService.save(p30);
+			LOGGER.info("BOOTSTRAP ECM - PROFESSIONI/DISCIPLINE create");
 		}else{
-			LOGGER.info("Bootsrap ECM - PROFESSIONI / DISCIPLINE not empty");
+			LOGGER.info("BOOTSTRAP ECM - PROFESSIONI/DISCIPLINE trovate(" + disciplinea.size() +")");
 		}
 	}
 }

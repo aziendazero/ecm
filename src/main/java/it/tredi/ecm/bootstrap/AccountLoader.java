@@ -36,7 +36,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		LOGGER.info("BOOTSTRAP ECM - Initializing ACL...");
+		LOGGER.info("BOOTSTRAP ECM - Inizializzazione ACL...");
 		
 		Set<Account> accounts = accountRepository.findAll();
 			
@@ -138,8 +138,9 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 //			}catch (Exception ex){
 //				ex.printStackTrace();
 //			}
+			LOGGER.info("BOOTSTRAP ECM - ACL creata");
 		}else{
-			LOGGER.info("BOOTSTRAP ECM - Acl not empty...");
+			LOGGER.info("BOOTSTRAP ECM - ACL trovata (" + accounts.size() + ")");
 		}
 	}
 }

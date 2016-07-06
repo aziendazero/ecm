@@ -38,7 +38,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 	@Override
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		LOGGER.info("BOOTSTRAP ECM - Initializing DATABASE...");
+		LOGGER.info("BOOTSTRAP ECM - Inizializzazione PROVIDER...");
 		
 		Provider provider = providerRepository.findOneByPartitaIva("00578261208");
 		
@@ -84,9 +84,9 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			
 			personaRepository.save(legale);
 			
-			LOGGER.info("Provider " + provider.getId() + " created");
+			LOGGER.info("BOOTSTRAP ECM - PROVIDER creato");
 		}else{
-			LOGGER.info("bootstrap ecm - database not empty...");
+			LOGGER.info("BOOTSTRAP ECM - PROVIDER trovato");
 		}
 	}
 }
