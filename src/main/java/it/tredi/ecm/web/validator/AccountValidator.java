@@ -15,7 +15,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccountChangePassword;
 
 @Component
-public class AccountValidator extends Validator{
+public class AccountValidator{
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccountValidator.class);
 
 	@Autowired
@@ -29,7 +29,7 @@ public class AccountValidator extends Validator{
 		Utils.logInfo(LOGGER, "Validazione Account");
 		Account account = (Account)target;
 		validateAccount(account, errors, prefix);
-		logDebugErrorFields(LOGGER, errors);
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 	public void validateChangePassword(Object target, Errors errors, Account account){
@@ -55,7 +55,7 @@ public class AccountValidator extends Validator{
 				errors.rejectValue("confirmNewPassword", "error.password_repeat");
 			}
 		}
-		logDebugErrorFields(LOGGER, errors);
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 	private void validateAccount(Account account, Errors errors, String prefix){

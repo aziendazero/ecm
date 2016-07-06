@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.tredi.ecm.dao.entity.File;
@@ -61,5 +62,10 @@ public class Utils {
 	public static void logDebug(org.slf4j.Logger LOGGER, String message){
 		String userInfo = "[" + getAuthenticatedUser().getAccount().getUsername() + "] - "; 
 		LOGGER.debug(userInfo + message);
+	}
+	
+	public static void logDebugErrorFields(org.slf4j.Logger LOGGER, Errors errors){
+		if(LOGGER.isDebugEnabled())
+			errors.getFieldErrors().forEach( fieldError -> Utils.logDebug(LOGGER, fieldError.getField() + ": '" + fieldError.getRejectedValue() + "' [" + fieldError.getCode()+ "]"));
 	}
 }

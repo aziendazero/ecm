@@ -27,6 +27,7 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoAllegatiWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.AccreditamentoAllegatiValidator;
@@ -59,14 +60,15 @@ public class AccreditamentoAllegatiController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/allegati/edit")
 	public String editAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info("GET /accreditamento/"+ accreditamentoId +"/allegati/edit");
+		Utils.logInfo(LOGGER, "GET /accreditamento/"+ accreditamentoId +"/allegati/edit");
 		try{
 			return goToEdit(model, prepareAccreditamentoAllegatiWrapper(accreditamentoId));
 		}catch (Exception ex){
-			LOGGER.error("GET /accreditamento/"+ accreditamentoId +"/allegati/edit",ex);
+			Utils.logError(LOGGER, "GET /accreditamento/"+ accreditamentoId +"/allegati/edit",ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addFlashAttribute("currentTab","tab3");
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/"+ accreditamentoId);
 			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	}
@@ -75,7 +77,7 @@ public class AccreditamentoAllegatiController {
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/save", method = RequestMethod.POST)
 	public String saveDatiAccreditamento(@ModelAttribute("accreditamentoAllegatiWrapper") AccreditamentoAllegatiWrapper wrapper, BindingResult result,
 			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
-		LOGGER.info("POST /accreditamento/"+ accreditamentoId +"/allegati/save");
+		Utils.logInfo(LOGGER, "POST /accreditamento/"+ accreditamentoId +"/allegati/save");
 		try {
 				//TODO getFile da testare se funziona anche senza reload
 				//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
@@ -99,32 +101,35 @@ public class AccreditamentoAllegatiController {
 			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles());
 			
 			if(result.hasErrors()){
-				LOGGER.debug("Validazione fallita");
+				Utils.logDebug(LOGGER, "Validazione fallita");
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 				return EDIT;
 			}else{
-				LOGGER.debug("Salvataggio allegati al provider");
+				Utils.logDebug(LOGGER, "Salvataggio allegati al provider");
 				providerService.save(wrapper.getProvider());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.allegati_inseriti", "success"));
 				redirectAttrs.addFlashAttribute("currentTab","tab3");
 				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+				Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/"+ accreditamentoId);
 				return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch (Exception ex){
-			LOGGER.error("POST /accreditamento/"+ accreditamentoId +"/allegati/save", ex);
+			Utils.logError(LOGGER, "POST /accreditamento/"+ accreditamentoId +"/allegati/save", ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 			return EDIT;
 		}
 	}
 	
 	private String goToEdit(Model model, AccreditamentoAllegatiWrapper wrapper){
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
-		LOGGER.info("VIEW: " + EDIT);
+		Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 		return EDIT;
 	}
 
 	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapper(Long accreditamentoId){
-		LOGGER.info("prepareAccreditamentoAllegatiWrapper(" + accreditamentoId + ") - entering");
+		Utils.logInfo(LOGGER, "prepareAccreditamentoAllegatiWrapper(" + accreditamentoId + ") - entering");
 		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
 
@@ -151,7 +156,7 @@ public class AccreditamentoAllegatiController {
 		wrapper.setModelIds(modelIds);
 		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_ALLEGATI), accreditamento.getIdEditabili());
 
-		LOGGER.info("prepareAccreditamentoAllegatiWrapper(" + accreditamentoId + ") - exiting");
+		Utils.logInfo(LOGGER, "prepareAccreditamentoAllegatiWrapper(" + accreditamentoId + ") - exiting");
 		return wrapper;
 	}
 
