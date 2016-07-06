@@ -34,7 +34,7 @@ import it.tredi.ecm.web.validator.AccreditamentoAllegatiValidator;
 @Controller
 public class AccreditamentoAllegatiController {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAllegatiController.class);
-	
+
 	private final String EDIT = "accreditamento/accreditamentoAllegatiEdit";
 
 	@Autowired
@@ -45,12 +45,12 @@ public class AccreditamentoAllegatiController {
 	private AccreditamentoService accreditamentoService;
 	@Autowired
 	private ProviderService providerService;
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
-	
+
 	@ModelAttribute("accreditamentoAllegatiWrapper")
 	public AccreditamentoAllegatiWrapper getAccreditamentoAllegatiWrapper(@RequestParam(value="editId",required = false) Long id){
 		if(id != null){
@@ -98,9 +98,9 @@ public class AccreditamentoAllegatiController {
 							wrapper.setSistemaInformatico(fileService.getFile(file.getId()));
 					}
 				}
-			
+
 			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles());
-			
+
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				return EDIT;
@@ -117,7 +117,7 @@ public class AccreditamentoAllegatiController {
 			return EDIT;
 		}
 	}
-	
+
 	private String goToEdit(Model model, AccreditamentoAllegatiWrapper wrapper){
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
 		return EDIT;

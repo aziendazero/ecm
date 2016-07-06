@@ -411,6 +411,65 @@ h2 {
 }
 
 .file-widget-container {
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+.file-widget-fa {
+	height: 140px;
+}
+
+.file-widget-icon {
+	line-height: 140px
+}
+
+.file-widget-description {
+	height: 140px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.file-nome {
+	height: 20px;
+	line-height: 20px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.file-titolo {
+	height: 60px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	display: -webkit-box;
+  	-webkit-line-clamp: 3;
+  	-webkit-box-orient: vertical;
+}
+
+.file-data {
+	height: 20px;
+	line-height: 20px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.file-formato {
+	height: 20px;
+	line-height: 20px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.file-container {
+	margin: 0;
+	height: 140px;
 	border: 1px solid gray;
 	border-radius: 5px;
+	border-color: #E4E4E4;
+	padding-left: 5px;
+	padding-right: 5px;
+
+
 }
