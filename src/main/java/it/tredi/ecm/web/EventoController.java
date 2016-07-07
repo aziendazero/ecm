@@ -170,7 +170,9 @@ public class EventoController {
 			Model model, RedirectAttributes redirectAttrs){
 		try{
 			eventoService.delete(id);
-			return "redirect:/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit";
+//			return "redirect:/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit";
+			redirectAttrs.addFlashAttribute("currentTab","tab4");
+			return "redirect:/accreditamento/{accreditamentoId}/";
 		}catch (Exception ex){
 			LOGGER.error(ex.getMessage(), ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
