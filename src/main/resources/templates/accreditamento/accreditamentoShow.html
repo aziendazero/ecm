@@ -374,7 +374,7 @@
 														<h2 th:text="#{label.inserimento_piano_formativo(${accreditamentoWrapper.accreditamento.pianoFormativo})}">Piano formativo relativo all'anno xxx</h2>
 														<div class="pull-right buttons-header">
 															<a class="btn btn-primary"
-															th:if="${!accreditamentoWrapper.canSend}"
+															th:if="${!accreditamentoWrapper.canInsertPianoFormativo}"
 															th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/insertPianoFormativo|}"
 															th:text="#{label.inserisci_piano_formativo}">label.inserisci_piano_formativo</a>
 														</div>
@@ -392,7 +392,7 @@
 																<tr th:each="evento, row : ${accreditamentoWrapper?.listaEventi}">
 																	<td><a th:text="${evento.titolo}" th:href="@{|/accreditamento/${accreditamentoWrapper?.accreditamento.id}/provider/${accreditamentoWrapper?.provider.id}/evento/${evento.id}/edit|}"></a></td>
 																	<td th:unless="${evento.new}">
-																		<a th:href="@{|/accreditamento/${accreditamentoWrapper?.accreditamento.id}/provider/${accreditamentoWrapper?.provider.id}/evento/${evento.id}/delete|}"><span class="fa fa-trash" th:title="#{label.rimuovi_evento}"></span></a>
+																		<a th:if="${accreditamentoWrapper.accreditamento.editabile}" th:href="@{|/accreditamento/${accreditamentoWrapper?.accreditamento.id}/provider/${accreditamentoWrapper?.provider.id}/evento/${evento.id}/delete|}"><span class="fa fa-trash" th:title="#{label.rimuovi_evento}"></span></a>
 																	</td>
 																	<td th:if="${evento.new}">
 																		<a><span class="fa fa-trash disabled"></span></a>
@@ -400,7 +400,7 @@
 																</tr>
 															</tbody>
 														</table>
-														<a th:if="${accreditamentoWrapper.accreditamento.editabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${accreditamentoWrapper?.accreditamento.id}/provider/${accreditamentoWrapper?.provider.id}/evento/new?pianoFormativo=${accreditamentoWrapper?.accreditamento.pianoFormativo}|}"></a>
+														<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${accreditamentoWrapper?.accreditamento.id}/provider/${accreditamentoWrapper?.provider.id}/evento/new?pianoFormativo=${accreditamentoWrapper?.accreditamento.pianoFormativo}|}"></a>
 													</div>
 												</div>
 											</div>
@@ -517,7 +517,7 @@
 							else return true;
 						}
 						if (tab == "tab4") {
-							if (![[${accreditamentoWrapper.canInsertPianoFormativo}]]) {
+							if (![[${accreditamentoWrapper.completa}]]) {
 								var exists = false;
 						        $(".ui-pnotify-text").each(function() {
 						            if ($(this).html() == [[#{message.compilare_altre_tab}]]) {
