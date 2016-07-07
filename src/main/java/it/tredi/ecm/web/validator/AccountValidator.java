@@ -18,8 +18,7 @@ import it.tredi.ecm.web.bean.AccountChangePassword;
 public class AccountValidator{
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccountValidator.class);
 
-	@Autowired
-	private AccountService accountService;
+	@Autowired private AccountService accountService;
 
 	public void validate(Object target, Errors errors) {
 		validate(target, errors, "");
