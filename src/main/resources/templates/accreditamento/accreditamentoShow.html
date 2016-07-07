@@ -371,10 +371,10 @@
 											<div class="col-xs-12">
 												<div class="x_panel">
 													<div class="x_title">
-														<h2 th:text="#{label.inserimento_piano_formativo(${accreditamentoWrapper.accreditamento.pianoFormativo})}">Piano formativo relativo all'anno xxx</h2>
+														<h2 th:text="#{label.inserimento_piano_formativo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.pianoFormativo,0)})}">Piano formativo relativo all'anno xxx</h2>
 														<div class="pull-right buttons-header">
 															<a class="btn btn-primary"
-															th:if="${!accreditamentoWrapper.canInsertPianoFormativo}"
+															th:if="${accreditamentoWrapper.canInsertPianoFormativo}"
 															th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/insertPianoFormativo|}"
 															th:text="#{label.inserisci_piano_formativo}">label.inserisci_piano_formativo</a>
 														</div>
