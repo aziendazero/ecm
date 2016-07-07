@@ -16,8 +16,7 @@ import it.tredi.ecm.utils.Utils;
 public class AccreditamentoAllegatiValidator{
 private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAllegatiValidator.class);
 	
-	@Autowired
-	private FileValidator fileValidator;
+	@Autowired private FileValidator fileValidator;
 	
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
 		Utils.logInfo(LOGGER, "Validazione Allegati Accreditamento");

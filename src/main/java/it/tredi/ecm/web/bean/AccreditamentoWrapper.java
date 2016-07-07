@@ -1,6 +1,7 @@
 package it.tredi.ecm.web.bean;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +12,6 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
@@ -73,19 +73,7 @@ public class AccreditamentoWrapper {
 	private boolean sezione3Stato;
 
 	//Piano Formativo
-	private Set<Evento> listaEventi;
-	private String pianoFormativo;
-
-	public boolean isEditabile(){
-		return true;
-	}
-
-	public boolean isCanSend(){
-		if(listaEventi != null && !listaEventi.isEmpty())
-			return true;
-		else
-			return false;
-	}
+	private Set<Evento> listaEventi = new HashSet<Evento>();
 
 	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider){
 		//TODO migliorare la logica per evitare di fare troppi if
@@ -159,52 +147,6 @@ public class AccreditamentoWrapper {
 		}
 	}
 
-	/*
-	 * [A] Almeno 5 componenti (coordinatore incluso)
-	 * [B] Almeno 5 professionisti Sanitari ??? //TODO controllo comitato scientifico
-	 * [C] Se settato "Generale" -> Almeno 2 professioni diverse tra i componenti
-	 * [D] Se settato "Settoriale" -> Almeno 2 professioni analoghe a quelle selezionate (almeno che non sia stata selezionate solo 1 professione)
-	 * */
-	//	private void checkComitatoScientifico(){
-	//		comitatoScientificoStato = true;
-	//
-	//		//[A]
-	//		if(componentiComitatoScientifico.size() < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
-	//			comitatoScientificoStato = false;
-	//			comitatoScientificoErrorMessage = "error.numero_minimo_comitato";
-	//		}
-	//		else{
-	//			// mi assicuro che sono stati gia' inseriti i dati relativi all'accreditamento
-	//			if(datiAccreditamentoStato){
-	//				//Individuo distintamente le professioni dei componenti del comitato
-	//				Set<Professione> professioniDeiComponenti = new HashSet<Professione>();
-	//				for(Persona p : componentiComitatoScientifico){
-	//					professioniDeiComponenti.add(p.getProfessione());
-	//				}
-	//
-	//				//[C]
-	//				if(datiAccreditamento.getProfessioniAccreditamento().equalsIgnoreCase("generale")){
-	//					if(professioniDeiComponenti.size() < 2){
-	//						comitatoScientificoStato = false;
-	//						comitatoScientificoErrorMessage = "error.numero_minimo_professioni";
-	//					}
-	//				}//[D]
-	//				else{
-	//					if(datiAccreditamento.getProfessioniSelezionate().size() > 1){
-	//						professioniDeiComponenti.retainAll(datiAccreditamento.getProfessioniSelezionate());
-	//						if(professioniDeiComponenti.size() < 2){
-	//							comitatoScientificoStato = false;
-	//							comitatoScientificoErrorMessage = "error.numero_minimo_professioni_settoriale";
-	//						}
-	//					}
-	//				}
-	//			}else{
-	//				comitatoScientificoStato = false;
-	//				comitatoScientificoErrorMessage = "error.datiaccreditamento_mancanti";
-	//			}
-	//		}
-	//	}
-
 	private void setFilesStato(Set<String> filesDelProvider){
 		if(filesDelProvider.contains(FileEnum.FILE_ATTO_COSTITUTIVO))
 			attoCostitutivoStato = true;
@@ -220,22 +162,6 @@ public class AccreditamentoWrapper {
 			dichiarazioneLegaleStato = true;
 	}
 
-	//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
-	public boolean isCompleta(){
-		if(sezione1Stato && sezione2Stato && sezione3Stato)
-			return true;
-		else
-			return false;
-	}
-
-	//la domanda può essere inviata alla segreteria
-	public boolean isCanInsertPianoFormativo(){
-		if(isCompleta() && accreditamento.getStato().equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_BOZZA))
-			return true;
-		else
-			return false;
-	}
-
 	public boolean isComitatoScientificoEditabile(){
 		LinkedList<Integer> ids = new LinkedList<Integer>(Costanti.IDS_COMPONENTE_COMITATO_SCIENTIFICO);
 		ids.retainAll(getAccreditamento().getIdEditabili());
@@ -244,8 +170,37 @@ public class AccreditamentoWrapper {
 		else
 			return true;
 	}
+	
+	//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
+	public boolean isCompleta(){
+		if(sezione1Stato && sezione2Stato && sezione3Stato)
+			return true;
+		else
+			return false;
+	}
 
+	//Inserisci piano formativo e blocca idEditabili
+	public boolean isCanInsertPianoFormativo(){
+		if(accreditamento.isBozza() && isCompleta() && !accreditamento.hasPianoFormativo())
+			return true;
+		else
+			return false;
+	}
+	
+	//Invia domanda alla segreteria cambiando stato all'accreditamento e rendendo la domanda non più modificabile
+	public boolean isCanSend(){
+		if(accreditamento.isBozza() && isCompleta() && isPianoFormativoCompleto())
+			return true;
+		else
+			return false;
+	}
 
-
-
+	//ci sono eventi inseriti nel piano formativo
+	private boolean isPianoFormativoCompleto(){
+		return (listaEventi != null && !listaEventi.isEmpty());
+	}
+	
+	public boolean isCanInsertEventoInPianoFormativo(){
+		return (accreditamento.hasPianoFormativo() && accreditamento.isEditabile());
+	}
 }
