@@ -11,18 +11,17 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.utils.Utils;
 
 @Component
 public class FileValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileValidator.class);
 	
-	@Autowired
-	private EcmProperties ecmProperties;
-	@Autowired
-	private MessageSource messageSource;
+	@Autowired private EcmProperties ecmProperties;
+	@Autowired private MessageSource messageSource;
 	
 	public void validate(Object target, Errors errors, String prefix) {
-		LOGGER.debug("Validating File");
+		Utils.logInfo(LOGGER, "Validazione File");
 		File file = (File)target;
 		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){
 			errors.rejectValue(prefix, "error.empty");
@@ -34,7 +33,7 @@ public class FileValidator {
 	}
 	
 	public String validate(Object target) {
-		LOGGER.debug("Validating File AJAX Upload");
+		Utils.logInfo(LOGGER, "Validazione File AJAX Upload");
 		File file = (File)target;
 		String error = "";
 		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){

@@ -10,6 +10,7 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.repository.ProfileRepository;
+import it.tredi.ecm.utils.Utils;
 
 @Component
 public class ProfileValidator {
@@ -19,9 +20,10 @@ public class ProfileValidator {
 	private ProfileRepository profileRepository;
 
 	public void validate(Object target, Errors errors) {
-		LOGGER.debug("Validating Profile");
+		Utils.logInfo(LOGGER, "Validazione Profile");
 		Profile profile = (Profile)target;
 		validateProfile(profile, errors);
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 	private void validateProfile(Profile profile, Errors errors){

@@ -8,7 +8,10 @@ import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -32,16 +35,17 @@ import it.tredi.ecm.web.validator.FileValidator;
 @Controller
 //TODO sistemare meglio la gestione dei metadati degli allegati
 public class FileController {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileController.class);
+	
+	@Autowired private FileService fileService;
+	@Autowired private ProviderService providerService;
+	@Autowired private FileValidator fileValidator;
 
-	@Autowired
-	private FileValidator fileValidator;
-	@Autowired
-	private FileService fileService;
-	@Autowired
-	private ProviderService providerService;
-
+	//TODO security su file download/upload
 	@RequestMapping(value = "/file/{fileId}", method = RequestMethod.GET)
 	public void getFile(@PathVariable("fileId") Long id, HttpServletResponse response, Model model) throws IOException {
+		Utils.logInfo(LOGGER, "GET /file/" + id);
 		try {
 			if(id == null){
 				model.addAttribute("message",new Message("A","B","C"));
@@ -71,7 +75,7 @@ public class FileController {
 				FileCopyUtils.copy(inputStream, response.getOutputStream());
 			}
 		}catch (Exception ex) {
-			//TODO gestione eccezione
+			Utils.logError(LOGGER, "GET /file/" + id, ex);
 		}
 	}
 
@@ -80,9 +84,10 @@ public class FileController {
 	public Object uploadFile(@RequestParam(value = "multiPartFile", required = false) MultipartFile multiPartFile,
 			@RequestParam(value = "fileId", required = false) Long fileId,
 			@RequestParam(value = "tipo", required = true) String tipo){
+		Utils.logInfo(LOGGER, "GET /file/upload");
+		Utils.logDebug(LOGGER, "tipo: " + tipo);
 		File file = new File(FileEnum.valueOf(tipo));
 		try{
-
 			if(multiPartFile != null && !multiPartFile.isEmpty()){
 				file = Utils.convertFromMultiPart(multiPartFile);
 				file.setTipo(FileEnum.valueOf(tipo));
@@ -96,24 +101,28 @@ public class FileController {
 					return error;
 			}
 		}catch (Exception ex){
-			//TODO gestione eccezione
+			Utils.logError(LOGGER, "GET /file/upload", ex);
 		}
 		return file;
 	}
 
 	//TODO domenico (check se fa la query di tutto il provider)
 	/*** LIST PERSONA ***/
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/allegato/list")
 	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		Utils.logInfo(LOGGER, "GET /provider/" +providerId + "/allegato/list");
 		try {
 			Provider provider = providerService.getProvider(providerId);
 			model.addAttribute("allegatoList", provider.getFiles());
 			model.addAttribute("titolo", provider.getDenominazioneLegale());
+			Utils.logInfo(LOGGER, "VIEW: /allegato/list");
 			return "allegato/allegatoList";
 		}catch (Exception ex){
-			//TODO gestione eccezione
+			Utils.logError(LOGGER, "GET /provider/" +providerId + "/allegato/list", ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:provider/show";
+			Utils.logInfo(LOGGER, "REDIRECT: /provider/show");
+			return "redirect:/provider/show";
 		}
 	}
 

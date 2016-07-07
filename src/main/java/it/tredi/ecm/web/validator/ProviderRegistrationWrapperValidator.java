@@ -7,20 +7,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
+import it.tredi.ecm.utils.Utils;
 
 @Component
 public class ProviderRegistrationWrapperValidator{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProviderRegistrationWrapperValidator.class);
 	
-	@Autowired
-	private AccountValidator accountValidator;
-	@Autowired
-	private FileValidator fileValidator;
-	@Autowired
-	private ProviderValidator providerValidator;
+	@Autowired private AccountValidator accountValidator;
+	@Autowired private FileValidator fileValidator;
+	@Autowired private ProviderValidator providerValidator;
 	
 	public void validate(Object target, Errors errors) {
-		LOGGER.debug("Validating ProviderRegistrationWrapper");
+		Utils.logInfo(LOGGER, "Validazione ProviderRegistrationWrapper");
 		ProviderRegistrationWrapper providerForm = (ProviderRegistrationWrapper)target;
 		accountValidator.validate(providerForm.getProvider().getAccount(), errors, "provider.account.");
 		
@@ -33,6 +31,7 @@ public class ProviderRegistrationWrapperValidator{
 		if(providerForm.isDelegato()){
 			fileValidator.validate(providerForm.getDelega(), errors, "delegaRichiedenteFile");
 		}
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 	private void validateRichiedente(Persona richiedente, Errors errors){

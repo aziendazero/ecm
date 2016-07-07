@@ -13,21 +13,21 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.service.PersonaService;
+import it.tredi.ecm.utils.Utils;
 
 @Component
 public class PersonaValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PersonaValidator.class);
 	
-	@Autowired
-	private AnagraficaValidator anagraficaValidator;
-	@Autowired
-	private FileValidator fileValidator;
-	@Autowired
-	private PersonaService personaService;
+	@Autowired private AnagraficaValidator anagraficaValidator;
+	@Autowired private FileValidator fileValidator;
+	@Autowired private PersonaService personaService;
 	
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
+		Utils.logInfo(LOGGER, "Validazione Persona");
 		validatePersona(target, errors, prefix);
 		validateFiles(files, errors, "", ((Persona)target).getRuolo());
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 	private void validatePersona(Object target, Errors errors, String prefix){

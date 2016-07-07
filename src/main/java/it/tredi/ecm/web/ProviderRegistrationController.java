@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.File;
@@ -24,16 +25,12 @@ import it.tredi.ecm.web.validator.ProviderRegistrationWrapperValidator;
 
 @Controller
 public class ProviderRegistrationController {
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProviderRegistrationController.class);
 	public final String EDIT = "providerRegistration"; 
 	
-	@Autowired
-	private ProviderService providerService;
-	@Autowired
-	private FileService fileService;
-	
-	@Autowired
-	private ProviderRegistrationWrapperValidator providerRegistrationValidator;
+	@Autowired private ProviderService providerService;
+	@Autowired private FileService fileService;
+	@Autowired private ProviderRegistrationWrapperValidator providerRegistrationValidator;
 	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -53,35 +50,25 @@ public class ProviderRegistrationController {
 	/** Public provider registration form. */
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.GET)
 	public String providerRegistration(Model model, RedirectAttributes redirectAttrs) {
+		Utils.logInfo(LOGGER, "GET /providerRegistration");
 		try {
 			model.addAttribute("providerForm", providerService.getProviderRegistrationWrapper());
 			model.addAttribute("stepToShow", 0);
+			Utils.logInfo(LOGGER, "VIEW: /providerRegistration");
 			return "providerRegistration";
 		}catch (Exception ex){
-			//TODO gestione eccezione
+			Utils.logError(LOGGER, "GET /providerRegistration",ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "REDIRECT: /home");
 			return "redirect:/home";
 		}
 	}
 	
-	/** Private provider registration form for authenticated users. */
-	@RequestMapping("/providerRegistration/edit")
-	public String editProviderRegistration(Model model, RedirectAttributes redirectAttrs){
-		try {
-			model.addAttribute("providerForm", providerService.getProviderRegistrationWrapper());
-			return "provider/editProvider";
-		}catch (Exception ex){
-			//TODO gestione eccezione
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
-		}
-	}
-
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.POST)
 	public String registraProvider(@ModelAttribute("providerForm") ProviderRegistrationWrapper providerRegistrationWrapper, 
 									BindingResult result, RedirectAttributes redirectAttrs, Model model){
+		Utils.logInfo(LOGGER, "POST /providerRegistration");
 		try{
-			
 			//TODO Delegato consentito solo per alcuni tipi di Provider
 			if(providerRegistrationWrapper.isDelegato()){
 				File file = providerRegistrationWrapper.getDelega();
@@ -94,15 +81,19 @@ public class ProviderRegistrationController {
 			if(result.hasErrors()){
 				model.addAttribute("stepToShow", evaluateErrorStep(result));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 				return EDIT;
 			}else{
 				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.conferma_registrazione", "success"));
+				Utils.logInfo(LOGGER, "REDIRECT: /home");
 				return "redirect:/home";
 			}
 		}catch (Exception ex){
+			Utils.logError(LOGGER, "POST /providerRegistration",ex);
 			model.addAttribute("stepToShow", evaluateErrorStep(result));
 			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 			return EDIT;
 		}
 		

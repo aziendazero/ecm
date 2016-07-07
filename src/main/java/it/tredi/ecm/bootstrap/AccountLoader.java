@@ -10,6 +10,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import it.tredi.ecm.dao.entity.Role;
+import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.RoleEnum;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Profile;
@@ -41,6 +42,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 		Set<Account> accounts = accountRepository.findAll();
 			
 		if(accounts.isEmpty()){
+			/* ACCREDITAMENTO */
 			Role role_readAccreditamento = new Role();
 			role_readAccreditamento.setName(RoleEnum.ACCREDITAMENTO_SHOW.name());
 			role_readAccreditamento.setDescription("ACCREDITAMENTO (LETTURA)");
@@ -56,6 +58,12 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			role_readAllAccreditamento.setDescription("ACCREDITAMENTO (LETTURA TUTTI)");
 			roleRepository.save(role_readAllAccreditamento);
 			
+			Role role_writeAllAccreditamento = new Role();
+			role_writeAllAccreditamento.setName(RoleEnum.ACCREDITAMENTO_EDIT_ALL.name());
+			role_writeAllAccreditamento.setDescription("ACCREDITAMENTO (SCRITTURA TUTTI)");
+			roleRepository.save(role_writeAllAccreditamento);
+			
+			/* PROVIDER */
 			Role role_readProvider = new Role();
 			role_readProvider.setName(RoleEnum.PROVIDER_SHOW.name());
 			role_readProvider.setDescription("PROVIDER (LETTURA)");
@@ -71,6 +79,12 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			role_readAllProvider.setDescription("PROVIDER (LETTURA TUTTI)");
 			roleRepository.save(role_readAllProvider);
 			
+			Role role_writeAllProvider = new Role();
+			role_writeAllProvider.setName(RoleEnum.PROVIDER_EDIT_ALL.name());
+			role_writeAllProvider.setDescription("PROVIDER (SCRITTURA TUTTI)");
+			roleRepository.save(role_writeAllProvider);
+			
+			/* USER */
 			Role role_readUser = new Role();
 			role_readUser.setName(RoleEnum.USER_SHOW.name());
 			role_readUser.setDescription("UTENTI (LETTURA)");
@@ -86,19 +100,33 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			role_readAllUser.setDescription("UTENTI (LETTURA TUTTI)");
 			roleRepository.save(role_readAllUser);
 			
+			Role role_writeAllUser = new Role();
+			role_writeAllUser.setName(RoleEnum.USER_EDIT_ALL.name());
+			role_writeAllUser.setDescription("UTENTI (SCRITTURA TUTTI)");
+			roleRepository.save(role_writeAllUser);
+			
+			Role role_createUser = new Role();
+			role_createUser.setName(RoleEnum.USER_CREATE.name());
+			role_createUser.setDescription("UTENTI (CREAZIONE)");
+			roleRepository.save(role_createUser);
+			
+			/* PROFILE PROVIDER */
 			Profile profile_provider = new Profile();
-			profile_provider.setName("PROVIDER");
+			profile_provider.setName(Costanti.PROFILO_PROVIDER);
 			profile_provider.getRoles().add(role_readProvider);
 			profile_provider.getRoles().add(role_writeProvider);
 			profile_provider.getRoles().add(role_readAccreditamento);
 			profile_provider.getRoles().add(role_writeAccreditamento);
 			profileRepository.save(profile_provider);
 			
+			/* PROFILE ADMIN */
 			Profile profile_admin = new Profile();
-			profile_admin.setName("ADMIN");
+			profile_admin.setName(Costanti.PROFILO_ADMIN);
 			profile_admin.getRoles().add(role_readUser);
 			profile_admin.getRoles().add(role_writeUser);
 			profile_admin.getRoles().add(role_readAllUser);
+			profile_admin.getRoles().add(role_writeAllUser);
+			profile_admin.getRoles().add(role_createUser);
 			profileRepository.save(profile_admin);
 			
 			Account provider = new Account();

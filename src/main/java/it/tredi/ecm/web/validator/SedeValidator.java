@@ -6,13 +6,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.utils.Utils;
 
 @Component
 public class SedeValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SedeValidator.class);
 	
 	public void validate(Object target, Errors errors, String prefix){
-		LOGGER.debug("Validazione della sede");
+		Utils.logInfo(LOGGER, "Validazione Sede");
 		Sede sede = (Sede)target;
 		
 		if(sede.getProvincia() == null || sede.getProvincia().isEmpty())
@@ -29,5 +30,7 @@ public class SedeValidator {
 			errors.rejectValue(prefix + "fax", "error.empty");
 		if(sede.getEmail() == null || sede.getEmail().isEmpty())
 			errors.rejectValue(prefix + "email", "error.empty");
+		
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 }

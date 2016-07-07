@@ -8,16 +8,15 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.utils.Utils;
 
 @Component
 public class ProviderValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProviderValidator.class);
 	
-	@Autowired
-	private ProviderService providerService;
+	@Autowired private ProviderService providerService;
 	
 	private void validateProviderBase(Object target, Errors errors, String prefix) {
-		LOGGER.debug("VALIDAZIONE PROVIDER DATI COMUNI");
 		Provider providerForm = (Provider)target;
 		if(providerForm.getDenominazioneLegale().isEmpty())
 			errors.rejectValue(prefix + "denominazioneLegale", "error.empty");
@@ -27,7 +26,7 @@ public class ProviderValidator {
 	}
 	
 	public void validateForRegistrazione(Object target, Errors errors, String prefix) {
-		LOGGER.debug("VALIDAZIONE PROVIDER PER REGISTRAZIONE");
+		Utils.logInfo(LOGGER, "Validazione Provider per Registrazione");
 		Provider providerForm = (Provider)target;
 		validateProviderBase(providerForm, errors, prefix);
 		
@@ -46,10 +45,11 @@ public class ProviderValidator {
 				}
 			}
 		}
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 	public void validateForAccreditamento(Object target, Errors errors, String prefix) {
-		LOGGER.debug("VALIDAZIONE PROVIDER PER ACCREDITAMENTO");
+		Utils.logInfo(LOGGER, "Validazione Provider Accreditamento");
 		Provider providerForm = (Provider)target;
 		validateProviderBase(providerForm, errors, prefix);
 		
@@ -59,6 +59,7 @@ public class ProviderValidator {
 		if(providerForm.getNaturaOrganizzazione().isEmpty()){
 			errors.rejectValue(prefix + "naturaOrganizzazione", "error.empty");
 		}
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 }

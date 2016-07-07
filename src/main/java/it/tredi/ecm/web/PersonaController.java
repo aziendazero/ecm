@@ -36,6 +36,7 @@ import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.validator.PersonaValidator;
@@ -45,23 +46,15 @@ public class PersonaController {
 	private static Logger LOGGER = LoggerFactory.getLogger(PersonaController.class);
 
 	private final String EDIT = "persona/personaEdit";
+	private final String SHOW = "persona/personaShow";
 
-	@Autowired
-	private PersonaService personaService;
-	@Autowired
-	private ProviderService providerService;
-	@Autowired
-	private ProfessioneService professioneService;
-	@Autowired
-	private AnagraficaService anagraficaService;
-
-	@Autowired
-	private FileService fileService;
-	@Autowired
-	private AccreditamentoService accreditamentoService;
-
-	@Autowired
-	private PersonaValidator personaValidator;
+	@Autowired private PersonaService personaService;
+	@Autowired private AnagraficaService anagraficaService;
+	@Autowired private ProviderService providerService;
+	@Autowired private ProfessioneService professioneService;
+	@Autowired private FileService fileService;
+	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private PersonaValidator personaValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -71,9 +64,8 @@ public class PersonaController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/anagraficaList")
 	@ResponseBody
-	public Set<Anagrafica>getElencoComuni(@PathVariable Long providerId){
-		Set<Anagrafica> anagrafiche = personaService.getAllAnagraficheByProviderId(providerId);
-		return anagrafiche;
+	public Set<Anagrafica>getAnagraficheRegistrateDalProvider(@PathVariable Long providerId){
+		return personaService.getAllAnagraficheByProviderId(providerId);
 	}
 
 	@ModelAttribute("professioneList")
@@ -108,13 +100,14 @@ public class PersonaController {
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/new")
 	public String newPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
 			@RequestParam(name="ruolo", required = true) String ruolo, RedirectAttributes redirectAttrs){
+		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/new");
 		try {
 			return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId, false));
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/new", ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);
 			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	}
@@ -129,6 +122,7 @@ public class PersonaController {
 	public String setAnagrafica(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
 									@PathVariable("ruolo") String ruolo,
 										@RequestParam(name="anagraficaId", required = false) Long anagraficaId){
+		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + ruolo + "/setAnagrafica");
 		try {
 			Persona persona = null;
 			boolean isLookup = false;
@@ -149,9 +143,9 @@ public class PersonaController {
 			}
 			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId, isLookup));
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + ruolo + "/setAnagrafica",ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 			return EDIT;
 		}
 	}
@@ -160,6 +154,7 @@ public class PersonaController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/edit")
 	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
+		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/edit");
 		try {
 			Persona persona = personaService.getPersona(id);
 			if(persona == null){
@@ -167,17 +162,34 @@ public class PersonaController {
 			}
 			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId, false));
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/edit",ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 			return EDIT;
+		}
+	}
+	
+	/***	SHOW PERSONA ***/
+	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canShowProvider(principal,#providerId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/show")
+	public String showPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
+		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/show");
+		try {
+			Persona persona = personaService.getPersona(id);
+			return goToShow(model, preparePersonaWrapperShow(persona));
+		}catch (Exception ex){
+			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/show",ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId + "/show");
+			return "redirect: /accreditamento/" + accreditamentoId + "/show";
 		}
 	}
 
 	/***	SAVE PERSONA ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/save", method = RequestMethod.POST)
 	public String savePersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
-			RedirectAttributes redirectAttrs, Model model){
+			RedirectAttributes redirectAttrs, Model model, @PathVariable Long accreditamentoId, @PathVariable Long providerId){
+		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/save");
 		try {
 			if(personaWrapper.getPersona().isNew()){
 				Persona persona = personaWrapper.getPersona();
@@ -204,6 +216,7 @@ public class PersonaController {
 			try{
 				if(result.hasErrors()){
 					model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
+					Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 					return EDIT;
 				}else{
 					personaService.save(personaWrapper.getPersona());
@@ -220,20 +233,19 @@ public class PersonaController {
 
 					if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())
 						redirectAttrs.addFlashAttribute("currentTab","tab2");
+					Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);
 					return "redirect:/accreditamento/{accreditamentoId}";
 				}
 			}catch(Exception ex){
-				//TODO gestione eccezione
-				LOGGER.error(ex.getMessage(),ex);
+				Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/save", ex);
 				model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 				return EDIT;
 			}
-
-
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/save", ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 			return EDIT;
 		}
 	}
@@ -242,17 +254,18 @@ public class PersonaController {
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/delete")
 	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId,
 														Model model, RedirectAttributes redirectAttrs){
+		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + personaId + "/delete");
 		try{
 			personaService.delete(personaId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.componente_comitato_eliminato", "success"));
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + personaId + "/delete",ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 		}
 
 		redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 		redirectAttrs.addFlashAttribute("currentTab","tab2");
+		Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);
 		return "redirect:/accreditamento/{accreditamentoId}";
 	}
 
@@ -270,7 +283,14 @@ public class PersonaController {
 
 	private String goToEdit(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
+		Utils.logInfo(LOGGER, "VIEW: " + EDIT);
 		return EDIT;
+	}
+	
+	private String goToShow(Model model, PersonaWrapper personaWrapper){
+		model.addAttribute("personaWrapper", personaWrapper);
+		Utils.logInfo(LOGGER, "VIEW: " + SHOW);
+		return SHOW;
 	}
 
 	private PersonaWrapper preparePersonaWrapper(Persona persona, boolean isLookup){
@@ -278,6 +298,7 @@ public class PersonaController {
 	}
 
 	private PersonaWrapper preparePersonaWrapper(Persona persona, long accreditamentoId, long providerId, boolean isLookup){
+		Utils.logInfo(LOGGER, "preparePersonaWrapper(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - entering");
 		PersonaWrapper personaWrapper = new PersonaWrapper();
 
 		personaWrapper.setPersona(persona);
@@ -316,22 +337,34 @@ public class PersonaController {
 		}
 
 		personaWrapper.setIsLookup(isLookup);
-
+		Utils.logInfo(LOGGER, "preparePersonaWrapper(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - exiting");
+		return personaWrapper;
+	}
+	
+	private PersonaWrapper preparePersonaWrapperShow(Persona persona){
+		Utils.logInfo(LOGGER, "preparePersonaWrapperShow(" + persona.getId() + ") - entering");
+		PersonaWrapper personaWrapper = new PersonaWrapper();
+		personaWrapper.setPersona(persona);
+		Utils.logInfo(LOGGER, "preparePersonaWrapperShow(" + persona.getId() + ") - exiting");
 		return personaWrapper;
 	}
 
 	//TODO domenico (check se fa la query di tutto il provider)
 	/*** LIST PERSONA ***/
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/persona/list")
 	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		Utils.logInfo(LOGGER, "GET /provider/"+ providerId + "/persona/list");
 		try {
 			Provider provider = providerService.getProvider(providerId);
 			model.addAttribute("personaList", provider.getPersone());
 			model.addAttribute("titolo", provider.getDenominazioneLegale());
+			Utils.logInfo(LOGGER, "VIEW: /persona/personaList");
 			return "persona/personaList";
 		}catch (Exception ex){
-			//TODO gestione eccezione
+			Utils.logError(LOGGER, "GET /provider/"+ providerId + "/persona/list", ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "REDIRECT: /provider/show");
 			return "redirect:provider/show";
 		}
 	}

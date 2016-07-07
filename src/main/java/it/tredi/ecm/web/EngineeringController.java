@@ -21,6 +21,7 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EngineeringWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.EngineeringTestValidator;
@@ -30,14 +31,10 @@ public class EngineeringController {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(EngineeringController.class);
 
-	@Autowired
-	private ProviderService providerService;
-	@Autowired
-	private FileService fileService;
-	@Autowired
-	private EventoService eventoService;
-	@Autowired
-	private EngineeringTestValidator engineeringTestValidator;
+	@Autowired private ProviderService providerService;
+	@Autowired private FileService fileService;
+	@Autowired private EventoService eventoService;
+	@Autowired private EngineeringTestValidator engineeringTestValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -59,8 +56,7 @@ public class EngineeringController {
 			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(providerService.getProvider()));
 			return "engineering/firmaTest";
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error("Errore redirect firma", ex);
+			Utils.logError(LOGGER, "Errore redirect firma", ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -73,8 +69,7 @@ public class EngineeringController {
 			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
 			return "engineering/mypayTest";
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error("Errore redirect mypay", ex);
+			Utils.logError(LOGGER, "Errore redirect mypay", ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -105,8 +100,7 @@ public class EngineeringController {
 				return "redirect:/engineering/test/firma";
 			}
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error("Errore Salvataggio", ex);
+			Utils.logError(LOGGER, "Errore Salvataggio", ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "engineering/firmaTest";
 		}

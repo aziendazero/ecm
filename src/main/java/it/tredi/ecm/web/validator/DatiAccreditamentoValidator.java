@@ -12,19 +12,20 @@ import org.springframework.validation.Errors;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DatiEconomici;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.utils.Utils;
 
-	@Component
+@Component
 public class DatiAccreditamentoValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatiAccreditamentoValidator.class);
 	
-	@Autowired
-	private FileValidator fileValidator;
+	@Autowired private FileValidator fileValidator;
 	
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
-		LOGGER.debug("Validazione Dati Accreditamento");
+		Utils.logInfo(LOGGER, "Validazione DatiAccreditamento");
 		validateDatiAccreditamento(target, errors, prefix);
 		validateFilesEconomici(files, errors, "", ((DatiAccreditamento) target).getDatiEconomici());
 		validateFilesStrutturaPersonale(files, errors, "");
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 	private void validateDatiAccreditamento(Object target, Errors errors, String prefix){
@@ -38,7 +39,7 @@ public class DatiAccreditamentoValidator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void validateFilesEconomici(Object target, Errors errors, String prefix, DatiEconomici datiEconomici){
+	private void validateFilesEconomici(Object target, Errors errors, String prefix, DatiEconomici datiEconomici){
 		LOGGER.debug("VALIDAZIONE ALLEGATI ECONOMICI");
 		if(!datiEconomici.isEmpty()){
 			Set<File> files = null;
@@ -63,7 +64,7 @@ public class DatiAccreditamentoValidator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void validateFilesStrutturaPersonale(Object target, Errors errors, String prefix){
+	private void validateFilesStrutturaPersonale(Object target, Errors errors, String prefix){
 		LOGGER.debug("VALIDAZIONE ALLEGATI STRUTTARA PERSONALE");
 		Set<File> files = null;
 		if(target != null)

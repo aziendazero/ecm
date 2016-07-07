@@ -26,6 +26,7 @@ import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
 
@@ -46,18 +47,20 @@ public class AccreditamentoController {
 	/***	Get Lista Accreditamenti per provider CORRENTE	***/
 	@RequestMapping("/provider/accreditamento/list")
 	public String getAllAccreditamentiForCurrentProvider(RedirectAttributes redirectAttrs) throws Exception{
+		Utils.logInfo(LOGGER, "GET /provider/accreditamento/list");
 		try {
 			Provider currentProvider = providerService.getProvider();
 			if(currentProvider.isNew()){
 				throw new Exception("Provider non registrato");
 			}else{
 				redirectAttrs.addAttribute("providerId",currentProvider.getId());
+				Utils.logInfo(LOGGER, "REDIRECT: /provider/" + currentProvider.getId() + "/accreditamento/list");
 				return "redirect:/provider/{providerId}/accreditamento/list";
 			}
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /provider/accreditamento/list", ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "REDIRECT: /home");
 			return "redirect:/home";
 		}
 	}
@@ -66,27 +69,17 @@ public class AccreditamentoController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/accreditamento/list")
 	public String getAllAccreditamentiForProvider(@PathVariable("providerId") Long providerId, Model model, RedirectAttributes redirectAttrs){
+		Utils.logInfo(LOGGER, "GET /provider/" + providerId + "/accreditamento/list");
 		try {
 			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamento", accreditamentoService.canProviderCreateAccreditamento(providerId));
+			Utils.logInfo(LOGGER, "VIEW: accreditamento/accreditamentoList");
 			return "accreditamento/accreditamentoList";
-
-			//TODO per reindirizzare direttamente sulla view è necessario creare un'altra request
-			// che non faccia il ricaricamento da db
-			/*
-		  		if(listaAccreditamenti.size() == 1){
-
-					Accreditamento accreditamento = listaAccreditamenti.iterator().next();
-					redirectAttrs.addAttribute("id",accreditamento.getId())
-									.addFlashAttribute("accreditamento", accreditamento);
-					return "redirect:/provider/accreditamento/{id}";
-				}
-			*/
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /provider/" + providerId + "/accreditamento/list", ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "REDIRECT: /home");
 			return "redirect:/home";
 		}
 	}
@@ -95,13 +88,14 @@ public class AccreditamentoController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#id)")
 	@RequestMapping("/accreditamento/{id}")
 	public String getAccreditamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
+		Utils.logInfo(LOGGER, "GET /accreditamento/" + id);	
 		try {
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
 			return goToAccreditamento(model, accreditamento);
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /accreditamento/" + id, ex);	
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "VIEW: /accreditamento/accreditamentoList");	
 			return "accreditamento/accreditamentoList";
 		}
 	}
@@ -111,19 +105,23 @@ public class AccreditamentoController {
 			AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapper(accreditamento);
 			model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		}//TODO gestire differenza con Accreditamento STANDARD
+		Utils.logInfo(LOGGER, "VIEW: /accreditamento/accreditamentoShow");	
 		return "accreditamento/accreditamentoShow";
 	}
 
 	/*** NEW 	Nuova domanda accreditamento per provider corrente	***/
 	@RequestMapping("/provider/accreditamento/new")
 	public String getNewAccreditamentoForCurrentProvider(Model model, RedirectAttributes redirectAttrs) {
+		Utils.logInfo(LOGGER, "GET /provider/accreditamento/new");	
 		try{
-			redirectAttrs.addAttribute("id", accreditamentoService.getNewAccreditamentoForCurrentProvider().getId());
+			Long accreditamentoId = accreditamentoService.getNewAccreditamentoForCurrentProvider().getId();
+			redirectAttrs.addAttribute("id", accreditamentoId);
+			Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);	
 			return "redirect:/accreditamento/{id}";
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /provider/accreditamento/new", ex);	
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "REDIRECT: /provider/accreditamento/list");	
 			return "redirect:/provider/accreditamento/list";
 		}
 	}
@@ -132,16 +130,18 @@ public class AccreditamentoController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/send")
 	public String inviaDomandaAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
+		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/" + providerId + "/send");	
 		try{
 			accreditamentoService.inviaDomandaAccreditamento(accreditamentoId);
 			redirectAttrs.addAttribute("providerId",providerId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.domanda_inviata", "success"));
+			Utils.logInfo(LOGGER, "REDIRECT: /provider/" + providerId + "/accreditamento/list");
 			return "redirect:/provider/{providerId}/accreditamento/list";
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/" + providerId + "/send", ex);
 			redirectAttrs.addAttribute("id",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);
 			return "redirect:/accreditamento/{id}";
 		}
 	}
@@ -150,25 +150,27 @@ public class AccreditamentoController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/insertPianoFormativo")
 	public String inserisciPianoFormativo(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
+		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/" + providerId + "/insertPianoFormativo");
 		try{
 			accreditamentoService.inserisciPianoFormativo(accreditamentoId);
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 			redirectAttrs.addAttribute("providerId", providerId);
 			redirectAttrs.addAttribute("pianoFormativo", LocalDate.now().getYear());
-//			return "redirect:/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativo}/edit";
 			redirectAttrs.addFlashAttribute("currentTab", "tab4");
+			Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);
 			return "redirect:/accreditamento/{accreditamentoId}";
 		}catch (Exception ex){
-			//TODO gestione eccezione
-			LOGGER.error(ex.getMessage(),ex);
+			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId +"/provider/" + providerId + "/insertPianoFormativo", ex);
 			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);
 			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	}
 
 	/*** METODI PRIVATI PER IL SUPPORTO ***/
 	private AccreditamentoWrapper prepareAccreditamentoWrapper(Accreditamento accreditamento){
+		Utils.logInfo(LOGGER, "prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - entering");
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper();
 		accreditamentoWrapper.setAccreditamento(accreditamento);
 
@@ -215,7 +217,6 @@ public class AccreditamentoController {
 		}
 
 		//ALLEGATI
-
 		Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(accreditamento.getProvider().getId());
 
 		Long providerId = accreditamento.getProvider().getId();
@@ -226,10 +227,10 @@ public class AccreditamentoController {
 		int professioniDeiComponenti 			= personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
 		int professioniDeiComponentiAnaloghe 	= (professioniSelezionate.size() > 0) ? personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate) : 0;
 
-		LOGGER.info("-----------------NUMERO COMPONENTI: " 				+ numeroComponentiComitatoScientifico);
-		LOGGER.info("-----------------NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie);
-		LOGGER.info("-----------------NUMERO PROFESSIONI DISTINTE: " 	+ professioniDeiComponenti);
-		LOGGER.info("-----------------NUMERO PROFESSIONI ANALOGHE: "	+ professioniDeiComponentiAnaloghe);
+		Utils.logDebug(LOGGER, "<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico);
+		Utils.logDebug(LOGGER, "<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie);
+		Utils.logDebug(LOGGER, "<*>NUMERO PROFESSIONI DISTINTE: " + professioniDeiComponenti);
+		Utils.logDebug(LOGGER, "<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe);
 
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
 
@@ -237,6 +238,7 @@ public class AccreditamentoController {
 		if(accreditamento.getPianoFormativo() != null)
 			accreditamentoWrapper.setListaEventi(eventoService.getAllEventiFromProviderInPianoFormativo(providerId, accreditamento.getPianoFormativo()));
 
+		Utils.logInfo(LOGGER, "prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - exiting");
 		return accreditamentoWrapper;
 	}
 }

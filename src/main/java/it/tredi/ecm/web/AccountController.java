@@ -27,9 +27,9 @@ import it.tredi.ecm.web.validator.AccountValidator;
 @Controller
 public class AccountController{
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccountController.class);
-	private final String EDIT = "/user/editUser";
+	private final String EDIT = "/user/userEdit";
 	private final String LIST = "/user/userList";
-	private final String URL_LIST = "/user/userList";
+	private final String URL_LIST = "/user/list";
 	
 	@Autowired private AccountService accountService;
 	@Autowired private ProfileAndRoleService profileAndRoleService;
@@ -54,7 +54,6 @@ public class AccountController{
 	@RequestMapping("/user/list")
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		try {
-			//Utils.logInfo(LOGGER, ("GET /user/list");
 			Utils.logInfo(LOGGER, "GET /user/list");
 			model.addAttribute("accountList", accountService.getAllUsers());
 			Utils.logInfo(LOGGER, "VIEW: " + LIST);
