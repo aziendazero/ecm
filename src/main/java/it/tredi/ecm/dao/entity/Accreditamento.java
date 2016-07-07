@@ -48,16 +48,23 @@ public class Accreditamento extends BaseEntity{
 	@OneToOne(fetch = FetchType.LAZY)
 	private DatiAccreditamento datiAccreditamento;
 	
+	//flag che mi dice se la domanda è in visualizzazione o in modifica per il provider
+	//gli idEditabili invece indicano quali campi possono essere modificati
 	@Type(type = "serializable")
 	private List<Integer> idEditabili = new ArrayList<Integer>();
+	private boolean editabile = false; 
+	
+	@Column(name="anno_piano_formativo")
+	private Integer pianoFormativo;
 	
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoEnum tipoDomanda){
 		this.tipoDomanda = tipoDomanda;
 		this.stato = AccreditamentoEnum.ACCREDITAMENTO_STATO_BOZZA;
-		
 		for (int i = 0; i<100; i++)
 			idEditabili.add(new Integer(i));
+		editabile = true;
+		pianoFormativo = new Integer(0);
 	}
 	
 	public boolean isProvvisorio(){
@@ -68,14 +75,18 @@ public class Accreditamento extends BaseEntity{
 		return stato.equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_BOZZA);
 	}
 	
+	public boolean isInviato(){
+		return stato.equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_INVIATO);
+	}
+	
 	public boolean isAttivo(){
 		if( dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;
 		return false;
 	}
 	
-	public boolean isInviato(){
-		return stato.equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_INVIATO);
+	public boolean hasPianoFormativo(){
+		return (pianoFormativo!=null && pianoFormativo.intValue() != 0);
 	}
 	
 	@Override

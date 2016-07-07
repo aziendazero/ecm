@@ -28,21 +28,15 @@ import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.PianoFormativoWrapper;
 
 @Controller
 public class AccreditamentoController {
-
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoController.class);
 
-	@Autowired
-	private PersonaService personaService;
-	@Autowired
-	private ProviderService providerService;
-	@Autowired
-	private AccreditamentoService accreditamentoService;
-	@Autowired
-	private EventoService eventoService;
+	@Autowired private PersonaService personaService;
+	@Autowired private ProviderService providerService;
+	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private EventoService eventoService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -240,11 +234,8 @@ public class AccreditamentoController {
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
 
 		//PIANO FORMATIVO
-
-		Integer pianoFormativo = LocalDate.now().getYear();
-		accreditamentoWrapper.setListaEventi(eventoService.getAllEventiFromProviderInPianoFormativo(providerId, pianoFormativo));
-		accreditamentoWrapper.setPianoFormativo(String.valueOf(pianoFormativo));
-
+		if(accreditamento.getPianoFormativo() != null)
+			accreditamentoWrapper.setListaEventi(eventoService.getAllEventiFromProviderInPianoFormativo(providerId, accreditamento.getPianoFormativo()));
 
 		return accreditamentoWrapper;
 	}

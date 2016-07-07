@@ -159,11 +159,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug("Invio domanda di Accreditamento " + accreditamentoId + " alla segreteria");
 		
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
-		//TODO Data Invio ??? cosa succede se la domanda è tornata indietro? bisogna mantenere la data originale?
 		if(accreditamento.getDataInvio() == null)
 			accreditamento.setDataInvio(LocalDate.now());
 		accreditamento.setStato(AccreditamentoEnum.ACCREDITAMENTO_STATO_INVIATO);
 		accreditamento.getIdEditabili().clear();
+		accreditamento.setEditabile(false);
 		
 		accreditamentoRepository.save(accreditamento);
 	}
@@ -175,9 +175,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
 		accreditamento.getIdEditabili().clear();
+		accreditamento.setPianoFormativo(LocalDate.now().getYear());
 		accreditamentoRepository.save(accreditamento);
 	}
-
+	
 	@Override
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception{
 		LOGGER.debug("Recupero datiAccreditamento per la domanda " + accreditamentoId);
