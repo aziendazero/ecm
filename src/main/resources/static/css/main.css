@@ -360,6 +360,9 @@ th.center {
 	line-height: 230px;
 }
 
+.tile-stats-container {
+	padding: 0;
+}
 
 .profile_anagrafica {
 	height: 230px;
