@@ -33,7 +33,7 @@ import it.tredi.ecm.web.validator.ProviderValidator;
 @Controller
 public class ProviderController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Provider.class);
-	
+
 	private final String EDIT = "provider/providerEdit";
 
 	@Autowired private ProviderService providerService;
@@ -74,13 +74,13 @@ public class ProviderController {
 	/*** GLOBAL MODEL ATTRIBUTES***/
 
 	/***	SHOW	***/
-	@RequestMapping("/provider/show")
+	@RequestMapping("/provider/show/all")
 	public String showProviderFromCurrentUser(Model model, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "GET: provider/show");
+		Utils.logInfo(LOGGER, "GET: provider/show/all");
 		try {
 			return goToShowProvider(model, providerService.getProvider());
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET: provider/show",ex);
+			Utils.logError(LOGGER, "GET: provider/show/all",ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			Utils.logInfo(LOGGER, "REDIRECT: /provider/list");
 			return "redirect: /provider/list";
@@ -88,13 +88,13 @@ public class ProviderController {
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#id)")
-	@RequestMapping("/provider/{id}/show")
+	@RequestMapping("/provider/{id}/show/all")
 	public String showProvider(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "GET: provider/" + id + "/show");
+		Utils.logInfo(LOGGER, "GET: provider/" + id + "/show/all");
 		try {
 			return goToShowProvider(model, providerService.getProvider(id));
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET: provider/" + id + "/show",ex);
+			Utils.logError(LOGGER, "GET: provider/" + id + "/show/all",ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			Utils.logInfo(LOGGER, "REDIRECT: provider/list");
 			return "redirect: /provider/list";
@@ -103,8 +103,8 @@ public class ProviderController {
 
 	private String goToShowProvider(Model model, Provider provider){
 		model.addAttribute("provider",provider);
-		Utils.logInfo(LOGGER, "VIEW: provider/providerShow");
-		return "provider/providerShow";
+		Utils.logInfo(LOGGER, "VIEW: provider/providerShowAll");
+		return "provider/providerShowAll";
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#id)")

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html layout:decorator="fragments/template"
+	xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+	<div layout:fragment="content">
+		<div class="row animated fadeInDown">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.info_provider}"></h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x-content">
+						<ul class="list-unstyled">
+							<li>
+									<strong th:text="#{label.denominazione_legale}"></strong>:
+									<span th:text="${provider.denominazioneLegale + ' ' + ((provider.ragioneSociale == null) ? '' : provider.ragioneSociale)}">denominazioneLegale</span>
+							</li>
+							<li>
+									<strong th:text="#{label.tipo_organizzatore}"></strong>:
+									<span th:text="${provider.tipoOrganizzatore.nome}">tipoOrganizzatore</span>
+							</li>
+							<li th:unless="${#strings.isEmpty(provider.naturaOrganizzazione)}">
+									<strong th:text="#{label.natura_organizzazione}"></strong>:
+									<span th:text="${provider.naturaOrganizzazione}">natura_organizzazione</span>
+							</li>
+							<li>
+									<strong th:text="#{label.gruppo}"></strong>:
+									<span th:text="${provider.gruppo}">gruppo</span>
+							</li>
+							<li th:unless="${#strings.isEmpty(provider.partitaIva)}">
+									<strong th:text="#{label.partita_iva}"></strong>:
+									<span th:text="${provider.partitaIva}">partitaIva</span>
+							</li>
+							<li th:unless="${#strings.isEmpty(provider.codiceFiscale)}">
+									<strong th:text="#{label.codice_fiscale}"></strong>:
+									<span th:text="${provider.codiceFiscale}" class="text-uppercase">codiceFiscale</span>
+							</li>
+							<li>
+									<strong th:text="#{label.email}"></strong>:
+									<span th:text="${provider.account.email}">email</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div th:unless="${provider.sedeLegale == null}" class="col-xs-12 col-sm-6">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.sede_legale}"></h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x-content">
+						<ul class="list-unstyled">
+							<li>
+									<strong th:text="#{label.provincia}"></strong>:
+									<span th:text="${provider.sedeLegale.provincia}">provincia</span>
+							</li>
+							<li>
+									<strong th:text="#{label.comune}"></strong>:
+									<span th:text="${provider.sedeLegale.comune}">comune</span>
+							</li>
+							<li>
+									<strong th:text="#{label.indirizzo}"></strong>:
+									<span th:text="${provider.sedeLegale.indirizzo}">indirizzo</span>
+							</li>
+							<li>
+									<strong th:text="#{label.cap}"></strong>:
+									<span th:text="${provider.sedeLegale.cap}">cap</span>
+							</li>
+							<li>
+									<strong th:text="#{label.telefono}"></strong>:
+									<span th:text="${provider.sedeLegale.telefono}">telefono</span>
+							</li>
+							<li>
+									<strong th:text="#{label.fax}"></strong>:
+									<span th:text="${provider.sedeLegale.fax}">fax</span>
+							</li>
+							<li>
+									<strong th:text="#{label.email}"></strong>:
+									<span th:text="${provider.sedeLegale.email}">email</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div th:unless="${provider.sedeOperativa == null}" class="col-xs-12 col-sm-6">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.sede_operativa}"></h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x-content">
+						<ul class="list-unstyled">
+							<li>
+									<strong th:text="#{label.provincia}"></strong>:
+									<span th:text="${provider.sedeOperativa.provincia}">provincia</span>
+							</li>
+							<li>
+									<strong th:text="#{label.comune}"></strong>:
+									<span th:text="${provider.sedeOperativa.comune}">comune</span>
+							</li>
+							<li>
+									<strong th:text="#{label.indirizzo}"></strong>:
+									<span th:text="${provider.sedeOperativa.indirizzo}">indirizzo</span>
+							</li>
+							<li>
+									<strong th:text="#{label.cap}"></strong>:
+									<span th:text="${provider.sedeOperativa.cap}">cap</span>
+							</li>
+							<li>
+									<strong th:text="#{label.telefono}"></strong>:
+									<span th:text="${provider.sedeOperativa.telefono}">telefono</span>
+							</li>
+							<li>
+									<strong th:text="#{label.fax}"></strong>:
+									<span th:text="${provider.sedeOperativa.fax}">fax</span>
+							</li>
+							<li>
+									<strong th:text="#{label.email}"></strong>:
+									<span th:text="${provider.sedeOperativa.email}">email</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 tile-stats-container">
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('persona')">
+					<div class="tile-stats">
+						<div class="icon"><i class="fa fa-user-md"></i></div>
+						<div class="col-xs-10">
+		                	<div class="count" th:text="#{label.persone}"></div>
+		                	<p class="count-text" th:text="#{label.visualizza_lista_persone}">Visualizza la lista di tutte le persone</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('accreditamento')">
+					<div class="tile-stats">
+						<div class="icon"><i class="fa fa-clipboard"></i></div>
+						<div class="col-xs-10">
+		                	<div class="count" th:text="#{label.accreditamenti}"></div>
+		                	<p class="count-text" th:text="#{label.visualizza_lista_accreditamenti}">Visualizza la lista di tutte gli accreditamenti</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('evento')">
+					<div class="tile-stats">
+						<div class="icon"><i class="fa fa-calendar"></i></div>
+						<div class="col-xs-10">
+		                	<div class="count" th:text="#{label.eventi}"></div>
+		                	<p class="count-text" th:text="#{label.visualizza_lista_eventi}">Visualizza la lista di tutti gli eventi</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('allegato')">
+					<div class="tile-stats">
+						<div class="icon"><i class="fa fa-paperclip"></i></div>
+						<div class="col-xs-10">
+		                	<div class="count" th:text="#{label.allegati}"></div>
+		                	<p class="count-text" th:text="#{label.visualizza_lista_allegati}">Visualizza la lista di tutti gli allegati</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script th:inline="javascript">
+			function show(link) {
+				location.href = '/provider/[[${provider.id}]]/'+link+'/list'
+			}
+		</script>
+	</div>
+</body>
+</html>
