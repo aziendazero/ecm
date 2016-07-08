@@ -12,8 +12,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
@@ -45,7 +45,7 @@ public class Evento extends BaseEntity{
 	private Accreditamento accreditamento;
 
 	private String professioniEvento;
-	@OneToMany
+	@ManyToMany
 	@JoinTable(name = "evento_discipline",
 				joinColumns = @JoinColumn(name = "evento_id"),
 				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
