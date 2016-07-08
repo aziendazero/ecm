@@ -57,7 +57,7 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				//Account
 				Account account = new Account();
 				account.setEmail("demo@eng.it");
-				account.setUsername("engineering");
+				account.setUsername("engineering-dev");
 				account.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
 				account.setEnabled(true);
 				account.setChangePassword(false);
