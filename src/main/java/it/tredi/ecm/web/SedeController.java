@@ -139,7 +139,8 @@ public class SedeController {
 				//magic number (rende non editabili tutti i campi della sede operativa, ma consente ugualmente il salvataggio)
 				//refresh solo del fragment della view
 				SedeWrapper sedeWrapper = prepareSedeWrapper(sedeLegale, Costanti.SEDE_OPERATIVA, accreditamentoId, providerId);
-				sedeWrapper.setIdEditabili(Arrays.asList(0));
+				sedeWrapper.getIdEditabili().add(0);
+				//setIdEditabili(Arrays.asList(0));
 				return goToEditWhitFragment(model, sedeWrapper, "content");
 			}else{
 				model.addAttribute("message", new Message("message.warning", "message.manca_sedeLegale", "warning"));
@@ -183,9 +184,10 @@ public class SedeController {
 				if(provider != null){
 					if(provider.getSedeLegale() != null && provider.getSedeOperativa() != null){
 						if(provider.getSedeLegale().getId().equals(provider.getSedeOperativa().getId())){
-							List<Integer> list = new ArrayList<Integer>();
-							list.add(0);
-							sedeWrapper.setIdEditabili(list);
+//							List<Integer> list = new ArrayList<Integer>();
+//							list.add(0);
+//							sedeWrapper.setIdEditabili(list);
+							sedeWrapper.getIdEditabili().add(0);
 						}
 					}
 				}

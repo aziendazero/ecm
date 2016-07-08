@@ -1,5 +1,8 @@
 package it.tredi.ecm.bootstrap;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -10,6 +13,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
@@ -20,6 +25,8 @@ import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
+import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.DatiAccreditamentoService;
 
 @Component
 @org.springframework.context.annotation.Profile("dev")
@@ -27,14 +34,12 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 
 		private final static Logger LOGGER = LoggerFactory.getLogger(EngineeringLoader.class);
 
-		@Autowired
-		private ProviderRepository providerRepository;
-		@Autowired
-		private EventoRepository eventoRepository;
-		@Autowired
-		private AccountRepository accountRepository;
-		@Autowired
-		private ProfileRepository profileRepository;
+		@Autowired private ProviderRepository providerRepository;
+		@Autowired private EventoRepository eventoRepository;
+		@Autowired private AccountRepository accountRepository;
+		@Autowired private ProfileRepository profileRepository;
+		@Autowired private AccreditamentoService accreditamentoService;
+		@Autowired private DatiAccreditamentoService datAccreditamentoService;
 
 		@Override
 		@Transactional
@@ -71,6 +76,23 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				provider.setAccount(account);
 				providerRepository.save(provider);
 
+				//Accreditamento
+				Accreditamento accreditamento = null;
+				try{
+					accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId());
+				}catch(Exception ex){
+					LOGGER.error("BOOTSTRAP ECM - Creazione nuova domanda di accreditamento");
+					return;
+				}
+				
+				DatiAccreditamento datiAccreditamento = new DatiAccreditamento();
+				Set<ProceduraFormativa> procedure = new HashSet<ProceduraFormativa>();
+				procedure.add(ProceduraFormativa.FAD);
+				procedure.add(ProceduraFormativa.RES);
+				procedure.add(ProceduraFormativa.FSC);
+				datiAccreditamento.setProcedureFormative(procedure);
+				datAccreditamentoService.save(datiAccreditamento, accreditamento.getId());
+				
 				//Eventi
 				Evento evento = new Evento();
 				evento.setCosto(500.99);
@@ -78,6 +100,7 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				evento.setProceduraFormativa(ProceduraFormativa.FAD);
 				evento.setPagato(false);
 				evento.setProvider(provider);
+				evento.setAccreditamento(accreditamento);
 				eventoRepository.save(evento);
 
 				Evento evento2 = new Evento();
@@ -86,6 +109,7 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				evento2.setProceduraFormativa(ProceduraFormativa.RES);
 				evento2.setPagato(false);
 				evento2.setProvider(provider);
+				evento2.setAccreditamento(accreditamento);
 				eventoRepository.save(evento2);
 
 				Evento evento3 = new Evento();
@@ -94,6 +118,7 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				evento3.setProceduraFormativa(ProceduraFormativa.FSC);
 				evento3.setPagato(true);
 				evento3.setProvider(provider);
+				evento3.setAccreditamento(accreditamento);
 				eventoRepository.save(evento3);
 				LOGGER.info("BOOTSTRAP ECM - ENGINEERING creato...");
 			}
