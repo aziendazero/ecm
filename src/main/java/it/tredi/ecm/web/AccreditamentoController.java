@@ -125,6 +125,25 @@ public class AccreditamentoController {
 			return "redirect:/provider/accreditamento/list";
 		}
 	}
+	
+	/*** NEW 	Nuova domanda accreditamento per provider	***/
+	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
+	@RequestMapping("/provider/{providerId}/accreditamento/new")
+	public String getNewAccreditamentoForCurrentProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId +"/accreditamento/new"));	
+		try{
+			Long accreditamentoId = accreditamentoService.getNewAccreditamentoForProvider(providerId).getId();
+			redirectAttrs.addAttribute("id", accreditamentoId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));	
+			return "redirect:/accreditamento/{id}";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId +"/accreditamento/new"),ex);	
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			redirectAttrs.addAttribute("providerId",providerId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/accreditamento/list"));	
+			return "redirect:/provider/{providerId}/accreditamento/list";
+		}
+	}
 
 	/***	INVIA DOMANDA ALLA SEGRETERIA	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
