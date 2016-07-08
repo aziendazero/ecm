@@ -28,7 +28,7 @@
 							<tbody th:remove="all-but-first">
 								<tr th:each="evento, row : ${eventoList}">
 									<td th:text="${evento.id}"></td>
-									<td th:text="${evento.titolo}"></td>
+									<td><a th:text="${evento.titolo}" th:href="@{|/accreditamento/${evento.accreditamento.id}/provider/${evento.provider.id}/evento/${evento.id}/show|}"></a></td>
 									<td th:text="${evento.proceduraFormativa.nome}"></td>
 									<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<!-- fragment interno dell'evento, la parte di paginazione è gestita dai file eventoShow e eventoEdit -->
+	<!-- parametri del fragment: boolean passato come parametro e prende eventoWrapper dal module del chiamante -->
+	<th:block th:fragment="evento(editabile)">
+
+		<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
+		<th:block th:with="counter=${(editabile == true) ? (eventoWrapper.idOffset-1) : null}">
+
+			<div class="x_content">
+				<!-- rimove il tag form se l'evento NON è editabile -->
+				<div class="form-horizontal form-label-left" th:remove="${!editabile} ? none : tag">
+				<form th:remove="${editabile} ? none : tag"
+					id="formEvento" class="form-horizontal form-label-left"
+					th:action="@{|/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/evento/save|}"
+					method="post" enctype="multipart/form-data"
+					novalidate="novalidate">
+
+					<!-- gli input hidden non sono necessari se NON editabile -->
+					<th:block th:if="${editabile}">
+						<input type="hidden" name="editId" th:value="${eventoWrapper.evento.id}" />
+						<input type="hidden" th:field="${eventoWrapper.providerId}" />
+						<input type="hidden" th:field="${eventoWrapper.accreditamentoId}" />
+						<input type="hidden" th:field="${eventoWrapper.idEditabili}" />
+						<input type="hidden" th:field="${eventoWrapper.idOffset}" />
+						<input type="hidden" th:field="${eventoWrapper.evento.pianoFormativo}" />
+					</th:block>
+
+					<!-- CLASSIFICAZIONE EVENTO (inserito o meno nel piano formativo) -->
+					<div class="col-xs-12">
+						<th:block th:if="${eventoWrapper.evento.pianoFormativo}">
+							<h2 id="pianoFormativo" th:text="#{label.anno(${#numbers.formatInteger(eventoWrapper.evento.pianoFormativo,0)})} "></h2>
+						</th:block>
+						<th:block th:unless="${eventoWrapper.evento.pianoFormativo}">
+							<h2 id="pianoFormativo" th:text="#{label.evento_non_in_piano_formativo}"></h2>
+						</th:block>
+					</div>
+
+
+					<!-- PROCEDURE FORMATIVE -->
+					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.proceduraFormativa')} ? 'bad'">
+						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">1</label>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="procedure_formative_radio">
+							<span th:text="#{label.procedure_formative}">Procedure formative</span>
+							<span th:if="${editabile}" class="required">*</span>
+						</label>
+						<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_radio">
+							<div class="radio" th:with="counter=${(editabile == true) ? (++counter) : null}"
+								th:each="proceduraFormativa, row : ${proceduraFormativaList}">
+								<label th:class="${(!editabile or !#lists.contains(eventoWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
+									<!-- input disabilitato se l'evento è NON editabile perchè eventoShow o se l'id NON  è editabile -->
+									<input type="radio" class="flat"
+										th:field="${eventoWrapper.evento.proceduraFormativa}"
+										th:value="${proceduraFormativa}"
+										th:disabled="${!editabile or !#lists.contains(eventoWrapper.idEditabili, counter)}" />
+									<span th:text="${proceduraFormativa.nome}">proceduraFormativa.nome</span>
+								</label>
+							</div>
+						</div>
+						<div th:if="${#fields.hasErrors('eventoWrapper.evento.proceduraFormativa')}" class="alert" th:errors="${eventoWrapper.evento.proceduraFormativa}"></div>
+					</div>
+
+					<div class="divider-dashed"></div>
+
+					<!-- TITOLO PROGRAMMA FORMATIVO -->
+					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.titolo')} ? 'bad'">
+						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">2</label>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="procedure_formative_titolo">
+							<span th:text="#{label.titolo_programma_formativo}">Titolo del programma formativo</span>
+							<span th:if="${editabile}" class="required">*</span>
+						</label>
+						<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_titolo">
+							<!-- input disabilitato se l'evento è NON editabile perchè eventoShow o se l'id NON  è editabile -->
+							<textarea maxlength="3000" id="title" rows="3" name="titolo"
+								style="resize: none;" th:field="${eventoWrapper.evento.titolo}"
+								th:if="${editabile}"
+								th:disabled="${!#lists.contains(eventoWrapper.idEditabili, counter)}">
+							</textarea>
+							<div class="value" th:if="${!editabile}" th:text="${eventoWrapper.evento.titolo}"></div>
+							<!-- JS di counter non è disponibile in eventoShow -->
+							<div th:if="${editabile}" id="counter"></div>
+						</div>
+						<div th:if="${#fields.hasErrors('eventoWrapper.evento.titolo')}" class="alert" th:errors="${eventoWrapper.evento.titolo}"></div>
+					</div>
+
+					<div class="divider-dashed"></div>
+
+					<!-- OBIETTIVO FORMATIVO NAZIONALE-->
+					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.obiettivoNazionale')} ? 'bad'">
+						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">3</label>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivo_formativo_nazionale">
+							<span th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Nazionale</span>
+							<span th:if="${editabile}" class="required">*</span>
+						</label>
+						<div class="col-md-4 col-sm-4 col-xs-12" id="obiettivo_formativo_nazionale">
+							<!-- input disabilitato se l'evento è NON editabile perchè eventoShow o se l'id NON  è editabile -->
+							<select id="obiettivo-formativo-nazionale-select"
+								class="selectpicker"
+								th:field="${eventoWrapper.evento.obiettivoNazionale}"
+								data-width="100%" data-style="btn-primary"
+								data-actions-box="true" data-size="10"
+								data-hide-disabled="false"
+								title="Seleziona un obiettivo..."
+								th:disabled="${!#lists.contains(eventoWrapper.idEditabili, counter)}"
+								th:if="${editabile}"
+								th:remove="all-but-first">
+								<optgroup class="optgroup-primary"
+									th:each="categoriaObiettivoNazionale, row: ${categoriaObiettivoNazionaleList}"
+									th:label="${categoriaObiettivoNazionale.nome}"
+									th:remove="all-but-first">
+									<option
+										th:each="obiettivoNazionale, row: ${obiettivoNazionaleList}"
+										th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
+										th:value="${obiettivoNazionale.id}"
+										th:text="${obiettivoNazionale.nome}">Obiettivo selezionato
+									</option>
+								</optgroup>
+							</select>
+							<div class="value" th:if="${!editabile}" th:text="${eventoWrapper.evento.obiettivoNazionale.nome}"></div>
+						</div>
+						<div th:if="${#fields.hasErrors('eventoWrapper.evento.obiettivoNazionale')}" class="alert" th:errors="${eventoWrapper.evento.obiettivoNazionale}"></div>
+					</div>
+
+					<div class="divider-dashed"></div>
+
+					<!-- OBIETTIVO FORMATIVO REGIONALE -->
+					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.obiettivoRegionale')} ? 'bad'">
+						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">4</label>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivo_formativo_regionale">
+							<span th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Nazionale</span>
+							<span th:if="${editabile}" class="required">*</span>
+						</label>
+						<div class="col-md-4 col-sm-4 col-xs-12" id="obiettivo_formativo_regionale">
+							<!-- input disabilitato se l'evento è NON editabile perchè eventoShow o se l'id NON  è editabile -->
+							<select id="obiettivo-formativo-regionale-select"
+								class="selectpicker"
+								th:field="${eventoWrapper.evento.obiettivoRegionale}"
+								data-width="100%" data-style="btn-primary"
+								data-actions-box="true" data-size="10"
+								data-hide-disabled="false"
+								title="Seleziona un obiettivo..."
+								th:if="${editabile}"
+								th:disabled="${!#lists.contains(eventoWrapper.idEditabili, counter)}"
+								th:remove="all-but-first">
+								<option
+									th:each="obiettivoRegionale, row: ${obiettivoRegionaleList}"
+									th:value="${obiettivoRegionale.id}"
+									th:text="${obiettivoRegionale.nome}">Obiettivo selezionato
+								</option>
+							</select>
+							<div class="value" th:if="${!editabile}" th:text="${eventoWrapper.evento.obiettivoRegionale.nome}"></div>
+						</div>
+						<div th:if="${#fields.hasErrors('eventoWrapper.evento.obiettivoRegionale')}" class="alert" th:errors="${eventoWrapper.evento.obiettivoRegionale}"></div>
+					</div>
+
+					<div class="divider-dashed"></div>
+
+					<!-- PROFESSIONI EVENTO -->
+					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')} ? 'bad'">
+						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">5</label>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="evento_professioni">
+							<span th:text="#{label.evento_professioni}">Evento per professioni</span>
+							<span th:if="${editabile}" class="required">*</span>
+						</label>
+							<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni">
+								<div class="radio">
+									<label th:class="${(!editabile or !#lists.contains(eventoWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
+										<input type="radio" class="flat"
+											id="generaleProf" name="professioneEvento"
+											th:field="${eventoWrapper.evento.professioniEvento}"
+											th:value="Generale"
+											th:disabled="${!editabile or !#lists.contains(eventoWrapper.idEditabili, counter)}" />
+										<span th:text="#{label.generale}">Generale </span>
+									</label>
+								</div>
+								<div class="radio">
+									<label th:class="${(!editabile or !#lists.contains(eventoWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
+										<input type="radio" class="flat"
+											id="settorialeProf" name="professioneEvento"
+											th:field="${eventoWrapper.evento.professioniEvento}"
+											th:value="Settoriale"
+											th:disabled="${!editabile or !#lists.contains(eventoWrapper.idEditabili, counter)}" />
+										<span th:text="#{label.settoriale}">Settoriale </span>
+									</label>
+								</div>
+							</div>
+						<div th:if="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')}" class="alert" th:errors="${eventoWrapper.evento.professioniEvento}"></div>
+					</div>
+
+					<div class="divider-dashed"></div>
+
+					<!-- PROFESSIONI/DISCIPLINE -->
+					<div class="item form-group">
+						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">6</label>
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="evento_professioni-select">
+								<span th:text="#{label.professioni_discipline}">Professioni/discipline</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+						<th:block th:if="${editabile and #lists.contains(eventoWrapper.idEditabili, counter)}">
+							<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni-select">
+								<select id="professioni" class="selectpicker multi"
+									multiple="multiple" data-width="100%"
+									data-style="btn-primary" data-actions-box="true"
+									data-size="10" title="Seleziona una professione..."
+									onchange="abilitaDiscipline(this)"
+									data-selected-text-format="count" th:remove="all-but-first">
+									<option th:each="professione, row: ${professioneList}"
+										th:value="${professione.id}" th:text="${professione.nome}"
+										th:field="${eventoWrapper.evento.professioniSelezionate}">Professione
+										selezionata</option>
+								</select>
+								<select id="discipline" class="selectpicker multi"
+									th:field="${eventoWrapper.evento.discipline}"
+									multiple="multiple" data-width="100%"
+									data-style="btn-success" data-actions-box="true"
+									data-size="10" data-hide-disabled="true"
+									title="Seleziona una disciplina..." disabled="disabled"
+									data-selected-text-format="count" th:remove="all-but-first">
+									<optgroup class="optgroup-success" disabled="disabled"
+										th:each="professione, row: ${professioneList}"
+										th:label="${professione.nome}" th:remove="all-but-first">
+										<option th:each="disciplina, row: ${disciplinaList}"
+											th:if="${disciplina.professione == professione}"
+											th:value="${disciplina.id}" th:text="${disciplina.nome}">Disciplina
+											selezionata</option>
+									</optgroup>
+								</select>
+							</div>
+						</th:block>
+						<th:block th:unless="${editabile and #lists.contains(eventoWrapper.idEditabili, counter)}">
+							<div class="row" style="clear: both; padding: 2px;"></div>
+							<div class="row" style="clear: both">
+								<div class="col-md-3 col-sm-3 col-xs-12"></div>
+								<div class="col-md-6 col-sm-6 col-xs-12" id="evento_professioni-select">
+									<table id="professioni-discipline" class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-form" cellspacing="0" width="100%">
+										<thead>
+											<tr>
+												<th th:text="#{label.professione}">Professione</th>
+												<th th:text="#{label.disciplina}">Disciplina</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="disciplina, row: ${eventoWrapper.evento.discipline}">
+												<td th:text="${disciplina.professione.nome}"></td>
+												<td th:text="${disciplina.nome}"></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</th:block>
+					</div>
+				</form>
+				</div>
+			</div>
+		</th:block>
+	</th:block>
+</body>
+</html>
