@@ -10,60 +10,15 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-					
-					<!-- AGGIUNGERE LE PARTI THYMELEAF QUANDO HAI I JAVABEAN DELLA PERSONA -->
-					
-						<h1>
-							<span th:remove="tag">Nome</span> <span th:remove="tag">Cognome</span>
-						</h1>
+						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
+						</div>
 						<div class="clearfix"></div>
 					</div>
-					<div class="x_content">
-						<div class="col-md-9 col-sm-9 col-xs-12">
 
-							<ul class="fontawesome-icon-list list-unstyled user_data">
+					<th:block th:include="persona/personaFragment :: persona(false)"></th:block>
 
-								<li><i class="fa fa-credit-card"></i> <span th:text="#{label.codice_fiscale}"> Codice Fiscale></span>:</li>
-
-								<li><i class="fa fa-phone-square"></i> <span th:text="#{label.telefono}"> Telefono></span>:</li>
-
-								<li><i class="fa fa-phone"></i> <span th:text="#{label.cellulare}"> Cellulare></span>:</li>
-
-								<li><i class="fa fa-at"></i> <span th:text="#{label.email}"> Email></span>:</li>
-
-								<li><i class="fa fa-envelope"></i> <span th:text="#{label.pec}"> PEC></span>:</li>
-
-								<li><i class="fa fa-bank"></i> <span th:text="#{label.provider}"> Provider></span>:</li>
-
-								<li><i class="fa fa-briefcase"></i> <span th:text="#{label.ruolo}"> Ruolo</span>:</li>
-
-							</ul>
-							<table id="datatable-responsive"
-								class="table table-striped table-bordered dt-responsive nowrap"
-								cellspacing="0" width="100%">
-								<thead>
-									<tr>
-										<th th:text="#{label.file_nome}">File</th>
-										<th th:text="#{label.file_descrizione}">Descrizione</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>File1</td>
-										<td>Descrizione del file1</td>
-									</tr>
-									<tr>
-										<td>File2</td>
-										<td>Descrizione del file2</td>
-									</tr>
-									<tr>
-										<td>File1</td>
-										<td>Descrizione del file2</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
