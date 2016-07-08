@@ -112,6 +112,7 @@ public class EventoController {
 
 	//TODO domenico (check se fa la query di tutto il provider)
 	/*** LIST EVENTO ***/
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/evento/list")
 	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
@@ -127,6 +128,39 @@ public class EventoController {
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
 			return "redirect:/provider/show";
 		}
+	}
+
+	/*
+	 * SHOW EVENTO
+	 */
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
+	@RequestMapping(value = "/provider/{providerId}/evento/{id}/show")
+	public String showEvento(@PathVariable Long providerId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + id + "/show"));
+		try {
+			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + id + "/show"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
+			return "redirect:/provider/" + providerId + "/evento/list";
+		}
+	}
+
+	private String goToShow(Model model, EventoWrapper wrapper) {
+		model.addAttribute("eventoWrapper", wrapper);
+		model.addAttribute("proceduraFormativaList", wrapper.getEvento().getAccreditamento().getDatiAccreditamento().getProcedureFormative());
+		LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoShow"));
+		return "evento/eventoShow";
+	}
+
+	private EventoWrapper prepareEventoWrapperShow(Evento evento, Long providerId) {
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperShow(" + evento.getId() + "," + providerId + ") - entering"));
+		EventoWrapper eventoWrapper = new EventoWrapper();
+		eventoWrapper.setEvento(evento);
+		eventoWrapper.setProviderId(providerId);
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperShow(" + evento.getId() + "," + providerId + ") - exiting"));
+		return eventoWrapper;
 	}
 
 	/*

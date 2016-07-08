@@ -5,14 +5,14 @@
 <head lang="it">
 </head>
 <body>
-	<div layout:fragment="content" th:with="counter=${eventoWrapper.idOffset-1}">
+	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.visualizza_evento}">Evento</h2>
+						<h2 th:text="#{label.visualizza_evento(${eventoWrapper.evento.id})}">Evento</h2>
 						<div class="pull-right buttons-header">
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${eventoWrapper.accreditamentoId}/|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/list|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
