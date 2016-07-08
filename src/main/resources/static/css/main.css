@@ -365,7 +365,7 @@ th.center {
 }
 
 .profile_anagrafica {
-	height: 230px;
+	height: 210px;
 	white-space:nowrap;
 }
 
@@ -473,6 +473,18 @@ h2 {
 	border-color: #E4E4E4;
 	padding-left: 5px;
 	padding-right: 5px;
+}
 
+.value {
+	padding-top: 8px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
 
+.checkbox label, .radio label {
+	padding-left: 10px;
+}
+
+.flat {
+	display: none;
 }
