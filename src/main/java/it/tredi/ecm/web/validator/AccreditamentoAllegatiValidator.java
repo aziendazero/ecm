@@ -19,7 +19,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 	@Autowired private FileValidator fileValidator;
 	
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
-		Utils.logInfo(LOGGER, "Validazione Allegati Accreditamento");
+		LOGGER.info(Utils.getLogMessage("Validazione Allegati Accreditamento"));
 		validateFiles(files, errors, "");
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}

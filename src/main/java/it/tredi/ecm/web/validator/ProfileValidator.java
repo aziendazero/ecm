@@ -20,7 +20,7 @@ public class ProfileValidator {
 	private ProfileRepository profileRepository;
 
 	public void validate(Object target, Errors errors) {
-		Utils.logInfo(LOGGER, "Validazione Profile");
+		LOGGER.info(Utils.getLogMessage("Validazione Profile"));
 		Profile profile = (Profile)target;
 		validateProfile(profile, errors);
 		Utils.logDebugErrorFields(LOGGER, errors);

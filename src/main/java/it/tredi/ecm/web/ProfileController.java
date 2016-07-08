@@ -39,15 +39,15 @@ public class ProfileController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllUser(principal)")
 	@RequestMapping("/profile/list")
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "GET /profile/list");
+		LOGGER.info(Utils.getLogMessage("GET /profile/list"));
 		try {
 			model.addAttribute("profileList", profileAndRoleService.getAllProfile());
-			Utils.logInfo(LOGGER, "VIEW: /user/profileList");
+			LOGGER.info(Utils.getLogMessage("VIEW: /user/profileList"));
 			return "user/profileList";
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /profile/list",ex);
+			LOGGER.error(Utils.getLogMessage("GET /profile/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "REDIRECT: /home");
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";
 		}
 	}
@@ -55,16 +55,16 @@ public class ProfileController {
 	@PreAuthorize("@securityAccessServiceImpl.canCreateUser(principal)")
 	@RequestMapping("/profile/{id}/edit")
 	public String editProfile(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "GET /profile/" + id +"/edit");
+		LOGGER.info(Utils.getLogMessage("GET /profile/" + id +"/edit"));
 		try {
 			model.addAttribute("profile", profileAndRoleService.getProfile(id));
 			model.addAttribute("roleList", profileAndRoleService.getAllRole());
-			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 			return EDIT;
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /profile/" + id +"/edit", ex);
+			LOGGER.error(Utils.getLogMessage("GET /profile/" + id +"/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "REDIRECT: /profile/list");
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /profile/list"));
 			return "redirect:/profile/list";
 		}
 	}
@@ -72,40 +72,40 @@ public class ProfileController {
 	@PreAuthorize("@securityAccessServiceImpl.canCreateUser(principal)")
 	@RequestMapping("/profile/new")
 	public String newProfile(Model model, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "GET /profile/new");
+		LOGGER.info(Utils.getLogMessage("GET /profile/new"));
 		try {
 			model.addAttribute("profile", new Profile());
 			model.addAttribute("roleList", profileAndRoleService.getAllRole());
-			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 			return EDIT;
 		}catch (Exception ex) {
-			Utils.logError(LOGGER, "GET /profile/new",ex);
+			LOGGER.error(Utils.getLogMessage("GET /profile/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "REDIRECT: /profile/list");
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /profile/list"));
 			return "redirect:/profile/list";
 		}
 	}
 	
 	@RequestMapping(value = "profile/save", method = RequestMethod.POST)
 	public String saveProfile(@ModelAttribute("profile") Profile profile, BindingResult result, RedirectAttributes redirectAttrs, Model model){
-		Utils.logInfo(LOGGER, "POST /profile/save");
+		LOGGER.info(Utils.getLogMessage("POST /profile/save"));
 		try {
 			profileValidator.validate(profile, result);
 			if(result.hasErrors()){
 				model.addAttribute("roleList", profileAndRoleService.getAllRole());
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
 				profileAndRoleService.saveProfile(profile);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.profilo_salvato", "success"));
-				Utils.logInfo(LOGGER, "REDIRECT: /profile/list");
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /profile/list"));
 				return "redirect:/profile/list";
 			}
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "POST /profile/save",ex);
+			LOGGER.error(Utils.getLogMessage("POST /profile/save"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 			return EDIT;
 		}
 	}

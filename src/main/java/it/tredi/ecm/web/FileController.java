@@ -45,7 +45,7 @@ public class FileController {
 	//TODO security su file download/upload
 	@RequestMapping(value = "/file/{fileId}", method = RequestMethod.GET)
 	public void getFile(@PathVariable("fileId") Long id, HttpServletResponse response, Model model) throws IOException {
-		Utils.logInfo(LOGGER, "GET /file/" + id);
+		LOGGER.info(Utils.getLogMessage("GET /file/" + id));
 		try {
 			if(id == null){
 				model.addAttribute("message",new Message("A","B","C"));
@@ -75,7 +75,7 @@ public class FileController {
 				FileCopyUtils.copy(inputStream, response.getOutputStream());
 			}
 		}catch (Exception ex) {
-			Utils.logError(LOGGER, "GET /file/" + id, ex);
+			LOGGER.error(Utils.getLogMessage("GET /file/" + id), ex);
 		}
 	}
 
@@ -84,8 +84,8 @@ public class FileController {
 	public Object uploadFile(@RequestParam(value = "multiPartFile", required = false) MultipartFile multiPartFile,
 			@RequestParam(value = "fileId", required = false) Long fileId,
 			@RequestParam(value = "tipo", required = true) String tipo){
-		Utils.logInfo(LOGGER, "GET /file/upload");
-		Utils.logDebug(LOGGER, "tipo: " + tipo);
+		LOGGER.info(Utils.getLogMessage("GET /file/upload"));
+		LOGGER.debug(Utils.getLogMessage("tipo: " + tipo));
 		File file = new File(FileEnum.valueOf(tipo));
 		try{
 			if(multiPartFile != null && !multiPartFile.isEmpty()){
@@ -101,7 +101,7 @@ public class FileController {
 					return error;
 			}
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /file/upload", ex);
+			LOGGER.error(Utils.getLogMessage("GET /file/upload"), ex);
 		}
 		return file;
 	}
@@ -111,17 +111,17 @@ public class FileController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/allegato/list")
 	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "GET /provider/" +providerId + "/allegato/list");
+		LOGGER.info(Utils.getLogMessage("GET /provider/" +providerId + "/allegato/list"));
 		try {
 			Provider provider = providerService.getProvider(providerId);
 			model.addAttribute("allegatoList", provider.getFiles());
 			model.addAttribute("titolo", provider.getDenominazioneLegale());
-			Utils.logInfo(LOGGER, "VIEW: /allegato/list");
+			LOGGER.info(Utils.getLogMessage("VIEW: /allegato/list"));
 			return "allegato/allegatoList";
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /provider/" +providerId + "/allegato/list", ex);
+			LOGGER.error(Utils.getLogMessage("GET /provider/" +providerId + "/allegato/list"), ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "REDIRECT: /provider/show");
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
 			return "redirect:/provider/show";
 		}
 	}

@@ -83,14 +83,14 @@ public class DatiAccreditamentoController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/new")
 	public String newDatiAccreditamento(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId + "/dati/new");
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/new"));
 		try {
 			return goToEdit(model, prepareDatiAccreditamentoWrapper(new DatiAccreditamento(),accreditamentoId));
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId + "/dati/new", ex);
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
-			Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
 			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	}
@@ -99,14 +99,14 @@ public class DatiAccreditamentoController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/{id}/edit")
 	public String editDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/edit");
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/edit"));
 		try{
 			return goToEdit(model, prepareDatiAccreditamentoWrapper(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/edit", ex);
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
-			Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
 			return "redirect:/accreditamento/{accreditamentoId}";
 		}
 	};
@@ -115,7 +115,7 @@ public class DatiAccreditamentoController {
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/save", method = RequestMethod.POST)
 	public String saveDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
 											@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
-		Utils.logInfo(LOGGER, "POST /accreditamento/" + accreditamentoId + "/dati/save");
+		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/dati/save"));
 		try {
 			if(wrapper.getDatiAccreditamento().isNew()){
 				wrapper.setProvider(providerService.getProvider(wrapper.getProvider().getId()));
@@ -139,30 +139,30 @@ public class DatiAccreditamentoController {
 			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
 
 			if(result.hasErrors()){
-				Utils.logDebug(LOGGER, "Validazione Fallita");
+				LOGGER.debug(Utils.getLogMessage("Validazione Fallita"));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				Utils.logDebug(LOGGER, "Salvataggio DatiAccrdeditmento");
+				LOGGER.debug(Utils.getLogMessage("Salvataggio DatiAccrdeditmento"));
 				providerService.save(wrapper.getProvider());
 				datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), accreditamentoId);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.dati_attivita_inseriti", "success"));
 				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
-				Utils.logInfo(LOGGER, "REDIRECT: /accreditamento/" + accreditamentoId);
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
 				return "redirect:/accreditamento/{accreditamentoId}";
 			}
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "POST /accreditamento/" + accreditamentoId + "/dati/save", ex);
+			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/dati/save"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 			return EDIT;
 		}
 	}
 
 	private String goToEdit(Model model, DatiAccreditamentoWrapper wrapper){
 		model.addAttribute("datiAccreditamentoWrapper", wrapper);
-		Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
 
@@ -171,7 +171,7 @@ public class DatiAccreditamentoController {
 	}
 
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapper(DatiAccreditamento datiAccreditamento, long accreditamentoId){
-		Utils.logInfo(LOGGER, "prepareDatiAccreditamentoWrapper(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering");
+		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapper(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
 		wrapper.setDatiAccreditamento(datiAccreditamento);
 		wrapper.setAccreditamentoId(accreditamentoId);
@@ -195,7 +195,7 @@ public class DatiAccreditamentoController {
 		}
 
 		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_DATI_ACCREDITAMENTO), accreditamentoService.getIdEditabili(accreditamentoId));
-		Utils.logInfo(LOGGER, "prepareDatiAccreditamentoWrapper(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting");
+		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapper(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;
 	};
 }

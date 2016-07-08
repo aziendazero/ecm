@@ -21,7 +21,7 @@ public class DatiAccreditamentoValidator {
 	@Autowired private FileValidator fileValidator;
 	
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
-		Utils.logInfo(LOGGER, "Validazione DatiAccreditamento");
+		LOGGER.info(Utils.getLogMessage("Validazione DatiAccreditamento"));
 		validateDatiAccreditamento(target, errors, prefix);
 		validateFilesEconomici(files, errors, "", ((DatiAccreditamento) target).getDatiEconomici());
 		validateFilesStrutturaPersonale(files, errors, "");

@@ -17,7 +17,7 @@ public class GlobalExceptionController {
 
 	@ExceptionHandler(Exception.class)
 	public ModelAndView handleAllException(HttpServletRequest request, Exception ex){
-		Utils.logError(LOGGER, "AccessDeniedException", ex);
+		LOGGER.error(Utils.getLogMessage("AccessDeniedException"), ex);
 		ModelAndView model = new ModelAndView();
 		String httpErrorStatus = (String) request.getAttribute("javax.servlet.error.status_code");
 		Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");

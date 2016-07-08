@@ -36,7 +36,6 @@
 					<div class="menu_section">
 						<h3>
 							<div sec:authentication="principal.profile">profilo</div>
-							<!-- div sec:authentication="principal.authorities">roles</div-->
 						</h3>
 						<ul class="nav side-menu">
 							<!-- li th:if="${#authorization.expression('hasAuthority(''PROVIDER_READ'')')}" -->
@@ -59,6 +58,7 @@
 									 -->
 								</ul>
 							</li>
+							
 							<li th:if="${#authentication.principal.hasProfile('ADMIN')}">
 								<a>
 									<i class="fa fa-edit"></i> <span th:text="#{label.segreteria}">label.segreteria</span>

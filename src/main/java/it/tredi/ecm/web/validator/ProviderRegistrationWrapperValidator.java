@@ -18,7 +18,7 @@ public class ProviderRegistrationWrapperValidator{
 	@Autowired private ProviderValidator providerValidator;
 	
 	public void validate(Object target, Errors errors) {
-		Utils.logInfo(LOGGER, "Validazione ProviderRegistrationWrapper");
+		LOGGER.info(Utils.getLogMessage("Validazione ProviderRegistrationWrapper"));
 		ProviderRegistrationWrapper providerForm = (ProviderRegistrationWrapper)target;
 		accountValidator.validate(providerForm.getProvider().getAccount(), errors, "provider.account.");
 		

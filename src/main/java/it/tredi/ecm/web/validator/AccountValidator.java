@@ -25,14 +25,14 @@ public class AccountValidator{
 	}
 	
 	public void validate(Object target, Errors errors, String prefix) {
-		Utils.logInfo(LOGGER, "Validazione Account");
+		LOGGER.info(Utils.getLogMessage("Validazione Account"));
 		Account account = (Account)target;
 		validateAccount(account, errors, prefix);
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 	
 	public void validateChangePassword(Object target, Errors errors, Account account){
-		Utils.logInfo(LOGGER, "Validzione Account per ChangePassword");
+		LOGGER.info(Utils.getLogMessage("Validzione Account per ChangePassword"));
 		AccountChangePassword accountChangePassword = (AccountChangePassword)target;
 		if(accountChangePassword.getOldPassword().isEmpty())
 			errors.rejectValue("oldPassword", "error.empty");

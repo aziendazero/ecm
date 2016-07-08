@@ -56,7 +56,7 @@ public class EngineeringController {
 			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(providerService.getProvider()));
 			return "engineering/firmaTest";
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "Errore redirect firma", ex);
+			LOGGER.error(Utils.getLogMessage("Errore redirect firma"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -69,7 +69,7 @@ public class EngineeringController {
 			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
 			return "engineering/mypayTest";
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "Errore redirect mypay", ex);
+			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -100,7 +100,7 @@ public class EngineeringController {
 				return "redirect:/engineering/test/firma";
 			}
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "Errore Salvataggio", ex);
+			LOGGER.error(Utils.getLogMessage("Errore Salvataggio"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "engineering/firmaTest";
 		}

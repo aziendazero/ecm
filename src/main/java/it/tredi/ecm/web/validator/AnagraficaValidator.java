@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.service.AnagraficaService;
+import it.tredi.ecm.utils.Utils;
 
 @Component
 public class AnagraficaValidator {
@@ -21,7 +22,7 @@ public class AnagraficaValidator {
 	private AnagraficaService anagraficaService;
 	
 	public void validateBase(Object target, Errors errors, String prefix, Long providerId){
-		LOGGER.debug("VALIDAZIONE ANAGRAFICA");
+		LOGGER.info(Utils.getLogMessage("Validazione Anagrafica Base"));
 		Anagrafica anagrafica = (Anagrafica)target;
 		if(anagrafica.getCognome().isEmpty())
 			errors.rejectValue(prefix + "cognome", "error.empty");

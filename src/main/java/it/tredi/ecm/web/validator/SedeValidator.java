@@ -13,7 +13,7 @@ public class SedeValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SedeValidator.class);
 	
 	public void validate(Object target, Errors errors, String prefix){
-		Utils.logInfo(LOGGER, "Validazione Sede");
+		LOGGER.info(Utils.getLogMessage("Validazione Sede"));
 		Sede sede = (Sede)target;
 		
 		if(sede.getProvincia() == null || sede.getProvincia().isEmpty())

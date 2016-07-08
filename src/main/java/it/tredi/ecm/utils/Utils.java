@@ -48,24 +48,14 @@ public class Utils {
 
 		return null;
 	}
-
-	public static void logInfo(org.slf4j.Logger LOGGER, String message){
-		String userInfo = "[" + getAuthenticatedUser().getAccount().getUsername() + "] - "; 
-		LOGGER.info(userInfo + message);
-	}
-
-	public static void logError(org.slf4j.Logger LOGGER, String message, Throwable ex){
-		String userInfo = "[" + getAuthenticatedUser().getAccount().getUsername() + "] - "; 
-		LOGGER.error(userInfo + message, ex);
-	}
-
-	public static void logDebug(org.slf4j.Logger LOGGER, String message){
-		String userInfo = "[" + getAuthenticatedUser().getAccount().getUsername() + "] - "; 
-		LOGGER.debug(userInfo + message);
+	
+	public static String getLogMessage(String message){
+		CurrentUser currentUser = getAuthenticatedUser();
+		return "[" + ((currentUser != null) ? currentUser.getAccount().getUsername() : "AnonymousAuthentication") + "] - " + message; 
 	}
 	
 	public static void logDebugErrorFields(org.slf4j.Logger LOGGER, Errors errors){
 		if(LOGGER.isDebugEnabled())
-			errors.getFieldErrors().forEach( fieldError -> Utils.logDebug(LOGGER, fieldError.getField() + ": '" + fieldError.getRejectedValue() + "' [" + fieldError.getCode()+ "]"));
+			errors.getFieldErrors().forEach( fieldError -> LOGGER.debug(fieldError.getField() + ": '" + fieldError.getRejectedValue() + "' [" + fieldError.getCode()+ "]"));
 	}
 }

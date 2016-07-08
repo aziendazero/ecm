@@ -30,10 +30,9 @@ import it.tredi.ecm.dao.repository.SedeRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
-import it.tredi.ecm.utils.Utils;
 
 @Component
-@org.springframework.context.annotation.Profile("dev")
+@org.springframework.context.annotation.Profile("dev2")
 public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ProviderLoader.class);
 	
@@ -117,7 +116,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			try{
 				accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId());
 			}catch (Exception ex){
-				Utils.logError(LOGGER, "[BOOTSTRAP] - newAccreditamentoForProvider(" + provider.getId() + ")",  ex);
+				LOGGER.error("[BOOTSTRAP] - newAccreditamentoForProvider(" + provider.getId() + ")",  ex);
 			}
 			
 			DatiAccreditamento datiAccreditamento = new DatiAccreditamento();

@@ -54,12 +54,12 @@ public class AccountController{
 	@RequestMapping("/user/list")
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		try {
-			Utils.logInfo(LOGGER, "GET /user/list");
+			LOGGER.info(Utils.getLogMessage("GET /user/list"));
 			model.addAttribute("accountList", accountService.getAllUsers());
-			Utils.logInfo(LOGGER, "VIEW: " + LIST);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 			return LIST;
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /user/list", ex);
+			LOGGER.error(Utils.getLogMessage("GET /user/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -69,10 +69,10 @@ public class AccountController{
 	@RequestMapping("/user/{id}/edit")
 	public String editUser(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		try{
-			Utils.logInfo(LOGGER, "GET /user/" + id + "/edit");
+			LOGGER.info(Utils.getLogMessage("GET /user/" + id + "/edit"));
 			return goToEdit(model, accountService.getUserById(id));
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /user/" + id + "/edit", ex);
+			LOGGER.error(Utils.getLogMessage("GET /user/" + id + "/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:" + URL_LIST;
 		}
@@ -82,10 +82,10 @@ public class AccountController{
 	@RequestMapping("/user/new")
 	public String newUser(Model model, RedirectAttributes redirectAttrs){
 		try {
-			Utils.logInfo(LOGGER, "GET /user/new");
+			LOGGER.info(Utils.getLogMessage("GET /user/new"));
 			return goToEdit(model, new Account());
 		}catch (Exception ex) {
-			Utils.logError(LOGGER, "GET /user/new", ex);
+			LOGGER.error(Utils.getLogMessage("GET /user/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:" + URL_LIST;
 		}
@@ -93,46 +93,46 @@ public class AccountController{
 	
 	@RequestMapping(value = "/user/save", method = RequestMethod.POST)
 	public String saveUser(@ModelAttribute("account") Account account, BindingResult result, RedirectAttributes redirectAttrs, Model model){
-		Utils.logInfo(LOGGER, "POST /user/save");
+		LOGGER.info(Utils.getLogMessage("POST /user/save"));
 		try {
 			accountValidator.validate(account, result);
 			if(result.hasErrors()){
-				Utils.logDebug(LOGGER, "Validazione fallita");
+				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
 				model.addAttribute("profileList", profileAndRoleService.getAllProfile());
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				Utils.logDebug(LOGGER, "Salvataggio account");
+				LOGGER.debug(Utils.getLogMessage("Salvataggio account"));
 				try{
 					accountService.save(account);
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.utente_salvato", "success"));
-					Utils.logInfo(LOGGER, "REDIRECT:" + URL_LIST);
+					LOGGER.info(Utils.getLogMessage("REDIRECT:" + URL_LIST));
 					return "redirect:" + URL_LIST;
 				}catch (Exception ex){
-					Utils.logError(LOGGER, "POST /user/save", ex);
+					LOGGER.error(Utils.getLogMessage("POST /user/save"),ex);
 					model.addAttribute("profileList", profileAndRoleService.getAllProfile());
-					Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 					return EDIT; 
 				}
 			}
 		}catch (Exception ex) {
-			Utils.logError(LOGGER, "POST /user/save", ex);
+			LOGGER.error(Utils.getLogMessage("POST /user/save"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "REDIRECT:" + URL_LIST);
+			LOGGER.info(Utils.getLogMessage("REDIRECT:" + URL_LIST));
 			return "redirect:" + URL_LIST;
 		}
 	}
 	
 	@RequestMapping("/user/changePassword")
 	public String changePassword(Model model, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "GET /user/changePassword");
+		LOGGER.info(Utils.getLogMessage("GET /user/changePassword"));
 		try {
 			model.addAttribute("accountChangePassword", new AccountChangePassword());
-			Utils.logInfo(LOGGER, "VIEW: /user/changePassword");
+			LOGGER.info(Utils.getLogMessage("VIEW: /user/changePassword"));
 			return "user/changePassword";
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /user/changePassword",ex);
+			LOGGER.error(Utils.getLogMessage("GET /user/changePassword"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -141,46 +141,46 @@ public class AccountController{
 	@RequestMapping(value = "/user/changePassword", method = RequestMethod.POST)
 	public String changePassword(@ModelAttribute("accountChangePassword") AccountChangePassword accountChangePassword, 
 									BindingResult result, RedirectAttributes redirectAttrs, Model model){
-		Utils.logInfo(LOGGER, "POST /user/changePassword");
+		LOGGER.info(Utils.getLogMessage("POST /user/changePassword"));
 		try {
 			Account userAccount = accountService.getUserById(Utils.getAuthenticatedUser().getAccount().getId());
 			accountValidator.validateChangePassword(accountChangePassword, result, userAccount);
 			if(result.hasErrors()){
-				Utils.logDebug(LOGGER, "Validazione fallita");
+				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
 				model.addAttribute("accountChangePassword", accountChangePassword);
 				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
-				Utils.logInfo(LOGGER, "VIEW: /user/changePassword");
+				LOGGER.info(Utils.getLogMessage("VIEW: /user/changePassword"));
 				return "/user/changePassword";
 			}else{
-				Utils.logDebug(LOGGER, "Salvataggio account");
+				LOGGER.debug(Utils.getLogMessage("Salvataggio account"));
 				try{
 					accountService.changePassword(userAccount.getId(), accountChangePassword.getNewPassword());
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.password_cambiata", "success"));
 				}catch (Exception ex){
-					Utils.logError(LOGGER, "POST /user/changePassword",ex);
+					LOGGER.error(Utils.getLogMessage("POST /user/changePassword"),ex);
 					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				}
-				Utils.logInfo(LOGGER, "REDIRECT: /home");
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 				return "redirect:/home";
 			}
 		}catch (Exception ex) {
-			Utils.logError(LOGGER, "POST /user/changePassword",ex);
+			LOGGER.error(Utils.getLogMessage("POST /user/changePassword"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "REDIRECT: /user/changePassword");
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /user/changePassword"));
 			return "redirect:/user/changePassword";
 		}
 	}
 	
 	@RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST)
 	public String resetPassword(@RequestParam("reset_email") String email, RedirectAttributes redirectAttrs){
-		Utils.logInfo(LOGGER, "POST /user/resetPassword");
+		LOGGER.info(Utils.getLogMessage("POST /user/resetPassword"));
 		try{
 			if(email != null && !email.isEmpty()){
 				accountService.resetPassword(email);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.password_reset_completato", "success"));
 			}
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "POST /user/resetPassword", ex);
+			LOGGER.error(Utils.getLogMessage("POST /user/resetPassword"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 		}
 		return "redirect:/home";
@@ -189,7 +189,7 @@ public class AccountController{
 	private String goToEdit(Model model, Account account){
 		model.addAttribute("account", account);
 		model.addAttribute("profileList", profileAndRoleService.getAllProfile());
-		Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
 }

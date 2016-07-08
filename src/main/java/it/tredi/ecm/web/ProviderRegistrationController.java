@@ -50,16 +50,16 @@ public class ProviderRegistrationController {
 	/** Public provider registration form. */
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.GET)
 	public String providerRegistration(Model model, RedirectAttributes redirectAttrs) {
-		Utils.logInfo(LOGGER, "GET /providerRegistration");
+		LOGGER.info(Utils.getLogMessage("GET /providerRegistration"));
 		try {
 			model.addAttribute("providerForm", providerService.getProviderRegistrationWrapper());
 			model.addAttribute("stepToShow", 0);
-			Utils.logInfo(LOGGER, "VIEW: /providerRegistration");
+			LOGGER.info(Utils.getLogMessage("VIEW: /providerRegistration"));
 			return "providerRegistration";
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "GET /providerRegistration",ex);
+			LOGGER.error(Utils.getLogMessage("GET /providerRegistration"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "REDIRECT: /home");
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";
 		}
 	}
@@ -67,7 +67,7 @@ public class ProviderRegistrationController {
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.POST)
 	public String registraProvider(@ModelAttribute("providerForm") ProviderRegistrationWrapper providerRegistrationWrapper, 
 									BindingResult result, RedirectAttributes redirectAttrs, Model model){
-		Utils.logInfo(LOGGER, "POST /providerRegistration");
+		LOGGER.info(Utils.getLogMessage("POST /providerRegistration"));
 		try{
 			//TODO Delegato consentito solo per alcuni tipi di Provider
 			if(providerRegistrationWrapper.isDelegato()){
@@ -81,19 +81,19 @@ public class ProviderRegistrationController {
 			if(result.hasErrors()){
 				model.addAttribute("stepToShow", evaluateErrorStep(result));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
 				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.conferma_registrazione", "success"));
-				Utils.logInfo(LOGGER, "REDIRECT: /home");
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 				return "redirect:/home";
 			}
 		}catch (Exception ex){
-			Utils.logError(LOGGER, "POST /providerRegistration",ex);
+			LOGGER.error(Utils.getLogMessage("POST /providerRegistration"),ex);
 			model.addAttribute("stepToShow", evaluateErrorStep(result));
 			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
-			Utils.logInfo(LOGGER, "VIEW: " + EDIT);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 			return EDIT;
 		}
 		

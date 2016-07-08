@@ -26,7 +26,7 @@ public class ProviderValidator {
 	}
 	
 	public void validateForRegistrazione(Object target, Errors errors, String prefix) {
-		Utils.logInfo(LOGGER, "Validazione Provider per Registrazione");
+		LOGGER.info(Utils.getLogMessage("Validazione Provider per Registrazione"));
 		Provider providerForm = (Provider)target;
 		validateProviderBase(providerForm, errors, prefix);
 		
@@ -49,7 +49,7 @@ public class ProviderValidator {
 	}
 	
 	public void validateForAccreditamento(Object target, Errors errors, String prefix) {
-		Utils.logInfo(LOGGER, "Validazione Provider Accreditamento");
+		LOGGER.info(Utils.getLogMessage("Validazione Provider Accreditamento"));
 		Provider providerForm = (Provider)target;
 		validateProviderBase(providerForm, errors, prefix);
 		

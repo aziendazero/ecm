@@ -24,7 +24,7 @@ public class PersonaValidator {
 	@Autowired private PersonaService personaService;
 	
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
-		Utils.logInfo(LOGGER, "Validazione Persona");
+		LOGGER.info(Utils.getLogMessage("Validazione Persona"));
 		validatePersona(target, errors, prefix);
 		validateFiles(files, errors, "", ((Persona)target).getRuolo());
 		Utils.logDebugErrorFields(LOGGER, errors);

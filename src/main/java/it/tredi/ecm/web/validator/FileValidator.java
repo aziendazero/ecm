@@ -21,7 +21,7 @@ public class FileValidator {
 	@Autowired private MessageSource messageSource;
 	
 	public void validate(Object target, Errors errors, String prefix) {
-		Utils.logInfo(LOGGER, "Validazione File");
+		LOGGER.info(Utils.getLogMessage("Validazione File"));
 		File file = (File)target;
 		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){
 			errors.rejectValue(prefix, "error.empty");
@@ -33,7 +33,7 @@ public class FileValidator {
 	}
 	
 	public String validate(Object target) {
-		Utils.logInfo(LOGGER, "Validazione File AJAX Upload");
+		LOGGER.info(Utils.getLogMessage("Validazione File AJAX Upload"));
 		File file = (File)target;
 		String error = "";
 		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){

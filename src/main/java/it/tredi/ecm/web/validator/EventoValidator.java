@@ -20,7 +20,7 @@ public class EventoValidator {
 	}
 	
 	private void validateBase(Object target, Errors errors, String prefix){
-		Utils.logInfo(LOGGER, "Validazione Evento Base");
+		LOGGER.info(Utils.getLogMessage("Validazione Evento Base"));
 		Evento evento = (Evento) target;
 		if(evento.getProceduraFormativa() == null)
 			errors.rejectValue(prefix + "proceduraFormativa", "error.empty");
@@ -37,7 +37,7 @@ public class EventoValidator {
 	}
 	
 	private void validateFull(Object target, Errors errors, String prefix){
-		Utils.logInfo(LOGGER, "Validazione Evento Full");
+		LOGGER.info(Utils.getLogMessage("Validazione Evento Full"));
 		Evento evento = (Evento) target;
 		//TODO validateFull in caso di inserimento di un evento nn nel piano formativo
 		if(evento.getProceduraFormativa() == null)
