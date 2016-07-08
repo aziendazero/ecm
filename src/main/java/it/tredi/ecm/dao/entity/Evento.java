@@ -60,6 +60,7 @@ public class Evento extends BaseEntity{
 	private List<Integer> idEditabili = new ArrayList<Integer>();
 
 	public Evento() {
+
 		for (int i = 0; i<10; i++)
 			idEditabili.add(new Integer(i));
 	}
