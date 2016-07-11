@@ -9,7 +9,7 @@
 	<!-- wrapper con idEditabili -->
 	<th:block th:if="${__withIdEditabili__}">
 
-		<div th:if="${__${wrapper}__.__${tipoAllegato}__.id != null}" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+		<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
 
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
