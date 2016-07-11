@@ -26,22 +26,22 @@ import it.tredi.ecm.web.validator.ProviderRegistrationWrapperValidator;
 @Controller
 public class ProviderRegistrationController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProviderRegistrationController.class);
-	public final String EDIT = "providerRegistration"; 
-	
+	public final String EDIT = "providerRegistration";
+
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
 	@Autowired private ProviderRegistrationWrapperValidator providerRegistrationValidator;
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
-	
+
 	@ModelAttribute("tipoOrganizzatoreList")
 	public TipoOrganizzatore[] getListTipoOrganizzatore(){
 		return TipoOrganizzatore.values();
 	}
-	
+
 	@ModelAttribute("providerForm")
 	public ProviderRegistrationWrapper getProviderRegistrationWrapperPreRequest(@RequestParam(value="editId",required = false) Long id){
 		return providerService.getProviderRegistrationWrapper();
@@ -63,9 +63,9 @@ public class ProviderRegistrationController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping(value = "/providerRegistration", method = RequestMethod.POST)
-	public String registraProvider(@ModelAttribute("providerForm") ProviderRegistrationWrapper providerRegistrationWrapper, 
+	public String registraProvider(@ModelAttribute("providerForm") ProviderRegistrationWrapper providerRegistrationWrapper,
 									BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		LOGGER.info(Utils.getLogMessage("POST /providerRegistration"));
 		try{
@@ -75,9 +75,9 @@ public class ProviderRegistrationController {
 				if(file != null && !file.isNew())
 					providerRegistrationWrapper.setDelega(fileService.getFile(file.getId()));
 			}
-			
-			providerRegistrationValidator.validate(providerRegistrationWrapper, result);	
-			
+
+			providerRegistrationValidator.validate(providerRegistrationWrapper, result);
+
 			if(result.hasErrors()){
 				model.addAttribute("stepToShow", evaluateErrorStep(result));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
@@ -86,8 +86,8 @@ public class ProviderRegistrationController {
 			}else{
 				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.conferma_registrazione", "success"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
-				return "redirect:/home";
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /login"));
+				return "redirect:/login";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /providerRegistration"),ex);
@@ -96,9 +96,9 @@ public class ProviderRegistrationController {
 			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 			return EDIT;
 		}
-		
+
 	}
-	
+
 	private int evaluateErrorStep(BindingResult result){
 		if(result.hasFieldErrors("provider.account*"))
 			return 0;

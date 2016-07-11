@@ -162,10 +162,6 @@
 	              $('form .alert').remove();
 	          }).prop('checked', false);
 
-	        if([[${message}]]){
-	        	sendNotify();
-		      }
-
 	        $('.datatable-responsive-validate').DataTable({
 				"bFilter" : false,
 				"bInfo" : false,
@@ -378,6 +374,10 @@
 		           	.responsive.recalc()
 		           	.columns.adjust();
 		    });
+
+			if([[${message}]]){
+	        	sendNotify();
+		      }
 
 			function sendNotify(){
 				var notify = new PNotify({
