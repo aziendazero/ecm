@@ -42,9 +42,9 @@
 
 						<div class="stepContainer">
 							<form class="form-horizontal form-label-left" th:action="@{/providerRegistration}" method="post" enctype="multipart/form-data" novalidate="novalidate">
-								
+
 								<input th:if="${providerForm.provider.id}" type="hidden" name="editId" th:value="${providerForm.provider.id}" />
-								
+
 								<div id="step-1" class="wizard_content" style="display: block;">
 									<!-- username -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.account.username')} ? 'bad'">
@@ -58,7 +58,7 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.provider.account.username')}" class="alert" th:errors="${providerForm.provider.account.username}"></div>
 									</div>
-									
+
 									<!-- email -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.account.email')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">
@@ -69,11 +69,11 @@
 											<input type="email" id="email" th:field="${providerForm.provider.account.email}"
 												required="required" class="form-control col-md-7 col-xs-12" />
 										</div>
-										<div th:if="${#fields.hasErrors('providerForm.provider.account.email')}" class="alert" th:errors="${providerForm.provider.account.email}"></div>	
+										<div th:if="${#fields.hasErrors('providerForm.provider.account.email')}" class="alert" th:errors="${providerForm.provider.account.email}"></div>
 									</div>
 								</div>
 								<div id="step-2" class="wizard_content" style="display: none;">
-									
+
 									<!-- cognome -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.legale.anagrafica.cognome')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cognomeLegaleRappresentante">
@@ -86,7 +86,7 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.legale.anagrafica.cognome')}" class="alert" th:errors="${providerForm.legale.anagrafica.cognome}"></div>
 									</div>
-									
+
 									<!-- nome -->
 										<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.legale.anagrafica.nome')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeLegaleRappresentante">
@@ -99,7 +99,7 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.legale.anagrafica.nome')}" class="alert" th:errors="${providerForm.legale.anagrafica.nome}"></div>
 									</div>
-									
+
 									<!-- codice fiscale -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.legale.anagrafica.codiceFiscale')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cfLegaleRappresentante">
@@ -112,7 +112,7 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.legale.anagrafica.codiceFiscale')}" class="alert" th:errors="${providerForm.legale.anagrafica.codiceFiscale}"></div>
 									</div>
-									
+
 									<!-- email -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.legale.anagrafica.email')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="emailLegaleRappresentante">
@@ -125,7 +125,7 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.legale.anagrafica.email')}" class="alert" th:errors="${providerForm.legale.anagrafica.email}"></div>
 									</div>
-									
+
 									<!-- PEC -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.legale.anagrafica.pec')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="pecLegaleRappresentante">
@@ -138,11 +138,11 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.legale.anagrafica.pec')}" class="alert" th:errors="${providerForm.legale.anagrafica.pec}"></div>
 									</div>
-									
+
 									<div class="divider-dashed"></div>
-									
+
 									<h2 class="text-center" th:text="#{label.info_provider}">info provider</h2>
-									
+
 									<!-- denominazione legale -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.denominazioneLegale')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="denominazioneLegale">
@@ -170,7 +170,7 @@
 				                      </div>
 				                      <div th:if="${#fields.hasErrors('providerForm.provider.tipoOrganizzatore')}" class="alert" th:errors="${providerForm.provider.tipoOrganizzatore}"></div>
 				                    </div>
-									
+
 									<!-- partita iva -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.partitaIva')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="pIva">
@@ -183,7 +183,7 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.provider.partitaIva')}" class="alert" th:errors="${providerForm.provider.partitaIva}"></div>
 									</div>
-									
+
 									<!-- codicefiscale -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.codiceFiscale')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="pIva">
@@ -201,16 +201,16 @@
 									<!-- nome -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.richiedente.anagrafica.nome')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeRichiedente">
-											<span class="required" th:text="#{label.nome}">label.nome</span> 
+											<span class="required" th:text="#{label.nome}">label.nome</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="nomeRichiedente" name="nomeRichiedente" th:field="${providerForm.richiedente.anagrafica.nome}" 
+											<input type="text" id="nomeRichiedente" name="nomeRichiedente" th:field="${providerForm.richiedente.anagrafica.nome}"
 											required="required"	class="form-control col-md-7 col-xs-12" />
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.richiedente.anagrafica.nome')}" class="alert" th:errors="${providerForm.richiedente.anagrafica.nome}"></div>
 									</div>
-									
+
 									<!-- cognome -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.richiedente.anagrafica.cognome')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cognomeRichiedente">
@@ -223,7 +223,7 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.richiedente.anagrafica.cognome')}" class="alert" th:errors="${providerForm.richiedente.anagrafica.cognome}"></div>
 									</div>
-									
+
 									<!-- codice fiscale -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.richiedente.anagrafica.codiceFiscale')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cfRichiedente">
@@ -236,7 +236,7 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.richiedente.anagrafica.codiceFiscale')}" class="alert" th:errors="${providerForm.richiedente.anagrafica.codiceFiscale}"></div>
 									</div>
-									
+
 									<!-- incarico -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.richiedente.incarico')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="incaricoRichiedente">
@@ -249,7 +249,7 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.richiedente.incarico')}" class="alert" th:errors="${providerForm.richiedente.incarico}"></div>
 									</div>
-									
+
 									<!-- telefono -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.richiedente.anagrafica.telefono')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="telefonoRichiedente">
@@ -262,24 +262,24 @@
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.richiedente.anagrafica.telefono')}" class="alert" th:errors="${providerForm.richiedente.anagrafica.telefono}"></div>
 									</div>
-									
+
 									<div id="divider" class="divider-dashed"></div>
-									
+
 									<!-- checkbox delegato -->
 									<div id="checkbox_delegato" class="item form-group" th:classappend="${#fields.hasErrors('providerForm.delegato')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12"
 											for="delega_checkbox"><span th:text="#{label.delega_checkbox}">label.delega_checkbox</span><span class="required">*</span></label>
 										<div class="col-md-6 col-sm-6 col-xs-12" id="delega_checkbox">
 											<div class="checkbox">
-												<input id="isDelegato" name="isDelegato" type="checkbox" class="flat" th:field="${providerForm.delegato}" /> 
+												<input id="isDelegato" name="isDelegato" type="checkbox" class="flat" th:field="${providerForm.delegato}" />
 											</div>
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.delegato')}" class="alert" th:errors="${providerForm.delegato}"></div>
 									</div>
-									
+
 									<!-- delega -->
-									<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, true)" ></th:block>
-									
+									<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, true, true)" ></th:block>
+
 									<!-- Invia dati -->
 									<div class="item form-group text-right">
 										<input class="btn btn-success right" type="submit" name="saveTypeFull" value="full" th:value="#{label.crea_account}"/>
@@ -304,9 +304,9 @@
 		    	  selected: [[ ${stepToShow} ]],
 		    	  enableAllSteps: true
 		      });
-		      
-		      inputDelegaControl() 
-		      
+
+		      inputDelegaControl()
+
 		      function leaveAStepCallback(obj, context){
 		          if(context.toStep > context.fromStep)
 		        	  //return validator.checkAll($("form"));
@@ -314,7 +314,7 @@
 		          return true;
 		      };
 		    });
-		    
+
 		    function inputDelegaControl() {
 		    	// converte la stringa in boolean e poi fa un check se l'org è di tipo P, (mostra la checkbox e la delega)
 		    	var check = ($('#tipoOrganizzatore_select option:selected').attr('tipop') === "true");
@@ -325,7 +325,7 @@
 			    	$('#delega-parent').show();
 			    	$('#delega').prop('disabled', false);
 			    	$('#divider').show()
-			    } 
+			    }
 		    	// altrimenti la nasconde
 			    else {
 			    	$('#checkbox_delegato').hide();

@@ -44,7 +44,7 @@
 			                        </select>
 			                    </div>
 			                </th:block>
-			             	<th:block th:unless="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
+			             	<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<label id="tipoOrganizzatore_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 										th:text="${providerWrapper.provider.tipoOrganizzatore}"></label>
@@ -66,7 +66,7 @@
 										name="denominazioneLegale" th:field="${providerWrapper.provider.denominazioneLegale}"/>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
+							<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<label id="denominzioneLegale_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 										th:text="${providerWrapper.provider.denominazioneLegale}"></label>
@@ -88,7 +88,7 @@
 										name="partivaIva" th:field="${providerWrapper.provider.partitaIva}"/>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
+							<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<label id="partitaIva_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 										th:text="${providerWrapper.provider.partitaIva}"></label>
@@ -110,7 +110,7 @@
 										name="codiceFiscale" th:field="${providerWrapper.provider.codiceFiscale}"/>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
+							<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<label id="codiceFiscale_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 										th:text="${providerWrapper.provider.codiceFiscale}"></label>
@@ -134,7 +134,7 @@
 		                        	</select>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
+							<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<label id="ragioneSociale_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 										th:text="${providerWrapper.provider.ragioneSociale}"></label>
@@ -165,7 +165,7 @@
 										</div>
 									</div>
 								</th:block>
-								<th:block th:unless="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
+								<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="naturaOrganizzazione_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${providerWrapper.provider.naturaOrganizzazione}"></label>
