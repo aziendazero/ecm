@@ -37,6 +37,7 @@ public class AccreditamentoAllegatiController {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAllegatiController.class);
 
 	private final String EDIT = "accreditamento/accreditamentoAllegatiEdit";
+	private final String SHOW = "accreditamento/accreditamentoAllegatiShow";
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderService providerService;
@@ -51,7 +52,7 @@ public class AccreditamentoAllegatiController {
 	@ModelAttribute("accreditamentoAllegatiWrapper")
 	public AccreditamentoAllegatiWrapper getAccreditamentoAllegatiWrapper(@RequestParam(value="editId",required = false) Long id){
 		if(id != null){
-			return prepareAccreditamentoAllegatiWrapper(id);
+			return prepareAccreditamentoAllegatiWrapperEdit(id);
 		}
 		return new AccreditamentoAllegatiWrapper();
 	}
@@ -62,9 +63,26 @@ public class AccreditamentoAllegatiController {
 	public String editAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/edit"));
 		try{
-			return goToEdit(model, prepareAccreditamentoAllegatiWrapper(accreditamentoId));
+			return goToEdit(model, prepareAccreditamentoAllegatiWrapperEdit(accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			redirectAttrs.addFlashAttribute("currentTab","tab3");
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/"+ accreditamentoId));
+			return "redirect:/accreditamento/{accreditamentoId}";
+		}
+	}
+
+	/***	SHOW	***/
+	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/allegati/show")
+	public String showAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/show"));
+		try{
+			return goToShow(model, prepareAccreditamentoAllegatiWrapperShow(accreditamentoId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/show"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addFlashAttribute("currentTab","tab3");
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
@@ -97,9 +115,9 @@ public class AccreditamentoAllegatiController {
 							wrapper.setSistemaInformatico(fileService.getFile(file.getId()));
 					}
 				}
-			
+
 			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles());
-			
+
 			if(result.hasErrors()){
 				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
@@ -121,15 +139,21 @@ public class AccreditamentoAllegatiController {
 			return EDIT;
 		}
 	}
-	
+
 	private String goToEdit(Model model, AccreditamentoAllegatiWrapper wrapper){
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
 
-	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapper(Long accreditamentoId){
-		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapper(" + accreditamentoId + ") - entering"));
+	private String goToShow(Model model, AccreditamentoAllegatiWrapper wrapper){
+		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+		return SHOW;
+	}
+
+	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapperEdit(Long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperEdit(" + accreditamentoId + ") - entering"));
 		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
 
@@ -156,7 +180,32 @@ public class AccreditamentoAllegatiController {
 		wrapper.setModelIds(modelIds);
 		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_ALLEGATI), accreditamento.getIdEditabili());
 
-		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapper(" + accreditamentoId + ") - exiting"));
+		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperEdit(" + accreditamentoId + ") - exiting"));
+		return wrapper;
+	}
+
+	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapperShow(Long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperShow(" + accreditamentoId + ") - entering"));
+		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
+		wrapper.setAccreditamentoId(accreditamentoId);
+
+		Set<File> files = accreditamentoService.getAccreditamento(accreditamentoId).getProvider().getFiles();
+		for(File file : files){
+			if(file.isATTOCOSTITUTIVO())
+				wrapper.setAttoCostitutivo(file);
+			else if(file.isESPERIENZAFORMAZIONE())
+				wrapper.setEsperienzaFormazione(file);
+			else if(file.isDICHIARAZIONELEGALE())
+				wrapper.setDichiarazioneLegale(file);
+			else if(file.isPIANOQUALITA())
+				wrapper.setPianoQualita(file);
+			else if(file.isUTILIZZO())
+				wrapper.setUtilizzo(file);
+			else if(file.isSISTEMAINFORMATICO())
+				wrapper.setSistemaInformatico(file);
+		}
+
+		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperShow(" + accreditamentoId + ") - exiting"));
 		return wrapper;
 	}
 
