@@ -15,38 +15,35 @@
 					</div>
 					<div class="x_content">
 
-						<div class="dashboard-widget-content">
+						<div th:if="${#lists.isEmpty(allegatoList)}"
+							th:text="#{label.nessun_allegato}">Nessun allegato
+							disponibile</div>
 
-							<div th:if="${#lists.isEmpty(allegatoList)}"
-								th:text="#{label.nessun_allegato}">Nessun allegato
-								disponibile</div>
-
-							<div class="row files-container" th:remove="all-but-first">
-								<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 file-widget-container" th:each="allegato, row : ${allegatoList}">
-									<div class="file-container clickable" th:onclick="'download('+${allegato.id}+');'">
-										<div class="col-xs-3 file-widget-fa"
-											th:switch="${#strings.substringAfter(allegato.nomeFile,'.')}">
-											<span th:case="'pdf'" class="fa fa-file-pdf-o fa-5x file-widget-icon"> </span> <span
-											th:case="'xls'" class="fa fa-file-excel-o fa-5x file-widget-icon"> </span> <span
-											th:case="'txt'" class="fa fa-file-text-o fa-5x file-widget-icon"> </span> <span
-											th:case="'zip'" class="fa fa-file-zip-o fa-5x file-widget-icon"> </span> <span
-											th:case="'rar'" class="fa fa-file-zip-o fa-5x file-widget-icon"> </span> <span
-											th:case="'doc'" class="fa fa-file-word-o fa-5x file-widget-icon"> </span> <span
-											th:case="'docx'" class="fa fa-file-word-o fa-5x file-widget-icon"> </span> <span
-											th:case="'xml'" class="fa fa-file-code-o fa-5x file-widget-icon"></span> <span
-											th:case="*" class="fa fa-file-o fa-5x file-widget-icon"></span>
-										</div>
-										<div class="col-xs-9 text-left file-widget-description">
-											<div class="file-titolo brief italic" th:text="${allegato.tipo.nome}"> Dichiarazione del Legale Rappresentante attestante la veridicità della documentazione </div>
-											<div class="file-nome"><strong>Nome del file: </strong><span th:text="${#strings.substringBefore(allegato.nomeFile,'.')}">blablba.pdf</span></div>
-											<div class="file-data"><strong>Aggiunto il: </strong><span th:text="${allegato.dataCreazione}">2016-07-06</span></div>
-											<div class="file-formato"><strong>Formato del file: </strong><span th:text="${#strings.substringAfter(allegato.nomeFile,'.')}">pdf</span></div>
-										</div>
+						<div class="row files-container" th:remove="all-but-first">
+							<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 file-widget-container" th:each="allegato, row : ${allegatoList}">
+								<div class="file-container clickable" th:onclick="'download('+${allegato.id}+');'">
+									<div class="col-xs-3 file-widget-fa"
+										th:switch="${#strings.substringAfter(allegato.nomeFile,'.')}">
+										<span th:case="'pdf'" class="fa fa-file-pdf-o fa-5x file-widget-icon"> </span> <span
+										th:case="'xls'" class="fa fa-file-excel-o fa-5x file-widget-icon"> </span> <span
+										th:case="'txt'" class="fa fa-file-text-o fa-5x file-widget-icon"> </span> <span
+										th:case="'zip'" class="fa fa-file-zip-o fa-5x file-widget-icon"> </span> <span
+										th:case="'rar'" class="fa fa-file-zip-o fa-5x file-widget-icon"> </span> <span
+										th:case="'doc'" class="fa fa-file-word-o fa-5x file-widget-icon"> </span> <span
+										th:case="'docx'" class="fa fa-file-word-o fa-5x file-widget-icon"> </span> <span
+										th:case="'xml'" class="fa fa-file-code-o fa-5x file-widget-icon"></span> <span
+										th:case="*" class="fa fa-file-o fa-5x file-widget-icon"></span>
+									</div>
+									<div class="col-xs-9 text-left file-widget-description">
+										<div class="file-titolo brief italic" th:text="${allegato.tipo.nome}"> Dichiarazione del Legale Rappresentante attestante la veridicità della documentazione </div>
+										<div class="file-nome"><strong>Nome del file: </strong><span th:text="${#strings.substringBefore(allegato.nomeFile,'.')}">blablba.pdf</span></div>
+										<div class="file-data"><strong>Aggiunto il: </strong><span th:text="${allegato.dataCreazione}">2016-07-06</span></div>
+										<div class="file-formato"><strong>Formato del file: </strong><span th:text="${#strings.substringAfter(allegato.nomeFile,'.')}">pdf</span></div>
 									</div>
 								</div>
 							</div>
-
 						</div>
+
 					</div>
 				</div>
 			</div>

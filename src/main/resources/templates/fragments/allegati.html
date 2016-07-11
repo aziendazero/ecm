@@ -9,7 +9,7 @@
 	<!-- wrapper con idEditabili -->
 	<th:block th:if="${__withIdEditabili__}">
 
-		<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+		<div th:if="${__${wrapper}__.__${tipoAllegato}__.id != null}" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
 
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
@@ -19,7 +19,7 @@
 				<span th:text="#{label.__${tipoAllegato}__}">tipo allegato</span><span th:if="${note == null}" class="required">*</span>
 				<span class="small" style="display: block;" th:unless="${note == null}" th:text="${note}">messaggio aggiuntivo</span>
 			</label>
-			<th:block th:if="${#lists.contains(__${wrapper}__.idEditabili, counter)}">
+			<th:block th:if="${counter != null and #lists.contains(__${wrapper}__.idEditabili, counter)}">
 				<div class="col-md-4 col-sm-4 col-xs-12">
 					<div class="form-control col-md-7 col-xs-12 btn">
 						<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
@@ -34,7 +34,7 @@
 					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma" th:title="#{label.firma_digitalmente}"><span class="fa fa-pencil"></span></button>
 				</th:block>
 			</th:block>
-			<th:block th:if="${(!#lists.contains(__${wrapper}__.idEditabili, counter)) or counter == null}">
+			<th:block th:if="${counter == null or (!#lists.contains(__${wrapper}__.idEditabili, counter))}">
 				<div class="col-md-4 col-sm-4 col-xs-12">
 					<div class="allegato-label"><a th:id="__${tipoAllegato}___disabled" class="form-control form-disabled-text clickable left-align col-md-7 col-xs-12"
 						th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
