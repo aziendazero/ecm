@@ -129,8 +129,8 @@ public class AccreditamentoAllegatiController {
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.allegati_inseriti", "success"));
 				redirectAttrs.addFlashAttribute("currentTab","tab3");
 				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/"+ accreditamentoId));
-				return "redirect:/accreditamento/{accreditamentoId}";
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/"+ accreditamentoId + "/edit"));
+				return "redirect:/accreditamento/{accreditamentoId}/edit";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /accreditamento/"+ accreditamentoId +"/allegati/save"),ex);
