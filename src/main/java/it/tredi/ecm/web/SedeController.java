@@ -36,6 +36,7 @@ public class SedeController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(SedeController.class);
 
 	private final String EDIT = "sede/sedeEdit";
+	private final String SHOW = "sede/sedeShow";
 
 	@Autowired private SedeService sedeService;
 	@Autowired private ProviderService providerService;
@@ -115,7 +116,7 @@ public class SedeController {
 	@ModelAttribute("sedeWrapper")
 	public SedeWrapper getSede(@RequestParam(name = "editId", required = false) Long id){
 		if(id != null){
-			SedeWrapper sedeWrapper = new SedeWrapper(); 
+			SedeWrapper sedeWrapper = new SedeWrapper();
 			sedeWrapper.setSede(sedeService.getSede(id));
 			return sedeWrapper;
 		}
@@ -137,7 +138,7 @@ public class SedeController {
 				//preparo il wrapper specificando che è una sedeOperativa
 				//magic number (rende non editabili tutti i campi della sede operativa, ma consente ugualmente il salvataggio)
 				//refresh solo del fragment della view
-				SedeWrapper sedeWrapper = prepareSedeWrapper(sedeLegale, Costanti.SEDE_OPERATIVA, accreditamentoId, providerId);
+				SedeWrapper sedeWrapper = prepareSedeWrapperEdit(sedeLegale, Costanti.SEDE_OPERATIVA, accreditamentoId, providerId);
 				sedeWrapper.getIdEditabili().add(0);
 				//setIdEditabili(Arrays.asList(0));
 				return goToEditWhitFragment(model, sedeWrapper, "content");
@@ -157,11 +158,11 @@ public class SedeController {
 	/***	NEW / EDIT 	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sede/new")
-	public String getNewSedeCurrentProvider(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @RequestParam("tipologiaSede") String tipologiaSede, 
+	public String getNewSedeCurrentProvider(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @RequestParam("tipologiaSede") String tipologiaSede,
 			Model model, RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/new"));
 		try {
-			return goToEdit(model, prepareSedeWrapper(new Sede(), tipologiaSede, accreditamentoId, providerId));
+			return goToEdit(model, prepareSedeWrapperEdit(new Sede(), tipologiaSede, accreditamentoId, providerId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -170,13 +171,14 @@ public class SedeController {
 		}
 	}
 
+	/*** EDIT SEDE ***/
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sede/{id}/edit")
-	public String editSede(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, 
+	public String editSede(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
 			@RequestParam("tipologiaSede") String tipologiaSede, Model model){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/" + id + "/edit"));
 		try {
-			SedeWrapper sedeWrapper = prepareSedeWrapper(sedeService.getSede(id), tipologiaSede, accreditamentoId, providerId);
+			SedeWrapper sedeWrapper = prepareSedeWrapperEdit(sedeService.getSede(id), tipologiaSede, accreditamentoId, providerId);
 
 			if(tipologiaSede.equals(Costanti.SEDE_OPERATIVA)){
 				Provider provider = providerService.getProvider(providerId);
@@ -200,9 +202,26 @@ public class SedeController {
 		}
 	}
 
+	/*** SHOW SEDE ***/
+	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canShowProvider(principal,#providerId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sede/{id}/show")
+	public String showSede(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
+			@RequestParam("tipologiaSede") String tipologiaSede, Model model){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/" + id + "/show"));
+		try {
+			SedeWrapper sedeWrapper = prepareSedeWrapperShow(sedeService.getSede(id), tipologiaSede, accreditamentoId, providerId);
+			return goToShow(model, sedeWrapper);
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/" + id + "/show"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+			return SHOW;
+		}
+	}
+
 	/***	SAVE 	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/sede/save", method = RequestMethod.POST)
-	public String saveSede(@ModelAttribute("sedeWrapper") SedeWrapper sedeWrapper, BindingResult result,  
+	public String saveSede(@ModelAttribute("sedeWrapper") SedeWrapper sedeWrapper, BindingResult result,
 			Model model, @PathVariable Long providerId, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/save"));
 		try{
@@ -212,7 +231,7 @@ public class SedeController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				sedeService.save(sedeWrapper.getSede(), providerService.getProvider(providerId), sedeWrapper.getTipologiaSede());	
+				sedeService.save(sedeWrapper.getSede(), providerService.getProvider(providerId), sedeWrapper.getTipologiaSede());
 				redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.sede_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
@@ -232,27 +251,44 @@ public class SedeController {
 		return EDIT;
 	}
 
+	private String goToShow(Model model, SedeWrapper sedeWrapper){
+		model.addAttribute("sedeWrapper", sedeWrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+		return SHOW;
+	}
+
 	private String goToEditWhitFragment(Model model, SedeWrapper sedeWrapper, String fragment){
 		model.addAttribute("sedeWrapper", sedeWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT + " :: " + fragment));
 		return EDIT + " :: " + fragment;
 	}
 
-	private SedeWrapper prepareSedeWrapper(Sede sede, String tipologiaSede, long accreditamentoId, long providerId){
-		LOGGER.info(Utils.getLogMessage("prepareSedeWrapper(" + sede.getId() + "," + tipologiaSede + "," + accreditamentoId + "," + providerId +") - entering"));
+	private SedeWrapper prepareSedeWrapperEdit(Sede sede, String tipologiaSede, long accreditamentoId, long providerId){
+		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperEdit(" + sede.getId() + "," + tipologiaSede + "," + accreditamentoId + "," + providerId +") - entering"));
 		SedeWrapper sedeWrapper = new SedeWrapper();
 
 		sedeWrapper.setSede(sede);
 		sedeWrapper.setTipologiaSede(tipologiaSede);
 
-		if(tipologiaSede.equals(Costanti.SEDE_LEGALE)) 
+		if(tipologiaSede.equals(Costanti.SEDE_LEGALE))
 			sedeWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_SEDE_LEGALE), accreditamentoService.getIdEditabili(accreditamentoId));
-		else 
+		else
 			sedeWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_SEDE_OPERATIVA), accreditamentoService.getIdEditabili(accreditamentoId));
 
 		sedeWrapper.setAccreditamentoId(accreditamentoId);
 		sedeWrapper.setProviderId(providerId);
-		LOGGER.info(Utils.getLogMessage("prepareSedeWrapper(" + sede.getId() + "," + tipologiaSede + "," + accreditamentoId + "," + providerId +") - exiting"));
+		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperEdit(" + sede.getId() + "," + tipologiaSede + "," + accreditamentoId + "," + providerId +") - exiting"));
+		return sedeWrapper;
+	}
+
+	private SedeWrapper prepareSedeWrapperShow(Sede sede, String tipologiaSede, long accreditamentoId, long providerId){
+		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperShow(" + sede.getId() + "," + tipologiaSede + "," + accreditamentoId + "," + providerId +") - entering"));
+		SedeWrapper sedeWrapper = new SedeWrapper();
+		sedeWrapper.setSede(sede);
+		sedeWrapper.setTipologiaSede(tipologiaSede);
+		sedeWrapper.setAccreditamentoId(accreditamentoId);
+		sedeWrapper.setProviderId(providerId);
+		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperShow(" + sede.getId() + "," + tipologiaSede + "," + accreditamentoId + "," + providerId +") - exiting"));
 		return sedeWrapper;
 	}
 }

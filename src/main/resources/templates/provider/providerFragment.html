@@ -31,7 +31,7 @@
 
 						<!-- TIPO ORGANIZZATORE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.tipoOrganizzatore')} ? 'bad'">
-		                    <label class="control-label col-xs-1" th:text="${++counter}">1</label>
+		                    <label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">1</label>
 		                    <label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoOrganizzatore">
 		                      	<span th:text="#{label.tipo_organizzatore}">label.tipo_organizzatore</span>
 		                      	<span class="required">*</span>
@@ -55,7 +55,7 @@
 
 	                    <!-- DENOMINAZIONE LEGALE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.denominazioneLegale')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">2</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">2</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
 								<span th:text="#{label.denominazione_legale}">label.denominazione_legale</span>
 								<span class="required">*</span>
@@ -77,7 +77,7 @@
 
 						<!-- PARTITA IVA -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.partitaIva')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">3</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">3</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="partitaIva">
 								<span th:text="#{label.partita_iva}">label.partita_iva</span>
 								<span class="required">*</span>
@@ -99,7 +99,7 @@
 
 						<!-- CODICE FISCALE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.codiceFiscale')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">4</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">4</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codiceFiscale">
 								<span th:text="#{label.codice_fiscale}">label.codice_fiscale</span>
 								<span class="required">*</span>
@@ -121,7 +121,7 @@
 
 						<!-- RAGIONE SOCIALE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.ragioneSociale')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">5</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">5</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ragioneSociale">
 								<span th:text="#{label.ragione_sociale}">label.ragione_sociale</span>
 								<span class="required">*</span>
@@ -147,7 +147,7 @@
 
 						<!-- NATURA ORGANIZZAZIONE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">6</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">6</label>
 							<label th:text="#{label.organizzazione_natura}" class="control-label col-md-3 col-sm-3 col-xs-11" for="naturaOrganizzazione">Natura dell'organizzazione</label>
 								<th:block th:if="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12" id="naturaOrganizzazione">
@@ -178,7 +178,7 @@
 
 						<!-- NO PROFIT -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.noProfit')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">7</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">7</label>
 							<label th:text="#{label.no_profit}" class="control-label col-md-3 col-sm-3 col-xs-11" for="noProfit">Natura dell'organizzazione</label>
 								<th:block th:if="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12" id="noProfit">
@@ -196,7 +196,7 @@
 										</div>
 									</div>
 								</th:block>
-								<th:block th:unless="${#lists.contains(providerWrapper.idEditabili, counter)}">
+								<th:block th:if="${!editabile or #lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="noProfit_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${editabile and providerWrapper.provider.noProfit}"></label>

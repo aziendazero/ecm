@@ -32,10 +32,10 @@
 
 						<!-- PROVINCIA -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.provincia')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">1</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">1</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="provincia_sede"><span th:text="#{label.provincia}">Provincia</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
+							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter)  and !coincide}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<select id="provincia_sede" class="form-control required" th:field="${sedeWrapper.sede.provincia}">
 		                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
@@ -54,7 +54,7 @@
 
 						<!-- COMUNE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.comune')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">2</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">2</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="comune_sede"><span th:text="#{label.comune}">Comune</span><span class="required">*</span></label>
 							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
@@ -75,7 +75,7 @@
 
 						<!-- INDIRIZZO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.indirizzo')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">3</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">3</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="indirizzo_sede"><span th:text="#{label.indirizzo}">Indirizzo</span><span class="required">*</span></label>
 							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
@@ -96,7 +96,7 @@
 
 						<!-- CAP -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.cap')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">4</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">4</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="CAP_sede"><span th:text="#{label.cap}">CAP</span><span class="required">*</span></label>
 							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
@@ -117,7 +117,7 @@
 
 						<!-- TELEFONO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.telefono')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">5</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">5</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="telefono_sede"><span th:text="#{label.telefono}">Telefono</span><span class="required">*</span></label>
 							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
@@ -138,7 +138,7 @@
 
 						<!-- FAX -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.fax')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">7</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">7</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="fax_sede"><span th:text="#{label.fax}">FAX</span><span class="required">*</span></label>
 							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
@@ -158,7 +158,7 @@
 
 						<!-- EMAIL -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.email')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${++counter}">8</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">8</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="email_sede"><span th:text="#{label.email}">E-mail</span><span class="required">*</span></label>
 							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
