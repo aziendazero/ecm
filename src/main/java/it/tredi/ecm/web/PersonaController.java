@@ -89,7 +89,7 @@ public class PersonaController {
 				isLookup = true;
 			}
 
-			return preparePersonaWrapper(persona, isLookup);
+			return preparePersonaWrapperEdit(persona, isLookup);
 		}
 		return new PersonaWrapper();
 	}
@@ -102,7 +102,7 @@ public class PersonaController {
 			@RequestParam(name="ruolo", required = true) String ruolo, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/new"));
 		try {
-			return goToEdit(model, preparePersonaWrapper(createPersona(providerId, ruolo), accreditamentoId, providerId, false));
+			return goToEdit(model, preparePersonaWrapperEdit(createPersona(providerId, ruolo), accreditamentoId, providerId, false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -141,7 +141,7 @@ public class PersonaController {
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
 				isLookup = true;
 			}
-			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId, isLookup));
+			return goToEdit(model, preparePersonaWrapperEdit(persona, accreditamentoId, providerId, isLookup));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + ruolo + "/setAnagrafica"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -160,7 +160,7 @@ public class PersonaController {
 			if(persona == null){
 				persona = createPersona(providerId);
 			}
-			return goToEdit(model, preparePersonaWrapper(persona, accreditamentoId, providerId, false));
+			return goToEdit(model, preparePersonaWrapperEdit(persona, accreditamentoId, providerId, false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/edit"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -168,7 +168,7 @@ public class PersonaController {
 			return EDIT;
 		}
 	}
-	
+
 	/***	SHOW PERSONA ***/
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/show")
@@ -286,18 +286,18 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
-	
+
 	private String goToShow(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
 	}
 
-	private PersonaWrapper preparePersonaWrapper(Persona persona, boolean isLookup){
-		return preparePersonaWrapper(persona,0,0, isLookup);
+	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, boolean isLookup){
+		return preparePersonaWrapperEdit(persona,0,0, isLookup);
 	}
 
-	private PersonaWrapper preparePersonaWrapper(Persona persona, long accreditamentoId, long providerId, boolean isLookup){
+	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, long accreditamentoId, long providerId, boolean isLookup){
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapper(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - entering"));
 		PersonaWrapper personaWrapper = new PersonaWrapper();
 
@@ -340,7 +340,7 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapper(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - exiting"));
 		return personaWrapper;
 	}
-	
+
 	private PersonaWrapper preparePersonaWrapperShow(Persona persona){
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperShow(" + persona.getId() + ") - entering"));
 		PersonaWrapper personaWrapper = new PersonaWrapper();
