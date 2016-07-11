@@ -15,7 +15,7 @@
 							<th:block th:unless="${#lists.isEmpty(datiAccreditamentoWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formDatiAccreditamento" type="submit"></button>
 							</th:block>
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}/edit|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>

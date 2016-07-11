@@ -168,8 +168,8 @@ public class DatiAccreditamentoController {
 				datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), accreditamentoId);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.dati_attivita_inseriti", "success"));
 				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-				return "redirect:/accreditamento/{accreditamentoId}";
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+				return "redirect:/accreditamento/{accreditamentoId}/edit";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/dati/save"),ex);
