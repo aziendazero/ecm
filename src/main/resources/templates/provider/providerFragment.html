@@ -196,7 +196,7 @@
 										</div>
 									</div>
 								</th:block>
-								<th:block th:if="${!editabile or #lists.contains(providerWrapper.idEditabili, counter)}">
+								<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
 									<div class="col-md-4 col-sm-4 col-xs-12">
 										<label id="noProfit_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
 											th:text="${editabile and providerWrapper.provider.noProfit}"></label>
