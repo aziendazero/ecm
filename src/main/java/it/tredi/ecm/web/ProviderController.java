@@ -35,6 +35,7 @@ public class ProviderController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Provider.class);
 
 	private final String EDIT = "provider/providerEdit";
+	private final String SHOW = "provider/providerShow";
 
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
@@ -112,12 +113,26 @@ public class ProviderController {
 	public String editProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/edit"));
 		try {
-			return goToEdit(model, prepareProviderWrapper(providerService.getProvider(id), accreditamentoId));
+			return goToEdit(model, prepareProviderWrapperEdit(providerService.getProvider(id), accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
 			return "redirect:/accreditamento/" + accreditamentoId;
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canShowProvider(principal,#id)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/show")
+	public String showProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/show"));
+		try {
+			return goToShow(model, prepareProviderWrapperShow(providerService.getProvider(id), accreditamentoId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/show"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/" + accreditamentoId + "/show";
 		}
 	}
 
@@ -172,13 +187,28 @@ public class ProviderController {
 		return EDIT;
 	}
 
-	private ProviderWrapper prepareProviderWrapper(Provider provider, Long accreditamentoId){
-		LOGGER.info(Utils.getLogMessage("prepareProviderWrapper("+ provider.getId() + "," + accreditamentoId +") - entering"));
+	private String goToShow(Model model, ProviderWrapper providerWrapper){
+		model.addAttribute("providerWrapper", providerWrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+		return SHOW;
+	}
+
+	private ProviderWrapper prepareProviderWrapperEdit(Provider provider, Long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEdit("+ provider.getId() + "," + accreditamentoId +") - entering"));
 		ProviderWrapper providerWrapper = new ProviderWrapper();
 		providerWrapper.setProvider(provider);
 		providerWrapper.setAccreditamentoId(accreditamentoId);
 		providerWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_PROVIDER), accreditamentoService.getIdEditabili(accreditamentoId));
-		LOGGER.info(Utils.getLogMessage("prepareProviderWrapper("+ provider.getId() + "," + accreditamentoId +") - exiting"));
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEdit("+ provider.getId() + "," + accreditamentoId +") - exiting"));
+		return providerWrapper;
+	}
+
+	private ProviderWrapper prepareProviderWrapperShow(Provider provider, Long accreditamentoId) {
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperShow("+ provider.getId() + "," + accreditamentoId +") - entering"));
+		ProviderWrapper providerWrapper = new ProviderWrapper();
+		providerWrapper.setProvider(provider);
+		providerWrapper.setAccreditamentoId(accreditamentoId);
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperShow("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}
 
