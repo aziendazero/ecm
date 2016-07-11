@@ -197,14 +197,14 @@ public class AccreditamentoController {
 			redirectAttrs.addAttribute("providerId", providerId);
 			redirectAttrs.addAttribute("pianoFormativo", LocalDate.now().getYear());
 			redirectAttrs.addFlashAttribute("currentTab", "tab4");
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-			return "redirect:/accreditamento/{accreditamentoId}";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/{accreditamentoId}/edit";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/" + providerId + "/insertPianoFormativo"),ex);
 			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-			return "redirect:/accreditamento/{accreditamentoId}";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/{accreditamentoId}/edit";
 		}
 	}
 

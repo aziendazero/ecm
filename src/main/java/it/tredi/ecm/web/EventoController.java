@@ -69,7 +69,7 @@ public class EventoController {
 	@ModelAttribute("eventoWrapper")
 	public EventoWrapper getEventoWrapper(@RequestParam(value="editId",required = false) Long id){
 		if(id != null){
-			return prepareEventoWrapper(eventoService.getEvento(id));
+			return prepareEventoWrapperEdit(eventoService.getEvento(id));
 		}
 		return new EventoWrapper();
 	}
@@ -83,7 +83,7 @@ public class EventoController {
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/new"));
 		try{
-			return goToEdit(model, prepareEventoWrapper(createEvento(pianoFormativo), providerId, accreditamentoId),redirectAttrs);
+			return goToEdit(model, prepareEventoWrapperEdit(createEvento(pianoFormativo), providerId, accreditamentoId),redirectAttrs);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -101,7 +101,7 @@ public class EventoController {
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/" + id + "/edit"));
 		try{
-			return goToEdit(model, prepareEventoWrapper(eventoService.getEvento(id),0L,accreditamentoId),redirectAttrs);
+			return goToEdit(model, prepareEventoWrapperEdit(eventoService.getEvento(id),0L,accreditamentoId),redirectAttrs);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/" + id + "/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -131,7 +131,7 @@ public class EventoController {
 	}
 
 	/*
-	 * SHOW EVENTO
+	 * SHOW EVENTO PROVIDER
 	 */
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping(value = "/provider/{providerId}/evento/{id}/show")
@@ -147,6 +147,23 @@ public class EventoController {
 		}
 	}
 
+	/*
+	 * SHOW EVENTO ACCREDITAMENTO (piano formativo)
+	 */
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/evento/{id}/show")
+	public String showEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/" + id + "/show"));
+		try {
+			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId, accreditamentoId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/" + id + "/show"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/" + accreditamentoId + "/show";
+		}
+	}
+
 	private String goToShow(Model model, EventoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
 		model.addAttribute("proceduraFormativaList", wrapper.getEvento().getAccreditamento().getDatiAccreditamento().getProcedureFormative());
@@ -154,11 +171,16 @@ public class EventoController {
 		return "evento/eventoShow";
 	}
 
-	private EventoWrapper prepareEventoWrapperShow(Evento evento, Long providerId) {
+	private EventoWrapper prepareEventoWrapperShow(Evento evento, Long providerId){
+		return prepareEventoWrapperShow(evento, providerId, null);
+	}
+
+	private EventoWrapper prepareEventoWrapperShow(Evento evento, Long providerId, Long accreditamentoId) {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperShow(" + evento.getId() + "," + providerId + ") - entering"));
 		EventoWrapper eventoWrapper = new EventoWrapper();
 		eventoWrapper.setEvento(evento);
 		eventoWrapper.setProviderId(providerId);
+		eventoWrapper.setAccreditamentoId(accreditamentoId);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperShow(" + evento.getId() + "," + providerId + ") - exiting"));
 		return eventoWrapper;
 	}
@@ -190,8 +212,8 @@ public class EventoController {
 				redirectAttrs.addAttribute("providerId", wrapper.getProviderId());
 				redirectAttrs.addAttribute("pianoFormativo", wrapper.getEvento().getPianoFormativo());
 				redirectAttrs.addFlashAttribute("currentTab", "tab4");
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-				return "redirect:/accreditamento/{accreditamentoId}/";
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+				return "redirect:/accreditamento/{accreditamentoId}/edit";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/save"),ex);
@@ -212,8 +234,8 @@ public class EventoController {
 		try{
 			eventoService.delete(id);
 			redirectAttrs.addFlashAttribute("currentTab","tab4");
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-			return "redirect:/accreditamento/{accreditamentoId}/";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/{accreditamentoId}/edit";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/" + id + "/delete"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -251,13 +273,13 @@ public class EventoController {
 	}
 
 	//utilizzato nel caso di save
-	private EventoWrapper prepareEventoWrapper(Evento evento){
-		return prepareEventoWrapper(evento, 0L, 0L);
+	private EventoWrapper prepareEventoWrapperEdit(Evento evento){
+		return prepareEventoWrapperEdit(evento, 0L, 0L);
 	}
 
 	//utilizzato nel caso di edit e new
-	private EventoWrapper prepareEventoWrapper(Evento evento, long providerId, long accreditamentoId){
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapper(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + ") - entering"));
+	private EventoWrapper prepareEventoWrapperEdit(Evento evento, long providerId, long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + ") - entering"));
 		EventoWrapper wrapper = new EventoWrapper();
 		wrapper.setEvento(evento);
 
@@ -275,7 +297,7 @@ public class EventoController {
 			wrapper.setAccreditamentoId(evento.getAccreditamento().getId());
 			wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_EVENTO), evento.getIdEditabili());
 		}
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapper(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + ") - exiting"));
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + ") - exiting"));
 		return wrapper;
 	}
 

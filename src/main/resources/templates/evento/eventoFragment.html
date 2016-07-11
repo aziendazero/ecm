@@ -17,7 +17,7 @@
 				<div class="form-horizontal form-label-left" th:remove="${!editabile} ? none : tag">
 				<form th:remove="${editabile} ? none : tag"
 					id="formEvento" class="form-horizontal form-label-left"
-					th:action="@{|/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/evento/save|}"
+					th:action="@{eventoWrapper.accreditamentoId != null ? |/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/evento/save| : |/provider/${eventoWrapper.providerId}/evento/save|}"
 					method="post" enctype="multipart/form-data"
 					novalidate="novalidate">
 

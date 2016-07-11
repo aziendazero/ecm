@@ -12,7 +12,8 @@
 					<div class="x_title">
 						<h2 th:text="#{label.visualizza_evento(${eventoWrapper.evento.id})}">Evento</h2>
 						<div class="pull-right buttons-header">
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/list|}"></a>
+							<a th:if="${eventoWrapper.accreditamentoId != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${eventoWrapper.accreditamentoId}/show|}"></a>
+							<a th:if="${eventoWrapper.accreditamentoId == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/list|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
