@@ -460,7 +460,10 @@
 										<div class="clearfix"></div>
 									</div>
 									<div class="x_content">
-										<table id="piano-formativo-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${editabile ? 'datatable-responsive-pianoFormativo-edit' : 'datatable-responsive-pianoFormativo-show'}">
+
+										<div th:if="${#lists.isEmpty(listaEventi)}" th:text="#{label.nessun_evento_piano_formativo}"></div>
+
+										<table th:if="${!#lists.isEmpty(listaEventi)}" id="piano-formativo-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${editabile ? 'datatable-responsive-pianoFormativo-edit' : 'datatable-responsive-pianoFormativo-show'}">
 											<thead>
 												<tr>
 													<th th:text="#{label.tipologia_evento}">Tipologia dell'evento</th>
