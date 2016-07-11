@@ -44,7 +44,7 @@
 										<div class="clearfix"></div>
 									</div>
 									<div class="x_content">
-										<table class="datatable-responsive-check table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${editabile ? 'datatable-responsive-provider-edit' : 'datatable-responsive-provider-show'}">
 											<thead>
 												<tr>
 													<th th:text="#{label.sezione}">label.sezione</th>
@@ -64,7 +64,7 @@
 															<span class="fa fa-remove red" th:title="#{label.non_inserito}"></span>
 														</td>
 													</th:block>
-													<td><a th:unless="${editabile}" th:text="#{label.provider}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/show|}">label.provider</a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.provider}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/show|}">label.provider</a></td>
 												</tr>
 												<!-- SEDE LEGALE -->
 												<tr>
@@ -110,7 +110,7 @@
 													<td th:unless="${editabile}"><a th:text="#{label.legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/show|}"></a></td>
 												</tr>
 												<!-- DELEGATO LEGALE RAPPRESENTANTE -->
-												<tr th:if="${accreditamentoWrapper.provider.tipoOrganizzatore.tipoP}">
+												<tr th:if="${accreditamentoWrapper.provider.tipoOrganizzatore.tipoP and !(!editabile and (accreditamentoWrapper.delegatoLegaleRappresentante == null))}">
 													<th:block th:if="${editabile}">
 														<td th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante.id}/edit|}"></a></td>
 														<td th:if="${accreditamentoWrapper.delegatoLegaleRappresentante == null}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=DELEGATO_LEGALE_RAPPRESENTANTE|}"></a></td>
@@ -122,7 +122,7 @@
 															<span class="fa fa-check green" th:title="#{label.ok}"></span>
 														</td>
 													</th:block>
-													<td th:unless="${(accreditamentoWrapper.delegatoLegaleRappresentante == null) or editabile}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante.id}/show|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante.id}/show|}"></a></td>
 												</tr>
 											</tbody>
 										</table>
@@ -139,7 +139,7 @@
 										<div class="clearfix"></div>
 									</div>
 									<div class="x_content">
-										<table class="datatable-responsive-check table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"  th:classappend="${editabile ? 'datatable-responsive-datiAccreditamento-edit' : 'datatable-responsive-datiAccreditamento-show'}">
 											<thead>
 												<tr>
 													<th th:text="#{label.sezione}">label.sezione</th>
@@ -180,7 +180,7 @@
 										<div class="clearfix"></div>
 									</div>
 									<div class="x_content">
-										<table class="datatable-responsive-check table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"  th:classappend="${editabile ? 'datatable-responsive-responsabili-edit' : 'datatable-responsive-responsabili-show'}">
 											<thead>
 												<tr>
 													<th th:text="#{label.responsabile}">Responsabile</th>
@@ -261,7 +261,7 @@
 									</div>
 									<div class="x_content">
 										<div th:unless="${accreditamentoWrapper.comitatoScientificoStato or !editabile}" th:text="#{${accreditamentoWrapper.comitatoScientificoErrorMessage}}" class="alert alert-error"></div>
-										<table id="comitato-table" class="datatable-responsive-componenti-comitato table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<table id="comitato-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"  th:classappend="${editabile ? 'datatable-responsive-componentiComitato-edit' : 'datatable-responsive-componentiComitato-show'}">
 											<thead>
 												<tr>
 													<th th:text="#{label.componenti_comitato_scientifico}">Componenti Comitato Scientifico</th>
@@ -339,7 +339,7 @@
 										<div class="clearfix"></div>
 									</div>
 									<div class="x_content">
-										<table class="datatable-responsive-check table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"  th:classappend="${editabile ? 'datatable-responsive-allegati-edit' : 'datatable-responsive-allegati-show'}">
 											<thead>
 												<tr>
 													<th th:text="#{label.allegato}">Allegato</th>
@@ -360,7 +360,7 @@
 															<span class="fa fa-remove red" th:title="#{label.non_inserito}"></span>
 														</td>
 													</th:block>
-													<td><a th:unless="${editabile}" th:text="#{label.attoCostitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.attoCostitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 												</tr>
 												<!-- ALLEGATO ESPERIENZA FORMAZIONE -->
 												<tr>
@@ -374,7 +374,7 @@
 															<span class="fa fa-remove red" th:title="#{label.non_inserito}"></span>
 														</td>
 													</th:block>
-													<td><a th:unless="${editabile}" th:text="#{label.esperienzaFormazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.esperienzaFormazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 												</tr>
 												<!-- ALLEGATO UTILIZZO -->
 												<tr>
@@ -388,7 +388,7 @@
 															<span class="fa fa-remove red" th:title="#{label.non_inserito}"></span>
 														</td>
 													</th:block>
-													<td><a th:unless="${editabile}" th:text="#{label.utilizzo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.utilizzo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 												</tr>
 												<!-- ALLEGATO SISTEMA INFORMATICO -->
 												<tr>
@@ -402,7 +402,7 @@
 															<span class="fa fa-remove red" th:title="#{label.non_inserito}"></span>
 														</td>
 													</th:block>
-													<td><a th:unless="${editabile}" th:text="#{label.sistemaInformatico}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.sistemaInformatico}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 												</tr>
 												<!-- ALLEGATO PIANO QUALITÀ -->
 												<tr>
@@ -416,7 +416,7 @@
 															<span class="fa fa-remove red" th:title="#{label.non_inserito}"></span>
 														</td>
 													</th:block>
-													<td><a th:unless="${editabile}" th:text="#{label.pianoQualita}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.pianoQualita}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 												</tr>
 												<!-- ALLEGATO DICHIARAZIONE LEGALE -->
 												<tr>
@@ -430,7 +430,7 @@
 															<span class="fa fa-remove red" th:title="#{label.non_inserito}"></span>
 														</td>
 													</th:block>
-													<td><a th:unless="${editabile}" th:text="#{label.dichiarazioneLegale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.dichiarazioneLegale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 												</tr>
 											</tbody>
 										</table>
@@ -460,7 +460,7 @@
 										<div class="clearfix"></div>
 									</div>
 									<div class="x_content">
-										<table id="piano-formativo-table" class="datatable-responsive-piano-formativo table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<table id="piano-formativo-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${editabile ? 'datatable-responsive-pianoFormativo-edit' : 'datatable-responsive-pianoFormativo-show'}">
 											<thead>
 												<tr>
 													<th th:text="#{label.tipologia_evento}">Tipologia dell'evento</th>
@@ -479,7 +479,7 @@
 															<a><span class="fa fa-trash disabled"></span></a>
 														</td>
 													</th:block>
-													<td><a th:unless="${editabile}" th:text="${evento.titolo}" th:href="@{|/accreditamento/${accreditamentoWrapper?.accreditamento.id}/provider/${accreditamentoWrapper?.provider.id}/evento/${evento.id}/show|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="${evento.titolo}" th:href="@{|/accreditamento/${accreditamentoWrapper?.accreditamento.id}/provider/${accreditamentoWrapper?.provider.id}/evento/${evento.id}/show|}"></a></td>
 												</tr>
 											</tbody>
 										</table>
