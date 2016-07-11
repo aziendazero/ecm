@@ -176,7 +176,7 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/show"));
 		try {
 			Persona persona = personaService.getPersona(id);
-			return goToShow(model, preparePersonaWrapperShow(persona));
+			return goToShow(model, preparePersonaWrapperShow(persona, accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/show"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -341,9 +341,10 @@ public class PersonaController {
 		return personaWrapper;
 	}
 
-	private PersonaWrapper preparePersonaWrapperShow(Persona persona){
+	private PersonaWrapper preparePersonaWrapperShow(Persona persona, long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperShow(" + persona.getId() + ") - entering"));
 		PersonaWrapper personaWrapper = new PersonaWrapper();
+		personaWrapper.setAccreditamentoId(accreditamentoId);
 		personaWrapper.setPersona(persona);
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperShow(" + persona.getId() + ") - exiting"));
 		return personaWrapper;
