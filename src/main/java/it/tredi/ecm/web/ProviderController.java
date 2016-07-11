@@ -153,8 +153,8 @@ public class ProviderController {
 				providerService.save(providerWrapper.getProvider());
 				redirectAttrs.addAttribute("accreditamentoId", providerWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.provider_salvato", "success"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-				return "redirect:/accreditamento/{accreditamentoId}";
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+				return "redirect:/accreditamento/{accreditamentoId}/edit";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/save"),ex);
