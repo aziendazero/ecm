@@ -24,7 +24,7 @@ import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EngineeringWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.validator.EngineeringTestValidator;
+import it.tredi.ecm.web.validator.EngineeringValidator;
 
 @Controller
 public class EngineeringController {
@@ -34,7 +34,7 @@ public class EngineeringController {
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
-	@Autowired private EngineeringTestValidator engineeringTestValidator;
+	@Autowired private EngineeringValidator engineeringValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -89,7 +89,7 @@ public class EngineeringController {
 					wrapper.setFileDaFirmare(fileService.getFile(file.getId()));
 			}
 
-			engineeringTestValidator.validate(wrapper.getProvider(), result, "testFirma.", wrapper.getFileDaFirmare());
+			engineeringValidator.validate(wrapper.getProvider(), result, "testFirma.", wrapper.getFileDaFirmare());
 
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
@@ -97,7 +97,7 @@ public class EngineeringController {
 			}else{
 				providerService.save(wrapper.getProvider());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "engineering.dati_inseriti", "success"));
-				return "redirect:/engineering/test/firma";
+				return "redirect:/home";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore Salvataggio"),ex);

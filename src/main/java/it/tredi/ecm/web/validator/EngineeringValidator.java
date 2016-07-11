@@ -9,8 +9,8 @@ import org.springframework.validation.Errors;
 import it.tredi.ecm.dao.entity.File;
 
 @Component
-public class EngineeringTestValidator {
-	private static final Logger LOGGER = LoggerFactory.getLogger(EngineeringTestValidator.class);
+public class EngineeringValidator {
+	private static final Logger LOGGER = LoggerFactory.getLogger(EngineeringValidator.class);
 
 	@Autowired
 	private FileValidator fileValidator;
