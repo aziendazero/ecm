@@ -12,7 +12,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.accreditamenti_lista}">Lista degli
 							accreditamenti</h2>
-						<div class="pull-right buttons-header">	
+						<div class="pull-right buttons-header">
 							<a class="btn btn-primary pull-right"
 									th:if="${canProviderCreateAccreditamento}"
 									th:href="@{/provider/accreditamento/new}"
@@ -36,7 +36,7 @@
 							<tbody th:unless="${#lists.isEmpty(accreditamentoList)}" th:remove="all-but-first">
 								<tr th:each="accreditamento : ${accreditamentoList}">
 									<td><a th:text="${accreditamento.tipoDomanda.nome}"
-										th:href="@{|/accreditamento/${accreditamento.id}|}">Provvisorio/Standard</a></td>
+										th:href="@{|/accreditamento/${accreditamento.id}/show|}">Provvisorio/Standard</a></td>
 									<td th:text="${accreditamento.stato.nome}">Accettata</td>
 									<td th:text="${accreditamento.dataInvio}">22/05/2014</td>
 									<td th:text="${accreditamento.dataValutazione}">24/05/2014</td>
