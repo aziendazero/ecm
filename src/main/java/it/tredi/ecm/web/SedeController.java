@@ -234,8 +234,8 @@ public class SedeController {
 				sedeService.save(sedeWrapper.getSede(), providerService.getProvider(providerId), sedeWrapper.getTipologiaSede());
 				redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.sede_salvata", "success"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-				return "redirect:/accreditamento/{accreditamentoId}";
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+				return "redirect:/accreditamento/{accreditamentoId}/edit";
 			}
 		}catch(Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/save"),ex);
