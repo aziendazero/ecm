@@ -233,8 +233,8 @@ public class PersonaController {
 
 					if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())
 						redirectAttrs.addFlashAttribute("currentTab","tab2");
-					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-					return "redirect:/accreditamento/{accreditamentoId}";
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+					return "redirect:/accreditamento/{accreditamentoId}/edit";
 				}
 			}catch(Exception ex){
 				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/save"),ex);
@@ -346,6 +346,18 @@ public class PersonaController {
 		PersonaWrapper personaWrapper = new PersonaWrapper();
 		personaWrapper.setAccreditamentoId(accreditamentoId);
 		personaWrapper.setPersona(persona);
+		personaWrapper.setRuolo(persona.getRuolo());
+		if(!persona.isNew()){
+			Set<File> files = persona.getFiles();
+			for(File file : files){
+				if(file.isCV())
+					personaWrapper.setCv(file);
+				else if(file.isDELEGA())
+					personaWrapper.setDelega(file);
+				else if(file.isATTONOMINA())
+					personaWrapper.setAttoNomina(file);
+			}
+		}
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperShow(" + persona.getId() + ") - exiting"));
 		return personaWrapper;
 	}

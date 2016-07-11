@@ -17,7 +17,7 @@
 								<button id="cerca-persona-btn" class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
 								<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" onclick="unsetIsLookup()" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/${personaWrapper.persona.ruolo}/setAnagrafica|}"></a>
 							</th:block>
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/edit|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
