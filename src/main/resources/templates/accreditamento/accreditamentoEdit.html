@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.accreditamento_titolo(  ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}">Provvisorio - bozza</h2>
+						<div class="pull-right buttons-header">
+							<a th:if="${accreditamentoWrapper.canSend}" class="btn btn-success pull-right" th:text="#{label.invia_domanda}"	th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="accreditamento/accreditamentoFragment :: accreditamento(true)"></th:block>
+
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				$(document).ready(function() {
+
+					var stack_topright = {"dir1": "down", "dir2": "left", "push": "top", "firstpos1": 25, "firstpos2": 25};
+
+					var table = $('#comitato-table').DataTable();
+					function checkRemove() {
+						if (table.rows().count() >= 6)
+							table.column(4).visible(true);
+						else
+							table.column(4).visible(false);
+					}
+					checkRemove();
+
+					$('a[data-toggle="tab"]').on('click', function (e) {
+						// tab selezionata
+						var tab = $(e.target).attr('id');
+
+						if (tab == "tab2") {
+							// check se la sezione è stata compilata (procede in caso affermativo, nega l'apertura della tab e manda un warn altrimenti)
+							// controlla anche se il warning è già aperto e in caso lo anima
+							if (![[${accreditamentoWrapper.sezione1Stato}]]) {
+								var exists = false;
+								//se è già aperto il pnotify chiama l'animate (attention seeker)
+						        $(".ui-pnotify-text").each(function() {
+						            if ($(this).html() == [[#{message.compilare_tab1}]]) {
+						                exists = true;
+						                animate($(this).parent().parent());
+						            }
+						        });
+								//altrimenti apre un nuovo pnotify
+						        if (!exists) {
+						        	var notify = new PNotify({
+										title: [[#{message.warning}]],
+										text:  [[#{message.compilare_tab1}]],
+										type: "warning",
+										hide: false,
+										stack: stack_topright,
+					                    buttons: {
+					                    	sticker: false
+					                    }
+					            	});
+						        }
+						        return false;
+							} else {
+								//check se non sia stato inserito alcun responsabile (altrimenti warn legale non modificabile)
+								if ([[${accreditamentoWrapper.responsabileSegreteria == null} and
+								      ${accreditamentoWrapper.responsabileAmministrativo == null} and
+								      ${accreditamentoWrapper.responsabileSistemaInformatico == null} and
+								      ${accreditamentoWrapper.responsabileQualita == null}]]) {
+									var exists = false;
+							        $(".ui-pnotify-text").each(function() {
+							            if ($(this).html() == [[#{message.legale_non_piu_modificabile}]]) {
+							                exists = true;
+							                animate($(this).parent().parent());
+							            }
+							        });
+							        if (!exists) {
+							        	var notify = new PNotify({
+											title: [[#{message.warning}]],
+											text:  [[#{message.legale_non_piu_modificabile}]],
+											type: "warning",
+											hide: false,
+											stack: stack_topright,
+						                    buttons: {
+						                    	sticker: false
+						                    }
+						            	});
+							        }
+								}
+								//in ogni caso non è bloccante
+								return true;
+							}
+						}
+						if (tab == "tab3") {
+							if (![[${accreditamentoWrapper.sezione2Stato}]]) {
+								var exists = false;
+						        $(".ui-pnotify-text").each(function() {
+						            if ($(this).html() == [[#{message.compilare_tab2}]]) {
+						                exists = true;
+						                animate($(this).parent().parent());
+						            }
+						        });
+						        if (!exists) {
+						        	var notify = new PNotify({
+										title: [[#{message.warning}]],
+										text:  [[#{message.compilare_tab2}]],
+										type: "warning",
+										hide: false,
+										stack: stack_topright,
+					                    buttons: {
+					                    	sticker: false
+					                    }
+					            	});
+						        }
+						        return false;
+							}
+							else return true;
+						}
+						if (tab == "tab4") {
+							if (![[${accreditamentoWrapper.completa}]]) {
+								var exists = false;
+						        $(".ui-pnotify-text").each(function() {
+						            if ($(this).html() == [[#{message.compilare_altre_tab}]]) {
+						                exists = true;
+						                animate($(this).parent().parent());
+						            }
+						        });
+						        if (!exists) {
+						        	var notify = new PNotify({
+										title: [[#{message.warning}]],
+										text:  [[#{message.compilare_altre_tab}]],
+										type: "warning",
+										hide: false,
+										stack: stack_topright,
+					                    buttons: {
+					                    	sticker: false
+					                    }
+					            	});
+						        }
+						        return false;
+							}
+							else return true;
+						}
+					});
+				});
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

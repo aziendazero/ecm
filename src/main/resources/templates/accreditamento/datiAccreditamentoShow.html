@@ -10,11 +10,14 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.accreditamento_titolo(  ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}">Provvisorio - bozza</h2>
+						<h2 th:text="#{label.dati_attività}">Dati relativi all’attività</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}|}"></a>
+						</div>
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:include="accreditamento/accreditamentoFragment :: accreditamento(false)"></th:block>
+					<th:block th:include="accreditamento/datiAccreditamentoFragment :: datiAccreditamento(false)"></th:block>
 
 				</div>
 			</div>
