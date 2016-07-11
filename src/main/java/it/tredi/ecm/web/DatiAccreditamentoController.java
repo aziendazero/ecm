@@ -42,6 +42,9 @@ public class DatiAccreditamentoController {
 	private static Logger LOGGER = LoggerFactory.getLogger(DatiAccreditamentoController.class);
 
 	private final String EDIT = "accreditamento/datiAccreditamentoEdit";
+	private final String SHOW = "accreditamento/datiAccreditamentoShow";
+
+
 
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 	@Autowired private DisciplinaService disciplinaService;
@@ -59,7 +62,7 @@ public class DatiAccreditamentoController {
 	@ModelAttribute("datiAccreditamentoWrapper")
 	public DatiAccreditamentoWrapper getDatiAccreditamentoWrapper(@RequestParam(value="editId",required = false) Long id){
 		if(id != null){
-			return prepareDatiAccreditamentoWrapper(datiAccreditamentoService.getDatiAccreditamento(id));
+			return prepareDatiAccreditamentoWrapperEdit(datiAccreditamentoService.getDatiAccreditamento(id));
 		}
 		return new DatiAccreditamentoWrapper();
 	}
@@ -85,7 +88,7 @@ public class DatiAccreditamentoController {
 	public String newDatiAccreditamento(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/new"));
 		try {
-			return goToEdit(model, prepareDatiAccreditamentoWrapper(new DatiAccreditamento(),accreditamentoId));
+			return goToEdit(model, prepareDatiAccreditamentoWrapperEdit(new DatiAccreditamento(),accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -101,9 +104,25 @@ public class DatiAccreditamentoController {
 	public String editDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/edit"));
 		try{
-			return goToEdit(model, prepareDatiAccreditamentoWrapper(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
+			return goToEdit(model, prepareDatiAccreditamentoWrapperEdit(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
+			return "redirect:/accreditamento/{accreditamentoId}";
+		}
+	};
+
+	/*** SHOW ***/
+	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/dati/{id}/show")
+	public String showDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/show"));
+		try{
+			return goToShow(model, prepareDatiAccreditamentoWrapperShow(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/show"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
@@ -166,12 +185,18 @@ public class DatiAccreditamentoController {
 		return EDIT;
 	}
 
-	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapper(DatiAccreditamento datiAccreditamento){
-		return prepareDatiAccreditamentoWrapper(datiAccreditamento, 0);
+	private String goToShow(Model model, DatiAccreditamentoWrapper wrapper){
+		model.addAttribute("datiAccreditamentoWrapper", wrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+		return SHOW;
 	}
 
-	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapper(DatiAccreditamento datiAccreditamento, long accreditamentoId){
-		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapper(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
+	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperEdit(DatiAccreditamento datiAccreditamento){
+		return prepareDatiAccreditamentoWrapperEdit(datiAccreditamento, 0);
+	}
+
+	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperEdit(DatiAccreditamento datiAccreditamento, long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperEdit(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
 		wrapper.setDatiAccreditamento(datiAccreditamento);
 		wrapper.setAccreditamentoId(accreditamentoId);
@@ -195,7 +220,31 @@ public class DatiAccreditamentoController {
 		}
 
 		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_DATI_ACCREDITAMENTO), accreditamentoService.getIdEditabili(accreditamentoId));
-		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapper(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
+		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperEdit(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;
 	};
+
+	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperShow(DatiAccreditamento datiAccreditamento, long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperShow(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
+		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
+		wrapper.setDatiAccreditamento(datiAccreditamento);
+		wrapper.setAccreditamentoId(accreditamentoId);
+		Set<File> files = datiAccreditamento.getAccreditamento().getProvider().getFiles();
+		for(File file : files){
+			if(file.isESTRATTOBILANCIOFORMAZIONE())
+				wrapper.setEstrattoBilancioFormazione(file);
+			else if(file.isBUDGETPREVISIONALE())
+				wrapper.setBudgetPrevisionale(file);
+			else if(file.isFUNZIONIGRAMMA())
+				wrapper.setFunzionigramma(file);
+			else if(file.isORGANIGRAMMA())
+				wrapper.setOrganigramma(file);
+		}
+
+		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperShow(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
+		return wrapper;
+	};
+
+
+
 }

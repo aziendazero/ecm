@@ -32,7 +32,7 @@
 
 						<!-- TIPOLOGIA ACCREDITAMENTO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')} ? 'bad'">
-							<label class="control-label col-xs-1 text-right" th:text="${++counter}">1</label>
+							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">1</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="accreditamento_tipologia"><span th:text="#{label.tipologiaAccreditamento}">Accreditamento per tipologia</span><span class="required">*</span></label>
 							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
@@ -81,7 +81,7 @@
 
 						<!-- PROCEDURE FORMATIVE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')} ? 'bad'">
-							<label class="control-label col-xs-1 text-right" th:text="${++counter}">2</label>
+							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">2</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="procedure_formative_checkbox"><span th:text="#{label.procedure_formative}">Procedure formative</span><span class="required">*</span></label>
 							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
@@ -118,7 +118,7 @@
 
 						<!-- PROFESSIONI ACCREDITAMENTO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')} ? 'bad'">
-							<label class="control-label col-xs-1 text-right" th:text="${++counter}">3</label>
+							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">3</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="accreditamento_professioni"><span th:text="#{label.professioniAccreditamento}">Accreditamento per professioni</span><span class="required">*</span></label>
 							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
@@ -166,7 +166,7 @@
 
 						<!-- PROFESSIONI/DISCIPLINE -->
 						<div class="item form-group">
-							<label class="control-label col-xs-1 text-right" th:text="${++counter}">4</label>
+							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">4</label>
 							<label th:text="#{label.professioni_discipline}"
 								class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="accreditamento_professioni">Professioni</label>
@@ -236,7 +236,7 @@
 
 						<!-- FATTURATO COMPLESSIVO -->
 						<div class="item">
-							<label class="col-xs-1 text-right" th:text="${++counter}">5</label>
+							<label class="col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">5</label>
 							<label class="col-xs-11"><span th:text="#{label.fatturato_complessivo_title}">Fatturato o Costi complessivi degli
 								ultimi 3 anni (in migliaia di euro)</span></label>
 						</div>
@@ -299,13 +299,13 @@
 						</div>
 
 						<!-- ALLEGATO 1 (ETRATTO BILANCIO RELATIVO FORMAZIONE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${++counter}, #{label.required_fatturato}, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${counter != null ? ++counter : null}, #{label.required_fatturato}, true, ${editabile})" ></th:block>
 
 						<div class="divider-dashed"></div>
 
 						<!-- FATTURATO FORMAZIONE -->
 						<div class="item">
-							<label class="col-xs-1 text-right" th:text="${++counter}">6</label>
+							<label class="col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">6</label>
 							<label class="col-xs-11"><span th:text="#{label.fatturato_formazione_title}">Fatturato o Costi dedicati alla formazione del personale
 								sanitario degli ultimi 3 anni (in migliaia di euro)</span></label>
 						</div>
@@ -368,13 +368,13 @@
 						</div>
 
 						<!-- ALLEGATO 2 (BUDGET PREVISIONALE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, budgetPrevisionale, ${++counter}, #{label.required_fatturato}, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, budgetPrevisionale,  ${counter != null ? ++counter : null}, #{label.required_fatturato}, true, ${editabile})" ></th:block>
 
 						<div class="divider-dashed"></div>
 
 						<!-- NUMERO DIPENDENTI -->
 						<div class="item">
-							<label class="col-xs-1 text-right" th:text="${++counter}">7</label>
+							<label class="col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">7</label>
 							<label class="col-xs-11"><span  th:text="#{label.numero_dipendenti_title}">Numero dipendenti dedicati alla
 								formazione</span><span class="required">*</span></label>
 						</div>
@@ -421,10 +421,10 @@
 						</div>
 
 						<!-- ALLEGATO 3 (ORGANIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma, ${++counter}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
 
 						<!-- ALLEGATO 4 (FUNZIONIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma, ${++counter}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
 					</form>
 				</div>
 			</div>
