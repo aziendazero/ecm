@@ -36,8 +36,10 @@
 			</th:block>
 			<th:block th:if="${counter == null or (!#lists.contains(__${wrapper}__.idEditabili, counter))}">
 				<div class="col-md-4 col-sm-4 col-xs-12">
-					<div class="allegato-label"><a th:id="__${tipoAllegato}___disabled" class="form-control form-disabled-text clickable left-align col-md-7 col-xs-12"
+					<div th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___disabled" class="form-control form-disabled-text clickable left-align col-md-7 col-xs-12"
 						th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
+					<div th:if="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><span th:id="__${tipoAllegato}___disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
+						th:text="#{label.allegato_non_inserito}"></span></div>
 				</div>
 			</th:block>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
