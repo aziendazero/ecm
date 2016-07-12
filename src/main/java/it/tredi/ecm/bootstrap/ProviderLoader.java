@@ -88,8 +88,8 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 
 			Sede sedeLegale = new Sede();
 			sedeLegale.setProvincia("Venezia");
-			sedeLegale.setComune("comuneA - 1");
-			sedeLegale.setCap("11111");
+			sedeLegale.setComune("Venezia");
+			sedeLegale.setCap("30121");
 			sedeLegale.setIndirizzo("Via speranza, 35");
 			sedeLegale.setTelefono("123456");
 			sedeLegale.setFax("01234567");
