@@ -137,8 +137,8 @@ public class AccreditamentoController {
 		try{
 			Long accreditamentoId = accreditamentoService.getNewAccreditamentoForCurrentProvider().getId();
 			redirectAttrs.addAttribute("id", accreditamentoId);
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-			return "redirect:/accreditamento/{id}";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/{id}/edit";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/accreditamento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -155,8 +155,8 @@ public class AccreditamentoController {
 		try{
 			Long accreditamentoId = accreditamentoService.getNewAccreditamentoForProvider(providerId).getId();
 			redirectAttrs.addAttribute("id", accreditamentoId);
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-			return "redirect:/accreditamento/{id}";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/{id}/edit";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId +"/accreditamento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
