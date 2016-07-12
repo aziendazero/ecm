@@ -493,6 +493,10 @@ h2 {
 	display: none;
 }
 
+.table-radio {
+	display: block;
+}
+
 .presentation {
 	margin-bottom: 20px !important;
 }
