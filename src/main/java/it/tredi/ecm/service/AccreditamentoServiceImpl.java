@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
@@ -22,11 +23,9 @@ import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 public class AccreditamentoServiceImpl implements AccreditamentoService {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoServiceImpl.class);
 	
-	@Autowired
-	private AccreditamentoRepository accreditamentoRepository;
-	
-	@Autowired
-	private ProviderService providerService;
+	@Autowired private AccreditamentoRepository accreditamentoRepository;
+	@Autowired private ProviderService providerService;
+	@Autowired private EventoService eventoService;
 	
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider() throws Exception{
@@ -166,6 +165,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.setEditabile(false);
 		
 		accreditamentoRepository.save(accreditamento);
+		
+		Set<Evento> eventiNelPianoFormativo = eventoService.getAllEventiFromProviderInPianoFormativo(accreditamento.getProvider().getId(), accreditamento.getPianoFormativo());
+		for(Evento e : eventiNelPianoFormativo)
+			e.getIdEditabili().clear();
 	}
 	
 	@Override
