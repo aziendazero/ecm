@@ -209,17 +209,19 @@
 							</label>
 						<th:block th:if="${editabile and #lists.contains(eventoWrapper.idEditabili, counter)}">
 							<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni-select">
-								<select id="professioni" class="selectpicker multi"
-									multiple="multiple" data-width="100%"
-									data-style="btn-primary" data-actions-box="true"
-									data-size="10" title="Seleziona una professione..."
-									onchange="abilitaDiscipline(this)"
-									data-selected-text-format="count" th:remove="all-but-first">
-									<option th:each="professione, row: ${professioneList}"
-										th:value="${professione.id}" th:text="${professione.nome}"
-										th:field="${eventoWrapper.evento.professioniSelezionate}">Professione
-										selezionata</option>
-								</select>
+								<div class="col-xs-12 select-with-margin-container">
+									<select id="professioni" class="selectpicker multi"
+										multiple="multiple" data-width="100%"
+										data-style="btn-primary" data-actions-box="true"
+										data-size="10" title="Seleziona una professione..."
+										onchange="abilitaDiscipline(this)"
+										data-selected-text-format="count" th:remove="all-but-first">
+										<option th:each="professione, row: ${professioneList}"
+											th:value="${professione.id}" th:text="${professione.nome}"
+											th:field="${eventoWrapper.evento.professioniSelezionate}">Professione
+											selezionata</option>
+									</select>
+								</div>
 								<select id="discipline" class="selectpicker multi"
 									th:field="${eventoWrapper.evento.discipline}"
 									multiple="multiple" data-width="100%"
