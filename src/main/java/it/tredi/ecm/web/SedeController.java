@@ -48,13 +48,9 @@ public class SedeController {
 	public List<String> getElencoProvince(){
 		List<String> elencoProvince = new ArrayList<String>();
 
-		elencoProvince.add("Belluno");
-		elencoProvince.add("Padova");
-		elencoProvince.add("Rovigo");
-		elencoProvince.add("Treviso");
 		elencoProvince.add("Venezia");
+		elencoProvince.add("Padova");
 		elencoProvince.add("Verona");
-		elencoProvince.add("Vicenza");
 
 		return elencoProvince;
 	}
@@ -65,23 +61,20 @@ public class SedeController {
 		HashMap<String, List<String>> elencoComuni = new HashMap<String, List<String>>();
 
 		List<String> provinciaA = new ArrayList<String>();
-		provinciaA.add("comuneA - 1");
-		provinciaA.add("comuneA - 2");
-		provinciaA.add("comuneA - 3");
+		provinciaA.add("Venezia");
+		provinciaA.add("Mira");
 
 		List<String> provinciaB = new ArrayList<String>();
-		provinciaB.add("comuneB - 1");
-		provinciaB.add("comuneB - 2");
-		provinciaB.add("comuneB - 3");
+		provinciaB.add("Padova");
+		provinciaB.add("Cittadella");
 
 		List<String> provinciaC = new ArrayList<String>();
-		provinciaC.add("comuneC - 1");
-		provinciaC.add("comuneC - 2");
-		provinciaC.add("comuneC - 3");
+		provinciaC.add("Verona");
+		provinciaC.add("Nogara");
 
 		elencoComuni.put("Venezia", provinciaA);
 		elencoComuni.put("Padova", provinciaB);
-		elencoComuni.put("Trieste", provinciaC);
+		elencoComuni.put("Verona", provinciaC);
 
 		return elencoComuni.get(provincia);
 	}
@@ -92,23 +85,36 @@ public class SedeController {
 		HashMap<String, List<String>> elencoCap = new HashMap<String, List<String>>();
 
 		List<String> capVenezia = new ArrayList<String>();
-		capVenezia.add("11111");
-		capVenezia.add("22222");
-		capVenezia.add("33333");
+		capVenezia.add("30121");
+		capVenezia.add("30150");
+		capVenezia.add("30176");
+		
+		List<String> capMira = new ArrayList<String>();
+		capMira.add("30034");
+		
 
 		List<String> capPadova = new ArrayList<String>();
-		capPadova.add("44444");
-		capPadova.add("55555");
-		capPadova.add("66666");
+		capPadova.add("35121");
+		capPadova.add("35131");
+		capPadova.add("35143");
+		
+		List<String> capCittadella = new ArrayList<String>();
+		capCittadella.add("35013");
 
-		List<String> capTrieste = new ArrayList<String>();
-		capTrieste.add("77777");
-		capTrieste.add("88888");
-		capTrieste.add("99999");
+		List<String> capVerona = new ArrayList<String>();
+		capVerona.add("37121");
+		capVerona.add("37131");
+		capVerona.add("37142");
+		
+		List<String> capNogara = new ArrayList<String>();
+		capNogara.add("37054");
 
-		elencoCap.put("comuneA - 1", capVenezia);
-		elencoCap.put("comuneB - 1", capPadova);
-		elencoCap.put("comuneC - 1", capTrieste);
+		elencoCap.put("Venezia", capVenezia);
+		elencoCap.put("Mira", capMira);
+		elencoCap.put("Padova", capPadova);
+		elencoCap.put("Cittadella", capCittadella);
+		elencoCap.put("Verona", capVerona);
+		elencoCap.put("Nogara", capNogara);
 
 		return elencoCap.get(comune);
 	}
