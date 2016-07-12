@@ -17,7 +17,7 @@
 						</div>
 						<div class="clearfix"></div>
 					</div>
-					
+
 					<!-- finestra modale visualizzazione stato validazione -->
 					<div id="validazione-modal" class="modal fade modal-validate" tabindex="-1" role="dialog" aria-hidden="true">
 						<div class="modal-dialog modal-lg">
@@ -175,18 +175,18 @@
 							</div>
 						</div>
 					</div>
-					
+
 					<!-- panel con il form -->
 					<div class="x_content">
 						<!-- URL messo a caso! CAMBIARE -->
 						<form id="formValidazione" class="form-horizontal form-label-left" th:action="@{|/validazione/${validazioneWrapper?.accreditamentoId}/validatore/${validazioneWrapper?.valutazioneId}/save|}"
 								method="post" enctype="multipart/form-data" novalidate="novalidate">
-							
-							<!-- mettere th:value -->	
+
+							<!-- mettere th:value -->
 							<input type="hidden" name="editId" />
 							<!-- mettere th:field -->
 							<input type="hidden" />
-														
+
 							<table class="datatable-responsive-validate table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<thead>
 									<tr>
@@ -307,7 +307,7 @@
 												</label>
 											</span>
 										</td>
-										<td><textarea name="note" style="resize: none;"></textarea></td>
+										<td><textarea name="note" class="note-text" style="resize: none;"></textarea></td>
 									</tr>
 									<!-- /eliminare -->
 								</tbody>
@@ -320,4 +320,3 @@
 	</div>
 </body>
 </html>
-							
