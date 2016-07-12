@@ -270,8 +270,8 @@
 									</div>
 									<div class="x_content">
 										<div th:unless="${accreditamentoWrapper.comitatoScientificoStato or !editabile}" th:text="#{${accreditamentoWrapper.comitatoScientificoErrorMessage}}" class="alert alert-error"></div>
-										<div th:if="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico)}" th:text="#{label.nessun_componente_comitato}"></div>
-										<table th:unless="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico)}" id="comitato-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"  th:classappend="${editabile ? 'datatable-responsive-componentiComitato-edit' : 'datatable-responsive-componentiComitato-show'}">
+										<div th:if="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico) and (accreditamentoWrapper.coordinatoreComitatoScientifico == null)}" th:text="#{label.nessun_componente_comitato}"></div>
+										<table th:unless="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico) and (accreditamentoWrapper.coordinatoreComitatoScientifico == null)}" id="comitato-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"  th:classappend="${editabile ? 'datatable-responsive-componentiComitato-edit' : 'datatable-responsive-componentiComitato-show'}">
 											<thead>
 												<tr>
 													<th th:text="#{label.componenti_comitato_scientifico}">Componenti Comitato Scientifico</th>
