@@ -15,7 +15,9 @@
 					</div>
 					<div class="x_content">
 
-						<table class="datatable-responsive-eventi table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<div th:if="${#lists.isEmpty(eventoList)}" th:text="#{label.nessun_evento_list}"></div>
+
+						<table th:unless="${#lists.isEmpty(eventoList)}" class="datatable-responsive-eventi table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
 									<th th:text="#{label.id}">label.id</th>
