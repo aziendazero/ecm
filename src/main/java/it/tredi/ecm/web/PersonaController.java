@@ -298,7 +298,7 @@ public class PersonaController {
 	}
 
 	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, long accreditamentoId, long providerId, boolean isLookup){
-		LOGGER.info(Utils.getLogMessage("preparePersonaWrapper(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - entering"));
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - entering"));
 		PersonaWrapper personaWrapper = new PersonaWrapper();
 
 		personaWrapper.setPersona(persona);
@@ -337,7 +337,7 @@ public class PersonaController {
 		}
 
 		personaWrapper.setIsLookup(isLookup);
-		LOGGER.info(Utils.getLogMessage("preparePersonaWrapper(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - exiting"));
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - exiting"));
 		return personaWrapper;
 	}
 

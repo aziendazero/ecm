@@ -191,7 +191,8 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			coordinatoreComitato.getAnagrafica().setEmail("lcapirossi@3di.com");
 			coordinatoreComitato.getAnagrafica().setPec("lcapirossi@pec.com");
 			coordinatoreComitato.setProfessione(discipline.iterator().next().getProfessione());
-			coordinatoreComitato.setRuolo(Ruolo.COORDINATORE_COMITATO_SCIENTIFICO);
+			coordinatoreComitato.setCoordinatoreComitatoScientifico(true);
+			coordinatoreComitato.setRuolo(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
 			personaRepository.save(coordinatoreComitato);
 
 			provider.addPersona(responsabileSegreteria);

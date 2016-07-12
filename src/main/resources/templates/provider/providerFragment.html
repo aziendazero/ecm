@@ -36,20 +36,25 @@
 		                      	<span th:text="#{label.tipo_organizzatore}">label.tipo_organizzatore</span>
 		                      	<span class="required">*</span>
 		                    </label>
-		                    <th:block th:if="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
-		                      	<div class="col-md-4 col-sm-4 col-xs-12">
-			                        <select id="tipoOrganizzatore" class="form-control required" th:field="${providerWrapper.provider.tipoOrganizzatore}">
-			                          <option value="" th:text="#{label.seleziona}">label.seleziona</option>
-			                          <option th:each="tipo : ${tipoOrganizzatoreList}" th:value="${tipo}" th:text="${tipo.nome}">Choose option</option>
-			                        </select>
-			                    </div>
-			                </th:block>
-			             	<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="tipoOrganizzatore_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${providerWrapper.provider.tipoOrganizzatore}"></label>
-								</div>
-							</th:block>
+	                     	<div class="col-md-4 col-sm-4 col-xs-12">
+		                        <select id="tipoOrganizzatore"
+									class="selectpicker required"
+									th:field="${providerWrapper.provider.tipoOrganizzatore}"
+									data-width="100%" data-style="btn-primary"
+									data-actions-box="true" data-size="10"
+									data-hide-disabled="false"
+									title="Seleziona una tipologia..."
+									th:if="${editabile}"
+									th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}"
+									th:remove="all-but-first">
+									<option
+										th:each="tipo, row: ${tipoOrganizzatoreList}"
+										th:value="${tipo}"
+										th:text="${tipo.nome}">tipologia selezionata
+									</option>
+								</select>
+								<div class="value" th:if="${!editabile}" th:text="${providerWrapper.provider.tipoOrganizzatore.nome}"></div>
+		                    </div>
 		                    <div th:if="${#fields.hasErrors('providerWrapper.provider.tipoOrganizzatore')}" class="alert" th:errors="${providerWrapper.provider.tipoOrganizzatore}"></div>
 	                    </div>
 
@@ -126,20 +131,25 @@
 								<span th:text="#{label.ragione_sociale}">label.ragione_sociale</span>
 								<span class="required">*</span>
 							</label>
-							<th:block th:if="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
-									<select id="ragioneSociale" class="form-control required" th:field="${providerWrapper.provider.ragioneSociale}">
-		                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
-		                          			<option th:each="item : ${elencoRagioniSociali}" th:value="${item}" th:text="${item}">Choose option</option>
-		                        	</select>
-								</div>
-							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="ragioneSociale_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${providerWrapper.provider.ragioneSociale}"></label>
-								</div>
-							</th:block>
+							<div class="col-md-4 col-sm-4 col-xs-12">
+		                        <select id="ragioneSociale"
+									class="selectpicker required"
+									th:field="${providerWrapper.provider.ragioneSociale}"
+									data-width="100%" data-style="btn-primary"
+									data-actions-box="true" data-size="10"
+									data-hide-disabled="false"
+									title="Seleziona una ragione sociale..."
+									th:if="${editabile}"
+									th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}"
+									th:remove="all-but-first">
+									<option
+										th:each="ragioneSociale, row: ${elencoRagioniSociali}"
+										th:value="${ragioneSociale}"
+										th:text="${ragioneSociale}">tipologia selezionata
+									</option>
+								</select>
+								<div class="value" th:if="${!editabile}" th:text="${providerWrapper.provider.ragioneSociale}"></div>
+		                    </div>
 							<div th:if="${#fields.hasErrors('providerWrapper.provider.ragioneSociale')}" class="alert" th:errors="${providerWrapper.provider.ragioneSociale}"></div>
 						</div>
 
@@ -149,28 +159,20 @@
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">6</label>
 							<label th:text="#{label.organizzazione_natura}" class="control-label col-md-3 col-sm-3 col-xs-11" for="naturaOrganizzazione">Natura dell'organizzazione</label>
-								<th:block th:if="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
-									<div class="col-md-4 col-sm-4 col-xs-12" id="naturaOrganizzazione">
-										<div class="radio">
-											<label>
-												<input type="radio" class="flat" name="naturaOrg" th:field="${providerWrapper.provider.naturaOrganizzazione}" th:value="Pubblica" />
-												<span th:text="#{label.pubblica}">Pubblica</span>
-											</label>
-										</div>
-										<div class="radio">
-											<label>
-												<input type="radio" class="flat" name="naturaOrg" th:field="${providerWrapper.provider.naturaOrganizzazione}" th:value="Privata" />
-												<span th:text="#{label.privata}">Privata</span>
-											</label>
-										</div>
-									</div>
-								</th:block>
-								<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
-									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="naturaOrganizzazione_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-											th:text="${providerWrapper.provider.naturaOrganizzazione}"></label>
-									</div>
-								</th:block>
+							<div class="col-md-4 col-sm-4 col-xs-12" id="naturaOrganizzazione">
+								<div class="radio">
+									<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
+										<input type="radio" class="flat" name="naturaOrg" th:field="${providerWrapper.provider.naturaOrganizzazione}" th:value="Pubblica" th:disabled="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}" />
+										<span th:text="#{label.pubblica}">Pubblica</span>
+									</label>
+								</div>
+								<div class="radio">
+									<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
+										<input type="radio" class="flat" name="naturaOrg" th:field="${providerWrapper.provider.naturaOrganizzazione}" th:value="Privata" th:disabled="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}" />
+										<span th:text="#{label.privata}">Privata</span>
+									</label>
+								</div>
+							</div>
 							<div th:if="${#fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')}" class="alert" th:errors="${providerWrapper.provider.naturaOrganizzazione}"></div>
 						</div>
 
@@ -180,28 +182,20 @@
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.noProfit')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">7</label>
 							<label th:text="#{label.no_profit}" class="control-label col-md-3 col-sm-3 col-xs-11" for="noProfit">Natura dell'organizzazione</label>
-								<th:block th:if="${editabile and #lists.contains(providerWrapper.idEditabili, counter)}">
-									<div class="col-md-4 col-sm-4 col-xs-12" id="noProfit">
-										<div class="radio">
-											<label>
-												<input type="radio" class="flat" name="societaNoProfit" th:field="${providerWrapper.provider.noProfit}" th:value="true" />
-												<span th:text="#{label.sì}">Sì</span>
-											</label>
-										</div>
-										<div class="radio">
-											<label>
-												<input type="radio" class="flat" name="societaNoProfit" th:field="${providerWrapper.provider.noProfit}" th:value="false" />
-												<span th:text="#{label.no}">No</span>
-											</label>
-										</div>
-									</div>
-								</th:block>
-								<th:block th:if="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}">
-									<div class="col-md-4 col-sm-4 col-xs-12">
-										<label id="noProfit_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-											th:text="${editabile and providerWrapper.provider.noProfit}"></label>
-									</div>
-								</th:block>
+							<div class="col-md-4 col-sm-4 col-xs-12" id="noProfit">
+								<div class="radio">
+									<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
+										<input type="radio" class="flat" name="societaNoProfit" th:field="${providerWrapper.provider.noProfit}" th:value="true" th:disabled="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}"/>
+										<span th:text="#{label.sì}">Sì</span>
+									</label>
+								</div>
+								<div class="radio">
+									<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
+										<input type="radio" class="flat" name="societaNoProfit" th:field="${providerWrapper.provider.noProfit}" th:value="false" th:disabled="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}"/>
+										<span th:text="#{label.no}">No</span>
+									</label>
+								</div>
+							</div>
 							<div th:if="${#fields.hasErrors('providerWrapper.provider.noProfit')}" class="alert" th:errors="${providerWrapper.provider.noProfit}"></div>
 						</div>
 					</form>

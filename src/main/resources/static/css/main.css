@@ -303,6 +303,10 @@ textarea {
 	width: 100%;
 }
 
+.note-text {
+	width: 300px;
+}
+
 .dropdown-header.optgroup-primary {
 	background-color: #337ab7;
 }
@@ -487,6 +491,10 @@ h2 {
 
 .flat {
 	display: none;
+}
+
+.table-radio {
+	display: block;
 }
 
 .presentation {
