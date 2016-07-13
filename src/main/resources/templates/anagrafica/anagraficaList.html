@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.anagrafiche_provider}">Anagrafiche del provider</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<!-- tabella di tutte le anagrafiche del provider corrente -->
+					<div class="x-content">
+						<table id="tabella-modale" class="datatable-responsive-search-anagrafica table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.cognome}">Cognome</th>
+									<th th:text="#{label.nome}">Nome</th>
+									<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="anagrafica, row : ${anagraficaList}">
+									<td th:text="${anagrafica.cognome}">Cognome</td>
+									<td th:text="${anagrafica.nome}">Cognome</td>
+									<td th:text="${anagrafica.codiceFiscale}">Cognome</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
