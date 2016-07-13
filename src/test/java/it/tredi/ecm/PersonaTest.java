@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ import it.tredi.ecm.web.bean.PersonaWrapper;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 @WithUserDetails("admin")
+@Ignore
 public class PersonaTest {
 
 	@Autowired

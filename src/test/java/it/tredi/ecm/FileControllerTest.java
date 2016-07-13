@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import java.io.FileInputStream;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 @WithUserDetails("admin")
+@Ignore
 public class FileControllerTest {
 	
 	@Autowired
