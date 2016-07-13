@@ -83,8 +83,8 @@ public class ProviderController {
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: provider/show/all"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/list"));
-			return "redirect: /provider/list";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect: /home";
 		}
 	}
 

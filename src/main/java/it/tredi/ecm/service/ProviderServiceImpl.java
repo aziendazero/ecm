@@ -51,8 +51,9 @@ public class ProviderServiceImpl implements ProviderService {
 			LOGGER.info("Provider not found");
 		}else{
 			LOGGER.info("User not sign in");
+			return new Provider();
 		}
-		return new Provider();
+		return null;
 	}
 
 	@Override

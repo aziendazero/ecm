@@ -98,6 +98,10 @@ public class Provider extends BaseEntity{
 		}
 	}
 	
+	public void setCodiceFiscale(String codiceFiscale){
+		this.codiceFiscale = codiceFiscale.toUpperCase();
+	}
+	
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
