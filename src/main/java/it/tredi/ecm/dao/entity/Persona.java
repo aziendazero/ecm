@@ -41,12 +41,12 @@ public class Persona extends BaseEntity{
 	private Ruolo ruolo;
 	private String incarico = "";
 	@OneToOne
-	private Professione professione;
+	private Professione professione = new Professione();
 	private Boolean coordinatoreComitatoScientifico;
 
 	@ManyToMany(cascade= CascadeType.REMOVE)
-	@JoinTable(name="persona_files", 
-				joinColumns={@JoinColumn(name="persona_id")}, 
+	@JoinTable(name="persona_files",
+				joinColumns={@JoinColumn(name="persona_id")},
 				inverseJoinColumns={@JoinColumn(name="files_id")}
 	)
 	Set<File> files = new HashSet<File>();

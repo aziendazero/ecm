@@ -134,6 +134,9 @@ public class PersonaController {
 			if(persona == null){
 				persona = createPersona(providerId, ruolo);
 			}
+			else {
+				persona.setProfessione(new Professione());
+			}
 			if(anagraficaId == null){
 				persona.setAnagrafica(new Anagrafica());
 				isLookup = false;
