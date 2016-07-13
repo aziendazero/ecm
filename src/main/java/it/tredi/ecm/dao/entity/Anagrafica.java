@@ -23,6 +23,10 @@ public class Anagrafica extends BaseEntity{
 	private String email;
 	private String pec;
 	
+	public void setCodiceFiscale(String codiceFiscale){
+		this.codiceFiscale = codiceFiscale.toUpperCase();
+	}
+	
 	@JsonIgnore
 	@OneToOne
 	private Provider provider;
