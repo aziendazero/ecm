@@ -173,7 +173,7 @@
 							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
 								<div class="col-md-4 col-sm-4 col-xs-12"
 									id="accreditamento_professioni">
-									<div class="col-xs-12">
+									<div class="col-xs-12 select-with-margin-container">
 										<select id="professioni" class="selectpicker"
 											multiple="multiple" data-width="100%"
 											data-style="btn-primary" data-actions-box="true"
@@ -185,24 +185,22 @@
 												th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniSelezionate}">Professione selezionata</option>
 										</select>
 									</div>
-									<div class="col-xs-12">
-										<select id="discipline" class="selectpicker" th:field="${datiAccreditamentoWrapper.datiAccreditamento.discipline}"
-											multiple="multiple" data-width="100%"
-											data-style="btn-success" data-actions-box="true"
-											data-size="10" data-hide-disabled="true"
-											title="Seleziona una disciplina..." disabled="disabled"
-											data-selected-text-format="count"
+									<select id="discipline" class="selectpicker" th:field="${datiAccreditamentoWrapper.datiAccreditamento.discipline}"
+										multiple="multiple" data-width="100%"
+										data-style="btn-success" data-actions-box="true"
+										data-size="10" data-hide-disabled="true"
+										title="Seleziona una disciplina..." disabled="disabled"
+										data-selected-text-format="count"
+										th:remove="all-but-first">
+										<optgroup class="optgroup-success" disabled="disabled"
+											th:each="professione, row: ${professioneList}"
+											th:label="${professione.nome}"
 											th:remove="all-but-first">
-											<optgroup class="optgroup-success" disabled="disabled"
-												th:each="professione, row: ${professioneList}"
-												th:label="${professione.nome}"
-												th:remove="all-but-first">
-												<option th:each="disciplina, row: ${disciplinaList}"
-												th:if="${disciplina.professione == professione}"
-												th:value="${disciplina.id}" th:text="${disciplina.nome}">Disciplina selezionata</option>
-											</optgroup>
-										</select>
-									</div>
+											<option th:each="disciplina, row: ${disciplinaList}"
+											th:if="${disciplina.professione == professione}"
+											th:value="${disciplina.id}" th:text="${disciplina.nome}">Disciplina selezionata</option>
+										</optgroup>
+									</select>
 								</div>
 							</th:block>
 							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
