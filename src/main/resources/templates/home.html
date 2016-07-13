@@ -7,20 +7,111 @@
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-md-12 col-sm-12 col-xs-12">
-				<div class="x_panel">
-					<div class="x_title">
-						<div class="col-md-6">
-							<h3>Home Page</h3>
-						</div>
-						<div class="clearfix"></div>
-					</div>
-					<div class="x-content">
-						<div class="col-md-12 col-sm-12 col-xs-12">EHY THERE!</div>
+
+				<!-- title -->
+				<div class="page-title">
+					<div class="title_left">
+						<div class="home-title" th:text="#{label.home_page}">Home page</div>
 					</div>
 				</div>
+
+				<div class="divider"></div>
+
+				<!-- ADMIN -->
+				<div class="row" th:if="${homeWrapper.isAdmin}">
+					<div class="home-divider" th:text="#{label.dashboard_admin}">Admin dashboard</div>
+					<div class="col-xs-12 tile-stats-container">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+							<div class="tile-stats">
+								<div class="icon"><i th:class="${homeWrapper.utentiInAttesaDiAttivazione == 1 ? 'fa fa-user' : 'fa fa-users'}"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.utentiInAttesaDiAttivazione}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.utentiInAttesaDiAttivazione == 1 ? #messages.msg('label.utente') : #messages.msg('label.utenti')}"></h3>
+				                	<p class="count-text" th:text="#{label.in_attesa_attivazione}">In attesa di attivazione</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:if="${homeWrapper.isAdmin}" class="divider"></div>
+
+				<!-- PROVIDER -->
+				<div class="row" th:if="${homeWrapper.isProvider}">
+					<div class="home-divider" th:text="#{label.dashboard_provider}">Provider dashboard</div>
+					<div class="col-xs-12 tile-stats-container">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+							<div class="tile-stats">
+								<div class="icon"><i th:class="${homeWrapper.messaggi == 1 ? 'fa fa-comment-o' : 'fa fa-comments-o'}"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.messaggi}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.messaggi == 1 ? #messages.msg('label.messaggio') : #messages.msg('label.messaggi')}"></h3>
+				                	<p class="count-text" th:text="#{label.da_leggere}">Da leggere</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+							<div class="tile-stats">
+								<div class="icon"><i class="fa fa-euro"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.eventiDaPagare}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.eventiDaPagare == 1 ? #messages.msg('label.evento') : #messages.msg('label.eventi')}"></h3>
+				                	<p class="count-text" th:text="#{label.da_pagare}">Da pagare</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+							<div class="tile-stats">
+								<div class="icon"><i class="fa fa-edit"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.accreditamentiDaIntegrare}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.accreditamentiDaIntegrare == 1 ? #messages.msg('label.accreditamento') : #messages.msg('label.accreditamenti')}"></h3>
+				                	<p class="count-text" th:text="#{label.da_integrare}">Da integrare</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:if="${homeWrapper.isProvider}" class="divider"></div>
+
+				<!-- SEGRETERIA -->
+				<div class="row" th:if="${homeWrapper.isSegreteria}">
+					<div class="home-divider" th:text="#{label.dashboard_segreteria}">Segreteria dashboard</div>
+					<div class="col-xs-12 tile-stats-container">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+							<div class="tile-stats">
+								<div class="icon"><i class="fa fa-list-alt"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.richiesteInviateDaiProvider}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.richiesteInviateDaiProvider == 1 ? #messages.msg('label.richiesta_accreditamento') : #messages.msg('label.richieste_accreditamento')}"></h3>
+				                	<p class="count-text" th:text="#{label.da_valutare}">Da valutare</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+							<div class="tile-stats">
+								<div class="icon"><i class="fa fa-credit-card"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.providerQuotaAnnuale}"></div>
+				                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+				                	<p class="count-text" th:text="#{label.devono_pagare_quota_annuale}">Devono pagare la quota annuale</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+							<div class="tile-stats">
+								<div class="icon"><i class="fa fa-euro"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.providerQuotaEventi}"></div>
+				                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+				                	<p class="count-text" th:text="#{label.devono_pagare_quota_eventi}">Devono pagare la quota degli eventi</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
 			</div>
 		</div>
-		<br/>
 	</div>
 </body>
 </html>
