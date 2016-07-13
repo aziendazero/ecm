@@ -1,6 +1,7 @@
 package it.tredi.ecm;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import it.tredi.ecm.service.ProviderService;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 //@WithUserDetails("provider")
+@Ignore
 public class ProviderTest {
 
 	@Autowired
