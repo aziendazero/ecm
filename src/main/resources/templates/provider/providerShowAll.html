@@ -166,7 +166,10 @@
 		</div>
 		<script th:inline="javascript">
 			function show(link) {
-				location.href = '/provider/[[${provider.id}]]/'+link+'/list'
+				var start = [[@{|/provider/${provider.id}/|}]];
+				var end = link + '/list'
+				var url = start + end;
+ 				location.href = url;
 			}
 		</script>
 	</div>

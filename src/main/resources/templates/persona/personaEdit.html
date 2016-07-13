@@ -61,9 +61,8 @@
 			$("#cerca-persona-btn").one("click", function(){
 				var table = $('#tabella-modale').DataTable();
 				$.get( "/provider/" + [[${personaWrapper.providerId}]] + "/anagraficaList", function(data){
-					var accreditamentoId = [[${personaWrapper.accreditamentoId}]];
-					var providerId = [[${personaWrapper.providerId}]];
-					var ruolo = [[${personaWrapper.persona.ruolo}]].$name;
+ 					var ruolo = [[${personaWrapper.persona.ruolo}]].$name;
+					var start = [[@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/|}]];
 
 					for(item in data){
 						var obj = data[item];
@@ -71,21 +70,11 @@
 							obj.codiceFiscale,
 							obj.nome,
 							obj.cognome,
-							//'<a class="btn btn-primary" th:text="#{label.seleziona}" href="loadPersona('+ obj.id +')"></a>'
-							'<a class="btn btn-primary btn-lookup" onclick="setIsLookup()" th:text="#{label.seleziona}" href="/accreditamento/' + accreditamentoId + '/provider/' + providerId + '/persona/' + ruolo + '/setAnagrafica?anagraficaId=' + obj.id +'"></a>'
+							'<a class="btn btn-primary btn-lookup" onclick="setIsLookup()" th:text="#{label.seleziona}" href="' + start + ruolo + '/setAnagrafica?anagraficaId=' + obj.id + '"></a>'
 						]).draw(false);
 					}
 				});
 			});
-
-			function loadPersona(id){
-				//var url = "/accreditamento/" + [[${personaWrapper.accreditamentoId}]] + "/provider/" + [[${personaWrapper.providerId}]] + "/anagrafica/" + id +"/copia";
-				var RUOLO = [[${personaWrapper.persona.ruolo}]];
-				var url = "/accreditamento/" + [[${personaWrapper.accreditamentoId}]] + "/provider/" + [[${personaWrapper.providerId}]] + "/persona/" + RUOLO.$name + "/setAnagrafica?anagraficaId=" + id;
-				//$("#main-container").load(url);
-				//$("#persona-modal").modal('hide');<!-- Registra Dati Accreditamento -->
-				return url;
-			}
 
 			function setIsLookup() {
 				$("#hidden-lookup").val(true);

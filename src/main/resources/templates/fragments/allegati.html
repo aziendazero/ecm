@@ -109,7 +109,7 @@
             console.log('tipoAllegato: ' + tipoAllegato + ' - fileId: ' + fileId);
 
            	$.ajax({
-                  	url : "/file/upload",
+                  	url : [[@{/file/upload}]],
                   	data : oMyForm,
                   	type : "POST",
                   	enctype: 'multipart/form-data',

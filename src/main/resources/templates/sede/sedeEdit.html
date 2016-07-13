@@ -31,7 +31,10 @@
 			<script th:inline="javascript">
 			function sendAjaxRequestProvincia(){
 				var provincia = $("#provincia_sede").val();
-				$.get( "/comuni?provincia=" + provincia, function(data){
+				var start = [[@{/comuni?provincia=}]];
+				var end = provincia;
+				var url = start + end;
+				$.get(url, function(data){
 					$("#comune_sede").empty();
 					$("#comune_sede").append('<option value = "">' + "---" + "</option>")
 
@@ -44,7 +47,10 @@
 			};
 			function sendAjaxRequestCAP(){
 				var comune = $("#comune_sede").val();
-				$.get( "/cap?comune=" + comune, function(data){
+				var start = [[@{/cap?comune=}]];
+				var end = comune;
+				var url = start + end;
+				$.get(url, function(data){
 					$("#CAP_sede").empty();
 					$("#CAP_sede").append('<option value = "">' + "---" + "</option>")
 
@@ -58,7 +64,7 @@
 
 
 			function loadSedeLegale(){
-				var url = "/accreditamento/" + [[${sedeWrapper.accreditamentoId}]] + "/provider/" + [[${sedeWrapper.providerId}]] + "/sede/copia";
+				var url = [[@{|/accreditamento/${sedeWrapper.accreditamentoId}/provider/${sedeWrapper.providerId}/sede/copia|}]];
 				$("#main-container").load(url);
 			}
 

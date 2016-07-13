@@ -49,7 +49,10 @@
 			</div>
 			<script th:inline="javascript">
 				function download(id) {
-					location.href = '/file/'+id;
+					var start = [[@{/file/}]];
+					var end = id;
+					var url = start + end;
+					location.href = url;
 				}
 			</script>
 		</div>
