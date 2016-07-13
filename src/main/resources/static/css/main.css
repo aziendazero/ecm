@@ -346,9 +346,16 @@ th.center {
 	text-overflow: ellipsis;
 }
 
-.tile-stats .count{
+.tile-stats .tile-text{
 	font-size: 30px;
 	min-height: 70px;
+	font-weight: bold;
+}
+
+.tile-h3 {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .count-text {
@@ -504,4 +511,16 @@ h2 {
 
 .presentation {
 	margin-bottom: 20px !important;
+}
+
+.home-title {
+	font-weight: bold;
+	font-size: 35px;
+}
+
+.home-divider {
+	font-weight: bold;
+	font-size: 26px;
+	font-style: italic;
+	margin-left: 20px;
 }
