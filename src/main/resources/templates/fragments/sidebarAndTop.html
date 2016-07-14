@@ -47,6 +47,7 @@
 								<ul class="nav child_menu" style="display: none">
 									<li><a th:href="@{/provider/show/all}" th:text="#{label.scheda_provider}">label.info_provider</a></li>
 									<li><a th:href="@{/provider/accreditamento/list}" th:text="#{label.accreditamento}">label.iter_accreditamento</a></li>
+									<li><a th:href="@{/provider/anagrafica/list}" th:text="#{label.anagrafiche}">label.anagrafiche</a></li>
 									<!--
 									<li><a href="#" th:text="#{label.eventi}">label.eventi</a></li>
 									<li><a href="#" th:text="#{label.piano_formativo}">label.piano_formativo</a></li>
@@ -58,7 +59,7 @@
 									 -->
 								</ul>
 							</li>
-							
+
 							<li th:if="${#authentication.principal.hasProfile('ADMIN')}">
 								<a>
 									<i class="fa fa-edit"></i> <span th:text="#{label.segreteria}">label.segreteria</span>
