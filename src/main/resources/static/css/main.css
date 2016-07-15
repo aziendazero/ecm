@@ -172,6 +172,11 @@ table.datatable-responsive-search-validation thead .sorting_asc:after {
 	text-align: center;
 }
 
+.disabled-fa {
+	cursor: not-allowed !important;
+	color: #A5A9AC;
+}
+
 .disabled {
 	cursor: not-allowed !important;
 	color: #fff;
@@ -523,4 +528,30 @@ h2 {
 	font-size: 26px;
 	font-style: italic;
 	margin-left: 20px;
+}
+
+.btn-table {
+	min-width: 100px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+.table-icon {
+	height: 46px;
+	line-height: 46px;
+	font-size: 18px;
+}
+
+.single {
+	width: 100%;
+}
+
+.double {
+	width: 49%;
+}
+
+.triple {
+	width: 32.5%;
 }

@@ -28,15 +28,6 @@
 
 					var stack_topright = {"dir1": "down", "dir2": "left", "push": "top", "firstpos1": 25, "firstpos2": 25};
 
-					var table = $('#comitato-table').DataTable();
-					function checkRemove() {
-						if (table.rows().count() >= 6)
-							table.column(4).visible(true);
-						else
-							table.column(4).visible(false);
-					}
-					checkRemove();
-
 					$('a[data-toggle="tab"]').on('click', function (e) {
 						// tab selezionata
 						var tab = $(e.target).attr('id');
