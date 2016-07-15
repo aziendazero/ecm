@@ -268,8 +268,8 @@ public class PersonaController {
 
 		redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 		redirectAttrs.addFlashAttribute("currentTab","tab2");
-		LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-		return "redirect:/accreditamento/{accreditamentoId}";
+		LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+		return "redirect:/accreditamento/{accreditamentoId}/edit";
 	}
 
 	/***	Metodi privati di supporto	***/
