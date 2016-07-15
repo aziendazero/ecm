@@ -41,7 +41,7 @@ public class Persona extends BaseEntity{
 	private Ruolo ruolo;
 	private String incarico = "";
 	@OneToOne
-	private Professione professione = new Professione();
+	private Professione professione;
 	private Boolean coordinatoreComitatoScientifico;
 
 	@ManyToMany(cascade= CascadeType.REMOVE)

@@ -249,13 +249,6 @@ public class AccreditamentoController {
 				accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
 		}
 
-		int comitatoScientificoMemebers = accreditamentoWrapper.getComponentiComitatoScientifico().size();
-		if(comitatoScientificoMemebers < 4){
-			for(int i = comitatoScientificoMemebers; i<4; i++){
-				accreditamentoWrapper.getComponentiComitatoScientifico().add(new Persona());
-			}
-		}
-
 		//ALLEGATI
 		Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(accreditamento.getProvider().getId());
 
@@ -323,6 +316,23 @@ public class AccreditamentoController {
 		}
 
 		Long providerId = accreditamento.getProvider().getId();
+
+		//ALLEGATI
+		Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(accreditamento.getProvider().getId());
+
+		Set<Professione> professioniSelezionate = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? datiAccreditamento.getProfessioniSelezionate() : new HashSet<Professione>();
+
+		int numeroComponentiComitatoScientifico = personaService.numeroComponentiComitatoScientifico(providerId);
+		int numeroProfessionistiSanitarie 		= personaService.numeroComponentiComitatoScientificoConProfessioneSanitaria(providerId);
+		int professioniDeiComponenti 			= personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
+		int professioniDeiComponentiAnaloghe 	= (professioniSelezionate.size() > 0) ? personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate) : 0;
+
+		LOGGER.debug(Utils.getLogMessage("<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico));
+		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie));
+		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + professioniDeiComponenti));
+		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
+
+		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
 
 		//PIANO FORMATIVO
 		if(accreditamento.getPianoFormativo() != null)
