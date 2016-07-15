@@ -20,13 +20,15 @@
 									<th th:text="#{label.denominazione_legale}">Denominazione legale</th>
 									<th th:text="#{label.codiceFiscaleOrIVA}">Codice fiscale / Partita IVA</th>
 									<th th:text="#{label.gruppo_appartenenza}">Gruppo di appartenenza</th>
+									<th th:text="#{label.status}">Status del provider</th>
 								</tr>
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(providerList)}" th:remove="all-but-first">
 								<tr th:each="provider : ${providerList}">
-									<th><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/show/all|}">3d informatica</a></th>
+									<th><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/accreditamento/list|}">3d informatica</a></th>
 									<th th:text="${provider.partitaIva != null} ? ${provider.partitaIva} : ${provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</th>
 									<th th:text="${provider.gruppo}">informatica</th>
+									<th th:text="${provider.status.nome}">stato</th>
 								</tr>
 							</tbody>
 						</table>
