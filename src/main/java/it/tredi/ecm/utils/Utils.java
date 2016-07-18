@@ -24,7 +24,10 @@ public class Utils {
 		CurrentUser currentUser = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		if(authentication instanceof AnonymousAuthenticationToken){
+		if(authentication == null){
+			LOGGER.info("AnonymousAuthentication found");
+			return null;
+		}else if(authentication instanceof AnonymousAuthenticationToken){
 			LOGGER.info("AnonymousAuthentication found");
 			return null;
 		}

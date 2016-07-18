@@ -11,6 +11,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private PianoFormativoService pianoFormativoService;
 
 	/**		PROVIDER	**/
 	@Override
@@ -19,6 +20,17 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 			return false;
 		
 		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW_ALL.name()))
+			return true;
+		
+		return false;
+	}
+	
+	@Override
+	public boolean canEditAllProvider(CurrentUser currentUser) {
+		if(currentUser == null)
+			return false;
+		
+		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT_ALL.name()))
 			return true;
 		
 		return false;
@@ -38,10 +50,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	
 	@Override
 	public boolean canEditProvider(CurrentUser currentUser, Long providerId) {
-		if(currentUser == null)
-			return false;
-		
-		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT_ALL.name()))
+		if(canEditAllProvider(currentUser))
 			return true;
 		
 		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT.name())){
@@ -153,4 +162,28 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	private boolean isUserOwner(Long currentUserAccountId, Long userId){
 		return userId.equals(currentUserAccountId);
 	}
+	
+	/*	PIANO FORMATIVO	*/
+	@Override
+	public boolean canInsertPianoFormativo(CurrentUser currentUser, Long providerId) {
+		if(!canEditProvider(currentUser, providerId))
+			return false;
+		
+		if(canEditAllProvider(currentUser))
+			return true;
+		
+		return providerService.canInsertPianoFormativo(providerId);
+	}
+	
+	@Override
+	public boolean canEditPianoFormativo(CurrentUser currentUser, Long providerId, Long pianoFormativoId) {
+		if(!canEditProvider(currentUser, providerId))
+			return false;
+		
+		if(canEditAllProvider(currentUser))
+			return true;
+		
+		return pianoFormativoService.isEditabile(pianoFormativoId);
+	}
+	
 }

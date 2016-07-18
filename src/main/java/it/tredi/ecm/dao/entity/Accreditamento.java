@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
 import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
@@ -31,10 +33,13 @@ public class Accreditamento extends BaseEntity{
 	private AccreditamentoEnum stato;
 	@Column(name = "data_invio")
 	private LocalDate dataInvio;
-	@Column(name = "data_valutazione")
-	private LocalDate dataValutazione;
 	@Column(name = "data_scadenza")
 	private LocalDate dataScadenza;
+	
+	@Column(name = "data_valutazione")
+	private LocalDate dataValutazione;
+	@Column(name = "data_fine_accreditamento")
+	private LocalDate dataFineAccreditamento;
 	
 	@JoinColumn(name = "valutato_da")
 	@OneToOne(fetch = FetchType.LAZY)
@@ -45,7 +50,7 @@ public class Accreditamento extends BaseEntity{
 	private Provider provider;
 	
 	@JoinColumn(name = "dati_accreditamento_id")
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, cascade= CascadeType.REMOVE)
 	private DatiAccreditamento datiAccreditamento;
 	
 	//flag che mi dice se la domanda è in visualizzazione o in modifica per il provider
@@ -79,7 +84,7 @@ public class Accreditamento extends BaseEntity{
 		return stato.equals(AccreditamentoEnum.ACCREDITAMENTO_STATO_INVIATO);
 	}
 	
-	public boolean isAttivo(){
+	public boolean isProcedimentoAttivo(){
 		if( dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;
 		return false;

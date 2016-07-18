@@ -49,7 +49,6 @@ import it.tredi.ecm.web.bean.PersonaWrapper;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 @WithUserDetails("admin")
-@Ignore
 public class PersonaTest {
 
 	@Autowired

@@ -10,6 +10,7 @@ public class EventoWrapper extends Wrapper {
 	private Evento evento;
 	private Long providerId;
 	private Long accreditamentoId;
+	private Long pianoFormativoId;
 	
 	public EventoWrapper(){
 	}

@@ -1,10 +1,12 @@
 package it.tredi.ecm.dao.entity;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
@@ -30,6 +32,8 @@ public class Account extends BaseEntity{
 	private boolean locked;
 	private boolean enabled;
 	private boolean changePassword;
+	@Column(name = "data_scadenza_password")
+	private LocalDate dataScadenzaPassword;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "account_profile", 
@@ -40,6 +44,10 @@ public class Account extends BaseEntity{
     			}
     		)	
 	private Set<Profile> profiles = new HashSet<Profile>();
+	
+	public boolean isCredentialsNonExpired(){
+		return dataScadenzaPassword.isAfter(LocalDate.now());
+	}
 	
 	public String getProfileAsString(){
 		String result = "[";

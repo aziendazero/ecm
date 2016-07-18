@@ -27,4 +27,6 @@ public interface AccreditamentoService{
 	
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception;
 	public Long getProviderIdForAccreditamento(Long accreditamentoId);
+	
+	public Set<Accreditamento> getAllAccreditamentiInviati();
 }

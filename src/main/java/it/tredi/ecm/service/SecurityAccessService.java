@@ -6,6 +6,7 @@ public interface SecurityAccessService {
 	public boolean canShowProvider(CurrentUser currentUser, Long providerId);
 	public boolean canShowAllProvider(CurrentUser currentUser);
 	public boolean canEditProvider(CurrentUser currentUser, Long providerId);
+	public boolean canEditAllProvider(CurrentUser currentUser);
 	
 	public boolean canShowAccreditamento(CurrentUser currentUser, Long providerId);
 	public boolean canShowAllAccreditamento(CurrentUser currentUser);
@@ -15,4 +16,7 @@ public interface SecurityAccessService {
 	public boolean canShowAllUser(CurrentUser currentUser);
 	public boolean canEditUser(CurrentUser currentUser, Long userId);
 	public boolean canCreateUser(CurrentUser currentUser);
+	
+	public boolean canInsertPianoFormativo(CurrentUser currentUser, Long providerId);
+	public boolean canEditPianoFormativo(CurrentUser currentUser, Long providerId, Long pianoFormativoId);
 }

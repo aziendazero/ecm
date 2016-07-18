@@ -14,6 +14,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -27,18 +28,27 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@NamedEntityGraph(name="graph.provider.files",
-					attributeNodes = @NamedAttributeNode(value="files", subgraph="minimalFileInfo"),
-					subgraphs = @NamedSubgraph(name="minimalFileInfo", attributeNodes={
-								@NamedAttributeNode("id"),
-								@NamedAttributeNode("nomeFile"),
-								@NamedAttributeNode("tipo")
-							}))
+@NamedEntityGraphs({
+
+	@NamedEntityGraph(name="graph.provider.files",
+			attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"), 
+					@NamedAttributeNode(value="files", subgraph="minimalFileInfo")},
+			subgraphs = @NamedSubgraph(name="minimalFileInfo", attributeNodes={
+					@NamedAttributeNode("id"),
+					@NamedAttributeNode("nomeFile"),
+					@NamedAttributeNode("tipo")
+			}))
+	,
+	@NamedEntityGraph(name="graph.provider.minimal",
+	attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"), 
+			})
+
+})
 public class Provider extends BaseEntity{
 	/*	ACCOUNT LEGATO AL PROFILO PROVIDER	*/
 	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	private Account account;
-	
+
 	/*	INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE	*/
 	private String denominazioneLegale;
 	@Enumerated(EnumType.STRING)
@@ -46,50 +56,57 @@ public class Provider extends BaseEntity{
 	private String gruppo;
 	private String partitaIva;
 	private String codiceFiscale;
-	
+
 	/*	PERSONE REGISTRATE DAL PROVIDER	
 	 * 	alcune in fase di registrazione, altre in fase di accreditamento */
 	@OneToMany(mappedBy="provider")
 	private Set<Persona> persone = new HashSet<Persona>();
-	
+
 	/*	SEDI DEL PROVIDER FORNITE IN FASE DI ACCREDITAMENTO	*/
 	@OneToOne
 	private Sede sedeLegale;
 	@OneToOne
 	private Sede sedeOperativa;
-	
+
 	/*	INFO PROVIDER FORNITE IN FASE DI ACCREDITAMENTO	*/
 	private String ragioneSociale;
 	private String naturaOrganizzazione;
 	@Column(name ="no_profit")
 	private boolean noProfit = false;
-	
+
 	/*	IL GRUPPO VIENE DESIGNATO IN FUNZIONE DEL TIPO DI ORGANIZZATORE	*/
 	public void setTipoOrganizzatore(TipoOrganizzatore tipoOrganizzatore){
 		this.tipoOrganizzatore = tipoOrganizzatore;
 		this.gruppo = tipoOrganizzatore.getGruppo();
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	private StatusProvider status;
-	
-	@ManyToMany
+
+	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(name="provider_files", 
-				joinColumns={@JoinColumn(name="provider_id")},
-				inverseJoinColumns={@JoinColumn(name="files_id")}
-	)
+	joinColumns={@JoinColumn(name="provider_id")},
+	inverseJoinColumns={@JoinColumn(name="files_id")}
+			)
 	Set<File> files = new HashSet<File>();
-	
+
 	public void addFile(File file){
 		this.getFiles().add(file);
 	}
 	
+	@Column(name ="can_insert_accreditamento_standard")
+	private boolean canInsertAccreditamentoStandard;
+	@Column(name ="can_insert_piano_formativo")
+	private boolean canInsertPianoFormativo;
+	@Column(name ="can_insert_evento")
+	private boolean canInsertEvento;
+
 	/** UTILS **/
 	public void addPersona(Persona persona){
 		this.persone.add(persona);
 		persona.setProvider(this);
 	}
-	
+
 	public boolean isSedeCoincide(){
 		if(sedeLegale != null && sedeOperativa != null){
 			return sedeLegale.getId().equals(sedeOperativa.getId());
@@ -97,20 +114,20 @@ public class Provider extends BaseEntity{
 			return false;
 		}
 	}
-	
+
 	public void setCodiceFiscale(String codiceFiscale){
 		this.codiceFiscale = codiceFiscale.toUpperCase();
 	}
-	
+
 	@Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Provider entitapiatta = (Provider) o;
-        return Objects.equals(id, entitapiatta.id);
-    }
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Provider entitapiatta = (Provider) o;
+		return Objects.equals(id, entitapiatta.id);
+	}
 }
