@@ -22,7 +22,7 @@
 						novalidate="novalidate">
 
 						<!-- gli input hidden non sono necessari se NON editabile -->
-						<th:block th:if="${editabile}">
+						<th:block th:with="counter=${counter}" th:if="${editabile}">
 							<input type="hidden" name="editId" th:value="${sedeWrapper.sede.id}" />
 							<input type="hidden" th:field="${sedeWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${sedeWrapper.tipologiaSede}" />
@@ -33,20 +33,37 @@
 						<!-- PROVINCIA -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.provincia')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">1</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="provincia_sede"><span th:text="#{label.provincia}">Provincia</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter)  and !coincide}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="provincia_sede">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.provincia}">Provincia</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<select id="provincia_sede" class="form-control required" th:field="${sedeWrapper.sede.provincia}">
-		                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
-		                          			<option th:each="provincia : ${elencoProvince}" th:value="${provincia}" th:text="${provincia}">Choose option</option>
+									<select id="provincia_sede" class="form-control required" th:field="${sedeWrapper.sede.provincia}"
+										th:disabled="${coincide or !#lists.contains(sedeWrapper.idEditabili, counter)}">
+	                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
+	                          			<option th:each="provincia : ${elencoProvince}" th:value="${provincia}" th:text="${provincia}">Choose option</option>
 		                        	</select>
+<!-- 		                        	<select id="provincia_sede" -->
+<!-- 										class="selectpicker required" -->
+<!-- 										th:field="${sedeWrapper.sede.provincia}" -->
+<!-- 										data-width="100%" data-style="btn-primary" -->
+<!-- 										data-actions-box="true" data-size="10" -->
+<!-- 										data-hide-disabled="false" -->
+<!-- 										title="Seleziona una provincia..." -->
+<!-- 										th:if="${editabile}" -->
+<!-- 										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}" -->
+<!-- 										th:remove="all-but-first"> -->
+<!-- 										<option -->
+<!-- 											th:each="provincia : ${elencoProvince}" th:value="${provincia}" -->
+<!-- 											th:text="${provincia}">Venezia -->
+<!-- 										</option> -->
+<!-- 									</select> -->
 							  	</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(sedeWrapper.idEditabili, counter) or coincide}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="provincia_sede_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${sedeWrapper.sede.provincia}"></label>
+									<div class="value" th:text="${sedeWrapper.sede.provincia}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.provincia')}" class="alert" th:errors="${sedeWrapper.sede.provincia}"></div>
@@ -55,19 +72,20 @@
 						<!-- COMUNE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.comune')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">2</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="comune_sede"><span th:text="#{label.comune}">Comune</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="comune_sede">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.comune}">Comune</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<select id="comune_sede" class="form-control required" th:field="${sedeWrapper.sede.comune}">
+									<select th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}" id="comune_sede" class="form-control required" th:field="${sedeWrapper.sede.comune}">
 										<option th:value="${sedeWrapper.sede.comune}" th:text="${sedeWrapper.sede.comune}"/>
 		                        	</select>
 							  	</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(sedeWrapper.idEditabili, counter) or coincide}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="comune_sede_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${sedeWrapper.sede.comune}"></label>
+									<div class="value" th:text="${sedeWrapper.sede.comune}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.comune')}" class="alert" th:errors="${sedeWrapper.sede.comune}"></div>
@@ -76,19 +94,21 @@
 						<!-- INDIRIZZO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.indirizzo')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">3</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="indirizzo_sede"><span th:text="#{label.indirizzo}">Indirizzo</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="indirizzo_sede">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.indirizzo}">Indirizzo</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="indirizzo_sede" name="indirizzo_sede"
 										required="required" class="form-control col-md-7 col-xs-12"
-										type="text" th:field="${sedeWrapper.sede.indirizzo}" />
+										type="text" th:field="${sedeWrapper.sede.indirizzo}"
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}"/>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(sedeWrapper.idEditabili, counter) or coincide}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="indirizzo_sede" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${sedeWrapper.sede.indirizzo}"></label>
+									<div class="value" th:text="${sedeWrapper.sede.indirizzo}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.indirizzo')}" class="alert" th:errors="${sedeWrapper.sede.indirizzo}"></div>
@@ -97,19 +117,21 @@
 						<!-- CAP -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.cap')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">4</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="CAP_sede"><span th:text="#{label.cap}">CAP</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="CAP_sede">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cap}">CAP</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<select id="CAP_sede" class="form-control required" th:field="${sedeWrapper.sede.cap}">
+									<select id="CAP_sede" class="form-control required" th:field="${sedeWrapper.sede.cap}"
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}">
 										<option th:value="${sedeWrapper.sede.cap}" th:text="${sedeWrapper.sede.cap}"/>
 		                        	</select>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(sedeWrapper.idEditabili, counter) or coincide}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="CAP_sede" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${sedeWrapper.sede.cap}"></label>
+									<div class="value" th:text="${sedeWrapper.sede.cap}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.cap')}" class="alert" th:errors="${sedeWrapper.sede.cap}"></div>
@@ -118,19 +140,21 @@
 						<!-- TELEFONO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.telefono')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">5</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="telefono_sede"><span th:text="#{label.telefono}">Telefono</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="telefono_sede">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.telefono}">Telefono</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="telefono_sede" name="telefono_sede"
 										required="required" class="form-control col-md-7 col-xs-12"
-										type="tel" th:field="${sedeWrapper.sede.telefono}"/>
+										type="tel" th:field="${sedeWrapper.sede.telefono}"
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}"/>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(sedeWrapper.idEditabili, counter) or coincide}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="telefono_sede" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${sedeWrapper.sede.telefono}"></label>
+									<div class="value" th:text="${sedeWrapper.sede.telefono}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.telefono')}" class="alert" th:errors="${sedeWrapper.sede.telefono}"></div>
@@ -139,18 +163,20 @@
 						<!-- FAX -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.fax')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">7</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="fax_sede"><span th:text="#{label.fax}">FAX</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="fax_sede">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.fax}">FAX</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="fax_sede" name="fax_sede" required="required"
-										class="form-control col-md-7 col-xs-12" type="tel" th:field="${sedeWrapper.sede.fax}" />
+										class="form-control col-md-7 col-xs-12" type="tel" th:field="${sedeWrapper.sede.fax}"
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}"/>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(sedeWrapper.idEditabili, counter) or coincide}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="fax_sede" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${sedeWrapper.sede.fax}"></label>
+									<div class="value" th:text="${sedeWrapper.sede.fax}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.fax')}" class="alert" th:errors="${sedeWrapper.sede.fax}"></div>
@@ -159,19 +185,21 @@
 						<!-- EMAIL -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.email')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">8</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="email_sede"><span th:text="#{label.email}">E-mail</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(sedeWrapper.idEditabili, counter) and !coincide}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="email_sede">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.email}">E-mail</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="email_sede" name="email_sede"
 										required="required" class="form-control col-md-7 col-xs-12"
-										type="email" th:field="${sedeWrapper.sede.email}"/>
+										type="email" th:field="${sedeWrapper.sede.email}"
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}"/>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(sedeWrapper.idEditabili, counter) or coincide}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="email_sede" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${sedeWrapper.sede.email}"></label>
+									<div class="value" th:text="${sedeWrapper.sede.email}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.email')}" class="alert" th:errors="${sedeWrapper.sede.email}"></div>

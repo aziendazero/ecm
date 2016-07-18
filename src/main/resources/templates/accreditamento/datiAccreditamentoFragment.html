@@ -33,45 +33,33 @@
 						<!-- TIPOLOGIA ACCREDITAMENTO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')} ? 'bad'">
 							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">1</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="accreditamento_tipologia"><span th:text="#{label.tipologiaAccreditamento}">Accreditamento per tipologia</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12"
-									id="accreditamento_tipologia">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="accreditamento_tipologia">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.tipologiaAccreditamento}">Accreditamento per tipologia</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12" id="accreditamento_tipologia">
 									<div class="radio">
 										<label>
-											<input type="radio" class="flat"
-												id="generaleTipologia" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
-												<span th:text="#{label.generale}">Generale </span>
+											<input type="radio" class="flat" id="generaleTipologia"
+												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
+												th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
+											<span th:text="#{label.generale}">Generale </span>
 										</label>
 									</div>
 									<div class="radio">
 										<label>
-											<input type="radio" class="flat"
-												id="settorialeTipologia" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Settoriale" />
+											<input type="radio" class="flat" id="settorialeTipologia"
+												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
+												th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Settoriale" />
 											<span th:text="#{label.settoriale}">Settoriale </span>
 										</label>
 									</div>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12"
-									id="accreditamento_tipologia">
-									<div class="radio">
-										<label class="label-disabled">
-											<input type="radio" class="flat" disabled="disabled"
-												id="generaleTipologia" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
-												<span th:text="#{label.generale}">Generale </span>
-										</label>
-										<input type="hidden" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
-									</div>
-									<div class="radio">
-										<label class="label-disabled">
-											<input type="radio" class="flat" disabled="disabled"
-												id="settorialeTipologia" name="tipologiaAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Settoriale" />
-											<span th:text="#{label.settoriale}">Settoriale </span>
-										</label>
-									</div>
+							<th:block th:unless="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12" id="accreditamento_tipologia">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" ></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}"></div>
@@ -82,32 +70,31 @@
 						<!-- PROCEDURE FORMATIVE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')} ? 'bad'">
 							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">2</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="procedure_formative_checkbox"><span th:text="#{label.procedure_formative}">Procedure formative</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="procedure_formative_checkbox">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.procedure_formative}">Procedure formative</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_checkbox">
 									<div class="checkbox" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
 										<label>
 											<input type="checkbox" class="flat" th:field="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}" th:value="${proceduraFormativa}"
 												th:disabled="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Generale'  or
-																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null)}" />
+																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
+																!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
 											<span th:text="${proceduraFormativa.nome}">formazione residenziale (RES)</span>
 											<input type="hidden" name="datiAccreditamento.procedureFormative" th:value="${proceduraFormativa}"
 												th:disabled="${(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Settoriale') or
-																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null)}"/>
+																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
+																!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"/>
 										</label>
 									</div>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_checkbox">
-									<div class="checkbox" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
-										<label class="label-disabled">
-											<input type="checkbox" class="flat" th:field="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}"
-											th:value="${proceduraFormativa}"
-											disabled="disabled" /> <span th:text="${proceduraFormativa.nome}">formazione
-												residenziale (RES)</span>
-										</label>
+									<div th:each="proceduraFormativa, row : ${proceduraFormativaList}">
+										<div class="value" th:if="${#lists.contains(datiAccreditamentoWrapper.datiAccreditamento.procedureFormative, proceduraFormativa)}" th:text="${proceduraFormativa.nome}"></div>
 									</div>
 								</div>
 							</th:block>
@@ -119,44 +106,33 @@
 						<!-- PROFESSIONI ACCREDITAMENTO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')} ? 'bad'">
 							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">3</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="accreditamento_professioni"><span th:text="#{label.professioniAccreditamento}">Accreditamento per professioni</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12"
-									id="accreditamento_professioni">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="accreditamento_professioni">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.professioniAccreditamento}">Accreditamento per professioni</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12" id="accreditamento_professioni">
 									<div class="radio">
-										<label> <input type="radio" class="flat" id="generaleProf"
-											name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}" th:value="Generale" /> <span
-											th:text="#{label.generale}">
-												Generale </span>
+										<label>
+											<input type="radio" class="flat" id="generaleProf"
+												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
+												th:value="Generale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+											<span th:text="#{label.generale}">Generale </span>
 										</label>
 									</div>
 									<div class="radio">
-										<label> <input type="radio" class="flat" id="settorialeProf"
-											name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}" th:value="Settoriale" /> <span
-											th:text="#{label.settoriale}">
-												Settoriale </span>
+										<label>
+											<input type="radio" class="flat" id="settorialeProf"
+												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
+												th:value="Settoriale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+											<span th:text="#{label.settoriale}">Settoriale </span>
 										</label>
 									</div>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12"
-									id="accreditamento_professioni">
-									<div class="radio">
-										<label class="label-disabled"> <input type="radio" class="flat" id="generaleProf"
-											name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}" value="Generale" disabled="disabled" /> <span
-											th:text="#{label.generale}">
-												Generale </span>
-										</label>
-									</div>
-									<div class="radio">
-										<label class="label-disabled"> <input type="radio" class="flat" id="settorialeProf"
-											name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}" value="Settoriale" disabled="disabled" /> <span
-											th:text="#{label.settoriale}">
-												Settoriale </span>
-										</label>
-									</div>
+							<th:block th:unless="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12" id="accreditamento_professioni">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
@@ -167,19 +143,20 @@
 						<!-- PROFESSIONI/DISCIPLINE -->
 						<div class="item form-group">
 							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">4</label>
-							<label th:text="#{label.professioni_discipline}"
-								class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="accreditamento_professioni">Professioni</label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12"
-									id="accreditamento_professioni">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="accreditamento_professioni">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.professioni_discipline}">Professioni</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12" id="accreditamento_professioni">
 									<div class="col-xs-12 select-with-margin-container">
 										<select id="professioni" class="selectpicker"
 											multiple="multiple" data-width="100%"
 											data-style="btn-primary" data-actions-box="true"
 											data-size="10" title="Seleziona una professione..."
 											onchange="abilitaDiscipline(this)" data-selected-text-format="count"
-											th:remove="all-but-first">
+											th:remove="all-but-first"
+											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
 											<option th:each="professione, row: ${professioneList}"
 												th:value="${professione.id}" th:text="${professione.nome}"
 												th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniSelezionate}">Professione selezionata</option>
@@ -188,11 +165,13 @@
 									<select id="discipline" class="selectpicker" th:field="${datiAccreditamentoWrapper.datiAccreditamento.discipline}"
 										multiple="multiple" data-width="100%"
 										data-style="btn-success" data-actions-box="true"
-										data-size="10" data-hide-disabled="true"
+										data-size="10" data-hide-disabled="true" th:attr="data-editabile=${#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
 										title="Seleziona una disciplina..." disabled="disabled"
+										th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
 										data-selected-text-format="count"
 										th:remove="all-but-first">
 										<optgroup class="optgroup-success" disabled="disabled"
+											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
 											th:each="professione, row: ${professioneList}"
 											th:label="${professione.nome}"
 											th:remove="all-but-first">
@@ -203,14 +182,13 @@
 									</select>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<th:block th:if="${!editabile}">
 								<div class="row" style="clear:both; padding:2px;"></div>
 								<div class="row" style="clear:both">
 									<div class="col-md-3 col-sm-3 col-xs-12"></div>
-									<div class="col-md-6 col-sm-6 col-xs-12"
-										id="accreditamento_professioni">
+									<div class="col-md-6 col-sm-6 col-xs-12" id="accreditamento_professioni">
 										<table id="professioni-discipline"
-											class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-form"
+											class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline"
 											cellspacing="0" width="100%">
 											<thead>
 												<tr>
@@ -235,62 +213,67 @@
 						<!-- FATTURATO COMPLESSIVO -->
 						<div class="item">
 							<label class="col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">5</label>
-							<label class="col-xs-11"><span th:text="#{label.fatturato_complessivo_title}">Fatturato o Costi complessivi degli
-								ultimi 3 anni (in migliaia di euro)</span></label>
+							<label class="col-xs-11">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.fatturato_complessivo_title}">Fatturato o Costi complessivi degli
+								ultimi 3 anni (in migliaia di euro)</span>
+							</label>
 						</div>
 						<!-- ANNO 1 -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno1_value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno}">2016</label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno1_value">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno}">2016</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<input id="costi_complessivi_anno1_value"
+									<input
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}" required="required"
-										class="form-control col-md-7 col-xs-12" type="text"
+										class="form-control col-md-7 col-xs-12" type="text" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
 										pattern="^\d+\.\d$" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="costi_complessivi_anno1_value_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										 th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"></label>
+							<th:block th:unless="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12" id="costi_complessivi_anno1_value">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"></div>
 						</div>
 						<!-- ANNO 2 -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno2_value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoDue}">2015</label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno2_value">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoDue}">2015</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="costi_complessivi_anno2_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$" />
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="costi_complessivi_anno1_value_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										 th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"></label>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"></div>
 						</div>
 						<!-- ANNO 3 -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno3_value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre}">2014</label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno3_value">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre}">2014</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="costi_complessivi_anno3_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$" />
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="costi_complessivi_anno3_value_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										 th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></label>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></div>
@@ -304,62 +287,67 @@
 						<!-- FATTURATO FORMAZIONE -->
 						<div class="item">
 							<label class="col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">6</label>
-							<label class="col-xs-11"><span th:text="#{label.fatturato_formazione_title}">Fatturato o Costi dedicati alla formazione del personale
-								sanitario degli ultimi 3 anni (in migliaia di euro)</span></label>
+							<label class="col-xs-11">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.fatturato_formazione_title}">Fatturato o Costi dedicati alla formazione del personale
+								sanitario degli ultimi 3 anni (in migliaia di euro)</span>
+							</label>
 						</div>
 						<!-- ANNO 1 -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno1_value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoUno}">2016</label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno1_value">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoUno}">2016</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="costi_formazione_anno1_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$" />
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="costi_formazione_anno1_value_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										 th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"></label>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"></div>
 						</div>
 						<!-- ANNO 2 -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno2_value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoDue}">2015</label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno2_value">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoDue}">2015</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="costi_formazione_anno2_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$" />
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"/>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="costi_formazione_anno1_value_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										 th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"></label>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"></div>
 						</div>
 						<!-- ANNO 3 -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno3_value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre}">2014</label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno3_value">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre}">2014</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="costi_formazione_anno3_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$"/>
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="costi_formazione_anno3_value_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										 th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></label>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></div>
@@ -373,50 +361,51 @@
 						<!-- NUMERO DIPENDENTI -->
 						<div class="item">
 							<label class="col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">7</label>
-							<label class="col-xs-11"><span  th:text="#{label.numero_dipendenti_title}">Numero dipendenti dedicati alla
-								formazione</span><span class="required">*</span></label>
+							<label th:class="${editabile ? '' : 'label-show'}" class="col-xs-11">
+								<span  th:text="#{label.numero_dipendenti_title}">Numero dipendenti dedicati alla formazione</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
 						</div>
 						<!-- TEMPO INDETERMINATO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')} ? 'bad'">
-							<label th:text="#{label.tempo_indeterminato}"
-									class="control-label col-md-4 col-sm-4 col-xs-12"
-									for="tempo_indeterminato">Tempo indeterminato</label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12"
-									id="tempo_indeterminato">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="tempo_indeterminato">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.tempo_indeterminato}">Tempo indeterminato</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12" id="tempo_indeterminato">
 									<input id="tempo_indeterminato_value" th:field="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"
 										required="required"	class="form-control col-md-7 col-xs-12" type="text"
-										pattern="numeric" />
+										pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="tempo_indeterminato_value" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										 th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></label>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></div>
 						</div>
 						<!-- ALTRO PERSONALE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')} ? 'bad'">
-							<label th:text="#{label.altro_personale}"
-								class="control-label col-md-4 col-sm-4 col-xs-12"
-								for="altro_personale">Altro personale</label>
-							<th:block th:if="${editabile and #lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="altro_personale">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.altro_personale}">Altro personale</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12" id="altro_personale">
 									<input id="altro_personale_value" th:field="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"
 										required="required"	class="form-control col-md-7 col-xs-12" type="text"
-										pattern="numeric" />
+										pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="altro_personale_value" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										 th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></label>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
 						</div>
+
+						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 3 (ORGANIGRAMMA) -->
 						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>

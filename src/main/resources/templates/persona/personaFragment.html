@@ -36,34 +36,42 @@
 						<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
 									${personaWrapper.persona.componenteComitatoScientifico}"
 							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12"
-								for="isCoordinatore_comitato"><span th:text="#{label.is_coordinatore}">Inserisci come Coordinatore del Comitato Scientifico</span></label>
-							<div class="col-md-4 col-sm-4 col-xs-12">
-								<div class="checkbox">
-									<input id="isCoordinatore_comitato" name="isCoordinatore_comitato"
-										class="flat" type="checkbox" th:field="${personaWrapper.persona.coordinatoreComitatoScientifico}" th:disabled="${!editabile or #lists.isEmpty(personaWrapper.idEditabili)}" />
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="isCoordinatore_comitato">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="${editabile ? #messages.msg('label.is_coordinatore') : #messages.msg('label.inserito_come_coordinatore')}">Inserisci come Coordinatore del Comitato Scientifico</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<div class="checkbox">
+										<input id="isCoordinatore_comitato" name="isCoordinatore_comitato"
+											class="flat" type="checkbox" th:field="${personaWrapper.persona.coordinatoreComitatoScientifico}" th:disabled="${#lists.isEmpty(personaWrapper.idEditabili)}" />
+									</div>
 								</div>
-							</div>
+							</th:block>
+							<th:block th:unless="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<div class="value" th:text="${personaWrapper.persona.coordinatoreComitatoScientifico ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+								</div>
+							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')}" class="alert" th:errors="${personaWrapper.persona.coordinatoreComitatoScientifico}"></div>
 						</div>
 
 						<!-- COGNOME -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">1</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="cognome_persona"><span th:text="#{label.cognome}">Cognome</span> <span	class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(personaWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cognome_persona">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cognome}">Cognome</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<input id="cognome_persona"	name="cognome_persona"
+									<input id="cognome_persona"	name="cognome_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, counter)}"
 										required="required"	class="form-control col-md-7 col-xs-12"
 										type="text" th:field="${personaWrapper.persona.anagrafica.cognome}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="cognome_persona_disabled"
-										class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${personaWrapper.persona.anagrafica.cognome}"></label>
+									<div class="value" th:text="${personaWrapper.persona.anagrafica.cognome}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.cognome}"></div>
@@ -72,19 +80,20 @@
 						<!-- NOME -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">2</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="cognome_persona"><span th:text="#{label.nome}">Nome</span> <span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(personaWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cognome_persona">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.nome}">Nome</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<input id="nome_persona" name="nome_persona"
+									<input id="nome_persona" name="nome_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, counter)}"
 										required="required"	class="form-control col-md-7 col-xs-12"
 										type="text" th:field="${personaWrapper.persona.anagrafica.nome}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="nome_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										 th:text="${personaWrapper.persona.anagrafica.nome}"></label>
+									<div class="value" th:text="${personaWrapper.persona.anagrafica.nome}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.nome}"></div>
@@ -93,19 +102,20 @@
 						<!-- CODICE FISCALE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">3</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="codiceFiscale_persona"><span th:text="#{label.codice_fiscale}">Codice Fiscale</span> <span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(personaWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codiceFiscale_persona">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.codice_fiscale}">Codice Fiscale</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<input id="codiceFiscale_persona" name="codiceFiscale_persona"
+									<input id="codiceFiscale_persona" name="codiceFiscale_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, counter) or personaWrapper.isLookup}"
 										required="required"	class="form-control col-md-7 col-xs-12"
-										type="text" th:field="${personaWrapper.persona.anagrafica.codiceFiscale}" th:disabled="${personaWrapper.isLookup}" />
+										type="text" th:field="${personaWrapper.persona.anagrafica.codiceFiscale}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="codiceFiscale_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${personaWrapper.persona.anagrafica.codiceFiscale}"></label>
+									<div class="value" th:text="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
@@ -113,24 +123,21 @@
 
 						<!-- CHECKBOX FLAG STRANIERO -->
 						<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
-									${personaWrapper.persona.componenteComitatoScientifico}"
-							class="item form-group">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12"
-								for="isStraniero_persona"><span th:text="#{label.cf_straniero}">Ha un codice fiscale non italiano</span></label>
-							<th:block th:if="${editabile and #lists.contains(personaWrapper.idEditabili, counter)}">
+									${personaWrapper.persona.componenteComitatoScientifico}" class="item form-group">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="isStraniero_persona">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cf_straniero}">Ha un codice fiscale non italiano</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<div class="checkbox">
-										<input id="isStraniero_persona" name="isStraniero_persona"
+										<input id="isStraniero_persona" name="isStraniero_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, counter)}"
 											class="flat" type="checkbox" th:field="${personaWrapper.persona.anagrafica.straniero}" />
 									</div>
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<div class="checkbox">
-										<input id="isStraniero_persona" name="isStraniero_persona" disabled="disabled"
-											class="flat" type="checkbox" th:field="${personaWrapper.persona.anagrafica.straniero}" />
-									</div>
+									<div class="value" th:text="${personaWrapper.persona.anagrafica.straniero ? #messages.msg('label.sì') : #messages.msg('label.no')}">Sì</div>
 								</div>
 							</th:block>
 						</div>
@@ -138,19 +145,20 @@
 						<!-- TELEFONO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">4</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="telefono_persona"><span th:text="#{label.telefono}">Telefono</span> <span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(personaWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="telefono_persona">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.telefono}">Telefono</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<input id="telefono_persona" name="telefono_persona"
+									<input id="telefono_persona" name="telefono_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, counter)}"
 										required="required"	class="form-control col-md-7 col-xs-12"
 										type="tel" th:field="${personaWrapper.persona.anagrafica.telefono}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="telefono_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${personaWrapper.persona.anagrafica.telefono}"></label>
+									<div class="value" th:text="${personaWrapper.persona.anagrafica.telefono}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.telefono}"></div>
@@ -163,19 +171,20 @@
 										${personaWrapper.persona.responsabileQualita}"
 							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">5</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="cellulare_persona"><span th:text="#{label.cellulare}">Cellulare</span> <span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(personaWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cellulare_persona">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cellulare}">Cellulare</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<input id="cellulare_persona" name="cellulare_persona"
+									<input id="cellulare_persona" name="cellulare_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, counter)}"
 										required="required"	class="form-control col-md-7 col-xs-12"
 										type="tel" th:field="${personaWrapper.persona.anagrafica.cellulare}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="cellulare_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${personaWrapper.persona.anagrafica.cellulare}"></label>
+									<div class="value" th:text="${personaWrapper.persona.anagrafica.cellulare}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.cellulare}"></div>
@@ -184,19 +193,20 @@
 						<!-- EMAIL -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">6</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="email_persona"><span th:text="#{label.email}">Email</span> <span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(personaWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="email_persona">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.email}">Email</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<input id="email_persona" name="email_persona"
+									<input id="email_persona" name="email_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, counter)}"
 										required="required"	class="form-control col-md-7 col-xs-12"
 										type="email" th:field="${personaWrapper.persona.anagrafica.email}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="email_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${personaWrapper.persona.anagrafica.email}"></label>
+									<div class="value" th:text="${personaWrapper.persona.anagrafica.email}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.email}"></div>
@@ -207,19 +217,20 @@
 									${personaWrapper.persona.delegatoLegaleRappresentante}"
 							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">7</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="pec_persona"><span th:text="#{label.posta_elettronica_certificata}">Posta elettronica certificata (PEC)</span> <span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(personaWrapper.idEditabili, counter)}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="pec_persona">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.posta_elettronica_certificata}">Posta elettronica certificata (PEC)</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<input id="pec_persona" name="pec_persona"
+									<input id="pec_persona" name="pec_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, counter)}"
 										required="required"	class="form-control col-md-7 col-xs-12"
 										type="email" th:field="${personaWrapper.persona.anagrafica.pec}" />
 								</div>
 							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
+							<th:block th:unless="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="pec_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${personaWrapper.persona.anagrafica.pec}"></label>
+									<div class="value" th:text="${personaWrapper.persona.anagrafica.pec}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.pec}"></div>
@@ -232,8 +243,11 @@
 									${personaWrapper.persona.responsabileQualita}"
 							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.professione')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">8</label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11"
-								for="professione_persona"><span th:text="#{label.professione}">Professione</span><span class="required">*</span></label>
+							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="professione_persona">
+								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.professione}">Professione</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
 		                        	<select id="professione_persona" class="selectpicker"
 										data-width="100%" data-style="btn-primary" data-actions-box="true"
@@ -245,24 +259,30 @@
 											th:value="${professione.id}" th:text="${professione.nome}">Professione selezionata</option>
 									</select>
 							  	</div>
+							</th:block>
+							<th:block th:unless="${editabile}">
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<div class="value" th:text="${personaWrapper.persona.professione.nome}"></div>
+								</div>
+							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.professione')}" class="alert" th:errors="${personaWrapper.persona.professione}"></div>
 						</div>
 
 						<!-- ALLEGATO 1 (ATTO DI NOMINA) -->
 						<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}">
-							<div class="divider-dashed"></div>
+							<div th:if="${editabile}" class="divider-dashed"></div>
 							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, attoNomina, ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
 						</div>
 
 						<!-- ALLEGATO 2 (CURRICULUM VITAE) -->
 						<div th:unless="${personaWrapper.persona.legaleRappresentante}">
-							<div class="divider-dashed"></div>
+							<div th:if="${editabile}" class="divider-dashed"></div>
 							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${counter != null ? ++counter : null}, null, true, ${editabile})"></th:block>
 						</div>
 
 						<!-- ALLEGATO 3 (DELEGA) -->
 						<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}">
-							<div class="divider-dashed"></div>
+							<div th:if="${editabile}" class="divider-dashed"></div>
 							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, delega, ${counter != null ? ++counter : null}, null, true, ${editabile})"></th:block>
 						</div>
 					</form>
