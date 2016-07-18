@@ -18,7 +18,7 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 		super(account.getUsername(),account.getPassword(),account.isEnabled(),true,true,!account.isLocked(),auth);
 		this.account = account;
 	}
-
+	
 	public String getProfile(){
 		String result = "[";
 
