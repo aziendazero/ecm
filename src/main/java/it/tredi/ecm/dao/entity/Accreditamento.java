@@ -59,8 +59,8 @@ public class Accreditamento extends BaseEntity{
 	private List<Integer> idEditabili = new ArrayList<Integer>();
 	private boolean editabile = false; 
 	
-	@Column(name="anno_piano_formativo")
-	private Integer pianoFormativo;
+	@OneToOne
+	private PianoFormativo pianoFormativo;
 	
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoEnum tipoDomanda){
@@ -69,7 +69,6 @@ public class Accreditamento extends BaseEntity{
 		for (int i = 0; i<100; i++)
 			idEditabili.add(new Integer(i));
 		editabile = true;
-		pianoFormativo = new Integer(0);
 	}
 	
 	public boolean isProvvisorio(){
@@ -91,7 +90,7 @@ public class Accreditamento extends BaseEntity{
 	}
 	
 	public boolean hasPianoFormativo(){
-		return (pianoFormativo!=null && pianoFormativo.intValue() != 0);
+		return pianoFormativo.isNew();
 	}
 	
 	@Override

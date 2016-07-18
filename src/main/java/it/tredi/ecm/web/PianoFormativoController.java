@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
@@ -28,7 +29,7 @@ import it.tredi.ecm.web.bean.PianoFormativoWrapper;
 public class PianoFormativoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(PianoFormativoController.class);
 	private final String NEW = "evento/pianoFormativoNew";
-	private final String EDITPIANO = "evento/pianoFormativoEdit";
+	private final String EDIT = "evento/pianoFormativoEdit";
 	private final String SHOW = "evento/pianoFormativoShow";
 	private final String LIST = "evento/pianoFormativoList";
 
@@ -48,7 +49,7 @@ public class PianoFormativoController {
 	public String newPianoFormativo(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/new"));
 		try{
-			return goToNew(model, preparePianoFormativoWrapper(providerId));
+			return goToNew(model, preparePianoFormativoWrapper(new PianoFormativo(), providerId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -70,8 +71,10 @@ public class PianoFormativoController {
 				model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				return NEW;
 			}else{
-				pianoFormativoService.create(wrapper.getProviderId(), wrapper.getAnnoPianoFormativo());
-				return EDITPIANO;
+				PianoFormativo pianoFormativo = pianoFormativoService.create(wrapper.getProviderId(), wrapper.getAnnoPianoFormativo());
+				redirectAttrs.addAttribute("providerId", providerId);
+				redirectAttrs.addAttribute("pianoFormativoId", pianoFormativo.getId());
+				return "redirect: /provider/{providerId}/pianoFormativo/{pianoFormativoId}/edit";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/save"),ex);
@@ -89,7 +92,8 @@ public class PianoFormativoController {
 	public String editPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/edit"));
 		try{
-			return EDITPIANO;
+			goToEdit(model, preparePianoFormativoWrapper(pianoFormativoService.getPianoFormativo(pianoFormativoId), providerId));
+			return EDIT;
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -158,9 +162,15 @@ public class PianoFormativoController {
 		return NEW;
 	}
 	
-	private PianoFormativoWrapper preparePianoFormativoWrapper(Long providerId){
+	private String goToEdit(Model model, PianoFormativoWrapper pianoFormativoWrapper){
+		model.addAttribute("pianoFormativoWrapper", pianoFormativoWrapper);
+		return EDIT;
+	}
+	
+	private PianoFormativoWrapper preparePianoFormativoWrapper(PianoFormativo pianoFormativo, Long providerId){
 		PianoFormativoWrapper wrapper = new PianoFormativoWrapper();
 		
+		wrapper.setPianoFormativo(pianoFormativo);
 		wrapper.setProviderId(providerId);
 		wrapper.setAnniDisponibiliList(getAnniDisponibiliList());
 		
@@ -172,8 +182,6 @@ public class PianoFormativoController {
 		Set<Integer> anniDisponibiliList = new HashSet<Integer>();
 		anniDisponibiliList.add(new Integer(annoCorrente));
 		anniDisponibiliList.add(new Integer(annoCorrente + 1));
-		anniDisponibiliList.add(new Integer(annoCorrente + 2));
-		anniDisponibiliList.add(new Integer(annoCorrente + 3));
 		return anniDisponibiliList;
 	}
 	

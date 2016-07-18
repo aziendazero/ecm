@@ -10,6 +10,7 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
@@ -73,7 +74,7 @@ public class AccreditamentoWrapper {
 	private boolean sezione3Stato;
 
 	//Piano Formativo
-	private Set<Evento> listaEventi = new HashSet<Evento>();
+	private PianoFormativo pianoFormativo;
 
 	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider){
 		//TODO migliorare la logica per evitare di fare troppi if
@@ -197,7 +198,7 @@ public class AccreditamentoWrapper {
 
 	//ci sono eventi inseriti nel piano formativo
 	private boolean isPianoFormativoCompleto(){
-		return (listaEventi != null && !listaEventi.isEmpty());
+		return !pianoFormativo.getEventi().isEmpty();
 	}
 	
 	public boolean isCanInsertEventoInPianoFormativo(){

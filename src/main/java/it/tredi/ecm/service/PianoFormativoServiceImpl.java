@@ -33,7 +33,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 
 	@Override
 	@Transactional
-	public void create(Long providerId, Integer annoPianoFormativo) {
+	public PianoFormativo create(Long providerId, Integer annoPianoFormativo) {
 		LOGGER.debug(Utils.getLogMessage("Inserimento Piano Formativo Anno " + annoPianoFormativo + " del Provider: " + providerId));
 		Provider provider = providerService.getProvider();
 		PianoFormativo pianoFormativo = new PianoFormativo();
@@ -41,6 +41,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		pianoFormativo.setProvider(provider);
 		pianoFormativoRepository.save(pianoFormativo);
 		//TODO calcolare la data entro la quale il piano è modificabile
+		return pianoFormativo;
 	}
 	
 	@Override

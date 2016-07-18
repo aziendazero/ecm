@@ -42,6 +42,10 @@ public class PianoFormativo extends BaseEntity{
 			evento.setPianoFormativo(this.annoPianoFormativo);
 	}
 	
+	public void removeEvento(long eventoId){
+		
+	}
+	
 	public boolean isPianoModificabile(){
 		if(isEditabile())
 			return true;

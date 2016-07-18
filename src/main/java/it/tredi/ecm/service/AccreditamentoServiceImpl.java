@@ -177,11 +177,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		
 		accreditamentoRepository.save(accreditamento);
 		
-		Set<Evento> eventiNelPianoFormativo = eventoService.getAllEventiFromProviderInPianoFormativo(accreditamento.getProvider().getId(), accreditamento.getPianoFormativo());
+		Set<Evento> eventiNelPianoFormativo = accreditamento.getPianoFormativo().getEventi();
 		for(Evento e : eventiNelPianoFormativo)
 			e.getIdEditabili().clear();
 		
-		//accreditamento.getPianoFormativo().setEditabile(false);
+		accreditamento.getPianoFormativo().setEditabile(false);
 	}
 	
 	@Override
@@ -190,18 +190,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Inserimento piano formativo per la domanda di Accreditamento " + accreditamentoId));
 		
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
+		PianoFormativo pianoFormativo = new PianoFormativo();
+		pianoFormativo.setEditabile(true);
+		pianoFormativo.setAnnoPianoFormativo(LocalDate.now().getYear());
+		pianoFormativo.setProvider(accreditamento.getProvider());
+		accreditamento.setPianoFormativo(pianoFormativo);
 		accreditamento.getIdEditabili().clear();
-		accreditamento.setPianoFormativo(LocalDate.now().getYear());
 		accreditamentoRepository.save(accreditamento);
-		
-//		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
-//		PianoFormativo pianoFormativo = new PianoFormativo();
-//		pianoFormativo.setEditabile(true);
-//		pianoFormativo.setAnnoPianoFormativo(LocalDate.now().getYear());
-//		pianoFormativo.setProvider(accreditamento.getProvider());
-//		accreditamento.setPianoFormativo(pianoFormativo);
-//		accreditamento.getIdEditabili().clear();
-		
 	}
 	
 	@Override

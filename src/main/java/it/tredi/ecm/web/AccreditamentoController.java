@@ -268,8 +268,6 @@ public class AccreditamentoController {
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
 
 		//PIANO FORMATIVO
-		if(accreditamento.getPianoFormativo() != null)
-			accreditamentoWrapper.setListaEventi(eventoService.getAllEventiFromProviderInPianoFormativo(providerId, accreditamento.getPianoFormativo()));
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
@@ -333,10 +331,6 @@ public class AccreditamentoController {
 		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
 
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
-
-		//PIANO FORMATIVO
-		if(accreditamento.getPianoFormativo() != null)
-			accreditamentoWrapper.setListaEventi(eventoService.getAllEventiFromProviderInPianoFormativo(providerId, accreditamento.getPianoFormativo()));
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;

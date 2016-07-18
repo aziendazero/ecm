@@ -7,7 +7,7 @@ import it.tredi.ecm.dao.entity.PianoFormativo;
 public interface PianoFormativoService {
 
 	public boolean exist(Long providerId, Integer annoPianoFormativo);
-	public void create(Long providerId, Integer annoPianoFormativo);
+	public PianoFormativo create(Long providerId, Integer annoPianoFormativo);
 	public void save(PianoFormativo pianoFormativo);
 	
 	public PianoFormativo getPianoFormativo(Long pianoFormativoId);
