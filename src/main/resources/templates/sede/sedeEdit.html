@@ -17,7 +17,6 @@
 							<th:block th:if="${!#lists.isEmpty(sedeWrapper.idEditabili) and !((#lists.size(sedeWrapper.idEditabili) == 1) and coincide)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formSede" type="submit"></button>
 								<button class="btn btn-primary pull-right" onclick="loadSedeLegale()" th:if="${sedeWrapper.tipologiaSede == 'SedeOperativa'}" th:text="#{label.coincide_con_sede_legale}"></button>
-								<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/provider/${sedeWrapper.providerId}/sede/new?tipologiaSede=${sedeWrapper.tipologiaSede}|}"></a>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/edit|}"></a>
 						</div>
