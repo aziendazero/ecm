@@ -13,8 +13,9 @@ import it.tredi.ecm.dao.entity.Provider;
 
 @Repository
 public interface ProviderRepository extends CrudRepository<Provider, Long> {
-	//TODO @EntityGraph al momenot non funziona...sarebbe utile investigare per capire perchè
-	@EntityGraph(value = "graph.provider.files", type = EntityGraphType.FETCH)
+	//TODO @EntityGraph al momento non funziona...sarebbe utile investigare per capire perchè
+	//@EntityGraph(value = "graph.provider.files", type = EntityGraphType.FETCH)
+	@EntityGraph(value = "graph.provider.minimal", type = EntityGraphType.FETCH)
 	public Provider findOne(Long id);
 	
 	public Provider findOneByAccountId(Long id);
@@ -27,4 +28,7 @@ public interface ProviderRepository extends CrudRepository<Provider, Long> {
 
 	@Query("SELECT p.account.id FROM Provider p WHERE p.id = :providerId")
 	public Long getAccountIdById(@Param("providerId")Long providerId);
+	
+	@Query("SELECT p.canInsertPianoFormativo FROM Provider p WHERE p.id = :providerId")
+	public boolean canInsertPianoFormativo(@Param("providerId")Long providerId);
 }

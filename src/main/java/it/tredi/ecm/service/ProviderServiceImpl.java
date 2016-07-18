@@ -67,7 +67,7 @@ public class ProviderServiceImpl implements ProviderService {
 		LOGGER.info("Retrieving Provider (" + codiceFiscale +")");
 		return providerRepository.findOneByCodiceFiscale(codiceFiscale);
 	}
-	
+
 	@Override
 	public Provider getProviderByPartitaIva(String partitaIva) {
 		LOGGER.info("Retrieving Provider (" + partitaIva +")");
@@ -93,19 +93,19 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 		providerRepository.save(provider);
 	}
-	
+
 	@Override
 	public Set<String> getFileTypeUploadedByProviderId(Long id) {
 		LOGGER.debug("Recupero i tipi di file presenti per il provider: " + id);
 		return providerRepository.findAllFileTipoByProviderId(id);
 	}
-	
+
 	@Override
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper() {
 		ProviderRegistrationWrapper providerRegistrationWrapper = new ProviderRegistrationWrapper();
 		Provider provider = new Provider();
 		providerRegistrationWrapper.setProvider(provider);
-		
+
 		if(provider.isNew()){
 			File delega = new File();
 			providerRegistrationWrapper.setDelega(delega);
@@ -117,19 +117,19 @@ public class ProviderServiceImpl implements ProviderService {
 				richiedente = new Persona(Ruolo.RICHIEDENTE);
 				provider.addPersona(richiedente);
 			}
-			
+
 			Persona legale = personaService.getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE, provider.getId());
 			if(legale == null){
 				legale = new Persona(Ruolo.LEGALE_RAPPRESENTANTE);
 				provider.addPersona(legale);
 			}
-			
+
 			File delega = new File();
 			providerRegistrationWrapper.setDelega(delega);
 			providerRegistrationWrapper.setRichiedente(richiedente);
 			providerRegistrationWrapper.setLegale(legale);
 		}
-		
+
 		return providerRegistrationWrapper;
 	}
 
@@ -142,32 +142,37 @@ public class ProviderServiceImpl implements ProviderService {
 			richiedente.setRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
 		Persona legale = providerRegistrationWrapper.getLegale();
 		File delegaRichiedente = providerRegistrationWrapper.getDelega();
-		
+
 		if(provider.getAccount().getProfiles().isEmpty()){
 			//assegno profilo PROVIDER TODO 
 			Optional<Profile> providerProfile = profileAndRoleService.getProfileByName(Costanti.PROFILO_PROVIDER);
 			if(providerProfile.isPresent())
 				provider.getAccount().getProfiles().add(providerProfile.get());
 		}
-		
+
 		provider.setStatus(StatusProvider.INSERITO);
 		save(provider);
-		
+
 		//TODO Delegato consentito solo per alcuni tipi di Provider
 		if(providerRegistrationWrapper.isDelegato()){
 			delegaRichiedente.setTipo(FileEnum.FILE_DELEGA);
 			fileService.save(delegaRichiedente);
 			richiedente.addFile(delegaRichiedente);
 		}
-		
+
 		provider.addPersona(richiedente);
 		personaService.save(richiedente);
 		provider.addPersona(legale);
 		personaService.save(legale);
 	}
-	
+
 	@Override
 	public Long getAccountIdForProvider(Long providerId) {
 		return providerRepository.getAccountIdById(providerId);
+	}
+
+	@Override
+	public boolean canInsertPianoFormativo(Long providerId) {
+		return providerRepository.canInsertPianoFormativo(providerId);
 	}
 }

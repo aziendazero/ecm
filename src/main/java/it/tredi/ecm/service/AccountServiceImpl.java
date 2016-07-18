@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 import javax.transaction.Transactional;
@@ -100,6 +101,7 @@ public class AccountServiceImpl implements AccountService{
 		try{
 			String firstPassword = setNewRandomPassword(user);
 			sendRegistrationEmail(user, firstPassword);
+			user.setDataScadenzaPassword(LocalDate.now());
 		}catch (Exception ex){
 			LOGGER.error("Impossibile creare l'utente " + user.getUsername(), ex);
 			throw ex;
