@@ -79,6 +79,7 @@ public class EventoController {
 	 * */
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/evento/new")
+	//@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/new")
 	public String newEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @RequestParam(name="pianoFormativo", required = true) int pianoFormativo,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/new"));
@@ -97,6 +98,7 @@ public class EventoController {
 	 * */
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/evento/{id}/edit")
+	//@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/edit")
 	public String editEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/" + id + "/edit"));
@@ -152,6 +154,7 @@ public class EventoController {
 	 */
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/evento/{id}/show")
+	//@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/show")
 	public String showEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/" + id + "/show"));
 		try {
