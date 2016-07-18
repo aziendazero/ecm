@@ -126,11 +126,12 @@ body.nav-md .container.body .right_col.main{
 .allegato-label {
 	overflow: hidden;
 	text-overflow: ellipsis;
-	margin-top: 3px;
+	margin-top: 8px;
 	text-align: left;
+	min-height: 30px;;
 }
 
-table.datatable-responsive-form thead .sorting_asc:after {
+table.datatable-responsive-discipline thead .sorting_asc:after {
 	visibility: hidden;
 }
 
@@ -500,6 +501,13 @@ h2 {
 	padding-top: 8px;
 	padding-left: 10px;
 	padding-right: 10px;
+	min-height: 30px;
+	font-size: 17px;
+	display: block;
+}
+
+.label-show {
+	font-size: 17px;
 }
 
 .checkbox label, .radio label {
@@ -555,3 +563,20 @@ h2 {
 .triple {
 	width: 32.5%;
 }
+
+.danger {
+	color: #d9534f;
+	text-decoration: underline;
+}
+
+.row-group {
+	background-color: #337ab7 !important;
+	color: #fff;
+	opacity: 0.8;
+    filter: alpha(opacity=80);
+	font-weight: bold;
+	font-style: italic;
+}
+
+
+
