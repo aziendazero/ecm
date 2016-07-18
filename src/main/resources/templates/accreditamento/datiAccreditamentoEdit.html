@@ -25,6 +25,7 @@
 				</div>
 			</div>
 			<script th:inline="javascript">
+			/*<![CDATA[*/
 				//cambia la stringa per i pulsanti e il contatore
 				$(document).ready(function() {
 					$('select').selectpicker({
@@ -60,7 +61,7 @@
 						}
 					});
 					//decide se disabilitare/abilitare tutta la select
-					if (almenoUna) {
+					if (almenoUna && ($('#discipline').attr('data-editabile') === 'true')) {
 						$('#discipline').prop('disabled', false);
 					} else {
 						$('#discipline').prop('disabled', true);
@@ -94,6 +95,7 @@
 					$('button[data-id="professioni"]').prop('disabled', false);
 					$('button[data-id="discipline"]').prop('disabled', false);
 				});
+			/*]]>*/
 			</script>
 		</div>
 	</div>
