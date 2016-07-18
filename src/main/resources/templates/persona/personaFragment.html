@@ -234,20 +234,17 @@
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">8</label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11"
 								for="professione_persona"><span th:text="#{label.professione}">Professione</span><span class="required">*</span></label>
-							<th:block th:if="${editabile and #lists.contains(personaWrapper.idEditabili, counter)}">
 								<div class="col-md-4 col-sm-4 col-xs-12">
-									<select id="professione_persona" class="form-control required" th:field="${personaWrapper.persona.professione}">
-		                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
-		                          			<option th:each="professione : ${professioneList}" th:value="${professione.id}" th:text="${professione.nome}">Choose option</option>
-		                        	</select>
+		                        	<select id="professione_persona" class="selectpicker"
+										data-width="100%" data-style="btn-primary" data-actions-box="true"
+										data-size="10" title="Seleziona una professione..."
+										th:remove="all-but-first"
+										th:field="${personaWrapper.persona.professione}"
+										th:disabled="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
+										<option th:each="professione, row: ${professioneList}"
+											th:value="${professione.id}" th:text="${professione.nome}">Professione selezionata</option>
+									</select>
 							  	</div>
-							</th:block>
-							<th:block th:if="${!editabile or !#lists.contains(personaWrapper.idEditabili, counter)}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
-									<label id="professione_persona_disabled" class="form-control form-disabled-text left-align col-md-7 col-xs-12"
-										th:text="${personaWrapper.persona.professione.nome}"></label>
-								</div>
-							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.professione')}" class="alert" th:errors="${personaWrapper.persona.professione}"></div>
 						</div>
 

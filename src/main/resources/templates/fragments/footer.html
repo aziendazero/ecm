@@ -181,100 +181,6 @@
 				"ordering" : false,
 			});
 
-			$('.datatable-responsive-provider-edit').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-				"columnDefs": [ {
-					"targets": 1,
-					"width": "1px",
-					"sClass": "center"
-				} ],
-			});
-
-			$('.datatable-responsive-provider-show').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-			});
-
-			$('.datatable-responsive-responsabili-edit').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-				"columnDefs": [ {
-					"targets": 1,
-					"width": "1px",
-					"sClass": "center"
-				} ],
-			});
-
-			$('.datatable-responsive-responsabili-show').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-			});
-
-			$('.datatable-responsive-datiAccreditamento-edit').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-				"columnDefs": [ {
-					"targets": 1,
-					"width": "1px",
-					"sClass": "center"
-				} ],
-			});
-			$('.datatable-responsive-datiAccreditamento-show').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false
-			});
-
-			$('.datatable-responsive-componentiComitato-edit').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-				"columnDefs": [ {
-					"targets": 4,
-					"width": "1px",
-					"sClass": "center"
-				} ],
-			});
-
-			$('.datatable-responsive-componentiComitato-show').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-			});
-
-			$('.datatable-responsive-allegati-edit').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-				"columnDefs": [ {
-					"targets": 1,
-					"width": "1px",
-					"sClass": "center"
-				} ],
-			});
-
-			$('.datatable-responsive-allegati-show').DataTable({
-				"bFilter" : false,
-				"bInfo" : false,
-				"bPaginate" : false,
-				"ordering" : false,
-			});
-
 			$('.datatable-responsive-pianoFormativo-edit').DataTable({
 				"bFilter" : false,
 				"bInfo" : false,
@@ -337,6 +243,12 @@
 			                   	{"targets": [ '_all' ], "orderable": false, "width": "1px" },
 			                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
 			                  ]
+			});
+
+			$('.datatable-responsive-search-anagrafica').DataTable({
+				"bInfo" : false,
+				"bPaginate" : false,
+			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
 			});
 
 			$('.datatable-responsive-mypay').DataTable({

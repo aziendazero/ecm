@@ -96,7 +96,7 @@ var validator = (function($){
                 }
                 return true;
             }
-            if( !skip && lengthRange && a.length < lengthRange[0] ){
+            if( lengthRange && a.length < lengthRange[0] ){
                 alertTxt = message.min;
                 return false;
             }
@@ -134,15 +134,18 @@ var validator = (function($){
                     case 'phone' :
                         regex = /^\+?([0-9]|[-|' '])+$/i;
                         break;
-                    case 'codiceFiscale' : 
+                    case 'codiceFiscale' :
                     	regex = /^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]$/;
                         break;
-                    case 'partitaIva' : 
+                    case 'partitaIva' :
                     	regex = /^[0-9]{11}$/;
                         break;
-                    case 'codiceFiscale|partitaIva' : 
+                    case 'codiceFiscale|partitaIva' :
                     	regex = /(^[0-9]{11}$|^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]$)/;
                         break;
+                    case 'passwordEcm' :
+                    	regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]/;
+                    	break;
                     default :
                         regex = pattern;
                 }

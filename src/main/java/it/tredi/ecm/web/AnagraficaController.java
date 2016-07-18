@@ -30,17 +30,17 @@ public class AnagraficaController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnagraficaController.class);
 	private final String EDIT = "/anagrafica/anagraficaEdit";
 	private final String LIST = "/anagrafica/anagraficaList";
-	private final String URL_LIST = "provider/{providerId}/anagrafica/list";
-	
+	private final String URL_LIST = "/provider/anagrafica/list";
+
 	@Autowired private AnagraficaService anagraficaService;
 	@Autowired private ProviderService providerService;
 	@Autowired private AnagraficaValidator anagraficaValidator;
-	
+
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
     }
-	
+
 	@ModelAttribute("anagraficaWrapper")
 	public AnagraficaWrapper getAnagraficaPreRequest(@RequestParam(value="editId",required = false) Long id){
 		if(id != null)
@@ -49,23 +49,23 @@ public class AnagraficaController {
 	}
 
 	/**
-	 * Lista anagrafiche 
+	 * Lista anagrafiche
 	 **/
 	@RequestMapping("/provider/anagrafica/list")
-	public String showAnagraficaList(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+	public String showAnagraficaList(Model model, RedirectAttributes redirectAttrs){
 		try {
-			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/anagrafica/list"));
+			LOGGER.info(Utils.getLogMessage("GET /provider/anagrafica/list"));
 			Provider provider = providerService.getProvider();
 			model.addAttribute("anagraficaList", anagraficaService.getAllAnagraficheByProviderId(provider.getId()));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 			return LIST;
 		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/anagrafica/list"),ex);
+			LOGGER.error(Utils.getLogMessage("GET /provider/anagrafica/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/anagrafica/{anagraficaId}/edit")
 	public String editAnagrafica(@PathVariable Long providerId, @PathVariable Long anagraficaId, Model model, RedirectAttributes redirectAttrs){
@@ -78,14 +78,14 @@ public class AnagraficaController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping(value = "/provider/{providerId}/anagrafica/save", method = RequestMethod.POST)
-	public String saveAnagrafica(@ModelAttribute("anagraficaWrapper") AnagraficaWrapper wrapper, BindingResult result,  
+	public String saveAnagrafica(@ModelAttribute("anagraficaWrapper") AnagraficaWrapper wrapper, BindingResult result,
 									@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/{providerId}/anagrafica/save"));
 		try {
-			anagraficaValidator.validateBase(wrapper.getAnagrafica(), result, "", providerId);
+			anagraficaValidator.validateBase(wrapper.getAnagrafica(), result, "anagrafica.", providerId);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
@@ -93,7 +93,6 @@ public class AnagraficaController {
 			}else{
 				anagraficaService.save(wrapper.getAnagrafica());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.anagrafica_salvata", "success"));
-				redirectAttrs.addAttribute(providerId);
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/anagrafica/list"));
 				return "redirect:" + URL_LIST;
 			}
@@ -103,26 +102,26 @@ public class AnagraficaController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	private String goToEdit(Model model, AnagraficaWrapper wrapper){
 		model.addAttribute("anagraficaWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
-	
+
 	//utilizzato save (passa editId come hidden param)
 	private AnagraficaWrapper prepareAnagraficaWrapper(Anagrafica anagrafica){
 		return prepareAnagraficaWrapper(anagrafica, anagrafica.getProvider().getId());
 	}
-	
+
 	//utilizzato per edit e new
 	private AnagraficaWrapper prepareAnagraficaWrapper(Anagrafica anagrafica, Long providerId){
 		LOGGER.info(Utils.getLogMessage("prepareAnagraficaWrapper(" + anagrafica.getId() + "," + providerId + ") - entering"));
 		AnagraficaWrapper wrapper = new AnagraficaWrapper();
-		
+
 		wrapper.setAnagrafica(anagrafica);
 		wrapper.setProviderId(providerId);
-		
+
 		LOGGER.info(Utils.getLogMessage("prepareAnagraficaWrapper(" + anagrafica.getId() + "," + providerId + ") - exiting"));
 		return wrapper;
 	}
