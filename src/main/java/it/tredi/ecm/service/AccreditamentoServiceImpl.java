@@ -28,6 +28,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AccreditamentoRepository accreditamentoRepository;
 	@Autowired private ProviderService providerService;
 	@Autowired private EventoService eventoService;
+	@Autowired private PianoFormativoService pianoFormativoService;
 	
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider() throws Exception{
@@ -194,6 +195,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		pianoFormativo.setEditabile(true);
 		pianoFormativo.setAnnoPianoFormativo(LocalDate.now().getYear());
 		pianoFormativo.setProvider(accreditamento.getProvider());
+		pianoFormativoService.save(pianoFormativo);
 		accreditamento.setPianoFormativo(pianoFormativo);
 		accreditamento.getIdEditabili().clear();
 		accreditamentoRepository.save(accreditamento);

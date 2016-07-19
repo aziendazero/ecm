@@ -171,7 +171,7 @@ public class AccreditamentoWrapper {
 		else
 			return true;
 	}
-	
+
 	//la domanda è stata compilata in tutte le sue parti (tutti i flag sono TRUE)
 	public boolean isCompleta(){
 		if(sezione1Stato && sezione2Stato && sezione3Stato)
@@ -187,7 +187,7 @@ public class AccreditamentoWrapper {
 		else
 			return false;
 	}
-	
+
 	//Invia domanda alla segreteria cambiando stato all'accreditamento e rendendo la domanda non più modificabile
 	public boolean isCanSend(){
 		if(accreditamento.isBozza() && isCompleta() && isPianoFormativoCompleto())
@@ -198,9 +198,9 @@ public class AccreditamentoWrapper {
 
 	//ci sono eventi inseriti nel piano formativo
 	private boolean isPianoFormativoCompleto(){
-		return !pianoFormativo.getEventi().isEmpty();
+		return ((accreditamento.getPianoFormativo() != null) && !accreditamento.getPianoFormativo().getEventi().isEmpty());
 	}
-	
+
 	public boolean isCanInsertEventoInPianoFormativo(){
 		return (accreditamento.hasPianoFormativo() && accreditamento.isEditabile());
 	}

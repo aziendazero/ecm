@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<!-- tabella degli eventi del pianoFormativo -->
+	<!-- parametri del fragment: boolean passato come parametro, id del provider e nome del wrapper -->
+	<th:block th:fragment="pianoFormativo(wrapper, accreditamentoId, editabile)">
+		<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
+		<div th:if="${(__${wrapper}__.pianoFormativo == null) or #lists.isEmpty(__${wrapper}__.pianoFormativo.eventi)}" th:text="#{label.nessun_evento_piano_formativo}"></div>
+
+		<table th:unless="${(__${wrapper}__.pianoFormativo == null) or #lists.isEmpty(__${wrapper}__.pianoFormativo.eventi)}" id="piano-formativo-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${editabile ? 'datatable-responsive-evento-edit' : 'datatable-responsive-accreditamento-show'}"> <!-- cambiare table accreditamento con evento in accreditamentoShow -->
+			<thead>
+				<tr>
+					<th th:text="#{label.tipologia_evento}">Tipologia dell'evento</th>
+					<th th:unless="${editabile}" th:text="#{label.stato}">Stato</th>
+					<th th:if="${editabile}" th:text="#{label.azioni}">Azioni</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="evento, row : ${__${wrapper}__.pianoFormativo.eventi}">
+					<td><a th:text="${evento.titolo}" th:href="@{|/accreditamento/${accreditamentoId}/provider/${__${wrapper}__.pianoFormativo.provider.id}/pianoFormativo/${__${wrapper}__.pianoFormativo.provider.id}/evento/${evento.id}/show|}"></a></td>
+					<th:block th:if="${editabile}">
+						<td>
+							<span style="white-space: nowrap">
+								<a th:unless="${evento.new or !__${wrapper}__.pianoFormativo.pianoModificabile}" th:href="@{|/accreditamento/${accreditamentoId}/provider/${__${wrapper}__.pianoFormativo.provider.id}/pianoFormativo/${__${wrapper}__.pianoFormativo.id}/evento/${evento.id}/delete|}" class="btn btn-table double btn-danger"><span class="fa fa-trash"></span> <span th:text="#{label.elimina}"></span></a>
+								<a th:if="${evento.new or !__${wrapper}__.pianoFormativo.pianoModificabile}" class="btn btn-table double btn-danger disabled"><span class="fa fa-trash"></span> <span th:text="#{label.elimina}"></span></a>
+								<a th:unless="${evento.new}" th:href="@{|/accreditamento/${accreditamentoId}/provider/${__${wrapper}__.pianoFormativo.provider.id}/pianoFormativo/${__${wrapper}__.pianoFormativo.id}/evento/${evento.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
+								<a th:if="${evento.new}" class="btn btn-primary btn-table double disabled"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
+							</span>
+						</td>
+					</th:block>
+					<th:block th:unless="${editabile}">
+						<td th:unless="${evento.new}">
+							<span class="fa table-icon fa-check green"></span>
+						</td>
+						<td th:if="${evento.new}">
+							<span class="fa table-icon fa-remove red"></span>
+						</td>
+					</th:block>
+				</tr>
+			</tbody>
+		</table>
+
+	</th:block>
+</body>
+</html>
