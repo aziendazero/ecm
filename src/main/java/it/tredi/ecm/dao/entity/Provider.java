@@ -101,9 +101,9 @@ public class Provider extends BaseEntity{
 	@Column(name ="can_insert_evento")
 	private boolean canInsertEvento;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "provider")
 	private Set<Pagamento> pagamenti = new HashSet<Pagamento>();
-
+	
 	/** UTILS **/
 	public void addPersona(Persona persona){
 		this.persone.add(persona);
