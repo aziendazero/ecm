@@ -172,6 +172,7 @@ public class EventoController {
 		}
 	}
 
+
 	/*
 	 * ELIMINAZIONE DI UN EVENTO IN PIANO FORMATIVO (accreditamento)
 	 * */
