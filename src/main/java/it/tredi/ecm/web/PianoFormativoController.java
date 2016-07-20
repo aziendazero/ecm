@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.PianoFormativo;
@@ -28,19 +31,21 @@ import it.tredi.ecm.web.bean.PianoFormativoWrapper;
 @Controller
 public class PianoFormativoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(PianoFormativoController.class);
-	private final String NEW = "evento/pianoFormativoNew";
-	private final String EDIT = "evento/pianoFormativoEdit";
-	private final String SHOW = "evento/pianoFormativoShow";
-	private final String LIST = "evento/pianoFormativoList";
+	private final String NEW = "pianoFormativo/pianoFormativoNew";
+	private final String EDIT = "pianoFormativo/pianoFormativoEdit";
+	private final String SHOW = "pianoFormativo/pianoFormativoShow";
+	private final String LIST = "pianoFormativo/pianoFormativoList";
 
-	@Autowired private PianoFormativoService pianoFormativoService; 
-	@Autowired private ProviderService providerService; 
+	@Autowired private PianoFormativoService pianoFormativoService;
+	@Autowired private ProviderService providerService;
+
+	@Autowired private HttpServletRequest request;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
-	
+
 	/*
 	 * CREAZIONE PIANO FORMATIVO
 	 * */
@@ -57,24 +62,23 @@ public class PianoFormativoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	/*
 	 * SALVATAGGIO PIANO FORMATIVO
 	 * */
 	@PreAuthorize("@securityAccessServiceImpl.canInsertPianoFormativo(principal,#providerId)")
-	@RequestMapping("/provider/{providerId}/pianoFormativo/save")
-	public String savePianoFormativo(@ModelAttribute("pianoFormativoWrapper") PianoFormativoWrapper wrapper, @PathVariable Long providerId,	
+	@RequestMapping(value = "/provider/{providerId}/pianoFormativo/save", method = RequestMethod.POST)
+	public String savePianoFormativo(@ModelAttribute("pianoFormativoWrapper") PianoFormativoWrapper wrapper, @PathVariable Long providerId,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/save"));
+		String referrer = request.getHeader("referer");
 		try{
-			if(pianoFormativoService.exist(wrapper.getProviderId(), wrapper.getAnnoPianoFormativo())){
-				model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-				return NEW;
+			if(pianoFormativoService.exist(wrapper.getProviderId(), wrapper.getPianoFormativo().getAnnoPianoFormativo())){
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.piano_formativo_anno_gia_inserito(${#numbers.formatInteger("+ wrapper.getPianoFormativo().getAnnoPianoFormativo() +",0)})", "error"));
+				return "redirect:"+referrer;
 			}else{
-				PianoFormativo pianoFormativo = pianoFormativoService.create(wrapper.getProviderId(), wrapper.getAnnoPianoFormativo());
-				redirectAttrs.addAttribute("providerId", providerId);
-				redirectAttrs.addAttribute("pianoFormativoId", pianoFormativo.getId());
-				return "redirect: /provider/{providerId}/pianoFormativo/{pianoFormativoId}/edit";
+				pianoFormativoService.create(wrapper.getProviderId(), wrapper.getPianoFormativo().getAnnoPianoFormativo());
+				return "redirect:"+referrer;
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/save"),ex);
@@ -83,7 +87,7 @@ public class PianoFormativoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	/*
 	 * EDIT PIANO FORMATIVO
 	 * */
@@ -101,7 +105,7 @@ public class PianoFormativoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	/*
 	 * SHOW PIANO FORMATIVO
 	 * */
@@ -119,7 +123,7 @@ public class PianoFormativoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	/*
 	 * SHOW LISTA PIANI FORMATIVI
 	 * */
@@ -130,6 +134,7 @@ public class PianoFormativoController {
 		try{
 			model.addAttribute("pianoFormativoList", pianoFormativoService.getAllPianiFormativiForProvider(providerId));
 			model.addAttribute("canInsertPianoFormativo", providerService.canInsertPianoFormativo(providerId));
+			model.addAttribute("providerId", providerId);
 			return LIST;
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/list"),ex);
@@ -138,7 +143,7 @@ public class PianoFormativoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	/*
 	 * SHOW LISTA PIANI FORMATIVI (current Provider)
 	 * */
@@ -156,27 +161,27 @@ public class PianoFormativoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	private String goToNew(Model model, PianoFormativoWrapper pianoFormativoWrapper){
 		model.addAttribute("pianoFormativoWrapper", pianoFormativoWrapper);
 		return NEW;
 	}
-	
+
 	private String goToEdit(Model model, PianoFormativoWrapper pianoFormativoWrapper){
 		model.addAttribute("pianoFormativoWrapper", pianoFormativoWrapper);
 		return EDIT;
 	}
-	
+
 	private PianoFormativoWrapper preparePianoFormativoWrapper(PianoFormativo pianoFormativo, Long providerId){
 		PianoFormativoWrapper wrapper = new PianoFormativoWrapper();
-		
+
 		wrapper.setPianoFormativo(pianoFormativo);
 		wrapper.setProviderId(providerId);
 		wrapper.setAnniDisponibiliList(getAnniDisponibiliList());
-		
+
 		return wrapper;
 	}
-	
+
 	private Set<Integer> getAnniDisponibiliList(){
 		int annoCorrente = LocalDate.now().getYear();
 		Set<Integer> anniDisponibiliList = new HashSet<Integer>();
@@ -184,5 +189,5 @@ public class PianoFormativoController {
 		anniDisponibiliList.add(new Integer(annoCorrente + 1));
 		return anniDisponibiliList;
 	}
-	
+
 }
