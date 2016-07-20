@@ -41,6 +41,7 @@ import it.tredi.ecm.dao.repository.ProviderRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.EventoService;
+import it.tredi.ecm.service.PagamentoService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
@@ -68,6 +69,7 @@ public class PianoFormativoTest {
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private EventoRepository eventoRepository;
 	@Autowired private EventoService eventoService;
+	@Autowired private PagamentoService pagamentoService;
 	
 	private Long providerId;
 	private Long accreditamentoId;
@@ -193,6 +195,7 @@ public class PianoFormativoTest {
 	}
 
 	@Test
+	@Ignore
 	public void getEventi(){
 //		Provider provider = providerService.getProvider(20L);
 //		
@@ -203,6 +206,11 @@ public class PianoFormativoTest {
 		Provider provider = datiAccreditamentoService.getDatiAccreditamento(207L).getAccreditamento().getProvider();
 		for(it.tredi.ecm.dao.entity.File f :  provider.getFiles())
 			System.out.println(f.getNomeFile());
+	}
+	
+	@Test
+	public void testPagamento(){
+		pagamentoService.getAllProviderNotPagamentoEffettuato(new Integer(2017));
 	}
 	
 }

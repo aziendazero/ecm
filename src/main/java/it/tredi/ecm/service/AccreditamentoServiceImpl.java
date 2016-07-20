@@ -18,6 +18,7 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.utils.Utils;
@@ -184,6 +185,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			e.getIdEditabili().clear();
 		
 		accreditamento.getPianoFormativo().setEditabile(false);
+		
+		accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
 	}
 	
 	@Override
