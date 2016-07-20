@@ -23,6 +23,7 @@ public class DatiAccreditamento extends BaseEntity {
 	/*** INFO RELATIVE ALLA RICHIESTA ***/
 	private String tipologiaAccreditamento;
 	@ElementCollection
+	//TODO perchè salva l'id con inizializzazione da 0????
 	private Set<ProceduraFormativa> procedureFormative = new HashSet<ProceduraFormativa>();
 	private String professioniAccreditamento;
 	

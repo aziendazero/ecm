@@ -19,10 +19,8 @@ import it.tredi.ecm.dao.repository.PersonaRepository;
 public class PersonaServiceImpl implements PersonaService {
 	private static Logger LOGGER = LoggerFactory.getLogger(PersonaServiceImpl.class);
 	
-	@Autowired
-	private PersonaRepository personaRepository;
-	@Autowired
-	private AnagraficaService anagraficaService;
+	@Autowired private PersonaRepository personaRepository;
+	@Autowired private AnagraficaService anagraficaService;
 	
 	@Override
 	public Persona getPersona(Long id) {

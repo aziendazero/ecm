@@ -17,7 +17,8 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.utils.Utils;
 
@@ -53,10 +54,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			throw new Exception("Provider non registrato");
 		}else{
 			
-			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(provider.getId(), AccreditamentoEnum.ACCREDITAMENTO_TIPO_PROVVISORIO);
+			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(provider.getId(), AccreditamentoTipoEnum.PROVVISORIO);
 			
 			if(accreditamentiAttivi.isEmpty()){
-				Accreditamento accreditamento = new Accreditamento(AccreditamentoEnum.ACCREDITAMENTO_TIPO_PROVVISORIO);
+				Accreditamento accreditamento = new Accreditamento(AccreditamentoTipoEnum.PROVVISORIO);
 				accreditamento.setProvider(provider);
 				save(accreditamento);
 				return accreditamento;
@@ -85,7 +86,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 * Restituisce tutte le domande di accreditamento che hanno una data di scadenza "attiva"
 	 * */
 	@Override
-	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(Long providerId, AccreditamentoEnum tipoDomanda) {
+	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(Long providerId, AccreditamentoTipoEnum tipoDomanda) {
 		LOGGER.debug(Utils.getLogMessage("Recupero domande di accreditamento avviate per il provider " + providerId));
 		LOGGER.debug(Utils.getLogMessage("Ricerca domande di accreditamento di tipo: " + tipoDomanda.name() + "con data di scadenza posteriore a: " + LocalDate.now()));
 		return accreditamentoRepository.findByProviderIdAndTipoDomandaAndDataScadenzaAfter(providerId, tipoDomanda, LocalDate.now());
@@ -97,7 +98,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero eventuale accreditamento attivo per il provider: " + providerId));
-		Accreditamento accreditamento = accreditamentoRepository.findOneByProviderIdAndStatoAndDataFineAccreditamentoAfter(providerId, AccreditamentoEnum.ACCREDITAMENTO_STATO_APPROVATO, LocalDate.now());
+		Accreditamento accreditamento = accreditamentoRepository.findOneByProviderIdAndStatoAndDataFineAccreditamentoAfter(providerId, AccreditamentoStatoEnum.ACCREDITATO, LocalDate.now());
 		if(accreditamento != null)
 			LOGGER.debug("Trovato accreditamento attivo: " + accreditamento.getId() + "  per il provider: " + providerId);
 		return accreditamento;
@@ -172,7 +173,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.setDataInvio(LocalDate.now());
 		accreditamento.setDataScadenza(accreditamento.getDataInvio().plusDays(180));
 		
-		accreditamento.setStato(AccreditamentoEnum.ACCREDITAMENTO_STATO_INVIATO);
+		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
 		accreditamento.getIdEditabili().clear();
 		accreditamento.setEditabile(false);
 		
@@ -220,6 +221,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public Set<Accreditamento> getAllAccreditamentiInviati(){
 		LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento inviate alla segreteria"));
-		return accreditamentoRepository.findAllByStato(AccreditamentoEnum.ACCREDITAMENTO_STATO_INVIATO);
+		return accreditamentoRepository.findAllByStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
 	}
 }

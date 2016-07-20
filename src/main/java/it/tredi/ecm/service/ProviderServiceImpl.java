@@ -15,8 +15,8 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.dao.enumlist.StatusProvider;
 import it.tredi.ecm.dao.repository.ProviderRepository;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
@@ -150,7 +150,7 @@ public class ProviderServiceImpl implements ProviderService {
 				provider.getAccount().getProfiles().add(providerProfile.get());
 		}
 
-		provider.setStatus(StatusProvider.INSERITO);
+		provider.setStatus(ProviderStatoEnum.INSERITO);
 		save(provider);
 
 		//TODO Delegato consentito solo per alcuni tipi di Provider

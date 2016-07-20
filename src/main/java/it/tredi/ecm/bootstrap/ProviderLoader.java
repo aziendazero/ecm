@@ -20,8 +20,8 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.dao.enumlist.StatusProvider;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.PersonaRepository;
@@ -104,7 +104,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			provider.setNaturaOrganizzazione("Privata");
 			provider.setNoProfit(false);
 
-			provider.setStatus(StatusProvider.INSERITO);
+			provider.setStatus(ProviderStatoEnum.INSERITO);
 			provider.setAccount(account);
 			provider.addPersona(legale);
 			provider.setSedeLegale(sedeLegale);

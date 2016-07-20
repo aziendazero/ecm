@@ -20,7 +20,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import it.tredi.ecm.dao.enumlist.StatusProvider;
+import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import lombok.Getter;
 import lombok.Setter;
@@ -81,7 +81,7 @@ public class Provider extends BaseEntity{
 	}
 
 	@Enumerated(EnumType.STRING)
-	private StatusProvider status;
+	private ProviderStatoEnum status;
 
 	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(name="provider_files", 
@@ -100,6 +100,9 @@ public class Provider extends BaseEntity{
 	private boolean canInsertPianoFormativo;
 	@Column(name ="can_insert_evento")
 	private boolean canInsertEvento;
+	
+	@OneToMany
+	private Set<Pagamento> pagamenti = new HashSet<Pagamento>();
 
 	/** UTILS **/
 	public void addPersona(Persona persona){

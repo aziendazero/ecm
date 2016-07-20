@@ -3,6 +3,7 @@ package it.tredi.ecm.dao.entity;
 import java.util.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import lombok.Getter;

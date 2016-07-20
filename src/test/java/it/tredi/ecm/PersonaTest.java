@@ -33,8 +33,8 @@ import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.dao.enumlist.StatusProvider;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
@@ -94,7 +94,7 @@ public class PersonaTest {
 		provider.setDenominazioneLegale("VR 46");
 		provider.setPartitaIva("00464646460");
 		provider.setTipoOrganizzatore(TipoOrganizzatore.PRIVATI);
-		provider.setStatus(StatusProvider.INSERITO);
+		provider.setStatus(ProviderStatoEnum.INSERITO);
 		provider.addPersona(persona);
 		provider.setAccount(account);
 		providerService.save(provider);

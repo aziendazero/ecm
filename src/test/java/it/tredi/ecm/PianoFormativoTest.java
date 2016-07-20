@@ -2,16 +2,13 @@ package it.tredi.ecm;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.transaction.Transactional;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,7 +31,7 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
-import it.tredi.ecm.dao.enumlist.StatusProvider;
+import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
@@ -96,7 +93,7 @@ public class PianoFormativoTest {
 		provider.setDenominazioneLegale("VR 46");
 		provider.setPartitaIva("00464646460");
 		provider.setTipoOrganizzatore(TipoOrganizzatore.PRIVATI);
-		provider.setStatus(StatusProvider.INSERITO);
+		provider.setStatus(ProviderStatoEnum.INSERITO);
 		provider.setAccount(account);
 		providerService.save(provider);
 		

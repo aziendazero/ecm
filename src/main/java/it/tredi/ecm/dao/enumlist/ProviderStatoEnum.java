@@ -3,8 +3,7 @@ package it.tredi.ecm.dao.enumlist;
 import lombok.Getter;
 
 @Getter
-public enum StatusProvider {
-
+public enum ProviderStatoEnum {
 	INSERITO (1, "Inserito - Domanda in stato di bozza"),
 	VALIDATO (2, "Domanda inviata"),
 	ACCREDITATO_PROVVISORIAMENTE (3, "Accreditamento provvisorio accettato"),
@@ -16,7 +15,7 @@ public enum StatusProvider {
 	private int id;
 	private String nome;
 
-	private StatusProvider(int id, String nome){
+	private ProviderStatoEnum(int id, String nome){
 		this.id = id;
 		this.nome = nome;
 	}

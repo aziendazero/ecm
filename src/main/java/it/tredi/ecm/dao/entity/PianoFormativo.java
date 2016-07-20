@@ -43,7 +43,7 @@ public class PianoFormativo extends BaseEntity{
 	}
 	
 	public void removeEvento(long eventoId){
-		
+		this.getEventi().removeIf(e -> e.getId() == eventoId);
 	}
 	
 	public boolean isPianoModificabile(){

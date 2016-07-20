@@ -5,7 +5,7 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.enumlist.AccreditamentoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 
 public interface AccreditamentoService{
 	public Accreditamento getNewAccreditamentoForCurrentProvider() throws Exception;
@@ -13,7 +13,7 @@ public interface AccreditamentoService{
 	public Accreditamento getAccreditamento(Long id);
 	
 	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId);
-	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(Long providerId, AccreditamentoEnum tipoTomanda);
+	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(Long providerId, AccreditamentoTipoEnum tipoTomanda);
 	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId);
 	public void save(Accreditamento accreditamento);
 	

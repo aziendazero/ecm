@@ -19,7 +19,7 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
-import it.tredi.ecm.dao.enumlist.StatusProvider;
+import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
@@ -72,7 +72,7 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				provider.setCodiceFiscale("");
 				provider.setPartitaIva("01234567890");
 				provider.setTipoOrganizzatore(TipoOrganizzatore.AZIENDE_SANITARIE);
-				provider.setStatus(StatusProvider.INSERITO);
+				provider.setStatus(ProviderStatoEnum.INSERITO);
 				provider.setAccount(account);
 				providerRepository.save(provider);
 
