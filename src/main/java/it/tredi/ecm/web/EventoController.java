@@ -172,6 +172,7 @@ public class EventoController {
 		}
 	}
 
+
 	/*
 	 * ELIMINAZIONE DI UN EVENTO IN PIANO FORMATIVO (accreditamento)
 	 * */
@@ -233,8 +234,6 @@ public class EventoController {
 			return "redirect:/provider/" + providerId + "/evento/list";
 		}
 	}
-
-
 
 	private String goToShow(Model model, EventoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);

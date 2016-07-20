@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="pianoFormativo.annoPianoFormativo">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.lista_piani_formativi}"></h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+							<button type="button" onclick="openPianoFormativoNew()" class="btn btn-primary pull-right"
+									th:if="${canInsertPianoFormativo}"
+									data-toggle="modal" data-target=".modal-pianoFormativoNew"
+									th:text="#{label.nuovo_piano_formativo}">label.nuovo_piano_formativo</button>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<div class="pianoFormativo.annoPianoFormativo">
+							<div class="col-xs-12">
+
+								<div th:if="${#lists.isEmpty(pianoFormativoList)}">
+									<h2 class="col-xs-12 text-center">
+										<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_piano_formativo}">Non ci sono piani formativi!</i>
+									</h2>
+								</div>
+
+								<div th:unless="${#lists.isEmpty(pianoFormativoList)}" class="accordion-container" th:each="pianoFormativo, pianoFormativo.annoPianoFormativo : ${pianoFormativoList}">
+									<!-- start accordion -->
+									<div class="accordion" role="tablist" aria-multiselectable="true">
+										<div class="panel">
+											<a class="panel-heading" role="tab" th:id="${'heading'+pianoFormativo.annoPianoFormativo}"
+												data-toggle="collapse" data-parent=".accordion"
+												th:href="${'#collapse'+pianoFormativo.annoPianoFormativo}" aria-expanded="true"
+												th:aria-controls="${'collapse'+pianoFormativo.annoPianoFormativo}">
+												<span class="panel-title" th:text="${pianoFormativo.annoPianoFormativo}">2016</span>
+											</a>
+											<div th:id="${'collapse'+pianoFormativo.annoPianoFormativo}" class="panel-collapse collapse"
+												role="tabpanel" th:aria-labelledby="${'heading'+pianoFormativo.annoPianoFormativo}">
+												<div class="panel-body">
+
+													<div th:if="${#lists.isEmpty(pianoFormativo.eventi)}" th:text="#{label.nessun_evento_list}"></div>
+
+													<table th:unless="${#lists.isEmpty(pianoFormativo.eventi)}" class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-eventi" cellspacing="0" width="100%">
+														<thead>
+															<tr>
+																<th th:text="#{label.id}">label.id</th>
+																<th th:text="#{label.titolo}">label.titolo</th>
+																<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
+																<th th:text="#{label.prezzo}">label.prezzo</th>
+																<th th:text="#{label.stato}">label.stato</th>
+															</tr>
+														</thead>
+														<tbody th:remove="all-but-first">
+															<tr th:each="evento, row : ${pianoFormativo.eventi}">
+																<td th:text="${evento.id}"></td>
+																<td><a th:text="${evento.titolo}" data-toggle="modal" data-target=".modal-eventoShow" th:onclick="'openEventoShow('+${evento.id}+', '+${pianoFormativo.id}+');'"></a></td>
+																<td th:text="${evento.proceduraFormativa.nome}"></td>
+																<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
+																<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
+																<td th:unless="${evento.pagato}"><button type="button" class="btn btn-primary btn-mypay" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per il pagamento con MYPAY!')">Paga con MYPAY!</button></td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- finestra modale per pianoFormativoNew -->
+					<div id="pianoFormativoNew-modal" class="modal fade modal-pianoFormativoNew" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+									</button>
+									<h4 class="modal-title" id="myModalLabel" th:text="#{label.seleziona_anno}">Seleziona anno</h4>
+								</div>
+								<div class="modal-body">
+									<div id="pianoFormativoNew" class="loaded-container">
+										<!-- loaded -->
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-primary modal-btn" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+									<button type="submit" class="btn btn-success modal-btn" form="formPianoFormativoAnno" th:text="#{label.Ok}">Ok</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- finestra modale per eventoShow -->
+					<div id="eventoShow-modal" class="modal fade modal-eventoShow" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+									</button>
+									<h4 class="modal-title" id="myModalLabel" th:text="#{label.visualizza_evento_modal}">Visualizza evento</h4>
+								</div>
+								<div class="modal-body">
+									<div id="eventoShow" class="loaded-container">
+										<!-- loaded -->
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-primary modal-btn" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				$(document).ready(function() {
+
+					$('.datatable-responsive-piano-formativo').DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [ {
+							"targets": 1,
+							"width": "1px",
+							"sClass": "center"
+						} ],
+					});
+				})
+
+				function openPianoFormativoNew() {
+					var url = [[@{|/provider/${providerId}/pianoFormativo/new|}]]
+
+					$("#pianoFormativoNew").load(url + ' #toModal', function() {
+						$('.selectpicker').selectpicker();
+					});
+
+				}
+
+
+				function openEventoShow(id, pianoFormativoId) {
+					var url = [[@{|/provider/${providerId}/evento/|}]] + id + "/show";
+
+					$("#eventoShow").load(url + ' #toModal', function() {
+
+						//table responsive professioni/discipline show
+						$('.datatable-responsive-discipline').DataTable({
+							"bFilter" : false,
+							"bPaginate": false,
+							"bInfo" : false,
+						    "columnDefs": [
+						    	{ "targets": [ '_all' ], "orderable": false },
+						    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
+						    	{ "visible": false, "targets": 0 }
+						    ],
+						    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+						    "drawCallback": function ( settings ) {
+					        	var api = this.api();
+					            var rows = api.rows( {page:'current'} ).nodes();
+					            var last=null;
+
+					            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+					            	if ( last !== group ) {
+					                	$(rows).eq( i ).before(
+					                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
+					            	);
+					                    last = group;
+					                }
+					            });
+					        }
+						});
+
+					});
+
+				}
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

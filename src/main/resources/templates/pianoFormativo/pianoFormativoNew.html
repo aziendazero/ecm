@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row" id="toModal">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.lista_anni_selezionabili}"></h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<form id="formPianoFormativoAnno" class="form-horizontal form-label-left"
+								th:action="@{|/provider/${pianoFormativoWrapper.providerId}/pianoFormativo/save|}"
+								method="post" enctype="multipart/form-data"
+								novalidate="novalidate">
+
+							<input type="hidden" name="editId" th:value="${pianoFormativoWrapper.pianoFormativo.id}" />
+							<input type="hidden" th:field="${pianoFormativoWrapper.providerId}" />
+
+							<div class="col-xs-2"></div>
+							<div class="col-xs-8">
+								<select id="selezioneAnno"
+									class="selectpicker required"
+									th:field="${pianoFormativoWrapper.pianoFormativo.annoPianoFormativo}"
+									data-width="100%" data-style="btn-primary"
+									data-actions-box="true" data-size="10"
+									data-hide-disabled="false"
+									title="Seleziona un anno...">
+									<option th:each="anno, row: ${pianoFormativoWrapper.anniDisponibiliList}"
+												th:value="${anno}"
+												th:text="${anno}">
+									</option>
+
+								</select>
+							</div>
+							<div class="free-space"></div>
+
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

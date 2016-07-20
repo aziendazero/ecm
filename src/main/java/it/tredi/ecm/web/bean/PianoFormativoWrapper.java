@@ -12,6 +12,5 @@ import lombok.Setter;
 public class PianoFormativoWrapper {
 	private long providerId;
 	private Set<Integer> anniDisponibiliList = new HashSet<Integer>();
-	private int annoPianoFormativo;
 	private PianoFormativo pianoFormativo;
 }
