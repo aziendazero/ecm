@@ -793,9 +793,6 @@ h2 {
   width: 100%;
   display: block;
 }
-.accordion .panel:hover {
-  background: #F2F5F7;
-}
 .x_panel {
   position: relative;
   width: 100%;
@@ -1343,7 +1340,7 @@ ul.msg_list li a .message {
   border: 1px solid #D9DEE4;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  
+
 }
 .dropdown-menu>li>a {
   color: #5A738E;
@@ -4776,7 +4773,7 @@ a.hiddenanchor {
 #toreset:target ~ #wrapper #login,
 #toreset:target ~ #wrapper #register,
 #toregister:target ~ #wrapper #login,
-#toregister:target ~ #wrapper #reset, 
+#toregister:target ~ #wrapper #reset,
 #tologin:target ~ #wrapper #register
 #tologin:target ~ #wrapper #reset{
   -webkit-animation-name: fadeOutLeft;
