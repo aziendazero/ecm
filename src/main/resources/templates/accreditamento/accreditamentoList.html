@@ -17,6 +17,8 @@
 									th:if="${canProviderCreateAccreditamento}"
 									th:href="@{/provider/accreditamento/new}"
 									th:text="#{label.nuova_domanda}">label.nuova_domanda</a>
+							<a class="btn btn.primary pull-right" th:if="${back}" th:href="@{|/provider/list|}"
+								th:text="#{label.indietro}">Indietro</a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
