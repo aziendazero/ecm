@@ -45,9 +45,9 @@
 												<div class="panel-body">
 
 
-													<th:block th:substituteby="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, 198, ${pianoFormativo.pianoModificabile})"></th:block>
+													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${pianoFormativo.pianoModificabile})"></th:block>
 
-													<a th:if="${pianoFormativo.pianoModificabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/198/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
+													<a th:if="${pianoFormativo.pianoModificabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
 
 												</div>
 											</div>
