@@ -213,12 +213,9 @@ public class SedeController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sede/{id}/show")
 	public String showSede(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
-			@RequestParam Map<String,String> requestParams, Model model, RedirectAttributes redirectAttrs){
+			@RequestParam (value = "tipologiaSede", required = true) String tipologiaSede, @RequestParam(value = "from", required =  false) String from, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/" + id + "/show"));
-		//Prendo i parametri della get
-		String tipologiaSede=requestParams.get("tipologiaSede");
 		model.addAttribute("tipologiaSede", tipologiaSede);
-		String from=requestParams.get("from");
 		try {
 			if (from != null) {
 				redirectAttrs.addFlashAttribute("tipologiaSede", tipologiaSede);
