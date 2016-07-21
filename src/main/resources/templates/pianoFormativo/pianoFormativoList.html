@@ -107,17 +107,31 @@
 			/*<![CDATA[*/
 				$(document).ready(function() {
 
-					$('.datatable-responsive-piano-formativo').DataTable({
+					//table responsive evento edit
+					$('.datatable-responsive-evento-edit').DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"autoWidth": false,
+						"columnDefs": [
+							{ "targets": 1, "width": "210px", "sClass": "center" },
+						],
+					});
+
+					//table responsive evento show
+					$('.datatable-responsive-evento-show').DataTable({
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
 						"ordering" : false,
 						"columnDefs": [ {
 							"targets": 1,
-							"width": "1px",
+							"width": "70px",
 							"sClass": "center"
 						} ],
 					});
+
 				})
 
 				function openPianoFormativoNew() {
