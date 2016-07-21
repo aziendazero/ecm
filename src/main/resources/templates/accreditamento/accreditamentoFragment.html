@@ -55,7 +55,8 @@
 											<tbody>
 												<!-- PROVIDER -->
 												<tr>
-													<td><a th:text="#{label.provider}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/show|}">label.provider</a></td>
+													<td th:if="${editabile}"><a th:text="#{label.provider}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/show?from=edit|}">label.provider</a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.provider}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/show|}">label.provider</a></td>
 													<td	th:if="${accreditamentoWrapper.providerStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
 													</td>
