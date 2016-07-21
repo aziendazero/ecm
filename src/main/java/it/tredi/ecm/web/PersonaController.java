@@ -175,10 +175,18 @@ public class PersonaController {
 	/***	SHOW PERSONA ***/
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/show")
-	public String showPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs, HttpServletRequest req){
+	public String showPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
+			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs, HttpServletRequest req){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/show"));
 		try {
 			Persona persona = personaService.getPersona(id);
+			if(from != null) {
+				redirectAttrs.addFlashAttribute("mode", from);
+				return "redirect:/accreditamento/"+ accreditamentoId + "/provider/" + providerId + "/persona/" + id +"/show";
+			}
+			if(model.containsAttribute("mode")) {
+				return goToShowFromEdit(model, preparePersonaWrapperShow(persona, accreditamentoId));
+			}
 			return goToShow(model, preparePersonaWrapperShow(persona, accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/show"),ex);
@@ -286,16 +294,34 @@ public class PersonaController {
 
 	private String goToEdit(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
-		model.addAttribute("returnLink", "/personaRedirect/" + personaWrapper.getPersona().getId() + "/accreditamento/" + personaWrapper.getAccreditamentoId() + "/edit");
+		model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
 
 	private String goToShow(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
-		model.addAttribute("returnLink", "/personaRedirect/" + personaWrapper.getPersona().getId() + "/accreditamento/" + personaWrapper.getAccreditamentoId() + "/show");
+		model.addAttribute("returnLink", calcolaLink(personaWrapper, "show"));
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
+	}
+
+	private String goToShowFromEdit(Model model, PersonaWrapper personaWrapper) {
+		model.addAttribute("personaWrapper", personaWrapper);
+		model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
+		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+		return SHOW;
+	}
+
+	private String calcolaLink(PersonaWrapper wrapper, String mode) {
+		String tab;
+
+		if(wrapper.getRuolo().equals(Ruolo.LEGALE_RAPPRESENTANTE) || wrapper.getRuolo().equals(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE))
+			tab = "tab1";
+		else
+			tab = "tab2";
+
+		return "/accreditamento/" + wrapper.getAccreditamentoId() + "/" + mode + "?tab=" + tab;
 	}
 
 	@RequestMapping(value= "/personaRedirect/{personaId}/{target}/{targetId}/{mode}")
