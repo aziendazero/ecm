@@ -394,7 +394,8 @@
 											<tbody>
 												<!-- ALLEGATO ATTO COSTITUTIVO -->
 												<tr>
-													<td><a th:text="#{label.attoCostitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:if="${editabile}"><a th:text="#{label.attoCostitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show?from=edit|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.attoCostitutivo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 													<td	th:if="${accreditamentoWrapper.attoCostitutivoStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
 													</td>
@@ -407,8 +408,8 @@
 												</tr>
 												<!-- ALLEGATO ESPERIENZA FORMAZIONE -->
 												<tr>
-													<td><a th:text="#{label.esperienzaFormazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
-
+													<td th:if="${editabile}"><a th:text="#{label.esperienzaFormazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show?from=edit|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.esperienzaFormazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 													<td	th:if="${accreditamentoWrapper.esperienzaFormazioneStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
 													</td>
@@ -421,7 +422,8 @@
 												</tr>
 												<!-- ALLEGATO UTILIZZO -->
 												<tr>
-													<td><a th:text="#{label.utilizzo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:if="${editabile}"><a th:text="#{label.utilizzo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show?from=edit|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.utilizzo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 													<td	th:if="${accreditamentoWrapper.utilizzoStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
 													</td>
@@ -434,7 +436,8 @@
 												</tr>
 												<!-- ALLEGATO SISTEMA INFORMATICO -->
 												<tr>
-													<td><a th:text="#{label.sistemaInformatico}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:if="${editabile}"><a th:text="#{label.sistemaInformatico}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show?from=edit|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.sistemaInformatico}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 													<td	th:if="${accreditamentoWrapper.sistemaInformaticoStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
 													</td>
@@ -447,7 +450,8 @@
 												</tr>
 												<!-- ALLEGATO PIANO QUALITÀ -->
 												<tr>
-													<td><a th:text="#{label.pianoQualita}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:if="${editabile}"><a th:text="#{label.pianoQualita}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show?from=edit|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.pianoQualita}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 													<td	th:if="${accreditamentoWrapper.pianoQualitaStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
 													</td>
@@ -460,7 +464,8 @@
 												</tr>
 												<!-- ALLEGATO DICHIARAZIONE LEGALE -->
 												<tr>
-													<td><a th:text="#{label.dichiarazioneLegale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td th:if="${editabile}"><a th:text="#{label.dichiarazioneLegale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show?from=edit|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.dichiarazioneLegale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
 													<td	th:if="${accreditamentoWrapper.dichiarazioneLegaleStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
 													</td>
