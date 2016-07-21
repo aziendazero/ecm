@@ -36,6 +36,79 @@
 					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/edit|}]] + param;
 					location.href = url;
 				}
+
+// 					function switchMode() {
+// 						var redirectTab;
+// 						var withMessage;
+
+// 						//Check se la tab può essere aperta in modifica
+// 						//In caso negativo apre la prima disponibile e chiede al controller di mandare un messaggio appropriato
+// 						switch(tabSelected) {
+
+// 							case "tab1":
+// 								redirectTab = "tab1";
+// 								withMessage = false;
+// 								break;
+
+// 							case "tab2":
+// 								if([[${accreditamentoWrapper.sezione1Stato}]]) {
+// 									redirectTab = "tab2";
+// 									withMessage = false;
+// 								}
+// 								else {
+// 									redirectTab = "tab1";
+// 									withMessage = true;
+// 								}
+// 								break;
+
+// 							case "tab3":
+// 								if([[${accreditamentoWrapper.sezione2Stato}]]) {
+// 									redirectTab = "tab3";
+// 									withMessage = false;
+// 								}
+// 								else{
+// 									if([[${accreditamentoWrapper.sezione1Stato}]]) {
+// 										redirectTab = "tab2";
+// 										withMessage = true;
+// 									}
+// 									else {
+// 										redirectTab = "tab1";
+// 										withMessage = true;
+// 									}
+// 								}
+// 								break;
+
+// 							case "tab4":
+// 								if([[${accreditamentoWrapper.completa}]]) {
+// 									redirectTab = "tab4";
+// 									withMessage = false;
+// 								}
+// 								if([[${accreditamentoWrapper.sezione2Stato}]]) {
+// 									redirectTab = "tab3";
+// 									withMessage = true;
+// 								}
+// 								else{
+// 									if([[${accreditamentoWrapper.sezione1Stato}]]) {
+// 										redirectTab = "tab2";
+// 										withMessage = true;
+// 									}
+// 									else {
+// 										redirectTab = "tab1";
+// 										withMessage = true;
+// 									}
+// 								}
+// 								break;
+
+// 						}
+
+// 						var param = "?tab=" + redirectTab;
+// 						var msg = "";
+// 						if(withMessage)
+// 							msg = "&msg=true";
+// 						var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/edit|}]] + param + msg;
+// 						location.href = url;
+// 					}
+
 			/*]]>*/
 			</script>
 		</div>
