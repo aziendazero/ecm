@@ -168,7 +168,8 @@
 											<tbody>
 												<!-- DATI ACCREDITAMENTO -->
 												<tr>
-													<td th:unless="${accreditamentoWrapper.datiAccreditamento.new}"><a th:text="#{label.dati_accreditamento}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/show|}"></a></td>
+													<td th:if="${!accreditamentoWrapper.datiAccreditamento.new and !editabile}"><a th:text="#{label.dati_accreditamento}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/show|}"></a></td>
+													<td th:if="${!accreditamentoWrapper.datiAccreditamento.new and editabile}"><a th:text="#{label.dati_accreditamento}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/show?from=edit|}"></a></td>
 													<td th:if="${accreditamentoWrapper.datiAccreditamento.new}"><div th:text="#{label.dati_accreditamento}"></div></td>
 													<td	th:if="${accreditamentoWrapper.datiAccreditamentoStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
