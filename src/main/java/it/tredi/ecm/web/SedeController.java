@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,16 +89,16 @@ public class SedeController {
 		capVenezia.add("30121");
 		capVenezia.add("30150");
 		capVenezia.add("30176");
-		
+
 		List<String> capMira = new ArrayList<String>();
 		capMira.add("30034");
-		
+
 
 		List<String> capPadova = new ArrayList<String>();
 		capPadova.add("35121");
 		capPadova.add("35131");
 		capPadova.add("35143");
-		
+
 		List<String> capCittadella = new ArrayList<String>();
 		capCittadella.add("35013");
 
@@ -105,7 +106,7 @@ public class SedeController {
 		capVerona.add("37121");
 		capVerona.add("37131");
 		capVerona.add("37142");
-		
+
 		List<String> capNogara = new ArrayList<String>();
 		capNogara.add("37054");
 
@@ -212,9 +213,18 @@ public class SedeController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sede/{id}/show")
 	public String showSede(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
-			@RequestParam("tipologiaSede") String tipologiaSede, Model model){
+			@RequestParam Map<String,String> requestParams, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/" + id + "/show"));
+		//Prendo i parametri della get
+		String tipologiaSede=requestParams.get("tipologiaSede");
+		model.addAttribute("tipologiaSede", tipologiaSede);
+		String from=requestParams.get("from");
 		try {
+			if (from != null) {
+				redirectAttrs.addFlashAttribute("tipologiaSede", tipologiaSede);
+				redirectAttrs.addFlashAttribute("mode", from);
+				return "redirect:/accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/" + id + "/show?tipologiaSede=" + tipologiaSede;
+			}
 			SedeWrapper sedeWrapper = prepareSedeWrapperShow(sedeService.getSede(id), tipologiaSede, accreditamentoId, providerId);
 			return goToShow(model, sedeWrapper);
 		}catch (Exception ex){

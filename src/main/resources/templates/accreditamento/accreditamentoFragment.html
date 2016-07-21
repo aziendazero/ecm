@@ -69,7 +69,8 @@
 												</tr>
 												<!-- SEDE LEGALE -->
 												<tr>
-													<td th:unless="${accreditamentoWrapper.sedeLegale.new}"><a th:text="#{label.sede_legale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale.id}/show?tipologiaSede=SedeLegale|}"></a></td>
+													<td th:if="${!accreditamentoWrapper.sedeLegale.new and !editabile}"><a th:text="#{label.sede_legale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale.id}/show?tipologiaSede=SedeLegale|}"></a></td>
+													<td th:if="${!accreditamentoWrapper.sedeLegale.new and editabile}"><a th:text="#{label.sede_legale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale.id}/|+show(tipologiaSede='SedeLegale',from='edit')}"></a></td>
 													<td th:if="${accreditamentoWrapper.sedeLegale.new}"><div th:text="#{label.sede_legale}"></div></td>
 													<td	th:if="${accreditamentoWrapper.sedeLegaleStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
@@ -86,7 +87,8 @@
 												</tr>
 												<!-- SEDE OPERATIVA -->
 												<tr>
-													<td th:unless="${accreditamentoWrapper.sedeOperativa.new}"><a th:text="#{label.sede_operativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.provider.sedeOperativa.id}/show?tipologiaSede=SedeOperativa|}"></a></td>
+													<td th:if="${!accreditamentoWrapper.sedeOperativa.new and !editabile}"><a th:text="#{label.sede_operativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.provider.sedeOperativa.id}/show?tipologiaSede=SedeOperativa|}"></a></td>
+													<td th:if="${!accreditamentoWrapper.sedeOperativa.new and editabile}"><a th:text="#{label.sede_operativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.provider.sedeOperativa.id}/|+show(tipologiaSede=SedeOperativa,from=edit)}"></a></td>
 													<td th:if="${accreditamentoWrapper.sedeOperativa.new}"><div th:text="#{label.sede_operativa}"></div></td>
 													<td	th:if="${accreditamentoWrapper.sedeOperativaStato}">
 														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
