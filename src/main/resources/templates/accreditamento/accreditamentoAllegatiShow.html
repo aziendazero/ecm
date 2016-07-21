@@ -12,8 +12,8 @@
 					<div class="x_title">
 						<h2 th:text="#{label.allegati}">allegati</h2>
 						<div class="pull-right buttons-header">
-							<a th:if="${mode == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/allegatiRedirect/accreditamento/${accreditamentoAllegatiWrapper.accreditamentoId}/show|}"></a>
-							<a th:if="${mode != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/allegatiRedirect/accreditamento/${accreditamentoAllegatiWrapper.accreditamentoId}/${mode}|}"></a>
+							<a th:if="${mode == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoAllegatiWrapper.accreditamentoId}/show?tab=tab3|}"></a>
+							<a th:if="${mode != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoAllegatiWrapper.accreditamentoId}/${mode}?tab=tab3|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>

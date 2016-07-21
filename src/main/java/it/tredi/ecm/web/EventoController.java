@@ -248,13 +248,6 @@ public class EventoController {
 		return "evento/eventoShow";
 	}
 
-	@RequestMapping(value = "/eventoRedirect/{target}/{targetId}/{mode}")
-	public String eventoRedirect (@PathVariable String target, @PathVariable Long targetId, @PathVariable String mode,  RedirectAttributes redirectAttrs) {
-		redirectAttrs.addFlashAttribute("currentTab", "tab4");
-		return "redirect:/" + target + "/" + targetId + "/" + mode;
-	}
-
-
 	private EventoWrapper prepareEventoWrapperShow(Evento evento, Long providerId){
 		return prepareEventoWrapperShow(evento, providerId, null);
 	}
@@ -268,10 +261,6 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperShow(" + evento.getId() + "," + providerId + ") - exiting"));
 		return eventoWrapper;
 	}
-
-
-
-
 
 	private String goToEdit(Model model, EventoWrapper wrapper, RedirectAttributes redirectAttrs){
 		try {

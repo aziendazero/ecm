@@ -612,6 +612,19 @@
 					],
 				});
 
+				//table responsive evento show
+				$('.datatable-responsive-evento-show').DataTable({
+					"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+					"ordering" : false,
+					"columnDefs": [ {
+						"targets": 1,
+						"width": "70px",
+						"sClass": "center"
+					} ],
+				});
+
 			});
 		/*]]>*/
 		</script>

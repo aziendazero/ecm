@@ -12,8 +12,8 @@
 					<div class="x_title">
 						<h2 th:text="#{label.visualizza_evento(${eventoWrapper.evento.id})}">Evento</h2>
 						<div class="pull-right buttons-header">
-							<a th:if="${eventoWrapper.accreditamentoId != null and mode != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/eventoRedirect/accreditamento/${eventoWrapper.accreditamentoId}/${mode}|}"></a>
-							<a th:if="${eventoWrapper.accreditamentoId != null and mode == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/eventoRedirect/accreditamento/${eventoWrapper.accreditamentoId}/show|}"></a>
+							<a th:if="${eventoWrapper.accreditamentoId != null and mode != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${eventoWrapper.accreditamentoId}/${mode}?tab=tab4|}"></a>
+							<a th:if="${eventoWrapper.accreditamentoId != null and mode == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${eventoWrapper.accreditamentoId}/show?tab=tab4|}"></a>
 							<a th:if="${eventoWrapper.accreditamentoId == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/list|}"></a>
 						</div>
 						<div class="clearfix"></div>

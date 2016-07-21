@@ -158,12 +158,6 @@ public class AccreditamentoAllegatiController {
 		return SHOW;
 	}
 
-	@RequestMapping(value = "/allegatiRedirect/{target}/{targetId}/{mode}")
-	public String allegatiRedirect (@PathVariable String target, @PathVariable Long targetId, @PathVariable String mode,  RedirectAttributes redirectAttrs) {
-		redirectAttrs.addFlashAttribute("currentTab", "tab3");
-		return "redirect:/" + target + "/" + targetId + "/" + mode;
-	}
-
 	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapperEdit(Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperEdit(" + accreditamentoId + ") - entering"));
 		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
