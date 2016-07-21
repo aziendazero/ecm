@@ -13,7 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
@@ -75,6 +78,7 @@ public class AccreditamentoController {
 			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamento", accreditamentoService.canProviderCreateAccreditamento(providerId));
+
 			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
 			return "accreditamento/accreditamentoList";
 		}catch (Exception ex){
@@ -85,12 +89,16 @@ public class AccreditamentoController {
 		}
 	}
 
-	/***	Get Accreditamento {ID}	***/
+	/***	Get show Accreditamento {ID}	***/
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#id)")
 	@RequestMapping("/accreditamento/{id}/show")
-	public String showAccreditamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
+	public String showAccreditamento(@PathVariable Long id, Model model, @RequestParam(required = false) String tab, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + id + "/show"));
 		try {
+			if (tab != null) {
+				model.addAttribute("currentTab", tab);
+			}
+			LOGGER.info(Utils.getLogMessage("TAB:" + tab));
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
 			return goToAccreditamentoShow(model, accreditamento);
 		}catch (Exception ex){
@@ -104,9 +112,13 @@ public class AccreditamentoController {
 	/***	Get edit Accreditamento {ID}	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#id)")
 	@RequestMapping("/accreditamento/{id}/edit")
-	public String editAccreditamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
+	public String editAccreditamento(@PathVariable Long id, Model model, @RequestParam(required = false) String tab, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + id + "/edit"));
 		try {
+			if (tab != null) {
+				model.addAttribute("currentTab", tab);
+			}
+			LOGGER.info(Utils.getLogMessage("TAB:" + tab));
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
 			return goToAccreditamentoEdit(model, accreditamento);
 		}catch (Exception ex){

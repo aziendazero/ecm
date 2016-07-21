@@ -13,7 +13,7 @@
 						<h2 th:text="#{label.accreditamento_titolo(Modifica, ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}">Provvisorio - bozza</h2>
 						<div class="pull-right buttons-header">
 							<a th:if="${accreditamentoWrapper.canSend}" class="btn btn-success pull-right" th:text="#{label.invia_domanda}"	th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a>
-							<a class="btn btn-primary pull-right" th:text="#{label.torna_in_visualizzazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/show|}"></a>
+							<button type="button" class="btn btn-primary pull-right" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode()"></button>
 						</div>
 						<div class="clearfix"></div>
 					</div>
@@ -24,6 +24,19 @@
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
+
+			  	var tabSelected = "tab1";
+				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+					tabSelected = e.target.id;
+					console.log(tabSelected);
+				});
+
+				function switchMode() {
+					var param = "?tab=" + tabSelected;
+					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/show|}]] + param;
+					location.href = url;
+				}
+
 				$(document).ready(function() {
 
 					var stack_topright = {"dir1": "down", "dir2": "left", "push": "top", "firstpos1": 25, "firstpos2": 25};

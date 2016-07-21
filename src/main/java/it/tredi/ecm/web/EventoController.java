@@ -119,9 +119,15 @@ public class EventoController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/show")
 	public String showEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
-												Model model, RedirectAttributes redirectAttrs) {
+			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show"));
 		try {
+			//parametro per decidere se tornare in edit o in show accreditamento dopo un eventoShow
+			if(from != null) {
+				redirectAttrs.addFlashAttribute("mode", from);
+				return "redirect:/accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show";
+			}
+			LOGGER.info(Utils.getLogMessage("MODE: " + from));
 			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId, accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show"),ex);
@@ -241,6 +247,13 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoShow"));
 		return "evento/eventoShow";
 	}
+
+	@RequestMapping(value = "/eventoRedirect/{target}/{targetId}/{mode}")
+	public String eventoRedirect (@PathVariable String target, @PathVariable Long targetId, @PathVariable String mode,  RedirectAttributes redirectAttrs) {
+		redirectAttrs.addFlashAttribute("currentTab", "tab4");
+		return "redirect:/" + target + "/" + targetId + "/" + mode;
+	}
+
 
 	private EventoWrapper prepareEventoWrapperShow(Evento evento, Long providerId){
 		return prepareEventoWrapperShow(evento, providerId, null);

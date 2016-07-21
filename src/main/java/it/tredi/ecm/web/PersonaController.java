@@ -175,7 +175,7 @@ public class PersonaController {
 	/***	SHOW PERSONA ***/
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/show")
-	public String showPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
+	public String showPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs, HttpServletRequest req){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/show"));
 		try {
 			Persona persona = personaService.getPersona(id);
@@ -286,14 +286,26 @@ public class PersonaController {
 
 	private String goToEdit(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
+		model.addAttribute("returnLink", "/personaRedirect/" + personaWrapper.getPersona().getId() + "/accreditamento/" + personaWrapper.getAccreditamentoId() + "/edit");
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
 
 	private String goToShow(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
+		model.addAttribute("returnLink", "/personaRedirect/" + personaWrapper.getPersona().getId() + "/accreditamento/" + personaWrapper.getAccreditamentoId() + "/show");
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
+	}
+
+	@RequestMapping(value= "/personaRedirect/{personaId}/{target}/{targetId}/{mode}")
+	public String personaRedirect(@PathVariable Long personaId, @PathVariable String target, @PathVariable Long targetId, @PathVariable String mode, RedirectAttributes redirectAttrs) {
+		Persona persona = personaService.getPersona(personaId);
+		if(!persona.isLegaleRappresentante() && !persona.isDelegatoLegaleRappresentante())
+			redirectAttrs.addFlashAttribute("currentTab", "tab2");
+		else
+			redirectAttrs.addFlashAttribute("currentTab", "tab1");
+		return "redirect:/" + target + "/" + targetId + "/" + mode ;
 	}
 
 	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, boolean isLookup){

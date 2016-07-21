@@ -47,6 +47,7 @@ import it.tredi.ecm.web.bean.PersonaWrapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
+@Ignore
 @ActiveProfiles("dev")
 @WithUserDetails("admin")
 public class PersonaTest {

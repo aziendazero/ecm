@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 
+import javax.persistence.OneToMany;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,6 +152,12 @@ public class AccreditamentoAllegatiController {
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
+	}
+
+	@RequestMapping(value = "/allegatiRedirect/{target}/{targetId}/{mode}")
+	public String allegatiRedirect (@PathVariable String target, @PathVariable Long targetId, @PathVariable String mode,  RedirectAttributes redirectAttrs) {
+		redirectAttrs.addFlashAttribute("currentTab", "tab3");
+		return "redirect:/" + target + "/" + targetId + "/" + mode;
 	}
 
 	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapperEdit(Long accreditamentoId){

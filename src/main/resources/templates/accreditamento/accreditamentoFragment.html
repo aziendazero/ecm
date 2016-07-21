@@ -502,7 +502,7 @@
 									</div>
 									<div class="x_content">
 
-										<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(accreditamentoWrapper.accreditamento, ${accreditamentoWrapper.accreditamento.id}, ${editabile})"></th:block>
+										<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(accreditamentoWrapper.accreditamento.pianoFormativo, ${accreditamentoWrapper.accreditamento.id}, ${editabile})"></th:block>
 
 										<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo.id}/evento/new|}"></a>
 									</div>
@@ -518,7 +518,7 @@
 		/*<![CDATA[*/
 			$(document).ready(function() {
 
-				if ([[${currentTab}]] != null && [[${currentTab}]] != "tab1")
+				if ([[${currentTab}]] != null)
 					$('#'+[[${currentTab}]]).tab('show');
 
 				//table responsive generica show

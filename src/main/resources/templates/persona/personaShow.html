@@ -12,7 +12,8 @@
 					<div class="x_title">
 						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
 						<div class="pull-right buttons-header">
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/show|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
+							<div th:text="${returnLink}"></div>
 						</div>
 						<div class="clearfix"></div>
 					</div>

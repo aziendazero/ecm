@@ -30,7 +30,7 @@
 									</h2>
 								</div>
 
-								<div th:unless="${#lists.isEmpty(pianoFormativoList)}" class="accordion-container" th:each="pianoFormativo, pianoFormativo.annoPianoFormativo : ${pianoFormativoList}">
+								<div th:unless="${#lists.isEmpty(pianoFormativoList)}" class="accordion-container" th:each="pianoFormativo, row : ${pianoFormativoList}" th:with="pianoFormativoInner=${pianoFormativo}">
 									<!-- start accordion -->
 									<div class="accordion" role="tablist" aria-multiselectable="true">
 										<div class="panel">
@@ -44,29 +44,34 @@
 												role="tabpanel" th:aria-labelledby="${'heading'+pianoFormativo.annoPianoFormativo}">
 												<div class="panel-body">
 
-													<div th:if="${#lists.isEmpty(pianoFormativo.eventi)}" th:text="#{label.nessun_evento_list}"></div>
 
-													<table th:unless="${#lists.isEmpty(pianoFormativo.eventi)}" class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-eventi" cellspacing="0" width="100%">
-														<thead>
-															<tr>
-																<th th:text="#{label.id}">label.id</th>
-																<th th:text="#{label.titolo}">label.titolo</th>
-																<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
-																<th th:text="#{label.prezzo}">label.prezzo</th>
-																<th th:text="#{label.stato}">label.stato</th>
-															</tr>
-														</thead>
-														<tbody th:remove="all-but-first">
-															<tr th:each="evento, row : ${pianoFormativo.eventi}">
-																<td th:text="${evento.id}"></td>
-																<td><a th:text="${evento.titolo}" data-toggle="modal" data-target=".modal-eventoShow" th:onclick="'openEventoShow('+${evento.id}+', '+${pianoFormativo.id}+');'"></a></td>
-																<td th:text="${evento.proceduraFormativa.nome}"></td>
-																<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
-																<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
-																<td th:unless="${evento.pagato}"><button type="button" class="btn btn-primary btn-mypay" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per il pagamento con MYPAY!')">Paga con MYPAY!</button></td>
-															</tr>
-														</tbody>
-													</table>
+													<th:block th:substituteby="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, 198, ${pianoFormativo.pianoModificabile})"></th:block>
+
+													<a th:if="${pianoFormativo.pianoModificabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/198/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
+
+<!-- 													<div th:if="${#lists.isEmpty(pianoFormativo.eventi)}" th:text="#{label.nessun_evento_list}"></div> -->
+
+<!-- 													<table th:unless="${#lists.isEmpty(pianoFormativo.eventi)}" class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-eventi" cellspacing="0" width="100%"> -->
+<!-- 														<thead> -->
+<!-- 															<tr> -->
+<!-- 																<th th:text="#{label.id}">label.id</th> -->
+<!-- 																<th th:text="#{label.titolo}">label.titolo</th> -->
+<!-- 																<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th> -->
+<!-- 																<th th:text="#{label.prezzo}">label.prezzo</th> -->
+<!-- 																<th th:text="#{label.stato}">label.stato</th> -->
+<!-- 															</tr> -->
+<!-- 														</thead> -->
+<!-- 														<tbody th:remove="all-but-first"> -->
+<!-- 															<tr th:each="evento, row : ${pianoFormativo.eventi}"> -->
+<!-- 																<td th:text="${evento.id}"></td> -->
+<!-- 																<td><a th:text="${evento.titolo}" data-toggle="modal" data-target=".modal-eventoShow" th:onclick="'openEventoShow('+${evento.id}+', '+${pianoFormativo.id}+');'"></a></td> -->
+<!-- 																<td th:text="${evento.proceduraFormativa.nome}"></td> -->
+<!-- 																<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td> -->
+<!-- 																<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td> -->
+<!-- 																<td th:unless="${evento.pagato}"><button type="button" class="btn btn-primary btn-mypay" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per il pagamento con MYPAY!')">Paga con MYPAY!</button></td> -->
+<!-- 															</tr> -->
+<!-- 														</tbody> -->
+<!-- 													</table> -->
 												</div>
 											</div>
 										</div>
