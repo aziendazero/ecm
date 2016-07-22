@@ -7,7 +7,7 @@
 <body>
 	<!-- fragment interno dell'evento, la parte di paginazione è gestita dai file eventoShow e eventoEdit -->
 	<!-- parametri del fragment: boolean passato come parametro e prende eventoWrapper dal module del chiamante -->
-	<th:block th:fragment="evento(editabile)">
+	<th:block th:fragment="evento(editabile, fromAccreditamento)">
 
 		<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
 		<th:block th:with="counter=${(editabile == true) ? (eventoWrapper.idOffset-1) : null}">
@@ -17,7 +17,7 @@
 				<div class="form-horizontal form-label-left" th:remove="${!editabile} ? none : tag">
 				<form th:remove="${editabile} ? none : tag"
 					id="formEvento" class="form-horizontal form-label-left"
-					th:action="@{eventoWrapper.accreditamentoId != null ? |/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/pianoFormativo/${eventoWrapper.pianoFormativoId}/evento/save| : |/provider/${eventoWrapper.providerId}/evento/save|}"
+					th:action="@{${fromAccreditamento == true} ? |/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/pianoFormativo/${eventoWrapper.pianoFormativoId}/evento/save| : |/provider/${eventoWrapper.providerId}/pianoFormativo/${eventoWrapper.pianoFormativoId}/evento/save|}"
 					method="post" enctype="multipart/form-data"
 					novalidate="novalidate">
 

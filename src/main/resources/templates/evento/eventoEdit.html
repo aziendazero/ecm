@@ -15,13 +15,12 @@
 							<th:block th:unless="${#lists.isEmpty(eventoWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formEvento" type="submit"></button>
 							</th:block>
-							<a th:if="${eventoWrapper.accreditamentoId != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/eventoRedirect/accreditamento/${eventoWrapper.accreditamentoId}/edit|}"></a>
-							<a th:if="${eventoWrapper.accreditamentoId == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/list|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:include="evento/eventoFragment :: evento(true)"></th:block>
+					<th:block th:include="evento/eventoFragment :: evento(true, ${fromAccreditamento})"></th:block>
 
 				</div>
 			</div>

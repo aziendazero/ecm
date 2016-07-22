@@ -82,13 +82,44 @@ public class EventoController {
 	 * */
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/new")
-	public String newEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId,
+	public String newEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId,
 							Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"));
 		try{
+			model.addAttribute("returnLink", "/accreditamento/"+ accreditamentoId + "/edit?tab=tab4");
+			model.addAttribute("fromAccreditamento", true);
 			return goToEdit(model, prepareEventoWrapperEdit(new Evento(), providerId, accreditamentoId, pianoFormativoId), redirectAttrs);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
+	/*
+	 * INSERIMENTO EVENTO IN PIANO FORMATIVO (piano formativo)
+	 */
+//	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)") TODO
+	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/new")
+	public String newEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId,
+			Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"));
+		try{
+			model.addAttribute("returnLink", "/provider/" + providerId + "/pianoFormativo/list");
+			model.addAttribute("fromAccreditamento", false);
+			Long accreditamentoId = accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId();
+			return goToEdit(model, prepareEventoWrapperEdit(new Evento(), providerId, accreditamentoId, pianoFormativoId), redirectAttrs);
+		}
+//		catch (AccreditamentoNotFoundException ex){
+//			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"),ex);
+//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+//			redirectAttrs.addAttribute("providerId", providerId);
+//			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+//			return "redirect:/provider/{providerId}/pianoFormativo/list";
+//		}
+		catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";
@@ -100,13 +131,45 @@ public class EventoController {
 	 * */
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/edit")
-	public String editEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
+	public String editEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/edit"));
 		try{
+			model.addAttribute("returnLink", "/accreditamento/"+ accreditamentoId + "/edit?tab=tab4");
+			model.addAttribute("fromAccreditamento", true);
 			return goToEdit(model, prepareEventoWrapperEdit(eventoService.getEvento(id),0L,accreditamentoId,pianoFormativoId),redirectAttrs);
-		}catch (Exception ex){
+		}
+		catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
+	/*
+	 * MODIFICA EVENTO IN PIANO FORMATIVO (piano formativo)
+	 * */
+//	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)") TODO
+	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/edit")
+	public String editEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
+			Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/edit"));
+		try{
+			model.addAttribute("returnLink", "/provider/" + providerId + "/pianoFormativo/list");
+			model.addAttribute("fromAccreditamento", false);
+			Long accreditamentoId = accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId();
+			return goToEdit(model, prepareEventoWrapperEdit(eventoService.getEvento(id),0L,accreditamentoId,pianoFormativoId),redirectAttrs);
+		}
+//		catch (AccreditamentoNotFoundException ex){
+//			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/edit"),ex);
+//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+//			redirectAttrs.addAttribute("providerId", providerId);
+//			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+//			return "redirect:/provider/{providerId}/pianoFormativo/list";
+//		}
+		catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";
@@ -128,6 +191,12 @@ public class EventoController {
 				return "redirect:/accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show";
 			}
 			LOGGER.info(Utils.getLogMessage("MODE: " + from));
+			if(model.asMap().get("mode") != null && model.asMap().get("mode").equals("edit")) {
+				model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/edit?tab=tab4");
+			}
+			else {
+				model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/show?tab=tab4");
+			}
 			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId, accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show"),ex);
@@ -138,10 +207,47 @@ public class EventoController {
 	}
 
 	/*
+	 * SHOW EVENTO IN PIANO FORMATIVO (piano formativo)
+	 */
+//	@PreAuthorize("@securityAccessServiceImpl.canShowPianoFormativo(principal,#providerId)") TODO?
+	@RequestMapping(value = "/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/show")
+	public String showEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
+			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show"));
+		try {
+			//parametro per decidere se tornare in edit o in show accreditamento dopo un eventoShow
+			if(from != null) {
+				redirectAttrs.addFlashAttribute("mode", from);
+				return "redirect:/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show";
+			}
+			LOGGER.info(Utils.getLogMessage("MODE: " + from));
+
+			//per il momento non c'è nessuna distinzione a seconda del from (tuttavia in thymleaf è comodo portarselo dietro)
+			model.addAttribute("returnLink", "/provider/" + providerId + "/pianoFormativo/list");
+
+			Long accreditamentoId = accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId();
+			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId, accreditamentoId));
+		}
+//		catch (AccreditamentoNotFoundException ex){
+//			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show"),ex);
+//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+//			redirectAttrs.addAttribute("providerId", providerId);
+//			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+//			return "redirect:/provider/{providerId}/pianoFormativo/list";
+//		}
+		catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
+	/*
 	 * SALVATAGGIO EVENTO IN PIANO FORMATIVO (accreditamento)
 	 * */
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/save", method=RequestMethod.POST)
-	public String saveEvento(@ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+	public String saveEventoAccreditamento(@ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
 			Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/save"));
 		try{
@@ -178,13 +284,57 @@ public class EventoController {
 		}
 	}
 
+	/*
+	 * SALVATAGGIO EVENTO IN PIANO FORMATIVO (piano formativo)
+	 * */
+	@RequestMapping(value = "/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/save", method=RequestMethod.POST)
+	public String saveEventoPianoFormativo(@ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+			Model model, RedirectAttributes redirectAttrs, @PathVariable Long providerId, @PathVariable Long pianoFormativoId){
+		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/save"));
+		try{
+			if(wrapper.getEvento().isNew()){
+				Evento evento = wrapper.getEvento();
+				evento.setProvider(providerService.getProvider(wrapper.getProviderId()));
+				evento.setAccreditamento(accreditamentoService.getAccreditamento(wrapper.getAccreditamentoId()));
+			}
+
+			eventoValidator.validate(wrapper.getEvento(), result, "evento.", true);
+
+			if(result.hasErrors()){
+				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
+				populateListFromAccreditamento(model, wrapper.getAccreditamentoId());
+				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+				return EDIT;
+			}else{
+				eventoService.save(wrapper.getEvento());
+				PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
+				pianoFormativo.addEvento(wrapper.getEvento());
+				pianoFormativoService.save(pianoFormativo);
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+				return "redirect:/provider/{providerId}/pianoFormativo/list";
+			}
+		}
+//		catch (AccreditamentoNotFoundException ex){
+//			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/save"),ex);
+//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+//			redirectAttrs.addAttribute("providerId", providerId);
+//			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+//			return "redirect:/provider/{providerId}/pianoFormativo/list";
+//		}
+		catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/save"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+			return EDIT;
+		}
+	}
 
 	/*
 	 * ELIMINAZIONE DI UN EVENTO IN PIANO FORMATIVO (accreditamento)
 	 * */
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/delete")
-	public String removeEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
+	public String removeEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/delete"));
 		try{
@@ -195,7 +345,8 @@ public class EventoController {
 			redirectAttrs.addFlashAttribute("currentTab","tab4");
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
 			return "redirect:/accreditamento/{accreditamentoId}/edit";
-		}catch (Exception ex){
+		}
+		catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/evento/" + id + "/delete"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
@@ -203,6 +354,36 @@ public class EventoController {
 		}
 	}
 
+	/*
+	 * ELIMINAZIONE DI UN EVENTO IN PIANO FORMATIVO (piano formativo)
+	 * */
+//	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#accreditamentoId)") TODO
+	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/delete")
+	public String removeEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
+			Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/delete"));
+		try{
+			PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
+			pianoFormativo.removeEvento(id);
+			pianoFormativoService.save(pianoFormativo);
+			eventoService.delete(id);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+			return "redirect:/provider/" + providerId + "/pianoFormativo/list";
+		}
+//		catch (AccreditamentoNotFoundException ex){
+//			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/delete"),ex);
+//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+//			redirectAttrs.addAttribute("providerId", providerId);
+//			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+//			return "redirect:/provider/{providerId}/pianoFormativo/list";
+//		}
+		catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + id + "/delete"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
 
 	//TODO domenico (check se fa la query di tutto il provider)
 	/*** LIST EVENTO ***/
@@ -232,6 +413,7 @@ public class EventoController {
 	public String showEvento(@PathVariable Long providerId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + id + "/show"));
 		try {
+			model.addAttribute("returnLink", "/provider/"+ providerId + "/evento/list");
 			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + id + "/show"),ex);
