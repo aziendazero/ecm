@@ -263,6 +263,8 @@
 	           	.columns.adjust();
 			});
 
+			var stack_topright = {"dir1": "down", "dir2": "left", "push": "top", "firstpos1": 25, "firstpos2": 25};
+
 			if([[${message}]]){
 	        	sendNotify();
 		      }
@@ -273,9 +275,15 @@
 					text:  [[${message} == null ? '' : #{__${message?.testo}__}]],
 					type: [[${message?.tipo}]],
 					hide: false,
+					addclass: "stack-topright",
+					stack: stack_topright,
                     buttons: {
-                    	sticker: false
-                    }
+                    	sticker: false,
+                    },
+					mobile: {
+					    swipe_dismiss: true,
+				    	styling: true ,
+					}
             	});
 			};
 
@@ -285,9 +293,16 @@
 					text:  testo,
 					type: tipo,
 					hide: false,
+					addclass: "stack-topright",
+					stack: stack_topright,
+					animation: "fade",
                     buttons: {
-                    	sticker: false
-                    }
+                    	sticker: false,
+                    },
+					mobile: {
+					    swipe_dismiss: true,
+				    	styling: true,
+					}
             	});
 			};
 
