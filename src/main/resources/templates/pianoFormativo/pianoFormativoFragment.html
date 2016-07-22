@@ -9,7 +9,7 @@
 	<!-- parametri del fragment: boolean passato come parametro, id del provider e nome del pianoFormativo -->
 	<th:block th:fragment="pianoFormativo(pianoFormativo, accreditamentoId, editabile)">
 		<!-- differenzia se il piano formativo viene chiamato dall'accreditamento o dall'apposita sidebar -->
-		<th:block th:with="prefixURL=${accreditamentoId != null ? '/accreditamento/${accreditamentoId}' : ''}">
+		<th:block th:with="prefixURL=${accreditamentoId != null ? '/accreditamento/'+accreditamentoId : ''}">
 
 
 			<div th:if="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventi)}" th:text="#{label.nessun_evento_piano_formativo}"></div>
