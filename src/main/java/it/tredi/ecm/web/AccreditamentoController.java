@@ -151,8 +151,15 @@ public class AccreditamentoController {
 				case "tab1":	model.addAttribute("currentTab", "tab1");
 							 	break;
 
-				case "tab2":	if(accreditamentoWrapper.isSezione1Stato())
+				case "tab2":	if(accreditamentoWrapper.isSezione1Stato()) {
 									model.addAttribute("currentTab", "tab2");
+									if (accreditamentoWrapper.getResponsabileSegreteria() == null &&
+									    accreditamentoWrapper.getResponsabileAmministrativo() == null &&
+									    accreditamentoWrapper.getResponsabileSistemaInformatico() == null &&
+									    accreditamentoWrapper.getResponsabileQualita() == null) {
+										model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
+									}
+								}
 								else {
 									model.addAttribute("currentTab", "tab1");
 									model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
