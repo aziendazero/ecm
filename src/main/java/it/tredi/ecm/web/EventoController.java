@@ -41,6 +41,7 @@ public class EventoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoController.class);
 	private final String EDIT = "evento/eventoEdit";
 
+
 	@Autowired private EventoService eventoService;
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
