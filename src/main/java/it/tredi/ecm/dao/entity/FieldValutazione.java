@@ -3,7 +3,7 @@ package it.tredi.ecm.dao.entity;
 import java.util.Objects;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,16 +11,12 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Disciplina extends BaseEntity{
-	private String nome;
+public class FieldValutazione extends Field{
+	private boolean esito;
+	private String note;
 	
-	@OneToOne
-	private Professione professione;
-	
-	public Disciplina(){}
-	public Disciplina(String nome){
-		this.nome = nome;
-	}
+	@ManyToOne
+	private Persona valutatore;
 	
 	@Override
     public boolean equals(Object o) {
@@ -30,7 +26,7 @@ public class Disciplina extends BaseEntity{
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Disciplina entitapiatta = (Disciplina) o;
+        FieldValutazione entitapiatta = (FieldValutazione) o;
         return Objects.equals(id, entitapiatta.id);
     }
 }

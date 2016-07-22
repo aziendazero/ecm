@@ -35,6 +35,10 @@ public class Account extends BaseEntity{
 	@Column(name = "data_scadenza_password")
 	private LocalDate dataScadenzaPassword;
 	
+	private String nome;
+	private String cognome;
+	private String codiceFiscale;
+	
 	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "account_profile", 
     			joinColumns = {

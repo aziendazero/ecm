@@ -1,36 +1,34 @@
 package it.tredi.ecm.dao.entity;
 
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
+import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
+@Entity
 public class Valutazione extends BaseEntity{
-	private int campo;
-	private boolean esito;
-	private String valutazione;
-	
-	@ManyToOne
+	@OneToOne
+	private Account account;
+	@OneToOne
 	private Accreditamento accreditamento;
-	
-	@ManyToOne
-	private Persona valutatore;
-	
-	@Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Valutazione entitapiatta = (Valutazione) o;
-        return Objects.equals(id, entitapiatta.id);
-    }
+	@OneToMany
+	private Set<FieldValutazione> valutazioni = new HashSet<FieldValutazione>();
+	@Enumerated(EnumType.STRING)
+	@Column(name="tipo_valutazione")
+	private ValutazioneTipoEnum tipoValutazione;
+	private String valutazioneComplessiva;
+	@Column(name="data_valutazione")
+	private LocalDate dataValutazione;
 }

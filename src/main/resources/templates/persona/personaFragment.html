@@ -58,6 +58,9 @@
 						<!-- COGNOME -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">1</label>
+							
+							<label class="control-label col-xs-1" th:text="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cognome',personaWrapper.ruolo)}"></label>
+							
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cognome_persona">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cognome}">Cognome</span>
 								<span th:if="${editabile}" class="required">*</span>
