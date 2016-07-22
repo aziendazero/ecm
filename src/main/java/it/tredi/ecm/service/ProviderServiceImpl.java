@@ -27,16 +27,11 @@ public class ProviderServiceImpl implements ProviderService {
 
 	private final Logger LOGGER = Logger.getLogger(ProviderService.class);
 
-	@Autowired
-	private ProviderRepository providerRepository;
-	@Autowired
-	private PersonaService personaService;
-	@Autowired
-	private ProfileAndRoleService profileAndRoleService;
-	@Autowired
-	private AccountService accountService;
-	@Autowired
-	private FileService fileService;
+	@Autowired private ProviderRepository providerRepository;
+	@Autowired private PersonaService personaService;
+	@Autowired private ProfileAndRoleService profileAndRoleService;
+	@Autowired private AccountService accountService;
+	@Autowired private FileService fileService;
 
 	@Override
 	public Provider getProvider() {

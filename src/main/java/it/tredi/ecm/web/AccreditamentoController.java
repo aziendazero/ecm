@@ -26,6 +26,7 @@ import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.PersonaService;
@@ -48,6 +49,14 @@ public class AccreditamentoController {
 		dataBinder.setDisallowedFields("id");
 	}
 
+	@RequestMapping("/accreditamento/{accreditamentoId}/stato/{stato}")
+	public String SetStatoFromBonita(@PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato) throws Exception{
+		//TODO modifica stato della domanda da parte del flusso
+		//lo facciamo cosi in modo tale da non dover disabilitare la cache di hibernate
+		//accreditamentoService.setStato(accreditamentoId, stato);
+		return "";
+	}
+	
 	/***	Get Lista Accreditamenti per provider CORRENTE	***/
 	@RequestMapping("/provider/accreditamento/list")
 	public String getAllAccreditamentiForCurrentProvider(RedirectAttributes redirectAttrs) throws Exception{

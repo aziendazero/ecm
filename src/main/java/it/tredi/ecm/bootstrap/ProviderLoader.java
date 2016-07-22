@@ -205,24 +205,28 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			componenteComitato1.setRuolo(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
 			componenteComitato1.setAnagrafica(responsabileAmministrativo.getAnagrafica());
 			componenteComitato1.setProfessione(discipline.iterator().next().getProfessione());
+			componenteComitato1.setCoordinatoreComitatoScientifico(false);
 			personaRepository.save(componenteComitato1);
 
 			Persona componenteComitato2 = new Persona();
 			componenteComitato2.setRuolo(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
 			componenteComitato2.setAnagrafica(responsabileSegreteria.getAnagrafica());
 			componenteComitato2.setProfessione(discipline.iterator().next().getProfessione());
+			componenteComitato2.setCoordinatoreComitatoScientifico(false);
 			personaRepository.save(componenteComitato2);
 
 			Persona componenteComitato3 = new Persona();
 			componenteComitato3.setRuolo(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
 			componenteComitato3.setAnagrafica(responsabileQualita.getAnagrafica());
 			componenteComitato3.setProfessione(discipline.iterator().next().getProfessione());
+			componenteComitato3.setCoordinatoreComitatoScientifico(false);
 			personaRepository.save(componenteComitato3);
 
 			Persona componenteComitato4 = new Persona();
 			componenteComitato4.setRuolo(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
 			componenteComitato4.setAnagrafica(responsabileSistemaInformatico.getAnagrafica());
 			componenteComitato4.setProfessione(discipline.iterator().next().getProfessione());
+			componenteComitato4.setCoordinatoreComitatoScientifico(false);
 			personaRepository.save(componenteComitato4);
 
 			provider.addPersona(componenteComitato1);

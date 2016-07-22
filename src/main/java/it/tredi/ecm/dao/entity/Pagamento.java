@@ -6,8 +6,6 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,8 +16,8 @@ import lombok.Setter;
 public class Pagamento extends BaseEntity{
 	@Column(name = "data_pagamento")
 	private LocalDate dataPagamento;
-	@Column(name = "costo", precision=10, scale=2)
-	private BigDecimal costo;
+	@Column(name = "importo", precision=10, scale=2)
+	private BigDecimal importo;
 	@Column(name = "anno_pagamento")
 	private Integer annoPagamento;
 	

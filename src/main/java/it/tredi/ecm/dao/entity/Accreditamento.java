@@ -2,9 +2,10 @@ package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-
+import java.util.Set;
 import java.time.temporal.ChronoUnit;
 
 import javax.persistence.CascadeType;
@@ -14,6 +15,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
@@ -74,10 +76,17 @@ public class Accreditamento extends BaseEntity{
 	@Type(type = "serializable")
 	private List<Integer> idEditabili = new ArrayList<Integer>();
 	private boolean editabile = false;
-
+	
+	@OneToMany(mappedBy = "accreditamento")
+	private Set<FieldEditabile> idEditabil = new HashSet<FieldEditabile>();
+	
 	@OneToOne
 	private PianoFormativo pianoFormativo;
 
+	@OneToOne
+	private GruppoCrecm gruppoCrecm;
+	
+	
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){
 		this.tipoDomanda = tipoDomanda;
