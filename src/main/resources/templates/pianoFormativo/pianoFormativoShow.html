@@ -3,22 +3,21 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
 	layout:decorator="fragments/template">
 <head lang="it">
-</head>
+</head>				<!-- TODO sistemare (aggiungere h2 giusti, pulsanti e la parte di x-content (fragment solo tabella eventi) -->
 <body>
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.info_provider}">label.info_provider</h2>
+						<h2>Crea label piano formativo</h2>
 						<div class="pull-right buttons-header">
-							<a th:if="${mode == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoId}/show|}"></a>
-							<a th:if="${mode != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoId}/${mode}|}"></a>
+							<button class="btn btn-primary">change me</button>
 						</div>
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:include="provider/providerFragment :: provider(false)"></th:block>
+					<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(false)"></th:block>
 
 				</div>
 			</div>

@@ -106,8 +106,8 @@ public class AccreditamentoController {
 		try {
 			if (tab != null) {
 				model.addAttribute("currentTab", tab);
+				LOGGER.info(Utils.getLogMessage("TAB:" + tab));
 			}
-			LOGGER.info(Utils.getLogMessage("TAB:" + tab));
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
 			return goToAccreditamentoShow(model, accreditamento);
 		}catch (Exception ex){
@@ -125,11 +125,10 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + id + "/edit"));
 		try {
 			if (tab != null) {
-				model.addAttribute("currentTab", tab);
+				LOGGER.info(Utils.getLogMessage("TAB:" + tab));
 			}
-			LOGGER.info(Utils.getLogMessage("TAB:" + tab));
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
-			return goToAccreditamentoEdit(model, accreditamento);
+			return goToAccreditamentoEdit(model, accreditamento, tab);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + id + "/edit"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -145,11 +144,74 @@ public class AccreditamentoController {
 		return "accreditamento/accreditamentoShow";
 	}
 
-	private String goToAccreditamentoEdit(Model model, Accreditamento accreditamento){
+	private String goToAccreditamentoEdit(Model model, Accreditamento accreditamento, String tab){
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperEdit(accreditamento);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
+		selectCorrectTab(tab, accreditamentoWrapper, model);
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoEdit"));
 		return "accreditamento/accreditamentoEdit";
+	}
+
+	//Check per capire in che tab ritornare e con quale messaggio
+	private void selectCorrectTab(String tab, AccreditamentoWrapper accreditamentoWrapper, Model model){
+		if(tab != null) {
+			switch(tab) {
+
+				case "tab1":	model.addAttribute("currentTab", "tab1");
+							 	break;
+
+				case "tab2":	if(accreditamentoWrapper.isSezione1Stato()) {
+									model.addAttribute("currentTab", "tab2");
+									if (accreditamentoWrapper.getResponsabileSegreteria() == null &&
+									    accreditamentoWrapper.getResponsabileAmministrativo() == null &&
+									    accreditamentoWrapper.getResponsabileSistemaInformatico() == null &&
+									    accreditamentoWrapper.getResponsabileQualita() == null) {
+										model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
+									}
+								}
+								else {
+									model.addAttribute("currentTab", "tab1");
+									model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+								}
+								break;
+
+				case "tab3":	if(accreditamentoWrapper.isSezione2Stato())
+									model.addAttribute("currentTab", "tab3");
+								else {
+									if(accreditamentoWrapper.isSezione1Stato()) {
+										model.addAttribute("currentTab", "tab2");
+										model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
+									}
+									else {
+										model.addAttribute("currentTab", "tab1");
+										model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+									}
+								}
+								break;
+
+				case "tab4":  	if(accreditamentoWrapper.isCompleta())
+									model.addAttribute("currentTab", "tab4");
+								else {
+									if(accreditamentoWrapper.isSezione2Stato()) {
+										model.addAttribute("currentTab", "tab3");
+										model.addAttribute("message", new Message("message.warning", "message.compilare_altre_tab", "warning"));
+									}
+									else {
+										if(accreditamentoWrapper.isSezione1Stato()) {
+											model.addAttribute("currentTab", "tab2");
+											model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
+										}
+										else {
+											model.addAttribute("currentTab", "tab1");
+											model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+										}
+									}
+								}
+								break;
+
+				default:		break;
+			}
+		}
 	}
 
 	/*** NEW 	Nuova domanda accreditamento per provider corrente	***/

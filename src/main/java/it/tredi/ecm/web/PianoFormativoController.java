@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.PianoFormativo;
@@ -129,12 +130,15 @@ public class PianoFormativoController {
 	 * */
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/pianoFormativo/list")
-	public String showListaPianiFormativi(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+	public String showListaPianiFormativi(@PathVariable Long providerId, @RequestParam(required = false) String accordion, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/list"));
 		try{
 			model.addAttribute("pianoFormativoList", pianoFormativoService.getAllPianiFormativiForProvider(providerId));
 			model.addAttribute("canInsertPianoFormativo", providerService.canInsertPianoFormativo(providerId));
 			model.addAttribute("providerId", providerId);
+			if (accordion != null) {
+				model.addAttribute("accordion", accordion);
+			}
 			return LIST;
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/list"),ex);

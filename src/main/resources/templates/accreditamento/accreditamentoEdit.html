@@ -39,8 +39,6 @@
 
 				$(document).ready(function() {
 
-					var stack_topright = {"dir1": "down", "dir2": "left", "push": "top", "firstpos1": 25, "firstpos2": 25};
-
 					$('a[data-toggle="tab"]').on('click', function (e) {
 						// tab selezionata
 						var tab = $(e.target).attr('id');
@@ -59,16 +57,7 @@
 						        });
 								//altrimenti apre un nuovo pnotify
 						        if (!exists) {
-						        	var notify = new PNotify({
-										title: [[#{message.warning}]],
-										text:  [[#{message.compilare_tab1}]],
-										type: "warning",
-										hide: false,
-										stack: stack_topright,
-					                    buttons: {
-					                    	sticker: false
-					                    }
-					            	});
+						        	sendNotifyStatic([[#{message.warning}]], [[#{message.compilare_tab1}]], "warning");
 						        }
 						        return false;
 							} else {
@@ -85,16 +74,7 @@
 							            }
 							        });
 							        if (!exists) {
-							        	var notify = new PNotify({
-											title: [[#{message.warning}]],
-											text:  [[#{message.legale_non_piu_modificabile}]],
-											type: "warning",
-											hide: false,
-											stack: stack_topright,
-						                    buttons: {
-						                    	sticker: false
-						                    }
-						            	});
+							        	sendNotifyStatic([[#{message.warning}]], [[#{message.legale_non_piu_modificabile}]], "warning");
 							        }
 								}
 								//in ogni caso non è bloccante
@@ -111,16 +91,7 @@
 						            }
 						        });
 						        if (!exists) {
-						        	var notify = new PNotify({
-										title: [[#{message.warning}]],
-										text:  [[#{message.compilare_tab2}]],
-										type: "warning",
-										hide: false,
-										stack: stack_topright,
-					                    buttons: {
-					                    	sticker: false
-					                    }
-					            	});
+						        	sendNotifyStatic([[#{message.warning}]], [[#{message.compilare_tab2}]], "warning");
 						        }
 						        return false;
 							}
@@ -136,16 +107,8 @@
 						            }
 						        });
 						        if (!exists) {
-						        	var notify = new PNotify({
-										title: [[#{message.warning}]],
-										text:  [[#{message.compilare_altre_tab}]],
-										type: "warning",
-										hide: false,
-										stack: stack_topright,
-					                    buttons: {
-					                    	sticker: false
-					                    }
-					            	});
+						        	sendNotifyStatic([[#{message.warning}]], [[#{message.compilare_altre_tab}]], "warning");
+
 						        }
 						        return false;
 							}

@@ -124,9 +124,14 @@ public class ProviderController {
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canShowProvider(principal,#id)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/show")
-	public String showProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
+	public String showProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id,
+			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/show"));
 		try {
+			if (from != null) {
+				redirectAttrs.addFlashAttribute("mode", from);
+				return "redirect:/accreditamento/" + accreditamentoId + "/provider/" + id + "/show";
+			}
 			return goToShow(model, prepareProviderWrapperShow(providerService.getProvider(id), accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/show"),ex);

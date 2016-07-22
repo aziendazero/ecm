@@ -6,7 +6,7 @@
 </head>
 <body>
 	<div layout:fragment="content">
-		<div class="pianoFormativo.annoPianoFormativo">
+		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
@@ -34,44 +34,21 @@
 									<!-- start accordion -->
 									<div class="accordion" role="tablist" aria-multiselectable="true">
 										<div class="panel">
-											<a class="panel-heading" role="tab" th:id="${'heading'+pianoFormativo.annoPianoFormativo}"
+											<a class="panel-heading" role="tab" th:id="${pianoFormativo.annoPianoFormativo}"
 												data-toggle="collapse" data-parent=".accordion"
 												th:href="${'#collapse'+pianoFormativo.annoPianoFormativo}" aria-expanded="true"
-												th:aria-controls="${'collapse'+pianoFormativo.annoPianoFormativo}">
+												th:attr="aria-controls=${'collapse'+pianoFormativo.annoPianoFormativo}">
 												<span class="panel-title" th:text="${pianoFormativo.annoPianoFormativo}">2016</span>
 											</a>
 											<div th:id="${'collapse'+pianoFormativo.annoPianoFormativo}" class="panel-collapse collapse"
-												role="tabpanel" th:aria-labelledby="${'heading'+pianoFormativo.annoPianoFormativo}">
+												role="tabpanel" th:attr="aria-labelledby=${'heading'+pianoFormativo.annoPianoFormativo}">
 												<div class="panel-body">
 
 
-													<th:block th:substituteby="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, 198, ${pianoFormativo.pianoModificabile})"></th:block>
+													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${pianoFormativo.pianoModificabile})"></th:block>
 
-													<a th:if="${pianoFormativo.pianoModificabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/198/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
+													<a th:if="${pianoFormativo.pianoModificabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
 
-<!-- 													<div th:if="${#lists.isEmpty(pianoFormativo.eventi)}" th:text="#{label.nessun_evento_list}"></div> -->
-
-<!-- 													<table th:unless="${#lists.isEmpty(pianoFormativo.eventi)}" class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-eventi" cellspacing="0" width="100%"> -->
-<!-- 														<thead> -->
-<!-- 															<tr> -->
-<!-- 																<th th:text="#{label.id}">label.id</th> -->
-<!-- 																<th th:text="#{label.titolo}">label.titolo</th> -->
-<!-- 																<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th> -->
-<!-- 																<th th:text="#{label.prezzo}">label.prezzo</th> -->
-<!-- 																<th th:text="#{label.stato}">label.stato</th> -->
-<!-- 															</tr> -->
-<!-- 														</thead> -->
-<!-- 														<tbody th:remove="all-but-first"> -->
-<!-- 															<tr th:each="evento, row : ${pianoFormativo.eventi}"> -->
-<!-- 																<td th:text="${evento.id}"></td> -->
-<!-- 																<td><a th:text="${evento.titolo}" data-toggle="modal" data-target=".modal-eventoShow" th:onclick="'openEventoShow('+${evento.id}+', '+${pianoFormativo.id}+');'"></a></td> -->
-<!-- 																<td th:text="${evento.proceduraFormativa.nome}"></td> -->
-<!-- 																<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td> -->
-<!-- 																<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td> -->
-<!-- 																<td th:unless="${evento.pagato}"><button type="button" class="btn btn-primary btn-mypay" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per il pagamento con MYPAY!')">Paga con MYPAY!</button></td> -->
-<!-- 															</tr> -->
-<!-- 														</tbody> -->
-<!-- 													</table> -->
 												</div>
 											</div>
 										</div>
@@ -130,18 +107,38 @@
 			/*<![CDATA[*/
 				$(document).ready(function() {
 
-					$('.datatable-responsive-piano-formativo').DataTable({
+					//table responsive evento edit
+					$('.datatable-responsive-evento-edit').DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"autoWidth": false,
+						"columnDefs": [
+							{ "targets": 1, "width": "210px", "sClass": "center" },
+						],
+					});
+
+					//table responsive evento show
+					$('.datatable-responsive-evento-show').DataTable({
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
 						"ordering" : false,
 						"columnDefs": [ {
 							"targets": 1,
-							"width": "1px",
+							"width": "70px",
 							"sClass": "center"
 						} ],
 					});
-				})
+
+					//show accordion
+					if([[${accordion}]] != null) {
+						$('#collapse'+[[${accordion}]]).collapse('show');
+						console.log("yes");
+					}
+
+				});
 
 				function openPianoFormativoNew() {
 					var url = [[@{|/provider/${providerId}/pianoFormativo/new|}]]

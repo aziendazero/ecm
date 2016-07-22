@@ -117,9 +117,14 @@ public class DatiAccreditamentoController {
 	/*** SHOW ***/
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/{id}/show")
-	public String showDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+	public String showDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId,
+			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/show"));
 		try{
+			if(from != null) {
+				redirectAttrs.addFlashAttribute("mode", from);
+				return "redirect:/accreditamento/"+ accreditamentoId + "/dati/" + id + "/show";
+			}
 			return goToShow(model, prepareDatiAccreditamentoWrapperShow(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/show"),ex);

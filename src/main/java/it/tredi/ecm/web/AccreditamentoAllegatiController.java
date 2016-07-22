@@ -79,9 +79,13 @@ public class AccreditamentoAllegatiController {
 	/***	SHOW	***/
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/allegati/show")
-	public String showAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+	public String showAllegati(@PathVariable Long accreditamentoId, @RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/show"));
 		try{
+			if (from != null) {
+				redirectAttrs.addFlashAttribute("mode", from);
+				return "redirect:/accreditamento/" + accreditamentoId + "/allegati/show";
+			}
 			return goToShow(model, prepareAccreditamentoAllegatiWrapperShow(accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/show"),ex);
@@ -152,12 +156,6 @@ public class AccreditamentoAllegatiController {
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
-	}
-
-	@RequestMapping(value = "/allegatiRedirect/{target}/{targetId}/{mode}")
-	public String allegatiRedirect (@PathVariable String target, @PathVariable Long targetId, @PathVariable String mode,  RedirectAttributes redirectAttrs) {
-		redirectAttrs.addFlashAttribute("currentTab", "tab3");
-		return "redirect:/" + target + "/" + targetId + "/" + mode;
 	}
 
 	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapperEdit(Long accreditamentoId){
