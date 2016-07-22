@@ -2,6 +2,8 @@ package it.tredi.ecm.utils;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -10,7 +12,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
+import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.bean.CurrentUser;
 
 public class Utils {
@@ -60,5 +65,43 @@ public class Utils {
 	public static void logDebugErrorFields(org.slf4j.Logger LOGGER, Errors errors){
 		if(LOGGER.isDebugEnabled())
 			errors.getFieldErrors().forEach( fieldError -> LOGGER.debug(fieldError.getField() + ": '" + fieldError.getRejectedValue() + "' [" + fieldError.getCode()+ "]"));
+	}
+	
+	/*
+	 * Mi restituisce la lista di ENUM per legare le checkbox lato thymeleafe
+	 * */
+	public static Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<FieldEditabile> src, SubSetFieldEnum type){
+		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
+		
+		src.forEach(f -> {
+			if(f.getIdField().getSubSetField() == type)
+				dst.add(f.getIdField());
+		});
+		
+		return dst;
+	}
+	
+	/*
+	 * Mi restituisce la sublist di record presenti su db per valutare nel save del controller quali eliminare perchè deselezionate
+	 * */
+	public static Set<FieldEditabile> getSubset(Set<FieldEditabile> src, SubSetFieldEnum type){
+		Set<FieldEditabile> dst = new HashSet<FieldEditabile>();
+		
+		src.forEach(f -> {
+			if(f.getIdField().getSubSetField() == type)
+				dst.add(f);
+		});		
+		
+		return dst;
+	}
+	
+	/*
+	 * Controllo se un determinato IdFieldEnum è presente nella lista
+	 * */
+	public static FieldEditabile getField(Set<FieldEditabile> src, IdFieldEnum idEnum){
+		for(FieldEditabile f : src)
+			if(f.getIdField() == idEnum)
+				return f;
+		return null;
 	}
 }

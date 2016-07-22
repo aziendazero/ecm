@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html layout:decorator="fragments/template"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-md-12 col-sm-12 col-xs-12">
+
+				<!-- title -->
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="home-title" th:text="#{label.home_page}">Home
+							page</div>
+					</div>
+				</div>
+
+				<div class="divider"></div>
+
+				<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni">
+					<form id="formEvento" class="form-horizontal form-label-left"
+						th:action="@{/edit/save}" method="post"
+						enctype="multipart/form-data" novalidate="novalidate">
+
+						<input type="hidden" name="editId" th:value="${wrapper.accreditamento.id}" />
+						
+						<div class="check">
+							<input type="checkbox"
+								th:field="${wrapper.selected}"
+								th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__SOSTITUISCI}" /> 
+								<span th:text="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__SOSTITUISCI}">Generale </span>
+						</div>
+						
+						<div class="check">
+							<input type="checkbox"
+								th:field="${wrapper.selected}"
+								th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__COGNOME}" /> 
+								<span th:text="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__COGNOME}">Generale </span>
+						</div>
+						<div class="check">
+							<input type="checkbox"
+								th:field="${wrapper.selected}"
+								th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__NOME}" /> 
+								<span th:text="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__NOME}">Generale </span>
+						</div>
+						<button class="btn btn-success pull-right" th:text="#{label.salva}" type="submit"></button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
