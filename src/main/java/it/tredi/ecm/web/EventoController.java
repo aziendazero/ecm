@@ -26,6 +26,7 @@ import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ObiettivoService;
@@ -82,7 +83,7 @@ public class EventoController {
 	 * */
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/new")
-	public String newEvento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId,
+	public String newEventoPianoFormativoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId,
 							Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"));
 		try{
@@ -203,6 +204,32 @@ public class EventoController {
 		}
 	}
 
+	/*
+	 * INSERIMENTO EVENTO IN PIANO FORMATIVO
+	 * */
+	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
+	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/new")
+	public String newEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId,
+							Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"));
+		try{
+			Long accreditamentoId = accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId();
+			return goToEdit(model, prepareEventoWrapperEdit(new Evento(), providerId, accreditamentoId, pianoFormativoId), redirectAttrs);
+		}catch (AccreditamentoNotFoundException ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+			redirectAttrs.addAttribute("providerId", providerId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+			return "redirect:/provider/{providerId}/pianoFormativo/list";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+	
+	
 
 	//TODO domenico (check se fa la query di tutto il provider)
 	/*** LIST EVENTO ***/

@@ -21,6 +21,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
+import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.utils.Utils;
 
 @Service
@@ -97,11 +98,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 * Restituisce l'unica domanda di accreditamento che ha una data di fine accreditamento "attiva" e che è in stato "APPROVATO"
 	 * */	
 	@Override
-	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId) {
+	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId) throws AccreditamentoNotFoundException{
 		LOGGER.debug(Utils.getLogMessage("Recupero eventuale accreditamento attivo per il provider: " + providerId));
 		Accreditamento accreditamento = accreditamentoRepository.findOneByProviderIdAndStatoAndDataFineAccreditamentoAfter(providerId, AccreditamentoStatoEnum.ACCREDITATO, LocalDate.now());
 		if(accreditamento != null)
 			LOGGER.debug("Trovato accreditamento attivo: " + accreditamento.getId() + "  per il provider: " + providerId);
+		else 
+			throw new AccreditamentoNotFoundException("Nessun Accreditamento attivo trovato per il provider " + providerId);
 		return accreditamento;
 	}
 	
