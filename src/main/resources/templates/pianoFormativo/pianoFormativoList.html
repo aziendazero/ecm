@@ -6,7 +6,7 @@
 </head>
 <body>
 	<div layout:fragment="content">
-		<div class="pianoFormativo.annoPianoFormativo">
+		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
@@ -34,14 +34,14 @@
 									<!-- start accordion -->
 									<div class="accordion" role="tablist" aria-multiselectable="true">
 										<div class="panel">
-											<a class="panel-heading" role="tab" th:id="${'heading'+pianoFormativo.annoPianoFormativo}"
+											<a class="panel-heading" role="tab" th:id="${pianoFormativo.annoPianoFormativo}"
 												data-toggle="collapse" data-parent=".accordion"
 												th:href="${'#collapse'+pianoFormativo.annoPianoFormativo}" aria-expanded="true"
-												th:aria-controls="${'collapse'+pianoFormativo.annoPianoFormativo}">
+												th:attr="aria-controls=${'collapse'+pianoFormativo.annoPianoFormativo}">
 												<span class="panel-title" th:text="${pianoFormativo.annoPianoFormativo}">2016</span>
 											</a>
 											<div th:id="${'collapse'+pianoFormativo.annoPianoFormativo}" class="panel-collapse collapse"
-												role="tabpanel" th:aria-labelledby="${'heading'+pianoFormativo.annoPianoFormativo}">
+												role="tabpanel" th:attr="aria-labelledby=${'heading'+pianoFormativo.annoPianoFormativo}">
 												<div class="panel-body">
 
 
@@ -132,7 +132,13 @@
 						} ],
 					});
 
-				})
+					//show accordion
+					if([[${accordion}]] != null) {
+						$('#collapse'+[[${accordion}]]).collapse('show');
+						console.log("yes");
+					}
+
+				});
 
 				function openPianoFormativoNew() {
 					var url = [[@{|/provider/${providerId}/pianoFormativo/new|}]]
