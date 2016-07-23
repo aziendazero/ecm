@@ -45,7 +45,7 @@
 					<!-- PROCEDURE FORMATIVE -->
 					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.proceduraFormativa')} ? 'bad'">
 						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
-						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">1</label>
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.proceduraFormativa') : ''}"></label>
 						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="procedure_formative_radio">
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.procedure_formative}">Procedure formative</span>
 							<span th:if="${editabile}" class="required">*</span>
@@ -75,7 +75,7 @@
 					<!-- TITOLO PROGRAMMA FORMATIVO -->
 					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.titolo')} ? 'bad'">
 						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
-						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">2</label>
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.titolo') : ''}"></label>
 						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="procedure_formative_titolo">
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.titolo_programma_formativo}">Titolo del programma formativo</span>
 							<span th:if="${editabile}" class="required">*</span>
@@ -102,7 +102,7 @@
 					<!-- OBIETTIVO FORMATIVO NAZIONALE-->
 					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.obiettivoNazionale')} ? 'bad'">
 						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
-						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">3</label>
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.obiettivoNazionale') : ''}"></label>
 						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivo_formativo_nazionale">
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Nazionale</span>
 							<span th:if="${editabile}" class="required">*</span>
@@ -146,7 +146,7 @@
 					<!-- OBIETTIVO FORMATIVO REGIONALE -->
 					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.obiettivoRegionale')} ? 'bad'">
 						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
-						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">4</label>
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.obiettivoRegionale') : ''}"></label>
 						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivo_formativo_regionale">
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Nazionale</span>
 							<span th:if="${editabile}" class="required">*</span>
@@ -184,7 +184,7 @@
 					<!-- PROFESSIONI EVENTO -->
 					<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')} ? 'bad'">
 						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
-						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">5</label>
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.professioniEvento') : ''}"></label>
 						<label class="control-label col-md-3 col-sm-3 col-xs-11" for="evento_professioni">
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.evento_professioni}">Evento per professioni</span>
 							<span th:if="${editabile}" class="required">*</span>
@@ -222,7 +222,7 @@
 					<!-- PROFESSIONI/DISCIPLINE -->
 					<div class="item form-group">
 						<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
-						<label class="control-label col-xs-1 text-right" th:text="${counter != null} ? ${++counter} : ''">6</label>
+						<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.discipline') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="evento_professioni-select">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.professioni_discipline}">Professioni/discipline</span>
 								<span th:if="${editabile}" class="required">*</span>

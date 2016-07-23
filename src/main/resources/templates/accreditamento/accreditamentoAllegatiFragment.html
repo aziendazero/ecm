@@ -33,7 +33,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="attoCostitutivo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.attoCostitutivoModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, attoCostitutivo,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, attoCostitutivo,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('accreditamentoAllegati.file.attoCostitutivo') : null}, null, true, ${editabile})" ></th:block>
 
 						<!-- allegato 2 (esperienza formazione in ambito sanitario) -->
 						<div class="divider-dashed"></div>
@@ -41,7 +41,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="esperienzaFormazione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.esperienzaFormazioneModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('accreditamentoAllegati.file.esperienzaFormazione') : null}, null, true, ${editabile})" ></th:block>
 
 						<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
 						<div class="divider-dashed"></div>
@@ -49,7 +49,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="utilizzo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.utilizzoModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, utilizzo,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, utilizzo,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('accreditamentoAllegati.file.utilizzo') : null}, null, true, ${editabile})" ></th:block>
 
 						<!-- allegato 4 (sistema informatico dedicato alla formazione in ambito sanitario) -->
 						<div class="divider-dashed"></div>
@@ -57,7 +57,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="sistemaInformatico_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.sistemaInformaticoModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, sistemaInformatico,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, sistemaInformatico,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('accreditamentoAllegati.file.sistemaInformatico') : null}, null, true, ${editabile})" ></th:block>
 
 						<!-- allegato 5 (piano di qualità) -->
 						<div class="divider-dashed"></div>
@@ -65,7 +65,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="pianoQualita_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.pianoQualitaModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, pianoQualita,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, pianoQualita,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('accreditamentoAllegati.file.pianoQualita') : null}, null, true, ${editabile})" ></th:block>
 
 						<!-- allegato 6 (dichiarazione del legale rappresentante) -->
 						<div class="divider-dashed"></div>
@@ -73,7 +73,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="dichiarazioneLegale_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.dichiarazioneLegaleModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneLegale,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneLegale,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('accreditamentoAllegati.file.dichiarazioneLegale') : null}, null, true, ${editabile})" ></th:block>
 
 					</form>
 				</div>
