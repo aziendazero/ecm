@@ -21,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
+import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import lombok.Getter;
 import lombok.Setter;
@@ -69,7 +70,8 @@ public class Provider extends BaseEntity{
 	private Sede sedeOperativa;
 
 	/*	INFO PROVIDER FORNITE IN FASE DI ACCREDITAMENTO	*/
-	private String ragioneSociale;
+	@Enumerated(EnumType.STRING)
+	private RagioneSocialeEnum ragioneSociale;
 	private String naturaOrganizzazione;
 	@Column(name ="no_profit")
 	private boolean noProfit = false;

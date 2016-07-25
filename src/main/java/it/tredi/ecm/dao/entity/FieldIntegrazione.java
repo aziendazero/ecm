@@ -3,7 +3,8 @@ package it.tredi.ecm.dao.entity;
 import java.util.Objects;
 
 import javax.persistence.Entity;
-import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Entity
 public class FieldIntegrazione extends Field{
-	@Transient
+	@Type(type = "serializable")
 	private Object newValue;
 	
 	@Override

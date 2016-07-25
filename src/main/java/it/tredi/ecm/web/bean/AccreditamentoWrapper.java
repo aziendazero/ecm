@@ -83,7 +83,7 @@ public class AccreditamentoWrapper {
 		//
 		//NON lo faccio adesso perchè voglio capire in fase di validazione della domanda come gestiremo i vari stati
 
-		providerStato = (provider.getRagioneSociale()!= null && !provider.getRagioneSociale().isEmpty()) ? true : false;
+		providerStato = (provider.getRagioneSociale()!= null) ? true : false;
 
 		sedeLegaleStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
 		sedeOperativaStato = (sedeOperativa != null && !sedeOperativa.isNew()) ? true : false;

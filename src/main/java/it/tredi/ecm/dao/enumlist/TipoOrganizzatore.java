@@ -19,7 +19,7 @@ public enum TipoOrganizzatore {
 	RICOVERO_PRIVATE (13, "Strutture di ricovero private", "B", false),
 	ZOOPROFILATTICO (5, "Istituto zooprofilattico", "B", true),
 	ENTE_FORMAZIONE (15, "Ente di formazione a partecipazione prevalentemente pubblica regionale o provinciale", "B", true),
-	OSPEDALI_CLASSIFICATI (16, "Ospedali classificati ex. Art. 1 legge 132 1968", "C", false);
+	OSPEDALI_CLASSIFICATI (16, "Ospedali classificati ex. Art. 1 legge 132 1968", "C", true);
 	
 	private int id;
 	private String nome;

@@ -144,7 +144,7 @@ public class ProviderValidator {
 		Provider providerForm = (Provider)target;
 		validateProviderBase(providerForm, errors, prefix);
 
-		if(providerForm.getRagioneSociale().isEmpty()){
+		if(providerForm.getRagioneSociale() == null){
 			errors.rejectValue(prefix + "ragioneSociale", "error.empty");
 		}
 		if(providerForm.getNaturaOrganizzazione().isEmpty()){
