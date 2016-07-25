@@ -14,8 +14,6 @@
 						<div class="pull-right buttons-header">
 							<th:block th:unless="${#lists.isEmpty(personaWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formPersona" type="submit"></button>
-								<button id="cerca-persona-btn" class="btn btn-primary pull-right" th:text="#{label.lookup}" data-toggle="modal" data-target=".modal-lookup">lookup</button>
-								<a class="btn btn-primary pull-right" th:text="#{label.nuovo}" onclick="unsetIsLookup()" th:href="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/${personaWrapper.persona.ruolo}/setAnagrafica|}"></a>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
 						</div>
@@ -26,19 +24,6 @@
 
 				</div>
 			</div>
-			<script th:inline="javascript">
-
-				function setIsLookup() {
-					$("#hidden-lookup").val(true);
-					$("codiceFiscale_persona").prop('disabled', 'disabled');
-				}
-
-				function unsetIsLookup() {
-					$("#hidden-lookup").val(false);
-					$("codiceFiscale_persona").removeProp('disabled');
-				}
-
-			</script>
 		</div>
 	</div>
 </body>
