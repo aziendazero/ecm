@@ -42,8 +42,8 @@ public class PersonaValidator {
 				anagraficaValidator.validateCellulare(persona.getAnagrafica(), errors, prefix + "anagrafica.");
 		}
 		
-		//PEC (LR - DLR)
-		if(persona.isLegaleRappresentante() || persona.isDelegatoLegaleRappresentante()){
+		//PEC (LR)
+		if(persona.isLegaleRappresentante()){
 			anagraficaValidator.validatePEC(persona.getAnagrafica(), errors, prefix + "anagrafica.");
 		}
 		
@@ -120,9 +120,7 @@ public class PersonaValidator {
 			fileValidator.validate(attoNomina, errors, prefix + "attoNomina");
 		}
 		
-		if(!ruolo.equals(Ruolo.LEGALE_RAPPRESENTANTE)){
-			//solo il LR NON ha il cv
-			fileValidator.validate(cv, errors, prefix + "cv");
-		}
+		//tutti hanno il cv
+		fileValidator.validate(cv, errors, prefix + "cv");
 	}
 }

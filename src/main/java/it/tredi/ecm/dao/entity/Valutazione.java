@@ -19,16 +19,16 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Valutazione extends BaseEntity{
+	@Column(name="data_valutazione")
+	private LocalDate dataValutazione;
 	@OneToOne
 	private Account account;
 	@OneToOne
 	private Accreditamento accreditamento;
+	@Column(name="tipo_valutazione")
+	@Enumerated(EnumType.STRING)
+	private ValutazioneTipoEnum tipoValutazione;
 	@OneToMany
 	private Set<FieldValutazione> valutazioni = new HashSet<FieldValutazione>();
-	@Enumerated(EnumType.STRING)
-	@Column(name="tipo_valutazione")
-	private ValutazioneTipoEnum tipoValutazione;
 	private String valutazioneComplessiva;
-	@Column(name="data_valutazione")
-	private LocalDate dataValutazione;
 }

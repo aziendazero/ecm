@@ -21,6 +21,7 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
+import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
@@ -100,7 +101,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			provider.setDenominazioneLegale("3D Informatica");
 			provider.setPartitaIva("00578261208");
 			provider.setTipoOrganizzatore(TipoOrganizzatore.AZIENDE_SANITARIE);
-			provider.setRagioneSociale("srl");
+			provider.setRagioneSociale(RagioneSocialeEnum.SRL);
 			provider.setNaturaOrganizzazione("Privata");
 			provider.setNoProfit(false);
 

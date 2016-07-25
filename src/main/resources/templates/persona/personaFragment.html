@@ -214,8 +214,7 @@
 						</div>
 
 						<!-- POSTA ELETTRONICA CERTIFICATA (PEC) -->
-						<div th:if="${personaWrapper.persona.legaleRappresentante} or
-									${personaWrapper.persona.delegatoLegaleRappresentante}"
+						<div th:if="${personaWrapper.persona.legaleRappresentante}"
 							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')} ? 'bad'">
 							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.pec',personaWrapper.ruolo)  : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="pec_persona">
@@ -276,10 +275,8 @@
 						</div>
 
 						<!-- ALLEGATO 2 (CURRICULUM VITAE) -->
-						<div th:unless="${personaWrapper.persona.legaleRappresentante}">
-							<div th:if="${editabile}" class="divider-dashed"></div>
-							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.file.cv',personaWrapper.ruolo) : null}, null, true, ${editabile})"></th:block>
-						</div>
+						<div th:if="${editabile}" class="divider-dashed"></div>
+						<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.file.cv',personaWrapper.ruolo) : null}, null, true, ${editabile})"></th:block>
 
 						<!-- ALLEGATO 3 (DELEGA) -->
 						<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}">
