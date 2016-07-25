@@ -117,7 +117,7 @@
 													</td>
 													<td th:if="${editabile}">
 														<span style="white-space: nowrap">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=LEGALE_RAPPRESENTANTE|}" class="btn btn-success btn-table double"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></a>
+															<button type="button" onclick="setEditURLs('LEGALE_RAPPRESENTANTE')" class="btn btn-success btn-table double" data-toggle="modal" data-target=".modal-scelta"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></button>
 															<a th:if="${accreditamentoWrapper.legaleRappresentante != null}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 															<a th:if="${accreditamentoWrapper.legaleRappresentante == null}" class="btn btn-primary btn-table double disabled"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 														</span>
@@ -136,7 +136,7 @@
 													</td>
 													<td th:if="${editabile}">
 														<span style="white-space: nowrap">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=DELEGATO_LEGALE_RAPPRESENTANTE|}" class="btn btn-success btn-table double"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></a>
+															<button type="button" onclick="setEditURLs('DELEGATO_LEGALE_RAPPRESENTANTE')" class="btn btn-success btn-table double" data-toggle="modal" data-target=".modal-scelta"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></button>
 															<a th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 															<a th:if="${accreditamentoWrapper.delegatoLegaleRappresentante == null}" class="btn btn-primary btn-table double disabled"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 														</span>
@@ -225,7 +225,7 @@
 													</td>
 													<td th:if="${editabile}">
 														<span style="white-space: nowrap">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=RESPONSABILE_SEGRETERIA|}" class="btn btn-success btn-table double"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></a>
+															<button type="button" onclick="setEditURLs('RESPONSABILE_SEGRETERIA')" class="btn btn-success btn-table double" data-toggle="modal" data-target=".modal-scelta"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></button>
 															<a th:if="${accreditamentoWrapper.responsabileSegreteria != null}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 															<a th:if="${accreditamentoWrapper.responsabileSegreteria == null}" class="btn btn-primary btn-table double disabled"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 														</span>
@@ -244,7 +244,7 @@
 													</td>
 													<td th:if="${editabile}">
 														<span style="white-space: nowrap">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=RESPONSABILE_AMMINISTRATIVO|}" class="btn btn-success btn-table double"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></a>
+															<button type="button" onclick="setEditURLs('RESPONSABILE_AMMINISTRATIVO')" class="btn btn-success btn-table double" data-toggle="modal" data-target=".modal-scelta"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></button>
 															<a th:if="${accreditamentoWrapper.responsabileAmministrativo != null}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileAmministrativo.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 															<a th:if="${accreditamentoWrapper.responsabileAmministrativo == null}" class="btn btn-primary btn-table double disabled"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 														</span>
@@ -263,7 +263,7 @@
 													</td>
 													<td th:if="${editabile}">
 														<span style="white-space: nowrap">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=RESPONSABILE_SISTEMA_INFORMATICO|}" class="btn btn-success btn-table double"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></a>
+															<button type="button" onclick="setEditURLs('RESPONSABILE_SISTEMA_INFORMATICO')" class="btn btn-success btn-table double" data-toggle="modal" data-target=".modal-scelta"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></button>
 															<a th:if="${accreditamentoWrapper.responsabileSistemaInformatico != null}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSistemaInformatico.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 															<a th:if="${accreditamentoWrapper.responsabileSistemaInformatico == null}" class="btn btn-primary btn-table double disabled"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 														</span>
@@ -282,7 +282,7 @@
 													</td>
 													<td th:if="${editabile}">
 														<span style="white-space: nowrap">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=RESPONSABILE_QUALITA|}" class="btn btn-success btn-table double"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></a>
+															<button type="button" onclick="setEditURLs('RESPONSABILE_QUALITA')" class="btn btn-success btn-table double" data-toggle="modal" data-target=".modal-scelta"><span class="fa fa-user"></span> <span th:text="#{label.assegna}">Assegna</span></button>
 															<a th:if="${accreditamentoWrapper.responsabileQualita != null}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileQualita.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 															<a th:if="${accreditamentoWrapper.responsabileQualita == null}" class="btn btn-primary btn-table double disabled"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 														</span>
@@ -378,7 +378,7 @@
 												</tr>
 											</tbody>
 										</table>
-										<a th:if="${accreditamentoWrapper.comitatoScientificoEditabile and editabile}" th:text="#{label.aggiungi_componente}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=COMPONENTE_COMITATO_SCIENTIFICO|}"></a>
+										<button type="button" onclick="setEditURLs('COMPONENTE_COMITATO_SCIENTIFICO')" class="btn btn-primary with-margin-top" data-toggle="modal" data-target=".modal-scelta"><span class="fa fa-users"></span> <span th:text="#{label.aggiungi_componente}">Assegna</span></button>
 									</div>
 								</div>
 							</div>
