@@ -12,12 +12,11 @@ public enum Ruolo {
 	RESPONSABILE_AMMINISTRATIVO (6, "Responsabile Amministrativo"),
 	RESPONSABILE_SISTEMA_INFORMATICO (7,"Responsabile Sistema Informatico"),
 	RESPONSABILE_QUALITA (8, "Responsabile Qualità"),
-	COMPONENTE_COMITATO_SCIENTIFICO (9, "Componente Comitato Scientifico"),
-	COORDINATORE_COMITATO_SCIENTIFICO (10, "Coordinatore Comitato Scientifico");
-	
+	COMPONENTE_COMITATO_SCIENTIFICO (9, "Componente Comitato Scientifico");
+
 	private int id;
 	private String nome;
-	
+
 	private Ruolo(int id, String nome){
 		this.id = id;
 		this.nome = nome;
