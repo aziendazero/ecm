@@ -164,4 +164,20 @@ public enum IdFieldEnum {
 		}
 		return 0;
 	}
+	
+	public static IdFieldEnum getIdField(String key){
+		for(IdFieldEnum e : IdFieldEnum.values()){
+			if(e.getKey().equals(key))
+				return e;
+		}
+		return null;
+	}
+	
+	public static IdFieldEnum getIdField(String key, Ruolo ruolo){
+		for(IdFieldEnum e : IdFieldEnum.values()){
+			if(e.getRuolo() == ruolo && e.getKey().equals(key))
+				return e;
+		}
+		return null;
+	}
 }
