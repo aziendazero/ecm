@@ -31,7 +31,7 @@
 
 						<!-- TIPO ORGANIZZATORE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.tipoOrganizzatore')} ? 'bad'">
-		                    <label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">1</label>
+		                    <label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.tipoOrganizzatore') : ''}"></label>
 		                    <label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoOrganizzatore">
 		                      	<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.tipo_organizzatore}">label.tipo_organizzatore</span>
 		                      	<span th:if="${editabile}" class="required">*</span>
@@ -66,7 +66,7 @@
 
 	                    <!-- DENOMINAZIONE LEGALE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.denominazioneLegale')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">2</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.denominazioneLegale') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.denominazione_legale}">label.denominazione_legale</span>
 								<span th:if="${editabile}" class="required">*</span>
@@ -88,7 +88,7 @@
 
 						<!-- PARTITA IVA -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.partitaIva')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">3</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.partitaIva') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="partitaIva">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.partita_iva}">label.partita_iva</span>
 								<span th:if="${editabile}" class="required">*</span>
@@ -111,7 +111,7 @@
 
 						<!-- CODICE FISCALE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.codiceFiscale')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">4</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.codiceFiscale') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codiceFiscale">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.codice_fiscale}">label.codice_fiscale</span>
 								<span th:if="${editabile}" class="required">*</span>
@@ -134,7 +134,7 @@
 
 						<!-- RAGIONE SOCIALE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.ragioneSociale')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">5</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.ragioneSociale') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ragioneSociale">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.ragione_sociale}">label.ragione_sociale</span>
 								<span th:if="${editabile}" class="required">*</span>
@@ -171,7 +171,7 @@
 
 						<!-- NATURA ORGANIZZAZIONE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">6</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.naturaOrganizzazione') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="naturaOrganizzazione">
 								<span th:text="#{label.organizzazione_natura}" th:class="${editabile ? '' : 'label-show'}">Natura dell'organizzazione</span>
 							</label>
@@ -203,7 +203,7 @@
 
 						<!-- NO PROFIT -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.noProfit')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">7</label>
+							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.noProfit') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="noProfit">
 								<span th:text="#{label.no_profit}" th:class="${editabile ? '' : 'label-show'}">Natura dell'organizzazione</span>
 							</label>

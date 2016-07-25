@@ -32,7 +32,7 @@
 
 						<!-- TIPOLOGIA ACCREDITAMENTO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')} ? 'bad'">
-							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">1</label>
+							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.tipologiaAccreditamento') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="accreditamento_tipologia">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.tipologiaAccreditamento}">Accreditamento per tipologia</span>
 								<span th:if="${editabile}" class="required">*</span>
@@ -69,7 +69,7 @@
 
 						<!-- PROCEDURE FORMATIVE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')} ? 'bad'">
-							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">2</label>
+							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.procedureFormative') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="procedure_formative_checkbox">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.procedure_formative}">Procedure formative</span>
 								<span th:if="${editabile}" class="required">*</span>
@@ -105,7 +105,7 @@
 
 						<!-- PROFESSIONI ACCREDITAMENTO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')} ? 'bad'">
-							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">3</label>
+							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.professioniAccreditamento') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="accreditamento_professioni">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.professioniAccreditamento}">Accreditamento per professioni</span>
 								<span th:if="${editabile}" class="required">*</span>
@@ -142,7 +142,7 @@
 
 						<!-- PROFESSIONI/DISCIPLINE -->
 						<div class="item form-group">
-							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">4</label>
+							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.discipline') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="accreditamento_professioni">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.professioni_discipline}">Professioni</span>
 								<span th:if="${editabile}" class="required">*</span>
@@ -212,7 +212,7 @@
 
 						<!-- FATTURATO COMPLESSIVO -->
 						<div class="item">
-							<label class="col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">5</label>
+							<label class="col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.datiEconomici.fatturatoComplessivo') : ''}"></label>
 							<label class="col-xs-11">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.fatturato_complessivo_title}">Fatturato o Costi complessivi degli
 								ultimi 3 anni (in migliaia di euro)</span>
@@ -280,13 +280,13 @@
 						</div>
 
 						<!-- ALLEGATO 1 (ETRATTO BILANCIO RELATIVO FORMAZIONE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${counter != null ? ++counter : null}, #{label.required_fatturato}, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.estrattoBilancioFormazione') : null}, #{label.required_fatturato}, true, ${editabile})" ></th:block>
 
 						<div class="divider-dashed"></div>
 
 						<!-- FATTURATO FORMAZIONE -->
 						<div class="item">
-							<label class="col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">6</label>
+							<label class="col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.datiEconomici.fatturatoFormazione') : ''}"></label>
 							<label class="col-xs-11">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.fatturato_formazione_title}">Fatturato o Costi dedicati alla formazione del personale
 								sanitario degli ultimi 3 anni (in migliaia di euro)</span>
@@ -354,13 +354,13 @@
 						</div>
 
 						<!-- ALLEGATO 2 (BUDGET PREVISIONALE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, budgetPrevisionale,  ${counter != null ? ++counter : null}, #{label.required_fatturato}, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, budgetPrevisionale,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.budgetPrevisionale') : null}, #{label.required_fatturato}, true, ${editabile})" ></th:block>
 
 						<div class="divider-dashed"></div>
 
 						<!-- NUMERO DIPENDENTI -->
 						<div class="item">
-							<label class="col-xs-1 text-right" th:text="${counter != null ? ++counter : ''}">7</label>
+							<label class="col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.numeroDipendenti') : ''}"></label>
 							<label th:class="${editabile ? '' : 'label-show'}" class="col-xs-11">
 								<span  th:text="#{label.numero_dipendenti_title}">Numero dipendenti dedicati alla formazione</span>
 								<span th:if="${editabile}" class="required">*</span>
@@ -408,10 +408,10 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 3 (ORGANIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.organigramma') : null}, null, true, ${editabile})" ></th:block>
 
 						<!-- ALLEGATO 4 (FUNZIONIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${counter != null ? ++counter : null}, null, true, ${editabile})" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.funzionigramma') : null}, null, true, ${editabile})" ></th:block>
 					</form>
 				</div>
 			</div>
