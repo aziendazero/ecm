@@ -58,7 +58,7 @@ public class Provider extends BaseEntity{
 	private String partitaIva;
 	private String codiceFiscale;
 
-	private Boolean hasPartitaIVA;
+	private boolean hasPartitaIVA = false;
 
 	/*	PERSONE REGISTRATE DAL PROVIDER
 	 * 	alcune in fase di registrazione, altre in fase di accreditamento */

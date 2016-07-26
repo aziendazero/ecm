@@ -20,9 +20,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
+import it.tredi.ecm.dao.repository.FieldEditabileRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
@@ -40,6 +43,7 @@ public class ProviderController {
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderValidator providerValidator;
+	@Autowired private FieldEditabileRepository fieldEditabileRepository;
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -203,7 +207,8 @@ public class ProviderController {
 		ProviderWrapper providerWrapper = new ProviderWrapper();
 		providerWrapper.setProvider(provider);
 		providerWrapper.setAccreditamentoId(accreditamentoId);
-		providerWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_PROVIDER), accreditamentoService.getIdEditabili(accreditamentoId));
+		providerWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileRepository.findAllByAccreditamentoId(accreditamentoId), SubSetFieldEnum.PROVIDER));
+		//providerWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_PROVIDER), accreditamentoService.getIdEditabili(accreditamentoId));
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEdit("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}

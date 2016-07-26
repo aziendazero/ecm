@@ -87,7 +87,7 @@ public class AccreditamentoController {
 			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamento", accreditamentoService.canProviderCreateAccreditamento(providerId));
-
+			model.addAttribute("providerId", providerId);
 			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
 			return "accreditamento/accreditamentoList";
 		}catch (Exception ex){

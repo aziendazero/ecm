@@ -59,7 +59,7 @@
 								</ul>
 							</li>
 
-							<li id="admin" th:if="${#authentication.principal.hasProfile('ADMIN')}">
+							<li id="admin" th:if="${#authentication.principal.hasProfile('SEGRETERIA')}">
 								<a>
 									<i class="fa fa-edit"></i> <span th:text="#{label.segreteria}">label.segreteria</span>
 									<span class="fa fa-chevron-down"></span>

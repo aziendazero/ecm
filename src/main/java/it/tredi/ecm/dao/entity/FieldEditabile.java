@@ -3,6 +3,8 @@ package it.tredi.ecm.dao.entity;
 import java.util.Objects;
 
 import javax.persistence.Entity;
+
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +12,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FieldEditabile extends Field {
+	public FieldEditabile() {}
+	public FieldEditabile(IdFieldEnum idField, Accreditamento accreditamento) {
+		super.setIdField(idField);
+		super.setAccreditamento(accreditamento);
+	}
+	
 	@Override
     public boolean equals(Object o) {
         if (this == o) {

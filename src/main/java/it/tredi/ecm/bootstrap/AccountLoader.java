@@ -121,7 +121,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			
 			/* PROFILE ADMIN */
 			Profile profile_admin = new Profile();
-			profile_admin.setName(Costanti.PROFILO_ADMIN);
+			profile_admin.setName(Costanti.PROFILO_SEGRETERIA);
 			
 			profile_admin.getRoles().add(role_readAllUser);
 			profile_admin.getRoles().add(role_writeAllUser);

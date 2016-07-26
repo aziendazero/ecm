@@ -205,6 +205,8 @@ public class AccreditamentoWrapper {
 	}
 
 	public boolean isCanInsertEventoInPianoFormativo(){
-		return (accreditamento.hasPianoFormativo() && accreditamento.isEditabile());
+		return (accreditamento.hasPianoFormativo());
+		//return (accreditamento.hasPianoFormativo() && accreditamento.isEditabile());
+		//TODO controllo FieldEditabile
 	}
 }

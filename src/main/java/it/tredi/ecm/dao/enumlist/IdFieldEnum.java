@@ -1,5 +1,8 @@
 package it.tredi.ecm.dao.enumlist;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.Getter;
 
 @Getter
@@ -179,5 +182,14 @@ public enum IdFieldEnum {
 				return e;
 		}
 		return null;
+	}
+	
+	public static Set<IdFieldEnum> getAllForSubset(SubSetFieldEnum subset){
+		Set<IdFieldEnum> ids = new HashSet<IdFieldEnum>();
+		for(IdFieldEnum e : IdFieldEnum.values()){
+			if(e.getSubSetField() == subset)
+				ids.add(e);
+		}
+		return ids;
 	}
 }

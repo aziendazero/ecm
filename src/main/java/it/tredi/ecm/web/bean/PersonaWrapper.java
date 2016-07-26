@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PersonaWrapper extends Wrapper {
+public class PersonaWrapper extends Wrapper2 {
 	private Persona persona;
 	private Ruolo ruolo;
 	private Long accreditamentoId;

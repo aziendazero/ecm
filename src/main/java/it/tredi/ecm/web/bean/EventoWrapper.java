@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EventoWrapper extends Wrapper {
+public class EventoWrapper extends Wrapper2 {
 	private Evento evento;
 	private Long providerId;
 	private Long accreditamentoId;
