@@ -111,6 +111,28 @@
 				</div>
 
 			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				$(document).ready(function() {
+
+					$(function () {
+						//Se l'utente è il provider il menù provider sarà aperto
+						if ([[${homeWrapper.isProvider}]]) {
+							$('#provider').click();
+							return;
+						}
+						//Se l'utente è l'admin il menù segreteria sarà aperto
+						if ([[${homeWrapper.isProvider}]]) {
+							$('#admin').click();
+							return;
+						}
+					});
+
+				});
+
+			/*]]>*/
+			</script>
 		</div>
 	</div>
 </body>

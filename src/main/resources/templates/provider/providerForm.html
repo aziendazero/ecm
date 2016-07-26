@@ -171,6 +171,18 @@
 				                      <div th:if="${#fields.hasErrors('providerForm.provider.tipoOrganizzatore')}" class="alert" th:errors="${providerForm.provider.tipoOrganizzatore}"></div>
 				                    </div>
 
+				                    <!-- flag partita iva -->
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="hasPartitaIVA">
+											<span th:text="#{label.ha_partita_IVA}">Sei titolare di Partita IVA?</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<div class="checkbox">
+												<input id="hasPartitaIVA" name="hasPartitaIVA" class="flat" type="checkbox" th:field="${providerForm.provider.hasPartitaIVA}" />
+											</div>
+										</div>
+									</div>
+
 									<!-- partita iva -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.partitaIva')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="pIva">
@@ -178,7 +190,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="pIva" name="pIva" pattern='partitaIva' th:field="${providerForm.provider.partitaIva}"
+											<input type="text" id="pIva" name="pIva" pattern='partitaIva' th:field="${providerForm.provider.partitaIva}" th:disabled="!${providerForm.provider.hasPartitaIVA}"
 												required="required" class="form-control col-md-7 col-xs-12" />
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.provider.partitaIva')}" class="alert" th:errors="${providerForm.provider.partitaIva}"></div>
@@ -191,7 +203,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="codiceFiscale" name="codiceFiscale" pattern='codiceFiscale' th:field="${providerForm.provider.codiceFiscale}"
+											<input type="text" id="codiceFiscale" name="codiceFiscale" th:field="${providerForm.provider.codiceFiscale}"
 												required="required" class="form-control col-md-7 col-xs-12" />
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.provider.codiceFiscale')}" class="alert" th:errors="${providerForm.provider.codiceFiscale}"></div>
@@ -265,20 +277,34 @@
 
 									<div id="divider" class="divider-dashed"></div>
 
-									<!-- checkbox delegato -->
+									<!-- readio rappresentante -->
 									<div id="checkbox_delegato" class="item form-group" th:classappend="${#fields.hasErrors('providerForm.delegato')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12"
-											for="delega_checkbox"><span th:text="#{label.delega_checkbox}">label.delega_checkbox</span><span class="required">*</span></label>
-										<div class="col-md-6 col-sm-6 col-xs-12" id="delega_checkbox">
-											<div class="checkbox">
-												<input id="isDelegato" name="isDelegato" type="checkbox" class="flat" th:field="${providerForm.delegato}" />
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delega_checkbox">
+											<span th:text="#{label.rappresentante_radio}">label.rappresentante_radio</span> <span class="required">*</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12" id="delegato_radio">
+											<div class="radio">
+												<label>
+													<input type="radio" class="flat" id="legaleRadio"
+														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="false" />
+													<span th:text="#{label.legale_radio}">Il richiedente è il Legale Rappresentante</span>
+												</label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="flat" id="delegatoRadio"
+														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="true" />
+													<span th:text="#{label.delegato_radio}">Il richiedente è delegato dal Legale Rappresentante</span>
+												</label>
 											</div>
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.delegato')}" class="alert" th:errors="${providerForm.delegato}"></div>
 									</div>
 
 									<!-- delega -->
-									<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, true, true)" ></th:block>
+									<div id="delegaFile" th:class="${providerForm.delegato} ? '' : hidden">
+										<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, true, true)" ></th:block>
+									</div>
 
 									<!-- Invia dati -->
 									<div class="item form-group text-right">
@@ -315,10 +341,32 @@
 		      };
 		    });
 
+		    $('#hasPartitaIVA').on('ifChecked', function(){
+		    	$('#pIva').prop('disabled', false)
+		    		.prop('required', true)
+		   	});
+
+		   	$('#hasPartitaIVA').on('ifUnchecked', function() {
+		   		$('#pIva').prop('disabled', true)
+		   			.prop('required', false)
+		   			.val('')
+		   			.parent().next().remove();
+		   		$('#pIva').parent().parent().removeClass('bad');
+		   	});
+
+		   	$('#legaleRadio').on('ifChecked', function() {
+		   		$('#delega').prop('disabled', true);
+		   		$('#delegaFile').addClass('hidden');
+		   	});
+
+		   	$('#delegatoRadio').on('ifChecked', function() {
+		   		$('#delega').prop('disabled', false);
+		   		$('#delegaFile').removeClass('hidden');
+		   	});
+
 		    function inputDelegaControl() {
 		    	// converte la stringa in boolean e poi fa un check se l'org è di tipo P, (mostra la checkbox e la delega)
 		    	var check = ($('#tipoOrganizzatore_select option:selected').attr('tipop') === "true");
-		    	console.log(check);
 			    if (check) {
 			    	$('#checkbox_delegato').show();
 			    	$('#isDelegato').iCheck("enable");

@@ -106,7 +106,7 @@ public class ProviderRegistrationController {
 			return 1;
 		if(result.hasFieldErrors("provider*"))
 			return 1;
-		if(result.hasFieldErrors("richiedente*") || result.hasFieldErrors("delegaRichiedente*"))
+		if(result.hasFieldErrors("richiedente*") || result.hasFieldErrors("delega*"))
 			return 2;
 		return 0;
 	}

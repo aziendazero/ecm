@@ -6,6 +6,56 @@
 </head>
 <body>
 	<div layout:fragment="content">
+
+		<!--  modale di selezione lookup o nuovo -->
+		<div id="scelta-modal" class="modal fade modal-scelta" data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-md">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel" th:text="#{label.scelta_modalita}">Scelta modalità</h4>
+					</div>
+					<div class="modal-body">
+						<button type="button" class="btn btn-success btn-scelta btn-first" id="trova_anagrafica" data-toggle="modal" data-target=".modal-lookup"><span class="text-btn-scelta" th:text="#{label.seleziona_anagrafica}">Seleziona anagrafica esistente</span></button>
+						<a class="btn btn-success btn-scelta btn-last" id="nuova_anagrafica" href=""><span class="text-btn-scelta" th:text="#{label.inserisci_nuova_anagrafica}">Inserisci nuova anagrafica</span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- finestra modale di lookup delle anagrafiche -->
+		<div id="persona-modal" class="modal fade modal-lookup" data-model-index="2" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel2" th:text="#{label.cerca_persona}">Cerca anagrafica</h4>
+					</div>
+					<div class="modal-body">
+						<table id="tabella-modale" class="datatable-responsive-search table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
+									<th th:text="#{label.nome}">Nome</th>
+									<th th:text="#{label.cognome}">Cognome</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- popolata con una request ajax -->
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -35,6 +85,24 @@
 					var param = "?tab=" + tabSelected;
 					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/show|}]] + param;
 					location.href = url;
+				}
+
+				function setEditURLs(ruolo) {
+					$('#nuova_anagrafica').prop('href', [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=|}]]+ruolo);
+					var table = $('#tabella-modale').DataTable();
+					$.get( "/provider/" + [[${accreditamentoWrapper.provider.id}]] + "/anagraficaList", function(data){
+						var start = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]];
+
+						for(item in data){
+							var obj = data[item];
+							table.row.add([
+								obj.codiceFiscale,
+								obj.nome,
+								obj.cognome,
+								'<a class="btn btn-primary btn-lookup" href="' + start + ruolo + '/setAnagrafica?anagraficaId=' + obj.id + '">'+[[#{label.seleziona}]]+'</a>'
+							]).draw(false);
+						}
+					});
 				}
 
 				$(document).ready(function() {

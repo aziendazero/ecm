@@ -32,7 +32,7 @@ import lombok.Setter;
 @NamedEntityGraphs({
 
 	@NamedEntityGraph(name="graph.provider.files",
-			attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"), 
+			attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"),
 					@NamedAttributeNode(value="files", subgraph="minimalFileInfo")},
 			subgraphs = @NamedSubgraph(name="minimalFileInfo", attributeNodes={
 					@NamedAttributeNode("id"),
@@ -41,7 +41,7 @@ import lombok.Setter;
 			}))
 	,
 	@NamedEntityGraph(name="graph.provider.minimal",
-	attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"), 
+	attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"),
 			})
 
 })
@@ -58,7 +58,9 @@ public class Provider extends BaseEntity{
 	private String partitaIva;
 	private String codiceFiscale;
 
-	/*	PERSONE REGISTRATE DAL PROVIDER	
+	private Boolean hasPartitaIVA;
+
+	/*	PERSONE REGISTRATE DAL PROVIDER
 	 * 	alcune in fase di registrazione, altre in fase di accreditamento */
 	@OneToMany(mappedBy="provider")
 	private Set<Persona> persone = new HashSet<Persona>();
@@ -86,7 +88,7 @@ public class Provider extends BaseEntity{
 	private ProviderStatoEnum status;
 
 	@ManyToMany(fetch=FetchType.LAZY)
-	@JoinTable(name="provider_files", 
+	@JoinTable(name="provider_files",
 	joinColumns={@JoinColumn(name="provider_id")},
 	inverseJoinColumns={@JoinColumn(name="files_id")}
 			)
@@ -95,17 +97,17 @@ public class Provider extends BaseEntity{
 	public void addFile(File file){
 		this.getFiles().add(file);
 	}
-	
+
 	@Column(name ="can_insert_accreditamento_standard")
 	private boolean canInsertAccreditamentoStandard;
 	@Column(name ="can_insert_piano_formativo")
 	private boolean canInsertPianoFormativo;
 	@Column(name ="can_insert_evento")
 	private boolean canInsertEvento;
-	
+
 	@OneToMany(mappedBy = "provider")
 	private Set<Pagamento> pagamenti = new HashSet<Pagamento>();
-	
+
 	/** UTILS **/
 	public void addPersona(Persona persona){
 		this.persone.add(persona);
