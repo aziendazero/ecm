@@ -94,7 +94,7 @@ public class FileController {
 				if(fileId != null && !fileId.equals(0L))
 					file.setId(fileId);
 
-				String error = fileValidator.validate(file);
+				String error = fileValidator.validate(file, multiPartFile.getContentType());
 				if(error.isEmpty())
 					fileService.save(file);
 				else

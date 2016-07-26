@@ -14,6 +14,7 @@
 					</div>
 					<div class="x_content">
 						<form class="form-horizontal form-label-left" th:object="${account}" th:action="@{/user/save}" method="post" novalidate="novalidate">
+							
 							<!-- nome utente -->
 							<input type="hidden" name="editId" th:value="*{id}" />
 							<div class="item form-group" th:classappend="${#fields.hasErrors('username')} ? 'bad'">
@@ -27,6 +28,7 @@
 								</div>
 								<div th:if="${#fields.hasErrors('username')}" class="alert" th:errors="*{username}"></div>
 							</div>
+							
 							<!-- email -->
 							<div class="item form-group" th:classappend="${#fields.hasErrors('email')} ? 'bad'">
 								<label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">
@@ -39,6 +41,7 @@
 								</div>
 								<div th:if="${#fields.hasErrors('email')}" class="alert" th:errors="*{email}"></div>	
 							</div>
+							
 							<!-- Enabled -->
 							<div class="item form-group">
 		                      <label class="control-label col-md-3 col-sm-3 col-xs-12">
@@ -72,6 +75,14 @@
 		                        </div>
                         	  </div>
                         	</div>
+                        	
+                        	<!-- note -->
+							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="note">
+								<span th:text="#{label.note}">label.note</span>
+							</label>
+							<div class="col-md-6 col-sm-6 col-xs-12">
+								<textarea type="text" id="note" th:field="*{note}"	class="form-control col-md-7 col-xs-12"></textarea>
+							</div>
 		                    
 		                    <!-- Invia dati -->
 							<div class="item form-group text-right">

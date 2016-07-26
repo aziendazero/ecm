@@ -15,7 +15,6 @@ public class Valutatore extends BaseEntity{
 	private Account account;
 	@OneToOne
 	private GruppoCrecm gruppoCrecm;
-	private String note;
 	@Column(name="valutazioni_non_date")
 	private int valutazioniNonDate = 0;
 }

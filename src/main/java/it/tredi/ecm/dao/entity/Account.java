@@ -30,7 +30,7 @@ public class Account extends BaseEntity{
 	private String email;
 	private Date expiresDate;
 	private boolean locked;
-	private boolean enabled;
+	private boolean enabled = true;
 	private boolean changePassword;
 	@Column(name = "data_scadenza_password")
 	private LocalDate dataScadenzaPassword;
@@ -38,6 +38,7 @@ public class Account extends BaseEntity{
 	private String nome;
 	private String cognome;
 	private String codiceFiscale;
+	private String note;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "account_profile", 

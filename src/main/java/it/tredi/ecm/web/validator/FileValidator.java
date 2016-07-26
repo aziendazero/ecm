@@ -32,13 +32,16 @@ public class FileValidator {
 		}
 	}
 	
-	public String validate(Object target) {
+	public String validate(Object target, String contentType) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione File AJAX Upload"));
 		File file = (File)target;
 		String error = "";
 		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){
 			error = messageSource.getMessage("error.empty", null, Locale.getDefault());
 		}else{
+			if(!(contentType.equalsIgnoreCase("application/pdf") || contentType.equalsIgnoreCase("application/pkcs7-mime")))
+				error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
+			
 			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
 				error = messageSource.getMessage("error.maxFileSize", new Object[]{String.valueOf(ecmProperties.getMultipartMaxFileSize()/(1024*1024) )}, Locale.getDefault());
 			}

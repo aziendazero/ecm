@@ -69,7 +69,8 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				//Provider
 				provider = new Provider();
 				provider.setDenominazioneLegale("Engineering s.r.l.");
-				provider.setCodiceFiscale("");
+				provider.setCodiceFiscale("engineeringSRL");
+				provider.setHasPartitaIVA(true);
 				provider.setPartitaIva("01234567890");
 				provider.setTipoOrganizzatore(TipoOrganizzatore.AZIENDE_SANITARIE);
 				provider.setStatus(ProviderStatoEnum.INSERITO);
