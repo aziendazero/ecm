@@ -139,6 +139,7 @@
 
 						<div class="divider-dashed"></div>
 
+
 						<!-- PROFESSIONI/DISCIPLINE -->
 						<div class="item form-group">
 							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.discipline') : ''}"></label>
@@ -356,13 +357,8 @@
 
 						<div class="divider-dashed"></div>
 
-						<!-- ALLEGATO 2 (ETRATTO BILANCIO RELATIVO FORMAZIONE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.estrattoBilancioFormazione') : null}, #{label.required_fatturato}, true, ${editabile}, false)" ></th:block>
-
-						<div class="divider-dashed"></div>
-
-						<!-- ALLEGATO 3 (BUDGET PREVISIONALE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, budgetPrevisionale,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.budgetPrevisionale') : null}, #{label.required_fatturato}, true, ${editabile}, false)" ></th:block>
+						<!-- ALLEGATO 2 (ETRATTO BILANCIO RELATIVO FORMAZIONE + BUDGET PREVISIONALE) -->
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.estrattoBilancioFormazione') : null}, null, true, ${editabile}, true)" ></th:block>
 
 						<div class="divider-dashed"></div>
 

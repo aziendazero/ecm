@@ -51,7 +51,7 @@
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
 						<th:block th:with="counter=${counter}" th:if="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_radio">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_radio">
 								<div class="radio" th:with="counter=${(editabile == true) ? (++counter) : null}"
 									th:each="proceduraFormativa, row : ${proceduraFormativaList}">
 									<input type="radio" class="flat"
@@ -63,7 +63,7 @@
 							</div>
 						</th:block>
 						<th:block th:unless="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_radio">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_radio">
 									<div class="value" th:text="${eventoWrapper.evento.proceduraFormativa.nome}"></div>
 							</div>
 						</th:block>
@@ -81,7 +81,7 @@
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
 						<th:block th:with="counter=${counter}" th:if="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_titolo">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_titolo">
 								<textarea maxlength="3000" id="title" rows="3" name="titolo"
 									style="resize: none;" th:field="${eventoWrapper.evento.titolo}"
 									th:disabled="${!#lists.contains(eventoWrapper.idEditabili, counter)}">
@@ -90,7 +90,7 @@
 							</div>
 						</th:block>
 						<th:block th:unless="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_titolo">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_titolo">
 								<div class="value" th:text="${eventoWrapper.evento.titolo}"></div>
 							</div>
 						</th:block>
@@ -108,7 +108,7 @@
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
 						<th:block th:with="counter=${counter}" th:if="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="obiettivo_formativo_nazionale">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="obiettivo_formativo_nazionale">
 								<!-- input disabilitato se l'evento è NON editabile perchè eventoShow o se l'id NON  è editabile -->
 								<select id="obiettivo-formativo-nazionale-select"
 									class="selectpicker"
@@ -134,7 +134,7 @@
 							</div>
 						</th:block>
 						<th:block th:unless="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="obiettivo_formativo_nazionale">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="obiettivo_formativo_nazionale">
 								<div class="value" th:text="${eventoWrapper.evento.obiettivoNazionale.nome}"></div>
 							</div>
 						</th:block>
@@ -152,7 +152,7 @@
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
 						<th:block th:with="counter=${counter}" th:if="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="obiettivo_formativo_regionale">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="obiettivo_formativo_regionale">
 								<!-- input disabilitato se l'evento è NON editabile perchè eventoShow o se l'id NON  è editabile -->
 								<select id="obiettivo-formativo-regionale-select"
 									class="selectpicker"
@@ -172,7 +172,7 @@
 							</div>
 						</th:block>
 						<th:block th:unless="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="obiettivo_formativo_regionale">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="obiettivo_formativo_regionale">
 								<div class="value" th:text="${eventoWrapper.evento.obiettivoRegionale.nome}"></div>
 							</div>
 						</th:block>
@@ -190,7 +190,7 @@
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
 						<th:block th:with="counter=${counter}" th:if="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni">
 								<div class="radio">
 									<input type="radio" class="flat"
 										id="generaleProf" name="professioneEvento"
@@ -210,7 +210,7 @@
 							</div>
 						</th:block>
 						<th:block th:unless="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni">
 								<div class="value" th:text="${eventoWrapper.evento.professioniEvento}"></div>
 							</div>
 						</th:block>
@@ -228,7 +228,7 @@
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 						<th:block th:with="counter=${counter}" th:if="${editabile}">
-							<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni-select">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
 								<div class="col-xs-12 select-with-margin-container">
 									<select id="professioni" class="selectpicker multi"
 										multiple="multiple" data-width="100%"
@@ -249,6 +249,7 @@
 									data-style="btn-success" data-actions-box="true"
 									th:disabled="${!#lists.contains(eventoWrapper.idEditabili, counter)}"
 									data-size="10" data-hide-disabled="true"
+									onchange="visualizzaDiscipline(this)"
 									title="Seleziona una disciplina..." disabled="disabled"
 									data-selected-text-format="count" th:remove="all-but-first">
 									<optgroup class="optgroup-success" disabled="disabled"

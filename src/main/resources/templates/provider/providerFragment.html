@@ -92,7 +92,7 @@
 							</label>
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 								<div class="checkbox">
-									<input id="hasPartitaIVA" name="hasPartitaIVA" class="flat" type="checkbox" th:disabled="${providerWrapper.provider.hasPartitaIVA}" th:field="${providerWrapper.provider.hasPartitaIVA}" />
+									<input id="hasPartitaIVA" name="hasPartitaIVA" class="flat" type="checkbox" th:disabled="${providerWrapper.provider.hasPartitaIVA or !#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.partitaIva'))}" th:field="${providerWrapper.provider.hasPartitaIVA}" />
 								</div>
 							</div>
 						</div>

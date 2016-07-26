@@ -157,6 +157,49 @@ public class ProviderValidator {
 		if(providerForm.getNaturaOrganizzazione().isEmpty()){
 			errors.rejectValue(prefix + "naturaOrganizzazione", "error.empty");
 		}
+		// se il flag hasPartitaIVA è true valido, altrimenti no
+		if(providerForm.getHasPartitaIVA()) {
+			//partita IVA obbligatoria
+
+			//contollo su partita IVA esistente
+			if(!providerForm.getPartitaIva().isEmpty()){
+				//inserita partitaIva
+
+				//cerco se esiste già un provider con quella partitaIva
+				Provider provider = providerService.getProviderByPartitaIva((providerForm.getPartitaIva()));
+				if(provider != null){
+					//ho trovato un provider con la partitaIva..
+					//se sono in registrazione di nuovo provider do errore
+					if(providerForm.isNew()){
+						errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
+					}else{
+						//se sono in modifica.. controllo che effettivamente sono in modifica del provider che ho trovato
+						if(!provider.getId().equals(providerForm.getId())){
+							errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
+						}
+					}
+				}
+
+				//cerco se esiste già un provider con quella partitaIva registrata nel codiceFiscale
+				Provider providerCF = providerService.getProviderByCodiceFiscale((providerForm.getPartitaIva()));
+				if(providerCF != null){
+					//ho trovato un provider con la partitaIva..registrata nel campo cf
+					//se sono in registrazione di nuovo provider do errore
+					if(providerForm.isNew()){
+						errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
+					}else{
+						//se sono in modifica.. controllo che effettivamente sono in modifica del provider che ho trovato
+						if(!providerCF.getId().equals(providerForm.getId())){
+							errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
+						}
+					}
+				}
+			}
+			// se non ho la partitaIVA errore
+			else {
+				errors.rejectValue(prefix +  "partitaIva", "error.empty");
+			}
+		}
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
