@@ -14,8 +14,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Pagamento extends BaseEntity{
+	/*
+	 * Creazione record di pagamento per ogni provider all'inizio dell'anno (dataPagamento = null)
+	 * 
+	 * Esiste l'apposito metodo PagamentoRepository.findAllProviderNotPagamentoEffettuato(annoPagamento) 
+	 * per individuare lo stato del pagamento per i provider per l'anno in corso
+	 * 
+	 * */
 	@Column(name = "data_pagamento")
 	private LocalDate dataPagamento;
+	@Column(name = "data_scadenza_pagamento")
+	private LocalDate dataScadenzaPagamento;
 	@Column(name = "importo", precision=10, scale=2)
 	private BigDecimal importo;
 	@Column(name = "anno_pagamento")

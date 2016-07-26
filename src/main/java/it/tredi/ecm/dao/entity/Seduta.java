@@ -6,9 +6,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
-public class Seduta {
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+public class Seduta extends BaseEntity{
 	@Column(name="data")
 	private LocalDate data;
 	@Column(name="ora")

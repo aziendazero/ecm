@@ -86,6 +86,9 @@ public class Accreditamento extends BaseEntity{
 	@OneToOne
 	private GruppoCrecm gruppoCrecm;
 	
+	@OneToMany(mappedBy = "accreditamento")
+	Set<ValutazioneCommissione> valutazioniCommissione = new HashSet<ValutazioneCommissione>();
+	
 	
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){
