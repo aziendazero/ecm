@@ -30,7 +30,7 @@ public class Account extends BaseEntity{
 	private String email;
 	private Date expiresDate;
 	private boolean locked;
-	private boolean enabled;
+	private boolean enabled = true;
 	private boolean changePassword;
 	@Column(name = "data_scadenza_password")
 	private LocalDate dataScadenzaPassword;
