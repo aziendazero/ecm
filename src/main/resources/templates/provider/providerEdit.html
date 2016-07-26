@@ -24,6 +24,25 @@
 
 				</div>
 			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				 $('#hasPartitaIVA').on('ifChecked', function(){
+			    	$('#partitaIva').prop('disabled', false)
+			    		.prop('required', true)
+			   	});
+
+			   	$('#hasPartitaIVA').on('ifUnchecked', function() {
+			   		$('#partitaIva').prop('disabled', true)
+			   			.prop('required', false)
+			   			.val('')
+			   			.parent().next().remove();
+			   		$('#partitaIva').parent().parent().removeClass('bad');
+			   		$('#partitaIva').blur();
+			   	});
+
+			/*]]>*/
+			</script>
 		</div>
 	</div>
 </body>

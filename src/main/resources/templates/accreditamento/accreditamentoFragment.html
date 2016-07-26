@@ -488,6 +488,20 @@
 														<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><span class="fa fa-sign-in"></span> <span th:text="#{label.inserisci}">Inserisci</span></a>
 													</td>
 												</tr>
+												<!-- ALLEGATO DICHIARAZIONE ESCLUSIONE -->
+												<tr>
+													<td th:if="${editabile}"><a th:text="#{label.dichiarazioneEsclusione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show?from=edit|}"></a></td>
+													<td th:unless="${editabile}"><a th:text="#{label.dichiarazioneEsclusione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}"></a></td>
+													<td	th:if="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
+														<span class="fa table-icon fa-check green" th:title="#{label.ok}"></span>
+													</td>
+													<td	th:unless="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
+														<span class="fa table-icon fa-remove grey" th:title="#{label.facoltativo}"></span>
+													</td>
+													<td th:if="${editabile}">
+														<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><span class="fa fa-sign-in"></span> <span th:text="#{label.inserisci}">Inserisci</span></a>
+													</td>
+												</tr>
 											</tbody>
 										</table>
 									</div>

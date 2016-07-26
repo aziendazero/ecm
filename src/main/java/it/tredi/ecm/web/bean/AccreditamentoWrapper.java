@@ -68,6 +68,7 @@ public class AccreditamentoWrapper {
 	private boolean sistemaInformaticoStato;
 	private boolean pianoQualitaStato;
 	private boolean dichiarazioneLegaleStato;
+	private boolean dichiarazioneEsclusioneStato;
 
 	private boolean sezione1Stato;
 	private boolean sezione2Stato;
@@ -161,6 +162,8 @@ public class AccreditamentoWrapper {
 			pianoQualitaStato = true;
 		if(filesDelProvider.contains(FileEnum.FILE_DICHIARAZIONE_LEGALE))
 			dichiarazioneLegaleStato = true;
+		if(filesDelProvider.contains(FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE))
+			dichiarazioneEsclusioneStato = true;
 	}
 
 	public boolean isComitatoScientificoEditabile(){

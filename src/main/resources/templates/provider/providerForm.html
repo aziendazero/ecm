@@ -303,7 +303,7 @@
 
 									<!-- delega -->
 									<div id="delegaFile" th:class="${providerForm.delegato} ? '' : hidden">
-										<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, true, true)" ></th:block>
+										<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, true, true, true)" ></th:block>
 									</div>
 
 									<!-- Invia dati -->
@@ -318,6 +318,7 @@
 			</div>
 		</div>
 		<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
 		    $(document).ready(function() {
 		      // Smart Wizard
 		      $('#providerWizard').smartWizard({
@@ -352,6 +353,7 @@
 		   			.val('')
 		   			.parent().next().remove();
 		   		$('#pIva').parent().parent().removeClass('bad');
+		   		$('#pIva').blur();
 		   	});
 
 		   	$('#legaleRadio').on('ifChecked', function() {
@@ -383,6 +385,7 @@
 			    	$('#divider').hide();
 			    }
 	      	}
+		/*]]>*/
     	</script>
 	</div>
 </body>

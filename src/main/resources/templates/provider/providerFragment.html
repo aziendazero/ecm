@@ -37,7 +37,7 @@
 		                      	<span th:if="${editabile}" class="required">*</span>
 		                    </label>
 		                    <th:block th:with="counter=${counter}" th:if="${editabile}">
-		                     	<div class="col-md-4 col-sm-4 col-xs-12">
+		                     	<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 			                        <select id="tipoOrganizzatore"
 										class="selectpicker required"
 										th:field="${providerWrapper.provider.tipoOrganizzatore}"
@@ -57,7 +57,7 @@
 			                    </div>
 			           		</th:block>
 			           		<th:block th:unless="${editabile}">
-			           			<div class="col-md-4 col-sm-4 col-xs-12">
+			           			<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 			              			<div class="value" th:if="${!editabile}" th:text="${providerWrapper.provider.tipoOrganizzatore.nome}"></div>
 		                    	</div>
 		                    </th:block>
@@ -72,18 +72,30 @@
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input type="text" id="denominazioneLegale" required="required" class="form-control col-md-7 col-xs-12"
 										name="denominazioneLegale" th:field="${providerWrapper.provider.denominazioneLegale}" th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${providerWrapper.provider.denominazioneLegale}"></div>
 
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('providerWrapper.provider.denominazioneLegale')}" class="alert" th:errors="${providerWrapper.provider.denominazioneLegale}"></div>
+						</div>
+
+						<!-- FLAG PARTITA IVA -->
+						<div class="item form-group">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="hasPartitaIVA">
+								<span th:text="#{label.ha_partita_IVA}">Sei titolare di Partita IVA?</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+								<div class="checkbox">
+									<input id="hasPartitaIVA" name="hasPartitaIVA" class="flat" type="checkbox" th:disabled="${providerWrapper.provider.hasPartitaIVA}" th:field="${providerWrapper.provider.hasPartitaIVA}" />
+								</div>
+							</div>
 						</div>
 
 						<!-- PARTITA IVA -->
@@ -94,14 +106,14 @@
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input type="text" id="partitaIva" required="required" class="form-control col-md-7 col-xs-12"
 										name="partivaIva" th:field="${providerWrapper.provider.partitaIva}"
-										th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}"/>
+										th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter) or providerWrapper.provider.hasPartitaIVA}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${providerWrapper.provider.partitaIva}"></div>
 
 								</div>
@@ -117,14 +129,14 @@
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input type="text" id="codiceFiscale" required="required" class="form-control col-md-7 col-xs-12"
 										name="codiceFiscale" th:field="${providerWrapper.provider.codiceFiscale}"
 										th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${providerWrapper.provider.codiceFiscale}"></div>
 
 								</div>
@@ -140,7 +152,7 @@
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 			                        <select id="ragioneSociale"
 										class="selectpicker required"
 										th:field="${providerWrapper.provider.ragioneSociale}"
@@ -160,7 +172,7 @@
 			                    </div>
 			             	</th:block>
 			             	<th:block th:unless="${editabile}">
-			             		<div class="col-md-4 col-sm-4 col-xs-12">
+			             		<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 			                    	<div class="value" th:text="${providerWrapper.provider.ragioneSociale}"></div>
 			                   	</div>
 							</th:block>
@@ -177,7 +189,7 @@
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12" id="naturaOrganizzazione">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="naturaOrganizzazione">
 									<div class="radio">
 										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
 											<input type="radio" class="flat" name="naturaOrg" th:field="${providerWrapper.provider.naturaOrganizzazione}" th:value="Pubblica" th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}" />
@@ -193,7 +205,7 @@
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12" id="naturaOrganizzazione">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="naturaOrganizzazione">
 									<div class="value" th:text="${providerWrapper.provider.naturaOrganizzazione}"></div>
 								</div>
 							</th:block>
@@ -210,7 +222,7 @@
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12" id="noProfit">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="noProfit">
 									<div class="radio">
 										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
 											<input type="radio" class="flat" name="societaNoProfit" th:field="${providerWrapper.provider.noProfit}" th:value="true" th:disabled="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}"/>
@@ -226,7 +238,7 @@
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
-								<div class="col-md-4 col-sm-4 col-xs-12" id="noProfit">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="noProfit">
 									<div class="value" th:text="${providerWrapper.provider.noProfit ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
 								</div>
 							</th:block>

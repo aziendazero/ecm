@@ -215,6 +215,8 @@ public class DatiAccreditamentoController {
 			for(File file : files){
 				if(file.isESTRATTOBILANCIOFORMAZIONE())
 					wrapper.setEstrattoBilancioFormazione(file);
+				else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+					wrapper.setEstrattoBilancioComplessivo(file);
 				else if(file.isBUDGETPREVISIONALE())
 					wrapper.setBudgetPrevisionale(file);
 				else if(file.isFUNZIONIGRAMMA())

@@ -53,6 +53,9 @@ public class File extends BaseEntity {
 	@JsonIgnore	public boolean isATTONOMINA(){
 		return this.tipo.equals(FileEnum.FILE_ATTO_NOMINA);
 	}
+	@JsonIgnore public boolean isESTRATTOBILANCIOCOMPLESSIVO(){
+		return this.tipo.equals(FileEnum.FILE_ESTRATTO_BILANCIO_COMPLESSIVO);
+	}
 	@JsonIgnore	public boolean isESTRATTOBILANCIOFORMAZIONE(){
 		return this.tipo.equals(FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
 	}
@@ -83,6 +86,9 @@ public class File extends BaseEntity {
 	@JsonIgnore	public boolean isDICHIARAZIONELEGALE(){
 		return this.tipo.equals(FileEnum.FILE_DICHIARAZIONE_LEGALE);
 	}
+	@JsonIgnore public boolean isDICHIARAZIONEESCLUSIONE() {
+		return this.tipo.equals(FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE);
+	}
 
 	//ENGINEERING TEST FILE
 	@JsonIgnore	public boolean isFILEDAFIRMARE(){
@@ -100,5 +106,4 @@ public class File extends BaseEntity {
         File entitapiatta = (File) o;
         return Objects.equals(id, entitapiatta.id);
     }
-
 }

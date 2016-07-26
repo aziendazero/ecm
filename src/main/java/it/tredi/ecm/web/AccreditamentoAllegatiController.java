@@ -119,6 +119,8 @@ public class AccreditamentoAllegatiController {
 							wrapper.setUtilizzo(fileService.getFile(file.getId()));
 						else if(file.isSISTEMAINFORMATICO())
 							wrapper.setSistemaInformatico(fileService.getFile(file.getId()));
+						else if(file.isDICHIARAZIONEESCLUSIONE())
+							wrapper.setDichiarazioneEsclusione(fileService.getFile(file.getId()));
 					}
 				}
 
