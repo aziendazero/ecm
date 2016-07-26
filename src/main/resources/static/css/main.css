@@ -629,6 +629,10 @@ h2 {
 	box-shadow: none;
 }
 
-#table-discipline-selected {
+.dinamic-view-discipline {
 	margin-top: 20px;
+}
+
+#no-discipline {
+	padding-top: 5px;
 }
