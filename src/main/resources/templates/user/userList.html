@@ -26,6 +26,7 @@
 									<th th:text="#{label.enabled}">label.enabled</th>
 									<th th:text="#{label.locked}">label.locked</th>
 									<th th:text="#{label.profili}">label.profili</th>
+									<th th:text="#{label.note}">label.note</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -45,6 +46,8 @@
 										class="fa fa-unlock green icon"></i></td>
 
 									<td th:text="${account.profileAsString}"></td>
+									
+									<td th:text="${account.note}"></td>
 								</tr>
 							</tbody>
 						</table>

@@ -38,6 +38,7 @@ public class Account extends BaseEntity{
 	private String nome;
 	private String cognome;
 	private String codiceFiscale;
+	private String note;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "account_profile", 
