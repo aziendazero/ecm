@@ -57,7 +57,7 @@
 			</label>
 			<div class="col-md-4 col-sm-4 col-xs-12">
 				<div class="form-control col-md-7 col-xs-12 btn">
-					<input type="file" accept="application/pdf" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
+					<input type="file" accept=".pdf,.pdf.p7m" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
 						style="display: none;" />
 					<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
 					<div th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
