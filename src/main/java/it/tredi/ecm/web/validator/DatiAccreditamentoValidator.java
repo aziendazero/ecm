@@ -17,17 +17,17 @@ import it.tredi.ecm.utils.Utils;
 @Component
 public class DatiAccreditamentoValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatiAccreditamentoValidator.class);
-	
+
 	@Autowired private FileValidator fileValidator;
-	
+
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
 		LOGGER.info(Utils.getLogMessage("Validazione DatiAccreditamento"));
 		validateDatiAccreditamento(target, errors, prefix);
 		validateFilesEconomici(files, errors, "", ((DatiAccreditamento) target).getDatiEconomici());
-		validateFilesStrutturaPersonale(files, errors, "");
+		validateFilesObbligatori(files, errors, "");
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
-	
+
 	private void validateDatiAccreditamento(Object target, Errors errors, String prefix){
 		DatiAccreditamento datiAccreditamento = (DatiAccreditamento)target;
 		if(datiAccreditamento.getTipologiaAccreditamento() == null || datiAccreditamento.getTipologiaAccreditamento().isEmpty())
@@ -37,7 +37,7 @@ public class DatiAccreditamentoValidator {
 		if(datiAccreditamento.getProfessioniAccreditamento() == null || datiAccreditamento.getProfessioniAccreditamento().isEmpty())
 			errors.rejectValue(prefix + "professioniAccreditamento", "error.empty");
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void validateFilesEconomici(Object target, Errors errors, String prefix, DatiEconomici datiEconomici){
 		LOGGER.debug("VALIDAZIONE ALLEGATI ECONOMICI");
@@ -48,24 +48,20 @@ public class DatiAccreditamentoValidator {
 			else
 				files = new HashSet<File>();
 			File estrattoBilancioFormazione = null;
-			File budgetPrevisionale = null;
-			
+
 			for(File file : files){
 				if(file != null){
 					if(file.isESTRATTOBILANCIOFORMAZIONE())
 						estrattoBilancioFormazione = file;
-					else if(file.isBUDGETPREVISIONALE())
-						budgetPrevisionale = file;
 				}
 			}
 			fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione");
-			fileValidator.validate(budgetPrevisionale, errors, prefix + "budgetPrevisionale");
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private void validateFilesStrutturaPersonale(Object target, Errors errors, String prefix){
-		LOGGER.debug("VALIDAZIONE ALLEGATI STRUTTARA PERSONALE");
+	private void validateFilesObbligatori(Object target, Errors errors, String prefix){
+		LOGGER.debug("VALIDAZIONE ALLEGATI OBBLIGATORI");
 		Set<File> files = null;
 		if(target != null)
 			files = (Set<File>) target;
@@ -73,16 +69,20 @@ public class DatiAccreditamentoValidator {
 			files = new HashSet<File>();
 		File funzionigramma = null;
 		File organigramma = null;
-		
+		File estrattoBilancioComplessivo = null;
+
 		for(File file : files){
 			if(file != null && !file.isNew()){
 				if(file.isFUNZIONIGRAMMA())
 					funzionigramma = file;
 				else if(file.isORGANIGRAMMA())
 					organigramma = file;
+				else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+					estrattoBilancioComplessivo = file;
 			}
 		}
 		fileValidator.validate(funzionigramma, errors, prefix + "funzionigramma");
 		fileValidator.validate(organigramma, errors, prefix + "organigramma");
+		fileValidator.validate(estrattoBilancioComplessivo, errors, prefix + "estrattoBilancioComplessivo");
 	}
 }

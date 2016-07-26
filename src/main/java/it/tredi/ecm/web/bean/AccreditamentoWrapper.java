@@ -141,6 +141,9 @@ public class AccreditamentoWrapper {
 							comitatoScientificoErrorMessage = "error.numero_minimo_professioni_settoriale";
 						}
 					}
+//	TODO			else{
+//						if(!datiAccreditamento.getProfessioniSelezionate().iterator().next() ==
+//					}
 				}
 			}else{
 				comitatoScientificoStato = false;
