@@ -150,20 +150,35 @@
 							}
 						}
 						if (tab == "tab3") {
-							if (![[${accreditamentoWrapper.sezione2Stato}]]) {
+							if([[${accreditamentoWrapper.comitatoScientificoErrorMessage != '' && accreditamentoWrapper.comitatoScientificoErrorMessage != null}]]) {
 								var exists = false;
 						        $(".ui-pnotify-text").each(function() {
-						            if ($(this).html() == [[#{message.compilare_tab2}]]) {
+						            if ($(this).html() == [[#{${(accreditamentoWrapper.comitatoScientificoErrorMessage != '' and accreditamentoWrapper.comitatoScientificoErrorMessage != null) ? accreditamentoWrapper.comitatoScientificoErrorMessage : 'message.errore_eccezione'}}]]) {
 						                exists = true;
 						                animate($(this).parent().parent());
 						            }
 						        });
 						        if (!exists) {
-						        	sendNotifyStatic([[#{message.warning}]], [[#{message.compilare_tab2}]], "warning");
+						        	sendNotifyStatic([[#{message.warning}]], [[#{${(accreditamentoWrapper.comitatoScientificoErrorMessage != '' and accreditamentoWrapper.comitatoScientificoErrorMessage != null) ? accreditamentoWrapper.comitatoScientificoErrorMessage : 'message.errore_eccezione'}}]], "warning");
 						        }
 						        return false;
 							}
-							else return true;
+							else {
+								if (![[${accreditamentoWrapper.sezione2Stato}]]) {
+									var exists = false;
+							        $(".ui-pnotify-text").each(function() {
+							            if ($(this).html() == [[#{message.compilare_tab2}]]) {
+							                exists = true;
+							                animate($(this).parent().parent());
+							            }
+							        });
+							        if (!exists) {
+							        	sendNotifyStatic([[#{message.warning}]], [[#{message.compilare_tab2}]], "warning");
+							        }
+							        return false;
+								}
+								else return true;
+							}
 						}
 						if (tab == "tab4") {
 							if (![[${accreditamentoWrapper.completa}]]) {
