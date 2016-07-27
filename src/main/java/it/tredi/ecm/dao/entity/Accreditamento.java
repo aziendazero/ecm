@@ -22,6 +22,8 @@ import org.hibernate.annotations.Type;
 
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -75,28 +77,51 @@ public class Accreditamento extends BaseEntity{
 	//gli idEditabili invece indicano quali campi possono essere modificati
 	@Type(type = "serializable")
 	private List<Integer> idEditabili = new ArrayList<Integer>();
-	private boolean editabile = false;
-	
-	@OneToMany(mappedBy = "accreditamento")
-	private Set<FieldEditabile> idEditabil = new HashSet<FieldEditabile>();
-	
+
+	@OneToMany(mappedBy = "accreditamento", cascade={CascadeType.PERSIST,CascadeType.MERGE})
+	private List<FieldEditabile> idEditabil = new ArrayList<FieldEditabile>();
+
 	@OneToOne
 	private PianoFormativo pianoFormativo;
 
 	@OneToOne
 	private GruppoCrecm gruppoCrecm;
-	
+
 	@OneToMany(mappedBy = "accreditamento")
 	Set<ValutazioneCommissione> valutazioniCommissione = new HashSet<ValutazioneCommissione>();
-	
-	
+
+
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){
 		this.tipoDomanda = tipoDomanda;
 		this.stato = AccreditamentoStatoEnum.BOZZA;
-		for (int i = 0; i<100; i++)
-			idEditabili.add(new Integer(i));
-		editabile = true;
+		enableAllIdField();
+	}
+
+	private void enableAllIdField(){
+		//PROVIDER FIELD
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER))
+			idEditabil.add(new FieldEditabile(id, this));
+
+		//SEDE LEGALE
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_LEGALE))
+			idEditabil.add(new FieldEditabile(id, this));
+
+		//SEDE OPERATIVA 
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_OPERATIVA))
+			idEditabil.add(new FieldEditabile(id, this));
+
+		//LEGALE RAPPRESENTANTE
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.LEGALE_RAPPRESENTANTE))
+			idEditabil.add(new FieldEditabile(id, this));
+
+		//DELEGATO LEGALE RAPPRESENTANTE 
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE))
+			idEditabil.add(new FieldEditabile(id, this));
+
+		//DATI ACCREDITAMENTO
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DATI_ACCREDITAMENTO))
+			idEditabil.add(new FieldEditabile(id, this));
 	}
 
 	public boolean isProvvisorio(){

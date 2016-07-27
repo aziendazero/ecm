@@ -56,7 +56,7 @@ public class AccreditamentoController {
 		//accreditamentoService.setStato(accreditamentoId, stato);
 		return "";
 	}
-	
+
 	/***	Get Lista Accreditamenti per provider CORRENTE	***/
 	@RequestMapping("/provider/accreditamento/list")
 	public String getAllAccreditamentiForCurrentProvider(RedirectAttributes redirectAttrs) throws Exception{
@@ -87,7 +87,7 @@ public class AccreditamentoController {
 			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamento", accreditamentoService.canProviderCreateAccreditamento(providerId));
-
+			model.addAttribute("providerId", providerId);
 			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
 			return "accreditamento/accreditamentoList";
 		}catch (Exception ex){
@@ -157,59 +157,59 @@ public class AccreditamentoController {
 		if(tab != null) {
 			switch(tab) {
 
-				case "tab1":	model.addAttribute("currentTab", "tab1");
-							 	break;
+			case "tab1":	model.addAttribute("currentTab", "tab1");
+			break;
 
-				case "tab2":	if(accreditamentoWrapper.isSezione1Stato()) {
-									model.addAttribute("currentTab", "tab2");
-									if (accreditamentoWrapper.getResponsabileSegreteria() == null &&
-									    accreditamentoWrapper.getResponsabileAmministrativo() == null &&
-									    accreditamentoWrapper.getResponsabileSistemaInformatico() == null &&
-									    accreditamentoWrapper.getResponsabileQualita() == null) {
-										model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
-									}
-								}
-								else {
-									model.addAttribute("currentTab", "tab1");
-									model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
-								}
-								break;
+			case "tab2":	if(accreditamentoWrapper.isSezione1Stato()) {
+				model.addAttribute("currentTab", "tab2");
+				if (accreditamentoWrapper.getResponsabileSegreteria() == null &&
+						accreditamentoWrapper.getResponsabileAmministrativo() == null &&
+						accreditamentoWrapper.getResponsabileSistemaInformatico() == null &&
+						accreditamentoWrapper.getResponsabileQualita() == null) {
+					model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
+				}
+			}
+			else {
+				model.addAttribute("currentTab", "tab1");
+				model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+			}
+			break;
 
-				case "tab3":	if(accreditamentoWrapper.isSezione2Stato())
-									model.addAttribute("currentTab", "tab3");
-								else {
-									if(accreditamentoWrapper.isSezione1Stato()) {
-										model.addAttribute("currentTab", "tab2");
-										model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
-									}
-									else {
-										model.addAttribute("currentTab", "tab1");
-										model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
-									}
-								}
-								break;
+			case "tab3":	if(accreditamentoWrapper.isSezione2Stato())
+				model.addAttribute("currentTab", "tab3");
+			else {
+				if(accreditamentoWrapper.isSezione1Stato()) {
+					model.addAttribute("currentTab", "tab2");
+					model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
+				}
+				else {
+					model.addAttribute("currentTab", "tab1");
+					model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+				}
+			}
+			break;
 
-				case "tab4":  	if(accreditamentoWrapper.isCompleta())
-									model.addAttribute("currentTab", "tab4");
-								else {
-									if(accreditamentoWrapper.isSezione2Stato()) {
-										model.addAttribute("currentTab", "tab3");
-										model.addAttribute("message", new Message("message.warning", "message.compilare_altre_tab", "warning"));
-									}
-									else {
-										if(accreditamentoWrapper.isSezione1Stato()) {
-											model.addAttribute("currentTab", "tab2");
-											model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
-										}
-										else {
-											model.addAttribute("currentTab", "tab1");
-											model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
-										}
-									}
-								}
-								break;
+			case "tab4":  	if(accreditamentoWrapper.isCompleta())
+				model.addAttribute("currentTab", "tab4");
+			else {
+				if(accreditamentoWrapper.isSezione2Stato()) {
+					model.addAttribute("currentTab", "tab3");
+					model.addAttribute("message", new Message("message.warning", "message.compilare_altre_tab", "warning"));
+				}
+				else {
+					if(accreditamentoWrapper.isSezione1Stato()) {
+						model.addAttribute("currentTab", "tab2");
+						model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
+					}
+					else {
+						model.addAttribute("currentTab", "tab1");
+						model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+					}
+				}
+			}
+			break;
 
-				default:		break;
+			default:		break;
 			}
 		}
 	}
@@ -295,63 +295,9 @@ public class AccreditamentoController {
 	/*** METODI PRIVATI PER IL SUPPORTO ***/
 	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento){
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - entering"));
-		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper();
-		accreditamentoWrapper.setAccreditamento(accreditamento);
-
-		// PROVIDER
-		accreditamentoWrapper.setProvider(accreditamento.getProvider());
-
-		//SEDE LEGALE
-		Sede sede = accreditamento.getProvider().getSedeLegale();
-		accreditamentoWrapper.setSedeLegale( sede != null ? sede : new Sede());
-
-		//SEDE OPERATIVA
-		sede = accreditamento.getProvider().getSedeOperativa();
-		accreditamentoWrapper.setSedeOperativa( sede != null ? sede : new Sede());
-
-		//DATI ACCREDITAMENTO
-		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
-		accreditamentoWrapper.setDatiAccreditamento(datiAccreditamento != null ? datiAccreditamento : new DatiAccreditamento());
-
-		// LEGALE RAPPRESENTANTE E RESPONSABILI
-		for(Persona p : accreditamento.getProvider().getPersone()){
-			if(p.isLegaleRappresentante())
-				accreditamentoWrapper.setLegaleRappresentante(p);
-			else if(p.isDelegatoLegaleRappresentante())
-				accreditamentoWrapper.setDelegatoLegaleRappresentante(p);
-			else if(p.isResponsabileSegreteria())
-				accreditamentoWrapper.setResponsabileSegreteria(p);
-			else if(p.isResponsabileAmministrativo())
-				accreditamentoWrapper.setResponsabileAmministrativo(p);
-			else if(p.isResponsabileSistemaInformatico())
-				accreditamentoWrapper.setResponsabileSistemaInformatico(p);
-			else if(p.isResponsabileQualita())
-				accreditamentoWrapper.setResponsabileQualita(p);
-			else if(p.isCoordinatoreComitatoScientifico())
-				accreditamentoWrapper.setCoordinatoreComitatoScientifico(p);
-			else if(p.isComponenteComitatoScientifico())
-				accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
-		}
-
-		//ALLEGATI
-		Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(accreditamento.getProvider().getId());
-
-		Long providerId = accreditamento.getProvider().getId();
-		Set<Professione> professioniSelezionate = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? datiAccreditamento.getProfessioniSelezionate() : new HashSet<Professione>();
-
-		int numeroComponentiComitatoScientifico = personaService.numeroComponentiComitatoScientifico(providerId);
-		int numeroProfessionistiSanitarie 		= personaService.numeroComponentiComitatoScientificoConProfessioneSanitaria(providerId);
-		int professioniDeiComponenti 			= personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
-		int professioniDeiComponentiAnaloghe 	= (professioniSelezionate.size() > 0) ? personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate) : 0;
-
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico));
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie));
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + professioniDeiComponenti));
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
-
-		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
-
-		//PIANO FORMATIVO
+		
+		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
+		commonPrepareAccreditamentoWrapper(accreditamentoWrapper);
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
@@ -359,64 +305,32 @@ public class AccreditamentoController {
 
 	private AccreditamentoWrapper prepareAccreditamentoWrapperShow(Accreditamento accreditamento){
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - entering"));
-		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper();
-		accreditamentoWrapper.setAccreditamento(accreditamento);
-
-		// PROVIDER
-		accreditamentoWrapper.setProvider(accreditamento.getProvider());
-
-		//SEDE LEGALE
-		Sede sede = accreditamento.getProvider().getSedeLegale();
-		accreditamentoWrapper.setSedeLegale( sede != null ? sede : new Sede());
-
-		//SEDE OPERATIVA
-		sede = accreditamento.getProvider().getSedeOperativa();
-		accreditamentoWrapper.setSedeOperativa( sede != null ? sede : new Sede());
-
-		//DATI ACCREDITAMENTO
-		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
-		accreditamentoWrapper.setDatiAccreditamento(datiAccreditamento != null ? datiAccreditamento : new DatiAccreditamento());
-
-		// LEGALE RAPPRESENTANTE E RESPONSABILI
-		for(Persona p : accreditamento.getProvider().getPersone()){
-			if(p.isLegaleRappresentante())
-				accreditamentoWrapper.setLegaleRappresentante(p);
-			else if(p.isDelegatoLegaleRappresentante())
-				accreditamentoWrapper.setDelegatoLegaleRappresentante(p);
-			else if(p.isResponsabileSegreteria())
-				accreditamentoWrapper.setResponsabileSegreteria(p);
-			else if(p.isResponsabileAmministrativo())
-				accreditamentoWrapper.setResponsabileAmministrativo(p);
-			else if(p.isResponsabileSistemaInformatico())
-				accreditamentoWrapper.setResponsabileSistemaInformatico(p);
-			else if(p.isResponsabileQualita())
-				accreditamentoWrapper.setResponsabileQualita(p);
-			else if(p.isCoordinatoreComitatoScientifico())
-				accreditamentoWrapper.setCoordinatoreComitatoScientifico(p);
-			else if(p.isComponenteComitatoScientifico())
-				accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
-		}
-
-		Long providerId = accreditamento.getProvider().getId();
-
-		//ALLEGATI
-		Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(accreditamento.getProvider().getId());
-
-		Set<Professione> professioniSelezionate = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? datiAccreditamento.getProfessioniSelezionate() : new HashSet<Professione>();
-
-		int numeroComponentiComitatoScientifico = personaService.numeroComponentiComitatoScientifico(providerId);
-		int numeroProfessionistiSanitarie 		= personaService.numeroComponentiComitatoScientificoConProfessioneSanitaria(providerId);
-		int professioniDeiComponenti 			= personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
-		int professioniDeiComponentiAnaloghe 	= (professioniSelezionate.size() > 0) ? personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate) : 0;
-
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico));
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie));
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + professioniDeiComponenti));
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
-
-		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
+		
+		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
+		commonPrepareAccreditamentoWrapper(accreditamentoWrapper);
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
+	}
+
+	private void commonPrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper){
+		Long providerId = accreditamentoWrapper.getProvider().getId();
+		//ALLEGATI
+		Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(providerId);
+
+		Set<Professione> professioniSelezionate = (accreditamentoWrapper.getAccreditamento().getDatiAccreditamento() != null && !accreditamentoWrapper.getDatiAccreditamento().isNew()) ? accreditamentoWrapper.getDatiAccreditamento().getProfessioniSelezionate() : new HashSet<Professione>();
+
+		int numeroComponentiComitatoScientifico = personaService.numeroComponentiComitatoScientifico(providerId);
+		int numeroProfessionistiSanitarie 		= personaService.numeroComponentiComitatoScientificoConProfessioneSanitaria(providerId);
+		//int professioniDeiComponenti 			= personaService.numeroProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
+		int professioniDeiComponentiAnaloghe 	= (professioniSelezionate.size() > 0) ? personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate) : 0;
+		Set<Professione> elencoProfessioniDeiComponenti = personaService.elencoProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
+
+		LOGGER.debug(Utils.getLogMessage("<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico));
+		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie));
+		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + elencoProfessioniDeiComponenti.size()));
+		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
+
+		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
 	}
 }

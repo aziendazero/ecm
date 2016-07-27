@@ -24,7 +24,9 @@ public interface PersonaRepository extends CrudRepository<Persona, Long> {
 	public int countDistinctProfessioneByRuoloAndProviderId(@Param("ruolo")Ruolo ruolo, @Param("providerId")Long providerId);
 	@Query("select count(distinct p.professione) from Persona p where p.ruolo = :ruolo and p.provider.id = :providerId and p.professione in :professioniSelezionate")
 	public int countDistinctProfessioneByRuoloAndProviderIdInProfessioniSelezionate(@Param("ruolo")Ruolo ruolo, @Param("providerId") Long providerId,@Param("professioniSelezionate") Set<Professione> professioniSelezionate);
-
+	@Query("select distinct p.professione from Persona p where p.ruolo = :ruolo and p.provider.id = :providerId")
+	public Set<Professione> findDistinctProfessioneByRuoloAndProviderId(@Param("ruolo")Ruolo ruolo, @Param("providerId")Long providerId);
+	
 	//TODO @EntityGraph al momento non funziona...sarebbe utile investigare per capire perchè
 	@EntityGraph(value = "graph.persona.files", type = EntityGraphType.FETCH)
 	@Override

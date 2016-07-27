@@ -11,6 +11,7 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.PianoFormativo;
+import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
@@ -76,8 +77,52 @@ public class AccreditamentoWrapper {
 
 	//Piano Formativo
 	private PianoFormativo pianoFormativo;
+	
+	
+	public AccreditamentoWrapper(){};
+	public AccreditamentoWrapper(Accreditamento accreditamento){
+		this.setAccreditamento(accreditamento);
 
-	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider){
+		// PROVIDER
+		this.setProvider(accreditamento.getProvider());
+
+		//SEDE LEGALE
+		Sede sede = accreditamento.getProvider().getSedeLegale();
+		this.setSedeLegale( sede != null ? sede : new Sede());
+
+		//SEDE OPERATIVA
+		sede = accreditamento.getProvider().getSedeOperativa();
+		this.setSedeOperativa( sede != null ? sede : new Sede());
+
+		//DATI ACCREDITAMENTO
+		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
+		this.setDatiAccreditamento(datiAccreditamento != null ? datiAccreditamento : new DatiAccreditamento());
+
+		// LEGALE RAPPRESENTANTE E RESPONSABILI
+		for(Persona p : accreditamento.getProvider().getPersone()){
+			if(p.isLegaleRappresentante())
+				this.setLegaleRappresentante(p);
+			else if(p.isDelegatoLegaleRappresentante())
+				this.setDelegatoLegaleRappresentante(p);
+			else if(p.isResponsabileSegreteria())
+				this.setResponsabileSegreteria(p);
+			else if(p.isResponsabileAmministrativo())
+				this.setResponsabileAmministrativo(p);
+			else if(p.isResponsabileSistemaInformatico())
+				this.setResponsabileSistemaInformatico(p);
+			else if(p.isResponsabileQualita())
+				this.setResponsabileQualita(p);
+			else if(p.isCoordinatoreComitatoScientifico())
+				this.setCoordinatoreComitatoScientifico(p);
+			else if(p.isComponenteComitatoScientifico())
+				this.getComponentiComitatoScientifico().add(p);
+		}
+	}
+	
+	
+	
+
+	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider){
 		//TODO migliorare la logica per evitare di fare troppi if
 		// ad esempio inizializzare gli stati a true e poi ad ogni controllo se fallisce si mette il false sia allo stato che al valid
 		// cosi facendo valid è settato in automatico senza rifare tutti i controlli
@@ -99,7 +144,7 @@ public class AccreditamentoWrapper {
 		responsabileSistemaInformaticoStato = (responsabileSistemaInformatico != null && !responsabileSistemaInformatico.isNew()) ? true : false;
 		responsabileQualitaStato = (responsabileQualita != null && !responsabileQualita.isNew()) ? true : false;
 
-		checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, professioniDeiComponenti, professioniDeiComponentiAnaloghe);
+		checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe);
 		setFilesStato(filesDelProvider);
 
 		sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
@@ -112,9 +157,12 @@ public class AccreditamentoWrapper {
 	 * [B] Almeno 5 professionisti Sanitari
 	 * [C] Se settato "Generale" -> Almeno 2 professioni diverse tra i componenti
 	 * [D] Se settato "Settoriale" -> Almeno 2 professioni analoghe a quelle selezionate (almeno che non sia stata selezionate solo 1 professione)
+	 * [D-bis] Se Selezionata solo 1 professione -> deve conicidere con quella e UNICA dei componenti del comitato scientifico
 	 * */
-	public void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitari, int professioniDeiComponenti, int professioniDeiComponentiAnaloghe){
+	public void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitari, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe){
 		comitatoScientificoStato = true;
+
+		int professioniDeiComponenti = elencoProfessioniDeiComponenti.size();
 
 		//[A]
 		if(numeroComponentiComitatoScientifico < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
@@ -140,10 +188,18 @@ public class AccreditamentoWrapper {
 							comitatoScientificoStato = false;
 							comitatoScientificoErrorMessage = "error.numero_minimo_professioni_settoriale";
 						}
+					}//[D - bis]
+					else{
+						if(elencoProfessioniDeiComponenti.size() > 1 || elencoProfessioniDeiComponenti.size() == 0){
+							comitatoScientificoStato = false;
+							comitatoScientificoErrorMessage = "error.professioni_non_conformi_con_accreditamento";
+						}else{
+							if(elencoProfessioniDeiComponenti.iterator().next() != datiAccreditamento.getProfessioniSelezionate().iterator().next()){
+								comitatoScientificoStato = false;
+								comitatoScientificoErrorMessage = "error.professioni_non_conformi_con_accreditamento";
+							}
+						}
 					}
-//	TODO			else{
-//						if(!datiAccreditamento.getProfessioniSelezionate().iterator().next() ==
-//					}
 				}
 			}else{
 				comitatoScientificoStato = false;
@@ -208,6 +264,8 @@ public class AccreditamentoWrapper {
 	}
 
 	public boolean isCanInsertEventoInPianoFormativo(){
-		return (accreditamento.hasPianoFormativo() && accreditamento.isEditabile());
+		return (accreditamento.hasPianoFormativo());
+		//return (accreditamento.hasPianoFormativo() && accreditamento.isEditabile());
+		//TODO controllo FieldEditabile
 	}
 }

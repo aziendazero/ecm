@@ -182,6 +182,8 @@ public class AccreditamentoAllegatiController {
 				wrapper.setUtilizzo(file);
 			else if(file.isSISTEMAINFORMATICO())
 				wrapper.setSistemaInformatico(file);
+			else if(file.isDICHIARAZIONEESCLUSIONE())
+				wrapper.setDichiarazioneEsclusione(file);
 		}
 
 		HashMap<FileEnum, Long> modelIds = fileService.getModelFileIds();
@@ -211,6 +213,8 @@ public class AccreditamentoAllegatiController {
 				wrapper.setUtilizzo(file);
 			else if(file.isSISTEMAINFORMATICO())
 				wrapper.setSistemaInformatico(file);
+			else if(file.isDICHIARAZIONEESCLUSIONE())
+				wrapper.setDichiarazioneEsclusione(file);
 		}
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperShow(" + accreditamentoId + ") - exiting"));

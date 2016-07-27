@@ -59,9 +59,6 @@ public class File extends BaseEntity {
 	@JsonIgnore	public boolean isESTRATTOBILANCIOFORMAZIONE(){
 		return this.tipo.equals(FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
 	}
-	@JsonIgnore	public boolean isBUDGETPREVISIONALE(){
-		return this.tipo.equals(FileEnum.FILE_BUDGET_PREVISIONALE);
-	}
 	@JsonIgnore	public boolean isFUNZIONIGRAMMA(){
 		return this.tipo.equals(FileEnum.FILE_FUNZIONIGRAMMA);
 	}

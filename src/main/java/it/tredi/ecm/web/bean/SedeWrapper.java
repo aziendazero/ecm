@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SedeWrapper extends Wrapper{
+public class SedeWrapper extends Wrapper2{
 	private Sede sede;
 	private String tipologiaSede; 
 	private Long accreditamentoId;

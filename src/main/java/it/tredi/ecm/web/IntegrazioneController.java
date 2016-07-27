@@ -46,7 +46,7 @@ public class IntegrazioneController {
 		Set<IdFieldEnum> listaDaView = wrapper.getSelected();
 
 		Set<FieldEditabile> listaFull = wrapper.getFullLista();
-		Set<FieldEditabile> listaSubset = Utils.getSubset(listaFull, SubSetFieldEnum.RESPONSABILE_SEGRETERIA);
+		Set<FieldEditabile> listaSubset = Utils.getSubset(listaFull, SubSetFieldEnum.DATI_ACCREDITAMENTO);
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(wrapper.getAccreditamento().getId());
 
@@ -76,7 +76,7 @@ public class IntegrazioneController {
 
 		wrapper.setAccreditamento(accreditamento);
 		wrapper.setFullLista(fullLista);
-		wrapper.setSelected(Utils.getSubsetOfIdFieldEnum(fullLista, SubSetFieldEnum.RESPONSABILE_SEGRETERIA));
+		wrapper.setSelected(Utils.getSubsetOfIdFieldEnum(fullLista, SubSetFieldEnum.DATI_ACCREDITAMENTO));
 
 		return wrapper;
 	}

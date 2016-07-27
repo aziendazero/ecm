@@ -62,7 +62,7 @@ public class ProviderValidator {
 //		}
 
 		// se il flag hasPartitaIVA è true valido, altrimenti no
-		if(providerForm.getHasPartitaIVA()) {
+		if(providerForm.isHasPartitaIVA()) {
 			//partita IVA obbligatoria
 
 			//contollo su partita IVA esistente
@@ -158,7 +158,7 @@ public class ProviderValidator {
 			errors.rejectValue(prefix + "naturaOrganizzazione", "error.empty");
 		}
 		// se il flag hasPartitaIVA è true valido, altrimenti no
-		if(providerForm.getHasPartitaIVA()) {
+		if(providerForm.isHasPartitaIVA()) {
 			//partita IVA obbligatoria
 
 			//contollo su partita IVA esistente

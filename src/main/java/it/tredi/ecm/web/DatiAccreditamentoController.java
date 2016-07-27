@@ -1,6 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.util.LinkedList;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -24,11 +23,12 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Professione;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
+import it.tredi.ecm.service.FieldEditabileService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
@@ -52,6 +52,7 @@ public class DatiAccreditamentoController {
 	@Autowired private FileService fileService;
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private FieldEditabileService fieldEditabileService;
 	@Autowired private DatiAccreditamentoValidator datiAccreditamentoValidator;
 
 	@InitBinder
@@ -151,8 +152,8 @@ public class DatiAccreditamentoController {
 				if(file != null && !file.isNew()){
 					if(file.isESTRATTOBILANCIOFORMAZIONE())
 						wrapper.setEstrattoBilancioFormazione(fileService.getFile(file.getId()));
-					else if(file.isBUDGETPREVISIONALE())
-						wrapper.setBudgetPrevisionale(fileService.getFile(file.getId()));
+					else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+						wrapper.setEstrattoBilancioComplessivo(fileService.getFile(file.getId()));
 					else if(file.isFUNZIONIGRAMMA())
 						wrapper.setFunzionigramma(fileService.getFile(file.getId()));
 					else if(file.isORGANIGRAMMA())
@@ -217,8 +218,6 @@ public class DatiAccreditamentoController {
 					wrapper.setEstrattoBilancioFormazione(file);
 				else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
 					wrapper.setEstrattoBilancioComplessivo(file);
-				else if(file.isBUDGETPREVISIONALE())
-					wrapper.setBudgetPrevisionale(file);
 				else if(file.isFUNZIONIGRAMMA())
 					wrapper.setFunzionigramma(file);
 				else if(file.isORGANIGRAMMA())
@@ -226,7 +225,7 @@ public class DatiAccreditamentoController {
 			}
 		}
 
-		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_DATI_ACCREDITAMENTO), accreditamentoService.getIdEditabili(accreditamentoId));
+		wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.DATI_ACCREDITAMENTO));
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperEdit(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;
 	};
@@ -240,8 +239,8 @@ public class DatiAccreditamentoController {
 		for(File file : files){
 			if(file.isESTRATTOBILANCIOFORMAZIONE())
 				wrapper.setEstrattoBilancioFormazione(file);
-			else if(file.isBUDGETPREVISIONALE())
-				wrapper.setBudgetPrevisionale(file);
+			else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+				wrapper.setEstrattoBilancioComplessivo(file);
 			else if(file.isFUNZIONIGRAMMA())
 				wrapper.setFunzionigramma(file);
 			else if(file.isORGANIGRAMMA())

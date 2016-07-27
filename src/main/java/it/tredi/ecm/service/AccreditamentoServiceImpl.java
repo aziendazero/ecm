@@ -119,21 +119,22 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public boolean canProviderCreateAccreditamento(Long providerId) {
 		boolean canProvider = true;
 		
-		Set<Accreditamento> accreditamentoList = getAllAccreditamentiForProvider(providerId);
-		for(Accreditamento accreditamento : accreditamentoList){
-			if(accreditamento.isBozza()){
-				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di " + accreditamento.getStato().name()));
-				return false;
-			}
-			
-			if(accreditamento.isProcedimentoAttivo()){
-				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Procedimento Attivo"));
-				return false;
-			}
-//TODO gestire la distinzione tra domanda inviata ma ancora non accreditata e domanda accreditata
-//			if(accreditamento.isInviato())
+//TODO TEST
+//		Set<Accreditamento> accreditamentoList = getAllAccreditamentiForProvider(providerId);
+//		for(Accreditamento accreditamento : accreditamentoList){
+//			if(accreditamento.isBozza()){
+//				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di " + accreditamento.getStato().name()));
 //				return false;
-		}
+//			}
+//			
+//			if(accreditamento.isProcedimentoAttivo()){
+//				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Procedimento Attivo"));
+//				return false;
+//			}
+////TODO gestire la distinzione tra domanda inviata ma ancora non accreditata e domanda accreditata
+////			if(accreditamento.isInviato())
+////				return false;
+//		}
 		
 		return canProvider;
 	}
@@ -179,7 +180,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		
 		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
 		accreditamento.getIdEditabili().clear();
-		accreditamento.setEditabile(false);
 		
 		accreditamentoRepository.save(accreditamento);
 		

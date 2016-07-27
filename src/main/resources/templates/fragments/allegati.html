@@ -14,7 +14,7 @@
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
 
-			<label class="control-label col-xs-1" th:text="${counter}">numero indice</label>
+			<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(counter) : ''}">numero indice</label>
 			<label class="control-label col-md-3 col-sm-3 col-xs-7" th:for="__${tipoAllegato}__">
 				<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
 				<span th:if="${note == null and editabile and required}" class="required">*</span>
@@ -24,8 +24,8 @@
 				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 					<div class="col-xs-10">
 						<input type="file" accept="application/pdf" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" th:required="${required}"
-							style="display: none;" th:disabled="${counter == null or !#lists.contains(__${wrapper}__.idEditabili, counter)}"/>
-						<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" th:disabled="${counter == null or !#lists.contains(__${wrapper}__.idEditabili, counter)}" />
+							style="display: none;" th:disabled="${counter == null or !#lists.contains(__${wrapper}__.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(counter))}"/>
+						<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" th:disabled="${counter == null or !#lists.contains(__${wrapper}__.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(counter))}" />
 						<div th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
 						<div th:if="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 					</div>
@@ -87,13 +87,14 @@
 				case 'organigramma' : 					tipoAllegato = 'FILE_ORGANIGRAMMA'; break;
 				case 'funzionigramma' :					tipoAllegato = 'FILE_FUNZIONIGRAMMA'; break;
 				case 'estrattoBilancioFormazione' : 	tipoAllegato = 'FILE_ESTRATTO_BILANCIO_FORMAZIONE'; break;
-				case 'budgetPrevisionale' : 			tipoAllegato = 'FILE_BUDGET_PREVISIONALE'; break;
+				case 'estrattoBilancioComplessivo' : 	tipoAllegato = 'FILE_ESTRATTO_BILANCIO_COMPLESSIVO'; break;
 				case 'attoCostitutivo' : 				tipoAllegato = 'FILE_ATTO_COSTITUTIVO'; break;
 				case 'esperienzaFormazione' : 			tipoAllegato = 'FILE_ESPERIENZA_FORMAZIONE'; break;
 				case 'utilizzo' : 						tipoAllegato = 'FILE_UTILIZZO'; break;
 				case 'sistemaInformatico' : 			tipoAllegato = 'FILE_SISTEMA_INFORMATICO'; break;
 				case 'pianoQualita' : 					tipoAllegato = 'FILE_PIANO_QUALITA'; break;
 				case 'dichiarazioneLegale' : 			tipoAllegato = 'FILE_DICHIARAZIONE_LEGALE'; break;
+				case 'dichiarazioneEsclusione' : 		tipoAllegato = 'FILE_DICHIARAZIONE_ESCLUSIONE'; break;
 
 				//File da firmare per engineering
 				case 'fileDaFirmare' :					tipoAllegato = 'FILE_DA_FIRMARE'; break;
@@ -134,13 +135,14 @@
 						case 'FILE_ORGANIGRAMMA' : 					inputName = 'organigramma'; break;
 						case 'FILE_FUNZIONIGRAMMA' :				inputName = 'funzionigramma'; break;
 						case 'FILE_ESTRATTO_BILANCIO_FORMAZIONE' : 	inputName = 'estrattoBilancioFormazione'; break;
-						case 'FILE_BUDGET_PREVISIONALE' : 			inputName = 'budgetPrevisionale'; break;
+						case 'FILE_ESTRATTO_BILANCIO_COMPLESSIVO' : inputName = 'estrattoBilancioComplessivo'; break;
 						case 'FILE_ATTO_COSTITUTIVO' : 				inputName = 'attoCostitutivo'; break;
 						case 'FILE_ESPERIENZA_FORMAZIONE' : 		inputName = 'esperienzaFormazione'; break;
 						case 'FILE_UTILIZZO' : 						inputName = 'utilizzo'; break;
 						case 'FILE_SISTEMA_INFORMATICO' : 			inputName = 'sistemaInformatico'; break;
 						case 'FILE_PIANO_QUALITA' : 				inputName = 'pianoQualita'; break;
 						case 'FILE_DICHIARAZIONE_LEGALE' : 			inputName = 'dichiarazioneLegale'; break;
+						case 'FILE_DICHIARAZIONE_ESCLUSIONE' : 		inputName = 'dichiarazioneEsclusione'; break;
 
 						//File da firmare per engineering
 						case 'FILE_DA_FIRMARE' :					inputName = 'fileDaFirmare'; break;

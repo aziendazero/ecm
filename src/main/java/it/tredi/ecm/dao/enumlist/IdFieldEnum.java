@@ -1,5 +1,8 @@
 package it.tredi.ecm.dao.enumlist;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.Getter;
 
 @Getter
@@ -56,9 +59,9 @@ public enum IdFieldEnum {
 	DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO ("datiAccreditamento.professioniAccreditamento", 41, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
 	DATI_ACCREDITAMENTO__DISCIPLINE ("datiAccreditamento.discipline", 42, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
 	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO ("datiAccreditamento.datiEconomici.fatturatoComplessivo", 43, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
-	DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE ("datiAccreditamento.file.estrattoBilancioFormazione", 44, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
+	DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO ("datiAccreditamento.file.estrattoBilancioComplessivo", 44, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
 	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE ("datiAccreditamento.datiEconomici.fatturatoFormazione", 45, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
-	DATI_ACCREDITAMENTO__BUDGET_PREVISIONALE ("datiAccreditamento.file.budgetPrevisionale", 46, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
+	DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE ("datiAccreditamento.file.estrattoBilancioFormazione", 46, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),	
 	DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI ("datiAccreditamento.numeroDipendenti", 47, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
 	DATI_ACCREDITAMENTO__ORGANIGRAMMA ("datiAccreditamento.file.organigramma", 48, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
 	DATI_ACCREDITAMENTO__FUNZIONIGRAMMA ("datiAccreditamento.file.funzionigramma", 49, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
@@ -120,6 +123,7 @@ public enum IdFieldEnum {
 	ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO ("accreditamentoAllegati.file.sistemaInformatico", 93, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO),
 	ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA ("accreditamentoAllegati.file.pianoQualita", 94, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO),
 	ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE ("accreditamentoAllegati.file.dichiarazioneLegale", 95, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO),
+	ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE ("accreditamentoAllegati.file.dichiarazioneEsclusione", 96, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO),
 	
 	PIANO_FORMATIVO_FULL ("pianoFormativo", -1, null, SubSetFieldEnum.PIANO_FORMATIVO),//gestiamo la possibilità di modificare o meno il piano formativo dentro l'accreditamento
 	EVENTO_PIANO_FORMATIVO__PROCEDURA_FORMATIVA ("evento.proceduraFormativa", 1, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),
@@ -179,5 +183,14 @@ public enum IdFieldEnum {
 				return e;
 		}
 		return null;
+	}
+	
+	public static Set<IdFieldEnum> getAllForSubset(SubSetFieldEnum subset){
+		Set<IdFieldEnum> ids = new HashSet<IdFieldEnum>();
+		for(IdFieldEnum e : IdFieldEnum.values()){
+			if(e.getSubSetField() == subset)
+				ids.add(e);
+		}
+		return ids;
 	}
 }

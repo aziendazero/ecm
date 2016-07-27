@@ -10,7 +10,7 @@
 	<th:block th:fragment="provider(editabile)">
 
 		<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
-		<th:block th:with="counter=${(editabile == true) ? (providerWrapper.idOffset-1) : null}">
+		<th:block th:with="counter=${(editabile == true) ? 0 : null}">
 
 			<div class="x_content">
 				<!-- rimove il tag form se il provider NON è editabile -->
@@ -26,7 +26,6 @@
 							<input type="hidden" name="editId" th:value="${providerWrapper.provider.id}" />
 							<input type="hidden" th:field="${providerWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${providerWrapper.idEditabili}" />
-							<input type="hidden" th:field="${providerWrapper.idOffset}" />
 						</th:block>
 
 						<!-- TIPO ORGANIZZATORE -->
@@ -46,7 +45,7 @@
 										data-hide-disabled="false"
 										title="Seleziona una tipologia..."
 										th:if="${editabile}"
-										th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}"
+										th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore'))}"
 										th:remove="all-but-first">
 										<option
 											th:each="tipo, row: ${tipoOrganizzatoreList}"
@@ -74,7 +73,7 @@
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input type="text" id="denominazioneLegale" required="required" class="form-control col-md-7 col-xs-12"
-										name="denominazioneLegale" th:field="${providerWrapper.provider.denominazioneLegale}" th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}"/>
+										name="denominazioneLegale" th:field="${providerWrapper.provider.denominazioneLegale}" th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale'))}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -109,13 +108,12 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input type="text" id="partitaIva" required="required" class="form-control col-md-7 col-xs-12"
 										name="partivaIva" th:field="${providerWrapper.provider.partitaIva}"
-										th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter) or providerWrapper.provider.hasPartitaIVA}"/>
+										th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')) or providerWrapper.provider.hasPartitaIVA}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${providerWrapper.provider.partitaIva}"></div>
-
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('providerWrapper.provider.partitaIva')}" class="alert" th:errors="${providerWrapper.provider.partitaIva}"></div>
@@ -132,7 +130,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input type="text" id="codiceFiscale" required="required" class="form-control col-md-7 col-xs-12"
 										name="codiceFiscale" th:field="${providerWrapper.provider.codiceFiscale}"
-										th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}"/>
+										th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale'))}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -161,7 +159,7 @@
 										data-hide-disabled="false"
 										title="Seleziona una ragione sociale..."
 										th:if="${editabile}"
-										th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}"
+										th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale'))}"
 										th:remove="all-but-first">
 										<option
 											th:each="ragioneSociale, row: ${T(it.tredi.ecm.dao.enumlist.RagioneSocialeEnum).values()}"
@@ -191,14 +189,14 @@
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="naturaOrganizzazione">
 									<div class="radio">
-										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
-											<input type="radio" class="flat" name="naturaOrg" th:field="${providerWrapper.provider.naturaOrganizzazione}" th:value="Pubblica" th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}" />
+										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione'))) ? 'label-disabled' : ''}">
+											<input type="radio" class="flat" name="naturaOrg" th:field="${providerWrapper.provider.naturaOrganizzazione}" th:value="Pubblica" th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione'))}" />
 											<span th:text="#{label.pubblica}">Pubblica</span>
 										</label>
 									</div>
 									<div class="radio">
-										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
-											<input type="radio" class="flat" name="naturaOrg" th:field="${providerWrapper.provider.naturaOrganizzazione}" th:value="Privata" th:disabled="${!#lists.contains(providerWrapper.idEditabili, counter)}" />
+										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione'))) ? 'label-disabled' : ''}">
+											<input type="radio" class="flat" name="naturaOrg" th:field="${providerWrapper.provider.naturaOrganizzazione}" th:value="Privata" th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione'))}" />
 											<span th:text="#{label.privata}">Privata</span>
 										</label>
 									</div>
@@ -224,14 +222,14 @@
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="noProfit">
 									<div class="radio">
-										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
-											<input type="radio" class="flat" name="societaNoProfit" th:field="${providerWrapper.provider.noProfit}" th:value="true" th:disabled="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}"/>
+										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit'))) ? 'label-disabled' : ''}">
+											<input type="radio" class="flat" name="societaNoProfit" th:field="${providerWrapper.provider.noProfit}" th:value="true" th:disabled="${!editabile or !#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit'))}"/>
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
-										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, counter)) ? 'label-disabled' : ''}">
-											<input type="radio" class="flat" name="societaNoProfit" th:field="${providerWrapper.provider.noProfit}" th:value="false" th:disabled="${!editabile or !#lists.contains(providerWrapper.idEditabili, counter)}"/>
+										<label th:class="${(!editabile or !#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit'))) ? 'label-disabled' : ''}">
+											<input type="radio" class="flat" name="societaNoProfit" th:field="${providerWrapper.provider.noProfit}" th:value="false" th:disabled="${!editabile or !#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit'))}"/>
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>

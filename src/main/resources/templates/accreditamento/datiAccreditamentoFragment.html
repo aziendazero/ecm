@@ -10,7 +10,7 @@
 	<th:block th:fragment="datiAccreditamento(editabile)">
 
 		<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
-		<th:block th:with="counter=${(editabile == true) ? (datiAccreditamentoWrapper.idOffset-1) : null}">
+		<th:block th:with="counter=${(editabile == true) ? 0 : null}">
 
 			<div class="x_content">
 				<!-- rimove il tag form se il datiAccreditamento NON è editabile -->
@@ -27,7 +27,6 @@
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.provider.id}" />
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.idEditabili}" />
-							<input type="hidden" th:field="${datiAccreditamentoWrapper.idOffset}" />
 						</th:block>
 
 						<!-- TIPOLOGIA ACCREDITAMENTO -->
@@ -42,7 +41,7 @@
 									<div class="radio">
 										<label>
 											<input type="radio" class="flat" id="generaleTipologia"
-												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
+												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento'))}"
 												th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
 											<span th:text="#{label.generale}">Generale </span>
 										</label>
@@ -50,7 +49,7 @@
 									<div class="radio">
 										<label>
 											<input type="radio" class="flat" id="settorialeTipologia"
-												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
+												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento'))}"
 												th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Settoriale" />
 											<span th:text="#{label.settoriale}">Settoriale </span>
 										</label>
@@ -81,12 +80,12 @@
 											<input type="checkbox" class="flat" th:field="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}" th:value="${proceduraFormativa}"
 												th:disabled="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Generale'  or
 																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
-																!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+																!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative'))}" />
 											<span th:text="${proceduraFormativa.nome}">formazione residenziale (RES)</span>
 											<input type="hidden" name="datiAccreditamento.procedureFormative" th:value="${proceduraFormativa}"
 												th:disabled="${(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Settoriale') or
 																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
-																!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"/>
+																!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative'))}"/>
 										</label>
 									</div>
 								</div>
@@ -116,7 +115,7 @@
 										<label>
 											<input type="radio" class="flat" id="generaleProf"
 												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
-												th:value="Generale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+												th:value="Generale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento'))}" />
 											<span th:text="#{label.generale}">Generale </span>
 										</label>
 									</div>
@@ -124,7 +123,7 @@
 										<label>
 											<input type="radio" class="flat" id="settorialeProf"
 												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
-												th:value="Settoriale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+												th:value="Settoriale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento'))}" />
 											<span th:text="#{label.settoriale}">Settoriale </span>
 										</label>
 									</div>
@@ -142,7 +141,7 @@
 
 
 						<!-- PROFESSIONI/DISCIPLINE -->
-						<!-- <div class="item form-group">
+						<div class="item form-group">
 							<label class="control-label col-xs-1 text-right" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.discipline') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="accreditamento_professioni">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.professioni_discipline}">Professioni</span>
@@ -157,7 +156,7 @@
 											data-size="10" title="Seleziona una professione..."
 											onchange="abilitaDiscipline(this)" data-selected-text-format="count"
 											th:remove="all-but-first"
-											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}">
+											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}">
 											<option th:each="professione, row: ${professioneList}"
 												th:value="${professione.id}" th:text="${professione.nome}"
 												th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniSelezionate}">Professione selezionata</option>
@@ -166,13 +165,13 @@
 									<select id="discipline" class="selectpicker" th:field="${datiAccreditamentoWrapper.datiAccreditamento.discipline}"
 										multiple="multiple" data-width="100%"
 										data-style="btn-success" data-actions-box="true"
-										data-size="10" data-hide-disabled="true" th:attr="data-editabile=${#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
+										data-size="10" data-hide-disabled="true" th:attr="data-editabile=${#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}"
 										title="Seleziona una disciplina..." disabled="disabled"
-										th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
+										th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}"
 										data-selected-text-format="count"
 										th:remove="all-but-first">
 										<optgroup class="optgroup-success" disabled="disabled"
-											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
+											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}"
 											th:each="professione, row: ${professioneList}"
 											th:label="${professione.nome}"
 											th:remove="all-but-first">
@@ -207,7 +206,7 @@
 									</div>
 								</div>
 							</th:block>
-						</div> -->
+						</div>
 
 						<div class="divider-dashed"></div>
 
@@ -228,7 +227,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}" required="required"
-										class="form-control col-md-7 col-xs-12" type="text" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"
+										class="form-control col-md-7 col-xs-12" type="text" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}"
 										pattern="^\d+\.\d$" />
 								</div>
 							</th:block>
@@ -249,7 +248,7 @@
 									<input id="costi_complessivi_anno2_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}" />
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -269,7 +268,7 @@
 									<input id="costi_complessivi_anno3_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}" />
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -283,7 +282,7 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 1 (ESTRATTO DEL BILANCIO COMPLESSIVO) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.estrattoBilancioComplessivo') : null}, #{label.required_fatturato}, true, ${editabile}, false)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${counter != null ? 'datiAccreditamento.file.estrattoBilancioComplessivo' : null}, #{label.required_fatturato}, true, ${editabile}, false)" ></th:block>
 
 						<div class="divider-dashed"></div>
 
@@ -305,7 +304,7 @@
 									<input id="costi_formazione_anno1_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}" />
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -325,7 +324,7 @@
 									<input id="costi_formazione_anno2_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}"/>
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -345,7 +344,7 @@
 									<input id="costi_formazione_anno3_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}" required="required"
 										class="form-control col-md-7 col-xs-12" type="text"
-										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+										pattern="^\d+\.\d$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}" />
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -359,7 +358,7 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 2 (ETRATTO BILANCIO RELATIVO FORMAZIONE + BUDGET PREVISIONALE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.estrattoBilancioFormazione') : null}, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${counter != null ? 'datiAccreditamento.file.estrattoBilancioFormazione' : null}, null, true, ${editabile}, true)" ></th:block>
 
 						<div class="divider-dashed"></div>
 
@@ -380,7 +379,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tempo_indeterminato">
 									<input id="tempo_indeterminato_value" th:field="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"
 										required="required"	class="form-control col-md-7 col-xs-12" type="text"
-										pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+										pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti'))}" />
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -399,7 +398,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="altro_personale">
 									<input id="altro_personale_value" th:field="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"
 										required="required"	class="form-control col-md-7 col-xs-12" type="text"
-										pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, counter)}" />
+										pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti'))}" />
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -413,15 +412,10 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 3 (ORGANIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.organigramma') : null}, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${counter != null ? 'datiAccreditamento.file.organigramma' : null}, null, true, ${editabile}, true)" ></th:block>
 
 						<!-- ALLEGATO 4 (FUNZIONIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.funzionigramma') : null}, null, true, ${editabile}, true)" ></th:block>
-
-						<th:block th:each="disciplina, row : ${datiAccreditamentoWrapper.datiAccreditamento.discipline}">
-							<div>vaffanculo</div>
-							<input type="hidden" th:value="${disciplina}" th:name="|datiAccreditamentoWrapper.datiAccreditamento.discipline[${row.index}]|"/>
-						</th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${counter != null ? 'datiAccreditamento.file.funzionigramma' : null}, null, true, ${editabile}, true)" ></th:block>
 					</form>
 				</div>
 			</div>

@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AccreditamentoAllegatiWrapper extends Wrapper{
+public class AccreditamentoAllegatiWrapper extends Wrapper2{
 	private Long accreditamentoId;
 	private Provider provider;
 
