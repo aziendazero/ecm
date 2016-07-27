@@ -1,7 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,10 +26,11 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.AnagraficaService;
+import it.tredi.ecm.service.FieldEditabileService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
@@ -53,7 +52,7 @@ public class PersonaController {
 	@Autowired private ProviderService providerService;
 	@Autowired private ProfessioneService professioneService;
 	@Autowired private FileService fileService;
-	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private FieldEditabileService fieldEditabileService;
 	@Autowired private PersonaValidator personaValidator;
 
 	@InitBinder
@@ -237,8 +236,8 @@ public class PersonaController {
 					if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() ||
 							personaWrapper.getPersona().isComponenteComitatoScientifico() || personaWrapper.getPersona().isCoordinatoreComitatoScientifico()||
 							personaWrapper.getPersona().isResponsabileSistemaInformatico() || personaWrapper.getPersona().isResponsabileQualita())
-						accreditamentoService.removeIdEditabili(personaWrapper.getAccreditamentoId(), Costanti.IDS_LEGALE_RAPPRESENTANTE);
-
+						fieldEditabileService.removeFieldEditabileForAccreditamento(accreditamentoId, null, SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
+						
 					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito('"+ personaWrapper.getPersona().getRuolo().getNome() +"')", "success"));
 
@@ -360,21 +359,24 @@ public class PersonaController {
 		}
 
 		if(accreditamentoId != 0){
-			List<Integer> accreditamentoIdEditabili = accreditamentoService.getIdEditabili(accreditamentoId);
 			if(persona.isLegaleRappresentante())
-				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_LEGALE_RAPPRESENTANTE), accreditamentoIdEditabili);
+				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.LEGALE_RAPPRESENTANTE));
 			else if(persona.isDelegatoLegaleRappresentante())
-				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_DELEGATO_LEGALE_RAPPRESENTANTE), accreditamentoIdEditabili);
+				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE));
 			else if(persona.isResponsabileSegreteria())
-				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_RESPONSABILE_SEGRETERIA), accreditamentoIdEditabili);
+				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.RESPONSABILE_SEGRETERIA));
 			else if(persona.isResponsabileAmministrativo())
-				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_RESPONSABILE_AMMINISTRATIVO), accreditamentoIdEditabili);
-			else if(persona.isComponenteComitatoScientifico())
-				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_COMPONENTE_COMITATO_SCIENTIFICO), accreditamentoIdEditabili);
+				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO));
+			else if(persona.isComponenteComitatoScientifico()){
+				if(persona.isNew()) 
+					personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO)); 
+				else
+					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, persona.getId()), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO));
+			}
 			else if(persona.isResponsabileSistemaInformatico())
-				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_RESPONSABILE_SISTEMA_INFORMATICO), accreditamentoIdEditabili);
+				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO));
 			else if(persona.isResponsabileQualita())
-				personaWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_RESPONSABILE_QUALITA), accreditamentoIdEditabili);
+				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.RESPONSABILE_QUALITA));
 		}
 
 		personaWrapper.setIsLookup(isLookup);

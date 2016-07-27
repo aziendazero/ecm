@@ -24,9 +24,10 @@
 						enctype="multipart/form-data" novalidate="novalidate">
 
 						<input type="hidden" th:field="${wrapper.accreditamentoId}" />
-						<input type="hidden" th:field="${wrapper.subSet}" />
+						<input type="hidden" th:field="${wrapper.subset}" />
+						<input type="hidden" th:field="${wrapper.objRef}" />
 						
-						<div class="check" th:each="idField, row : ${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getAllForSubset(wrapper.subSet)}">
+						<div class="check" th:each="idField, row : ${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getAllForSubset(wrapper.subset)}">
 							<input type="checkbox"
 								th:field="${wrapper.selected}"
 								th:value="${idField}" /> 

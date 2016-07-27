@@ -1,12 +1,14 @@
 package it.tredi.ecm.web.bean;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
@@ -14,6 +16,9 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -224,8 +229,7 @@ public class AccreditamentoWrapper {
 	}
 
 	public boolean isComitatoScientificoEditabile(){
-		LinkedList<Integer> ids = new LinkedList<Integer>(Costanti.IDS_COMPONENTE_COMITATO_SCIENTIFICO);
-		ids.retainAll(getAccreditamento().getIdEditabili());
+		Set<IdFieldEnum> ids = Utils.getSubsetOfIdFieldEnum(new HashSet<FieldEditabile>(getAccreditamento().getIdEditabil()), SubSetFieldEnum.COMITATO_SCIENTIFICO);
 		if(ids.isEmpty())
 			return false;
 		else

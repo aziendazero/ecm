@@ -2,10 +2,7 @@ package it.tredi.ecm.web;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
-import it.tredi.ecm.dao.enumlist.FileEnum;
-import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldEditabileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
