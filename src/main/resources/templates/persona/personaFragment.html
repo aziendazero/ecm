@@ -266,17 +266,17 @@
 						<!-- ALLEGATO 1 (ATTO DI NOMINA) -->
 						<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}">
 							<div th:if="${editabile}" class="divider-dashed"></div>
-							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, attoNomina, ${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.file.attoNomina',personaWrapper.ruolo) : null}, null, true, ${editabile}, true)" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, attoNomina, ${editabile ? 'persona.file.attoNomina' : null}, ${personaWrapper.ruolo}, null, true, ${editabile}, true)" ></th:block>
 						</div>
 
 						<!-- ALLEGATO 2 (CURRICULUM VITAE) -->
 						<div th:if="${editabile}" class="divider-dashed"></div>
-						<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.file.cv',personaWrapper.ruolo) : null}, null, true, ${editabile}, true)"></th:block>
+						<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${editabile ? 'persona.file.cv' : null}, ${personaWrapper.ruolo}, null, true, ${editabile}, true)"></th:block>
 
 						<!-- ALLEGATO 3 (DELEGA) -->
 						<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}">
 							<div th:if="${editabile}" class="divider-dashed"></div>
-							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, delega, ${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.file.delega',personaWrapper.ruolo) : null}, null, true, ${editabile}, true)"></th:block>
+							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, delega, ${editabile ? 'persona.file.delega' : null}, ${personaWrapper.ruolo}, null, true, ${editabile}, true)"></th:block>
 						</div>
 					</form>
 				</div>

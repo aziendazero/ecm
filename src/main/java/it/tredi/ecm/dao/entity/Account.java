@@ -38,6 +38,8 @@ public class Account extends BaseEntity{
 	private String nome;
 	private String cognome;
 	private String codiceFiscale;
+	//in realtà servono solo per gli utenti con profilo REFEREE
+	private int valutazioniNonDate = 0;
 	private String note;
 	
 	@ManyToMany(fetch = FetchType.EAGER)

@@ -15,9 +15,6 @@ public class FieldValutazione extends Field{
 	private boolean esito;
 	private String note;
 	
-	@ManyToOne
-	private Persona valutatore;
-	
 	@Override
     public boolean equals(Object o) {
         if (this == o) {

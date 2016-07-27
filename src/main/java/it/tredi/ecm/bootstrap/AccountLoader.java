@@ -119,7 +119,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			profile_provider.getRoles().add(role_writeAccreditamento);
 			profileRepository.save(profile_provider);
 			
-			/* PROFILE ADMIN */
+			/* PROFILE SEGRETERIA */
 			Profile profile_admin = new Profile();
 			profile_admin.setName(Costanti.PROFILO_SEGRETERIA);
 			
@@ -166,6 +166,34 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			//admin.getProfiles().add(profile_provider);
 			
 			accountRepository.save(admin);
+			
+			/* PROFILE REFEREE */
+			Profile profile_referee = new Profile();
+			profile_referee.setName(Costanti.PROFILO_REFEREE);
+			
+			profile_referee.getRoles().add(role_readAllProvider);
+			profile_referee.getRoles().add(role_readAllAccreditamento);
+
+			profileRepository.save(profile_referee);
+			
+			/* PROFILE COMMISSIONE */
+			Profile profile_commissione = new Profile();
+			profile_commissione.setName(Costanti.PROFILO_COMMISSIONE);
+			
+			profile_commissione.getRoles().add(role_readAllProvider);
+			profile_commissione.getRoles().add(role_readAllAccreditamento);
+
+			profileRepository.save(profile_commissione);
+			
+			/* PROFILE OSSERVATORE */
+			Profile profile_osservatore = new Profile();
+			profile_osservatore.setName(Costanti.PROFILO_OSSERVATORE);
+			
+			profile_osservatore.getRoles().add(role_readAllProvider);
+			profile_osservatore.getRoles().add(role_readAllAccreditamento);
+
+			profileRepository.save(profile_osservatore);
+			
 			
 //			try{
 //				accountService.save(admin);

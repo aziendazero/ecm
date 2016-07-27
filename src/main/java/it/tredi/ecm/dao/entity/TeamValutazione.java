@@ -4,16 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-public class GruppoCrecm extends BaseEntity{
-	private String nome;
-	@OneToMany
-	private Set<Account> valutatori = new HashSet<Account>();
+public class TeamValutazione{
+	private Account teamLeader;
+	private Set<Account> membri = new HashSet<Account>();
+	private Persona responsabileInformatico; 
 }

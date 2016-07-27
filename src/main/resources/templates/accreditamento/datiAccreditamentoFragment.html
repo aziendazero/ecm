@@ -280,7 +280,7 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 1 (ESTRATTO DEL BILANCIO COMPLESSIVO) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${editabile ? 'datiAccreditamento.file.estrattoBilancioComplessivo' : null}, #{label.required_fatturato}, true, ${editabile}, false)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${editabile ? 'datiAccreditamento.file.estrattoBilancioComplessivo' : null}, null, #{label.required_fatturato}, true, ${editabile}, false)" ></th:block>
 
 						<div class="divider-dashed"></div>
 
@@ -356,7 +356,7 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 2 (ETRATTO BILANCIO RELATIVO FORMAZIONE + BUDGET PREVISIONALE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${editabile ? 'datiAccreditamento.file.estrattoBilancioFormazione' : null}, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${editabile ? 'datiAccreditamento.file.estrattoBilancioFormazione' : null}, null, null, true, ${editabile}, true)" ></th:block>
 
 						<div class="divider-dashed"></div>
 
@@ -410,10 +410,10 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 3 (ORGANIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${editabile ? 'datiAccreditamento.file.organigramma' : null}, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${editabile ? 'datiAccreditamento.file.organigramma' : null}, null, null, true, ${editabile}, true)" ></th:block>
 
 						<!-- ALLEGATO 4 (FUNZIONIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${editabile ? 'datiAccreditamento.file.funzionigramma' : null}, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${editabile ? 'datiAccreditamento.file.funzionigramma' : null}, null, null, true, ${editabile}, true)" ></th:block>
 					</form>
 				</div>
 			</div>
