@@ -19,14 +19,12 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 
 	private File estrattoBilancioComplessivo;
 	private File estrattoBilancioFormazione;
-	private File budgetPrevisionale;
 	private File funzionigramma;
 	private File organigramma;
 
 	public DatiAccreditamentoWrapper() {
 		setEstrattoBilancioComplessivo(new File(FileEnum.FILE_ESTRATTO_BILANCIO_COMPLESSIVO));
 		setEstrattoBilancioFormazione(new File(FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE));
-		setBudgetPrevisionale(new File(FileEnum.FILE_BUDGET_PREVISIONALE));
 		setFunzionigramma(new File(FileEnum.FILE_FUNZIONIGRAMMA));
 		setOrganigramma(new File(FileEnum.FILE_ORGANIGRAMMA));
 	}
@@ -41,12 +39,6 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		estrattoBilancioFormazione = file;
 		if(provider != null)
 			provider.addFile(estrattoBilancioFormazione);
-	}
-
-	public void setBudgetPrevisionale(File file){
-		budgetPrevisionale = file;
-		if(provider != null)
-			provider.addFile(budgetPrevisionale);
 	}
 
 	public void setFunzionigramma(File file){
@@ -65,7 +57,6 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		Set<File> files = new HashSet<File>();
 		files.add(estrattoBilancioComplessivo);
 		files.add(estrattoBilancioFormazione);
-		files.add(budgetPrevisionale);
 		files.add(funzionigramma);
 		files.add(organigramma);
 		return files;

@@ -152,8 +152,8 @@ public class DatiAccreditamentoController {
 				if(file != null && !file.isNew()){
 					if(file.isESTRATTOBILANCIOFORMAZIONE())
 						wrapper.setEstrattoBilancioFormazione(fileService.getFile(file.getId()));
-					else if(file.isBUDGETPREVISIONALE())
-						wrapper.setBudgetPrevisionale(fileService.getFile(file.getId()));
+					else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+						wrapper.setEstrattoBilancioComplessivo(fileService.getFile(file.getId()));
 					else if(file.isFUNZIONIGRAMMA())
 						wrapper.setFunzionigramma(fileService.getFile(file.getId()));
 					else if(file.isORGANIGRAMMA())
@@ -218,8 +218,6 @@ public class DatiAccreditamentoController {
 					wrapper.setEstrattoBilancioFormazione(file);
 				else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
 					wrapper.setEstrattoBilancioComplessivo(file);
-				else if(file.isBUDGETPREVISIONALE())
-					wrapper.setBudgetPrevisionale(file);
 				else if(file.isFUNZIONIGRAMMA())
 					wrapper.setFunzionigramma(file);
 				else if(file.isORGANIGRAMMA())
@@ -241,8 +239,8 @@ public class DatiAccreditamentoController {
 		for(File file : files){
 			if(file.isESTRATTOBILANCIOFORMAZIONE())
 				wrapper.setEstrattoBilancioFormazione(file);
-			else if(file.isBUDGETPREVISIONALE())
-				wrapper.setBudgetPrevisionale(file);
+			else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+				wrapper.setEstrattoBilancioComplessivo(file);
 			else if(file.isFUNZIONIGRAMMA())
 				wrapper.setFunzionigramma(file);
 			else if(file.isORGANIGRAMMA())

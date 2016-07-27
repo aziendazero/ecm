@@ -282,7 +282,7 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 1 (ESTRATTO DEL BILANCIO COMPLESSIVO) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.estrattoBilancioComplessivo') : null}, #{label.required_fatturato}, true, ${editabile}, false)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${counter != null ? 'datiAccreditamento.file.estrattoBilancioComplessivo' : null}, #{label.required_fatturato}, true, ${editabile}, false)" ></th:block>
 
 						<div class="divider-dashed"></div>
 
@@ -358,7 +358,7 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 2 (ETRATTO BILANCIO RELATIVO FORMAZIONE + BUDGET PREVISIONALE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.estrattoBilancioFormazione') : null}, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${counter != null ? 'datiAccreditamento.file.estrattoBilancioFormazione' : null}, null, true, ${editabile}, true)" ></th:block>
 
 						<div class="divider-dashed"></div>
 
@@ -412,10 +412,10 @@
 						<div class="divider-dashed"></div>
 
 						<!-- ALLEGATO 3 (ORGANIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.organigramma') : null}, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${counter != null ? 'datiAccreditamento.file.organigramma' : null}, null, true, ${editabile}, true)" ></th:block>
 
 						<!-- ALLEGATO 4 (FUNZIONIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.file.funzionigramma') : null}, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${counter != null ? 'datiAccreditamento.file.funzionigramma' : null}, null, true, ${editabile}, true)" ></th:block>
 					</form>
 				</div>
 			</div>

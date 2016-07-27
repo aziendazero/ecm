@@ -25,25 +25,14 @@
 
 						<input type="hidden" name="editId" th:value="${wrapper.accreditamento.id}" />
 						
-						<div class="check">
+						<div class="check" th:each="idField, row : ${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getAllForSubset('DATI_ACCREDITAMENTO')}">
 							<input type="checkbox"
 								th:field="${wrapper.selected}"
-								th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__FULL}" /> 
-								<span th:text="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__FULL}">Generale </span>
+								th:value="${idField}" /> 
+								<span th:text="${idField}">Generale </span>
 						</div>
 						
-						<div class="check">
-							<input type="checkbox"
-								th:field="${wrapper.selected}"
-								th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__COGNOME}" /> 
-								<span th:text="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__COGNOME}">Generale </span>
-						</div>
-						<div class="check">
-							<input type="checkbox"
-								th:field="${wrapper.selected}"
-								th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__NOME}" /> 
-								<span th:text="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__NOME}">Generale </span>
-						</div>
+						
 						<button class="btn btn-success pull-right" th:text="#{label.salva}" type="submit"></button>
 					</form>
 				</div>
