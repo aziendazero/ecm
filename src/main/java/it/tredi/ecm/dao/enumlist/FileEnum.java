@@ -9,7 +9,6 @@ public enum FileEnum {
 	FILE_ATTO_NOMINA (3, "Atto di nomina"),
 	FILE_ESTRATTO_BILANCIO_FORMAZIONE (4, "Estratto del bilancio relativo alla formazione"),
 	FILE_ESTRATTO_BILANCIO_COMPLESSIVO (5, "Estratto del bilancio complessivo degli ultimi 3 anni"),
-	FILE_BUDGET_PREVISIONALE (6, "Budget previsionale"),
 	FILE_FUNZIONIGRAMMA (7, "Funzionigramma"),
 	FILE_ORGANIGRAMMA (8, "Organigramma"),
 	FILE_ATTO_COSTITUTIVO (9, "Atto Costitutivo e statuto"),
@@ -27,7 +26,7 @@ public enum FileEnum {
 	FILE_DICHIARAZIONE_ESCLUSIONE (21, ""),
 
 	//ENGINEERING TEST FILE
-	FILE_DA_FIRMARE(21, "");
+	FILE_DA_FIRMARE(22, "");
 
 	private int id;
 	private String nome;
