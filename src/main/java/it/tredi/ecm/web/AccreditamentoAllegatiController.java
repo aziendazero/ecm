@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 
-import javax.persistence.OneToMany;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,9 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.FieldEditabileService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
@@ -44,6 +44,7 @@ public class AccreditamentoAllegatiController {
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
+	@Autowired private FieldEditabileService fieldEditabileService;
 	@Autowired private AccreditamentoAllegatiValidator accreditamentoAllegatiValidator;
 
 	@InitBinder
@@ -188,7 +189,7 @@ public class AccreditamentoAllegatiController {
 
 		HashMap<FileEnum, Long> modelIds = fileService.getModelFileIds();
 		wrapper.setModelIds(modelIds);
-		wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_ALLEGATI), accreditamento.getIdEditabili());
+		wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperEdit(" + accreditamentoId + ") - exiting"));
 		return wrapper;

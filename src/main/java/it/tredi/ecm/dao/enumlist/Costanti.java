@@ -22,7 +22,7 @@ public class Costanti {
 	public static final List<Integer> IDS_COMPONENTE_COMITATO_SCIENTIFICO = Arrays.asList(65,66,67,68,69,70,71,72,73);
 	public static final List<Integer> IDS_RESPONSABILE_SISTEMA_INFORMATICO = Arrays.asList(74,75,76,77,78,79,80,81);
 	public static final List<Integer> IDS_RESPONSABILE_QUALITA = Arrays.asList(82,83,84,85,86,87,88,89);
-	public static final List<Integer> IDS_ALLEGATI = Arrays.asList(90,91,92,93,94,95);
+	//public static final List<Integer> IDS_ALLEGATI = Arrays.asList(90,91,92,93,94,95);
 
 	public static final List<Integer> IDS_EVENTO_PIANO_FORMATIVO = Arrays.asList(1,2,3,4,5,6);
 	public static final List<Integer> IDS_EVENTO = Arrays.asList(1,2,3,4,5,6,7,8,9);

@@ -4,7 +4,7 @@
 <head>
 </head>
 <body>
-<th:block th:fragment="allegati(wrapper, withIdEditabili, tipoAllegato, counter, note, withFirma, editabile, required)">
+<th:block th:fragment="allegati(wrapper, withIdEditabili, tipoAllegato, fieldKey, note, withFirma, editabile, required)">
 
 	<!-- wrapper con idEditabili -->
 	<th:block th:if="${__withIdEditabili__}">
@@ -14,7 +14,7 @@
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
 
-			<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(counter) : ''}">numero indice</label>
+			<label class="control-label col-xs-1" th:text="${fieldKey != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(fieldKey) : ''}">numero indice</label>
 			<label class="control-label col-md-3 col-sm-3 col-xs-7" th:for="__${tipoAllegato}__">
 				<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
 				<span th:if="${note == null and editabile and required}" class="required">*</span>
@@ -24,8 +24,8 @@
 				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 					<div class="col-xs-10">
 						<input type="file" accept="application/pdf" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" th:required="${required}"
-							style="display: none;" th:disabled="${counter == null or !#lists.contains(__${wrapper}__.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(counter))}"/>
-						<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" th:disabled="${counter == null or !#lists.contains(__${wrapper}__.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(counter))}" />
+							style="display: none;" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey))}"/>
+						<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey))}" />
 						<div th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
 						<div th:if="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 					</div>
