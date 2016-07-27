@@ -7,6 +7,9 @@ public class Costanti {
 	public static final String PROFILO_PROVIDER = "PROVIDER";
 	public static final String PROFILO_ADMIN = "ADMIN";
 	public static final String PROFILO_SEGRETERIA = "SEGRETERIA";
+	public static final String PROFILO_REFEREE = "REFEREE";
+	public static final String PROFILO_COMMISSIONE = "COMMISSIONE";
+	public static final String PROFILO_OSSERVATORE = "OSSERVATORE";
 
 	public static final String SEDE_LEGALE = "SedeLegale";
 	public static final String SEDE_OPERATIVA = "SedeOperativa";

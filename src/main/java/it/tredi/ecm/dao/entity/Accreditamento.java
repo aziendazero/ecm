@@ -61,10 +61,6 @@ public class Accreditamento extends BaseEntity{
 	@Column(name = "data_fine_accreditamento")//data di scadenza calcolata dall'accreditamento +4anni
 	private LocalDate dataFineAccreditamento;
 
-	@JoinColumn(name = "valutato_da")
-	@OneToOne(fetch = FetchType.LAZY)
-	private Persona valutatore;
-
 	@JoinColumn(name = "provider_id")
 	@OneToOne(fetch = FetchType.LAZY)
 	private Provider provider;
@@ -122,7 +118,23 @@ public class Accreditamento extends BaseEntity{
 		//DATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DATI_ACCREDITAMENTO))
 			idEditabil.add(new FieldEditabile(id, this));
+		
+		//RESPONSABILE SEGRETERIA
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SEGRETERIA))
+			idEditabil.add(new FieldEditabile(id, this));
+		
+		//RESPONSABILE AMMINISTRATIVO
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO))
+			idEditabil.add(new FieldEditabile(id, this));
+		
+		//RESPONSABILE SISTEMA INFORMATICO
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO))
+			idEditabil.add(new FieldEditabile(id, this));
 
+		//RESPONSABILE SISTEMA QUALITA
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_QUALITA))
+			idEditabil.add(new FieldEditabile(id, this));
+		
 		//ALLEGATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO))
 			idEditabil.add(new FieldEditabile(id, this));
