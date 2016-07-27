@@ -20,12 +20,13 @@
 
 				<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni">
 					<form id="formEvento" class="form-horizontal form-label-left"
-						th:action="@{/edit/save}" method="post"
+						th:action="@{/fieldEditabile/save}" method="post"
 						enctype="multipart/form-data" novalidate="novalidate">
 
-						<input type="hidden" name="editId" th:value="${wrapper.accreditamento.id}" />
+						<input type="hidden" th:field="${wrapper.accreditamentoId}" />
+						<input type="hidden" th:field="${wrapper.subSet}" />
 						
-						<div class="check" th:each="idField, row : ${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getAllForSubset('DATI_ACCREDITAMENTO')}">
+						<div class="check" th:each="idField, row : ${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getAllForSubset(wrapper.subSet)}">
 							<input type="checkbox"
 								th:field="${wrapper.selected}"
 								th:value="${idField}" /> 

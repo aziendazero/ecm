@@ -27,28 +27,22 @@ public class IntegrazioneController {
 	@Autowired AccreditamentoService accreditamentoService;
 	@Autowired FieldEditabileRepository repo;
 
-	public TestWrapper getWrapper(@RequestParam(value="editId",required = false) Long id){
-		if(id != null)
-			return prepareWrapper(accreditamentoService.getAccreditamento(id));
-		return null;
-	}
-
-	@RequestMapping("/edit/{accreditamentoId}")
-	public String edit(@PathVariable Long accreditamentoId, Model model){
+	@RequestMapping("/fieldEditabile/{accreditamentoId}")
+	public String edit(@PathVariable Long accreditamentoId, Model model, @RequestParam("subset") SubSetFieldEnum subSet){
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-		model.addAttribute("wrapper", prepareWrapper(accreditamento));
+		model.addAttribute("wrapper", prepareWrapper(accreditamentoId, subSet));
 		return "test";
 	}
 
-	@RequestMapping("/edit/save")
+	@RequestMapping("/fieldEditabile/save")
 	public String save(@ModelAttribute("wrapper") TestWrapper wrapper, Model model){
 
 		Set<IdFieldEnum> listaDaView = wrapper.getSelected();
 
 		Set<FieldEditabile> listaFull = wrapper.getFullLista();
-		Set<FieldEditabile> listaSubset = Utils.getSubset(listaFull, SubSetFieldEnum.DATI_ACCREDITAMENTO);
+		Set<FieldEditabile> listaSubset = Utils.getSubset(listaFull, wrapper.getSubSet());
 
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(wrapper.getAccreditamento().getId());
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(wrapper.getAccreditamentoId());
 
 		listaSubset.forEach(f -> {
 			if(listaDaView == null || !listaDaView.contains(f.getIdField())){
@@ -70,13 +64,14 @@ public class IntegrazioneController {
 		return "redirect:/home";
 	}
 
-	private TestWrapper prepareWrapper(Accreditamento accreditamento){
+	private TestWrapper prepareWrapper(Long accreditamentoId, SubSetFieldEnum subset){
 		TestWrapper wrapper = new TestWrapper();
-		Set<FieldEditabile> fullLista = repo.findAllByAccreditamentoId(accreditamento.getId());
-
-		wrapper.setAccreditamento(accreditamento);
+		Set<FieldEditabile> fullLista = repo.findAllByAccreditamentoId(accreditamentoId);
+		
+		wrapper.setAccreditamentoId(accreditamentoId);
+		wrapper.setSubSet(subset);
 		wrapper.setFullLista(fullLista);
-		wrapper.setSelected(Utils.getSubsetOfIdFieldEnum(fullLista, SubSetFieldEnum.DATI_ACCREDITAMENTO));
+		wrapper.setSelected(Utils.getSubsetOfIdFieldEnum(fullLista, subset));
 
 		return wrapper;
 	}
