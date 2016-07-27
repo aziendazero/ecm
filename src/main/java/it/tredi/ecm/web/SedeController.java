@@ -21,7 +21,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
+<<<<<<< HEAD
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+=======
+import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.service.AccreditamentoService;
+>>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 import it.tredi.ecm.service.FieldEditabileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
