@@ -31,7 +31,7 @@ public enum IdFieldEnum {
 	SEDE_OPERATIVA__CAP ("SedeOperativa.cap", 18, null, SubSetFieldEnum.SEDE_OPERATIVA),
 	SEDE_OPERATIVA__TELEFONO ("SedeOperativa.telefono", 19, null, SubSetFieldEnum.SEDE_OPERATIVA),
 	SEDE_OPERATIVA__FAX ("SedeOperativa.fax", 20, null, SubSetFieldEnum.SEDE_OPERATIVA),
-	SEDE_OPERATIVA__EMAIL ("SedeOperativa.email", 21, null, SubSetFieldEnum.SEDE_LEGALE),
+	SEDE_OPERATIVA__EMAIL ("SedeOperativa.email", 21, null, SubSetFieldEnum.SEDE_OPERATIVA),
 	
 	LEGALE_RAPPRESENTANTE__FULL ("persona.legaleRappresentante",-1,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE),
 	LEGALE_RAPPRESENTANTE__COGNOME ("persona.anagrafica.cognome",22,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE),

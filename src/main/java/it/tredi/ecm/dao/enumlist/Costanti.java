@@ -12,8 +12,8 @@ public class Costanti {
 	public static final String SEDE_OPERATIVA = "SedeOperativa";
 
 	//public static final List<Integer> IDS_PROVIDER = Arrays.asList(1,2,5,6,7);
-	public static final List<Integer> IDS_SEDE_LEGALE = Arrays.asList(8,9,10,11,12,13,14);
-	public static final List<Integer> IDS_SEDE_OPERATIVA = Arrays.asList(15,16,17,18,19,20,21);
+	//public static final List<Integer> IDS_SEDE_LEGALE = Arrays.asList(8,9,10,11,12,13,14);
+	//public static final List<Integer> IDS_SEDE_OPERATIVA = Arrays.asList(15,16,17,18,19,20,21);
 	public static final List<Integer> IDS_LEGALE_RAPPRESENTANTE = Arrays.asList(22,23,24,24,25,26,27,28,29);
 	public static final List<Integer> IDS_DELEGATO_LEGALE_RAPPRESENTANTE = Arrays.asList(30,31,32,33,34,35,36,37,38);
 	//public static final List<Integer> IDS_DATI_ACCREDITAMENTO = Arrays.asList(39,40,41,42,43,44,45,46,47,48,49);

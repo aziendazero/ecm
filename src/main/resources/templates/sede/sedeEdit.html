@@ -6,17 +6,17 @@
 
 </head>
 <body>
-	<div layout:fragment="content" id="main-container" th:fragment="content" th:with="counter=${sedeWrapper.idOffset - 1}, coincide=${#lists.contains(sedeWrapper.idEditabili, 0)}">
+	<div layout:fragment="content" id="main-container" th:fragment="content">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:unless="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and coincide}" th:text="${sedeWrapper.tipologiaSede == 'SedeLegale'} ? #{label.sede_legale} : #{label.sede_operativa}">label.info_sede</h2>
-						<h2 th:if="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and coincide}" th:text="#{label.sede_operativa_coincide}">label.sede_operativa_coincide</h2>
+						<h2 th:unless="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="${sedeWrapper.tipologiaSede == 'SedeLegale'} ? #{label.sede_legale} : #{label.sede_operativa}">label.info_sede</h2>
+						<h2 th:if="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="#{label.sede_operativa_coincide}">label.sede_operativa_coincide</h2>
 						<div class="pull-right buttons-header">
-							<th:block th:if="${!#lists.isEmpty(sedeWrapper.idEditabili) and !((#lists.size(sedeWrapper.idEditabili) == 1) and coincide)}">
+							<th:block th:unless="${#lists.isEmpty(sedeWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formSede" type="submit"></button>
-								<button class="btn btn-primary pull-right" onclick="loadSedeLegale()" th:if="${sedeWrapper.tipologiaSede == 'SedeOperativa'}" th:text="#{label.coincide_con_sede_legale}"></button>
+								<button class="btn btn-primary pull-right" onclick="loadSedeLegale()" th:if="${sedeWrapper.tipologiaSede == 'SedeOperativa' and !sedeWrapper.coincide}" th:text="#{label.coincide_con_sede_legale}"></button>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/edit|}"></a>
 						</div>

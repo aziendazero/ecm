@@ -10,8 +10,6 @@
 	<th:block th:fragment="sede(editabile)">
 
 		<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
-		<th:block th:with="counter=${(editabile == true) ? (sedeWrapper.idOffset-1) : null}">
-
 			<div class="x_content">
 				<!-- rimove il tag form se il sede NON è editabile -->
 				<div class="form-horizontal form-label-left" th:remove="${!editabile} ? none : tag">
@@ -22,44 +20,27 @@
 						novalidate="novalidate">
 
 						<!-- gli input hidden non sono necessari se NON editabile -->
-						<th:block th:with="counter=${counter}" th:if="${editabile}">
+						<th:block th:if="${editabile}">
 							<input type="hidden" name="editId" th:value="${sedeWrapper.sede.id}" />
 							<input type="hidden" th:field="${sedeWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${sedeWrapper.tipologiaSede}" />
 							<input type="hidden" th:field="${sedeWrapper.idEditabili}" />
-							<input type="hidden" th:field="${sedeWrapper.idOffset}" />
 						</th:block>
 
 						<!-- PROVINCIA -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.provincia')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">1</label>
-							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.provincia') : ''}"></label>
+							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.provincia') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="provincia_sede">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.provincia}">Provincia</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
-							<th:block th:with="counter=${counter}" th:if="${editabile}">
+							<th:block th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<select id="provincia_sede" class="form-control required" th:field="${sedeWrapper.sede.provincia}"
-										th:disabled="${coincide or !#lists.contains(sedeWrapper.idEditabili, counter)}">
+										th:disabled="${sedeWrapper.coincide or !#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.provincia'))}">
 	                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
 	                          			<option th:each="provincia : ${elencoProvince}" th:value="${provincia}" th:text="${provincia}">Choose option</option>
 		                        	</select>
-<!-- 		                        	<select id="provincia_sede" -->
-<!-- 										class="selectpicker required" -->
-<!-- 										th:field="${sedeWrapper.sede.provincia}" -->
-<!-- 										data-width="100%" data-style="btn-primary" -->
-<!-- 										data-actions-box="true" data-size="10" -->
-<!-- 										data-hide-disabled="false" -->
-<!-- 										title="Seleziona una provincia..." -->
-<!-- 										th:if="${editabile}" -->
-<!-- 										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}" -->
-<!-- 										th:remove="all-but-first"> -->
-<!-- 										<option -->
-<!-- 											th:each="provincia : ${elencoProvince}" th:value="${provincia}" -->
-<!-- 											th:text="${provincia}">Venezia -->
-<!-- 										</option> -->
-<!-- 									</select> -->
 							  	</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -72,15 +53,14 @@
 
 						<!-- COMUNE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.comune')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">2</label>
-							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.comune') : ''}"></label>
+							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.comune') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="comune_sede">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.comune}">Comune</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
-							<th:block th:with="counter=${counter}" th:if="${editabile}">
+							<th:block  th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<select th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}" id="comune_sede" class="form-control required" th:field="${sedeWrapper.sede.comune}">
+									<select th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.comune')) or sedeWrapper.coincide}" id="comune_sede" class="form-control required" th:field="${sedeWrapper.sede.comune}">
 										<option th:value="${sedeWrapper.sede.comune}" th:text="${sedeWrapper.sede.comune}"/>
 		                        	</select>
 							  	</div>
@@ -95,18 +75,17 @@
 
 						<!-- INDIRIZZO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.indirizzo')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">3</label>
-							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.indirizzo') : ''}"></label>
+							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.indirizzo') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="indirizzo_sede">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.indirizzo}">Indirizzo</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
-							<th:block th:with="counter=${counter}" th:if="${editabile}">
+							<th:block  th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input id="indirizzo_sede" name="indirizzo_sede"
 										required="required" class="form-control col-md-7 col-xs-12"
 										type="text" th:field="${sedeWrapper.sede.indirizzo}"
-										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}"/>
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.indirizzo')) or sedeWrapper.coincide}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -119,16 +98,15 @@
 
 						<!-- CAP -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.cap')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">4</label>
-							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.cap') : ''}"></label>
+							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.cap') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="CAP_sede">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cap}">CAP</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
-							<th:block th:with="counter=${counter}" th:if="${editabile}">
+							<th:block  th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<select id="CAP_sede" class="form-control required" th:field="${sedeWrapper.sede.cap}"
-										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}">
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.cap')) or sedeWrapper.coincide}">
 										<option th:value="${sedeWrapper.sede.cap}" th:text="${sedeWrapper.sede.cap}"/>
 		                        	</select>
 								</div>
@@ -143,18 +121,17 @@
 
 						<!-- TELEFONO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.telefono')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">5</label>
-							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.telefono') : ''}"></label>
+							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.telefono') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="telefono_sede">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.telefono}">Telefono</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
-							<th:block th:with="counter=${counter}" th:if="${editabile}">
+							<th:block  th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input id="telefono_sede" name="telefono_sede"
 										required="required" class="form-control col-md-7 col-xs-12"
 										type="tel" th:field="${sedeWrapper.sede.telefono}"
-										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}"/>
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.telefono')) or sedeWrapper.coincide}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -167,17 +144,16 @@
 
 						<!-- FAX -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.fax')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">7</label>
-							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.fax') : ''}"></label>
+							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.fax') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="fax_sede">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.fax}">FAX</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
-							<th:block th:with="counter=${counter}" th:if="${editabile}">
+							<th:block  th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input id="fax_sede" name="fax_sede" required="required"
 										class="form-control col-md-7 col-xs-12" type="tel" th:field="${sedeWrapper.sede.fax}"
-										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}"/>
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.fax')) or sedeWrapper.coincide}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -190,18 +166,17 @@
 
 						<!-- EMAIL -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.email')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${counter != null ? ++counter : ''}">8</label>
-							<label class="control-label col-xs-1" th:text="${counter != null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.email') : ''}"></label>
+							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.email') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="email_sede">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.email}">E-mail</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
-							<th:block th:with="counter=${counter}" th:if="${editabile}">
+							<th:block  th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input id="email_sede" name="email_sede"
 										required="required" class="form-control col-md-7 col-xs-12"
 										type="email" th:field="${sedeWrapper.sede.email}"
-										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, counter) or coincide}"/>
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.email')) or sedeWrapper.coincide}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -214,7 +189,6 @@
 					</form>
 				</div>
 			</div>
-		</th:block>
 	</th:block>
 </body>
 </html>
