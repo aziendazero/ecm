@@ -629,10 +629,28 @@ h2 {
 	box-shadow: none;
 }
 
-.dinamic-view-discipline {
-	margin-top: 20px;
+#professioni-discipline > tbody > tr > td {
+	padding: 0px;
+	padding-left: 8px;
 }
 
-#no-discipline {
-	padding-top: 5px;
+.nota-validazione {
+	border: 1px solid #E74C3C;
+	border-radius: 5px;
+	padding: 4px;
+}
+
+.red-italic {
+	color: #E74C3C;
+	font-style: italic;
+	margin-left: 5px !important;
+	font-size: 17px;
+}
+
+div#toModal > div.x_content {
+	display: none;
+}
+
+.collapse-link {
+	cursor: pointer;
 }
