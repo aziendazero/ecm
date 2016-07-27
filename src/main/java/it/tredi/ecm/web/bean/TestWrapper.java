@@ -6,13 +6,15 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class TestWrapper {
-	private Accreditamento accreditamento;
+	private long accreditamentoId;
+	private SubSetFieldEnum subSet;
 	private Set<FieldEditabile> fullLista = new HashSet<FieldEditabile>();
 	private Set<IdFieldEnum> selected = new HashSet<IdFieldEnum>();
 	

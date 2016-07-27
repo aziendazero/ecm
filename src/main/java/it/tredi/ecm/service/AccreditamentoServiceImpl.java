@@ -30,7 +30,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	
 	@Autowired private AccreditamentoRepository accreditamentoRepository;
 	@Autowired private ProviderService providerService;
-	@Autowired private EventoService eventoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
 	
 	@Override

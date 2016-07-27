@@ -1,14 +1,12 @@
 package it.tredi.ecm.web.bean;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;

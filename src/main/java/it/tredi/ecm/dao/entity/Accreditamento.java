@@ -122,6 +122,10 @@ public class Accreditamento extends BaseEntity{
 		//DATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DATI_ACCREDITAMENTO))
 			idEditabil.add(new FieldEditabile(id, this));
+
+		//ALLEGATI ACCREDITAMENTO
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO))
+			idEditabil.add(new FieldEditabile(id, this));
 	}
 
 	public boolean isProvvisorio(){
