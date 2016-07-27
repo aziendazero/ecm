@@ -2,10 +2,7 @@ package it.tredi.ecm.web;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
-import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.service.FieldEditabileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
 import it.tredi.ecm.utils.Utils;
@@ -41,7 +39,7 @@ public class SedeController {
 
 	@Autowired private SedeService sedeService;
 	@Autowired private ProviderService providerService;
-	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private FieldEditabileService fieldEditabileService;
 	@Autowired private SedeValidator sedeValidator;
 
 	/***	GLOBAL MODEL ATTRIBUTES	***/
@@ -143,10 +141,10 @@ public class SedeController {
 
 			if(sedeLegale != null){
 				//preparo il wrapper specificando che è una sedeOperativa
-				//magic number (rende non editabili tutti i campi della sede operativa, ma consente ugualmente il salvataggio)
+				//magicnumber (rende non editabili tutti i campi della sede operativa, ma consente ugualmente il salvataggio)
 				//refresh solo del fragment della view
 				SedeWrapper sedeWrapper = prepareSedeWrapperEdit(sedeLegale, Costanti.SEDE_OPERATIVA, accreditamentoId, providerId);
-				sedeWrapper.getIdEditabili().add(0);
+				sedeWrapper.setCoincide(true);
 				//setIdEditabili(Arrays.asList(0));
 				return goToEditWhitFragment(model, sedeWrapper, "content");
 			}else{
@@ -192,10 +190,7 @@ public class SedeController {
 				if(provider != null){
 					if(provider.getSedeLegale() != null && provider.getSedeOperativa() != null){
 						if(provider.getSedeLegale().getId().equals(provider.getSedeOperativa().getId())){
-//							List<Integer> list = new ArrayList<Integer>();
-//							list.add(0);
-//							sedeWrapper.setIdEditabili(list);
-							sedeWrapper.getIdEditabili().add(0);
+							sedeWrapper.setCoincide(true);
 						}
 					}
 				}
@@ -283,10 +278,11 @@ public class SedeController {
 		sedeWrapper.setSede(sede);
 		sedeWrapper.setTipologiaSede(tipologiaSede);
 
+		
 		if(tipologiaSede.equals(Costanti.SEDE_LEGALE))
-			sedeWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_SEDE_LEGALE), accreditamentoService.getIdEditabili(accreditamentoId));
+			sedeWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.SEDE_LEGALE));
 		else
-			sedeWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_SEDE_OPERATIVA), accreditamentoService.getIdEditabili(accreditamentoId));
+			sedeWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.SEDE_OPERATIVA));
 
 		sedeWrapper.setAccreditamentoId(accreditamentoId);
 		sedeWrapper.setProviderId(providerId);

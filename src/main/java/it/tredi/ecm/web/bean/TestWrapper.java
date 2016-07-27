@@ -14,7 +14,8 @@ import lombok.Setter;
 @Setter
 public class TestWrapper {
 	private long accreditamentoId;
-	private SubSetFieldEnum subSet;
+	private SubSetFieldEnum subset;
+	private Long objRef;
 	private Set<FieldEditabile> fullLista = new HashSet<FieldEditabile>();
 	private Set<IdFieldEnum> selected = new HashSet<IdFieldEnum>();
 	

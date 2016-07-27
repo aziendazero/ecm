@@ -28,9 +28,11 @@ public class IntegrazioneController {
 	@Autowired FieldEditabileRepository repo;
 
 	@RequestMapping("/fieldEditabile/{accreditamentoId}")
-	public String edit(@PathVariable Long accreditamentoId, Model model, @RequestParam("subset") SubSetFieldEnum subSet){
+	public String edit(@PathVariable Long accreditamentoId, Model model, 
+						@RequestParam("subset") SubSetFieldEnum subset,
+						 @RequestParam(name = "objRef", required=false) Long objectReference){
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-		model.addAttribute("wrapper", prepareWrapper(accreditamentoId, subSet));
+		model.addAttribute("wrapper", prepareWrapper(accreditamentoId, subset, objectReference));
 		return "test";
 	}
 
@@ -40,7 +42,7 @@ public class IntegrazioneController {
 		Set<IdFieldEnum> listaDaView = wrapper.getSelected();
 
 		Set<FieldEditabile> listaFull = wrapper.getFullLista();
-		Set<FieldEditabile> listaSubset = Utils.getSubset(listaFull, wrapper.getSubSet());
+		Set<FieldEditabile> listaSubset = Utils.getSubset(listaFull, wrapper.getSubset());
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(wrapper.getAccreditamentoId());
 
@@ -56,6 +58,9 @@ public class IntegrazioneController {
 					FieldEditabile field = new FieldEditabile();
 					field.setAccreditamento(accreditamento);
 					field.setIdField(id);
+					if(wrapper.getObjRef() != null)
+						field.setObjectReference(wrapper.getObjRef());
+					
 					repo.save(field);
 				}
 			}
@@ -64,12 +69,18 @@ public class IntegrazioneController {
 		return "redirect:/home";
 	}
 
-	private TestWrapper prepareWrapper(Long accreditamentoId, SubSetFieldEnum subset){
+	private TestWrapper prepareWrapper(Long accreditamentoId, SubSetFieldEnum subset, Long objRef){
 		TestWrapper wrapper = new TestWrapper();
-		Set<FieldEditabile> fullLista = repo.findAllByAccreditamentoId(accreditamentoId);
+		
+		Set<FieldEditabile> fullLista = null;
+		if(objRef == null)
+			fullLista = repo.findAllByAccreditamentoId(accreditamentoId);
+		else
+			fullLista = repo.findAllByAccreditamentoIdAndObjectReference(accreditamentoId, objRef);
 		
 		wrapper.setAccreditamentoId(accreditamentoId);
-		wrapper.setSubSet(subset);
+		wrapper.setSubset(subset);
+		wrapper.setObjRef(objRef);
 		wrapper.setFullLista(fullLista);
 		wrapper.setSelected(Utils.getSubsetOfIdFieldEnum(fullLista, subset));
 

@@ -179,7 +179,6 @@ public class PersonaTest {
 				.param("persona.anagrafica.cognome", wrapper.getPersona().getAnagrafica().getCognome())
 				.param("persona.anagrafica.nome", wrapper.getPersona().getAnagrafica().getNome())
 				.param("idEditabili", idEditabili)
-				.param("idOffset", String.valueOf(wrapper.getIdOffset()))
 				)
 				.andReturn().getModelAndView();
 
