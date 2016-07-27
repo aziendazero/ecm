@@ -19,6 +19,7 @@ public interface PersonaService {
 	public int numeroComponentiComitatoScientificoConProfessioneSanitaria(Long providerId);
 	public int numeroProfessioniDistinteDeiComponentiComitatoScientifico(Long providerId);
 	public int numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(Long providerId, Set<Professione> professioniSelezionate);
+	public Set<Professione> elencoProfessioniDistinteDeiComponentiComitatoScientifico(Long providerId);
 	
 	public Set<Anagrafica> getAllAnagraficheByProviderId(Long providerId);
 	Set<Persona> getComitatoScientifico(Long providerId);
