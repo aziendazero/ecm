@@ -87,7 +87,7 @@
 						</div>
 
 						<!-- FLAG PARTITA IVA -->
-						<div class="item form-group">
+						<div class="item form-group" th:if="${editabile}">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="hasPartitaIVA">
 								<span th:text="#{label.ha_partita_IVA}">Sei titolare di Partita IVA?</span>
 							</label>
