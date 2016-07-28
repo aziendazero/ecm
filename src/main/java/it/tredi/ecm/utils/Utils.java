@@ -82,6 +82,17 @@ public class Utils {
 		return dst;
 	}
 	
+	public static Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<FieldEditabile> src, Long objectReference, SubSetFieldEnum type){
+		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
+		
+		src.forEach(f -> {
+			if(f.getIdField().getSubSetField() == type && f.getObjectReference() == objectReference)
+				dst.add(f.getIdField());
+		});
+		
+		return dst;
+	}
+	
 	/*
 	 * Mi restituisce la sublist di record presenti su db per valutare nel save del controller quali eliminare perchè deselezionate
 	 * */
@@ -108,6 +119,8 @@ public class Utils {
 	
 	public static SubSetFieldEnum getSubsetFromRuolo(Ruolo ruolo){
 		switch (ruolo){
+			case LEGALE_RAPPRESENTANTE: return SubSetFieldEnum.LEGALE_RAPPRESENTANTE;
+			case DELEGATO_LEGALE_RAPPRESENTANTE: return SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE;
 			case RESPONSABILE_SEGRETERIA: return SubSetFieldEnum.RESPONSABILE_SEGRETERIA;
 			case RESPONSABILE_AMMINISTRATIVO: return SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO;
 			case RESPONSABILE_SISTEMA_INFORMATICO: return SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO;

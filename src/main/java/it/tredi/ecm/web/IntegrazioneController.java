@@ -31,7 +31,6 @@ public class IntegrazioneController {
 	public String edit(@PathVariable Long accreditamentoId, Model model, 
 						@RequestParam("subset") SubSetFieldEnum subset,
 						 @RequestParam(name = "objRef", required=false) Long objectReference){
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		model.addAttribute("wrapper", prepareWrapper(accreditamentoId, subset, objectReference));
 		return "test";
 	}

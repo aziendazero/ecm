@@ -1,6 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.util.LinkedList;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -21,12 +20,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
-import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.AccreditamentoService;
@@ -295,7 +292,7 @@ public class EventoController {
 				if (accreditamentoId != null) {
 					//inserimento nuovo evento multi-istanza in domanda di Accreditamento, inserisco FieldEditabile
 					if(insertFieldEditabile)
-						fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, wrapper.getEvento().getId(), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO);
+						fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, wrapper.getEvento().getId(), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO, IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
 					
 					redirectAttrs.addFlashAttribute("currentTab", "tab4");
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));

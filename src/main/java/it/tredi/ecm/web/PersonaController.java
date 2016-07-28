@@ -236,10 +236,11 @@ public class PersonaController {
 					//inserimento nuova persona in Domanda di Accreditamento
 					//inseriamo gli IdEditabili (con riferimento all'id nel caso di multi-istanza)
 					if(insertFieldEditabile){
+						SubSetFieldEnum subset = Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo());
 						if(personaWrapper.getPersona().isComponenteComitatoScientifico())
-							fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, personaWrapper.getPersona().getId(), Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo()));
+							fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, personaWrapper.getPersona().getId(), subset, IdFieldEnum.getAllForSubset(subset));
 						else
-							fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, null, Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo()));
+							fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, null, subset, IdFieldEnum.getAllForSubset(subset));
 					}
 					
 					// Durante la compilazione della domanda di accreditamento, se si inizia l'inserimento dei responsabili non e' piu'
@@ -375,24 +376,16 @@ public class PersonaController {
 		}
 
 		if(accreditamentoId != 0){
-			if(persona.isLegaleRappresentante())
-				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.LEGALE_RAPPRESENTANTE));
-			else if(persona.isDelegatoLegaleRappresentante())
-				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE));
-			else if(persona.isResponsabileSegreteria())
-				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.RESPONSABILE_SEGRETERIA));
-			else if(persona.isResponsabileAmministrativo())
-				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO));
-			else if(persona.isComponenteComitatoScientifico()){
-				if(persona.isNew()) 
-					personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO)); 
-				else
-					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, persona.getId()), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO));
+			SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
+			if(persona.isNew()){
+				personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
+			}else{
+				if(persona.isComponenteComitatoScientifico()){
+					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
+				}else{
+					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
+				}
 			}
-			else if(persona.isResponsabileSistemaInformatico())
-				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO));
-			else if(persona.isResponsabileQualita())
-				personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.RESPONSABILE_QUALITA));
 		}
 
 		personaWrapper.setIsLookup(isLookup);

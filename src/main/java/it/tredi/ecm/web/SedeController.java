@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.FieldEditabileService;
 import it.tredi.ecm.service.ProviderService;
@@ -278,11 +279,12 @@ public class SedeController {
 		sedeWrapper.setSede(sede);
 		sedeWrapper.setTipologiaSede(tipologiaSede);
 
+		SubSetFieldEnum subset = (tipologiaSede.equals(Costanti.SEDE_LEGALE)) ? SubSetFieldEnum.SEDE_LEGALE : SubSetFieldEnum.SEDE_OPERATIVA;
 		
-		if(tipologiaSede.equals(Costanti.SEDE_LEGALE))
-			sedeWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.SEDE_LEGALE));
+		if(sede.isNew())
+			sedeWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 		else
-			sedeWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.SEDE_OPERATIVA));
+			sedeWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
 
 		sedeWrapper.setAccreditamentoId(accreditamentoId);
 		sedeWrapper.setProviderId(providerId);

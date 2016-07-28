@@ -22,7 +22,6 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.service.AccreditamentoService;
-import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
@@ -36,7 +35,6 @@ public class AccreditamentoController {
 	@Autowired private PersonaService personaService;
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
-	@Autowired private EventoService eventoService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
