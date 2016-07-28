@@ -15,14 +15,17 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.utils.Utils;
+import scala.annotation.meta.field;
 
 @Service
 public class AccreditamentoServiceImpl implements AccreditamentoService {
@@ -31,6 +34,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AccreditamentoRepository accreditamentoRepository;
 	@Autowired private ProviderService providerService;
 	@Autowired private PianoFormativoService pianoFormativoService;
+	@Autowired private FieldEditabileService fieldEditabileService;
 	
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider() throws Exception{
@@ -139,35 +143,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 	
 	@Override
-	public List<Integer> getIdEditabili(Long accreditamentoId) {
-		LOGGER.debug(Utils.getLogMessage("Recupero idEditabili per domanda " + accreditamentoId));
-		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
-		if(accreditamento != null)
-			return accreditamento.getIdEditabili();
-		return new ArrayList<Integer>();
-	}
-	
-	@Override
-	@Transactional
-	public void removeIdEditabili(Long accreditamentoId, List<Integer> idEditabiliToRemove) {
-		LOGGER.debug(Utils.getLogMessage("Rimozione idEditabili " +  idEditabiliToRemove + "dalla domanda : " + accreditamentoId));
-
-		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
-		accreditamento.getIdEditabili().removeAll(idEditabiliToRemove);
-		accreditamentoRepository.save(accreditamento);
-	}
-	
-	@Override
-	@Transactional
-	public void addIdEditabili(Long accreditamentoId, List<Integer> idEditabiliToAdd) {
-		LOGGER.debug(Utils.getLogMessage("Aggiunta idEditabili " +  idEditabiliToAdd + "alla domanda : " + accreditamentoId));
-		
-		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
-		accreditamento.getIdEditabili().addAll(idEditabiliToAdd);
-		accreditamentoRepository.save(accreditamento);
-	}
-
-	@Override
 	@Transactional
 	public void inviaDomandaAccreditamento(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Invio domanda di Accreditamento " + accreditamentoId + " alla segreteria"));
@@ -203,7 +178,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		pianoFormativo.setProvider(accreditamento.getProvider());
 		pianoFormativoService.save(pianoFormativo);
 		accreditamento.setPianoFormativo(pianoFormativo);
+		//fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 		accreditamento.getIdEditabili().clear();
+		accreditamento.getIdEditabili().add(new FieldEditabile(IdFieldEnum.EVENTO_PIANO_FORMATIVO__FULL, accreditamento));
 		accreditamentoRepository.save(accreditamento);
 	}
 	

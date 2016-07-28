@@ -20,9 +20,6 @@ public interface AccreditamentoService{
 	
 	public boolean canProviderCreateAccreditamento(Long providerId);
 	
-	public List<Integer> getIdEditabili(Long accreditamentoId);
-	public void removeIdEditabili(Long accrediatementoId, List<Integer> idEditabiliToRemove);
-	public void addIdEditabili(Long accrediatementoId, List<Integer> idEditabiliToAdd);
 	public void inviaDomandaAccreditamento(Long accreditamentoId);
 	public void inserisciPianoFormativo(Long accreditamentoId);
 	
