@@ -305,7 +305,7 @@
 						$(this).load(url + ' #toModal');
 					})
 
-					$('#showAll-modal').on('shown.bs.modal', function (e) {
+					$('#showAll-modal').one('shown.bs.modal', function (e) {
 						//table responsive professioni/discipline show
 						$('.datatable-responsive-discipline').DataTable({
 							"bFilter" : false,
