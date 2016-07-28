@@ -73,7 +73,7 @@ public class Accreditamento extends BaseEntity{
 	//gli idEditabili invece indicano quali campi possono essere modificati
 	@Type(type = "serializable")
 
-	@OneToMany(mappedBy = "accreditamento", cascade={CascadeType.ALL})
+	@OneToMany(mappedBy = "accreditamento", cascade={CascadeType.MERGE, CascadeType.PERSIST})
 	private List<FieldEditabile> idEditabili = new ArrayList<FieldEditabile>();
 
 	@OneToOne

@@ -39,19 +39,13 @@ public class FieldEditabileServiceImpl implements FieldEditabileService{
 	
 	@Override
 	@Transactional
-	public void insertFieldEditabileForAccreditamento(Long accreditamentoId, Long objectReference, SubSetFieldEnum subset) {
-		LOGGER.debug(Utils.getLogMessage("Inserimento di alcuni IdEditabili per Domanda Accreditamento: " + accreditamentoId));
-		Set<IdFieldEnum> toInsert = IdFieldEnum.getAllForSubset(subset);
+	public void insertFieldEditabileForAccreditamento(Long accreditamentoId, Long objectReference, SubSetFieldEnum subset, Set<IdFieldEnum> toInsert) {
+		LOGGER.debug(Utils.getLogMessage("Inserimento di " + toInsert + " IdEditabili per Domanda Accreditamento: " + accreditamentoId));
 		Set<FieldEditabile> subSetList = new HashSet<FieldEditabile>();
 		if(objectReference == null)
 			subSetList = Utils.getSubset(getAllFieldEditabileForAccreditamento(accreditamentoId), subset);
  		else
  			subSetList = Utils.getSubset(getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, objectReference), subset);
-		
-		subSetList.forEach(f ->{
-			if(toInsert.contains(f.getIdField()))
-				fieldEditabileRepository.delete(f);
-		});
 		
 		if(toInsert != null){
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);

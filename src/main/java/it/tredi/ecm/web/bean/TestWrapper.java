@@ -3,7 +3,6 @@ package it.tredi.ecm.web.bean;
 import java.util.HashSet;
 import java.util.Set;
 
-import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;

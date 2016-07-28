@@ -1,7 +1,6 @@
 package it.tredi.ecm.web;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -22,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.AccreditamentoService;

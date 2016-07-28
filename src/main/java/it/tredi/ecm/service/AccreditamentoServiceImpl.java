@@ -1,8 +1,8 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -14,18 +14,16 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.Evento;
-import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
-import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.utils.Utils;
-import scala.annotation.meta.field;
 
 @Service
 public class AccreditamentoServiceImpl implements AccreditamentoService {
@@ -153,17 +151,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.setDataScadenza(accreditamento.getDataInvio().plusDays(180));
 		
 		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
-		accreditamento.getIdEditabili().clear();
-		
+		accreditamento.getPianoFormativo().setEditabile(false);
+		accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
 		accreditamentoRepository.save(accreditamento);
 		
-		Set<Evento> eventiNelPianoFormativo = accreditamento.getPianoFormativo().getEventi();
-		for(Evento e : eventiNelPianoFormativo)
-			e.getIdEditabili().clear();
-		
-		accreditamento.getPianoFormativo().setEditabile(false);
-		
-		accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
+		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 	}
 	
 	@Override
@@ -178,10 +170,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		pianoFormativo.setProvider(accreditamento.getProvider());
 		pianoFormativoService.save(pianoFormativo);
 		accreditamento.setPianoFormativo(pianoFormativo);
-		//fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
-		accreditamento.getIdEditabili().clear();
-		accreditamento.getIdEditabili().add(new FieldEditabile(IdFieldEnum.EVENTO_PIANO_FORMATIVO__FULL, accreditamento));
 		accreditamentoRepository.save(accreditamento);
+		
+		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
+		fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, null, SubSetFieldEnum.FULL, new HashSet<IdFieldEnum>(Arrays.asList(IdFieldEnum.EVENTO_PIANO_FORMATIVO__FULL)));
 	}
 	
 	@Override
