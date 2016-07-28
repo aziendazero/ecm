@@ -158,11 +158,7 @@ public class PersonaController {
 	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/edit"));
 		try {
-			Persona persona = personaService.getPersona(id);
-			if(persona == null){
-				persona = createPersona(providerId);
-			}
-			return goToEdit(model, preparePersonaWrapperEdit(persona, accreditamentoId, providerId, false));
+			return goToEdit(model, preparePersonaWrapperEdit(personaService.getPersona(id), accreditamentoId, providerId, false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/edit"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -230,6 +226,7 @@ public class PersonaController {
 					return EDIT;
 				}else{
 					
+					//non possono e non devono esistere più persone con lo stesso ruolo per ogni provider (tranne per i componenti del comitato scientifico)
 					if(personaWrapper.getPersona().isNew() && !personaWrapper.getPersona().isComponenteComitatoScientifico()){
 						Persona persona = personaService.getPersonaByRuolo(personaWrapper.getPersona().getRuolo(), providerId);
 						if(persona != null)
