@@ -6,6 +6,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import it.tredi.ecm.dao.entity.Profile;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
+import it.tredi.ecm.dao.enumlist.RoleEnum;
 import lombok.Getter;
 import it.tredi.ecm.dao.entity.Account;
 
@@ -36,17 +38,25 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 		return result;
 	}
 
-	public boolean hasProfile(String profileName){
+//	public boolean hasProfile(String profileName){
+//		for(Profile profile : account.getProfiles()){
+//			if(profile.getName().equals(profileName))
+//				return true;
+//		}
+//		return false;
+//	}
+	
+	public boolean hasProfile(ProfileEnum profileEnum){
 		for(Profile profile : account.getProfiles()){
-			if(profile.getName().equals(profileName))
+			if(profile.getProfileEnum() == profileEnum)
 				return true;
 		}
 		return false;
 	}
 
-	public boolean hasRole(String roleName){
-		for(GrantedAuthority role : getAuthorities()){
-			if(role.getAuthority().equals(roleName))
+	public boolean hasRole(RoleEnum role){
+		for(GrantedAuthority auth : getAuthorities()){
+			if(auth.getAuthority().equals(role.name()))
 				return true;
 		}
 		return false;

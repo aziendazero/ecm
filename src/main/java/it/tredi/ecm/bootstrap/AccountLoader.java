@@ -10,7 +10,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import it.tredi.ecm.dao.entity.Role;
-import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.RoleEnum;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Profile;
@@ -112,7 +112,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			
 			/* PROFILE PROVIDER */
 			Profile profile_provider = new Profile();
-			profile_provider.setName(Costanti.PROFILO_PROVIDER);
+			profile_provider.setProfileEnum(ProfileEnum.PROVIDER);
 			profile_provider.getRoles().add(role_readProvider);
 			profile_provider.getRoles().add(role_writeProvider);
 			profile_provider.getRoles().add(role_readAccreditamento);
@@ -121,7 +121,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			
 			/* PROFILE SEGRETERIA */
 			Profile profile_admin = new Profile();
-			profile_admin.setName(Costanti.PROFILO_SEGRETERIA);
+			profile_admin.setProfileEnum(ProfileEnum.SEGRETERIA);
 			
 			profile_admin.getRoles().add(role_readAllUser);
 			profile_admin.getRoles().add(role_writeAllUser);
@@ -169,7 +169,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			
 			/* PROFILE REFEREE */
 			Profile profile_referee = new Profile();
-			profile_referee.setName(Costanti.PROFILO_REFEREE);
+			profile_referee.setProfileEnum(ProfileEnum.REFEREE);
 			
 			profile_referee.getRoles().add(role_readAllProvider);
 			profile_referee.getRoles().add(role_readAllAccreditamento);
@@ -178,7 +178,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			
 			/* PROFILE COMMISSIONE */
 			Profile profile_commissione = new Profile();
-			profile_commissione.setName(Costanti.PROFILO_COMMISSIONE);
+			profile_commissione.setProfileEnum(ProfileEnum.COMMISSIONE);
 			
 			profile_commissione.getRoles().add(role_readAllProvider);
 			profile_commissione.getRoles().add(role_readAllAccreditamento);
@@ -187,7 +187,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			
 			/* PROFILE OSSERVATORE */
 			Profile profile_osservatore = new Profile();
-			profile_osservatore.setName(Costanti.PROFILO_OSSERVATORE);
+			profile_osservatore.setProfileEnum(ProfileEnum.OSSERVATORE);
 			
 			profile_osservatore.getRoles().add(role_readAllProvider);
 			profile_osservatore.getRoles().add(role_readAllAccreditamento);

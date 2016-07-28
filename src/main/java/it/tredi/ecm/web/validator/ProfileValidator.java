@@ -27,20 +27,20 @@ public class ProfileValidator {
 	}
 	
 	private void validateProfile(Profile profile, Errors errors){
-		//Presenza e univocità del name
-		if(profile.getName().isEmpty()){
-			errors.rejectValue("name", "error.empty");
-		}else{
-			Optional<Profile> profileLoaded = profileRepository.findOneByName(profile.getName());
-			if(profileLoaded.isPresent()){
-				if(profile.isNew()){
-					errors.rejectValue("name", "error.name.duplicated");
-				}else{
-					if(!profile.getId().equals(profileLoaded.get().getId()))
-						errors.rejectValue("name", "error.name.duplicated");
-				}
-			}
-		}
+//		//Presenza e univocità del name
+//		if(profile.getName() == null){
+//			errors.rejectValue("name", "error.empty");
+//		}else{
+//			//Optional<Profile> profileLoaded = profileRepository.findOneByName(profile.getName());
+//			if(profileLoaded.isPresent()){
+//				if(profile.isNew()){
+//					errors.rejectValue("name", "error.name.duplicated");
+//				}else{
+//					if(!profile.getId().equals(profileLoaded.get().getId()))
+//						errors.rejectValue("name", "error.name.duplicated");
+//				}
+//			}
+//		}
 
 	}
 }

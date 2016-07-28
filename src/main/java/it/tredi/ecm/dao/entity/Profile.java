@@ -5,12 +5,15 @@ import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +22,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Profile extends BaseEntity{
-	private String name;
+	@Enumerated(EnumType.STRING)
+	private ProfileEnum profileEnum;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "profile_role",
@@ -31,8 +35,8 @@ public class Profile extends BaseEntity{
 			)
 	private Set<Role> roles = new HashSet<Role>(); 
 	
-	public void setName(String name){
-		this.name = name.toUpperCase();
+	public String getName(){
+		return profileEnum.name();
 	}
 	
 	@Override

@@ -19,6 +19,7 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
@@ -51,7 +52,7 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 			if(provider == null) {
 				//Profilo
 				Profile profile = new Profile();
-				profile.setName("ENGINEERING");
+				profile.setProfileEnum(ProfileEnum.ENGINEERING);
 				profileRepository.save(profile);
 				
 				//Account

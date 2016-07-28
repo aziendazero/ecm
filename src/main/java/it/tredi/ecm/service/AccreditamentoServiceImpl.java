@@ -156,6 +156,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamentoRepository.save(accreditamento);
 		
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
+		
+		//TODO AVVIO WORKFLOW DOMANDA
 	}
 	
 	@Override

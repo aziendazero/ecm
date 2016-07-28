@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.enumlist.Costanti;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.HomeWrapper;
@@ -35,16 +36,16 @@ public class LoginController {
 
 		try{
 			//Init della lista di profili dell'utente
-			Set<String> profili = new HashSet<String>();
+			Set<ProfileEnum> profili = new HashSet<ProfileEnum>();
 
 			//Check del profilo del utente loggato + riempimento lista profili
 			CurrentUser currentUser = Utils.getAuthenticatedUser();
-			if(currentUser.hasProfile(Costanti.PROFILO_ADMIN))
-				profili.add(Costanti.PROFILO_ADMIN);
-			if(currentUser.hasProfile(Costanti.PROFILO_PROVIDER))
-				profili.add(Costanti.PROFILO_PROVIDER);
-			if(currentUser.hasProfile(Costanti.PROFILO_SEGRETERIA))
-				profili.add(Costanti.PROFILO_SEGRETERIA);
+			if(currentUser.hasProfile(ProfileEnum.ADMIN))
+				profili.add(ProfileEnum.ADMIN);
+			if(currentUser.hasProfile(ProfileEnum.PROVIDER))
+				profili.add(ProfileEnum.PROVIDER);
+			if(currentUser.hasProfile(ProfileEnum.SEGRETERIA))
+				profili.add(ProfileEnum.SEGRETERIA);
 
 			return goToShow(model, prepareHomeWrapper(profili), redirectAttrs);
 
@@ -56,24 +57,24 @@ public class LoginController {
 		}
 	}
 
-	private HomeWrapper prepareHomeWrapper(Set<String> profili) {
+	private HomeWrapper prepareHomeWrapper(Set<ProfileEnum> profili) {
 		HomeWrapper wrapper = new HomeWrapper();
-		Iterator<String> iterator = profili.iterator();
+		Iterator<ProfileEnum> iterator = profili.iterator();
 		while(iterator.hasNext()) {
 			switch(iterator.next()) {
-				case Costanti.PROFILO_ADMIN:
+				case ADMIN:
 					//TODO riempe i dati relativi ad admin
 					wrapper.setIsAdmin(true);
 					wrapper.setUtentiInAttesaDiAttivazione(1);
 					break;
-				case Costanti.PROFILO_PROVIDER:
+				case PROVIDER:
 					//TODO riempe i dati relativi al provider
 					wrapper.setIsProvider(true);
 					wrapper.setEventiDaPagare(3);
 					wrapper.setMessaggi(9);
 					wrapper.setAccreditamentiDaIntegrare(2);
 					break;
-				case Costanti.PROFILO_SEGRETERIA:
+				case SEGRETERIA:
 					//TODO riempe i dati relativi alla segreteria
 					wrapper.setIsSegreteria(true);
 					wrapper.setRichiesteInviateDaiProvider(5);
