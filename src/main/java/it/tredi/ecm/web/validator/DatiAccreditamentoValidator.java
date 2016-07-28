@@ -69,7 +69,7 @@ public class DatiAccreditamentoValidator {
 			files = new HashSet<File>();
 		File funzionigramma = null;
 		File organigramma = null;
-		File estrattoBilancioComplessivo = null;
+		File estrattoBilancioFormazione = null;
 
 		for(File file : files){
 			if(file != null && !file.isNew()){
@@ -77,12 +77,12 @@ public class DatiAccreditamentoValidator {
 					funzionigramma = file;
 				else if(file.isORGANIGRAMMA())
 					organigramma = file;
-				else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
-					estrattoBilancioComplessivo = file;
+				else if(file.isESTRATTOBILANCIOFORMAZIONE())
+					estrattoBilancioFormazione = file;
 			}
 		}
 		fileValidator.validate(funzionigramma, errors, prefix + "funzionigramma");
 		fileValidator.validate(organigramma, errors, prefix + "organigramma");
-		fileValidator.validate(estrattoBilancioComplessivo, errors, prefix + "estrattoBilancioComplessivo");
+		fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione");
 	}
 }
