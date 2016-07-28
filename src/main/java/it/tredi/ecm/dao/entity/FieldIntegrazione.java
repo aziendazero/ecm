@@ -1,11 +1,16 @@
 package it.tredi.ecm.dao.entity;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 import org.hibernate.annotations.Type;
 
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +20,10 @@ import lombok.Setter;
 public class FieldIntegrazione extends Field{
 	@Type(type = "serializable")
 	private Object newValue;
+	@Column(name="data_modifica")
+	private LocalDate dataModifica;
+	@Enumerated(EnumType.STRING)
+	private TipoIntegrazioneEnum tipoIntegrazioneEnum;
 	
 	@Override
     public boolean equals(Object o) {
