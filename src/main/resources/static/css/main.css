@@ -647,7 +647,7 @@ h2 {
 	font-size: 17px;
 }
 
-div#toModal > div.x_content {
+div.collapsible > div#toModal > div.x_content {
 	display: none;
 }
 
