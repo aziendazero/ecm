@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<th:block th:fragment="showAll">
+			<div class="row">
+
+				<!-- riempito con chiamata ajax provider -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.info_provider}">label.info_provider</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.provider != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.provider != null}" id="providerBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con chiamata ajax sede legale -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.sede_legale}">label.sede_legale</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.sedeLegale != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.sedeLegale != null}" id="sedeLegaleBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con chiamata ajax sede operativa -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.sede_operativa}">label.sede_operativa</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.sedeOperativa != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.sedeOperativa != null}" id="sedeOpBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con chiamata ajax legale rappresentante -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.legale_rappresentante}">label.legale_rappresentante</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.legaleRappresentante != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.legaleRappresentante != null}" id="legaleBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con chiamata ajax delegato legale rappresentante -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.delegato_legale_rappresentante}">label.delegato_legale_rappresentante</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" id="legaleBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con chiamata ajax dati accreditamento -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.dati_accreditamento}">label.dati_accreditamento</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.datiAccreditamento != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.datiAccreditamento != null}" id="datiBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con chiamata ajax responsabile di segreteria -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.responsabile_segreteria}">label.responsabile_segreteria</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileSegreteria != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.responsabileSegreteria != null}" id="rSegreteriaBlock" class="collapsible"></div>
+
+				</div>
+				<!-- riempito con chiamata ajax responsabile amministrativo -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.responsabile_amministrativo}">label.responsabile_amministrativo</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileAmministrativo != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.responsabileAmministrativo != null}" id="rAmministrativoBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con chiamata ajax responsabile sistema informatico -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.responsabile_sistema_informatico}">label.responsabile_sistema_informatico</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileSistemaInformatico != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.responsabileSistemaInformatico != null}" id="rSisInformaticoBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con chiamata ajax responsabile qualità -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.responsabile_qualita}">label.responsabile_qualita</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileQualita != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:if="${accreditamentoWrapper.responsabileQualita != null}" id="rQualitaBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con ciclo di chiamate ajax per il comitato scientifico  -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.componenti_comitato_scientifico}">label.componenti_comitato_scientifico</h2>
+						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico != null}">
+						<h2 th:text="#{label.coordinatore_comitato}">label.coordinatore_comitato</h2>
+						<div class="divider-dashed"></div>
+						<div th:id="coordinatoreBlock" class="collapsible"></div>
+					</th:block>
+					<th:block th:each="componente, row : ${accreditamentoWrapper.componentiComitatoScientifico}">
+						<h2 th:text="#{label.componente_comitato} + ' ' + ${componente.id}">label.componente_comitato</h2>
+						<div class="divider-dashed"></div>
+						<div th:id="componente+${componente.id}+Block" class="collapsible" role="iterComponente" th:attr="data-valore-id=${componente.id}"></div>
+					</th:block>
+
+				</div>
+
+				<!-- riempito con chiamata ajax allegati -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.allegati}">label.allegati</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div id="allegatiBlock" class="collapsible"></div>
+
+				</div>
+
+				<!-- riempito con ciclo di chiamate ajax per gli eventi del piano formativo -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.eventi_piano_formativo}">label.eventi_piano_formativo</h2>
+						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventi)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:if="${accreditamentoWrapper.accreditamento.pianoFormativo != null and !#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo.eventi)}">
+						<th:block th:each="evento row : ${accreditamentoWrapper.accreditamento.pianoFormativo.eventi}">
+							<h2 th:text="#{label.evento} + ': ' + ${evento.titolo}">label.componente_comitato</h2>
+							<div class="divider-dashed"></div>
+							<div th:id="evento+${componente.id}+Block" class="collapsible" role="iterEvento" th:attr="data-valore-id=${evento.id}"></div>
+						</th:block>
+					</th:block>
+
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				function populateShowAll(){
+
+					var url;
+
+					//provider
+					if([[${accreditamentoWrapper.provider != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider?.id}/show|}]];
+						$("#providerBlock").load(url + ' #toModal');
+					}
+
+					//sede legale
+					if([[${accreditamentoWrapper.sedeLegale != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale?.id}/show?tipologiaSede=SedeLegale|}]];
+						$("#sedeLegaleBlock").load(url + ' #toModal');
+					}
+
+					//sede operativa
+					if([[${accreditamentoWrapper.sedeOperativa != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeOperativa?.id}/show?tipologiaSede=SedeOperativa|}]];
+						$("#sedeOpBlock").load(url + ' #toModal');
+					}
+
+					//legale rappresentante
+					if([[${accreditamentoWrapper.legaleRappresentante != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante?.id}/show|}]];
+						$("#legaleBlock").load(url + ' #toModal');
+					}
+
+					//delegato legale rappresentante
+					if([[${accreditamentoWrapper.delegatoLegaleRappresentante != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante?.id}/show|}]];
+						$("#delegatoBlock").load(url + ' #toModal');
+					}
+
+					//dati accreditamento
+					if([[${accreditamentoWrapper.datiAccreditamento != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/show|}]];
+						$("#datiBlock").load(url + ' #toModal', function() {
+							//table responsive professioni/discipline show
+							$('.datatable-responsive-discipline').DataTable({
+								"bFilter" : false,
+								"bPaginate": false,
+								"bInfo" : false,
+							    "columnDefs": [
+							    	{ "targets": [ '_all' ], "orderable": false },
+							    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
+							    	{ "visible": false, "targets": 0 }
+							    ],
+							    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+							    "drawCallback": function ( settings ) {
+						        	var api = this.api();
+						            var rows = api.rows( {page:'current'} ).nodes();
+						            var last=null;
+
+						            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+						            	if ( last !== group ) {
+						                	$(rows).eq( i ).before(
+						                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
+						            	);
+						                    last = group;
+						                }
+						            });
+						        }
+
+							});
+						});
+					}
+
+					//responsabile segreteria
+					if([[${accreditamentoWrapper.responsabileSegreteria != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria?.id}/show|}]];
+						$("#rSegreteriaBlock").load(url + ' #toModal');
+					}
+
+					//responsabile amministrativo
+					if([[${accreditamentoWrapper.responsabileAmministrativo != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileAmministrativo?.id}/show|}]];
+						$("#rAmministrativoBlock").load(url + ' #toModal');
+					}
+
+					//responsabile sistema informatico
+					if([[${accreditamentoWrapper.responsabileSistemaInformatico != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSistemaInformatico?.id}/show|}]];
+						$("#rSisInformaticoBlock").load(url + ' #toModal');
+					}
+
+					//responsabile qualità
+					if([[${accreditamentoWrapper.responsabileQualita != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileQualita?.id}/show|}]];
+						$("#rQualitaBlock").load(url + ' #toModal');
+					}
+
+					//coordinatore del comitato
+					if([[${accreditamentoWrapper.coordinatoreComitatoScientifico != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.coordinatoreComitatoScientifico?.id}/show|}]];
+						$("#coordinatoreBlock").load(url + ' #toModal');
+					}
+
+					//ciclo sui componenti del comitato grazie al campo data-valore-id precedentemente settato
+					$('div[role=iterComponente]').each(function(index) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]] + $(this).attr("data-valore-id") + "/show";
+						$(this).load(url + ' #toModal');
+					})
+
+					//allegati
+					url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}]];
+					$('#allegatiBlock').load(url + " #toModal");
+
+					//ciclo sugli eventi del piano formativo grazie al campo data-valore-id precedentemente settato
+					$('div[role=iterEvento]').each(function(index) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]] + $(this).attr("data-valore-id") + "/show";
+						$(this).load(url + ' #toModal');
+					})
+
+				}
+			/*]]>*/
+			</script>
+		</th:block>
+	</div>
+</body>
+</html>

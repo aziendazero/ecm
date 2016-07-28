@@ -8,11 +8,41 @@
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-xs-12">
+
+				<!-- modale showAll -->
+				<div id="showAll-modal" class="modal fade modal-showAll" data-model-index="1" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+								</button>
+								<h4 class="modal-title" id="myModalLabel" th:text="#{label.riepilogo_accreditamento(${accreditamentoWrapper.accreditamento.tipoDomanda}, ${accreditamentoWrapper.accreditamento.stato})}">Riepilogo di tutto l'accreditamento</h4>
+							</div>
+							<div class="modal-body">
+
+								<!-- fragment show all -->
+								<th:block th:include="accreditamento/accreditamentoShowAll :: showAll"></th:block>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.accreditamento_titolo(Visualizzazione, ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}">Provvisorio - bozza</h2>
 						<div class="pull-right buttons-header">
-							<button type="button" class="btn btn-success pull-right" th:text="#{label.modifica}" onclick="switchMode()"></button>
+							<!-- blocco pulsanti segreteria -->
+							<th:block th:if="${#authentication.principal.hasProfile('SEGRETERIA')}">
+								<button type="button" class="btn btn-success pull-right" th:text="#{label.modifica}" onclick="switchMode()"></button>
+								<button type="button" class="btn btn-primary pull-right" th:text="#{label.abilita_id_editabili}" onclick="alert('TODO')"></button>
+							</th:block>
+							<!-- blocco pulsanti provider -->
+							<th:block th:if="${#authentication.principal.hasProfile('PROVIDER')}">
+								<button type="button" class="btn btn-success pull-right" th:text="#{label.modifica}" onclick="switchMode()"></button>
+							</th:block>
+							<button type="button" class="btn btn-primary pull-right" th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()" data-toggle="modal" data-target=".modal-showAll"></button>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${accreditamentoWrapper.provider.id}/accreditamento/list|}"></a>
 						</div>
 						<div class="clearfix"></div>
