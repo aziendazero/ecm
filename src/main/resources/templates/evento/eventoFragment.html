@@ -47,9 +47,9 @@
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.procedure_formative}">Procedure formative</span>
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
-						<th:block th:with="counter=${counter}" th:if="${editabile}">
+						<th:block th:if="${editabile}">
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_radio">
-								<div class="radio" th:with="counter=${(editabile == true) ? (++counter) : null}"
+								<div class="radio"
 									th:each="proceduraFormativa, row : ${proceduraFormativaList}">
 									<input type="radio" class="flat"
 										th:field="${eventoWrapper.evento.proceduraFormativa}"
@@ -77,7 +77,7 @@
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.titolo_programma_formativo}">Titolo del programma formativo</span>
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
-						<th:block th:with="counter=${counter}" th:if="${editabile}">
+						<th:block th:if="${editabile}">
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_titolo">
 								<textarea maxlength="3000" id="title" rows="3" name="titolo"
 									style="resize: none;" th:field="${eventoWrapper.evento.titolo}"
@@ -104,7 +104,7 @@
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Nazionale</span>
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
-						<th:block th:with="counter=${counter}" th:if="${editabile}">
+						<th:block th:if="${editabile}">
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="obiettivo_formativo_nazionale">
 								<!-- input disabilitato se l'evento è NON editabile perchè eventoShow o se l'id NON  è editabile -->
 								<select id="obiettivo-formativo-nazionale-select"
@@ -148,7 +148,7 @@
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Nazionale</span>
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
-						<th:block th:with="counter=${counter}" th:if="${editabile}">
+						<th:block th:if="${editabile}">
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="obiettivo_formativo_regionale">
 								<!-- input disabilitato se l'evento è NON editabile perchè eventoShow o se l'id NON  è editabile -->
 								<select id="obiettivo-formativo-regionale-select"
@@ -186,7 +186,7 @@
 							<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.evento_professioni}">Evento per professioni</span>
 							<span th:if="${editabile}" class="required">*</span>
 						</label>
-						<th:block th:with="counter=${counter}" th:if="${editabile}">
+						<th:block th:if="${editabile}">
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni">
 								<div class="radio">
 									<input type="radio" class="flat"
@@ -224,7 +224,7 @@
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.professioni_discipline}">Professioni/discipline</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
-						<th:block th:with="counter=${counter}" th:if="${editabile}">
+						<th:block th:if="${editabile}">
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
 								<div class="col-xs-12 select-with-margin-container">
 									<select id="professioni" class="selectpicker multi"
