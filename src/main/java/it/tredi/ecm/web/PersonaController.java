@@ -226,13 +226,14 @@ public class PersonaController {
 			try{
 				if(result.hasErrors()){
 					model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
+					model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
 					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 					return EDIT;
 				}else{
-					
-					boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false; 
+
+					boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false;
 					personaService.save(personaWrapper.getPersona());
-					
+
 					//inserimento nuova persona in Domanda di Accreditamento
 					//inseriamo gli IdEditabili (con riferimento all'id nel caso di multi-istanza)
 					if(insertFieldEditabile){
@@ -242,14 +243,14 @@ public class PersonaController {
 						else
 							fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, null, subset, IdFieldEnum.getAllForSubset(subset));
 					}
-					
+
 					// Durante la compilazione della domanda di accreditamento, se si inizia l'inserimento dei responsabili non e' piu'
 					// consentita la modifica del legale rappresentante
 					if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() ||
 							personaWrapper.getPersona().isComponenteComitatoScientifico() || personaWrapper.getPersona().isCoordinatoreComitatoScientifico()||
 							personaWrapper.getPersona().isResponsabileSistemaInformatico() || personaWrapper.getPersona().isResponsabileQualita())
 						fieldEditabileService.removeFieldEditabileForAccreditamento(accreditamentoId, null, SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
-						
+
 					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito('"+ personaWrapper.getPersona().getRuolo().getNome() +"')", "success"));
 
@@ -279,11 +280,11 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + personaId + "/delete"));
 		try{
 			personaService.delete(personaId);
-			
+
 			//rimozione persona multi-istanza dalla Domanda di Accreditamento
 			//rimuoviamo gli IdEditabili
 			fieldEditabileService.removeFieldEditabileForAccreditamento(accreditamentoId, personaId, SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO);
-			
+
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.componente_comitato_eliminato", "success"));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + personaId + "/delete"),ex);
