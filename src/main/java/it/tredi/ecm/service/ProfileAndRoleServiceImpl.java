@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Role;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.RoleRepository;
 
@@ -47,8 +48,8 @@ public class ProfileAndRoleServiceImpl implements ProfileAndRoleService{
 	}
 
 	@Override
-	public Optional<Profile> getProfileByName(String name) {
-		return profileRepository.findOneByName(name);
+	public Optional<Profile> getProfileByProfileEnum(ProfileEnum profileEnum) {
+		return profileRepository.findOneByProfileEnum(profileEnum);
 	}
 
 }

@@ -19,7 +19,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 		
-		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW_ALL.name()))
+		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW_ALL))
 			return true;
 		
 		return false;
@@ -30,7 +30,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 		
-		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT_ALL.name()))
+		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT_ALL))
 			return true;
 		
 		return false;
@@ -41,7 +41,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(canShowAllProvider(currentUser))
 			return true;
 
-		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW.name())){
+		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW)){
 			return isProviderOwner(currentUser.getAccount().getId(), providerId);
 		}
 		
@@ -53,7 +53,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(canEditAllProvider(currentUser))
 			return true;
 		
-		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT.name())){
+		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT)){
 			return isProviderOwner(currentUser.getAccount().getId(), providerId);
 		}
 		
@@ -71,7 +71,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 		
-		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_SHOW_ALL.name()))
+		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_SHOW_ALL))
 			return true;
 		
 		return false;
@@ -82,7 +82,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(canShowAllAccreditamento(currentUser))
 			return true;
 		
-		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_SHOW.name())){
+		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_SHOW)){
 			return isAccreditamentoOwner(currentUser.getAccount().getId(), accreditamentoId);
 		}
 		
@@ -94,10 +94,10 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 		
-		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_EDIT_ALL.name()))
+		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_EDIT_ALL))
 			return true;
 		
-		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_EDIT.name())){
+		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_EDIT)){
 			return isAccreditamentoOwner(currentUser.getAccount().getId(), accreditamentoId);
 		}
 		
@@ -115,7 +115,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 		
-		if(currentUser.hasRole(RoleEnum.USER_SHOW_ALL.name()))
+		if(currentUser.hasRole(RoleEnum.USER_SHOW_ALL))
 			return true;
 		
 		return false;
@@ -126,7 +126,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(canShowAllUser(currentUser))
 			return true;
 		
-		if(currentUser.hasRole(RoleEnum.USER_SHOW.name())){
+		if(currentUser.hasRole(RoleEnum.USER_SHOW)){
 			return isUserOwner(currentUser.getAccount().getId(), userId);
 		}
 		
@@ -138,10 +138,10 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 		
-		if(currentUser.hasRole(RoleEnum.USER_EDIT_ALL.name()))
+		if(currentUser.hasRole(RoleEnum.USER_EDIT_ALL))
 			return true;
 		
-		if(currentUser.hasRole(RoleEnum.USER_EDIT.name())){
+		if(currentUser.hasRole(RoleEnum.USER_EDIT)){
 			return isUserOwner(currentUser.getAccount().getId(), userId);
 		}
 		
@@ -153,7 +153,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 		
-		if(currentUser.hasRole(RoleEnum.USER_CREATE.name()))
+		if(currentUser.hasRole(RoleEnum.USER_CREATE))
 			return true;
 		
 		return false;

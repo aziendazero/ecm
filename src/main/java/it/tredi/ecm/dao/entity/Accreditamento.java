@@ -69,10 +69,6 @@ public class Accreditamento extends BaseEntity{
 	@OneToOne(fetch = FetchType.LAZY, cascade= CascadeType.REMOVE)
 	private DatiAccreditamento datiAccreditamento;
 
-	//flag che mi dice se la domanda è in visualizzazione o in modifica per il provider
-	//gli idEditabili invece indicano quali campi possono essere modificati
-	@Type(type = "serializable")
-
 	@OneToMany(mappedBy = "accreditamento", cascade={CascadeType.MERGE, CascadeType.PERSIST})
 	private List<FieldEditabile> idEditabili = new ArrayList<FieldEditabile>();
 
@@ -81,6 +77,9 @@ public class Accreditamento extends BaseEntity{
 
 	@OneToOne
 	private GruppoCrecm gruppoCrecm;
+
+	@OneToOne
+	private TeamValutazione teamValutazione;
 
 	@OneToMany(mappedBy = "accreditamento")
 	Set<ValutazioneCommissione> valutazioniCommissione = new HashSet<ValutazioneCommissione>();
@@ -117,15 +116,15 @@ public class Accreditamento extends BaseEntity{
 		//DATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DATI_ACCREDITAMENTO))
 			idEditabili.add(new FieldEditabile(id, this));
-		
+
 		//RESPONSABILE SEGRETERIA
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SEGRETERIA))
 			idEditabili.add(new FieldEditabile(id, this));
-		
+
 		//RESPONSABILE AMMINISTRATIVO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO))
 			idEditabili.add(new FieldEditabile(id, this));
-		
+
 		//RESPONSABILE SISTEMA INFORMATICO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO))
 			idEditabili.add(new FieldEditabile(id, this));
@@ -134,9 +133,15 @@ public class Accreditamento extends BaseEntity{
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_QUALITA))
 			idEditabili.add(new FieldEditabile(id, this));
 		
+		//FULL
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.FULL))
+			idEditabili.add(new FieldEditabile(id, this));
+		
 		//ALLEGATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO))
 			idEditabili.add(new FieldEditabile(id, this));
+
+
 	}
 
 	public boolean isProvvisorio(){

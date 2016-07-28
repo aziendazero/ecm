@@ -13,8 +13,8 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.repository.ProviderRepository;
@@ -140,7 +140,7 @@ public class ProviderServiceImpl implements ProviderService {
 
 		if(provider.getAccount().getProfiles().isEmpty()){
 			//assegno profilo PROVIDER TODO 
-			Optional<Profile> providerProfile = profileAndRoleService.getProfileByName(Costanti.PROFILO_PROVIDER);
+			Optional<Profile> providerProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDER);
 			if(providerProfile.isPresent())
 				provider.getAccount().getProfiles().add(providerProfile.get());
 		}
