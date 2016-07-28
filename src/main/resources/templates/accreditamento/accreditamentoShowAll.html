@@ -208,10 +208,10 @@
 					</div>
 
 					<th:block th:if="${accreditamentoWrapper.accreditamento.pianoFormativo != null and !#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo.eventi)}">
-						<th:block th:each="evento row : ${accreditamentoWrapper.accreditamento.pianoFormativo.eventi}">
+						<th:block th:each="evento, row : ${accreditamentoWrapper.accreditamento.pianoFormativo.eventi}">
 							<h2 th:text="#{label.evento} + ': ' + ${evento.titolo}">label.componente_comitato</h2>
 							<div class="divider-dashed"></div>
-							<div th:id="evento+${componente.id}+Block" class="collapsible" role="iterEvento" th:attr="data-valore-id=${evento.id}"></div>
+							<div th:id="evento+${evento.id}+Block" class="collapsible" role="iterEvento" th:attr="data-valore-id=${evento.id}"></div>
 						</th:block>
 					</th:block>
 
@@ -256,35 +256,7 @@
 					//dati accreditamento
 					if([[${accreditamentoWrapper.datiAccreditamento != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/show|}]];
-						$("#datiBlock").load(url + ' #toModal', function() {
-							//table responsive professioni/discipline show
-							$('.datatable-responsive-discipline').DataTable({
-								"bFilter" : false,
-								"bPaginate": false,
-								"bInfo" : false,
-							    "columnDefs": [
-							    	{ "targets": [ '_all' ], "orderable": false },
-							    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
-							    	{ "visible": false, "targets": 0 }
-							    ],
-							    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
-							    "drawCallback": function ( settings ) {
-						        	var api = this.api();
-						            var rows = api.rows( {page:'current'} ).nodes();
-						            var last=null;
-
-						            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
-						            	if ( last !== group ) {
-						                	$(rows).eq( i ).before(
-						                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
-						            	);
-						                    last = group;
-						                }
-						            });
-						        }
-
-							});
-						});
+						$("#datiBlock").load(url + ' #toModal');
 					}
 
 					//responsabile segreteria
@@ -329,10 +301,39 @@
 
 					//ciclo sugli eventi del piano formativo grazie al campo data-valore-id precedentemente settato
 					$('div[role=iterEvento]').each(function(index) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]] + $(this).attr("data-valore-id") + "/show";
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo.id}/evento/|}]] + $(this).attr("data-valore-id") + "/show";
 						$(this).load(url + ' #toModal');
 					})
 
+					$('#showAll-modal').on('shown.bs.modal', function (e) {
+						//table responsive professioni/discipline show
+						$('.datatable-responsive-discipline').DataTable({
+							"bFilter" : false,
+							"bPaginate": false,
+							"bInfo" : false,
+						    "columnDefs": [
+						    	{ "targets": [ '_all' ], "orderable": false },
+						    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
+						    	{ "visible": false, "targets": 0 }
+						    ],
+						    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+						    "drawCallback": function ( settings ) {
+					        	var api = this.api();
+					            var rows = api.rows( {page:'current'} ).nodes();
+					            var last=null;
+
+					            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+					            	if ( last !== group ) {
+					                	$(rows).eq( i ).before(
+					                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
+					            	);
+					                    last = group;
+					                }
+					            });
+					        }
+
+						});
+					})
 				}
 			/*]]>*/
 			</script>

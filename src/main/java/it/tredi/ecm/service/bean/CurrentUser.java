@@ -18,24 +18,24 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 		super(account.getUsername(),account.getPassword(),account.isEnabled(),true,true,!account.isLocked(),auth);
 		this.account = account;
 	}
-	
+
 	public String getProfile(){
 		String result = "[";
 
 		for(Profile profile : account.getProfiles())
-			result += profile.getName() + ",";
+			result += profile.getName() + ", ";
 
-		int x = result.lastIndexOf(",");
+		int x = result.lastIndexOf(", ");
 		if(x > 0)
 			result = result.substring(0,x);
 
 		result += "]";
 		if(result.length() == 2)
 			result = "nessun profilo";
-		
+
 		return result;
 	}
-	
+
 	public boolean hasProfile(String profileName){
 		for(Profile profile : account.getProfiles()){
 			if(profile.getName().equals(profileName))
@@ -43,7 +43,7 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 		}
 		return false;
 	}
-	
+
 	public boolean hasRole(String roleName){
 		for(GrantedAuthority role : getAuthorities()){
 			if(role.getAuthority().equals(roleName))
