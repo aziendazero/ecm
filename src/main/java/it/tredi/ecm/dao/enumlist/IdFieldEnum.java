@@ -125,7 +125,7 @@ public enum IdFieldEnum {
 	ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE ("accreditamentoAllegati.file.dichiarazioneLegale", 95, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO),
 	ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE ("accreditamentoAllegati.file.dichiarazioneEsclusione", 96, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO),
 
-	PIANO_FORMATIVO_FULL ("pianoFormativo", -1, null, SubSetFieldEnum.PIANO_FORMATIVO),//gestiamo la possibilità di modificare o meno il piano formativo dentro l'accreditamento
+	EVENTO_PIANO_FORMATIVO__FULL ("pianoFormativo", -1, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),//gestiamo la possibilità di modificare o meno il piano formativo dentro l'accreditamento
 	EVENTO_PIANO_FORMATIVO__PROCEDURA_FORMATIVA ("evento.proceduraFormativa", 1, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),
 	EVENTO_PIANO_FORMATIVO__TITOLO ("evento.titolo", 2, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),
 	EVENTO_PIANO_FORMATIVO__OBIETTIVO_NAZIONALE ("evento.obiettivoNazionale", 3, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),

@@ -72,10 +72,9 @@ public class Accreditamento extends BaseEntity{
 	//flag che mi dice se la domanda è in visualizzazione o in modifica per il provider
 	//gli idEditabili invece indicano quali campi possono essere modificati
 	@Type(type = "serializable")
-	private List<Integer> idEditabili = new ArrayList<Integer>();
 
-	@OneToMany(mappedBy = "accreditamento", cascade={CascadeType.PERSIST,CascadeType.MERGE})
-	private List<FieldEditabile> idEditabil = new ArrayList<FieldEditabile>();
+	@OneToMany(mappedBy = "accreditamento", cascade={CascadeType.ALL})
+	private List<FieldEditabile> idEditabili = new ArrayList<FieldEditabile>();
 
 	@OneToOne
 	private PianoFormativo pianoFormativo;
@@ -97,47 +96,47 @@ public class Accreditamento extends BaseEntity{
 	private void enableAllIdField(){
 		//PROVIDER FIELD
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 
 		//SEDE LEGALE
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_LEGALE))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 
 		//SEDE OPERATIVA 
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_OPERATIVA))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 
 		//LEGALE RAPPRESENTANTE
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.LEGALE_RAPPRESENTANTE))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 
 		//DELEGATO LEGALE RAPPRESENTANTE 
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 
 		//DATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DATI_ACCREDITAMENTO))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 		
 		//RESPONSABILE SEGRETERIA
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SEGRETERIA))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 		
 		//RESPONSABILE AMMINISTRATIVO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 		
 		//RESPONSABILE SISTEMA INFORMATICO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 
 		//RESPONSABILE SISTEMA QUALITA
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_QUALITA))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 		
 		//ALLEGATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO))
-			idEditabil.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabile(id, this));
 	}
 
 	public boolean isProvvisorio(){

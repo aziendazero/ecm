@@ -229,8 +229,19 @@ public class PersonaController {
 					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 					return EDIT;
 				}else{
+					
+					boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false; 
 					personaService.save(personaWrapper.getPersona());
-
+					
+					//inserimento nuova persona in Domanda di Accreditamento
+					//inseriamo gli IdEditabili (con riferimento all'id nel caso di multi-istanza)
+					if(insertFieldEditabile){
+						if(personaWrapper.getPersona().isComponenteComitatoScientifico())
+							fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, personaWrapper.getPersona().getId(), Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo()));
+						else
+							fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, null, Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo()));
+					}
+					
 					// Durante la compilazione della domanda di accreditamento, se si inizia l'inserimento dei responsabili non e' piu'
 					// consentita la modifica del legale rappresentante
 					if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() ||
@@ -267,6 +278,11 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + personaId + "/delete"));
 		try{
 			personaService.delete(personaId);
+			
+			//rimozione persona multi-istanza dalla Domanda di Accreditamento
+			//rimuoviamo gli IdEditabili
+			fieldEditabileService.removeFieldEditabileForAccreditamento(accreditamentoId, personaId, SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO);
+			
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.componente_comitato_eliminato", "success"));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + personaId + "/delete"),ex);

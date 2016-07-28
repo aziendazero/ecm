@@ -10,4 +10,5 @@ import it.tredi.ecm.dao.entity.FieldEditabile;
 public interface FieldEditabileRepository extends CrudRepository<FieldEditabile, Long> {
 	public Set<FieldEditabile> findAllByAccreditamentoId(Long accreditamentoId);
 	public Set<FieldEditabile> findAllByAccreditamentoIdAndObjectReference(Long accreditamentoId, Long objectReference);
+	public void deleteAllByAccreditamentoId(Long accreditamentoId);
 }

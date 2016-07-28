@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -21,7 +22,8 @@ public class FieldEditabileServiceImpl implements FieldEditabileService{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FieldEditabileServiceImpl.class);
 	
-	@Autowired FieldEditabileRepository fieldEditabileRepository;  
+	@Autowired private FieldEditabileRepository fieldEditabileRepository; 
+	@Autowired private AccreditamentoService accreditamentoService;
 	
 	@Override
 	public Set<FieldEditabile> getAllFieldEditabileForAccreditamento(Long accreditamentoId) {
@@ -37,8 +39,39 @@ public class FieldEditabileServiceImpl implements FieldEditabileService{
 	
 	@Override
 	@Transactional
+	public void insertFieldEditabileForAccreditamento(Long accreditamentoId, Long objectReference, SubSetFieldEnum subset) {
+		LOGGER.debug(Utils.getLogMessage("Inserimento di alcuni IdEditabili per Domanda Accreditamento: " + accreditamentoId));
+		Set<IdFieldEnum> toInsert = IdFieldEnum.getAllForSubset(subset);
+		Set<FieldEditabile> subSetList = new HashSet<FieldEditabile>();
+		if(objectReference == null)
+			subSetList = Utils.getSubset(getAllFieldEditabileForAccreditamento(accreditamentoId), subset);
+ 		else
+ 			subSetList = Utils.getSubset(getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, objectReference), subset);
+		
+		subSetList.forEach(f ->{
+			if(toInsert.contains(f.getIdField()))
+				fieldEditabileRepository.delete(f);
+		});
+		
+		if(toInsert != null){
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			for(IdFieldEnum id : toInsert){
+				if(Utils.getField(subSetList,id) == null){
+					FieldEditabile field = new FieldEditabile();
+					field.setAccreditamento(accreditamento);
+					field.setIdField(id);
+					if(objectReference != null)
+						field.setObjectReference(objectReference);
+					fieldEditabileRepository.save(field);
+				}
+			}
+		}
+	}
+	
+	@Override
+	@Transactional
 	public void removeFieldEditabileForAccreditamento(Long accreditamentoId, Long objectReference, SubSetFieldEnum subset) {
-		LOGGER.debug(Utils.getLogMessage("Eliminazione alcuni IdEditabili per Domanda Accreditamento: " + accreditamentoId));
+		LOGGER.debug(Utils.getLogMessage("Eliminazione di alcuni IdEditabili per Domanda Accreditamento: " + accreditamentoId));
 		Set<FieldEditabile> toRemove = new HashSet<FieldEditabile>();
  		if(objectReference == null)
  			toRemove = Utils.getSubset(getAllFieldEditabileForAccreditamento(accreditamentoId), subset);
@@ -46,5 +79,11 @@ public class FieldEditabileServiceImpl implements FieldEditabileService{
  			toRemove = Utils.getSubset(getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, objectReference), subset);
  		
  		fieldEditabileRepository.delete(toRemove);
+	}
+	
+	@Override
+	public void removeAllFieldEditabileForAccreditamento(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Eliminazione di tutti gli IdEditabili per Domanda Accreditamento: " + accreditamentoId));
+		fieldEditabileRepository.deleteAllByAccreditamentoId(accreditamentoId);
 	}
 }

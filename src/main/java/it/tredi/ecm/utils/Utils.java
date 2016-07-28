@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import it.tredi.ecm.dao.entity.FieldEditabile;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.bean.CurrentUser;
 
@@ -96,12 +97,23 @@ public class Utils {
 	}
 	
 	/*
-	 * Controllo se un determinato IdFieldEnum è presente nella lista
+	 * Controllo se un determinato IdFieldEnum è presente nella lista di record
 	 * */
 	public static FieldEditabile getField(Set<FieldEditabile> src, IdFieldEnum idEnum){
 		for(FieldEditabile f : src)
 			if(f.getIdField() == idEnum)
 				return f;
 		return null;
+	}
+	
+	public static SubSetFieldEnum getSubsetFromRuolo(Ruolo ruolo){
+		switch (ruolo){
+			case RESPONSABILE_SEGRETERIA: return SubSetFieldEnum.RESPONSABILE_SEGRETERIA;
+			case RESPONSABILE_AMMINISTRATIVO: return SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO;
+			case RESPONSABILE_SISTEMA_INFORMATICO: return SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO;
+			case RESPONSABILE_QUALITA: return SubSetFieldEnum.RESPONSABILE_QUALITA;
+			case COMPONENTE_COMITATO_SCIENTIFICO: return SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO;
+			default: return null;
+		}
 	}
 }

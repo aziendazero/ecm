@@ -229,7 +229,7 @@ public class AccreditamentoWrapper {
 	}
 
 	public boolean isComitatoScientificoEditabile(){
-		Set<IdFieldEnum> ids = Utils.getSubsetOfIdFieldEnum(new HashSet<FieldEditabile>(getAccreditamento().getIdEditabil()), SubSetFieldEnum.COMITATO_SCIENTIFICO);
+		Set<IdFieldEnum> ids = Utils.getSubsetOfIdFieldEnum(new HashSet<FieldEditabile>(getAccreditamento().getIdEditabili()), SubSetFieldEnum.COMITATO_SCIENTIFICO);
 		if(ids.isEmpty())
 			return false;
 		else
