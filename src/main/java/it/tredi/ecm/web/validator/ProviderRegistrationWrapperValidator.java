@@ -32,6 +32,7 @@ public class ProviderRegistrationWrapperValidator{
 			fileValidator.validate(providerForm.getDelega(), errors, "delega");
 		}
 		Utils.logDebugErrorFields(LOGGER, errors);
+
 	}
 
 	private void validateRichiedente(Persona richiedente, Errors errors){
