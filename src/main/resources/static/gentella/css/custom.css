@@ -6,6 +6,15 @@ body.nav-sm .container.body .left_col {
   position: absolute;
 }
 
+div.left_col {
+	width: 230px;
+	padding: 0;
+}
+
+h3.profile {
+	white-space:normal;
+}
+
 body.nav-sm .container.body .right_col {
   padding: 10px 20px;
   margin-left: 70px;

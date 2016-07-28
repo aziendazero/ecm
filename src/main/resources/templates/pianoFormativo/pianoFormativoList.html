@@ -45,7 +45,7 @@
 												<div class="panel-body">
 
 
-													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${pianoFormativo.pianoModificabile})"></th:block>
+													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${pianoFormativo.pianoModificabile}, true)"></th:block>
 
 													<a th:if="${pianoFormativo.pianoModificabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
 
