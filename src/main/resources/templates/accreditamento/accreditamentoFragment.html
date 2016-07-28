@@ -554,10 +554,8 @@
 
 										<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(accreditamentoWrapper.accreditamento.pianoFormativo, ${accreditamentoWrapper.accreditamento.id}, ${editabile}, ${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL)})"></th:block>
 
-										<th:block th:if="${accreditamentoWrapper.accreditamento.pianoFormativo != null}">
-											<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and #sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL)}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo.id}/evento/new|}"></a>
-											<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and !#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL)}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top disabled"></a>
-										</th:block>
+										<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and #sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL)}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo.id}/evento/new|}"></a>
+										<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and !#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL)}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top disabled"></a>
 									</div>
 								</div>
 							</div>
