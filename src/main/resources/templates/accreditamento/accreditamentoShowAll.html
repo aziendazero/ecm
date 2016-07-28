@@ -20,7 +20,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.provider != null}" id="providerBlock"></div>
+					<div th:if="${accreditamentoWrapper.provider != null}" id="providerBlock" class="collapsible"></div>
 
 				</div>
 
@@ -35,7 +35,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.sedeLegale != null}" id="sedeLegaleBlock"></div>
+					<div th:if="${accreditamentoWrapper.sedeLegale != null}" id="sedeLegaleBlock" class="collapsible"></div>
 
 				</div>
 
@@ -50,7 +50,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.sedeOperativa != null}" id="sedeOpBlock"></div>
+					<div th:if="${accreditamentoWrapper.sedeOperativa != null}" id="sedeOpBlock" class="collapsible"></div>
 
 				</div>
 
@@ -65,7 +65,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.legaleRappresentante != null}" id="legaleBlock"></div>
+					<div th:if="${accreditamentoWrapper.legaleRappresentante != null}" id="legaleBlock" class="collapsible"></div>
 
 				</div>
 
@@ -80,7 +80,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" id="legaleBlock"></div>
+					<div th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" id="legaleBlock" class="collapsible"></div>
 
 				</div>
 
@@ -95,7 +95,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.datiAccreditamento != null}" id="datiBlock"></div>
+					<div th:if="${accreditamentoWrapper.datiAccreditamento != null}" id="datiBlock" class="collapsible"></div>
 
 				</div>
 
@@ -110,7 +110,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.responsabileSegreteria != null}" id="rSegreteriaBlock"></div>
+					<div th:if="${accreditamentoWrapper.responsabileSegreteria != null}" id="rSegreteriaBlock" class="collapsible"></div>
 
 				</div>
 				<!-- riempito con chiamata ajax responsabile amministrativo -->
@@ -124,7 +124,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.responsabileAmministrativo != null}" id="rAmministrativoBlock"></div>
+					<div th:if="${accreditamentoWrapper.responsabileAmministrativo != null}" id="rAmministrativoBlock" class="collapsible"></div>
 
 				</div>
 
@@ -139,7 +139,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.responsabileSistemaInformatico != null}" id="rSisInformaticoBlock"></div>
+					<div th:if="${accreditamentoWrapper.responsabileSistemaInformatico != null}" id="rSisInformaticoBlock" class="collapsible"></div>
 
 				</div>
 
@@ -154,7 +154,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.responsabileQualita != null}" id="rQualitaBlock"></div>
+					<div th:if="${accreditamentoWrapper.responsabileQualita != null}" id="rQualitaBlock" class="collapsible"></div>
 
 				</div>
 
@@ -172,12 +172,12 @@
 					<th:block th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico != null}">
 						<h2 th:text="#{label.coordinatore_comitato}">label.coordinatore_comitato</h2>
 						<div class="divider-dashed"></div>
-						<div th:id="coordinatoreBlock"></div>
+						<div th:id="coordinatoreBlock" class="collapsible"></div>
 					</th:block>
 					<th:block th:each="componente, row : ${accreditamentoWrapper.componentiComitatoScientifico}">
 						<h2 th:text="#{label.componente_comitato} + ' ' + ${componente.id}">label.componente_comitato</h2>
 						<div class="divider-dashed"></div>
-						<div th:id="componente+${componente.id}+Block" role="iterComponente" th:attr="data-valore-id=${componente.id}"></div>
+						<div th:id="componente+${componente.id}+Block" class="collapsible" role="iterComponente" th:attr="data-valore-id=${componente.id}"></div>
 					</th:block>
 
 				</div>
@@ -192,7 +192,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div id="allegatiBlock"></div>
+					<div id="allegatiBlock" class="collapsible"></div>
 
 				</div>
 
@@ -207,11 +207,11 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:if="${accreditamentoWrapper.accreditamento.pianoFormativo != null}">
+					<th:block th:if="${accreditamentoWrapper.accreditamento.pianoFormativo != null and !#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo.eventi)}">
 						<th:block th:each="evento row : ${accreditamentoWrapper.accreditamento.pianoFormativo.eventi}">
 							<h2 th:text="#{label.evento} + ': ' + ${evento.titolo}">label.componente_comitato</h2>
 							<div class="divider-dashed"></div>
-							<div th:id="evento+${componente.id}+Block" role="iterEvento" th:attr="data-valore-id=${evento.id}"></div>
+							<div th:id="evento+${componente.id}+Block" class="collapsible" role="iterEvento" th:attr="data-valore-id=${evento.id}"></div>
 						</th:block>
 					</th:block>
 

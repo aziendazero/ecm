@@ -42,7 +42,7 @@
 							<th:block th:if="${#authentication.principal.hasProfile('PROVIDER')}">
 								<button type="button" class="btn btn-success pull-right" th:text="#{label.modifica}" onclick="switchMode()"></button>
 							</th:block>
-							<button type="button" class="btn btn-info pull-right" th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()" data-toggle="modal" data-target=".modal-showAll"></button>
+							<button type="button" class="btn btn-primary pull-right" th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()" data-toggle="modal" data-target=".modal-showAll"></button>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${accreditamentoWrapper.provider.id}/accreditamento/list|}"></a>
 						</div>
 						<div class="clearfix"></div>
