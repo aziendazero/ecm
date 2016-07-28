@@ -18,7 +18,12 @@ public enum AccreditamentoStatoEnum {
 	PREAVVISO_RIGETTO (12, "Preavviso di rigetto"),//provider deve modificare i campi da richiesta preavviso di rigetto
 	VALUTAZIONE_SEGRETERIA (13, "Valutazione Segreteria"),//domanda rimandata in valutazione alla segretria in seguito alle integrazioni effettuate (assegnamento CRECM mantenuto in automatico)
 	
-	VALUTAZIONE_SUL_CAMPO (14, "Valutazione sul campo"),//[SOLO STANDARD] - domanda assegnata ad un team di valutazione per valutare l'accreditamento STANDARD, task eseguito dalla segreteria (sostituisce 3 al primo giro nella domanda standard)
+	/*
+	 *  Domanda assegnata ad un team di valutazione per valutare l'accreditamento STANDARD
+	 *  Task eseguito dalla segreteria (sostituisce 3 al primo giro nella domanda standard)
+	 *  La segreteria compila la maschera dlel verbale e la salva. Il task termina quando la segreteria esplicitamente VALIDA il verbale. (salvataggio in bozza nel frattempo)
+	 * */
+	VALUTAZIONE_SUL_CAMPO (14, "Valutazione sul campo"),//[SOLO STANDARD]
 	VALUTAZIONE_TEAM_LEADER(15, "Valutazione del Team Leader");//[SOLO STANDARD] - domanda asseganata al Team Leader che deve compilare la griglia (sostituisce 3 dal secondo giro nella domanda standard)
 	
 	private int id;

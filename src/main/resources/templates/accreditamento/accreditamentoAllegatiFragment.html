@@ -26,7 +26,7 @@
 						</th:block>
 
 						<!-- allegato 1 (atto costitutivo e statuto) -->
-						<div class="model-link" id="esempio_attoCostitutivo">
+						<div th:if="${editabile}" class="model-link" id="esempio_attoCostitutivo">
 							<i class="fa fa-file-text"></i>
 							<a id="attoCostitutivo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.attoCostitutivoModel}|}"></a>
 						</div>
@@ -34,7 +34,7 @@
 
 						<!-- allegato 2 (esperienza formazione in ambito sanitario) -->
 						<div class="divider-dashed"></div>
-						<div class="model-link" id="esempio_esperienzaFormazione">
+						<div th:if="${editabile}" class="model-link" id="esempio_esperienzaFormazione">
 							<i class="fa fa-file-text"></i>
 							<a id="esperienzaFormazione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.esperienzaFormazioneModel}|}"></a>
 						</div>
@@ -42,7 +42,7 @@
 
 						<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
 						<div class="divider-dashed"></div>
-						<div class="model-link" id="esempio_utilizzo">
+						<div th:if="${editabile}" class="model-link" id="esempio_utilizzo">
 							<i class="fa fa-file-text"></i>
 							<a id="utilizzo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.utilizzoModel}|}"></a>
 						</div>
@@ -50,7 +50,7 @@
 
 						<!-- allegato 4 (sistema informatico dedicato alla formazione in ambito sanitario) -->
 						<div class="divider-dashed"></div>
-						<div class="model-link" id="esempio_sistemaInformatico">
+						<div th:if="${editabile}" class="model-link" id="esempio_sistemaInformatico">
 							<i class="fa fa-file-text"></i>
 							<a id="sistemaInformatico_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.sistemaInformaticoModel}|}"></a>
 						</div>
@@ -58,7 +58,7 @@
 
 						<!-- allegato 5 (piano di qualità) -->
 						<div class="divider-dashed"></div>
-						<div class="model-link" id="esempio_pianoQualita">
+						<div th:if="${editabile}" class="model-link" id="esempio_pianoQualita">
 							<i class="fa fa-file-text"></i>
 							<a id="pianoQualita_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.pianoQualitaModel}|}"></a>
 						</div>
@@ -66,7 +66,7 @@
 
 						<!-- allegato 6 (dichiarazione del legale rappresentante) -->
 						<div class="divider-dashed"></div>
-						<div class="model-link" id="esempio_dichiarazioneLegale">
+						<div th:if="${editabile}" class="model-link" id="esempio_dichiarazioneLegale">
 							<i class="fa fa-file-text"></i>
 							<a id="dichiarazioneLegale_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.dichiarazioneLegaleModel}|}"></a>
 						</div>
@@ -74,7 +74,7 @@
 
 						<!-- allegato 7 (dichiarazione esclusione) -->
 						<div class="divider-dashed"></div>
-						<div class="model-link" id="esempio_dichiarazioneEsclusione">
+						<div th:if="${editabile}" class="model-link" id="esempio_dichiarazioneEsclusione">
 							<i class="fa fa-file-text"></i>
 							<a id="dichiarazioneEsclusione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.dichiarazioneEsclusioneModel}|}"></a>
 						</div>
