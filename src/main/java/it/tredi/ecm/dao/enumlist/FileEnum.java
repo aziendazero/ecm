@@ -24,9 +24,10 @@ public enum FileEnum {
 	FILE_MODELLO_PIANO_QUALITA (19, ""),
 	FILE_MODELLO_DICHIARAZIONE_LEGALE (20, ""),
 	FILE_DICHIARAZIONE_ESCLUSIONE (21, ""),
+	FILE_VERBALE_VALUTAZIONE_SUL_CAMPO (22, "Verbale della valutazione sul campo"),
 
 	//ENGINEERING TEST FILE
-	FILE_DA_FIRMARE(22, "");
+	FILE_DA_FIRMARE(99, "");
 
 	private int id;
 	private String nome;
