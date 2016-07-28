@@ -14,7 +14,7 @@
 
 				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
-	
+
 			<label class="control-label col-xs-1" th:text="${fieldKey != null ? idEcm : ''}">numero indice</label>
 			<label class="control-label col-md-3 col-sm-3 col-xs-7" th:for="__${tipoAllegato}__">
 				<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
@@ -32,13 +32,13 @@
 					</div>
 					<!-- pulsante per aggiungere firma -->
 					<th:block th:if="${withFirma}">
-						<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><span class="fa fa-pencil"></span></button>
+						<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
 					</th:block>
 				</div>
 			</th:block>
 			<th:block th:unless="${editabile}">
 				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-					<div class="" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}"><div class="value"><span class="fa fa-download"> </span> <a th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div></div>
+					<div class="" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}"><div class="value"><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div></div>
 					<div class="" th:if="${__${wrapper}__.__${tipoAllegato}__.new}"><div class="value danger" th:text="#{label.allegato_non_inserito}"></div></div>
 				</div>
 			</th:block>
@@ -67,7 +67,7 @@
 				</div>
 				<!-- pulsante per aggiungere firma -->
 				<th:block th:if="${withFirma}">
-					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><span class="fa fa-pencil"></span></button>
+					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
 				</th:block>
 			</div>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>

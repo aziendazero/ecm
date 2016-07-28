@@ -139,7 +139,7 @@ public class ProviderServiceImpl implements ProviderService {
 		File delegaRichiedente = providerRegistrationWrapper.getDelega();
 
 		if(provider.getAccount().getProfiles().isEmpty()){
-			//assegno profilo PROVIDER TODO 
+			//assegno profilo PROVIDER TODO
 			Optional<Profile> providerProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDER);
 			if(providerProfile.isPresent())
 				provider.getAccount().getProfiles().add(providerProfile.get());
@@ -155,10 +155,26 @@ public class ProviderServiceImpl implements ProviderService {
 			richiedente.addFile(delegaRichiedente);
 		}
 
-		provider.addPersona(richiedente);
-		personaService.save(richiedente);
-		provider.addPersona(legale);
-		personaService.save(legale);
+		//controllo se richiedente e legale sono la stessa persona
+		if (richiedente.getAnagrafica().getCodiceFiscale().equals(legale.getAnagrafica().getCodiceFiscale())) {
+			Persona merge = new Persona();
+			merge.getAnagrafica().setNome(legale.getAnagrafica().getNome());
+			merge.getAnagrafica().setCognome(legale.getAnagrafica().getCognome());
+			merge.getAnagrafica().setCodiceFiscale(legale.getAnagrafica().getCodiceFiscale());
+			merge.getAnagrafica().setEmail(legale.getAnagrafica().getEmail());
+			merge.getAnagrafica().setPec(legale.getAnagrafica().getPec());
+			merge.getAnagrafica().setTelefono(richiedente.getAnagrafica().getTelefono());
+			merge.setIncarico(richiedente.getIncarico());
+			merge.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
+			provider.addPersona(merge);
+			personaService.save(merge);
+		}
+		else {
+			provider.addPersona(richiedente);
+			personaService.save(richiedente);
+			provider.addPersona(legale);
+			personaService.save(legale);
+		}
 	}
 
 	@Override

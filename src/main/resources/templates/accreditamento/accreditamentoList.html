@@ -14,7 +14,7 @@
 							accreditamenti</h2>
 						<div class="pull-right buttons-header">
 							<a class="btn btn-primary pull-right"
-									th:if="${canProviderCreateAccreditamento} or ${#authentication.principal.hasProfile('SEGRETRIA')}"
+									th:if="${canProviderCreateAccreditamento} or ${#authentication.principal.hasProfile('SEGRETERIA')}"
 									th:href="@{|/provider/${providerId}/accreditamento/new|}"
 									th:text="#{label.nuova_domanda}">label.nuova_domanda</a>
 							<a class="btn btn.primary pull-right" th:if="${back}" th:href="@{|/provider/list|}"
