@@ -90,6 +90,7 @@
 				function setEditURLs(ruolo) {
 					$('#nuova_anagrafica').prop('href', [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=|}]]+ruolo);
 					var table = $('#tabella-modale').DataTable();
+					table.clear();
 					$.get( "/provider/" + [[${accreditamentoWrapper.provider.id}]] + "/anagraficaList", function(data){
 						var start = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]];
 
