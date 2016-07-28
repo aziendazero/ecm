@@ -301,7 +301,7 @@
 
 					//ciclo sugli eventi del piano formativo grazie al campo data-valore-id precedentemente settato
 					$('div[role=iterEvento]').each(function(index) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo.id}/evento/|}]] + $(this).attr("data-valore-id") + "/show";
+ 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo?.id}/evento/|}]] + $(this).attr("data-valore-id") + "/show";
 						$(this).load(url + ' #toModal');
 					})
 

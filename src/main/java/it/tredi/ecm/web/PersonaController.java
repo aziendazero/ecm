@@ -230,6 +230,12 @@ public class PersonaController {
 					return EDIT;
 				}else{
 					
+					if(personaWrapper.getPersona().isNew() && !personaWrapper.getPersona().isComponenteComitatoScientifico()){
+						Persona persona = personaService.getPersonaByRuolo(personaWrapper.getPersona().getRuolo(), providerId);
+						if(persona != null)
+							personaService.delete(persona.getId());
+					}
+					
 					boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false; 
 					personaService.save(personaWrapper.getPersona());
 					
