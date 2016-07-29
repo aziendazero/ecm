@@ -31,35 +31,35 @@ public class ProviderValidator {
 		validateProviderBase(providerForm, errors, prefix);
 
 		//Presenza e univocità di codiceFiscale e/o partitaIva
-//		if(providerForm.getPartitaIva().isEmpty() && providerForm.getCodiceFiscale().isEmpty())
-//			errors.rejectValue(prefix + "partitaIva", "error.empty");
-//		else{
-//			Provider provider = providerService.getProviderByPartitaIva((providerForm.getPartitaIva()));
-//			if(provider != null){
-//				if(providerForm.isNew()){
-//					errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
-//				}else{
-//					if(!provider.getId().equals(providerForm.getId())){
-//						errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
-//					}
-//				}
-//			}
-//		}
-//
-//		if(providerForm.getPartitaIva().isEmpty() && providerForm.getCodiceFiscale().isEmpty())
-//			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
-//		else{
-//			Provider provider = providerService.getProviderByCodiceFiscale((providerForm.getCodiceFiscale()));
-//			if(provider != null){
-//				if(providerForm.isNew()){
-//					errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
-//				}else{
-//					if(!provider.getId().equals(providerForm.getId())){
-//						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
-//					}
-//				}
-//			}
-//		}
+		//		if(providerForm.getPartitaIva().isEmpty() && providerForm.getCodiceFiscale().isEmpty())
+		//			errors.rejectValue(prefix + "partitaIva", "error.empty");
+		//		else{
+		//			Provider provider = providerService.getProviderByPartitaIva((providerForm.getPartitaIva()));
+		//			if(provider != null){
+		//				if(providerForm.isNew()){
+		//					errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
+		//				}else{
+		//					if(!provider.getId().equals(providerForm.getId())){
+		//						errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
+		//					}
+		//				}
+		//			}
+		//		}
+		//
+		//		if(providerForm.getPartitaIva().isEmpty() && providerForm.getCodiceFiscale().isEmpty())
+		//			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
+		//		else{
+		//			Provider provider = providerService.getProviderByCodiceFiscale((providerForm.getCodiceFiscale()));
+		//			if(provider != null){
+		//				if(providerForm.isNew()){
+		//					errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
+		//				}else{
+		//					if(!provider.getId().equals(providerForm.getId())){
+		//						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
+		//					}
+		//				}
+		//			}
+		//		}
 
 		// se il flag hasPartitaIVA è true valido, altrimenti no
 		if(providerForm.isHasPartitaIVA()) {
@@ -157,6 +157,7 @@ public class ProviderValidator {
 		if(providerForm.getNaturaOrganizzazione().isEmpty()){
 			errors.rejectValue(prefix + "naturaOrganizzazione", "error.empty");
 		}
+
 		// se il flag hasPartitaIVA è true valido, altrimenti no
 		if(providerForm.isHasPartitaIVA()) {
 			//partita IVA obbligatoria
@@ -200,6 +201,44 @@ public class ProviderValidator {
 				errors.rejectValue(prefix +  "partitaIva", "error.empty");
 			}
 		}
+
+		//se entrambi vuoti..errore perchè almeno uno è obbligatorio
+		if(providerForm.getCodiceFiscale().isEmpty()){
+			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
+		}else{
+			//inserito codiceFiscale
+
+			//cerco se esiste già un provider con quella CodiceFiscale
+			Provider provider = providerService.getProviderByCodiceFiscale((providerForm.getCodiceFiscale()));
+			if(provider != null){
+				//ho trovato un provider con il CodiceFiscale..
+				//se sono in registrazione di nuovo provider do errore
+				if(providerForm.isNew()){
+					errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
+				}else{
+					//se sono in modifica.. controllo che effettivamente sono in modifica del provider che ho trovato
+					if(!provider.getId().equals(providerForm.getId())){
+						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
+					}
+				}
+			}
+
+			//cerco se esiste già un provider con quel CodiceFiscale registrato nella partitaIva
+			Provider providerPIVA = providerService.getProviderByPartitaIva((providerForm.getCodiceFiscale()));
+			if(providerPIVA != null){
+				//ho trovato un provider con il CodiceFiscale..registrata nel campo partitaIva
+				//se sono in registrazione di nuovo provider do errore
+				if(providerForm.isNew()){
+					errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
+				}else{
+					//se sono in modifica.. controllo che effettivamente sono in modifica del provider che ho trovato
+					if(!providerPIVA.getId().equals(providerForm.getId())){
+						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
+					}
+				}
+			}
+		}
+
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 

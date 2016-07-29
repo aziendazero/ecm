@@ -21,6 +21,7 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
@@ -78,7 +79,8 @@ public class AccreditamentoController {
 		try {
 			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
-			model.addAttribute("canProviderCreateAccreditamento", accreditamentoService.canProviderCreateAccreditamento(providerId));
+			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", accreditamentoService.canProviderCreateAccreditamento(providerId,AccreditamentoTipoEnum.PROVVISORIO));
+			model.addAttribute("canProviderCreateAccreditamentoStandard", accreditamentoService.canProviderCreateAccreditamento(providerId,AccreditamentoTipoEnum.STANDARD));
 			model.addAttribute("providerId", providerId);
 			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
 			return "accreditamento/accreditamentoList";
@@ -207,11 +209,11 @@ public class AccreditamentoController {
 	}
 
 	/*** NEW 	Nuova domanda accreditamento per provider corrente	***/
-	@RequestMapping("/provider/accreditamento/new")
-	public String getNewAccreditamentoForCurrentProvider(Model model, RedirectAttributes redirectAttrs) {
-		LOGGER.info(Utils.getLogMessage("GET /provider/accreditamento/new"));
+	@RequestMapping("/provider/accreditamento/{tipoDomanda}/new")
+	public String getNewAccreditamentoForCurrentProvider(@PathVariable AccreditamentoTipoEnum tipoDomanda, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/accreditamento/" + tipoDomanda + "/new"));
 		try{
-			Long accreditamentoId = accreditamentoService.getNewAccreditamentoForCurrentProvider().getId();
+			Long accreditamentoId = accreditamentoService.getNewAccreditamentoForCurrentProvider(tipoDomanda).getId();
 			redirectAttrs.addAttribute("id", accreditamentoId);
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
 			return "redirect:/accreditamento/{id}/edit";
@@ -225,11 +227,11 @@ public class AccreditamentoController {
 
 	/*** NEW 	Nuova domanda accreditamento per provider	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
-	@RequestMapping("/provider/{providerId}/accreditamento/new")
-	public String getNewAccreditamentoForCurrentProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs) {
-		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId +"/accreditamento/new"));
+	@RequestMapping("/provider/{providerId}/accreditamento/{tipoDomanda}/new")
+	public String getNewAccreditamentoForProvider(@PathVariable Long providerId, @PathVariable AccreditamentoTipoEnum tipoDomanda, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/accreditamento/" + tipoDomanda + "/new"));
 		try{
-			Long accreditamentoId = accreditamentoService.getNewAccreditamentoForProvider(providerId).getId();
+			Long accreditamentoId = accreditamentoService.getNewAccreditamentoForProvider(providerId,tipoDomanda).getId();
 			redirectAttrs.addAttribute("id", accreditamentoId);
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
 			return "redirect:/accreditamento/{id}/edit";

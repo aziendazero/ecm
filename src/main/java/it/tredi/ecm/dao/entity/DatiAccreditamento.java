@@ -44,8 +44,10 @@ public class DatiAccreditamento extends BaseEntity {
 	
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
-		for(Disciplina d : discipline)
-			professioniSelezionate.add(d.getProfessione());
+		if(discipline != null){
+			for(Disciplina d : discipline)
+				professioniSelezionate.add(d.getProfessione());
+		}
 		return professioniSelezionate;
 	}
 	

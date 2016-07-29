@@ -32,6 +32,7 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -103,7 +104,7 @@ public class PersonaTest {
 		personaService.save(persona);
 		
 		try {
-			Accreditamento accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId());
+			Accreditamento accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId(),AccreditamentoTipoEnum.PROVVISORIO);
 			this.personaId = persona.getId();
 			this.providerId = persona.getProvider().getId();
 			this.accreditamentoId = accreditamento.getId();

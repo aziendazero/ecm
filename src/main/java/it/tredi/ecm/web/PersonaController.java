@@ -174,15 +174,14 @@ public class PersonaController {
 			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs, HttpServletRequest req){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/show"));
 		try {
-			Persona persona = personaService.getPersona(id);
 			if(from != null) {
 				redirectAttrs.addFlashAttribute("mode", from);
 				return "redirect:/accreditamento/"+ accreditamentoId + "/provider/" + providerId + "/persona/" + id +"/show";
 			}
 			if(model.containsAttribute("mode")) {
-				return goToShowFromEdit(model, preparePersonaWrapperShow(persona, accreditamentoId));
+				return goToShowFromEdit(model, preparePersonaWrapperShow(personaService.getPersona(id), accreditamentoId));
 			}
-			return goToShow(model, preparePersonaWrapperShow(persona, accreditamentoId));
+			return goToShow(model, preparePersonaWrapperShow(personaService.getPersona(id), accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/show"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));

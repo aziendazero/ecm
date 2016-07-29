@@ -228,8 +228,7 @@ public class EventoController {
 			//per il momento non c'è nessuna distinzione a seconda del from (tuttavia in thymleaf è comodo portarselo dietro)
 			model.addAttribute("returnLink", "/provider/" + providerId + "/pianoFormativo/list?accordion=" + pianoFormativoService.getPianoFormativo(pianoFormativoId).getAnnoPianoFormativo());
 
-			Long accreditamentoId = accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId();
-			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId, accreditamentoId));
+			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId));
 		}
 //		catch (AccreditamentoNotFoundException ex){
 //			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/show"),ex);
@@ -474,7 +473,7 @@ public class EventoController {
 			if(evento.isNew())
 				wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
 			else
-				wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
+				wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId,evento.getId()), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
 		}
 		else{
 			wrapper.setAccreditamentoId(evento.getAccreditamento().getId());

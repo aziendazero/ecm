@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldEditabile;
@@ -36,7 +37,7 @@ public class IntegrazioneController {
 	}
 
 	@RequestMapping("/fieldEditabile/save")
-	public String save(@ModelAttribute("wrapper") TestWrapper wrapper, Model model){
+	public String save(@ModelAttribute("wrapper") TestWrapper wrapper, Model model, RedirectAttributes redirAttributes){
 
 		Set<IdFieldEnum> listaDaView = wrapper.getSelected();
 
@@ -65,7 +66,11 @@ public class IntegrazioneController {
 			}
 		}
 
-		return "redirect:/home";
+		redirAttributes.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
+		redirAttributes.addAttribute("subset", wrapper.getSubset());
+		if(wrapper.getObjRef() != null)
+			redirAttributes.addAttribute("objRef", wrapper.getObjRef());
+		return "redirect:/fieldEditabile/{accreditamentoId}";
 	}
 
 	private TestWrapper prepareWrapper(Long accreditamentoId, SubSetFieldEnum subset, Long objRef){

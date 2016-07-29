@@ -36,6 +36,10 @@ public class DatiAccreditamentoValidator {
 			errors.rejectValue(prefix + "procedureFormative", "error.empty");
 		if(datiAccreditamento.getProfessioniAccreditamento() == null || datiAccreditamento.getProfessioniAccreditamento().isEmpty())
 			errors.rejectValue(prefix + "professioniAccreditamento", "error.empty");
+		if(datiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato() == 0)
+			errors.rejectValue(prefix + "numeroDipendentiFormazioneTempoIndeterminato", "error.empty");
+		if(datiAccreditamento.getNumeroDipendentiFormazioneAltro() == 0)
+			errors.rejectValue(prefix + "numeroDipendentiFormazioneAltro", "error.empty");
 	}
 
 	@SuppressWarnings("unchecked")

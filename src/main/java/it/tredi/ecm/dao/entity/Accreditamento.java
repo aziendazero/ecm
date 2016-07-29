@@ -24,6 +24,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -89,14 +90,15 @@ public class Accreditamento extends BaseEntity{
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){
 		this.tipoDomanda = tipoDomanda;
 		this.stato = AccreditamentoStatoEnum.BOZZA;
-		enableAllIdField();
 	}
 
-	private void enableAllIdField(){
+	public void enableAllIdField(){
 		//PROVIDER FIELD
-		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER))
-			idEditabili.add(new FieldEditabile(id, this));
-
+		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER)){
+			if((id != IdFieldEnum.PROVIDER__CODICE_FISCALE) && !(id == IdFieldEnum.PROVIDER__PARTITA_IVA && this.getProvider().isHasPartitaIVA()))
+				idEditabili.add(new FieldEditabile(id, this));
+		}
+		
 		//SEDE LEGALE
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_LEGALE))
 			idEditabili.add(new FieldEditabile(id, this));
@@ -132,6 +134,14 @@ public class Accreditamento extends BaseEntity{
 		//RESPONSABILE SISTEMA QUALITA
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_QUALITA))
 			idEditabili.add(new FieldEditabile(id, this));
+		
+		//COMPONENTI COMITATO SCIENTIFICO
+		for(Persona p : this.getProvider().getPersone()){
+			if(p.isComponenteComitatoScientifico()){
+				for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO))
+					idEditabili.add(new FieldEditabile(id, this, p.getId()));
+			}
+		}
 		
 		//FULL
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.FULL))
