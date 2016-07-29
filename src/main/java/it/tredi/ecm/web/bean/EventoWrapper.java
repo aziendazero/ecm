@@ -11,7 +11,9 @@ public class EventoWrapper extends Wrapper {
 	private Long providerId;
 	private Long accreditamentoId;
 	private Long pianoFormativoId;
-	
+
+	private String eventoFrom;
+
 	public EventoWrapper(){
 	}
 }
