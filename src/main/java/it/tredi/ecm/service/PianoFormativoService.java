@@ -9,9 +9,10 @@ public interface PianoFormativoService {
 	public boolean exist(Long providerId, Integer annoPianoFormativo);
 	public PianoFormativo create(Long providerId, Integer annoPianoFormativo);
 	public void save(PianoFormativo pianoFormativo);
-	
+
 	public PianoFormativo getPianoFormativo(Long pianoFormativoId);
 	public Set<PianoFormativo> getAllPianiFormativiForProvider(Long providerId);
 	public PianoFormativo getPianoFormativoAnnualeForProvider(Long providerId, Integer annoPianoFormativo);
 	public boolean isEditabile(Long pianoFormativoId);
+	public Set<Long> getAllPianiFormativiIdInAccreditamentoForProvider(Long providerId);
 }

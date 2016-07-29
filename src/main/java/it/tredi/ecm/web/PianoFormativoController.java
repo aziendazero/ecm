@@ -2,6 +2,7 @@ package it.tredi.ecm.web;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
@@ -39,6 +42,8 @@ public class PianoFormativoController {
 
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private ProviderService providerService;
+
+	@Autowired private AccreditamentoService accreditamentoService;
 
 	@Autowired private HttpServletRequest request;
 
@@ -134,6 +139,7 @@ public class PianoFormativoController {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/list"));
 		try{
 			model.addAttribute("pianoFormativoList", pianoFormativoService.getAllPianiFormativiForProvider(providerId));
+			model.addAttribute("pianiIdFromAccreditamento", pianoFormativoService.getAllPianiFormativiIdInAccreditamentoForProvider(providerId));
 			model.addAttribute("canInsertPianoFormativo", providerService.canInsertPianoFormativo(providerId));
 			model.addAttribute("providerId", providerId);
 			if (accordion != null) {
