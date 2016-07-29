@@ -21,6 +21,10 @@
 									<th th:text="#{label.codiceFiscaleOrIVA}">Codice fiscale / Partita IVA</th>
 									<th th:text="#{label.gruppo_appartenenza}">Gruppo di appartenenza</th>
 									<th th:text="#{label.status}">Status del provider</th>
+									<th th:text="#{label.caninsert_piano_formativo}">Inserimento Piano Formativo</th>
+									<th th:text="#{label.caninsert_domanda_accreditamento_standard}">Inserimento Domanda Accreditamento Standard</th>
+									<th th:text="#{label.caninsert_eventi}">Inserimento Eventi</th>
+
 								</tr>
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(providerList)}" th:remove="all-but-first">
@@ -29,6 +33,9 @@
 									<th th:text="${provider.partitaIva != null} ? ${provider.partitaIva} : ${provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</th>
 									<th th:text="${provider.gruppo}">informatica</th>
 									<th th:text="${provider.status.nome}">stato</th>
+									<th th:text="${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</th>
+									<th th:text="${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</th>
+									<th th:text="${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</th>
 								</tr>
 							</tbody>
 						</table>
