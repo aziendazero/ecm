@@ -14,7 +14,7 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.info_provider}">label.info_provider</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.provider != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.provider != null}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -28,8 +28,8 @@
 				<div class="x_panel">
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.sede_legale}">label.sede_legale</h2>
-						<h2 style="display: inline" th:unless="${accreditamentoWrapper.sedeLegale.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<h2 style="display: inline" th:if="${accreditamentoWrapper.sedeLegale.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${accreditamentoWrapper.sedeLegale.new}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -43,14 +43,14 @@
 				<div class="x_panel">
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.sede_operativa}">label.sede_operativa</h2>
-						<h2 style="display: inline" th:unless="${accreditamentoWrapper.sedeOperativa != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<h2 style="display: inline" th:if="${accreditamentoWrapper.sedeOperativa.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${accreditamentoWrapper.sedeOperativa.new}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.sedeOperativa != null}" id="sedeOpBlock" class="collapsible"></div>
+					<div th:unless="${accreditamentoWrapper.sedeOperativa.new}" id="sedeOpBlock" class="collapsible"></div>
 
 				</div>
 
@@ -59,7 +59,7 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.legale_rappresentante}">label.legale_rappresentante</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.legaleRappresentante != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.legaleRappresentante != null}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -74,7 +74,7 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.delegato_legale_rappresentante}">label.delegato_legale_rappresentante</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -88,8 +88,8 @@
 				<div class="x_panel">
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.dati_accreditamento}">label.dati_accreditamento</h2>
-						<h2 style="display: inline" th:unless="${accreditamentoWrapper.datiAccreditamento.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<h2 style="display: inline" th:if="${accreditamentoWrapper.datiAccreditamento.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${accreditamentoWrapper.datiAccreditamento.new}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -104,7 +104,7 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.responsabile_segreteria}">label.responsabile_segreteria</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileSegreteria != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.responsabileSegreteria != null}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -118,7 +118,7 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.responsabile_amministrativo}">label.responsabile_amministrativo</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileAmministrativo != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.responsabileAmministrativo != null}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -133,7 +133,7 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.responsabile_sistema_informatico}">label.responsabile_sistema_informatico</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileSistemaInformatico != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.responsabileSistemaInformatico != null}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -148,7 +148,7 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.responsabile_qualita}">label.responsabile_qualita</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileQualita != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.responsabileQualita != null}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -162,8 +162,8 @@
 				<div class="x_panel">
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.componenti_comitato_scientifico}">label.componenti_comitato_scientifico</h2>
-						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico) and accreditamentoWrapper.coordinatoreComitatoScientifico == null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico) and accreditamentoWrapper.coordinatoreComitatoScientifico == null}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
@@ -201,7 +201,7 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.eventi_piano_formativo}">label.eventi_piano_formativo</h2>
 						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventi)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox">
+						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventi)}">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
