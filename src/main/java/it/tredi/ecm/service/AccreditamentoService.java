@@ -13,6 +13,7 @@ public interface AccreditamentoService{
 	
 	public Accreditamento getAccreditamento(Long id);
 	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId);
+	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId,AccreditamentoTipoEnum tipoDomanda);
 	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(Long providerId, AccreditamentoTipoEnum tipoTomanda);
 	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId) throws AccreditamentoNotFoundException;
 	

@@ -30,7 +30,7 @@ import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.AnagraficaService;
-import it.tredi.ecm.service.FieldEditabileService;
+import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
@@ -52,7 +52,7 @@ public class PersonaController {
 	@Autowired private ProviderService providerService;
 	@Autowired private ProfessioneService professioneService;
 	@Autowired private FileService fileService;
-	@Autowired private FieldEditabileService fieldEditabileService;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
 	@Autowired private PersonaValidator personaValidator;
 
 	@InitBinder

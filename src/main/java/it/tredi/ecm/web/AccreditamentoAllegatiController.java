@@ -24,7 +24,7 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.AccreditamentoService;
-import it.tredi.ecm.service.FieldEditabileService;
+import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
@@ -42,7 +42,7 @@ public class AccreditamentoAllegatiController {
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
-	@Autowired private FieldEditabileService fieldEditabileService;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
 	@Autowired private AccreditamentoAllegatiValidator accreditamentoAllegatiValidator;
 
 	@InitBinder

@@ -29,7 +29,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
-import it.tredi.ecm.dao.entity.FieldEditabile;
+import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -39,7 +39,7 @@ import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
-import it.tredi.ecm.dao.repository.FieldEditabileRepository;
+import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.dao.repository.PianoFormativoRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
 import it.tredi.ecm.service.AccreditamentoService;
@@ -63,7 +63,7 @@ public class GenericTest {
 	private WebApplicationContext webApplicationContext;
 
 	@Autowired private AccreditamentoService accreditamentoService;
-	@Autowired private FieldEditabileRepository repo;
+	@Autowired private FieldEditabileAccreditamentoRepository repo;
 	
 	private Long providerId;
 	private Long accreditamentoId;
@@ -110,7 +110,7 @@ public class GenericTest {
 //		f2.setIdEditabile(IdEditabileEnum.RESPONSABILE_SEGRETERIA__NOME);
 //		repo.save(f2);
 		
-		FieldEditabile f3 = new FieldEditabile();
+		FieldEditabileAccreditamento f3 = new FieldEditabileAccreditamento();
 		f3.setAccreditamento(accreditamento);
 		f3.setIdField(IdFieldEnum.PROVIDER__DENOMINAZIONE_LEGALE);
 		repo.save(f3);
@@ -119,8 +119,8 @@ public class GenericTest {
 	@Test
 	@Ignore
 	public void getIdIntegrazione() throws Exception{
-		Set<FieldEditabile> idEditAll = repo.findAllByAccreditamentoId(accreditamentoId);
-		Set<FieldEditabile> idEditComponente = repo.findAllByAccreditamentoId(accreditamentoId);
+		Set<FieldEditabileAccreditamento> idEditAll = repo.findAllByAccreditamentoId(accreditamentoId);
+		Set<FieldEditabileAccreditamento> idEditComponente = repo.findAllByAccreditamentoId(accreditamentoId);
 	}
 	
 	private void addIdEcm(){

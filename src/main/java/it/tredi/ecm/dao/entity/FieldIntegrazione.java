@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.Type;
 
@@ -14,10 +15,11 @@ import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+@MappedSuperclass
 @Setter
 @Getter
-@Entity
-public class FieldIntegrazione extends Field{
+public abstract class FieldIntegrazione extends Field{
+	
 	@Type(type = "serializable")
 	private Object newValue;
 	@Column(name="data_modifica")

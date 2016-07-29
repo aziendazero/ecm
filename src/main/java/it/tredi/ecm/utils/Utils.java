@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
-import it.tredi.ecm.dao.entity.FieldEditabile;
+import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -71,7 +71,7 @@ public class Utils {
 	/*
 	 * Mi restituisce la lista di ENUM per legare le checkbox lato thymeleafe
 	 * */
-	public static Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<FieldEditabile> src, SubSetFieldEnum type){
+	public static Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<FieldEditabileAccreditamento> src, SubSetFieldEnum type){
 		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
 		
 		src.forEach(f -> {
@@ -82,7 +82,7 @@ public class Utils {
 		return dst;
 	}
 	
-	public static Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<FieldEditabile> src, Long objectReference, SubSetFieldEnum type){
+	public static Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<FieldEditabileAccreditamento> src, Long objectReference, SubSetFieldEnum type){
 		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
 		
 		src.forEach(f -> {
@@ -96,8 +96,8 @@ public class Utils {
 	/*
 	 * Mi restituisce la sublist di record presenti su db per valutare nel save del controller quali eliminare perchè deselezionate
 	 * */
-	public static Set<FieldEditabile> getSubset(Set<FieldEditabile> src, SubSetFieldEnum type){
-		Set<FieldEditabile> dst = new HashSet<FieldEditabile>();
+	public static Set<FieldEditabileAccreditamento> getSubset(Set<FieldEditabileAccreditamento> src, SubSetFieldEnum type){
+		Set<FieldEditabileAccreditamento> dst = new HashSet<FieldEditabileAccreditamento>();
 		
 		src.forEach(f -> {
 			if(f.getIdField().getSubSetField() == type)
@@ -110,8 +110,8 @@ public class Utils {
 	/*
 	 * Controllo se un determinato IdFieldEnum è presente nella lista di record
 	 * */
-	public static FieldEditabile getField(Set<FieldEditabile> src, IdFieldEnum idEnum){
-		for(FieldEditabile f : src)
+	public static FieldEditabileAccreditamento getField(Set<FieldEditabileAccreditamento> src, IdFieldEnum idEnum){
+		for(FieldEditabileAccreditamento f : src)
 			if(f.getIdField() == idEnum)
 				return f;
 		return null;

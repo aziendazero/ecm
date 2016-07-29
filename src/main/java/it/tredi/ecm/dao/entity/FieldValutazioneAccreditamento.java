@@ -3,6 +3,7 @@ package it.tredi.ecm.dao.entity;
 import java.util.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +11,9 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class FieldValutazione extends Field{
+public class FieldValutazioneAccreditamento extends Field{
+	@ManyToOne
+	private Accreditamento accreditamento;
 	private boolean esito;
 	private String note;
 	
@@ -22,7 +25,7 @@ public class FieldValutazione extends Field{
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        FieldValutazione entitapiatta = (FieldValutazione) o;
+        FieldValutazioneAccreditamento entitapiatta = (FieldValutazioneAccreditamento) o;
         return Objects.equals(id, entitapiatta.id);
     }
 }

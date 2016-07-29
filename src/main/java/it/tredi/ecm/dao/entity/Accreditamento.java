@@ -71,7 +71,7 @@ public class Accreditamento extends BaseEntity{
 	private DatiAccreditamento datiAccreditamento;
 
 	@OneToMany(mappedBy = "accreditamento", cascade={CascadeType.MERGE, CascadeType.PERSIST})
-	private List<FieldEditabile> idEditabili = new ArrayList<FieldEditabile>();
+	private List<FieldEditabileAccreditamento> idEditabili = new ArrayList<FieldEditabileAccreditamento>();
 
 	@OneToOne
 	private PianoFormativo pianoFormativo;
@@ -96,60 +96,60 @@ public class Accreditamento extends BaseEntity{
 		//PROVIDER FIELD
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER)){
 			if((id != IdFieldEnum.PROVIDER__CODICE_FISCALE) && !(id == IdFieldEnum.PROVIDER__PARTITA_IVA && this.getProvider().isHasPartitaIVA()))
-				idEditabili.add(new FieldEditabile(id, this));
+				idEditabili.add(new FieldEditabileAccreditamento(id, this));
 		}
 		
 		//SEDE LEGALE
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_LEGALE))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
 		//SEDE OPERATIVA 
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_OPERATIVA))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
 		//LEGALE RAPPRESENTANTE
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.LEGALE_RAPPRESENTANTE))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
 		//DELEGATO LEGALE RAPPRESENTANTE 
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
 		//DATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DATI_ACCREDITAMENTO))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
 		//RESPONSABILE SEGRETERIA
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SEGRETERIA))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
 		//RESPONSABILE AMMINISTRATIVO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
 		//RESPONSABILE SISTEMA INFORMATICO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
 		//RESPONSABILE SISTEMA QUALITA
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_QUALITA))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 		
 		//COMPONENTI COMITATO SCIENTIFICO
 		for(Persona p : this.getProvider().getPersone()){
 			if(p.isComponenteComitatoScientifico()){
 				for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO))
-					idEditabili.add(new FieldEditabile(id, this, p.getId()));
+					idEditabili.add(new FieldEditabileAccreditamento(id, this, p.getId()));
 			}
 		}
 		
 		//FULL
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.FULL))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 		
 		//ALLEGATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO))
-			idEditabili.add(new FieldEditabile(id, this));
+			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
 
 	}
@@ -163,7 +163,7 @@ public class Accreditamento extends BaseEntity{
 	}
 
 	public boolean isProcedimentoAttivo(){
-		if( dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
+		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;
 		return false;
 	}

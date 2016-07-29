@@ -115,7 +115,7 @@ public class PianoFormativoTest {
 		procedure.add(ProceduraFormativa.FAD);
 		procedure.add(ProceduraFormativa.RES);
 		procedure.add(ProceduraFormativa.FSC);
-		datiAccreditamento.setProcedureFormative(procedure);
+		//datiAccreditamento.setProcedureFormative(procedure);
 		datiAccreditamentoService.save(datiAccreditamento, accreditamento.getId());
 	}
 	
