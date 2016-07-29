@@ -277,6 +277,16 @@ public class EventoController {
 			eventoValidator.validate(wrapper.getEvento(), result, "evento.", true);
 
 			if(result.hasErrors()){
+				// caso fromAccreditamento
+				if (accreditamentoId != null) {
+					model.addAttribute("returnLink", "/accreditamento/"+ accreditamentoId + "/edit?tab=tab4");
+					model.addAttribute("fromAccreditamento", true);
+				}
+				// caso inserimento evento dal pianoFormativo
+				else {
+					model.addAttribute("returnLink", "/provider/" + providerId + "/pianoFormativo/list?accordion=" + pianoFormativoService.getPianoFormativo(pianoFormativoId).getAnnoPianoFormativo());
+					model.addAttribute("fromAccreditamento", false);
+				}
 				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
 				populateListFromAccreditamento(model, wrapper.getAccreditamentoId());
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
@@ -292,7 +302,7 @@ public class EventoController {
 					//inserimento nuovo evento multi-istanza in domanda di Accreditamento, inserisco FieldEditabile
 					if(insertFieldEditabile)
 						fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, wrapper.getEvento().getId(), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO, IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
-					
+
 					redirectAttrs.addFlashAttribute("currentTab", "tab4");
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
 					return "redirect:/accreditamento/{accreditamentoId}/edit";
