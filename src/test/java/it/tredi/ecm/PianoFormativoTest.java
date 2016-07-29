@@ -30,6 +30,7 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
@@ -102,7 +103,7 @@ public class PianoFormativoTest {
 		Accreditamento accreditamento = null;
 		
 		try {
-			accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId());
+			accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId(),AccreditamentoTipoEnum.PROVVISORIO);
 			this.providerId = provider.getId();
 			this.accreditamentoId = accreditamento.getId();
 		} catch (Exception e) {

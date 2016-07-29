@@ -8,8 +8,8 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 
 public interface AccreditamentoService{
-	public Accreditamento getNewAccreditamentoForCurrentProvider() throws Exception;
-	public Accreditamento getNewAccreditamentoForProvider(Long providerId) throws Exception;
+	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception;
+	public Accreditamento getNewAccreditamentoForProvider(Long providerId, AccreditamentoTipoEnum tipoDomanda) throws Exception;
 	
 	public Accreditamento getAccreditamento(Long id);
 	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId);
@@ -18,7 +18,7 @@ public interface AccreditamentoService{
 	
 	public void save(Accreditamento accreditamento);
 	
-	public boolean canProviderCreateAccreditamento(Long providerId);
+	public boolean canProviderCreateAccreditamento(Long providerId,AccreditamentoTipoEnum tipoTomanda);
 	
 	public void inviaDomandaAccreditamento(Long accreditamentoId);
 	public void inserisciPianoFormativo(Long accreditamentoId);

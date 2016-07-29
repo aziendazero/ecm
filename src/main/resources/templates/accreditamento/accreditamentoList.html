@@ -14,9 +14,13 @@
 							accreditamenti</h2>
 						<div class="pull-right buttons-header">
 							<a class="btn btn-primary pull-right"
-									th:if="${canProviderCreateAccreditamento} or ${#authentication.principal.hasProfile('SEGRETERIA')}"
-									th:href="@{|/provider/${providerId}/accreditamento/new|}"
-									th:text="#{label.nuova_domanda}">label.nuova_domanda</a>
+									th:if="${canProviderCreateAccreditamentoProvvisorio} or ${#authentication.principal.hasProfile('SEGRETERIA')}"
+									th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).PROVVISORIO}/new|}"
+									th:text="#{label.nuova_domanda_provvisoria}">label.nuova_domanda_provvisoria</a>
+							<a class="btn btn-primary pull-right"
+									th:if="${canProviderCreateAccreditamentoStandard} or ${#authentication.principal.hasProfile('SEGRETERIA')}"
+									th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).STANDARD}/new|}"
+									th:text="#{label.nuova_domanda_standard}">label.nuova_domanda_standard</a>
 							<a class="btn btn.primary pull-right" th:if="${back}" th:href="@{|/provider/list|}"
 								th:text="#{label.indietro}">Indietro</a>
 						</div>

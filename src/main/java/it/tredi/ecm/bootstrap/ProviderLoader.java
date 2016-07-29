@@ -19,6 +19,7 @@ import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
@@ -117,7 +118,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 
 			Accreditamento accreditamento = null;
 			try{
-				accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId());
+				accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId(), AccreditamentoTipoEnum.PROVVISORIO);
 			}catch (Exception ex){
 				LOGGER.error("[BOOTSTRAP] - newAccreditamentoForProvider(" + provider.getId() + ")",  ex);
 			}

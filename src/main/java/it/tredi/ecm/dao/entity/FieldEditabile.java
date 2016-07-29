@@ -17,6 +17,12 @@ public class FieldEditabile extends Field {
 		super.setIdField(idField);
 		super.setAccreditamento(accreditamento);
 	}
+	public FieldEditabile(IdFieldEnum idField, Accreditamento accreditamento, Long objectReference) {
+		super.setIdField(idField);
+		super.setAccreditamento(accreditamento);
+		super.setObjectReference(objectReference);
+	}
+	
 	
 	@Override
     public boolean equals(Object o) {

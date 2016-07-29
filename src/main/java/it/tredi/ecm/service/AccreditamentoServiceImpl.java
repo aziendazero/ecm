@@ -35,20 +35,20 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private FieldEditabileService fieldEditabileService;
 	
 	@Override
-	public Accreditamento getNewAccreditamentoForCurrentProvider() throws Exception{
+	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Creazione domanda di accreditamento per il provider corrente"));
 		Provider currentProvider = providerService.getProvider();
-		return getNewAccreditamento(currentProvider);
+		return getNewAccreditamento(currentProvider,tipoDomanda);
 	}
 	
 	@Override
-	public Accreditamento getNewAccreditamentoForProvider(Long providerId) throws Exception {
-		LOGGER.debug(Utils.getLogMessage("Creazione domanda di accreditamento per il provider: " + providerId));
+	public Accreditamento getNewAccreditamentoForProvider(Long providerId, AccreditamentoTipoEnum tipoDomanda) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Creazione domanda di accreditamento " + tipoDomanda + " per il provider: " + providerId));
 		Provider provider = providerService.getProvider(providerId);
-		return getNewAccreditamento(provider);
+		return getNewAccreditamento(provider,tipoDomanda);
 	}
 	
-	private Accreditamento getNewAccreditamento(Provider provider) throws Exception{
+	private Accreditamento getNewAccreditamento(Provider provider, AccreditamentoTipoEnum tipoDomanda) throws Exception{
 		if(provider == null){
 			throw new Exception("Provider non può essere NULL");
 		}
@@ -57,16 +57,17 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			throw new Exception("Provider non registrato");
 		}else{
 			
-			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(provider.getId(), AccreditamentoTipoEnum.PROVVISORIO);
+			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(provider.getId(), tipoDomanda);
 			
 			if(accreditamentiAttivi.isEmpty()){
-				Accreditamento accreditamento = new Accreditamento(AccreditamentoTipoEnum.PROVVISORIO);
+				Accreditamento accreditamento = new Accreditamento(tipoDomanda);
 				accreditamento.setProvider(provider);
+				accreditamento.enableAllIdField();
 				save(accreditamento);
 				return accreditamento;
 			}else{
-				throw new Exception("E' già presente una domanda");
-			}
+				throw new Exception("E' già presente una domanda di accreditamento " + tipoDomanda + " per il provider " + provider.getId());
+			} 
 		}
 	}
 	
@@ -117,7 +118,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 	
 	@Override
-	public boolean canProviderCreateAccreditamento(Long providerId) {
+	public boolean canProviderCreateAccreditamento(Long providerId,AccreditamentoTipoEnum tipoTomanda) {
 		boolean canProvider = true;
 		
 //TODO TEST

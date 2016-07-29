@@ -18,6 +18,7 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
@@ -81,7 +82,7 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				//Accreditamento
 				Accreditamento accreditamento = null;
 				try{
-					accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId());
+					accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId(),AccreditamentoTipoEnum.PROVVISORIO);
 				}catch(Exception ex){
 					LOGGER.error("BOOTSTRAP ECM - Creazione nuova domanda di accreditamento");
 					return;
