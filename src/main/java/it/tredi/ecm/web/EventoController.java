@@ -537,40 +537,4 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoPianoFormativoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - exiting"));
 		return wrapper;
 	}
-
-}ianoFormativoId + ") - entering"));
-		EventoWrapper wrapper = new EventoWrapper();
-		wrapper.setEvento(evento);
-
-		wrapper.setEventoFrom("accreditamento");
-
-		if(evento.isNew()){
-			wrapper.setProviderId(providerId);
-		}else{
-			wrapper.setProviderId(evento.getProvider().getId());
-		}
-
-		if(accreditamentoId != 0){
-			wrapper.setAccreditamentoId(accreditamentoId);
-			if(evento.isNew())
-				wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
-			else
-				wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId,evento.getId()), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
-		}
-		else{
-			wrapper.setAccreditamentoId(evento.getAccreditamento().getId());
-			//TODO logica idEditabili per evento necessita di un FieldEditabileAccreditamento a parte
-			//wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_EVENTO), evento.getIdEditabili());
-		}
-
-		wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
-
-		if(pianoFormativoId != 0){
-			wrapper.setPianoFormativoId(pianoFormativoId);
-		}
-
-		LOGGER.info(Utils.getLogMessage("prepareEventoPianoFormativoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - exiting"));
-		return wrapper;
-	}
-
 }
