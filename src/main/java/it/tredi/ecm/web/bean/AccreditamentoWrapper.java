@@ -7,7 +7,7 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.FieldEditabile;
+import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
@@ -227,7 +227,7 @@ public class AccreditamentoWrapper {
 	}
 
 	public boolean isComitatoScientificoEditabile(){
-		Set<IdFieldEnum> ids = Utils.getSubsetOfIdFieldEnum(new HashSet<FieldEditabile>(getAccreditamento().getIdEditabili()), SubSetFieldEnum.COMITATO_SCIENTIFICO);
+		Set<IdFieldEnum> ids = Utils.getSubsetOfIdFieldEnum(new HashSet<FieldEditabileAccreditamento>(getAccreditamento().getIdEditabili()), SubSetFieldEnum.COMITATO_SCIENTIFICO);
 		if(ids.isEmpty())
 			return false;
 		else
@@ -266,6 +266,6 @@ public class AccreditamentoWrapper {
 	public boolean isCanInsertEventoInPianoFormativo(){
 		return (accreditamento.hasPianoFormativo());
 		//return (accreditamento.hasPianoFormativo() && accreditamento.isEditabile());
-		//TODO controllo FieldEditabile
+		//TODO controllo FieldEditabileAccreditamento
 	}
 }

@@ -32,7 +32,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AccreditamentoRepository accreditamentoRepository;
 	@Autowired private ProviderService providerService;
 	@Autowired private PianoFormativoService pianoFormativoService;
-	@Autowired private FieldEditabileService fieldEditabileService;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
 	
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{

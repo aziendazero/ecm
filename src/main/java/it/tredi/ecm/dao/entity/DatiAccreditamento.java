@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+import javax.print.attribute.HashAttributeSet;
 
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import lombok.Getter;

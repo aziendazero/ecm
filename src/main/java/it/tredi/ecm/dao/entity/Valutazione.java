@@ -29,6 +29,6 @@ public class Valutazione extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	private ValutazioneTipoEnum tipoValutazione;
 	@OneToMany
-	private Set<FieldValutazione> valutazioni = new HashSet<FieldValutazione>();
+	private Set<FieldValutazioneAccreditamento> valutazioni = new HashSet<FieldValutazioneAccreditamento>();
 	private String valutazioneComplessiva;
 }

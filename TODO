@@ -1,0 +1,11 @@
+ MODIFICA (su singoli campi degli oggetti della domanda)
+ 	+ campo singolo (String,Long,int,boolean) [classeObj, idObj, campo (-> set/get), IdFieldEnum, newValue, tipoCampo] 
+ 	+ campo singolo (LocalDate)
+ 	+ campo singolo (Enum)
+ 	+ campo singolo (Object)
+ 	+ campo singolo (File)
+ 	+ campo multi (Set<Object>, Set<Enum))
+ 
+ INSERIMENTO (inserimento nuovo OPPURE sostituzione di un oggetto)
+ 
+ ELIMINAZIONE (cancellazione di un oggetto da DB)

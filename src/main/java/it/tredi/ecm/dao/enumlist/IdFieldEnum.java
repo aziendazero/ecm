@@ -8,12 +8,12 @@ import lombok.Getter;
 @Getter
 public enum IdFieldEnum {
 	PROVIDER__TIPO_ORGANIZZATORE ("provider.tipoOrganizzatore", 1, null, SubSetFieldEnum.PROVIDER),
-	PROVIDER__DENOMINAZIONE_LEGALE ("provider.denominazioneLegale", 2, null, SubSetFieldEnum.PROVIDER),
+	PROVIDER__DENOMINAZIONE_LEGALE ("provider.denominazioneLegale", 2, null, SubSetFieldEnum.PROVIDER,it.tredi.ecm.dao.entity.Provider.class,"denominazioneLegale","java.lang.String"),
 	PROVIDER__PARTITA_IVA ("provider.partitaIva", 3, null, SubSetFieldEnum.PROVIDER),
-	PROVIDER__CODICE_FISCALE ("provider.codiceFiscale", 4, null, SubSetFieldEnum.PROVIDER),
-	PROVIDER__RAGIONE_SOCIALE ("provider.ragioneSociale", 5, null, SubSetFieldEnum.PROVIDER),
+	PROVIDER__CODICE_FISCALE ("provider.codiceFiscale", 4, null, SubSetFieldEnum.PROVIDER,it.tredi.ecm.dao.entity.Provider.class,"codiceFiscale","java.lang.String"),
+	PROVIDER__RAGIONE_SOCIALE ("provider.ragioneSociale", 5, null, SubSetFieldEnum.PROVIDER,it.tredi.ecm.dao.entity.Provider.class,"ragioneSociale","it.tredi.ecm.dao.enumlist.RagioneSocialeEnum"),
 	PROVIDER__NATURA_ORGANIZZAZIONE ("provider.naturaOrganizzazione", 6, null, SubSetFieldEnum.PROVIDER),
-	PROVIDER__NO_PROFIT ("provider.noProfit", 7, null, SubSetFieldEnum.PROVIDER),
+	PROVIDER__NO_PROFIT ("provider.noProfit", 7, null, SubSetFieldEnum.PROVIDER,it.tredi.ecm.dao.entity.Provider.class,"noProfit","boolean"),
 
 	SEDE_LEGALE__FULL ("SedeLegale", -1, null, SubSetFieldEnum.SEDE_LEGALE),
 	SEDE_LEGALE__PROVINCIA ("SedeLegale.provincia", 8, null, SubSetFieldEnum.SEDE_LEGALE),
@@ -55,7 +55,7 @@ public enum IdFieldEnum {
 	DELEGATO_LEGALE_RAPPRESENTANTE__DELEGA ("persona.file.delega",38,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE),
 
 	DATI_ACCREDITAMENTO__TIPOLOGIA_ACCREDITAMENTO ("datiAccreditamento.tipologiaAccreditamento", 39, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
-	DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE ("datiAccreditamento.procedureFormative", 40, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
+	DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE ("datiAccreditamento.procedureFormative", 40, null, SubSetFieldEnum.DATI_ACCREDITAMENTO,it.tredi.ecm.dao.entity.DatiAccreditamento.class,"procedureFormative","java.util.Set<it.tredi.ecm.dao.enumlist.ProceduraFormativa>"),
 	DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO ("datiAccreditamento.professioniAccreditamento", 41, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
 	DATI_ACCREDITAMENTO__DISCIPLINE ("datiAccreditamento.discipline", 42, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
 	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO ("datiAccreditamento.datiEconomici.fatturatoComplessivo", 43, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
@@ -137,12 +137,25 @@ public enum IdFieldEnum {
 	private String key;
 	private Ruolo ruolo;
 	private SubSetFieldEnum subSetField;
+	private Class parentClassRef;//it.tredi.ecm.dao.entity.Persona
+	private String nameRef;//nome
+	private String typeRef;//java.lang.String
 
 	private IdFieldEnum(String key, int idEcm, Ruolo ruolo, SubSetFieldEnum subSetField){
 		this.key = key;
 		this.idEcm = idEcm;
 		this.ruolo = ruolo;
 		this.subSetField = subSetField;
+	}
+	
+	private IdFieldEnum(String key, int idEcm, Ruolo ruolo, SubSetFieldEnum subSetField, Class parentClassRef, String nameRef, String typeRef){
+		this.key = key;
+		this.idEcm = idEcm;
+		this.ruolo = ruolo;
+		this.subSetField = subSetField;
+		this.parentClassRef = parentClassRef;
+		this.nameRef = nameRef;
+		this.typeRef = typeRef;
 	}
 
 	public static int getIdEcm(String key){

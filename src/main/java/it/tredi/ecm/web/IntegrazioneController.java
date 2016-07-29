@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.FieldEditabile;
+import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.dao.repository.FieldEditabileRepository;
+import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.TestWrapper;
@@ -26,7 +26,7 @@ import it.tredi.ecm.web.bean.TestWrapper;
 public class IntegrazioneController {
 
 	@Autowired AccreditamentoService accreditamentoService;
-	@Autowired FieldEditabileRepository repo;
+	@Autowired FieldEditabileAccreditamentoRepository repo;
 
 	@RequestMapping("/fieldEditabile/{accreditamentoId}")
 	public String edit(@PathVariable Long accreditamentoId, Model model, 
@@ -41,8 +41,8 @@ public class IntegrazioneController {
 
 		Set<IdFieldEnum> listaDaView = wrapper.getSelected();
 
-		Set<FieldEditabile> listaFull = wrapper.getFullLista();
-		Set<FieldEditabile> listaSubset = Utils.getSubset(listaFull, wrapper.getSubset());
+		Set<FieldEditabileAccreditamento> listaFull = wrapper.getFullLista();
+		Set<FieldEditabileAccreditamento> listaSubset = Utils.getSubset(listaFull, wrapper.getSubset());
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(wrapper.getAccreditamentoId());
 
@@ -55,7 +55,7 @@ public class IntegrazioneController {
 		if(listaDaView != null){
 			for(IdFieldEnum id : listaDaView){
 				if(Utils.getField(listaFull,id) == null){
-					FieldEditabile field = new FieldEditabile();
+					FieldEditabileAccreditamento field = new FieldEditabileAccreditamento();
 					field.setAccreditamento(accreditamento);
 					field.setIdField(id);
 					if(wrapper.getObjRef() != null)
@@ -76,7 +76,7 @@ public class IntegrazioneController {
 	private TestWrapper prepareWrapper(Long accreditamentoId, SubSetFieldEnum subset, Long objRef){
 		TestWrapper wrapper = new TestWrapper();
 		
-		Set<FieldEditabile> fullLista = null;
+		Set<FieldEditabileAccreditamento> fullLista = null;
 		if(objRef == null)
 			fullLista = repo.findAllByAccreditamentoId(accreditamentoId);
 		else

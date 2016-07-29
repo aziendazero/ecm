@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
-import it.tredi.ecm.dao.repository.FieldEditabileRepository;
+import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
@@ -38,7 +38,7 @@ public class ProviderController {
 
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
-	@Autowired private FieldEditabileRepository fieldEditabileRepository;
+	@Autowired private FieldEditabileAccreditamentoRepository fieldEditabileRepository;
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {

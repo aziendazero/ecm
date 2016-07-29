@@ -23,7 +23,7 @@ import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.service.FieldEditabileService;
+import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
 import it.tredi.ecm.utils.Utils;
@@ -40,7 +40,7 @@ public class SedeController {
 
 	@Autowired private SedeService sedeService;
 	@Autowired private ProviderService providerService;
-	@Autowired private FieldEditabileService fieldEditabileService;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
 	@Autowired private SedeValidator sedeValidator;
 
 	/***	GLOBAL MODEL ATTRIBUTES	***/

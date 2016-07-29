@@ -28,7 +28,7 @@ import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.EventoService;
-import it.tredi.ecm.service.FieldEditabileService;
+import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.ObiettivoService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
@@ -48,7 +48,7 @@ public class EventoController {
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ObiettivoService obietivoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
-	@Autowired private FieldEditabileService fieldEditabileService;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
 	@Autowired private EventoValidator eventoValidator;
 
 	@InitBinder
@@ -289,7 +289,7 @@ public class EventoController {
 				pianoFormativoService.save(pianoFormativo);
 				// caso fromAccreditamento
 				if (accreditamentoId != null) {
-					//inserimento nuovo evento multi-istanza in domanda di Accreditamento, inserisco FieldEditabile
+					//inserimento nuovo evento multi-istanza in domanda di Accreditamento, inserisco FieldEditabileAccreditamento
 					if(insertFieldEditabile)
 						fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, wrapper.getEvento().getId(), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO, IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
 					
@@ -347,7 +347,7 @@ public class EventoController {
 			eventoService.delete(eventoId);
 			// caso fromAccreditamento
 			if (accreditamentoId != null) {
-				//eliminazione evento multi-istanza da Domanda di accreditamento, rimuovo FieldEditabile
+				//eliminazione evento multi-istanza da Domanda di accreditamento, rimuovo FieldEditabileAccreditamento
 				fieldEditabileService.removeFieldEditabileForAccreditamento(accreditamentoId, eventoId, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO);
 				redirectAttrs.addFlashAttribute("currentTab","tab4");
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
@@ -477,7 +477,7 @@ public class EventoController {
 		}
 		else{
 			wrapper.setAccreditamentoId(evento.getAccreditamento().getId());
-			//TODO logica idEditabili per evento necessita di un FieldEditabile a parte
+			//TODO logica idEditabili per evento necessita di un FieldEditabileAccreditamento a parte
 			//wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_EVENTO), evento.getIdEditabili());
 		}
 

@@ -13,9 +13,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class Field extends BaseEntity{
-	@ManyToOne
-	private Accreditamento accreditamento;
-	
 	@Enumerated(EnumType.STRING)
 	private IdFieldEnum idField;
 	private long objectReference = -1;
