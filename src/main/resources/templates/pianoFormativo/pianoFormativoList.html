@@ -39,15 +39,15 @@
 												th:href="${'#collapse'+pianoFormativo.annoPianoFormativo}" aria-expanded="true"
 												th:attr="aria-controls=${'collapse'+pianoFormativo.annoPianoFormativo}">
 												<span class="panel-title" th:text="${pianoFormativo.annoPianoFormativo}">2016</span>
+												<span th:text="#{label.proveniente_da_accreditamento}" th:if="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
 											</a>
 											<div th:id="${'collapse'+pianoFormativo.annoPianoFormativo}" class="panel-collapse collapse"
 												role="tabpanel" th:attr="aria-labelledby=${'heading'+pianoFormativo.annoPianoFormativo}">
 												<div class="panel-body">
 
+													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}, true, null)"></th:block>
 
-													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${pianoFormativo.pianoModificabile}, true, null)"></th:block>
-
-													<a th:if="${pianoFormativo.pianoModificabile}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
+													<a th:if="${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
 
 												</div>
 											</div>
@@ -135,7 +135,6 @@
 					//show accordion
 					if([[${accordion}]] != null) {
 						$('#collapse'+[[${accordion}]]).collapse('show');
-						console.log("yes");
 					}
 
 				});

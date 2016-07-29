@@ -73,9 +73,9 @@ public class EventoController {
 	}
 
 	@ModelAttribute("eventoWrapper")
-	public EventoWrapper getEventoWrapper(@RequestParam(value="editId",required = false) Long id){
+	public EventoWrapper getEventoWrapper(@RequestParam(value="editId",required = false) Long id, @RequestParam(value="eventoFrom",required = false) String from){
 		if(id != null){
-			return prepareEventoWrapperEdit(eventoService.getEvento(id));
+			return prepareEventoWrapperEdit(eventoService.getEvento(id), from);
 		}
 		return new EventoWrapper();
 	}
@@ -91,7 +91,7 @@ public class EventoController {
 		try{
 			model.addAttribute("returnLink", "/accreditamento/"+ accreditamentoId + "/edit?tab=tab4");
 			model.addAttribute("fromAccreditamento", true);
-			return goToEdit(model, prepareEventoWrapperEdit(new Evento(), providerId, accreditamentoId, pianoFormativoId), redirectAttrs);
+			return goToEdit(model, prepareEventoAccreditamentoWrapperEdit(new Evento(), providerId, accreditamentoId, pianoFormativoId), redirectAttrs);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -112,7 +112,7 @@ public class EventoController {
 			model.addAttribute("returnLink", "/provider/" + providerId + "/pianoFormativo/list?accordion=" + pianoFormativoService.getPianoFormativo(pianoFormativoId).getAnnoPianoFormativo());
 			model.addAttribute("fromAccreditamento", false);
 			Long accreditamentoId = accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId();
-			return goToEdit(model, prepareEventoWrapperEdit(new Evento(), providerId, accreditamentoId, pianoFormativoId), redirectAttrs);
+			return goToEdit(model, prepareEventoPianoFormativoWrapperEdit(new Evento(), providerId, accreditamentoId, pianoFormativoId), redirectAttrs);
 		}
 //		catch (AccreditamentoNotFoundException ex){
 //			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/new"),ex);
@@ -140,7 +140,7 @@ public class EventoController {
 		try{
 			model.addAttribute("returnLink", "/accreditamento/"+ accreditamentoId + "/edit?tab=tab4");
 			model.addAttribute("fromAccreditamento", true);
-			return goToEdit(model, prepareEventoWrapperEdit(eventoService.getEvento(id),0L,accreditamentoId,pianoFormativoId),redirectAttrs);
+			return goToEdit(model, prepareEventoAccreditamentoWrapperEdit(eventoService.getEvento(id),0L,accreditamentoId,pianoFormativoId),redirectAttrs);
 		}
 		catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/edit"),ex);
@@ -162,7 +162,7 @@ public class EventoController {
 			model.addAttribute("returnLink", "/provider/" + providerId + "/pianoFormativo/list?accordion=" + pianoFormativoService.getPianoFormativo(pianoFormativoId).getAnnoPianoFormativo());
 			model.addAttribute("fromAccreditamento", false);
 			Long accreditamentoId = accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId();
-			return goToEdit(model, prepareEventoWrapperEdit(eventoService.getEvento(id),0L,accreditamentoId,pianoFormativoId),redirectAttrs);
+			return goToEdit(model, prepareEventoPianoFormativoWrapperEdit(eventoService.getEvento(id),0L,accreditamentoId,pianoFormativoId),redirectAttrs);
 		}
 //		catch (AccreditamentoNotFoundException ex){
 //			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/edit"),ex);
@@ -225,7 +225,7 @@ public class EventoController {
 			}
 			LOGGER.info(Utils.getLogMessage("MODE: " + from));
 
-			//per il momento non c'è nessuna distinzione a seconda del from (tuttavia in thymleaf è comodo portarselo dietro)
+			//per il momento non c'è nessuna distinzione a seconda del from (tuttavia in thymeleaf è comodo portarselo dietro)
 			model.addAttribute("returnLink", "/provider/" + providerId + "/pianoFormativo/list?accordion=" + pianoFormativoService.getPianoFormativo(pianoFormativoId).getAnnoPianoFormativo());
 
 			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId));
@@ -277,6 +277,16 @@ public class EventoController {
 			eventoValidator.validate(wrapper.getEvento(), result, "evento.", true);
 
 			if(result.hasErrors()){
+				// caso fromAccreditamento
+				if (accreditamentoId != null) {
+					model.addAttribute("returnLink", "/accreditamento/"+ accreditamentoId + "/edit?tab=tab4");
+					model.addAttribute("fromAccreditamento", true);
+				}
+				// caso inserimento evento dal pianoFormativo
+				else {
+					model.addAttribute("returnLink", "/provider/" + providerId + "/pianoFormativo/list?accordion=" + pianoFormativoService.getPianoFormativo(pianoFormativoId).getAnnoPianoFormativo());
+					model.addAttribute("fromAccreditamento", false);
+				}
 				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
 				populateListFromAccreditamento(model, wrapper.getAccreditamentoId());
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
@@ -292,15 +302,17 @@ public class EventoController {
 					//inserimento nuovo evento multi-istanza in domanda di Accreditamento, inserisco FieldEditabileAccreditamento
 					if(insertFieldEditabile)
 						fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, wrapper.getEvento().getId(), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO, IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
-					
+
 					redirectAttrs.addFlashAttribute("currentTab", "tab4");
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato", "success"));
 					return "redirect:/accreditamento/{accreditamentoId}/edit";
 				}
 				// caso inserimento evento dal pianoFormativo
 				else {
 					redirectAttrs.addFlashAttribute("accordion", pianoFormativo.getAnnoPianoFormativo());
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato", "success"));
 					return "redirect:/provider/" + providerId + "/pianoFormativo/list";
 				}
 
@@ -452,15 +464,85 @@ public class EventoController {
 	}
 
 	//utilizzato nel caso di save
-	private EventoWrapper prepareEventoWrapperEdit(Evento evento){
-		return prepareEventoWrapperEdit(evento, 0L, 0L, 0L);
+	private EventoWrapper prepareEventoWrapperEdit(Evento evento, String from){
+		LOGGER.info(Utils.getLogMessage("Wrapper Evento trovato, proveniente da: " + from));
+		if(from.equals("accreditamento"))
+			return prepareEventoAccreditamentoWrapperEdit(evento, 0L, 0L, 0L);
+		if(from.equals("pianoFormativo"))
+			return prepareEventoPianoFormativoWrapperEdit(evento, 0L, 0L, 0L);
+		else
+			return new EventoWrapper();
 	}
 
 	//utilizzato nel caso di edit e new
-	private EventoWrapper prepareEventoWrapperEdit(Evento evento, long providerId, long accreditamentoId, long pianoFormativoId){
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - entering"));
+	private EventoWrapper prepareEventoAccreditamentoWrapperEdit(Evento evento, long providerId, long accreditamentoId, long pianoFormativoId){
+		LOGGER.info(Utils.getLogMessage("prepareEventoAccreditamentoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - entering"));
 		EventoWrapper wrapper = new EventoWrapper();
 		wrapper.setEvento(evento);
+
+		wrapper.setEventoFrom("accreditamento");
+
+		if(evento.isNew()){
+			wrapper.setProviderId(providerId);
+		}else{
+			wrapper.setProviderId(evento.getProvider().getId());
+		}
+
+		if(accreditamentoId != 0){
+			wrapper.setAccreditamentoId(accreditamentoId);
+			if(evento.isNew())
+				wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
+			else
+				wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId,evento.getId()), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
+		}
+		else{
+			wrapper.setAccreditamentoId(evento.getAccreditamento().getId());
+			wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
+		}
+
+		if(pianoFormativoId != 0){
+			wrapper.setPianoFormativoId(pianoFormativoId);
+		}
+
+		LOGGER.info(Utils.getLogMessage("prepareEventoAccreditamentoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - exiting"));
+		return wrapper;
+	}
+
+	private EventoWrapper prepareEventoPianoFormativoWrapperEdit(Evento evento, long providerId, long accreditamentoId, long pianoFormativoId){
+		LOGGER.info(Utils.getLogMessage("prepareEventoPianoFormativoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - entering"));
+		EventoWrapper wrapper = new EventoWrapper();
+		wrapper.setEvento(evento);
+
+		wrapper.setEventoFrom("pianoFormativo");
+
+		if(evento.isNew()){
+			wrapper.setProviderId(providerId);
+		}else{
+			wrapper.setProviderId(evento.getProvider().getId());
+		}
+
+		if(accreditamentoId != 0){
+			wrapper.setAccreditamentoId(accreditamentoId);
+		}
+		else{
+			wrapper.setAccreditamentoId(evento.getAccreditamento().getId());
+		}
+
+		wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
+
+		if(pianoFormativoId != 0){
+			wrapper.setPianoFormativoId(pianoFormativoId);
+		}
+
+		LOGGER.info(Utils.getLogMessage("prepareEventoPianoFormativoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - exiting"));
+		return wrapper;
+	}
+
+}ianoFormativoId + ") - entering"));
+		EventoWrapper wrapper = new EventoWrapper();
+		wrapper.setEvento(evento);
+
+		wrapper.setEventoFrom("accreditamento");
 
 		if(evento.isNew()){
 			wrapper.setProviderId(providerId);
@@ -481,11 +563,13 @@ public class EventoController {
 			//wrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_EVENTO), evento.getIdEditabili());
 		}
 
+		wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
+
 		if(pianoFormativoId != 0){
 			wrapper.setPianoFormativoId(pianoFormativoId);
 		}
 
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - exiting"));
+		LOGGER.info(Utils.getLogMessage("prepareEventoPianoFormativoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - exiting"));
 		return wrapper;
 	}
 

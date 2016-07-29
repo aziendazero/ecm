@@ -17,10 +17,10 @@ import it.tredi.ecm.utils.Utils;
 @Service
 public class PianoFormativoServiceImpl implements PianoFormativoService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PianoFormativoServiceImpl.class);
-	
+
 	@Autowired private PianoFormativoRepository pianoFormativoRepository;
 	@Autowired private ProviderService providerService;
-	
+
 	@Override
 	public boolean exist(Long providerId, Integer annoPianoFormativo){
 		LOGGER.debug(Utils.getLogMessage("Check exist piano formativo " + annoPianoFormativo + " del Provider: " + providerId));
@@ -43,20 +43,20 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		//TODO calcolare la data entro la quale il piano è modificabile
 		return pianoFormativo;
 	}
-	
+
 	@Override
 	@Transactional
 	public void save(PianoFormativo pianoFormativo) {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio Piano Formativo Anno " + pianoFormativo.getAnnoPianoFormativo() + " del Provider: " + pianoFormativo.getProvider().getId()));
 		pianoFormativoRepository.save(pianoFormativo);
 	}
-	
+
 	@Override
 	public PianoFormativo getPianoFormativo(Long pianoFormativoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Piano Formativo: " + pianoFormativoId));
 		return pianoFormativoRepository.findOne(pianoFormativoId);
 	}
-	
+
 	@Override
 	public Set<PianoFormativo> getAllPianiFormativiForProvider(Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Piani Formativi del Provider: " + providerId));
@@ -68,12 +68,18 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		LOGGER.debug(Utils.getLogMessage("Recupero Piano Formativo Anno " + annoPianoFormativo + " del Provider: " + providerId));
 		return pianoFormativoRepository.findOneByProviderIdAndAnnoPianoFormativo(providerId, annoPianoFormativo);
 	}
-	
+
 	@Override
 	public boolean isEditabile(Long pianoFormativoId) {
 		PianoFormativo pianoFormativo = pianoFormativoRepository.findOne(pianoFormativoId);
 		if(pianoFormativo == null)
 			return false;
 		return pianoFormativo.isEditabile();
+	}
+
+	@Override
+	public Set<Long> getAllPianiFormativiIdInAccreditamentoForProvider(Long providerId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero id di piani formativi dentro Accreditamento per Provider: " + providerId));
+		return pianoFormativoRepository.findAllByProviderIdInAccreditamento(providerId);
 	}
 }
