@@ -9,25 +9,34 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 class="text-uppercase" th:if="${profile.new}" th:text="#{label.creazione_profilo}"></h2>
-						<h2 class="text-uppercase" th:unless="${profile.new}" th:text="#{label.modifica_profilo}"></h2>
+						<h2 class="text-uppercase" th:unless="${profile.new}" th:text="#{label.modifica_profilo} + ' - ' + ${profile.profileEnum}"></h2>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
 						<form class="form-horizontal form-label-left" th:object="${profile}" th:action="@{/profile/save}" method="post" novalidate="novalidate">
 							<!-- nome profilo -->
 							<input type="hidden" name="editId" th:value="*{id}" />
-							<div class="item form-group" th:classappend="${#fields.hasErrors('name')} ? 'bad'">
+							<input type="hidden" th:field="*{profileEnum}" />
+							
+							<!-- div class="item form-group" th:classappend="${#fields.hasErrors('profileEnum')} ? 'bad'">
 								<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeUtente">
 									<span class="required" th:text="#{label.nome}">label.nome</span>
 									<span class="required">*</span>
 								</label>
 								<div class="col-md-6 col-sm-6 col-xs-12">
-									<input type="text" th:field="*{name}"
+									<input type="text" th:field="*{profileEnum}"
 										required="required" class="form-control col-md-7 col-xs-12" />
 								</div>
-								<div th:if="${#fields.hasErrors('name')}" class="alert" th:errors="*{name}"></div>
-							</div>
-		                    
+								<div th:if="${#fields.hasErrors('profileEnum')}" class="alert" th:errors="*{profileEnum}"></div>
+							</div -->
+		                    <div class="item form-group">
+			                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeUtente">
+									<span th:text="#{label.nome}">label.nome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			              			<div class="value" th:text="*{profileEnum}"></div>
+		                    	</div>
+		                    </div>
 		                    <!-- Ruoli -->
 		                    <div class="item form-group">
 		                      <label class="col-md-3 col-sm-3 col-xs-12 control-label">

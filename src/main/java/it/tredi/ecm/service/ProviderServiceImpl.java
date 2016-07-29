@@ -186,4 +186,13 @@ public class ProviderServiceImpl implements ProviderService {
 	public boolean canInsertPianoFormativo(Long providerId) {
 		return providerRepository.canInsertPianoFormativo(providerId);
 	}
+
+	@Override
+	public boolean canInsertAccreditamentoStandard(Long providerId) {
+		return providerRepository.canInsertAccreditamentoStandard(providerId);
+	}
+	@Override
+	public boolean canInsertEvento(Long providerId) {
+		return providerRepository.canInsertEvento(providerId);
+	}
 }

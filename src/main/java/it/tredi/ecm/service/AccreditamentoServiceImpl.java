@@ -86,6 +86,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamenti;
 	}
 	
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiForProvider(Long providerId,AccreditamentoTipoEnum tipoDomnda) {
+		LOGGER.debug(Utils.getLogMessage("Recupero tutte le domande di accreditamento " + tipoDomnda + " per il provider " + providerId));
+		Set<Accreditamento> accreditamenti = accreditamentoRepository.findAllByProviderIdAndTipoDomanda(providerId,tipoDomnda);
+		if(accreditamenti != null) 
+			LOGGER.debug("Trovati " + accreditamenti.size() + " accreditamenti");
+		return accreditamenti;
+	}
+	
 	/**
 	 * Restituisce tutte le domande di accreditamento che hanno una data di scadenza "attiva"
 	 * */
@@ -121,23 +130,29 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public boolean canProviderCreateAccreditamento(Long providerId,AccreditamentoTipoEnum tipoTomanda) {
 		boolean canProvider = true;
 		
-//TODO TEST
-//		Set<Accreditamento> accreditamentoList = getAllAccreditamentiForProvider(providerId);
-//		for(Accreditamento accreditamento : accreditamentoList){
-//			if(accreditamento.isBozza()){
-//				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di " + accreditamento.getStato().name()));
-//				return false;
-//			}
-//			
-//			if(accreditamento.isProcedimentoAttivo()){
-//				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Procedimento Attivo"));
-//				return false;
-//			}
-////TODO gestire la distinzione tra domanda inviata ma ancora non accreditata e domanda accreditata
-////			if(accreditamento.isInviato())
-////				return false;
-//		}
+		//per le domande standard è innanzitutto necessario che la segreteria abiliti il provider
+		if(tipoTomanda == AccreditamentoTipoEnum.STANDARD){
+			if(!providerService.canInsertAccreditamentoStandard(providerId)){
+				return false;
+			}
+		}
 		
+		//controllo che non ci siano procedimenti gia' attivi
+		Set<Accreditamento> accreditamentoList = getAllAccreditamentiForProvider(providerId,tipoTomanda);
+		for(Accreditamento accreditamento : accreditamentoList){
+			if(accreditamento.isBozza()){
+				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di " + accreditamento.getStato().name()));
+				return false;
+			}
+			
+			if(accreditamento.isProcedimentoAttivo()){
+				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Procedimento Attivo"));
+				return false;
+			}
+			//TODO gestire la distinzione tra domanda inviata ma ancora non accreditata e domanda accreditata
+//				if(accreditamento.isInviato())
+//					return false;
+		}
 		return canProvider;
 	}
 	
