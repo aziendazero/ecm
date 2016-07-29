@@ -6,46 +6,47 @@
 </head>
 <body>
 	<!-- tabella degli eventi del pianoFormativo -->
-	<th:block th:fragment="pianoFormativo(pianoFormativo, accreditamentoId, editabile, editabileFull)">
+	<th:block th:fragment="pianoFormativo(pianoFormativo, accreditamentoId, editabile, editabileFull, idEditabili)">
 		<!-- differenzia se il piano formativo viene chiamato dall'accreditamento o dall'apposita sidebar -->
 		<th:block th:with="prefixURL=${accreditamentoId != null ? '/accreditamento/'+accreditamentoId : ''}">
 
+			<th:block th:if="${accreditamentoId != null}">
+				<div th:if="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventi)}" th:text="#{label.nessun_evento_piano_formativo}"></div>
 
-			<div th:if="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventi)}" th:text="#{label.nessun_evento_piano_formativo}"></div>
-
-			<table th:unless="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventi)}" id="piano-formativo-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${editabile ? 'datatable-responsive-evento-edit' : 'datatable-responsive-evento-show'}">
-				<thead>
-					<tr>
-						<th th:text="#{label.tipologia_evento}">Tipologia dell'evento</th>
-						<th th:unless="${editabile}" th:text="#{label.stato}">Stato</th>
-						<th th:if="${editabile}" th:text="#{label.azioni}">Azioni</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="evento, row : ${__${pianoFormativo}__.eventi}">
-						<td th:if="${editabile}"><a th:text="${evento.titolo}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show?from=edit|}"></a></td>
-						<td th:unless="${editabile}"><a th:text="${evento.titolo}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show|}"></a></td>
-						<th:block th:if="${editabile}">
-							<td>
-								<span style="white-space: nowrap">
-									<a th:if="${!evento.new and __${pianoFormativo}__.pianoModificabile and editabileFull}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/delete|}" class="btn btn-table double btn-danger"><span class="fa fa-trash"></span> <span th:text="#{label.elimina}"></span></a>
-									<a th:if="${evento.new or !__${pianoFormativo}__.pianoModificabile or !editabileFull}" class="btn btn-table double btn-danger disabled"><span class="fa fa-trash"></span> <span th:text="#{label.elimina}"></span></a>
-									<a th:unless="${evento.new}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
-									<a th:if="${evento.new}" class="btn btn-primary btn-table double disabled"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
-								</span>
-							</td>
-						</th:block>
-						<th:block th:unless="${editabile}">
-							<td th:unless="${evento.new}">
-								<span class="fa table-icon fa-check green"></span>
-							</td>
-							<td th:if="${evento.new}">
-								<span class="fa table-icon fa-remove red"></span>
-							</td>
-						</th:block>
-					</tr>
-				</tbody>
-			</table>
+				<table th:unless="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventi)}" id="piano-formativo-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${editabile ? 'datatable-responsive-evento-edit' : 'datatable-responsive-evento-show'}">
+					<thead>
+						<tr>
+							<th th:text="#{label.tipologia_evento}">Tipologia dell'evento</th>
+							<th th:unless="${editabile}" th:text="#{label.stato}">Stato</th>
+							<th th:if="${editabile}" th:text="#{label.azioni}">Azioni</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="evento, row : ${__${pianoFormativo}__.eventi}">
+							<td th:if="${editabile}"><a th:text="${evento.titolo}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show?from=edit|}"></a></td>
+							<td th:unless="${editabile}"><a th:text="${evento.titolo}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show|}"></a></td>
+							<th:block th:if="${editabile}">
+								<td>
+									<span style="white-space: nowrap">
+										<a th:if="${!evento.new and __${pianoFormativo}__.pianoModificabile and editabileFull}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/delete|}" class="btn btn-table double btn-danger"><span class="fa fa-trash"></span> <span th:text="#{label.elimina}"></span></a>
+										<a th:if="${evento.new or !__${pianoFormativo}__.pianoModificabile or !editabileFull}" class="btn btn-table double btn-danger disabled"><span class="fa fa-trash"></span> <span th:text="#{label.elimina}"></span></a>
+										<a th:if="${!evento.new and !#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(idEditabili, evento.id,'EVENTO_PIANO_FORMATIVO'))}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
+										<a th:if="${evento.new or #lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(idEditabili, evento.id,'EVENTO_PIANO_FORMATIVO'))}" class="btn btn-primary btn-table double disabled"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
+									</span>
+								</td>
+							</th:block>
+							<th:block th:unless="${editabile}">
+								<td th:unless="${evento.new}">
+									<span class="fa table-icon fa-check green"></span>
+								</td>
+								<td th:if="${evento.new}">
+									<span class="fa table-icon fa-remove red"></span>
+								</td>
+							</th:block>
+						</tr>
+					</tbody>
+				</table>
+			</th:block>
 
 		</th:block>
 	</th:block>

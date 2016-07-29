@@ -62,7 +62,6 @@
 					<div class="x_title">
 						<h2 th:text="#{label.accreditamento_titolo(Modifica, ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}">Provvisorio - bozza</h2>
 						<div class="pull-right buttons-header">
-							<a th:if="${accreditamentoWrapper.canSend}" class="btn btn-success pull-right" th:text="#{label.invia_domanda}"	th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a>
 							<button type="button" class="btn btn-primary pull-right" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode()"></button>
 						</div>
 						<div class="clearfix"></div>
