@@ -47,8 +47,8 @@ public class PianoFormativo extends BaseEntity{
 	}
 	
 	public boolean isPianoModificabile(){
-		if(isEditabile())
-			return true;
+		if(!isEditabile())
+			return false;
 		
 		if(dataFineModifca == null)
 			return true;
