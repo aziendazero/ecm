@@ -28,14 +28,14 @@
 				<div class="x_panel">
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.sede_legale}">label.sede_legale</h2>
-						<h2 style="display: inline" th:unless="${accreditamentoWrapper.sedeLegale != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.sedeLegale.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
 						<ul class="nav navbar-right panel_toolbox">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.sedeLegale != null}" id="sedeLegaleBlock" class="collapsible"></div>
+					<div th:unless="${accreditamentoWrapper.sedeLegale.new}" id="sedeLegaleBlock" class="collapsible"></div>
 
 				</div>
 
@@ -88,14 +88,14 @@
 				<div class="x_panel">
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.dati_accreditamento}">label.dati_accreditamento</h2>
-						<h2 style="display: inline" th:unless="${accreditamentoWrapper.datiAccreditamento != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<h2 style="display: inline" th:unless="${accreditamentoWrapper.datiAccreditamento.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
 						<ul class="nav navbar-right panel_toolbox">
 		                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.datiAccreditamento != null}" id="datiBlock" class="collapsible"></div>
+					<div th:unless="${accreditamentoWrapper.datiAccreditamento.new}" id="datiBlock" class="collapsible"></div>
 
 				</div>
 
@@ -230,13 +230,13 @@
 					}
 
 					//sede legale
-					if([[${accreditamentoWrapper.sedeLegale != null}]]) {
+					if([[${!accreditamentoWrapper.sedeLegale.new}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale?.id}/show?tipologiaSede=SedeLegale|}]];
 						$("#sedeLegaleBlock").load(url + ' #toModal');
 					}
 
 					//sede operativa
-					if([[${accreditamentoWrapper.sedeOperativa != null}]]) {
+					if([[${!accreditamentoWrapper.sedeOperativa.new}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeOperativa?.id}/show?tipologiaSede=SedeOperativa|}]];
 						$("#sedeOpBlock").load(url + ' #toModal');
 					}
@@ -254,7 +254,7 @@
 					}
 
 					//dati accreditamento
-					if([[${accreditamentoWrapper.datiAccreditamento != null}]]) {
+					if([[${!accreditamentoWrapper.datiAccreditamento.new}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/show|}]];
 						$("#datiBlock").load(url + ' #toModal');
 					}
@@ -332,6 +332,14 @@
 					            });
 					        }
 
+						});
+					})
+
+					//ripristina/chiude tutte le favicon
+					$('#showAll-modal').on('hidden.bs.modal', function (e) {
+						$(".fa-chevron-up").each(function(index) {
+							$(this).addClass('fa-chevron-down');
+							$(this).removeClass('fa-chevron-up');
 						});
 					})
 				}
