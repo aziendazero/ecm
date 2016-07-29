@@ -20,4 +20,6 @@ public interface ProviderService {
 	
 	public Long getAccountIdForProvider(Long providerId);
 	public boolean canInsertPianoFormativo(Long providerId);
+	public boolean canInsertEvento(Long providerId);
+	public boolean canInsertAccreditamentoStandard(Long providerId);
 }

@@ -69,22 +69,22 @@ public class ProfileController {
 		}
 	}
 	
-	@PreAuthorize("@securityAccessServiceImpl.canCreateUser(principal)")
-	@RequestMapping("/profile/new")
-	public String newProfile(Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET /profile/new"));
-		try {
-			model.addAttribute("profile", new Profile());
-			model.addAttribute("roleList", profileAndRoleService.getAllRole());
-			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
-			return EDIT;
-		}catch (Exception ex) {
-			LOGGER.error(Utils.getLogMessage("GET /profile/new"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /profile/list"));
-			return "redirect:/profile/list";
-		}
-	}
+//	@PreAuthorize("@securityAccessServiceImpl.canCreateUser(principal)")
+//	@RequestMapping("/profile/new")
+//	public String newProfile(Model model, RedirectAttributes redirectAttrs){
+//		LOGGER.info(Utils.getLogMessage("GET /profile/new"));
+//		try {
+//			model.addAttribute("profile", new Profile());
+//			model.addAttribute("roleList", profileAndRoleService.getAllRole());
+//			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+//			return EDIT;
+//		}catch (Exception ex) {
+//			LOGGER.error(Utils.getLogMessage("GET /profile/new"),ex);
+//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+//			LOGGER.info(Utils.getLogMessage("REDIRECT: /profile/list"));
+//			return "redirect:/profile/list";
+//		}
+//	}
 	
 	@RequestMapping(value = "profile/save", method = RequestMethod.POST)
 	public String saveProfile(@ModelAttribute("profile") Profile profile, BindingResult result, RedirectAttributes redirectAttrs, Model model){

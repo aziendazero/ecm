@@ -163,7 +163,7 @@ public class Accreditamento extends BaseEntity{
 	}
 
 	public boolean isProcedimentoAttivo(){
-		if( dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
+		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;
 		return false;
 	}

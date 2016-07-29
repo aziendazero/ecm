@@ -479,15 +479,16 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoAccreditamentoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - entering"));
 		EventoWrapper wrapper = new EventoWrapper();
 		wrapper.setEvento(evento);
-
-		wrapper.setEventoFrom("accreditamento");
-
 		if(evento.isNew()){
 			wrapper.setProviderId(providerId);
 		}else{
 			wrapper.setProviderId(evento.getProvider().getId());
 		}
-
+		if(pianoFormativoId != 0){
+			wrapper.setPianoFormativoId(pianoFormativoId);
+		}
+		
+		wrapper.setEventoFrom("accreditamento");
 		if(accreditamentoId != 0){
 			wrapper.setAccreditamentoId(accreditamentoId);
 			if(evento.isNew())
@@ -500,10 +501,6 @@ public class EventoController {
 			wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
 		}
 
-		if(pianoFormativoId != 0){
-			wrapper.setPianoFormativoId(pianoFormativoId);
-		}
-
 		LOGGER.info(Utils.getLogMessage("prepareEventoAccreditamentoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - exiting"));
 		return wrapper;
 	}
@@ -512,15 +509,16 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoPianoFormativoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - entering"));
 		EventoWrapper wrapper = new EventoWrapper();
 		wrapper.setEvento(evento);
-
-		wrapper.setEventoFrom("pianoFormativo");
-
 		if(evento.isNew()){
 			wrapper.setProviderId(providerId);
 		}else{
 			wrapper.setProviderId(evento.getProvider().getId());
 		}
-
+		if(pianoFormativoId != 0){
+			wrapper.setPianoFormativoId(pianoFormativoId);
+		}
+		
+		wrapper.setEventoFrom("pianoFormativo");
 		if(accreditamentoId != 0){
 			wrapper.setAccreditamentoId(accreditamentoId);
 		}
@@ -529,11 +527,7 @@ public class EventoController {
 		}
 
 		wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
-
-		if(pianoFormativoId != 0){
-			wrapper.setPianoFormativoId(pianoFormativoId);
-		}
-
+		
 		LOGGER.info(Utils.getLogMessage("prepareEventoPianoFormativoWrapperEdit(" + evento.getId() + "," + providerId + "," + accreditamentoId + "," + pianoFormativoId + ") - exiting"));
 		return wrapper;
 	}
