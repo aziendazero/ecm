@@ -212,7 +212,7 @@
 								<div id="step-3" class="wizard_content" style="display: none;">
 
 									<!-- radio rappresentante -->
-									<div id="checkbox_delegato" class="item form-group" th:classappend="${#fields.hasErrors('providerForm.delegato')} ? 'bad'">
+									<div id="radio_delegato" class="item form-group" th:classappend="${#fields.hasErrors('providerForm.delegato')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delega_checkbox">
 											<span th:text="#{label.rappresentante_radio}">label.rappresentante_radio</span> <span class="required">*</span>
 										</label>
@@ -420,16 +420,18 @@
 		    	// converte la stringa in boolean e poi fa un check se l'org è di tipo P, (mostra la checkbox e la delega)
 		    	var check = ($('#tipoOrganizzatore_select option:selected').attr('tipop') === "true");
 			    if (check) {
-			    	$('#checkbox_delegato').show();
-			    	$('#isDelegato').iCheck("enable");
+			    	$('#radio_delegato').show();
+			    	$('#delegatoRadio').iCheck("enable");
+			    	$('#legaleRadio').iCheck("enable");
 			    	$('#delega-parent').show();
 			    	$('#delega').prop('disabled', false);
 			    	$('#divider').show()
 			    }
 		    	// altrimenti la nasconde
 			    else {
-			    	$('#checkbox_delegato').hide();
-			    	$('#isDelegato').iCheck("disable");
+			    	$('#radio_delegato').hide();
+			    	$('#delegatoRadio').iCheck("disable");
+			    	$('#legaleRadio').iCheck("disable");
 			    	$('#delega-parent').hide();
 			    	$('#delega').prop( "disabled", true);
 			    	$('#divider').hide();
