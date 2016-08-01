@@ -58,12 +58,20 @@
 
 		<div class="row">
 			<div class="col-xs-12">
+
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.accreditamento_titolo(Modifica, ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}">Provvisorio - bozza</h2>
+						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.codiceFiscale + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
 							<button type="button" class="btn btn-primary pull-right" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode()"></button>
 						</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.accreditamento_titolo(Modifica, ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}">Provvisorio - bozza</h2>
 						<div class="clearfix"></div>
 					</div>
 
