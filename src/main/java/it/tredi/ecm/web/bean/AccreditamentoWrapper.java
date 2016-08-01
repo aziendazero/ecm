@@ -78,8 +78,8 @@ public class AccreditamentoWrapper {
 
 	//Piano Formativo
 	private PianoFormativo pianoFormativo;
-	
-	
+
+
 	public AccreditamentoWrapper(){};
 	public AccreditamentoWrapper(Accreditamento accreditamento){
 		this.setAccreditamento(accreditamento);
@@ -119,9 +119,9 @@ public class AccreditamentoWrapper {
 				this.getComponentiComitatoScientifico().add(p);
 		}
 	}
-	
-	
-	
+
+
+
 
 	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider){
 		//TODO migliorare la logica per evitare di fare troppi if
@@ -135,8 +135,9 @@ public class AccreditamentoWrapper {
 		sedeLegaleStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
 		sedeOperativaStato = (sedeOperativa != null && !sedeOperativa.isNew()) ? true : false;
 
-		legaleRappresentanteStato = (legaleRappresentante != null && !legaleRappresentante.isNew() && legaleRappresentante.getAnagrafica().getTelefono() != null && !legaleRappresentante.getAnagrafica().getTelefono().isEmpty()) ? true : false;
-		delegatoLegaleRappresentanteStato = (delegatoLegaleRappresentante != null && !delegatoLegaleRappresentante.isNew() && delegatoLegaleRappresentante.getAnagrafica().getPec() != null && !delegatoLegaleRappresentante.getAnagrafica().getPec().isEmpty()) ? true : false;
+		//check sul cv unico campo non settabile in registrazione o in modifica delle anagrafiche, ma solo durante la domanda di accreditamento
+		legaleRappresentanteStato = (legaleRappresentante != null && !legaleRappresentante.isNew() && legaleRappresentante.getAnagrafica().getCellulare() != null && !legaleRappresentante.getAnagrafica().getCellulare().isEmpty()) ? true : false;
+		delegatoLegaleRappresentanteStato = (delegatoLegaleRappresentante != null && !delegatoLegaleRappresentante.isNew() && delegatoLegaleRappresentante.getAnagrafica().getCellulare() != null && !delegatoLegaleRappresentante.getAnagrafica().getCellulare().isEmpty()) ? true : false;
 
 		datiAccreditamentoStato = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? true : false;
 
