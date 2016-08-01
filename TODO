@@ -2,9 +2,11 @@
  	+ campo singolo (String,Long,int,boolean) [classeObj, idObj, campo (-> set/get), IdFieldEnum, newValue, tipoCampo] 
  	+ campo singolo (LocalDate)
  	+ campo singolo (Enum)
- 	+ campo singolo (Object)
  	+ campo singolo (File)
- 	+ campo multi (Set<Object>, Set<Enum))
+ 	+ campo multi (Set<Enum))
+ 	
+ 	+ campo singolo (Object)
+ 	+ campo multi (Set<Object>)
  
  INSERIMENTO (inserimento nuovo OPPURE sostituzione di un oggetto)
  
