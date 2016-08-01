@@ -154,7 +154,7 @@ public class ProviderValidator {
 		if(providerForm.getRagioneSociale() == null){
 			errors.rejectValue(prefix + "ragioneSociale", "error.empty");
 		}
-		if(providerForm.getNaturaOrganizzazione().isEmpty()){
+		if(providerForm.getNaturaOrganizzazione() == null){
 			errors.rejectValue(prefix + "naturaOrganizzazione", "error.empty");
 		}
 
