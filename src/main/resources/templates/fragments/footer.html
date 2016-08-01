@@ -318,6 +318,32 @@
 				});
 			});
 
+			//rimuove class bad (errore validazione) dagli input
+			$('input[type=radio], input[type=checkbox]').each(function(){
+				$(this).on('ifToggled', function() {
+					$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
+
+				});
+			});
+
+			$("input[type=text], input[type=tel], input[type=password], textarea").each(function(){
+				$(this).on("focus", function() {
+					$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
+				});
+			});
+
+			$("select").each(function(){
+				$(this).on('change', function() {
+					$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
+				})
+			})
+
 			/*]]>*/
 		</script>
 	</body>

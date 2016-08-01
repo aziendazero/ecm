@@ -284,7 +284,9 @@ var validator = (function($){
 
         field.closest('.' + defaults.classes.item)
              .removeClass(defaults.classes.bad)
-             .find('.'+ defaults.classes.alert).remove();
+             .find('.'+ defaults.classes.alert).fadeOut(150, function() {
+                 $(this).remove();
+             });
     };
 
     function testByType(type, value){
