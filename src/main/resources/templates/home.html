@@ -21,7 +21,7 @@
 				<div class="row" th:if="${homeWrapper.isAdmin}">
 					<div class="home-divider" th:text="#{label.dashboard_admin}">Admin dashboard</div>
 					<div class="col-xs-12 tile-stats-container">
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 clickable" onclick="show('XXX')">
 							<div class="tile-stats">
 								<div class="icon"><i th:class="${homeWrapper.utentiInAttesaDiAttivazione == 1 ? 'fa fa-user' : 'fa fa-users'}"></i></div>
 								<div class="col-xs-10">
@@ -39,7 +39,7 @@
 				<div class="row" th:if="${homeWrapper.isProvider}">
 					<div class="home-divider" th:text="#{label.dashboard_provider}">Provider dashboard</div>
 					<div class="col-xs-12 tile-stats-container">
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
 							<div class="tile-stats">
 								<div class="icon"><i th:class="${homeWrapper.messaggi == 1 ? 'fa fa-comment-o' : 'fa fa-comments-o'}"></i></div>
 								<div class="col-xs-10">
@@ -49,7 +49,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
 							<div class="tile-stats">
 								<div class="icon"><i class="fa fa-euro"></i></div>
 								<div class="col-xs-10">
@@ -59,7 +59,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
 							<div class="tile-stats">
 								<div class="icon"><i class="fa fa-edit"></i></div>
 								<div class="col-xs-10">
@@ -77,7 +77,7 @@
 				<div class="row" th:if="${homeWrapper.isSegreteria}">
 					<div class="home-divider" th:text="#{label.dashboard_segreteria}">Segreteria dashboard</div>
 					<div class="col-xs-12 tile-stats-container">
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
 							<div class="tile-stats">
 								<div class="icon"><i class="fa fa-list-alt"></i></div>
 								<div class="col-xs-10">
@@ -87,7 +87,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
 							<div class="tile-stats">
 								<div class="icon"><i class="fa fa-credit-card"></i></div>
 								<div class="col-xs-10">
@@ -97,7 +97,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 clickable" onclick="show('XXX')">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
 							<div class="tile-stats">
 								<div class="icon"><i class="fa fa-euro"></i></div>
 								<div class="col-xs-10">

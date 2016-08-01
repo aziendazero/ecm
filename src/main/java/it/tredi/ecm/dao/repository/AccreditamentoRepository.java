@@ -23,5 +23,8 @@ public interface AccreditamentoRepository extends CrudRepository<Accreditamento,
 	@Query("SELECT a.provider.id FROM Accreditamento a WHERE a.id = :accreditamentoId")
 	public Long getProviderIdById(@Param("accreditamentoId") Long accreditamentoId);
 	
+	public int countAllByStato(AccreditamentoStatoEnum stato);
 	public Set<Accreditamento> findAllByStato(AccreditamentoStatoEnum stato);
+	public int countAllByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
+	public Set<Accreditamento> findAllByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
 }

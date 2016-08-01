@@ -26,8 +26,10 @@ public interface ProviderRepository extends CrudRepository<Provider, Long> {
 	@Query("SELECT files.tipo From Provider p JOIN p.files files WHERE p.id = :id")
 	public Set<String> findAllFileTipoByProviderId(@Param("id") Long id);
 
+	@Query("SELECT p.id FROM Provider p WHERE p.account.id = :accountId")
+	public Long getIdByAccountId(@Param("accountId") Long accountId);
 	@Query("SELECT p.account.id FROM Provider p WHERE p.id = :providerId")
-	public Long getAccountIdById(@Param("providerId")Long providerId);
+	public Long getAccountIdById(@Param("providerId") Long providerId);
 	
 	@Query("SELECT p.canInsertPianoFormativo FROM Provider p WHERE p.id = :providerId")
 	public boolean canInsertPianoFormativo(@Param("providerId")Long providerId);
