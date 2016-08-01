@@ -318,7 +318,7 @@
 				});
 			});
 
-			//rimuove class bad (errore validazione) dagli input
+			//rimuove class bad (errore validazione) dagli input (le select sono gestite su gentella.validator.validator.js unmark)
 			$('input[type=radio], input[type=checkbox]').each(function(){
 				$(this).on('ifToggled', function() {
 					$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
@@ -336,13 +336,15 @@
 				});
 			});
 
-			$("select").each(function(){
-				$(this).on('change', function() {
+			$('input[type=file]').each(function(){
+				$(this).on("change", function() {
 					$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
 						$(this).remove();
 					});
-				})
-			})
+				});
+			});
+
+
 
 			/*]]>*/
 		</script>
