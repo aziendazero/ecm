@@ -30,16 +30,16 @@ public class AccountController{
 	private final String EDIT = "/user/userEdit";
 	private final String LIST = "/user/userList";
 	private final String URL_LIST = "/user/list";
-	
+
 	@Autowired private AccountService accountService;
 	@Autowired private ProfileAndRoleService profileAndRoleService;
 	@Autowired private AccountValidator accountValidator;
-	
+
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
     }
-	
+
 	@ModelAttribute("account")
 	public Account getAccountPreRequest(@RequestParam(value="editId",required = false) Long id){
 		if(id != null)
@@ -48,7 +48,7 @@ public class AccountController{
 	}
 
 	/**
-	 * Lista account 
+	 * Lista account
 	 **/
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllUser(principal)")
 	@RequestMapping("/user/list")
@@ -64,7 +64,7 @@ public class AccountController{
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditUser(principal,#id)")
 	@RequestMapping("/user/{id}/edit")
 	public String editUser(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
@@ -77,7 +77,7 @@ public class AccountController{
 			return "redirect:" + URL_LIST;
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canCreateUser(principal)")
 	@RequestMapping("/user/new")
 	public String newUser(Model model, RedirectAttributes redirectAttrs){
@@ -90,7 +90,7 @@ public class AccountController{
 			return "redirect:" + URL_LIST;
 		}
 	}
-	
+
 	@RequestMapping(value = "/user/save", method = RequestMethod.POST)
 	public String saveUser(@ModelAttribute("account") Account account, BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		LOGGER.info(Utils.getLogMessage("POST /user/save"));
@@ -105,15 +105,19 @@ public class AccountController{
 			}else{
 				LOGGER.debug(Utils.getLogMessage("Salvataggio account"));
 				try{
+					boolean isNew = account.isNew();
 					accountService.save(account);
-					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.utente_salvato", "success"));
+					if (isNew)
+						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.utente_creato", "success"));
+					else
+						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.utente_salvato", "success"));
 					LOGGER.info(Utils.getLogMessage("REDIRECT:" + URL_LIST));
 					return "redirect:" + URL_LIST;
 				}catch (Exception ex){
 					LOGGER.error(Utils.getLogMessage("POST /user/save"),ex);
 					model.addAttribute("profileList", profileAndRoleService.getAllProfile());
 					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
-					return EDIT; 
+					return EDIT;
 				}
 			}
 		}catch (Exception ex) {
@@ -123,7 +127,7 @@ public class AccountController{
 			return "redirect:" + URL_LIST;
 		}
 	}
-	
+
 	@RequestMapping("/user/changePassword")
 	public String changePassword(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /user/changePassword"));
@@ -137,9 +141,9 @@ public class AccountController{
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping(value = "/user/changePassword", method = RequestMethod.POST)
-	public String changePassword(@ModelAttribute("accountChangePassword") AccountChangePassword accountChangePassword, 
+	public String changePassword(@ModelAttribute("accountChangePassword") AccountChangePassword accountChangePassword,
 									BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		LOGGER.info(Utils.getLogMessage("POST /user/changePassword"));
 		try {
@@ -170,7 +174,7 @@ public class AccountController{
 			return "redirect:/user/changePassword";
 		}
 	}
-	
+
 	@RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST)
 	public String resetPassword(@RequestParam("reset_email") String email, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /user/resetPassword"));
@@ -185,7 +189,7 @@ public class AccountController{
 		}
 		return "redirect:/home";
 	}
-	
+
 	private String goToEdit(Model model, Account account){
 		model.addAttribute("account", account);
 		model.addAttribute("profileList", profileAndRoleService.getAllProfile());

@@ -173,6 +173,11 @@ table.datatable-responsive-search-validation thead .sorting_asc:after {
 	text-align: center;
 }
 
+.stato-center {
+	text-align: center;
+	width: 70px;
+}
+
 .disabled-fa {
 	cursor: not-allowed !important;
 	color: #A5A9AC;

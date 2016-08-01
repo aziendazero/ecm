@@ -34,28 +34,32 @@
 				</div>
 
 				<div class="x_panel">
-					<div class="pull-right buttons-header">
-						<!-- tasto modifica -->
-						<th:block
-							th:if="${#authentication.principal.hasProfile('PROVIDER') OR #authentication.principal.hasProfile('SEGRETERIA')}">
-							<button type="button" class="btn btn-success pull-right"
-								th:text="#{label.modifica}" onclick="switchMode()"></button>
-							<a th:if="${accreditamentoWrapper.canSend}"
-								class="btn btn-success pull-right"
-								th:text="#{label.invia_domanda}"
-								th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a>
-						</th:block>
-						<button type="button" class="btn btn-primary pull-right"
-							th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()"
-							data-toggle="modal" data-target=".modal-showAll"></button>
-						<!-- blocco pulsanti segreteria -->
-						<th:block
-							th:if="${#authentication.principal.hasProfile('SEGRETERIA')}">
+					<div class="x_title">
+						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' ' + accreditamentoWrapper.provider.codiceFiscale + ' ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
+						<div class="pull-right buttons-header">
+							<!-- tasto modifica -->
+							<th:block
+								th:if="${#authentication.principal.hasProfile('PROVIDER') OR #authentication.principal.hasProfile('SEGRETERIA')}">
+								<button type="button" class="btn btn-success pull-right"
+									th:text="#{label.modifica}" onclick="switchMode()"></button>
+								<a th:if="${accreditamentoWrapper.canSend}"
+									class="btn btn-success pull-right"
+									th:text="#{label.invia_domanda}"
+									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a>
+							</th:block>
 							<button type="button" class="btn btn-primary pull-right"
-								th:text="#{label.abilita_id_editabili}" onclick="alert('TODO')"></button>
-						</th:block>
-						<a class="btn btn-primary pull-right" th:text="#{label.indietro}"
-							th:href="@{|/provider/${accreditamentoWrapper.provider.id}/accreditamento/list|}"></a>
+								th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()"
+								data-toggle="modal" data-target=".modal-showAll"></button>
+							<!-- blocco pulsanti segreteria -->
+							<th:block
+								th:if="${#authentication.principal.hasProfile('SEGRETERIA')}">
+								<button type="button" class="btn btn-primary pull-right"
+									th:text="#{label.abilita_id_editabili}" onclick="alert('TODO')"></button>
+							</th:block>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}"
+								th:href="@{|/provider/${accreditamentoWrapper.provider.id}/accreditamento/list|}"></a>
+						</div>
+						<div class="clearfix"></div>
 					</div>
 				</div>
 
