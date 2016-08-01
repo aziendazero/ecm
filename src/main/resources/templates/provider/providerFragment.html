@@ -96,7 +96,7 @@
 						</div>
 
 						<!-- PARTITA IVA -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.partitaIva')} ? 'bad'">
+						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.partitaIva')} ? 'bad'" th:if="${editabile or providerWrapper.provider.partitaIva != null}">
 							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.partitaIva') : ''}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="partitaIva">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.partita_iva}">label.partita_iva</span>
@@ -106,7 +106,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input type="text" id="partitaIva" required="required" class="form-control col-md-7 col-xs-12"
 										name="partivaIva" th:field="${providerWrapper.provider.partitaIva}"
-										th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva'))}"/>
+										th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')) or !providerWrapper.provider.hasPartitaIVA}"/>
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
