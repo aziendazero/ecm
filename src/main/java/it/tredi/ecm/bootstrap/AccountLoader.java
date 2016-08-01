@@ -163,7 +163,6 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			admin.setExpiresDate(null);
 			admin.setLocked(false);
 			admin.getProfiles().add(profile_admin);
-			//admin.getProfiles().add(profile_provider);
 			
 			accountRepository.save(admin);
 			
