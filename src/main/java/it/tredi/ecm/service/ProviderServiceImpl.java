@@ -133,7 +133,7 @@ public class ProviderServiceImpl implements ProviderService {
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerRegistrationWrapper) {
 		Provider provider = providerRegistrationWrapper.getProvider();
 		Persona richiedente = providerRegistrationWrapper.getRichiedente();
-		if(providerRegistrationWrapper.isDelegato())
+		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true)
 			richiedente.setRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
 		Persona legale = providerRegistrationWrapper.getLegale();
 		File delegaRichiedente = providerRegistrationWrapper.getDelega();
@@ -149,7 +149,7 @@ public class ProviderServiceImpl implements ProviderService {
 		save(provider);
 
 		//TODO Delegato consentito solo per alcuni tipi di Provider
-		if(providerRegistrationWrapper.isDelegato()){
+		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true){
 			delegaRichiedente.setTipo(FileEnum.FILE_DELEGA);
 			fileService.save(delegaRichiedente);
 			richiedente.addFile(delegaRichiedente);
@@ -176,7 +176,7 @@ public class ProviderServiceImpl implements ProviderService {
 			personaService.save(legale);
 		}
 	}
-	
+
 	@Override
 	public Long getProviderIdByAccountId(Long accountId) {
 		return providerRepository.getIdByAccountId(accountId);

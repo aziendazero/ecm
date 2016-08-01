@@ -28,9 +28,22 @@ public class ProviderRegistrationWrapperValidator{
 
 		//TODO Delegato consentito solo per alcuni tipi di Provider
 		//allegato obbligatorio solo se e' stato selezionato il flag delegato
-		if(providerForm.isDelegato()){
+		if(providerForm.getDelegato() == null)
+			errors.rejectValue("delegato", "error.empty");
+
+		if(providerForm.getDelegato() != null && providerForm.getDelegato() == true){
 			fileValidator.validate(providerForm.getDelega(), errors, "delega");
 		}
+
+		//check che il legale rappresentante e il delegato del legale rappresentante non abbiano lo stesso cv
+		if(providerForm.getDelegato() != null && providerForm.getDelegato() == true) {
+			String cvLegale = providerForm.getLegale().getAnagrafica().getCodiceFiscale();
+			String cvDelegato = providerForm.getRichiedente().getAnagrafica().getCodiceFiscale();
+			// evito il controllo se una delle due è vuota
+			if (!cvLegale.isEmpty() && cvLegale.equals(cvDelegato))
+				errors.rejectValue("richiedente.anagrafica.codiceFiscale", "error.stessoCf");
+		}
+
 		Utils.logDebugErrorFields(LOGGER, errors);
 
 	}

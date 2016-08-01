@@ -210,6 +210,38 @@
 									</div>
 								</div>
 								<div id="step-3" class="wizard_content" style="display: none;">
+
+									<!-- radio rappresentante -->
+									<div id="checkbox_delegato" class="item form-group" th:classappend="${#fields.hasErrors('providerForm.delegato')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delega_checkbox">
+											<span th:text="#{label.rappresentante_radio}">label.rappresentante_radio</span> <span class="required">*</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12" id="delegato_radio">
+											<div class="radio">
+												<label>
+													<input type="radio" class="flat" id="legaleRadio"
+														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="false" />
+													<span th:text="#{label.legale_radio}">Il richiedente è il Legale Rappresentante</span>
+												</label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="flat" id="delegatoRadio"
+														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="true" />
+													<span th:text="#{label.delegato_radio}">Il richiedente è delegato dal Legale Rappresentante</span>
+												</label>
+											</div>
+										</div>
+										<div th:if="${#fields.hasErrors('providerForm.delegato')}" class="alert" th:errors="${providerForm.delegato}"></div>
+									</div>
+
+									<!-- delega -->
+									<div id="delegaFile" th:class="${providerForm.delegato} ? '' : hidden">
+										<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, null, true, true, true)" ></th:block>
+									</div>
+
+									<div id="divider" class="divider-dashed"></div>
+
 									<!-- nome -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.richiedente.anagrafica.nome')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeRichiedente">
@@ -275,37 +307,6 @@
 										<div th:if="${#fields.hasErrors('providerForm.richiedente.anagrafica.telefono')}" class="alert" th:errors="${providerForm.richiedente.anagrafica.telefono}"></div>
 									</div>
 
-									<div id="divider" class="divider-dashed"></div>
-
-									<!-- readio rappresentante -->
-									<div id="checkbox_delegato" class="item form-group" th:classappend="${#fields.hasErrors('providerForm.delegato')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delega_checkbox">
-											<span th:text="#{label.rappresentante_radio}">label.rappresentante_radio</span> <span class="required">*</span>
-										</label>
-										<div class="col-md-6 col-sm-6 col-xs-12" id="delegato_radio">
-											<div class="radio">
-												<label>
-													<input type="radio" class="flat" id="legaleRadio"
-														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="false" />
-													<span th:text="#{label.legale_radio}">Il richiedente è il Legale Rappresentante</span>
-												</label>
-											</div>
-											<div class="radio">
-												<label>
-													<input type="radio" class="flat" id="delegatoRadio"
-														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="true" />
-													<span th:text="#{label.delegato_radio}">Il richiedente è delegato dal Legale Rappresentante</span>
-												</label>
-											</div>
-										</div>
-										<div th:if="${#fields.hasErrors('providerForm.delegato')}" class="alert" th:errors="${providerForm.delegato}"></div>
-									</div>
-
-									<!-- delega -->
-									<div id="delegaFile" th:class="${providerForm.delegato} ? '' : hidden">
-										<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, null, true, true, true)" ></th:block>
-									</div>
-
 									<!-- Invia dati -->
 									<div class="item form-group text-right">
 										<input class="btn btn-success right" type="submit" name="saveTypeFull" value="full" th:value="#{label.crea_account}"/>
@@ -350,17 +351,65 @@
 
 		   	$('#hasPartitaIVA').on('ifUnchecked', function() {
 		   		$('#pIva').prop('disabled', true)
-		   			.prop('required', false)
+			   		.prop('required', false)
 		   			.val('')
-		   			.parent().next().remove();
-		   		$('#pIva').parent().parent().removeClass('bad');
-		   		$('#pIva').blur();
+		   			.blur()
+		   			.parent().closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
 		   	});
 
 		   	$('#legaleRadio').on('ifChecked', function() {
 		   		$('#delega').prop('disabled', true);
 		   		$('#delegaFile').addClass('hidden');
+		   		//copia i valori del legale in quelli del richiedente e li disabilita
+		   		$('#nomeRichiedente').val($('#nomeLegaleRappresentante').val())
+		   			.prop('readonly', true)
+		   			.blur()
+		   			.addClass('label-disabled')
+		   			.on("focus", function(){
+  						$(this).blur();
+					})
+		   			.parent().closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
+		   		$('#cognomeRichiedente').val($('#cognomeLegaleRappresentante').val())
+		   			.prop('readonly', true)
+		   			.blur()
+		   			.addClass('label-disabled')
+		   			.on("focus", function(){
+  						$(this).blur();
+					})
+		   			.parent().closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
+		   		$('#cfRichiedente').val($('#cfLegaleRappresentante').val())
+		   			.prop('readonly', true)
+		   			.blur()
+		   			.addClass('label-disabled')
+		   			.on("focus", function(){
+  						$(this).blur();
+					})
+		   			.parent().closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
 		   	});
+
+		   	//sblocca i valori (solo nel caso in cui sia stato effettivamente checkato e poi successivamente uncheckato)
+			$('#legaleRadio').on('ifUnchecked', function() {
+				$('#nomeRichiedente').val('')
+		   			.prop('readonly', false)
+		   			.removeClass('label-disabled')
+		   			.unbind('focus');
+		   		$('#cognomeRichiedente').val('')
+		   			.prop('readonly', false)
+		   			.removeClass('label-disabled')
+		   			.unbind('focus');
+		   		$('#cfRichiedente').val('')
+		   			.prop('readonly', false)
+		   			.removeClass('label-disabled')
+		   			.unbind('focus');
+			});
 
 		   	$('#delegatoRadio').on('ifChecked', function() {
 		   		$('#delega').prop('disabled', false);
@@ -384,6 +433,7 @@
 			    	$('#delega-parent').hide();
 			    	$('#delega').prop( "disabled", true);
 			    	$('#divider').hide();
+			    	$('#legaleRadio').iCheck('uncheck');
 			    }
 	      	}
 		/*]]>*/
