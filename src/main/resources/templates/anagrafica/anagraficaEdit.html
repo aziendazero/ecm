@@ -118,7 +118,7 @@
 								<div class="col-md-4 col-sm-4 col-xs-12">
 									<input id="pec_anagrafica"	name="pec_anagrafica"
 										required="required"	class="form-control col-md-7 col-xs-12"
-										type="pec" th:field="${anagraficaWrapper.anagrafica.pec}" />
+										type="email" th:field="${anagraficaWrapper.anagrafica.pec}" />
 								</div>
 								<div th:if="${#fields.hasErrors('anagraficaWrapper.anagrafica.pec')}" class="alert" th:errors="${anagraficaWrapper.anagrafica.pec}"></div>
 							</div>

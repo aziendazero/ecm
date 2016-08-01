@@ -242,6 +242,19 @@
 
 									<div id="divider" class="divider-dashed"></div>
 
+									<!-- cognome -->
+									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.richiedente.anagrafica.cognome')} ? 'bad'">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cognomeRichiedente">
+											<span class="required" th:text="#{label.cognome}">label.cognome</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<input type="text" id="cognomeRichiedente" th:field="${providerForm.richiedente.anagrafica.cognome}"
+											required="required" class="form-control col-md-7 col-xs-12" />
+										</div>
+										<div th:if="${#fields.hasErrors('providerForm.richiedente.anagrafica.cognome')}" class="alert" th:errors="${providerForm.richiedente.anagrafica.cognome}"></div>
+									</div>
+									
 									<!-- nome -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.richiedente.anagrafica.nome')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeRichiedente">
@@ -253,19 +266,6 @@
 											required="required"	class="form-control col-md-7 col-xs-12" />
 										</div>
 										<div th:if="${#fields.hasErrors('providerForm.richiedente.anagrafica.nome')}" class="alert" th:errors="${providerForm.richiedente.anagrafica.nome}"></div>
-									</div>
-
-									<!-- cognome -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.richiedente.anagrafica.cognome')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cognomeRichiedente">
-											<span class="required" th:text="#{label.cognome}">label.nome</span>
-											<span class="required">*</span>
-										</label>
-										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="cognomeRichiedente" th:field="${providerForm.richiedente.anagrafica.cognome}"
-											required="required" class="form-control col-md-7 col-xs-12" />
-										</div>
-										<div th:if="${#fields.hasErrors('providerForm.richiedente.anagrafica.cognome')}" class="alert" th:errors="${providerForm.richiedente.anagrafica.cognome}"></div>
 									</div>
 
 									<!-- codice fiscale -->

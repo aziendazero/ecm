@@ -67,7 +67,14 @@ public class PersonaServiceImpl implements PersonaService {
 	@Override
 	public Set<Anagrafica> getAllAnagraficheByProviderId(Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Anagrafiche del Provider " + providerId));
-		return anagraficaService.getAllAnagraficheByProviderId(providerId);
+		Set<Anagrafica> listAnagrafiche = anagraficaService.getAllAnagraficheByProviderId(providerId);
+		
+		//Elimino l'anagrafica del Rappresentante Legale
+		Persona persona = getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE, providerId);
+		if(persona != null){
+			listAnagrafiche.remove(persona.getAnagrafica());
+		}
+		return listAnagrafiche;
 	}
 	
 	@Override
