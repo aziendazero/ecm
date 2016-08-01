@@ -215,4 +215,28 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento inviate alla segreteria"));
 		return accreditamentoRepository.findAllByStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
 	}
+	
+	@Override
+	public int countAllAccreditamentiByStato(AccreditamentoStatoEnum stato) {
+		LOGGER.debug(Utils.getLogMessage("Conto delle domande di accreditamento " + stato));
+		return accreditamentoRepository.countAllByStato(stato);
+	}
+	
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiByStato(AccreditamentoStatoEnum stato) {
+		LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato));
+		return accreditamentoRepository.findAllByStato(stato);
+	}
+	
+	@Override
+	public int countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId) {
+		LOGGER.debug(Utils.getLogMessage("Numero delle domande di accreditamento " + stato + " per provider " + providerId));
+		return accreditamentoRepository.countAllByStatoAndProviderId(stato, providerId);
+	}
+	
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato + " per provider " + providerId));
+		return accreditamentoRepository.findAllByStatoAndProviderId(stato, providerId);
+	}
 }

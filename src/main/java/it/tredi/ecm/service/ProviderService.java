@@ -18,6 +18,7 @@ public interface ProviderService {
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper);
 	
+	public Long getProviderIdByAccountId(Long accountId);
 	public Long getAccountIdForProvider(Long providerId);
 	public boolean canInsertPianoFormativo(Long providerId);
 	public boolean canInsertEvento(Long providerId);

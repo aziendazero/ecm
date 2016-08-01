@@ -111,6 +111,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			provider.setStatus(ProviderStatoEnum.INSERITO);
 			provider.setAccount(account);
 			provider.addPersona(legale);
+			provider.addPersona(richiedente);
 			provider.setSedeLegale(sedeLegale);
 			provider.setSedeOperativa(sedeLegale);
 			legale.getAnagrafica().setTelefono("123456");

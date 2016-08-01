@@ -176,6 +176,11 @@ public class ProviderServiceImpl implements ProviderService {
 			personaService.save(legale);
 		}
 	}
+	
+	@Override
+	public Long getProviderIdByAccountId(Long accountId) {
+		return providerRepository.getIdByAccountId(accountId);
+	}
 
 	@Override
 	public Long getAccountIdForProvider(Long providerId) {
