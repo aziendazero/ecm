@@ -30,37 +30,6 @@ public class ProviderValidator {
 		Provider providerForm = (Provider)target;
 		validateProviderBase(providerForm, errors, prefix);
 
-		//Presenza e univocità di codiceFiscale e/o partitaIva
-		//		if(providerForm.getPartitaIva().isEmpty() && providerForm.getCodiceFiscale().isEmpty())
-		//			errors.rejectValue(prefix + "partitaIva", "error.empty");
-		//		else{
-		//			Provider provider = providerService.getProviderByPartitaIva((providerForm.getPartitaIva()));
-		//			if(provider != null){
-		//				if(providerForm.isNew()){
-		//					errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
-		//				}else{
-		//					if(!provider.getId().equals(providerForm.getId())){
-		//						errors.rejectValue(prefix + "partitaIva", "error.partitaIva.duplicated");
-		//					}
-		//				}
-		//			}
-		//		}
-		//
-		//		if(providerForm.getPartitaIva().isEmpty() && providerForm.getCodiceFiscale().isEmpty())
-		//			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
-		//		else{
-		//			Provider provider = providerService.getProviderByCodiceFiscale((providerForm.getCodiceFiscale()));
-		//			if(provider != null){
-		//				if(providerForm.isNew()){
-		//					errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
-		//				}else{
-		//					if(!provider.getId().equals(providerForm.getId())){
-		//						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
-		//					}
-		//				}
-		//			}
-		//		}
-
 		// se il flag hasPartitaIVA è true valido, altrimenti no
 		if(providerForm.isHasPartitaIVA()) {
 			//partita IVA obbligatoria

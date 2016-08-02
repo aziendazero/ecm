@@ -39,13 +39,9 @@
 						<div class="pull-right buttons-header">
 							<!-- tasto modifica -->
 							<th:block
-								th:if="${#authentication.principal.hasProfile('PROVIDER') OR #authentication.principal.hasProfile('SEGRETERIA')}">
+								th:if="${(#authentication.principal.hasProfile('PROVIDER') AND accreditamentoWrapper.accreditamento.bozza) OR #authentication.principal.hasProfile('SEGRETERIA')}">
 								<button type="button" class="btn btn-success pull-right"
 									th:text="#{label.modifica}" onclick="switchMode()"></button>
-								<a th:if="${accreditamentoWrapper.canSend}"
-									class="btn btn-success pull-right"
-									th:text="#{label.invia_domanda}"
-									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a>
 							</th:block>
 							<button type="button" class="btn btn-primary pull-right"
 								th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()"
