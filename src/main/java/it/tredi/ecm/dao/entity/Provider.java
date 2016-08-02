@@ -80,8 +80,13 @@ public class Provider extends BaseEntity{
 
 	/*	IL GRUPPO VIENE DESIGNATO IN FUNZIONE DEL TIPO DI ORGANIZZATORE	*/
 	public void setTipoOrganizzatore(TipoOrganizzatore tipoOrganizzatore){
-		this.tipoOrganizzatore = tipoOrganizzatore;
-		this.gruppo = tipoOrganizzatore.getGruppo();
+		if(tipoOrganizzatore != null){
+			this.tipoOrganizzatore = tipoOrganizzatore;
+			this.gruppo = tipoOrganizzatore.getGruppo();
+		}else{
+			this.tipoOrganizzatore = null;
+			this.gruppo = "";
+		}
 	}
 
 	@Enumerated(EnumType.STRING)

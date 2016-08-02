@@ -163,9 +163,16 @@
 				                      	<span class="required">*</span>
 				                      </label>
 				                      <div class="col-md-6 col-sm-6 col-xs-12">
-				                        <select id="tipoOrganizzatore_select" class="form-control required" th:field="${providerForm.provider.tipoOrganizzatore}" onchange="inputDelegaControl()">
-				                          <option value="" th:text="#{label.seleziona}">label.seleziona</option>
-				                          <option th:each="tipo : ${tipoOrganizzatoreList}" th:attr="tipop=${tipo.tipoP}" th:value="${tipo}" th:text="${tipo.nome}">Choose option</option>
+				                        <select id="tipoOrganizzatore_select" 
+				                        	class="selectpicker required" 
+				                        	th:field="${providerForm.provider.tipoOrganizzatore}" 
+				                        	data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona una tipologia di organizzazione..."
+											th:remove="all-but-first"
+				                        	onchange="inputDelegaControl()">
+				                          <option th:each="tipo : ${T(it.tredi.ecm.dao.enumlist.RagioneSocialeEnum).values()}" th:attr="tipop=${tipo.tipoP}" th:value="${tipo}" th:text="${tipo.nome}">Choose option</option>
 				                        </select>
 				                      </div>
 				                      <div th:if="${#fields.hasErrors('providerForm.provider.tipoOrganizzatore')}" class="alert" th:errors="${providerForm.provider.tipoOrganizzatore}"></div>

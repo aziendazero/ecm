@@ -16,7 +16,7 @@ import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.service.ObiettivoService;
 
 @Component
-@org.springframework.context.annotation.Profile("dev")
+@org.springframework.context.annotation.Profile({"dev","demo"})
 public class ObiettiviLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ObiettiviLoader.class);
 	

@@ -37,11 +37,6 @@ public class ProviderRegistrationController {
 		dataBinder.setDisallowedFields("id");
 	}
 
-	@ModelAttribute("tipoOrganizzatoreList")
-	public TipoOrganizzatore[] getListTipoOrganizzatore(){
-		return TipoOrganizzatore.values();
-	}
-
 	@ModelAttribute("providerForm")
 	public ProviderRegistrationWrapper getProviderRegistrationWrapperPreRequest(@RequestParam(value="editId",required = false) Long id){
 		return providerService.getProviderRegistrationWrapper();
@@ -69,7 +64,7 @@ public class ProviderRegistrationController {
 									BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		LOGGER.info(Utils.getLogMessage("POST /providerRegistration"));
 		try{
-			//TODO Delegato consentito solo per alcuni tipi di Provider
+			//Delegato consentito solo per alcuni tipi di Provider
 			if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true){
 				File file = providerRegistrationWrapper.getDelega();
 				if(file != null && !file.isNew())

@@ -183,7 +183,14 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(canEditAllProvider(currentUser))
 			return true;
 		
-		return pianoFormativoService.isEditabile(pianoFormativoId);
+		return pianoFormativoService.isPianoModificabile(pianoFormativoId);
+	}
+	
+	/*	FILE */
+	@Override
+	public boolean canShowFile(CurrentUser currentUser, Long fileId){
+		//TODO
+		return true;
 	}
 	
 }
