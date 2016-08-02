@@ -328,7 +328,7 @@
 											</thead>
 											<tbody>
 												<!-- COORDINATORE COMITATO SCIENTIFICO -->
-												<tr>
+												<tr th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico != null}">
 													<td th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico != null and editabile}"><a th:text="#{label.coordinatore_comitato}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.coordinatoreComitatoScientifico.id}/show?from=edit|}"></a></td>
 													<td th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico != null and !editabile}"><a th:text="#{label.coordinatore_comitato}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.coordinatoreComitatoScientifico.id}/show|}"></a></td>
 													<td th:unless="${accreditamentoWrapper.coordinatoreComitatoScientifico}"><div th:text="#{label.coordinatore_comitato}"></div></td>
