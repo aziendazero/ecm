@@ -172,7 +172,7 @@
 											title="Seleziona una tipologia di organizzazione..."
 											th:remove="all-but-first"
 				                        	onchange="inputDelegaControl()">
-				                          <option th:each="tipo : ${T(it.tredi.ecm.dao.enumlist.RagioneSocialeEnum).values()}" th:attr="tipop=${tipo.tipoP}" th:value="${tipo}" th:text="${tipo.nome}">Choose option</option>
+				                          <option th:each="tipo : ${T(it.tredi.ecm.dao.enumlist.TipoOrganizzatore).values()}" th:attr="tipop=${tipo.tipoP}" th:value="${tipo}" th:text="${tipo.nome}">Choose option</option>
 				                        </select>
 				                      </div>
 				                      <div th:if="${#fields.hasErrors('providerForm.provider.tipoOrganizzatore')}" class="alert" th:errors="${providerForm.provider.tipoOrganizzatore}"></div>

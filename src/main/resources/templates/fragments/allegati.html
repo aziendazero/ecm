@@ -153,8 +153,9 @@
 					default: break;
 						}
 
+					var prefixUrl = [[@{/file/}]];
 					$("#"+inputName+"_label").text(response.nomeFile);
-					$("#"+inputName+"_label").attr('href',"/file/" + response.id);
+					$("#"+inputName+"_label").attr('href',prefixUrl + response.id);
 					$("#"+inputName+"\\.id").attr('value', response.id);
 					$("#"+inputName+"\\.nomeFile").attr('value', response.nomeFile);
 				}
