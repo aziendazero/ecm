@@ -139,7 +139,6 @@ public class ProviderServiceImpl implements ProviderService {
 		File delegaRichiedente = providerRegistrationWrapper.getDelega();
 
 		if(provider.getAccount().getProfiles().isEmpty()){
-			//assegno profilo PROVIDER TODO
 			Optional<Profile> providerProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDER);
 			if(providerProfile.isPresent())
 				provider.getAccount().getProfiles().add(providerProfile.get());
@@ -148,7 +147,7 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setStatus(ProviderStatoEnum.INSERITO);
 		save(provider);
 
-		//TODO Delegato consentito solo per alcuni tipi di Provider
+		//Delegato consentito solo per alcuni tipi di Provider
 		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true){
 			delegaRichiedente.setTipo(FileEnum.FILE_DELEGA);
 			fileService.save(delegaRichiedente);

@@ -29,7 +29,7 @@
 							<tbody th:unless="${#lists.isEmpty(providerList)}" th:remove="all-but-first">
 								<tr th:each="provider : ${providerList}">
 									<th><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/accreditamento/list|}">3d informatica</a></th>
-									<th th:text="${provider.partitaIva != null} ? ${provider.partitaIva} : ${provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</th>
+									<th th:text="${provider.partitaIva != null and !#strings.isEmpty(provider.partitaIva) ? provider.codiceFiscale + ' (' + provider.partitaIva +')' : provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</th>
 									<th th:text="${provider.gruppo}">informatica</th>
 									<th th:text="${provider.status.nome}">stato</th>
 									<th th:text="${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</th>

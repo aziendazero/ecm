@@ -46,7 +46,7 @@
 										th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore'))}"
 										th:remove="all-but-first">
 										<option
-											th:each="tipo, row: ${tipoOrganizzatoreList}"
+											th:each="tipo, row: ${T(it.tredi.ecm.dao.enumlist.TipoOrganizzatore).values()}"
 											th:value="${tipo}"
 											th:text="${tipo.nome}">tipologia selezionata
 										</option>

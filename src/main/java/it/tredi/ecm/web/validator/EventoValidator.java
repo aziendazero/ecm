@@ -39,7 +39,7 @@ public class EventoValidator {
 	private void validateFull(Object target, Errors errors, String prefix){
 		LOGGER.info(Utils.getLogMessage("Validazione Evento Full"));
 		Evento evento = (Evento) target;
-		//TODO validateFull in caso di inserimento di un evento nn nel piano formativo
+		//TODO validateFull in caso di inserimento di un evento non nel piano formativo
 		if(evento.getProceduraFormativa() == null)
 			errors.rejectValue(prefix + "proceduraFormativa", "error.empty");
 		if(evento.getTitolo() == null || evento.getTitolo().isEmpty())

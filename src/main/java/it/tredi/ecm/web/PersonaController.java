@@ -343,16 +343,6 @@ public class PersonaController {
 		return "/accreditamento/" + wrapper.getAccreditamentoId() + "/" + mode + "?tab=" + tab;
 	}
 
-	@RequestMapping(value= "/personaRedirect/{personaId}/{target}/{targetId}/{mode}")
-	public String personaRedirect(@PathVariable Long personaId, @PathVariable String target, @PathVariable Long targetId, @PathVariable String mode, RedirectAttributes redirectAttrs) {
-		Persona persona = personaService.getPersona(personaId);
-		if(!persona.isLegaleRappresentante() && !persona.isDelegatoLegaleRappresentante())
-			redirectAttrs.addFlashAttribute("currentTab", "tab2");
-		else
-			redirectAttrs.addFlashAttribute("currentTab", "tab1");
-		return "redirect:/" + target + "/" + targetId + "/" + mode ;
-	}
-
 	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, boolean isLookup){
 		return preparePersonaWrapperEdit(persona,0,0, isLookup);
 	}

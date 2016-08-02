@@ -19,4 +19,6 @@ public interface SecurityAccessService {
 	
 	public boolean canInsertPianoFormativo(CurrentUser currentUser, Long providerId);
 	public boolean canEditPianoFormativo(CurrentUser currentUser, Long providerId, Long pianoFormativoId);
+	
+	public boolean canShowFile(CurrentUser currentUser, Long fileId);
 }

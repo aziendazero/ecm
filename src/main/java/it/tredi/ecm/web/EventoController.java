@@ -103,7 +103,7 @@ public class EventoController {
 	/*
 	 * INSERIMENTO EVENTO IN PIANO FORMATIVO (piano formativo)
 	 */
-//	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
 	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/new")
 	public String newEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId,
 			Model model, RedirectAttributes redirectAttrs){
@@ -153,7 +153,7 @@ public class EventoController {
 	/*
 	 * MODIFICA EVENTO IN PIANO FORMATIVO (piano formativo)
 	 * */
-//	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
 	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/edit")
 	public String editEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
@@ -212,7 +212,7 @@ public class EventoController {
 	/*
 	 * SHOW EVENTO IN PIANO FORMATIVO (piano formativo)
 	 */
-//	@PreAuthorize("@securityAccessServiceImpl.canShowPianoFormativo(principal,#providerId)") TODO?
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping(value = "/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/show")
 	public String showEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
 			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs) {
@@ -343,7 +343,7 @@ public class EventoController {
 	/*
 	 * ELIMINAZIONE DI UN EVENTO IN PIANO FORMATIVO (piano formativo)
 	 * */
-//	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#accreditamentoId)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
 	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/delete")
 	public String removeEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){

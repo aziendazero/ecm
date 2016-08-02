@@ -167,7 +167,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.setDataScadenza(accreditamento.getDataInvio().plusDays(180));
 		
 		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
-		accreditamento.getPianoFormativo().setEditabile(false);
 		accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
 		accreditamentoRepository.save(accreditamento);
 		
@@ -183,7 +182,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
 		PianoFormativo pianoFormativo = new PianoFormativo();
-		pianoFormativo.setEditabile(true);
 		pianoFormativo.setAnnoPianoFormativo(LocalDate.now().getYear());
 		pianoFormativo.setProvider(accreditamento.getProvider());
 		pianoFormativoService.save(pianoFormativo);

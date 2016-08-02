@@ -70,11 +70,11 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 	}
 
 	@Override
-	public boolean isEditabile(Long pianoFormativoId) {
+	public boolean isPianoModificabile(Long pianoFormativoId) {
 		PianoFormativo pianoFormativo = pianoFormativoRepository.findOne(pianoFormativoId);
 		if(pianoFormativo == null)
 			return false;
-		return pianoFormativo.isEditabile();
+		return pianoFormativo.isPianoModificabile();
 	}
 
 	@Override

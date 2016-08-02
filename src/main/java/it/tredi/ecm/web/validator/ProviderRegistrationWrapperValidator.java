@@ -26,7 +26,7 @@ public class ProviderRegistrationWrapperValidator{
 		validateRichiedente(providerForm.getRichiedente(), errors);
 		validateLegale(providerForm.getLegale(), errors);
 
-		//TODO Delegato consentito solo per alcuni tipi di Provider
+		//Delegato consentito solo per alcuni tipi di Provider
 		//allegato obbligatorio solo se e' stato selezionato il flag delegato
 		if(providerForm.getProvider().getTipoOrganizzatore() != null && providerForm.getProvider().getTipoOrganizzatore().isTipoP() && providerForm.getDelegato() == null)
 			errors.rejectValue("delegato", "error.empty");
