@@ -634,7 +634,7 @@ h2 {
 	box-shadow: none;
 }
 
-#professioni-discipline > tbody > tr > td {
+.professioni-discipline > tbody > tr > td {
 	padding: 0px;
 	padding-left: 8px;
 }
