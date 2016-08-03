@@ -67,7 +67,11 @@
 									class="btn btn-success pull-right"
 									th:text="#{label.invia_domanda}"
 									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a>
+<<<<<<< HEAD
+							<button type="button" class="btn btn-primary pull-right" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></button>
+=======
 							<button type="button" class="btn btn-primary pull-right" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode()"></button>
+>>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 						</div>
 						<div class="clearfix"></div>
 					</div>
@@ -79,7 +83,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:include="accreditamento/accreditamentoFragment :: accreditamento(true)"></th:block>
+					<th:block th:include="accreditamento/accreditamentoFragment :: accreditamento('edit')"></th:block>
 
 				</div>
 			</div>
@@ -92,9 +96,9 @@
 					console.log(tabSelected);
 				});
 
-				function switchMode() {
+				function switchMode(mode) {
 					var param = "?tab=" + tabSelected;
-					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/show|}]] + param;
+					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/|}]] + mode + param;
 					location.href = url;
 				}
 

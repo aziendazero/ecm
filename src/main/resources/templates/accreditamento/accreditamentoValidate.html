@@ -9,7 +9,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 
-				<!-- modale showAll -->
+				<!-- modale riepilogo  -->
 				<div id="showAll-modal" class="modal fade modal-showAll"
 					data-model-index="1" role="dialog">
 					<div class="modal-dialog modal-lg">
@@ -25,8 +25,7 @@
 							<div class="modal-body">
 
 								<!-- fragment show all -->
-								<th:block
-									th:include="accreditamento/accreditamentoShowAll :: showAll"></th:block>
+								<th:block th:include="accreditamento/accreditamentoShowAll :: showAll"></th:block>
 
 							</div>
 						</div>
@@ -37,23 +36,13 @@
 					<div class="x_title">
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.codiceFiscale + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
-							<!-- tasto modifica -->
-							<th:block
-								th:if="${(#authentication.principal.hasProfile('PROVIDER') AND accreditamentoWrapper.accreditamento.bozza) OR #authentication.principal.hasProfile('SEGRETERIA')}">
-								<button type="button" class="btn btn-success pull-right"
-									th:text="#{label.modifica}" onclick="switchMode('edit')"></button>
-							</th:block>
+							<button type="button" class="btn btn-success pull-right"
+								th:text="#{label.conferma_valutazione}" onclick="alert('TODO')"></button>
+							<!-- mostra showAll -->
 							<button type="button" class="btn btn-primary pull-right"
 								th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()"
 								data-toggle="modal" data-target=".modal-showAll"></button>
-							<!-- blocco pulsanti segreteria -->
-							<th:block
-								th:if="${#authentication.principal.hasProfile('SEGRETERIA')}">
-								<button type="button" class="btn btn-primary pull-right"
-									th:text="#{label.abilita_id_editabili}" onclick="alert('TODO')"></button>
-								<button type="button" class="btn btn-primary pull-right" th:text="#{label.valuta_domanda}"
-									onclick="switchMode('validate')"></button>
-							</th:block>
+							<button type="button" class="btn btn-primary pull-right" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></button>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}"
 								th:href="@{|/provider/${accreditamentoWrapper.provider.id}/accreditamento/list|}"></a>
 						</div>
@@ -62,21 +51,19 @@
 				</div>
 
 				<div class="x_panel">
+
 					<div class="x_title">
-						<h2
-							th:text="#{label.accreditamento_titolo(Visualizzazione, ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}">Provvisorio
-							- bozza</h2>
+						<h2 th:text="#{label.accreditamento_titolo(Valutazione, ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}"></h2>
 						<div class="clearfix"></div>
 					</div>
-					<th:block
-						th:include="accreditamento/accreditamentoFragment :: accreditamento('show')"></th:block>
+					<th:block th:include="accreditamento/accreditamentoFragment :: accreditamento('validate')"></th:block>
 
 				</div>
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 
-			  	var tabSelected = "tab1";
+			    var tabSelected = "tab1";
 				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 					tabSelected = e.target.id;
 					console.log(tabSelected);

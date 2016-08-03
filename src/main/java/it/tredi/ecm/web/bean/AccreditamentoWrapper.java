@@ -123,35 +123,61 @@ public class AccreditamentoWrapper {
 
 
 
-	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider){
+	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider,String mode){
 		//TODO migliorare la logica per evitare di fare troppi if
 		// ad esempio inizializzare gli stati a true e poi ad ogni controllo se fallisce si mette il false sia allo stato che al valid
 		// cosi facendo valid è settato in automatico senza rifare tutti i controlli
 		//
 		//NON lo faccio adesso perchè voglio capire in fase di validazione della domanda come gestiremo i vari stati
 
-		providerStato = (provider.getRagioneSociale()!= null) ? true : false;
+		//check sulla modalità di visualizzazione
+		if(mode.equals("show") || mode.equals("edit")) {
+			providerStato = (provider.getRagioneSociale()!= null) ? true : false;
 
-		sedeLegaleStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
-		sedeOperativaStato = (sedeOperativa != null && !sedeOperativa.isNew()) ? true : false;
+			sedeLegaleStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
+			sedeOperativaStato = (sedeOperativa != null && !sedeOperativa.isNew()) ? true : false;
 
-		//check sul cv unico campo non settabile in registrazione o in modifica delle anagrafiche, ma solo durante la domanda di accreditamento
-		legaleRappresentanteStato = (legaleRappresentante != null && !legaleRappresentante.isNew() && legaleRappresentante.getAnagrafica().getCellulare() != null && !legaleRappresentante.getAnagrafica().getCellulare().isEmpty()) ? true : false;
-		delegatoLegaleRappresentanteStato = (delegatoLegaleRappresentante != null && !delegatoLegaleRappresentante.isNew() && delegatoLegaleRappresentante.getAnagrafica().getCellulare() != null && !delegatoLegaleRappresentante.getAnagrafica().getCellulare().isEmpty()) ? true : false;
+			//check sul cv unico campo non settabile in registrazione o in modifica delle anagrafiche, ma solo durante la domanda di accreditamento
+			legaleRappresentanteStato = (legaleRappresentante != null && !legaleRappresentante.isNew() && legaleRappresentante.getAnagrafica().getCellulare() != null && !legaleRappresentante.getAnagrafica().getCellulare().isEmpty()) ? true : false;
+			delegatoLegaleRappresentanteStato = (delegatoLegaleRappresentante != null && !delegatoLegaleRappresentante.isNew() && delegatoLegaleRappresentante.getAnagrafica().getCellulare() != null && !delegatoLegaleRappresentante.getAnagrafica().getCellulare().isEmpty()) ? true : false;
 
-		datiAccreditamentoStato = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? true : false;
+			datiAccreditamentoStato = (datiAccreditamento != null && !datiAccreditamento.isNew()) ? true : false;
 
-		responsabileSegreteriaStato = (responsabileSegreteria != null && !responsabileSegreteria.isNew()) ? true : false;
-		responsabileAmministrativoStato = (responsabileAmministrativo != null && !responsabileAmministrativo.isNew()) ? true : false;
-		responsabileSistemaInformaticoStato = (responsabileSistemaInformatico != null && !responsabileSistemaInformatico.isNew()) ? true : false;
-		responsabileQualitaStato = (responsabileQualita != null && !responsabileQualita.isNew()) ? true : false;
+			responsabileSegreteriaStato = (responsabileSegreteria != null && !responsabileSegreteria.isNew()) ? true : false;
+			responsabileAmministrativoStato = (responsabileAmministrativo != null && !responsabileAmministrativo.isNew()) ? true : false;
+			responsabileSistemaInformaticoStato = (responsabileSistemaInformatico != null && !responsabileSistemaInformatico.isNew()) ? true : false;
+			responsabileQualitaStato = (responsabileQualita != null && !responsabileQualita.isNew()) ? true : false;
 
-		checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe);
-		setFilesStato(filesDelProvider);
+			checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe);
+			setFilesStato(filesDelProvider);
 
-		sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
-		sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
-		sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
+			sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
+			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
+			sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
+		}
+		if(mode.equals("validate")) {
+			//TODO logica validazione stato
+			providerStato = false;
+			sedeLegaleStato = false;
+			sedeOperativaStato = false;
+			legaleRappresentanteStato = false;
+			delegatoLegaleRappresentanteStato = false;
+
+			datiAccreditamentoStato = false;
+
+			responsabileSegreteriaStato = false;
+			responsabileAmministrativoStato = false;
+			responsabileSistemaInformaticoStato = false;
+			responsabileQualitaStato = false;
+
+			attoCostitutivoStato = false;
+			esperienzaFormazioneStato = false;
+			utilizzoStato = false;
+			sistemaInformaticoStato = false;
+			pianoQualitaStato = false;
+			dichiarazioneLegaleStato = false;
+			dichiarazioneEsclusioneStato = false;
+		}
 	}
 
 	/*
