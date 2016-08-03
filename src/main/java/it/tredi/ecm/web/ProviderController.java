@@ -1,8 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
@@ -46,21 +42,6 @@ public class ProviderController {
     }
 
 	/*** GLOBAL MODEL ATTRIBUTES***/
-	@ModelAttribute("elencoRagioniSociali")
-	public List<String> getListRagioniSociali(){
-		//TODO recuperare elenco ragioni sociali
-		List<String> ragioniSociali = new ArrayList<String>();
-		ragioniSociali.add("srl");
-		ragioniSociali.add("snc");
-		ragioniSociali.add("spa");
-		ragioniSociali.add("sas");
-		return ragioniSociali;
-	}
-
-	@ModelAttribute("tipoOrganizzatoreList")
-	public TipoOrganizzatore[] getListTipoOrganizzatore(){
-		return TipoOrganizzatore.values();
-	}
 
 	@ModelAttribute("providerWrapper")
 	public ProviderWrapper getProvider(@RequestParam(name = "editId", required = false) Long id){

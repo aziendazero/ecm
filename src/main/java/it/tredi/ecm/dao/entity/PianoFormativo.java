@@ -24,9 +24,6 @@ public class PianoFormativo extends BaseEntity{
 	@Column(name="data_fine_modifica")
 	private LocalDate dataFineModifca;
 	
-	//flag di modifica per gestire le modifiche del piano formativo inserito nella domanda di accreditamento
-	private boolean editabile = false;
-	
 	@OneToOne(fetch = FetchType.LAZY)
 	private Provider provider;
 
@@ -47,9 +44,6 @@ public class PianoFormativo extends BaseEntity{
 	}
 	
 	public boolean isPianoModificabile(){
-		if(!isEditabile())
-			return false;
-		
 		if(dataFineModifca == null)
 			return true;
 		if(dataFineModifca.isBefore(LocalDate.now()) || dataFineModifca.isEqual(LocalDate.now()))

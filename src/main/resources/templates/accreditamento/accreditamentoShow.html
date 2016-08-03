@@ -39,7 +39,7 @@
 						<div class="pull-right buttons-header">
 							<!-- tasto modifica -->
 							<th:block
-								th:if="${#authentication.principal.hasProfile('PROVIDER') OR #authentication.principal.hasProfile('SEGRETERIA')}">
+								th:if="${(#authentication.principal.hasProfile('PROVIDER') AND accreditamentoWrapper.accreditamento.bozza) OR #authentication.principal.hasProfile('SEGRETERIA')}">
 								<button type="button" class="btn btn-success pull-right"
 									th:text="#{label.modifica}" onclick="switchMode('edit')"></button>
 							</th:block>

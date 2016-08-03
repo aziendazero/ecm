@@ -13,6 +13,6 @@ public interface PianoFormativoService {
 	public PianoFormativo getPianoFormativo(Long pianoFormativoId);
 	public Set<PianoFormativo> getAllPianiFormativiForProvider(Long providerId);
 	public PianoFormativo getPianoFormativoAnnualeForProvider(Long providerId, Integer annoPianoFormativo);
-	public boolean isEditabile(Long pianoFormativoId);
+	public boolean isPianoModificabile(Long pianoFormativoId);
 	public Set<Long> getAllPianiFormativiIdInAccreditamentoForProvider(Long providerId);
 }

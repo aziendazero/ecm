@@ -43,6 +43,7 @@ public class FileController {
 	@Autowired private FileValidator fileValidator;
 
 	//TODO security su file download/upload
+	@PreAuthorize("@securityAccessServiceImpl.canShowFile(principal,#fileId)")
 	@RequestMapping(value = "/file/{fileId}", method = RequestMethod.GET)
 	public void getFile(@PathVariable("fileId") Long id, HttpServletResponse response, Model model) throws IOException {
 		LOGGER.info(Utils.getLogMessage("GET /file/" + id));
