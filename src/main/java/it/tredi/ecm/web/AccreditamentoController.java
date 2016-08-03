@@ -131,6 +131,26 @@ public class AccreditamentoController {
 		}
 	}
 
+	/*** Get validate Accreditamento {ID} ***/
+//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#id)") TODO
+	@RequestMapping("/accreditamento/{id}/validate")
+	public String validateAccreditamento(@PathVariable Long id, Model model, @RequestParam(required = false) String tab, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + id + "/validate"));
+		try {
+			if (tab != null) {
+				model.addAttribute("currentTab", tab);
+				LOGGER.info(Utils.getLogMessage("TAB:" + tab));
+			}
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
+			return goToAccreditamentoValidate(model, accreditamento);
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + id + "/validate"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoList"));
+			return "accreditamento/accreditamentoList";
+		}
+	}
+
 	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento){
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperShow(accreditamento);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
@@ -144,6 +164,13 @@ public class AccreditamentoController {
 		selectCorrectTab(tab, accreditamentoWrapper, model);
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoEdit"));
 		return "accreditamento/accreditamentoEdit";
+	}
+
+	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento){
+		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento);
+		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoValidate"));
+		return "accreditamento/accreditamentoValidate";
 	}
 
 	//Check per capire in che tab ritornare e con quale messaggio
@@ -289,9 +316,9 @@ public class AccreditamentoController {
 	/*** METODI PRIVATI PER IL SUPPORTO ***/
 	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento){
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - entering"));
-		
+
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
-		commonPrepareAccreditamentoWrapper(accreditamentoWrapper);
+		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "edit");
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
@@ -299,15 +326,25 @@ public class AccreditamentoController {
 
 	private AccreditamentoWrapper prepareAccreditamentoWrapperShow(Accreditamento accreditamento){
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - entering"));
-		
+
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
-		commonPrepareAccreditamentoWrapper(accreditamentoWrapper);
+		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "show");
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
 	}
 
-	private void commonPrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper){
+	private AccreditamentoWrapper prepareAccreditamentoWrapperValidate(Accreditamento accreditamento){
+		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - entering"));
+
+		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
+		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "validate");
+
+		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - exiting"));
+		return accreditamentoWrapper;
+	}
+
+	private void commonPrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper, String mode){
 		Long providerId = accreditamentoWrapper.getProvider().getId();
 		//ALLEGATI
 		Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(providerId);
@@ -325,6 +362,6 @@ public class AccreditamentoController {
 		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + elencoProfessioniDeiComponenti.size()));
 		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
 
-		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider);
+		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode);
 	}
 }

@@ -13,15 +13,17 @@ import it.tredi.ecm.utils.Utils;
 @Controller
 public class ValutazioneController {
 	private static Logger LOGGER = LoggerFactory.getLogger(ValutazioneController.class);
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
-	
+
 	@RequestMapping("/valutazioneDemo")
 	public String showValutazioneDemo(RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /valutazioneDemo"));
 		return "segreteria/valutazione";
 	}
+
+
 }
