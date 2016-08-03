@@ -22,6 +22,7 @@ import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import lombok.Getter;
 import lombok.Setter;
@@ -129,6 +130,13 @@ public class Provider extends BaseEntity{
 
 	public void setCodiceFiscale(String codiceFiscale){
 		this.codiceFiscale = codiceFiscale.toUpperCase();
+	}
+	
+	public Persona getPersonaByRuolo(Ruolo ruolo){
+		for(Persona p : persone)
+			if(p.getRuolo() == ruolo)
+				return p;
+		return null;
 	}
 	
 	@Override

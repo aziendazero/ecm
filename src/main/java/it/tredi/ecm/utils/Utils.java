@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
+import it.tredi.ecm.dao.entity.Field;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -71,7 +72,7 @@ public class Utils {
 	/*
 	 * Mi restituisce la lista di ENUM per legare le checkbox lato thymeleafe
 	 * */
-	public static Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<FieldEditabileAccreditamento> src, SubSetFieldEnum type){
+	public static <T extends Field> Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<T> src, SubSetFieldEnum type){
 		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
 		
 		src.forEach(f -> {
@@ -82,7 +83,7 @@ public class Utils {
 		return dst;
 	}
 	
-	public static Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<FieldEditabileAccreditamento> src, Long objectReference, SubSetFieldEnum type){
+	public static <T extends Field> Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<T> src, Long objectReference, SubSetFieldEnum type){
 		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
 		
 		src.forEach(f -> {
@@ -96,12 +97,12 @@ public class Utils {
 	/*
 	 * Mi restituisce la sublist di record presenti su db per valutare nel save del controller quali eliminare perchè deselezionate
 	 * */
-	public static Set<FieldEditabileAccreditamento> getSubset(Set<FieldEditabileAccreditamento> src, SubSetFieldEnum type){
-		Set<FieldEditabileAccreditamento> dst = new HashSet<FieldEditabileAccreditamento>();
+	public static <T extends Field> Set<T> getSubset(Set<T> src, SubSetFieldEnum type){
+		Set<T> dst = new HashSet<T>();
 		
 		src.forEach(f -> {
 			if(f.getIdField().getSubSetField() == type)
-				dst.add(f);
+				dst. add(f);
 		});		
 		
 		return dst;

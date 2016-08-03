@@ -20,6 +20,7 @@ import java.util.Set;
 import javax.transaction.Transactional;
 
 import org.hibernate.collection.internal.PersistentSet;
+import org.hibernate.id.IdentityGenerator.GetGeneratedKeysDelegate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -54,6 +55,7 @@ import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
 import it.tredi.ecm.dao.repository.ProfessioneRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
+import it.tredi.ecm.service.IntegrazioneUtils;
 import it.tredi.ecm.service.PersonaService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -74,6 +76,8 @@ public class FieldIntegrazioneTest {
 	@Autowired private FieldEditabileAccreditamentoRepository repo;
 	@Autowired private FieldIntegrazioneAccreditamentoRepository repoIntegrazione;
 	@Autowired private ProfessioneRepository professioneRepository;
+	
+	@Autowired private IntegrazioneUtils integrazioneUtils;
 
 	@Autowired
 	private ApplicationContext appContext;
@@ -87,16 +91,6 @@ public class FieldIntegrazioneTest {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 	}
 
-	//@Before
-	@Transactional
-	public void init() {
-	}
-
-	@After
-	public void clean(){
-		//		accreditamentoRepository.delete(this.accreditamentoId);
-		//		providerRepository.delete(this.providerId);
-	}
 
 	@Test
 	@Ignore
@@ -112,7 +106,7 @@ public class FieldIntegrazioneTest {
 		System.out.println("BEFORE: ");
 		print(provider, null);
 
-		setField(provider, field.getIdField().getNameRef(), field.getNewValue());
+		integrazioneUtils.setField(provider, field.getIdField().getNameRef(), field.getNewValue());
 
 		System.out.println("AFTER: ");
 		print(provider, IdFieldEnum.PROVIDER__CODICE_FISCALE.getNameRef());
@@ -135,7 +129,7 @@ public class FieldIntegrazioneTest {
 		Provider provider = accreditamento.getProvider();
 		List<FieldIntegrazioneAccreditamento> idIntegrazione = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(FieldEditabileAccreditamento field : idEditabili){
-			Object newValue = getField(provider, field.getIdField().getNameRef());
+			Object newValue = integrazioneUtils.getField(provider, field.getIdField().getNameRef());
 			idIntegrazione.add(new FieldIntegrazioneAccreditamento(field.getIdField(), field.getAccreditamento(), newValue, TipoIntegrazioneEnum.MODIFICA));
 		}
 		repoIntegrazione.save(idIntegrazione);
@@ -147,7 +141,7 @@ public class FieldIntegrazioneTest {
 		Set<FieldIntegrazioneAccreditamento> idIntegrazione = repoIntegrazione.findAllByAccreditamentoId(304L);
 		Provider provider = new Provider();
 		for(FieldIntegrazioneAccreditamento field : idIntegrazione){
-			setField(provider, field.getIdField().getNameRef(), field.getNewValue());
+			integrazioneUtils.setField(provider, field.getIdField().getNameRef(), field.getNewValue());
 		}
 
 		print(provider, null);
@@ -157,7 +151,7 @@ public class FieldIntegrazioneTest {
 	@Transactional
 	@Ignore
 	public void createFieldIntegrazioneDatiAccreditamento() throws Exception{
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(304L);
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(416L);
 
 		//Segreteria ha sbloccato gli id
 		List<FieldEditabileAccreditamento> idEditabili = new ArrayList<FieldEditabileAccreditamento>();
@@ -166,10 +160,10 @@ public class FieldIntegrazioneTest {
 		idEditabili.add(new FieldEditabileAccreditamento(IdFieldEnum.DATI_ACCREDITAMENTO__DISCIPLINE, accreditamento));
 
 		//PROVIDER modifica i campi
-		DatiAccreditamento datiAccreditamento = datiAccreditamentoService.getDatiAccreditamento(400L);
+		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
 		List<FieldIntegrazioneAccreditamento> idIntegrazione = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(FieldEditabileAccreditamento field : idEditabili){
-			Object newValue = getField(datiAccreditamento, field.getIdField().getNameRef());
+			Object newValue = integrazioneUtils.getField(datiAccreditamento, field.getIdField().getNameRef());
 			idIntegrazione.add(new FieldIntegrazioneAccreditamento(field.getIdField(), field.getAccreditamento(), newValue, TipoIntegrazioneEnum.MODIFICA));
 		}
 
@@ -179,11 +173,12 @@ public class FieldIntegrazioneTest {
 	@Test
 	@Ignore
 	public void applyFieldIntegrazioneDatiAccreditamento() throws Exception{
-		Set<FieldIntegrazioneAccreditamento> idIntegrazione = repoIntegrazione.findAllByAccreditamentoId(304L);
-		DatiAccreditamento dati = datiAccreditamentoService.getDatiAccreditamento(549L);
+		Set<FieldIntegrazioneAccreditamento> idIntegrazione = repoIntegrazione.findAllByAccreditamentoId(416L);
+		//DatiAccreditamento dati = datiAccreditamentoService.getDatiAccreditamento(396L);
+		DatiAccreditamento dati = datiAccreditamentoService.getDatiAccreditamento(118L);
 		
 		for(FieldIntegrazioneAccreditamento field : idIntegrazione){
-			setField(dati, field.getIdField().getNameRef(), field.getNewValue());
+			integrazioneUtils.setField(dati, field.getIdField().getNameRef(), field.getNewValue());
 		}
 
 		datiAccreditamentoService.save(dati, dati.getAccreditamento().getId());
@@ -193,16 +188,17 @@ public class FieldIntegrazioneTest {
 	@Transactional
 	@Ignore
 	public void createFieldPersona() throws Exception{
-		Persona persona = personaService.getPersona(414L);
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(304L);
+		Persona persona = personaService.getPersona(584L);
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(416L);
 
 		//Segreteria ha sbloccato gli id
 		List<FieldEditabileAccreditamento> idEditabili = new ArrayList<FieldEditabileAccreditamento>();
+		idEditabili.add(new FieldEditabileAccreditamento(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME,accreditamento,persona.getId()));
 		idEditabili.add(new FieldEditabileAccreditamento(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE,accreditamento,persona.getId()));
 
 		List<FieldIntegrazioneAccreditamento> idIntegrazione = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(FieldEditabileAccreditamento field : idEditabili){
-			Object newValue = getField(persona, field.getIdField().getNameRef());
+			Object newValue = integrazioneUtils.getField(persona, field.getIdField().getNameRef());
 			idIntegrazione.add(new FieldIntegrazioneAccreditamento(field.getIdField(), field.getAccreditamento(), persona.getId(), newValue, TipoIntegrazioneEnum.MODIFICA));
 		}
 
@@ -212,144 +208,15 @@ public class FieldIntegrazioneTest {
 	@Test
 	//@Ignore
 	public void applyFieldPersona() throws Exception{
-		Set<FieldIntegrazioneAccreditamento> idIntegrazione = repoIntegrazione.findAllByAccreditamentoId(304L);
-		Persona persona = personaService.getPersona(411L);
+		Set<FieldIntegrazioneAccreditamento> idIntegrazione = repoIntegrazione.findAllByAccreditamentoId(416L);
+		Persona persona = personaService.getPersona(534L);
 		for(FieldIntegrazioneAccreditamento field : idIntegrazione){
-			setField(persona, field.getIdField().getNameRef(), field.getNewValue());
+			integrazioneUtils.setField(persona, field.getIdField().getNameRef(), field.getNewValue());
 		}
 
 		print(persona, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE.getNameRef());
 
 		personaService.save(persona);
-	}
-
-
-	private void setField(Object dst, String fieldName, Object fieldValue) throws Exception{
-		Method method = getSetterMethodFor(dst.getClass(), fieldName);
-		if(method != null){
-			Class<?> clazz = method.getParameterTypes()[0];
-
-			if(BaseEntity.class.isAssignableFrom(clazz)){
-				Object object = getEntityFromRepo(clazz, fieldValue);
-				method.invoke(dst, object);
-			}else if(Collection.class.isAssignableFrom(clazz)){
-				//verifico se la collection contiene Entity oppure Altri tipi di dato
-				clazz = getFirstGenericParameterTypesOfFirstParameter(method);
-				if(BaseEntity.class.isAssignableFrom(clazz)){
-					Set<Object> newSet = new HashSet<Object>();
-					for(Object obj :  (Set<?>)fieldValue){
-						newSet.add(getEntityFromRepo(clazz,obj)); 
-					}
-					method.invoke(dst, newSet);
-				}else{
-					method.invoke(dst, fieldValue);
-				}
-			}
-			else{
-				method.invoke(dst, fieldValue);
-			}
-		}
-	}
-
-	private Object getField(Object dst, String fieldName) throws Exception{
-		Method method = getGetterMethodFor(dst.getClass(), fieldName);
-		if(method != null){
-			Object newValue = method.invoke(dst);
-			if(newValue instanceof BaseEntity){
-				return ((BaseEntity) newValue).getId();
-			}
-			else if(newValue instanceof PersistentSet)
-			{
-				Set<Object> newSet = new HashSet<Object>();
-				//Class clazz = getFirstGenericReturnType(method);
-				Class clazz = getTypeByField(dst.getClass(),fieldName);
-				if(clazz != null && BaseEntity.class.isAssignableFrom(clazz)){
-					for(Object obj : (Set<?>)newValue){
-						newSet.add(((BaseEntity)obj).getId());
-					}
-					return newSet;
-				}else{
-					newSet.addAll((Set<?>)newValue);
-					return newSet;
-				}
-			}else{
-				return newValue;
-			}
-		}
-		return null;
-	}
-
-	private Method getSetterMethodFor(Class obj, String fieldName) throws IntrospectionException{
-		BeanInfo info;
-		info = Introspector.getBeanInfo(obj);
-		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-			if(pd.getName().equals(fieldName))
-				return pd.getWriteMethod();
-		}
-		return null;
-	}
-
-	private Method getGetterMethodFor(Class obj, String fieldName) throws IntrospectionException{
-		BeanInfo info;
-		info = Introspector.getBeanInfo(obj);
-		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-			if(pd.getName().equals(fieldName))
-				return pd.getReadMethod();
-		}
-		return null;
-	}
-
-	private Object getEntityFromRepo(Class<?> clazz, Object fieldValue) throws Exception{
-		Object repository = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "Repository");
-		Class[] cArg = new Class[1];
-		cArg[0] = java.io.Serializable.class;
-		Method findOne = repository.getClass().getDeclaredMethod("findOne", cArg);
-		return findOne.invoke(repository, fieldValue);
-	}
-
-	private Class getFirstGenericParameterTypesOfFirstParameter(Method method) throws Exception{
-		Type[] genericParameterTypes = method.getGenericParameterTypes();
-
-		if(genericParameterTypes[0] instanceof ParameterizedType){
-			ParameterizedType aType = (ParameterizedType) genericParameterTypes[0];
-			Type[] parameterArgTypes = aType.getActualTypeArguments();
-			return (Class) parameterArgTypes[0];
-		}
-
-		return null;
-	}
-
-	private Class getFirstGenericReturnType(Method method) throws Exception{
-		Type returnType  = method.getGenericReturnType();
-
-		if(returnType instanceof ParameterizedType){
-			ParameterizedType type = (ParameterizedType) returnType;
-			Type[] typeArguments = type.getActualTypeArguments();
-			return (Class) typeArguments[0];
-		}
-
-		return null;
-	}
-	
-	private Class getTypeByField(Class clazz, String fieldName) throws Exception{
-		Field field = null;
-		//Si fa cosi, ma se l'oggetto è caricato da repository, hibernate lo wrappa in un suo oggetto e quindi la reflection non funge più
-		//Sembrerebbe che gli oggetti di hibernate extends le Entity originali e quindi tentiamo la reflection sulla superClasse
-		try{
-			field = clazz.getDeclaredField(fieldName);
-		}catch (Exception ex){
-			field = clazz.getSuperclass().getDeclaredField(fieldName);
-		}
-		
-		Type genericFieldType = field.getGenericType();
-
-		if(genericFieldType instanceof ParameterizedType){
-		    ParameterizedType aType = (ParameterizedType) genericFieldType;
-		    Type[] fieldArgTypes = aType.getActualTypeArguments();
-		   return (Class) fieldArgTypes[0];
-		}
-
-		return null;
 	}
 
 	private void print(Object obj,String fieldName) throws Exception{
@@ -360,4 +227,30 @@ public class FieldIntegrazioneTest {
 				System.out.println(pd.getName() + ": " + pd.getReadMethod().invoke(obj));
 		}
 	}
+	
+
+//	private Class getFirstGenericParameterTypesOfFirstParameter(Method method) throws Exception{
+//		Type[] genericParameterTypes = method.getGenericParameterTypes();
+//
+//		if(genericParameterTypes[0] instanceof ParameterizedType){
+//			ParameterizedType aType = (ParameterizedType) genericParameterTypes[0];
+//			Type[] parameterArgTypes = aType.getActualTypeArguments();
+//			return (Class) parameterArgTypes[0];
+//		}
+//
+//		return null;
+//	}
+//
+//	private Class getFirstGenericReturnType(Method method) throws Exception{
+//		Type returnType  = method.getGenericReturnType();
+//
+//		if(returnType instanceof ParameterizedType){
+//			ParameterizedType type = (ParameterizedType) returnType;
+//			Type[] typeArguments = type.getActualTypeArguments();
+//			return (Class) typeArguments[0];
+//		}
+//
+//		return null;
+//	}
+	
 }
