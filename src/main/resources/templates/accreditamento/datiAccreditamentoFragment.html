@@ -37,7 +37,7 @@
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="accreditamento_tipologia">
 									<div class="radio">
-										<label>
+										<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')) ? 'label-disabled' : ''}">
 											<input type="radio" class="flat" id="generaleTipologia"
 												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento'))}"
 												th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
@@ -45,7 +45,7 @@
 										</label>
 									</div>
 									<div class="radio">
-										<label>
+										<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')) ? 'label-disabled' : ''}">
 											<input type="radio" class="flat" id="settorialeTipologia"
 												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento'))}"
 												th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Settoriale" />
@@ -74,7 +74,9 @@
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_checkbox">
 									<div class="checkbox" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
-										<label>
+										<label th:class="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Generale'  or
+																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
+																!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')) ? 'label-disabled' : ''}">
 											<input type="checkbox" class="flat" th:field="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}" th:value="${proceduraFormativa}"
 												th:disabled="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Generale'  or
 																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
@@ -110,7 +112,7 @@
 							<th:block th:with="counter=${counter}" th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="accreditamento_professioni">
 									<div class="radio">
-										<label>
+										<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')) ? 'label-disabled' : ''}">
 											<input type="radio" class="flat" id="generaleProf"
 												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
 												th:value="Generale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento'))}" />
@@ -118,7 +120,7 @@
 										</label>
 									</div>
 									<div class="radio">
-										<label>
+										<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')) ? 'label-disabled' : ''}">
 											<input type="radio" class="flat" id="settorialeProf"
 												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
 												th:value="Settoriale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento'))}" />
