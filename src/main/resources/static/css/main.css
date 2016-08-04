@@ -52,7 +52,7 @@ body.nav-md .container.body .right_col.main{
 	}
 }
 
-.dropdown-menu {
+.dropdown-menu.inner {
 	max-width: 100%;
 	min-width: 100%;
 }
@@ -658,4 +658,26 @@ div.collapsible > div#toModal > div.x_content {
 
 .collapse-link {
 	cursor: pointer;
+}
+
+.dropdown-toggle > span {
+	color: #fff;
+}
+
+.dropdown-menu.actions > li > a {
+    width: 100%;
+    padding: 12px 20px;
+    cursor: pointer;
+}
+
+.dropdown-menu.actions {
+	border-radius: 3px;
+	-webkit-box-shadow: 0px 2px 10px rgba(50, 50, 50, 0.5);
+    -moz-box-shadow: 0px 2px 10px rgba(50, 50, 50, 0.5);
+    box-shadow: 0px 2px 10px rgba(50, 50, 50, 0.5);
+    z-index: 200;
+}
+
+.divider.actions {
+	margin: 0 10px 0 10px;
 }
