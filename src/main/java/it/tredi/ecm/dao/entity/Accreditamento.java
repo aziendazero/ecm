@@ -98,12 +98,12 @@ public class Accreditamento extends BaseEntity{
 			if((id != IdFieldEnum.PROVIDER__CODICE_FISCALE) && !(id == IdFieldEnum.PROVIDER__PARTITA_IVA && this.getProvider().isHasPartitaIVA()))
 				idEditabili.add(new FieldEditabileAccreditamento(id, this));
 		}
-		
+
 		//SEDE LEGALE
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_LEGALE))
 			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
-		//SEDE OPERATIVA 
+		//SEDE OPERATIVA
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_OPERATIVA))
 			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
@@ -111,7 +111,7 @@ public class Accreditamento extends BaseEntity{
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.LEGALE_RAPPRESENTANTE))
 			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
-		//DELEGATO LEGALE RAPPRESENTANTE 
+		//DELEGATO LEGALE RAPPRESENTANTE
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE))
 			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
@@ -134,7 +134,7 @@ public class Accreditamento extends BaseEntity{
 		//RESPONSABILE SISTEMA QUALITA
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_QUALITA))
 			idEditabili.add(new FieldEditabileAccreditamento(id, this));
-		
+
 		//COMPONENTI COMITATO SCIENTIFICO
 		for(Persona p : this.getProvider().getPersone()){
 			if(p.isComponenteComitatoScientifico()){
@@ -142,11 +142,11 @@ public class Accreditamento extends BaseEntity{
 					idEditabili.add(new FieldEditabileAccreditamento(id, this, p.getId()));
 			}
 		}
-		
+
 		//FULL
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.FULL))
 			idEditabili.add(new FieldEditabileAccreditamento(id, this));
-		
+
 		//ALLEGATI ACCREDITAMENTO
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO))
 			idEditabili.add(new FieldEditabileAccreditamento(id, this));
@@ -160,6 +160,10 @@ public class Accreditamento extends BaseEntity{
 
 	public boolean isBozza(){
 		return stato.equals(AccreditamentoStatoEnum.BOZZA);
+	}
+
+	public boolean isValutazioneSegreteriaAssegnamento(){
+		return stato.equals(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
 	}
 
 	public boolean isProcedimentoAttivo(){
@@ -181,7 +185,7 @@ public class Accreditamento extends BaseEntity{
 		}
 	}
 
-	//nel caso in cui si stoppa il conteggio...salviamo momentaneamente la durata già trascorsa 
+	//nel caso in cui si stoppa il conteggio...salviamo momentaneamente la durata già trascorsa
 	public void standbyConteggio(){
 		durataProcedimento = getDurataProcedimento();
 		dataInizioConteggio = null;
