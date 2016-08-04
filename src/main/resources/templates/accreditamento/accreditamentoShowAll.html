@@ -170,13 +170,13 @@
 					</div>
 
 					<th:block th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico != null}">
-						<h2 th:text="#{label.coordinatore_comitato}">label.coordinatore_comitato</h2>
+						<h2 th:text="#{label.coordinatore_comitato} + ': ' + ${accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.nome + ' ' + accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.cognome}">label.coordinatore_comitato</h2>
 						<div class="divider-dashed"></div>
 						<div th:id="coordinatoreBlock" class="collapsible"></div>
 					</th:block>
 					<th:block th:each="componente, row : ${accreditamentoWrapper.componentiComitatoScientifico}">
-						<h2 th:text="#{label.componente_comitato} + ' ' + ${componente.id}">label.componente_comitato</h2>
-						<div class="divider-dashed"></div>
+						<h2 th:text="#{label.componente_comitato} + ': ' + ${componente.anagrafica.nome} + ' ' + ${componente.anagrafica.cognome}">label.componente_comitato</h2>
+						<div th:unless="${row.last}" class="divider-dashed"></div>
 						<div th:id="componente+${componente.id}+Block" class="collapsible" role="iterComponente" th:attr="data-valore-id=${componente.id}"></div>
 					</th:block>
 
@@ -210,7 +210,7 @@
 					<th:block th:if="${accreditamentoWrapper.accreditamento.pianoFormativo != null and !#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo.eventi)}">
 						<th:block th:each="evento, row : ${accreditamentoWrapper.accreditamento.pianoFormativo.eventi}">
 							<h2 th:text="#{label.evento} + ': ' + ${evento.titolo}">label.componente_comitato</h2>
-							<div class="divider-dashed"></div>
+							<div th:unless="${row.last}" class="divider-dashed"></div>
 							<div th:id="evento+${evento.id}+Block" class="collapsible" role="iterEvento" th:attr="data-valore-id=${evento.id}"></div>
 						</th:block>
 					</th:block>
@@ -326,7 +326,7 @@
 					            	if ( last !== group ) {
 					                	$(rows).eq( i ).before(
 					                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
-					            	);
+					            		);
 					                    last = group;
 					                }
 					            });
