@@ -187,7 +187,7 @@ public class AccountController{
 			LOGGER.error(Utils.getLogMessage("POST /user/resetPassword"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 		}
-		return "redirect:/home";
+		return "redirect:/login";
 	}
 
 	private String goToEdit(Model model, Account account){
