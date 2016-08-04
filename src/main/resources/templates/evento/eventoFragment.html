@@ -248,7 +248,7 @@
 								</div>
 								<select id="discipline" class="selectpicker required multi"
 									th:field="${eventoWrapper.evento.discipline}"
-									multiple="multiple" data-width="100%"
+									multiple="multiple" data-width="100%" th:attr="data-editabile=${#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
 									data-style="btn-success" data-actions-box="true"
 									th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
 									data-size="10" data-hide-disabled="true"
