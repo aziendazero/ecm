@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
@@ -75,6 +76,13 @@ public class AccreditamentoWrapper {
 	private boolean sezione1Stato;
 	private boolean sezione2Stato;
 	private boolean sezione3Stato;
+	private boolean sezione4Stato;
+
+	//stati per i pulsanti segreteria
+	private boolean canPrendiInCarica;
+	private boolean canValutaDomanda;
+	private boolean canAssegnaNuovoGruppo;
+	private boolean canConfermaValutazione;
 
 	//Piano Formativo
 	private PianoFormativo pianoFormativo;
@@ -177,6 +185,42 @@ public class AccreditamentoWrapper {
 			pianoQualitaStato = false;
 			dichiarazioneLegaleStato = false;
 			dichiarazioneEsclusioneStato = false;
+
+			//sezioni validate o meno
+			sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
+			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
+			sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
+			sezione4Stato = false;
+		}
+	}
+
+	public void checkSegreteriaButtons(){
+		//pulsante prendi in carica TODO sostituire con logica query Bonita
+		if(accreditamento.isValutazioneSegreteriaAssegnamento()) {
+			canPrendiInCarica = true;
+		}
+
+		//pulsante assegna nuovo gruppo crecm TODO CONTROLLARE!
+		if(accreditamento.getGruppoCrecm() == null) {
+			canAssegnaNuovoGruppo = true;
+		}
+	}
+
+	public void checkCanValidate(Account user){
+		//pulsante valuta domanda TODO CONTROLLARE!
+		if(accreditamento.getTeamValutazione() != null &&
+			accreditamento.getGruppoCrecm() != null &&
+			(accreditamento.getTeamValutazione().getComponentiSegreteria().contains(user) ||
+				accreditamento.getGruppoCrecm().getValutatori().contains(user))) {
+			canValutaDomanda = true;
+		}
+	}
+
+	//mi trovo accreditamentoValidate quindi gli stati rappresentano l'avanzamento della valutazione
+	public void checkConfirmValidate(){
+		//pulsante invia valutazione domanda TODO CONTROLLARE!
+		if(sezione1Stato && sezione2Stato && sezione3Stato && sezione4Stato) {
+			canConfermaValutazione = true;
 		}
 	}
 

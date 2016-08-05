@@ -25,6 +25,7 @@
 				</div>
 			</div>
 			<script th:inline="javascript">
+			/*<![CDATA[*/
 				var text_max = 3000;
 				$('#counter').html(text_max + ' '+[[#{label.caratteri_rimanenti}]]);
 
@@ -70,7 +71,7 @@
 						}
 					});
 					//decide se disabilitare/abilitare tutta la select
-					if (almenoUna) {
+					if (almenoUna && ($('#discipline').attr('data-editabile') === 'true')) {
 						$('#discipline').prop('disabled', false);
 					} else {
 						$('#discipline').prop('disabled', true);
@@ -91,6 +92,7 @@
 					$('button[data-id="professioni"]').prop('disabled', false);
 					$('button[data-id="discipline"]').prop('disabled', false);
 				});
+			/*]]>*/
 			</script>
 		</div>
 	</div>

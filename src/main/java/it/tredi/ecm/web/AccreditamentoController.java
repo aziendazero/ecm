@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -17,14 +19,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -330,6 +335,18 @@ public class AccreditamentoController {
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "show");
 
+		//logica per mostrare i pulsanti relativi alla valutazione della segreteria
+		CurrentUser currentUser = (CurrentUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(currentUser.hasProfile(ProfileEnum.SEGRETERIA)){
+			accreditamentoWrapper.checkSegreteriaButtons();
+		}
+
+		//logica per mostrare i pulsanti relativi alla valutazione per la segreteria e i referee
+		if(currentUser.hasProfile(ProfileEnum.SEGRETERIA) || currentUser.hasProfile(ProfileEnum.REFEREE)) {
+			Account currentAccount = currentUser.getAccount();
+			accreditamentoWrapper.checkCanValidate(currentAccount);
+		}
+
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
 	}
@@ -339,6 +356,9 @@ public class AccreditamentoController {
 
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "validate");
+
+		//logica per mostrare o meno il pulsante di conferma della valutazione
+		accreditamentoWrapper.checkConfirmValidate();
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;

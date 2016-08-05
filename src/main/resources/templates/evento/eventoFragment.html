@@ -50,13 +50,14 @@
 						</label>
 						<th:block th:if="${editabile}">
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_radio">
-								<div class="radio"
-									th:each="proceduraFormativa, row : ${proceduraFormativaList}">
-									<input type="radio" class="flat"
-										th:field="${eventoWrapper.evento.proceduraFormativa}"
-										th:value="${proceduraFormativa}"
-										th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.proceduraFormativa'))}" />
-									<span th:text="${proceduraFormativa.nome}">proceduraFormativa.nome</span>
+								<div class="radio" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
+									<label th:class="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.proceduraFormativa')) ? 'label-disabled' : ''}">
+										<input type="radio" class="flat"
+											th:field="${eventoWrapper.evento.proceduraFormativa}"
+											th:value="${proceduraFormativa}"
+											th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.proceduraFormativa'))}" />
+										<span th:text="${proceduraFormativa.nome}">proceduraFormativa.nome</span>
+									</label>
 								</div>
 							</div>
 						</th:block>
@@ -190,20 +191,24 @@
 						<th:block th:if="${editabile}">
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni">
 								<div class="radio">
-									<input type="radio" class="flat"
-										id="generaleProf" name="professioneEvento"
-										th:field="${eventoWrapper.evento.professioniEvento}"
-										th:value="Generale"
-										th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.professioniEvento'))}" />
-									<span th:text="#{label.generale}">Generale </span>
+									<label th:class="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.professioniEvento')) ? 'label-disabled' : ''}">
+										<input type="radio" class="flat"
+											id="generaleProf" name="professioneEvento"
+											th:field="${eventoWrapper.evento.professioniEvento}"
+											th:value="Generale"
+											th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.professioniEvento'))}" />
+										<span th:text="#{label.generale}">Generale </span>
+									</label>
 								</div>
 								<div class="radio">
-									<input type="radio" class="flat"
-										id="settorialeProf" name="professioneEvento"
-										th:field="${eventoWrapper.evento.professioniEvento}"
-										th:value="Settoriale"
-										th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.professioniEvento'))}" />
-									<span th:text="#{label.settoriale}">Settoriale </span>
+									<label th:class="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.professioniEvento')) ? 'label-disabled' : ''}">
+										<input type="radio" class="flat"
+											id="settorialeProf" name="professioneEvento"
+											th:field="${eventoWrapper.evento.professioniEvento}"
+											th:value="Settoriale"
+											th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.professioniEvento'))}" />
+										<span th:text="#{label.settoriale}">Settoriale </span>
+									</label>
 								</div>
 							</div>
 						</th:block>
@@ -243,7 +248,7 @@
 								</div>
 								<select id="discipline" class="selectpicker required multi"
 									th:field="${eventoWrapper.evento.discipline}"
-									multiple="multiple" data-width="100%"
+									multiple="multiple" data-width="100%" th:attr="data-editabile=${#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
 									data-style="btn-success" data-actions-box="true"
 									th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
 									data-size="10" data-hide-disabled="true"

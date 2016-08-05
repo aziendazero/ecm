@@ -74,13 +74,15 @@
 				$('#generaleTipologia').on('ifChecked', function(event){
 					$('input[name="datiAccreditamento.procedureFormative"]').iCheck("disable");
 					$('input[name="datiAccreditamento.procedureFormative"]').iCheck("check");
-					$('input[type="hidden"][name="datiAccreditamento.procedureFormative"]').prop('disabled', false);
+					$('input[type="hidden"][name="datiAccreditamento.procedureFormative"]').prop('disabled', false)
+						.parent().addClass('label-disabled');
 
 				});
 
 				$('#settorialeTipologia').on('ifChecked', function(event){
 					$('input[name="datiAccreditamento.procedureFormative"]').iCheck("enable");
-					$('input[type="hidden"][name="datiAccreditamento.procedureFormative"]').prop('disabled', true);
+					$('input[type="hidden"][name="datiAccreditamento.procedureFormative"]').prop('disabled', true)
+						.parent().removeClass('label-disabled');
 				});
 
 				//gestione generale/settoriale delle professioni
