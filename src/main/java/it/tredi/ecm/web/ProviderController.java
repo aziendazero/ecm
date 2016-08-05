@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
+import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
@@ -36,6 +41,7 @@ public class ProviderController {
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
 	@Autowired private FieldEditabileAccreditamentoRepository fieldEditabileRepository;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -224,6 +230,8 @@ public class ProviderController {
 	private ProviderWrapper prepareProviderWrapperValidate(Provider provider, Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - entering"));
 		ProviderWrapper providerWrapper = new ProviderWrapper();
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
+		providerWrapper.setMappa(mappa);
 		providerWrapper.setProvider(provider);
 		providerWrapper.setAccreditamentoId(accreditamentoId);
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - exiting"));
