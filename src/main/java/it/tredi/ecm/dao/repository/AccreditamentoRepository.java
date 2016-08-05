@@ -17,6 +17,8 @@ public interface AccreditamentoRepository extends CrudRepository<Accreditamento,
 	public Set<Accreditamento> findAllByProviderIdAndTipoDomanda(Long providerId, AccreditamentoTipoEnum tipoDomanda);
 	public Set<Accreditamento> findByProviderIdAndTipoDomandaAndDataScadenzaAfter(Long providerId, AccreditamentoTipoEnum tipoDomanda, LocalDate data);
 	public Accreditamento findOneByProviderIdAndStatoAndDataFineAccreditamentoAfter(Long providerId, AccreditamentoStatoEnum stato, LocalDate data);
+	@Query("SELECT a.stato FROM Accreditamento a WHERE a.id = :accreditamentoId")
+	public AccreditamentoStatoEnum getStatoByAccreditamentoId(@Param("accreditamentoId") Long accreditamentoId);
 	@Query("SELECT a.datiAccreditamento FROM Accreditamento a WHERE a.id = :accreditamentoId")
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(@Param("accreditamentoId") Long accreditamentoId);
 	

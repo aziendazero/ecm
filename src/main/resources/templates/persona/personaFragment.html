@@ -22,12 +22,17 @@
 						<th:block th:if="${editabile}">
 							<input type="hidden" name="editId" th:value="${personaWrapper.persona.id}" />
 							<input type="hidden" name="editId_Anagrafica" th:value="${personaWrapper.persona.anagrafica.id}" />
+							<input type="hidden" th:field="${personaWrapper.statoAccreditamento}" />
 							<input type="hidden" th:field="${personaWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${personaWrapper.providerId}" />
 							<input type="hidden" th:field="${personaWrapper.ruolo}" />
 							<input type="hidden" th:field="${personaWrapper.idEditabili}" />
+							<input type="hidden" th:field="${personaWrapper.fieldIntegrazione}" />
 							<input id="hidden-lookup" type="hidden" th:field="${personaWrapper.isLookup}" />
 						</th:block>
+
+						<!-- info -->
+						<h2 th:if="${personaWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
 
 						<!-- CHECKBOX FLAG COORDINATORE -->
 						<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
@@ -54,8 +59,7 @@
 
 						<!-- COGNOME -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cognome',personaWrapper.ruolo) : ''}"></label>
-
+<label class="control-label col-xs-1" th:text="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cognome',personaWrapper.ruolo)}"></label>
 							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cognome_persona">
 								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cognome}">Cognome</span>
 								<span th:if="${editabile}" class="required">*</span>

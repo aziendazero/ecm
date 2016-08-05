@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public class BaseEntity {
+public class BaseEntity implements Cloneable{
     @Id @GeneratedValue(strategy=GenerationType.AUTO)
     protected Long id;
 
@@ -27,5 +27,10 @@ public class BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+    
+    @Override
+	public Object clone() throws CloneNotSupportedException {
+    	return super.clone();
     }
 }
