@@ -31,6 +31,7 @@ public class ProviderController {
 
 	private final String EDIT = "provider/providerEdit";
 	private final String SHOW = "provider/providerShow";
+	private final String VALIDATE = "provider/providerValidate";
 
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
@@ -121,6 +122,22 @@ public class ProviderController {
 		}
 	}
 
+	/*** VALUTAZIONE SEGRETERIA ***/
+//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)") TODO
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/validate")
+	public String validateProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id,
+			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/validate"));
+		try {
+			return goToValidate(model, prepareProviderWrapperValidate(providerService.getProvider(id), accreditamentoId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/validate"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/" + accreditamentoId + "/validate";
+		}
+	}
+
 	/***	SAVE	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/save", method = RequestMethod.POST)
 	public String salvaProvider(@ModelAttribute("providerWrapper") ProviderWrapper providerWrapper, BindingResult result,
@@ -178,6 +195,12 @@ public class ProviderController {
 		return SHOW;
 	}
 
+	private String goToValidate(Model model, ProviderWrapper providerWrapper){
+		model.addAttribute("providerWrapper", providerWrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+		return VALIDATE;
+	}
+
 	private ProviderWrapper prepareProviderWrapperEdit(Provider provider, Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEdit("+ provider.getId() + "," + accreditamentoId +") - entering"));
 		ProviderWrapper providerWrapper = new ProviderWrapper();
@@ -195,6 +218,15 @@ public class ProviderController {
 		providerWrapper.setProvider(provider);
 		providerWrapper.setAccreditamentoId(accreditamentoId);
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperShow("+ provider.getId() + "," + accreditamentoId +") - exiting"));
+		return providerWrapper;
+	}
+
+	private ProviderWrapper prepareProviderWrapperValidate(Provider provider, Long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - entering"));
+		ProviderWrapper providerWrapper = new ProviderWrapper();
+		providerWrapper.setProvider(provider);
+		providerWrapper.setAccreditamentoId(accreditamentoId);
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}
 
