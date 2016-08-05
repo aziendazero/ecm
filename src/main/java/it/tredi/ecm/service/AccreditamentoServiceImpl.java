@@ -120,6 +120,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 	
 	@Override
+	public AccreditamentoStatoEnum getStatoAccreditamento(Long accreditamentoId) {
+		return accreditamentoRepository.getStatoByAccreditamentoId(accreditamentoId);
+	}
+	
+	@Override
 	@Transactional
 	public void save(Accreditamento accreditamento) {
 		LOGGER.debug("Salvataggio domanda di accreditamento " + accreditamento.getTipoDomanda() + " per il provider " + accreditamento.getProvider().getId());

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class PersonaWrapper extends Wrapper {
 	private Ruolo ruolo;
 	private Long accreditamentoId;
 	private Long providerId;
+	private AccreditamentoStatoEnum statoAccreditamento;
 
 	private File attoNomina;
 	private File cv;

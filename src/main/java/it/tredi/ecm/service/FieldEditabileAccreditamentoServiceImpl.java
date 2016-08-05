@@ -22,19 +22,19 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FieldEditabileAccreditamentoServiceImpl.class);
 	
-	@Autowired private FieldEditabileAccreditamentoRepository fieldEditabileRepository; 
+	@Autowired private FieldEditabileAccreditamentoRepository fieldEditabileAccreditamentoRepository; 
 	@Autowired private AccreditamentoService accreditamentoService;
 	
 	@Override
 	public Set<FieldEditabileAccreditamento> getAllFieldEditabileForAccreditamento(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di IdEditabili per Domanda Accreditamento: " + accreditamentoId));
-		return fieldEditabileRepository.findAllByAccreditamentoId(accreditamentoId);
+		return fieldEditabileAccreditamentoRepository.findAllByAccreditamentoId(accreditamentoId);
 	}
 	@Override
 	public Set<FieldEditabileAccreditamento> getAllFieldEditabileForAccreditamentoAndObject(Long accreditamentoId,
 			Long objectReference) {
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di IdEditabili per Domanda Accreditamento: " + accreditamentoId + " riferiti all'oggetto: " + objectReference));
-		return fieldEditabileRepository.findAllByAccreditamentoIdAndObjectReference(accreditamentoId, objectReference);
+		return fieldEditabileAccreditamentoRepository.findAllByAccreditamentoIdAndObjectReference(accreditamentoId, objectReference);
 	}
 	
 	@Override
@@ -56,7 +56,7 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 					field.setIdField(id);
 					if(objectReference != null)
 						field.setObjectReference(objectReference);
-					fieldEditabileRepository.save(field);
+					fieldEditabileAccreditamentoRepository.save(field);
 				}
 			}
 		}
@@ -72,12 +72,12 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
  		else
  			toRemove = Utils.getSubset(getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, objectReference), subset);
  		
- 		fieldEditabileRepository.delete(toRemove);
+ 		fieldEditabileAccreditamentoRepository.delete(toRemove);
 	}
 	
 	@Override
 	public void removeAllFieldEditabileForAccreditamento(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Eliminazione di tutti gli IdEditabili per Domanda Accreditamento: " + accreditamentoId));
-		fieldEditabileRepository.deleteAllByAccreditamentoId(accreditamentoId);
+		fieldEditabileAccreditamentoRepository.deleteAllByAccreditamentoId(accreditamentoId);
 	}
 }

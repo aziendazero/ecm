@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,17 +23,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Anagrafica;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AnagraficaService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
+import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
+import it.tredi.ecm.service.IntegrazioneUtils;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
@@ -52,8 +61,12 @@ public class PersonaController {
 	@Autowired private ProviderService providerService;
 	@Autowired private ProfessioneService professioneService;
 	@Autowired private FileService fileService;
-	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamentoService;
 	@Autowired private PersonaValidator personaValidator;
+
+	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private IntegrazioneUtils integrazioneUtils;
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -74,7 +87,10 @@ public class PersonaController {
 
 	@ModelAttribute("personaWrapper")
 	public PersonaWrapper getPersonaWrapper(@RequestParam(value="editId",required = false) Long id,
-			@RequestParam(value="editId_Anagrafica",required = false) Long anagraficaId){
+			@RequestParam(value="editId_Anagrafica",required = false) Long anagraficaId,
+			@RequestParam(value="statoAccreditamento",required = false) AccreditamentoStatoEnum statoAccreditamento) throws Exception{
+		//se sto chiamando il SAVE vedo se caricare da DB le entity per fare il merge con il wrapper arrivato dal form
+		//il wrapper ha scopo REQUEST e quindi tutti i campi non agganciati al form arrivano NULL dal client
 		if(id != null || anagraficaId != null){
 			Persona persona = (id != null) ? personaService.getPersona(id) : new Persona();
 			boolean isLookup = false;
@@ -87,8 +103,8 @@ public class PersonaController {
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
 				isLookup = true;
 			}
-
-			return preparePersonaWrapperEdit(persona, isLookup);
+			
+			return preparePersonaWrapperEdit(persona, isLookup, statoAccreditamento);
 		}
 		return new PersonaWrapper();
 	}
@@ -101,7 +117,7 @@ public class PersonaController {
 			@RequestParam(name="ruolo", required = true) String ruolo, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/new"));
 		try {
-			return goToEdit(model, preparePersonaWrapperEdit(createPersona(providerId, ruolo), accreditamentoId, providerId, false));
+			return goToEdit(model, preparePersonaWrapperEdit(new Persona(Ruolo.valueOf(ruolo)), accreditamentoId, providerId, false, accreditamentoService.getStatoAccreditamento(accreditamentoId)));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -119,8 +135,8 @@ public class PersonaController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{ruolo}/setAnagrafica")
 	public String setAnagrafica(@PathVariable Long accreditamentoId, @PathVariable Long providerId, Model model,
-									@PathVariable("ruolo") String ruolo,
-										@RequestParam(name="anagraficaId", required = false) Long anagraficaId){
+			@PathVariable("ruolo") String ruolo,
+			@RequestParam(name="anagraficaId", required = false) Long anagraficaId){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + ruolo + "/setAnagrafica"));
 		try {
 			Persona persona = null;
@@ -131,7 +147,7 @@ public class PersonaController {
 				persona = personaService.getPersonaByRuolo(Ruolo.valueOf(ruolo), providerId);
 
 			if(persona == null){
-				persona = createPersona(providerId, ruolo);
+				persona = new Persona(Ruolo.valueOf(ruolo));
 			}
 			else {
 				persona.setProfessione(new Professione());
@@ -143,7 +159,7 @@ public class PersonaController {
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
 				isLookup = true;
 			}
-			return goToEdit(model, preparePersonaWrapperEdit(persona, accreditamentoId, providerId, isLookup));
+			return goToEdit(model, preparePersonaWrapperEdit(persona, accreditamentoId, providerId, isLookup, accreditamentoService.getStatoAccreditamento(accreditamentoId)));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + ruolo + "/setAnagrafica"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -158,7 +174,7 @@ public class PersonaController {
 	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/edit"));
 		try {
-			return goToEdit(model, preparePersonaWrapperEdit(personaService.getPersona(id), accreditamentoId, providerId, false));
+			return goToEdit(model, preparePersonaWrapperEdit(personaService.getPersona(id), accreditamentoId, providerId, false, accreditamentoService.getStatoAccreditamento(accreditamentoId)));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/edit"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -225,33 +241,12 @@ public class PersonaController {
 					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 					return EDIT;
 				}else{
-					
-					//non possono e non devono esistere più persone con lo stesso ruolo per ogni provider (tranne per i componenti del comitato scientifico)
-					if(personaWrapper.getPersona().isNew() && !personaWrapper.getPersona().isComponenteComitatoScientifico()){
-						Persona persona = personaService.getPersonaByRuolo(personaWrapper.getPersona().getRuolo(), providerId);
-						if(persona != null)
-							personaService.delete(persona.getId());
-					}
-					
-					boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false; 
-					personaService.save(personaWrapper.getPersona());
 
-					//inserimento nuova persona in Domanda di Accreditamento
-					//inseriamo gli IdEditabili (con riferimento all'id nel caso di multi-istanza)
-					if(insertFieldEditabile){
-						SubSetFieldEnum subset = Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo());
-						if(personaWrapper.getPersona().isComponenteComitatoScientifico())
-							fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, personaWrapper.getPersona().getId(), subset, IdFieldEnum.getAllForSubset(subset));
-						else
-							fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, null, subset, IdFieldEnum.getAllForSubset(subset));
+					if(personaWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE){
+						integraPersona(personaWrapper);
+					}else{
+						savePersona(personaWrapper);
 					}
-
-					// Durante la compilazione della domanda di accreditamento, se si inizia l'inserimento dei responsabili non e' piu'
-					// consentita la modifica del legale rappresentante
-					if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() ||
-							personaWrapper.getPersona().isComponenteComitatoScientifico() || personaWrapper.getPersona().isCoordinatoreComitatoScientifico()||
-							personaWrapper.getPersona().isResponsabileSistemaInformatico() || personaWrapper.getPersona().isResponsabileQualita())
-						fieldEditabileService.removeFieldEditabileForAccreditamento(accreditamentoId, null, SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
 
 					redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.inserito('"+ personaWrapper.getPersona().getRuolo().getNome() +"')", "success"));
@@ -278,14 +273,14 @@ public class PersonaController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/delete")
 	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId,
-														Model model, RedirectAttributes redirectAttrs){
+			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + personaId + "/delete"));
 		try{
 			personaService.delete(personaId);
 
 			//rimozione persona multi-istanza dalla Domanda di Accreditamento
 			//rimuoviamo gli IdEditabili
-			fieldEditabileService.removeFieldEditabileForAccreditamento(accreditamentoId, personaId, SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO);
+			fieldEditabileAccreditamentoService.removeFieldEditabileForAccreditamento(accreditamentoId, personaId, SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO);
 
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.componente_comitato_eliminato", "success"));
 		}catch (Exception ex){
@@ -300,17 +295,6 @@ public class PersonaController {
 	}
 
 	/***	Metodi privati di supporto	***/
-	private Persona createPersona(Long providerId){
-		Persona persona = new Persona();
-		return persona;
-	}
-
-	private Persona createPersona(Long providerId, String ruolo){
-		Persona persona = createPersona(providerId);
-		persona.setRuolo(Ruolo.valueOf(ruolo));
-		return persona;
-	}
-
 	private String goToEdit(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
 		model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
@@ -343,18 +327,25 @@ public class PersonaController {
 		return "/accreditamento/" + wrapper.getAccreditamentoId() + "/" + mode + "?tab=" + tab;
 	}
 
-	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, boolean isLookup){
-		return preparePersonaWrapperEdit(persona,0,0, isLookup);
+	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento) throws Exception{
+		return preparePersonaWrapperEdit(persona,0,0, isLookup, statoAccreditamento);
 	}
 
-	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, long accreditamentoId, long providerId, boolean isLookup){
+	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, long accreditamentoId, long providerId, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento) throws Exception{
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - entering"));
 		PersonaWrapper personaWrapper = new PersonaWrapper();
 
+		//CONTROLLO PER FARE IL DETACH DELL'ENTITY NEL CASO IN CUI SIAMO IN INTEGRAZIONE E QUINDI NON APPLICARE LE MODIFICHE AL DB
+		//HIBERNATE non ci permette di fare il detach??? dell'oggeto e quindi siamo costretti a fare un clone
+		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
+			persona = persona.clone();
+		}
+		
 		personaWrapper.setPersona(persona);
 		personaWrapper.setAccreditamentoId(accreditamentoId);
 		personaWrapper.setProviderId(providerId);
 		personaWrapper.setRuolo(persona.getRuolo());
+		personaWrapper.setStatoAccreditamento(accreditamentoService.getStatoAccreditamento(personaWrapper.getAccreditamentoId()));
 
 		if(!persona.isNew()){
 			Set<File> files = persona.getFiles();
@@ -374,13 +365,21 @@ public class PersonaController {
 				personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 			}else{
 				if(persona.isComponenteComitatoScientifico()){
-					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
+					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
+					personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
 				}else{
-					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
+					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
+					personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId), subset));
 				}
 			}
 		}
 
+		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
+			for(FieldIntegrazioneAccreditamento field : personaWrapper.getFieldIntegrazione()){
+				integrazioneUtils.setField(personaWrapper.getPersona(),field.getIdField().getNameRef(),field.getNewValue());
+			}
+		}
+		
 		personaWrapper.setIsLookup(isLookup);
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - exiting"));
 		return personaWrapper;
@@ -407,23 +406,61 @@ public class PersonaController {
 		return personaWrapper;
 	}
 
-	//TODO domenico (check se fa la query di tutto il provider)
-	/*** LIST PERSONA ***/
-	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
-	@RequestMapping("/provider/{providerId}/persona/list")
-	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET /provider/"+ providerId + "/persona/list"));
-		try {
-			Provider provider = providerService.getProvider(providerId);
-			model.addAttribute("personaList", provider.getPersone());
-			model.addAttribute("titolo", provider.getDenominazioneLegale());
-			LOGGER.info(Utils.getLogMessage("VIEW: /persona/personaList"));
-			return "persona/personaList";
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /provider/"+ providerId + "/persona/list"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
-			return "redirect:provider/show";
+	/***	LOGICA PER SALVATAGGIO PERSONA	***/
+	private void savePersona(PersonaWrapper personaWrapper) throws Exception{
+		//non possono e non devono esistere più persone con lo stesso ruolo per ogni provider (tranne per i componenti del comitato scientifico)
+		if(personaWrapper.getPersona().isNew() && !personaWrapper.getPersona().isComponenteComitatoScientifico()){
+			Persona persona = personaService.getPersonaByRuolo(personaWrapper.getPersona().getRuolo(), personaWrapper.getProviderId());
+			if(persona != null)
+				personaService.delete(persona.getId());
 		}
+
+		boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false; 
+		personaService.save(personaWrapper.getPersona());
+
+		//inserimento nuova persona in Domanda di Accreditamento
+		//inseriamo gli IdEditabili (con riferimento all'id nel caso di multi-istanza) per consentire le modifiche successive
+		if(insertFieldEditabile){
+			SubSetFieldEnum subset = Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo());
+			if(personaWrapper.getPersona().isComponenteComitatoScientifico())
+				fieldEditabileAccreditamentoService.insertFieldEditabileForAccreditamento(personaWrapper.getAccreditamentoId(), personaWrapper.getPersona().getId(), subset, IdFieldEnum.getAllForSubset(subset));
+			else
+				fieldEditabileAccreditamentoService.insertFieldEditabileForAccreditamento(personaWrapper.getAccreditamentoId(), null, subset, IdFieldEnum.getAllForSubset(subset));
+		}
+
+		// Durante la compilazione della domanda di accreditamento, se si inizia l'inserimento dei responsabili non e' piu'
+		// consentita la modifica del legale rappresentante
+		if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() ||
+				personaWrapper.getPersona().isComponenteComitatoScientifico() || personaWrapper.getPersona().isCoordinatoreComitatoScientifico()||
+				personaWrapper.getPersona().isResponsabileSistemaInformatico() || personaWrapper.getPersona().isResponsabileQualita())
+			fieldEditabileAccreditamentoService.removeFieldEditabileForAccreditamento(personaWrapper.getAccreditamentoId(), null, SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
+	}
+
+	private void integraPersona(PersonaWrapper personaWrapper) throws Exception{
+		Accreditamento accreditamento = new Accreditamento();
+		accreditamento.setId(personaWrapper.getAccreditamentoId());
+		
+		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
+
+		if(personaWrapper.getPersona().isNew()){
+			//registriamo inserimento nuova persona
+		}else{
+			//registriamo i fieldIntegrazione con i valori
+			if(personaWrapper.getIdEditabili().contains(Utils.getFullFromRuolo(personaWrapper.getPersona().getRuolo()))){
+				//Nuovo lookup anagrafica
+			}else{
+				//modifica singoli campi
+				for(IdFieldEnum idField : personaWrapper.getIdEditabili()){
+					if(personaWrapper.getPersona().isComponenteComitatoScientifico())
+						fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento (idField, accreditamento, personaWrapper.getPersona().getId(),integrazioneUtils.getField(personaWrapper.getPersona(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+					else
+						fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneUtils.getField(personaWrapper.getPersona(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+				}
+			}
+		}
+		
+		//aggiorno la lista delle Integrazioni con i nuovi valori
+		fieldIntegrazioneAccreditamentoService.delete(personaWrapper.getFieldIntegrazione());
+		fieldIntegrazioneAccreditamentoService.save(fieldIntegrazioneList);
 	}
 }

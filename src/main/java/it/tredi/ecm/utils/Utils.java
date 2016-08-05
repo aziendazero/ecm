@@ -111,10 +111,11 @@ public class Utils {
 	/*
 	 * Controllo se un determinato IdFieldEnum è presente nella lista di record
 	 * */
-	public static FieldEditabileAccreditamento getField(Set<FieldEditabileAccreditamento> src, IdFieldEnum idEnum){
-		for(FieldEditabileAccreditamento f : src)
+	public static <T extends Field> T getField(Set<T> src, IdFieldEnum idEnum){
+		for(T f : src){
 			if(f.getIdField() == idEnum)
 				return f;
+		}
 		return null;
 	}
 	
@@ -127,6 +128,19 @@ public class Utils {
 			case RESPONSABILE_SISTEMA_INFORMATICO: return SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO;
 			case RESPONSABILE_QUALITA: return SubSetFieldEnum.RESPONSABILE_QUALITA;
 			case COMPONENTE_COMITATO_SCIENTIFICO: return SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO;
+			default: return null;
+		}
+	}
+	
+	public static IdFieldEnum getFullFromRuolo(Ruolo ruolo){
+		switch (ruolo){
+			case LEGALE_RAPPRESENTANTE: return IdFieldEnum.LEGALE_RAPPRESENTANTE__FULL;
+			case DELEGATO_LEGALE_RAPPRESENTANTE: return IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__FULL;
+			case RESPONSABILE_SEGRETERIA: return IdFieldEnum.RESPONSABILE_SEGRETERIA__FULL;
+			case RESPONSABILE_AMMINISTRATIVO: return IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__FULL;
+			case RESPONSABILE_SISTEMA_INFORMATICO: return IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__FULL;
+			case RESPONSABILE_QUALITA: return IdFieldEnum.RESPONSABILE_QUALITA__FULL;
+			case COMPONENTE_COMITATO_SCIENTIFICO: return IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL;
 			default: return null;
 		}
 	}

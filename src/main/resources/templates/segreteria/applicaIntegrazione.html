@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html layout:decorator="fragments/template"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-md-12 col-sm-12 col-xs-12">
+
+				<!-- title -->
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="home-title" th:text="#{label.home_page}">Home
+							page</div>
+					</div>
+				</div>
+
+				<div class="divider"></div>
+
+				<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni">
+					<form id="formApplicaIntegrazione" class="form-horizontal form-label-left"
+						th:action="@{|/accreditamento/${wrapper.accreditamentoId}/approvaIntegrazione/save|}" method="post"
+						enctype="multipart/form-data" novalidate="novalidate">
+
+						<input type="hidden" th:field="${wrapper.accreditamentoId}" />
+						<div class="item form-group">
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+								<div class="checkbox" th:each="fieldIntegrazioneAccreditamento, row : ${wrapper.fullLista}">
+									<label>
+										<input type="checkbox"
+											th:field="${wrapper.selected}"
+											th:value="${fieldIntegrazioneAccreditamento.id}"/>
+											<span th:text="${fieldIntegrazioneAccreditamento.objectReference != -1 ? fieldIntegrazioneAccreditamento.idField + '(' + fieldIntegrazioneAccreditamento.objectReference + ')' : fieldIntegrazioneAccreditamento.idField}">Generale	</span>
+											<span th:text="${fieldIntegrazioneAccreditamento.newValue}"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+						
+						<button class="btn btn-success pull-right" th:text="#{label.salva}" type="submit"></button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

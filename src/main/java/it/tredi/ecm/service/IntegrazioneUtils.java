@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.BaseEntity;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
@@ -100,6 +101,11 @@ public class IntegrazioneUtils {
 		}
 	}
 	
+	public void setFieldAndSave(Object dst, String fieldName, Object fieldValue) throws Exception{
+		setField(dst, fieldName, fieldValue);
+		saveEntity(dst.getClass(), dst);
+	}
+	
 	//recupero il tipo <generic> di un campo
 	private Class<?> getTypeByField(Class<?> clazz, String fieldName) throws Exception{
 		Field field = null;
@@ -151,6 +157,15 @@ public class IntegrazioneUtils {
 		cArg[0] = java.io.Serializable.class;
 		Method findOne = repository.getClass().getDeclaredMethod("findOne", cArg);
 		return findOne.invoke(repository, fieldValue);
+	}
+
+	//carica l'oggetto dal DB -> save(Object objectToSave)
+	private void saveEntity(Class<?> clazz, Object objectToSave) throws Exception{
+		Object repository = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "Repository");
+		Class<?>[] cArg = new Class[1];
+		cArg[0] = Object.class;
+		Method save = repository.getClass().getDeclaredMethod("save", cArg);
+		save.invoke(repository, objectToSave);
 	}
 	
 	//elimina l'oggetto dal DB -> delete(Long id)
@@ -210,10 +225,15 @@ public class IntegrazioneUtils {
 		
 		//TODO recuperare i fieldIntegrazione per i multi-istanza
 		
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SEGRETERIA).isEmpty()){
+			Persona persona = accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_SEGRETERIA);
+			applyIntegrazione(persona, fieldIntegrazioni);
+		}
+		
 	}
 	
 	private void applyIntegrazione(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
 		for(FieldIntegrazioneAccreditamento field :  fieldIntegrazioni)
-			setField(dst, field.getIdField().getNameRef(), field.getNewValue());
+			setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
 	}
 }

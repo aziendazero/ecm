@@ -40,6 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.BaseEntity;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
@@ -49,7 +50,9 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
+import it.tredi.ecm.dao.repository.AnagraficaRepository;
 import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
 import it.tredi.ecm.dao.repository.ProfessioneRepository;
@@ -76,6 +79,7 @@ public class FieldIntegrazioneTest {
 	@Autowired private FieldEditabileAccreditamentoRepository repo;
 	@Autowired private FieldIntegrazioneAccreditamentoRepository repoIntegrazione;
 	@Autowired private ProfessioneRepository professioneRepository;
+	@Autowired private AnagraficaRepository anagraficaRepository;
 	
 	@Autowired private IntegrazioneUtils integrazioneUtils;
 
@@ -206,7 +210,7 @@ public class FieldIntegrazioneTest {
 	}
 
 	@Test
-	//@Ignore
+	@Ignore
 	public void applyFieldPersona() throws Exception{
 		Set<FieldIntegrazioneAccreditamento> idIntegrazione = repoIntegrazione.findAllByAccreditamentoId(416L);
 		Persona persona = personaService.getPersona(534L);
@@ -217,6 +221,20 @@ public class FieldIntegrazioneTest {
 		print(persona, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE.getNameRef());
 
 		personaService.save(persona);
+	}
+	
+	@Test
+	public void test(){
+		Anagrafica a = anagraficaRepository.findOne(585L);
+		a.setCognome("Stronzo");
+		
+		Persona p = personaService.getPersona(699L);
+		p.setRuolo(Ruolo.RICHIEDENTE);
+		p.setAnagrafica(a);
+		
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(416L);
+		FieldIntegrazioneAccreditamento d = new FieldIntegrazioneAccreditamento(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__ATTO_NOMINA, accreditamento, null, TipoIntegrazioneEnum.MODIFICA);
+		repoIntegrazione.save(d);
 	}
 
 	private void print(Object obj,String fieldName) throws Exception{

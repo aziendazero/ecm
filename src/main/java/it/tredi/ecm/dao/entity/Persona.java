@@ -103,4 +103,11 @@ public class Persona extends BaseEntity{
 		Persona entitapiatta = (Persona) o;
 		return Objects.equals(id, entitapiatta.id);
 	}
+	
+	@Override
+	public Persona clone() throws CloneNotSupportedException {
+		Persona cloned = (Persona) super.clone();
+		cloned.setAnagrafica((Anagrafica)cloned.getAnagrafica().clone());
+		return cloned;
+	}
 }

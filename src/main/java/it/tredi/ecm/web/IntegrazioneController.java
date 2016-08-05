@@ -17,6 +17,7 @@ import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
+import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.TestWrapper;
@@ -27,6 +28,7 @@ public class IntegrazioneController {
 
 	@Autowired AccreditamentoService accreditamentoService;
 	@Autowired FieldEditabileAccreditamentoRepository repo;
+	@Autowired FieldIntegrazioneAccreditamentoRepository integrazioneRepo;
 
 	@RequestMapping("/fieldEditabile/{accreditamentoId}")
 	public String edit(@PathVariable Long accreditamentoId, Model model, 

@@ -8,4 +8,5 @@ import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 
 public interface FieldIntegrazioneAccreditamentoRepository extends CrudRepository<FieldIntegrazioneAccreditamento, Long> {
 	public Set<FieldIntegrazioneAccreditamento> findAllByAccreditamentoId(Long accreditamentoId);
+	public Set<FieldIntegrazioneAccreditamento> findAllByAccreditamentoIdAndObjectReference(Long accreditamentoId, Long objectReference);
 }
