@@ -14,9 +14,9 @@ import lombok.Setter;
 public class FieldValutazioneAccreditamento extends Field{
 	@ManyToOne
 	private Accreditamento accreditamento;
-	private boolean esito;
+	private Boolean esito;
 	private String note;
-	
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
