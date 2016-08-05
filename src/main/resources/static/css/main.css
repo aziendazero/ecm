@@ -681,3 +681,8 @@ div.collapsible > div#toModal > div.x_content {
 .divider.actions {
 	margin: 0 10px 0 10px;
 }
+
+.margin-valutabile {
+	height: 60px;
+	margin: 0;
+}
