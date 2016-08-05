@@ -43,8 +43,15 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 	@Override
 	@Transactional
 	public void save(FieldValutazioneAccreditamento valutazione) {
-		LOGGER.debug("Salvataggio domanda di accreditamento");
+		LOGGER.debug("Salvataggio FieldValutazioni per la domanda di accreditamento");
 		fieldValutazioneRepository.save(valutazione);
+	}
+	
+	@Override
+	@Transactional
+	public void saveMapList(Map<IdFieldEnum, FieldValutazioneAccreditamento> valutazioneAsMap) {
+		LOGGER.debug("Salvataggio FieldValutazioni per la domanda di accreditamento");
+		fieldValutazioneRepository.save(valutazioneAsMap.values());
 	}
 
 }

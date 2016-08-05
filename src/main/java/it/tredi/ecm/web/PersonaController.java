@@ -375,9 +375,7 @@ public class PersonaController {
 		}
 
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
-			for(FieldIntegrazioneAccreditamento field : personaWrapper.getFieldIntegrazione()){
-				integrazioneUtils.setField(personaWrapper.getPersona(),field.getIdField().getNameRef(),field.getNewValue());
-			}
+			integrazioneUtils.applyIntegrazione(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
 		}
 		
 		personaWrapper.setIsLookup(isLookup);
@@ -459,7 +457,7 @@ public class PersonaController {
 			}
 		}
 		
-		//aggiorno la lista delle Integrazioni con i nuovi valori
+		//TODO .. fare metodo update aggiorno la lista delle Integrazioni con i nuovi valori
 		fieldIntegrazioneAccreditamentoService.delete(personaWrapper.getFieldIntegrazione());
 		fieldIntegrazioneAccreditamentoService.save(fieldIntegrazioneList);
 	}

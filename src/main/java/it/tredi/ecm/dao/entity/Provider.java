@@ -139,6 +139,15 @@ public class Provider extends BaseEntity{
 		return null;
 	}
 	
+	public Set<Persona> getComponentiComitatoScientifico(){
+		Set<Persona> componentiComitato = new HashSet<Persona>();
+		persone.forEach(p ->{
+			if(p.isComponenteComitatoScientifico())
+				componentiComitato.add(p);
+		});
+		return componentiComitato;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

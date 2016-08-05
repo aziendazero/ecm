@@ -103,9 +103,15 @@
 				case 'fileDaFirmare' :					tipoAllegato = 'FILE_DA_FIRMARE'; break;
 			}
 
+			var stato = [[${__${wrapper}__.statoAccreditamento.name()}]];
+			
 	 		var oMyForm = new FormData();
             oMyForm.append("multiPartFile", $(element)[0].files[0]);
-            oMyForm.append("fileId", (!fileId) ? 0 : fileId );
+            
+            if(stato != 'INTEGRAZIONE')
+            	oMyForm.append("fileId", (!fileId) ? 0 : fileId );
+            else
+            	oMyForm.append("fileId", 0);
             oMyForm.append("tipo",tipoAllegato);
             oMyForm.append([[${_csrf.parameterName}]],[[${_csrf.token}]]);
 

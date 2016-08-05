@@ -83,6 +83,9 @@ public class Utils {
 		return dst;
 	}
 	
+	/*
+	 * Mi restituisce la lista di ENUM per legare le checkbox lato thymeleafe (per i MULTI-ISTANZA)
+	 * */
 	public static <T extends Field> Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<T> src, Long objectReference, SubSetFieldEnum type){
 		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
 		
@@ -102,6 +105,20 @@ public class Utils {
 		
 		src.forEach(f -> {
 			if(f.getIdField().getSubSetField() == type)
+				dst. add(f);
+		});		
+		
+		return dst;
+	}
+	
+	/*
+	 * Mi restituisce la sublist di record presenti su db per valutare nel save del controller quali eliminare perchè deselezionate (per i MULTI-ISTANZA)
+	 * */
+	public static <T extends Field> Set<T> getSubset(Set<T> src, Long objectReference, SubSetFieldEnum type){
+		Set<T> dst = new HashSet<T>();
+		
+		src.forEach(f -> {
+			if(f.getIdField().getSubSetField() == type && f.getObjectReference() == objectReference)
 				dst. add(f);
 		});		
 		

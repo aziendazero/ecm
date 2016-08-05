@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.BaseEntity;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
@@ -28,20 +30,31 @@ import it.tredi.ecm.utils.Utils;
 
 @Service
 public class IntegrazioneUtils {
-	
+
 	@Autowired private FieldIntegrazioneAccreditamentoRepository integrazioneRepo;
 	@Autowired private AccreditamentoService accreditamentoService;
-	
+
 	@Autowired
 	private ApplicationContext appContext;
-	
+
 	public Object getField(Object dst, String fieldName) throws Exception{
+
+		//se è un file restituisco l'id del file
+		if(fieldName.startsWith("files")){
+			Method getFiles = getGetterMethodFor(dst.getClass(), "files");
+			Set<File> files = (Set<File>) getFiles.invoke(dst);
+			for(File f : files){
+				if(f.getTipo() == FileEnum.valueOf(fieldName.substring(6)))
+					return f.getId();
+			}
+		}
+
 		if(fieldName.contains(".")){
 			//campo composto --> mi riconduco al caso semplice
 			dst = getObject(dst, fieldName);
 			fieldName = fieldName.substring(fieldName.lastIndexOf(".") + 1 , fieldName.length());
 		}
-		
+
 		Method method = getGetterMethodFor(dst.getClass(), fieldName);
 		if(method != null){
 			Object newValue = method.invoke(dst);
@@ -67,14 +80,25 @@ public class IntegrazioneUtils {
 		}
 		return null;
 	}
-	
+
 	public void setField(Object dst, String fieldName, Object fieldValue) throws Exception{
+		//se è un file restituisco carico sostituisco il file
+		if(fieldName.startsWith("files")){
+			Method getFiles = getGetterMethodFor(dst.getClass(), "files");
+			Set<File> files = (Set<File>) getFiles.invoke(dst);
+			for(File f : files){
+				if(f.getTipo() == FileEnum.valueOf(fieldName.substring(6)))
+					f = (File) getEntityFromRepo(f.getClass(), fieldValue);
+			}
+		}
+
+
 		if(fieldName.contains(".")){
 			//campo composto --> mi riconduco al caso semplice
 			dst = getObject(dst, fieldName);
 			fieldName = fieldName.substring(fieldName.lastIndexOf(".") + 1 , fieldName.length());
 		}
-		
+
 		Method method = getSetterMethodFor(dst.getClass(), fieldName);
 		if(method != null){
 			Class<?> clazz = method.getParameterTypes()[0];
@@ -100,12 +124,12 @@ public class IntegrazioneUtils {
 			}
 		}
 	}
-	
+
 	public void setFieldAndSave(Object dst, String fieldName, Object fieldValue) throws Exception{
 		setField(dst, fieldName, fieldValue);
 		saveEntity(dst.getClass(), dst);
 	}
-	
+
 	//recupero il tipo <generic> di un campo
 	private Class<?> getTypeByField(Class<?> clazz, String fieldName) throws Exception{
 		Field field = null;
@@ -116,18 +140,18 @@ public class IntegrazioneUtils {
 		}catch (Exception ex){
 			field = clazz.getSuperclass().getDeclaredField(fieldName);
 		}
-		
+
 		Type genericFieldType = field.getGenericType();
 
 		if(genericFieldType instanceof ParameterizedType){
-		    ParameterizedType aType = (ParameterizedType) genericFieldType;
-		    Type[] fieldArgTypes = aType.getActualTypeArguments();
-		   return (Class<?>) fieldArgTypes[0];
+			ParameterizedType aType = (ParameterizedType) genericFieldType;
+			Type[] fieldArgTypes = aType.getActualTypeArguments();
+			return (Class<?>) fieldArgTypes[0];
 		}
 
 		return (Class<?>)genericFieldType;
 	}
-	
+
 	//recupero il metodo GETTER
 	public Method getGetterMethodFor(Class<?> clazz, String fieldName) throws IntrospectionException{
 		BeanInfo info;
@@ -138,7 +162,7 @@ public class IntegrazioneUtils {
 		}
 		return null;
 	}
-	
+
 	//recupero il metodo SETTER
 	public Method getSetterMethodFor(Class<?> clazz, String fieldName) throws Exception{
 		BeanInfo info;
@@ -149,7 +173,7 @@ public class IntegrazioneUtils {
 		}
 		return null;
 	}
-	
+
 	//carica l'oggetto dal DB -> findOne(Long id)
 	private Object getEntityFromRepo(Class<?> clazz, Object fieldValue) throws Exception{
 		Object repository = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "Repository");
@@ -167,7 +191,7 @@ public class IntegrazioneUtils {
 		Method save = repository.getClass().getDeclaredMethod("save", cArg);
 		save.invoke(repository, objectToSave);
 	}
-	
+
 	//elimina l'oggetto dal DB -> delete(Long id)
 	public void removeEntityFromRepo(Class<?> clazz, Object fieldValue) throws Exception{
 		Object repository = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "Repository");
@@ -176,7 +200,7 @@ public class IntegrazioneUtils {
 		Method delete = repository.getClass().getDeclaredMethod("delete", cArg);
 		delete.invoke(repository, fieldValue);
 	}
-	
+
 	//nel caso in cui il fieldName è a più livelli, significa che si vuole accedere ad un campo di un oggetto interno
 	//attraverso la composizione dell'oggetto fino a recuperare l'oggetto reale
 	//esempio;
@@ -191,49 +215,71 @@ public class IntegrazioneUtils {
 		}
 		return dst;
 	}
-	
-	public void setAllIntegrazioniAccreditamento(Long accreditamentoId){
-		
+
+
+	public void applyIntegrazioniAccreditamentoAndSave(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
+		applyIntegrazioniAndSave(accreditamentoService.getAccreditamento(accreditamentoId), fieldIntegrazioni);
 	}
-	
-	public void applyAllIntegrazioniAccreditamento(Long accreditamentoId) throws Exception{
-		applyIntegrazioni(accreditamentoService.getAccreditamento(accreditamentoId), integrazioneRepo.findAllByAccreditamentoId(accreditamentoId));
-	}
-	
-	public void applyIntegrazioniAccreditamento(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
-		applyIntegrazioni(accreditamentoService.getAccreditamento(accreditamentoId), fieldIntegrazioni);
-	}
-	
-	private void applyIntegrazioni(Accreditamento accreditamento, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
+
+	private void applyIntegrazioniAndSave(Accreditamento accreditamento, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER).isEmpty())
-			applyIntegrazione(accreditamento.getProvider(), fieldIntegrazioni);
-		
+			applyIntegrazioneAndSave(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER));
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_LEGALE).isEmpty())
-			applyIntegrazione(accreditamento.getProvider().getSedeLegale(), fieldIntegrazioni);
-		
+			applyIntegrazioneAndSave(accreditamento.getProvider().getSedeLegale(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_LEGALE));
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_OPERATIVA).isEmpty())
-			applyIntegrazione(accreditamento.getProvider().getSedeOperativa(), fieldIntegrazioni);
-		
+			applyIntegrazioneAndSave(accreditamento.getProvider().getSedeOperativa(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_OPERATIVA));
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE).isEmpty())
-			applyIntegrazione(accreditamento.getProvider().getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE), fieldIntegrazioni);
-		
+			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE));
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE).isEmpty())
-			applyIntegrazione(accreditamento.getProvider().getPersonaByRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE), fieldIntegrazioni);
-		
+			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE));
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DATI_ACCREDITAMENTO).isEmpty())
-			applyIntegrazione(accreditamento.getDatiAccreditamento(), fieldIntegrazioni);
-		
-		//TODO recuperare i fieldIntegrazione per i multi-istanza
-		
+			applyIntegrazioneAndSave(accreditamento.getDatiAccreditamento(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DATI_ACCREDITAMENTO));
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SEGRETERIA).isEmpty()){
-			Persona persona = accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_SEGRETERIA);
-			applyIntegrazione(persona, fieldIntegrazioni);
+			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_SEGRETERIA), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SEGRETERIA));
 		}
-		
+
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO).isEmpty()){
+			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_AMMINISTRATIVO), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO));
+		}
+
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO).isEmpty()){
+			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_SISTEMA_INFORMATICO), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO));
+		}
+
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_QUALITA).isEmpty()){
+			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_QUALITA), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_QUALITA));
+		}
+
+		//fieldIntegrazione per i multi-istanza
+		Set<Persona> componentiComitato = accreditamento.getProvider().getComponentiComitatoScientifico();
+		componentiComitato.forEach( p -> {
+			if(!Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO).isEmpty()){
+				try {
+					applyIntegrazioneAndSave(p, Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
 	}
-	
-	private void applyIntegrazione(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
+
+	//oggetto + nomeCampo + valore
+	//esempio: (persona, "anagrafica.nome", "Pippo")
+	private void applyIntegrazioneAndSave(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
 		for(FieldIntegrazioneAccreditamento field :  fieldIntegrazioni)
 			setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
+	}
+
+	public void applyIntegrazione(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) throws Exception{
+		for(FieldIntegrazioneAccreditamento field : fieldIntegrazioneList){
+			setField(dst,field.getIdField().getNameRef(),field.getNewValue());
+		}
 	}
 }

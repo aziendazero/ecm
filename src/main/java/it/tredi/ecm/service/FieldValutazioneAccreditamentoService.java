@@ -10,4 +10,5 @@ public interface FieldValutazioneAccreditamentoService {
 	public Set<FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamento(Long accreditamentoId);
 	public Map<IdFieldEnum,FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoAsMap(Long accreditamentoId);
 	public void save(FieldValutazioneAccreditamento valutazione);
+	public void saveMapList(Map<IdFieldEnum,FieldValutazioneAccreditamento> valutazioneAsMap);
 }
