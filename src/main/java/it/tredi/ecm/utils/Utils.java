@@ -53,78 +53,78 @@ public class Utils {
 				return file;
 			}
 		}catch (IOException ioException){
-			LOGGER.error("Errore durante lettura contenuto del file caricato oppure nessun file passato",ioException);		
+			LOGGER.error("Errore durante lettura contenuto del file caricato oppure nessun file passato",ioException);
 		}
 
 		return null;
 	}
-	
+
 	public static String getLogMessage(String message){
 		CurrentUser currentUser = getAuthenticatedUser();
-		return "[" + ((currentUser != null) ? currentUser.getAccount().getUsername() : "AnonymousAuthentication") + "] - " + message; 
+		return "[" + ((currentUser != null) ? currentUser.getAccount().getUsername() : "AnonymousAuthentication") + "] - " + message;
 	}
-	
+
 	public static void logDebugErrorFields(org.slf4j.Logger LOGGER, Errors errors){
 		if(LOGGER.isDebugEnabled())
 			errors.getFieldErrors().forEach( fieldError -> LOGGER.debug(fieldError.getField() + ": '" + fieldError.getRejectedValue() + "' [" + fieldError.getCode()+ "]"));
 	}
-	
+
 	/*
 	 * Mi restituisce la lista di ENUM per legare le checkbox lato thymeleafe
 	 * */
 	public static <T extends Field> Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<T> src, SubSetFieldEnum type){
 		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
-		
+
 		src.forEach(f -> {
 			if(f.getIdField().getSubSetField() == type)
 				dst.add(f.getIdField());
 		});
-		
+
 		return dst;
 	}
-	
+
 	/*
 	 * Mi restituisce la lista di ENUM per legare le checkbox lato thymeleafe (per i MULTI-ISTANZA)
 	 * */
 	public static <T extends Field> Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<T> src, Long objectReference, SubSetFieldEnum type){
 		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
-		
+
 		src.forEach(f -> {
 			if(f.getIdField().getSubSetField() == type && f.getObjectReference() == objectReference)
 				dst.add(f.getIdField());
 		});
-		
+
 		return dst;
 	}
-	
+
 	/*
 	 * Mi restituisce la sublist di record presenti su db per valutare nel save del controller quali eliminare perchè deselezionate
 	 * */
 	public static <T extends Field> Set<T> getSubset(Set<T> src, SubSetFieldEnum type){
 		Set<T> dst = new HashSet<T>();
-		
+
 		src.forEach(f -> {
 			if(f.getIdField().getSubSetField() == type)
 				dst. add(f);
-		});		
-		
+		});
+
 		return dst;
 	}
-	
+
 	/*
 	 * Mi restituisce la sublist di record presenti su db per valutare nel save del controller quali eliminare perchè deselezionate (per i MULTI-ISTANZA)
 	 * */
 	public static <T extends Field> Set<T> getSubset(Set<T> src, Long objectReference, SubSetFieldEnum type){
 		Set<T> dst = new HashSet<T>();
-		
+
 		src.forEach(f -> {
 			if(f.getIdField().getSubSetField() == type && f.getObjectReference() == objectReference)
 				dst. add(f);
-		});		
-		
+		});
+
 		return dst;
 	}
-	
+
 	/*
 	 * Controllo se un determinato IdFieldEnum è presente nella lista di record
 	 * */
@@ -135,7 +135,7 @@ public class Utils {
 		}
 		return null;
 	}
-	
+
 	public static SubSetFieldEnum getSubsetFromRuolo(Ruolo ruolo){
 		switch (ruolo){
 			case LEGALE_RAPPRESENTANTE: return SubSetFieldEnum.LEGALE_RAPPRESENTANTE;
@@ -148,7 +148,7 @@ public class Utils {
 			default: return null;
 		}
 	}
-	
+
 	public static IdFieldEnum getFullFromRuolo(Ruolo ruolo){
 		switch (ruolo){
 			case LEGALE_RAPPRESENTANTE: return IdFieldEnum.LEGALE_RAPPRESENTANTE__FULL;
@@ -159,6 +159,14 @@ public class Utils {
 			case RESPONSABILE_QUALITA: return IdFieldEnum.RESPONSABILE_QUALITA__FULL;
 			case COMPONENTE_COMITATO_SCIENTIFICO: return IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL;
 			default: return null;
+		}
+	}
+
+	public static SubSetFieldEnum getSubsetFromTipologia(String tipologia) {
+		switch (tipologia){
+		case "SedeLegale": return SubSetFieldEnum.SEDE_LEGALE;
+		case "SedeOperativa": return SubSetFieldEnum.SEDE_OPERATIVA;
+		default: return null;
 		}
 	}
 }
