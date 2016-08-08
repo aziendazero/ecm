@@ -135,7 +135,7 @@ public class ProviderController {
 //	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)") TODO
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/validate")
 	public String validateProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id,
-			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs){
+			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/validate"));
 		try {
 			return goToValidate(model, prepareProviderWrapperValidate(providerService.getProvider(id), accreditamentoId));
@@ -176,14 +176,14 @@ public class ProviderController {
 		}
 	}
 
-	/***	VALUTAZIONE	***/
+	/***	SALVA VALUTAZIONE	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/validate", method = RequestMethod.POST)
 	public String valutaProvider(@ModelAttribute("providerWrapper") ProviderWrapper providerWrapper, BindingResult result,
 									Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/validate"));
 		try{
 			//validazione del provider
-			valutazioneValidator.validateValutazione(providerWrapper.getMappa(), result, "");
+			valutazioneValidator.validateValutazione(providerWrapper.getMappa(), result, "provider.");
 
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
