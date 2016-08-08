@@ -183,7 +183,7 @@ public class ProviderController {
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/validate"));
 		try{
 			//validazione del provider
-			valutazioneValidator.validateValutazione(providerWrapper.getMappa(), result, "provider.");
+			valutazioneValidator.validateValutazione(providerWrapper.getMappa(), result);
 
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
