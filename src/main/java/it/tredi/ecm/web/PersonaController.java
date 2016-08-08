@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -43,7 +45,7 @@ import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
-import it.tredi.ecm.service.IntegrazioneUtils;
+import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
@@ -61,6 +63,9 @@ public class PersonaController {
 	private final String SHOW = "persona/personaShow";
 	private final String VALIDATE = "persona/personaValidate";
 
+	@PersistenceContext
+	EntityManager entityManager;
+
 	@Autowired private PersonaService personaService;
 	@Autowired private AnagraficaService anagraficaService;
 	@Autowired private ProviderService providerService;
@@ -71,7 +76,7 @@ public class PersonaController {
 	@Autowired private ValutazioneValidator valutazioneValidator;
 
 	@Autowired private AccreditamentoService accreditamentoService;
-	@Autowired private IntegrazioneUtils integrazioneUtils;
+	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
@@ -404,32 +409,11 @@ public class PersonaController {
 	}
 
 	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, long accreditamentoId, long providerId, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento) throws Exception{
-		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - entering"));
-		PersonaWrapper personaWrapper = new PersonaWrapper();
-
-		//CONTROLLO PER FARE IL DETACH DELL'ENTITY NEL CASO IN CUI SIAMO IN INTEGRAZIONE E QUINDI NON APPLICARE LE MODIFICHE AL DB
-		//HIBERNATE non ci permette di fare il detach??? dell'oggeto e quindi siamo costretti a fare un clone
-		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
-			persona = persona.clone();
-		}
-
-		personaWrapper.setPersona(persona);
-		personaWrapper.setAccreditamentoId(accreditamentoId);
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + "," + statoAccreditamento +") - entering"));
+		PersonaWrapper personaWrapper = new PersonaWrapper(persona, accreditamentoId, persona.getRuolo());
 		personaWrapper.setProviderId(providerId);
-		personaWrapper.setRuolo(persona.getRuolo());
 		personaWrapper.setStatoAccreditamento(accreditamentoService.getStatoAccreditamento(personaWrapper.getAccreditamentoId()));
-
-		if(!persona.isNew()){
-			Set<File> files = persona.getFiles();
-			for(File file : files){
-				if(file.isCV())
-					personaWrapper.setCv(file);
-				else if(file.isDELEGA())
-					personaWrapper.setDelega(file);
-				else if(file.isATTONOMINA())
-					personaWrapper.setAttoNomina(file);
-			}
-		}
+		personaWrapper.setIsLookup(isLookup);
 
 		if(accreditamentoId != 0){
 			SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
@@ -447,31 +431,21 @@ public class PersonaController {
 		}
 
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
-			integrazioneUtils.applyIntegrazione(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
+			integrazioneService.applyIntegrazioneObject(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
 		}
 
-		personaWrapper.setIsLookup(isLookup);
-		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - exiting"));
+		if(!personaWrapper.getPersona().isNew()){
+			personaWrapper.setFiles(personaWrapper.getPersona().getFiles());
+		}
+		
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + "," + statoAccreditamento +") - exiting"));
 		return personaWrapper;
 	}
 
 	private PersonaWrapper preparePersonaWrapperShow(Persona persona, long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperShow(" + persona.getId() + ") - entering"));
-		PersonaWrapper personaWrapper = new PersonaWrapper();
-		personaWrapper.setAccreditamentoId(accreditamentoId);
-		personaWrapper.setPersona(persona);
-		personaWrapper.setRuolo(persona.getRuolo());
-		if(!persona.isNew()){
-			Set<File> files = persona.getFiles();
-			for(File file : files){
-				if(file.isCV())
-					personaWrapper.setCv(file);
-				else if(file.isDELEGA())
-					personaWrapper.setDelega(file);
-				else if(file.isATTONOMINA())
-					personaWrapper.setAttoNomina(file);
-			}
-		}
+		PersonaWrapper personaWrapper = new PersonaWrapper(persona, accreditamentoId, persona.getRuolo());
+		personaWrapper.setFiles(persona.getFiles());
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperShow(" + persona.getId() + ") - exiting"));
 		return personaWrapper;
 	}
@@ -511,6 +485,7 @@ public class PersonaController {
 
 	/***	LOGICA PER SALVATAGGIO PERSONA	***/
 	private void savePersona(PersonaWrapper personaWrapper) throws Exception{
+		LOGGER.info(Utils.getLogMessage("Salvataggio persona"));
 		//non possono e non devono esistere più persone con lo stesso ruolo per ogni provider (tranne per i componenti del comitato scientifico)
 		if(personaWrapper.getPersona().isNew() && !personaWrapper.getPersona().isComponenteComitatoScientifico()){
 			Persona persona = personaService.getPersonaByRuolo(personaWrapper.getPersona().getRuolo(), personaWrapper.getProviderId());
@@ -540,8 +515,14 @@ public class PersonaController {
 	}
 
 	private void integraPersona(PersonaWrapper personaWrapper) throws Exception{
+		LOGGER.info(Utils.getLogMessage("Integrazione persona"));
 		Accreditamento accreditamento = new Accreditamento();
 		accreditamento.setId(personaWrapper.getAccreditamentoId());
+
+
+		//DETACH DELL'ENTITY NEL CASO IN CUI SIAMO IN INTEGRAZIONE E QUINDI NON APPLICARE LE MODIFICHE AL DB
+		integrazioneService.detach(personaWrapper);
+		integrazioneService.detach(personaWrapper.getPersona());
 
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 
@@ -549,21 +530,28 @@ public class PersonaController {
 			//registriamo inserimento nuova persona
 		}else{
 			//registriamo i fieldIntegrazione con i valori
-			if(personaWrapper.getIdEditabili().contains(Utils.getFullFromRuolo(personaWrapper.getPersona().getRuolo()))){
+			IdFieldEnum idFieldFull = Utils.getFullFromRuolo(personaWrapper.getPersona().getRuolo());
+			if(personaWrapper.getIdEditabili().contains(idFieldFull)){
 				//Nuovo lookup anagrafica
+				if(personaWrapper.getPersona().isComponenteComitatoScientifico()){
+					//gestire multi-istanza
+				}else{
+					personaWrapper.getPersona().setId(null);
+					personaWrapper.getPersona().setProvider(null);
+					personaService.save(personaWrapper.getPersona());
+					fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idFieldFull, accreditamento, personaWrapper.getPersona().getId(), TipoIntegrazioneEnum.MODIFICA));
+				}
 			}else{
 				//modifica singoli campi
 				for(IdFieldEnum idField : personaWrapper.getIdEditabili()){
 					if(personaWrapper.getPersona().isComponenteComitatoScientifico())
-						fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento (idField, accreditamento, personaWrapper.getPersona().getId(),integrazioneUtils.getField(personaWrapper.getPersona(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+						fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento (idField, accreditamento, personaWrapper.getPersona().getId(),integrazioneService.getField(personaWrapper.getPersona(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
 					else
-						fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneUtils.getField(personaWrapper.getPersona(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+						fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(personaWrapper.getPersona(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
 				}
 			}
 		}
 
-		//TODO .. fare metodo update aggiorno la lista delle Integrazioni con i nuovi valori
-		fieldIntegrazioneAccreditamentoService.delete(personaWrapper.getFieldIntegrazione());
-		fieldIntegrazioneAccreditamentoService.save(fieldIntegrazioneList);
+		fieldIntegrazioneAccreditamentoService.update(personaWrapper.getFieldIntegrazione(), fieldIntegrazioneList);
 	}
 }

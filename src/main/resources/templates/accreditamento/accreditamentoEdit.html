@@ -99,7 +99,8 @@
 				}
 
 				function setEditURLs(ruolo) {
-					$('#nuova_anagrafica').prop('href', [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=|}]]+ruolo);
+					/*$('#nuova_anagrafica').prop('href', [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/new?ruolo=|}]]+ruolo);*/
+					$('#nuova_anagrafica').prop('href', [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]] + ruolo + '/setAnagrafica');
 					var table = $('#tabella-modale').DataTable();
 					table.clear();
 					urlGet = [[@{/provider/}]] + [[${accreditamentoWrapper.provider.id}]] + "/anagraficaList";

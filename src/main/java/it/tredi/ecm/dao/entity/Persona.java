@@ -62,7 +62,7 @@ public class Persona extends BaseEntity{
 	public void addFile(File file){
 		this.getFiles().add(file);
 	}
-
+	
 	/***	CHECK RUOLO DELLA PERSONA	***/
 	public boolean isResponsabileSegreteria(){
 		return ruolo.equals(Ruolo.RESPONSABILE_SEGRETERIA);

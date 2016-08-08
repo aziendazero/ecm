@@ -58,7 +58,7 @@ import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
 import it.tredi.ecm.dao.repository.ProfessioneRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
-import it.tredi.ecm.service.IntegrazioneUtils;
+import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -81,7 +81,7 @@ public class FieldIntegrazioneTest {
 	@Autowired private ProfessioneRepository professioneRepository;
 	@Autowired private AnagraficaRepository anagraficaRepository;
 	
-	@Autowired private IntegrazioneUtils integrazioneUtils;
+	@Autowired private IntegrazioneService integrazioneService;
 
 	@Autowired
 	private ApplicationContext appContext;
@@ -110,7 +110,7 @@ public class FieldIntegrazioneTest {
 		System.out.println("BEFORE: ");
 		print(provider, null);
 
-		integrazioneUtils.setField(provider, field.getIdField().getNameRef(), field.getNewValue());
+		integrazioneService.setField(provider, field.getIdField().getNameRef(), field.getNewValue());
 
 		System.out.println("AFTER: ");
 		print(provider, IdFieldEnum.PROVIDER__CODICE_FISCALE.getNameRef());
@@ -133,7 +133,7 @@ public class FieldIntegrazioneTest {
 		Provider provider = accreditamento.getProvider();
 		List<FieldIntegrazioneAccreditamento> idIntegrazione = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(FieldEditabileAccreditamento field : idEditabili){
-			Object newValue = integrazioneUtils.getField(provider, field.getIdField().getNameRef());
+			Object newValue = integrazioneService.getField(provider, field.getIdField().getNameRef());
 			idIntegrazione.add(new FieldIntegrazioneAccreditamento(field.getIdField(), field.getAccreditamento(), newValue, TipoIntegrazioneEnum.MODIFICA));
 		}
 		repoIntegrazione.save(idIntegrazione);
@@ -142,11 +142,10 @@ public class FieldIntegrazioneTest {
 	@Test
 	@Ignore
 	public void applyFieldIntegrazioneProvider() throws Exception{
-		Set<FieldIntegrazioneAccreditamento> idIntegrazione = repoIntegrazione.findAllByAccreditamentoId(304L);
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = repoIntegrazione.findAllByAccreditamentoId(304L);
 		Provider provider = new Provider();
-		for(FieldIntegrazioneAccreditamento field : idIntegrazione){
-			integrazioneUtils.setField(provider, field.getIdField().getNameRef(), field.getNewValue());
-		}
+		
+		integrazioneService.applyIntegrazioneObject(provider, fieldIntegrazioneList);
 
 		print(provider, null);
 	}
@@ -167,7 +166,7 @@ public class FieldIntegrazioneTest {
 		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
 		List<FieldIntegrazioneAccreditamento> idIntegrazione = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(FieldEditabileAccreditamento field : idEditabili){
-			Object newValue = integrazioneUtils.getField(datiAccreditamento, field.getIdField().getNameRef());
+			Object newValue = integrazioneService.getField(datiAccreditamento, field.getIdField().getNameRef());
 			idIntegrazione.add(new FieldIntegrazioneAccreditamento(field.getIdField(), field.getAccreditamento(), newValue, TipoIntegrazioneEnum.MODIFICA));
 		}
 
@@ -177,13 +176,11 @@ public class FieldIntegrazioneTest {
 	@Test
 	@Ignore
 	public void applyFieldIntegrazioneDatiAccreditamento() throws Exception{
-		Set<FieldIntegrazioneAccreditamento> idIntegrazione = repoIntegrazione.findAllByAccreditamentoId(416L);
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = repoIntegrazione.findAllByAccreditamentoId(416L);
 		//DatiAccreditamento dati = datiAccreditamentoService.getDatiAccreditamento(396L);
 		DatiAccreditamento dati = datiAccreditamentoService.getDatiAccreditamento(118L);
 		
-		for(FieldIntegrazioneAccreditamento field : idIntegrazione){
-			integrazioneUtils.setField(dati, field.getIdField().getNameRef(), field.getNewValue());
-		}
+		integrazioneService.applyIntegrazioneObject(dati, fieldIntegrazioneList);
 
 		datiAccreditamentoService.save(dati, dati.getAccreditamento().getId());
 	}
@@ -202,7 +199,7 @@ public class FieldIntegrazioneTest {
 
 		List<FieldIntegrazioneAccreditamento> idIntegrazione = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(FieldEditabileAccreditamento field : idEditabili){
-			Object newValue = integrazioneUtils.getField(persona, field.getIdField().getNameRef());
+			Object newValue = integrazioneService.getField(persona, field.getIdField().getNameRef());
 			idIntegrazione.add(new FieldIntegrazioneAccreditamento(field.getIdField(), field.getAccreditamento(), persona.getId(), newValue, TipoIntegrazioneEnum.MODIFICA));
 		}
 
@@ -212,11 +209,10 @@ public class FieldIntegrazioneTest {
 	@Test
 	@Ignore
 	public void applyFieldPersona() throws Exception{
-		Set<FieldIntegrazioneAccreditamento> idIntegrazione = repoIntegrazione.findAllByAccreditamentoId(416L);
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = repoIntegrazione.findAllByAccreditamentoId(416L);
 		Persona persona = personaService.getPersona(534L);
-		for(FieldIntegrazioneAccreditamento field : idIntegrazione){
-			integrazioneUtils.setField(persona, field.getIdField().getNameRef(), field.getNewValue());
-		}
+		
+		integrazioneService.applyIntegrazioneObject(persona, fieldIntegrazioneList);
 
 		print(persona, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE.getNameRef());
 

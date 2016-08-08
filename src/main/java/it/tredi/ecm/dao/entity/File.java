@@ -19,7 +19,7 @@ import lombok.Setter;
 @Table(name="file")
 @Getter
 @Setter
-public class File extends BaseEntity {
+public class File extends BaseEntity{
 	private String nomeFile;
 
 	@JsonIgnore
@@ -93,14 +93,26 @@ public class File extends BaseEntity {
 	}
 
 	@Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        File entitapiatta = (File) o;
-        return Objects.equals(id, entitapiatta.id);
-    }
+	public int hashCode() {
+		final int prime = 31;
+		//int result = super.hashCode();
+		int result = 1;
+		result = prime * result + ((tipo == null) ? 0 : tipo.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		File other = (File) obj;
+		if (tipo == other.tipo)
+			return false;
+		return true;
+	}
+ 
 }
