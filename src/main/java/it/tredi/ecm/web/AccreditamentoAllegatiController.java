@@ -173,6 +173,42 @@ public class AccreditamentoAllegatiController {
 		}
 	}
 
+	/***	 SAVE VALUTAZIONE ALLEGATI ACCREDITAMENTO	***/
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/validate", method = RequestMethod.POST)
+	public String valutaDatiAccreditamento(@ModelAttribute("accreditamentoAllegatiWrapper") AccreditamentoAllegatiWrapper wrapper, BindingResult result,
+			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
+		LOGGER.info(Utils.getLogMessage("POST /accreditamento/"+ accreditamentoId +"/allegati/validate"));
+		try {
+			//validazione dei file allegati accreditamento
+			valutazioneValidator.validateValutazione(wrapper.getMappa(), result);
+
+			if(result.hasErrors()){
+				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+				return VALIDATE;
+			}else{
+				Accreditamento accreditamento = new Accreditamento();
+				accreditamento.setId(wrapper.getAccreditamentoId());
+				wrapper.getMappa().forEach((k, v) -> {
+					v.setIdField(k);
+					v.setAccreditamento(accreditamento);
+				});
+				fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa());
+				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
+				redirectAttrs.addFlashAttribute("currentTab","tab3");
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+				return "redirect:/accreditamento/{accreditamentoId}/validate";
+			}
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("POST /accreditamento/"+ accreditamentoId +"/allegati/validate"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+			return VALIDATE;
+		}
+	}
+
 	private String goToEdit(Model model, AccreditamentoAllegatiWrapper wrapper){
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));

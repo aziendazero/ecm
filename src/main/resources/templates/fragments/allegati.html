@@ -68,7 +68,7 @@
 				</div>
 				<input type="hidden" th:field="${__${wrapper}__.mappa[__${idField}__].id}" />
 	        </th:block>
-			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
+			<div th:if="${editabile and #fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 		</div>
 		</th:block>
 	</th:block>

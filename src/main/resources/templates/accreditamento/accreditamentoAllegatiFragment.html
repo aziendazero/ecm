@@ -33,7 +33,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="attoCostitutivo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.attoCostitutivoModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, attoCostitutivo,  ${!showOnly ? 'accreditamentoAllegati.file.attoCostitutivo' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, attoCostitutivo,  ${!showOnly ? 'attoCostitutivo' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 2 (esperienza formazione in ambito sanitario) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -41,7 +41,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="esperienzaFormazione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.esperienzaFormazioneModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${!showOnly ? 'accreditamentoAllegati.file.esperienzaFormazione' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${!showOnly ? 'esperienzaFormazione' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -49,7 +49,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="utilizzo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.utilizzoModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, utilizzo,  ${!showOnly ? 'accreditamentoAllegati.file.utilizzo' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, utilizzo,  ${!showOnly ? 'utilizzo' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 4 (sistema informatico dedicato alla formazione in ambito sanitario) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -57,7 +57,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="sistemaInformatico_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.sistemaInformaticoModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, sistemaInformatico,  ${!showOnly ? 'accreditamentoAllegati.file.sistemaInformatico' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, sistemaInformatico,  ${!showOnly ? 'sistemaInformatico' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 5 (piano di qualità) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -65,7 +65,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="pianoQualita_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.pianoQualitaModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, pianoQualita,  ${!showOnly ? 'accreditamentoAllegati.file.pianoQualita' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, pianoQualita,  ${!showOnly ? 'pianoQualita' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 6 (dichiarazione del legale rappresentante) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -73,7 +73,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="dichiarazioneLegale_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.dichiarazioneLegaleModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneLegale,  ${!showOnly ? 'accreditamentoAllegati.file.dichiarazioneLegale' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneLegale,  ${!showOnly ? 'dichiarazioneLegale' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 7 (dichiarazione esclusione) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -81,7 +81,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="dichiarazioneEsclusione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.dichiarazioneEsclusioneModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneEsclusione,  ${!showOnly ? 'accreditamentoAllegati.file.dichiarazioneEsclusione' : null}, null, null, true, ${mode}, false)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneEsclusione,  ${!showOnly ? 'dichiarazioneEsclusione' : null}, null, null, true, ${mode}, false)" ></th:block>
 
 					</form>
 				</div>
