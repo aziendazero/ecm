@@ -286,7 +286,7 @@ public class SedeController {
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/validate"));
 		try{
 			//validazione della sede
-			valutazioneValidator.validateValutazione(sedeWrapper.getMappa(), result, "sede.");
+			valutazioneValidator.validateValutazione(sedeWrapper.getMappa(), result);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
