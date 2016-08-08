@@ -18,11 +18,11 @@ public class ValutazioneValidator {
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = (Map<IdFieldEnum, FieldValutazioneAccreditamento>) target;
 		for (Map.Entry<IdFieldEnum, FieldValutazioneAccreditamento> entry : mappa.entrySet()) {
 			if(entry.getValue().getEsito() == null)
-				errors.rejectValue(prefix + entry.getKey().getKey(), "error.atleast_one_empty");
+				errors.rejectValue(prefix + entry.getKey().getNameRef(), "error.atleast_one_empty");
 			else
 				if(entry.getValue().getEsito() == false && (entry.getValue().getNote() == null
 				|| entry.getValue().getNote().isEmpty()))
-					errors.rejectValue(prefix + entry.getKey().getKey(), "error.note_obbligatorie");
+					errors.rejectValue(prefix + entry.getKey().getNameRef(), "error.note_obbligatorie");
 		}
 	}
 }
