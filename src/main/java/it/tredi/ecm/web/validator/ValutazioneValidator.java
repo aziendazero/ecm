@@ -14,15 +14,15 @@ import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 public class ValutazioneValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ValutazioneValidator.class);
 
-	public void validateValutazione(Object target, Errors errors, String prefix) {
+	public void validateValutazione(Object target, Errors errors) {
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = (Map<IdFieldEnum, FieldValutazioneAccreditamento>) target;
 		for (Map.Entry<IdFieldEnum, FieldValutazioneAccreditamento> entry : mappa.entrySet()) {
 			if(entry.getValue().getEsito() == null)
-				errors.rejectValue(prefix + entry.getKey().getNameRef(), "error.atleast_one_empty");
+				errors.rejectValue(entry.getKey().getKey(), "error.atleast_one_empty");
 			else
 				if(entry.getValue().getEsito() == false && (entry.getValue().getNote() == null
 				|| entry.getValue().getNote().isEmpty()))
-					errors.rejectValue(prefix + entry.getKey().getNameRef(), "error.note_obbligatorie");
+					errors.rejectValue(entry.getKey().getKey(), "error.note_obbligatorie");
 		}
 	}
 }
