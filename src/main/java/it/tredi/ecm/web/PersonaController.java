@@ -306,7 +306,7 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/validate"));
 		try {
 			//validazione della persona
-			valutazioneValidator.validateValutazione(personaWrapper.getMappa(), result, "persona.");
+			valutazioneValidator.validateValutazione(personaWrapper.getMappa(), result);
 
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
@@ -437,7 +437,7 @@ public class PersonaController {
 		if(!personaWrapper.getPersona().isNew()){
 			personaWrapper.setFiles(personaWrapper.getPersona().getFiles());
 		}
-		
+
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + "," + statoAccreditamento +") - exiting"));
 		return personaWrapper;
 	}
