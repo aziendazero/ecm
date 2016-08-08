@@ -5,22 +5,26 @@
 <head lang="it">
 </head>
 <body>
-	<!-- fragment interno della sede, la parte di paginazione è gestita dai file sedeShow e sedeEdit -->
-	<!-- parametri del fragment: boolean passato come parametro e prende sedeWrapper dal module del chiamante -->
-	<th:block th:fragment="sede(editabile)">
+	<!-- fragment interno della sede, la parte di paginazione è gestita dai file sedeShow, sedeEdit e sedeValidate -->
+	<!-- parametri del fragment: String passato come parametro che specifica la modalità e prende sedeWrapper dal module del chiamante -->
+	<!-- tipologiaSede viene preso da sedeValidate.html e rappresenta la tipologia di sede (legale o operativa) -->
+	<th:block th:fragment="sede(mode)">
+		<th:block th:with="editabile=${mode == 'edit'},
+			valutabile=${mode == 'validate'},
+			showOnly=${mode == 'show'}">
 
-		<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
+			<!-- ogni parte non in comune sarà gestita in maniera appropriata -->
 			<div class="x_content">
 				<!-- rimove il tag form se il sede NON è editabile -->
-				<div class="form-horizontal form-label-left" th:remove="${!editabile} ? none : tag">
-					<form th:remove="${editabile} ? none : tag"
+				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
+					<form th:remove="${!showOnly} ? none : tag"
 						id="formSede" class="form-horizontal form-label-left"
-						th:action="@{|/accreditamento/${sedeWrapper.accreditamentoId}/provider/${sedeWrapper.providerId}/sede/save|}"
+						th:action="@{|/accreditamento/${sedeWrapper.accreditamentoId}/provider/${sedeWrapper.providerId}/sede/|} + ${valutabile ? 'validate' : 'save'}"
 						method="post" enctype="multipart/form-data"
 						novalidate="novalidate">
 
 						<!-- gli input hidden non sono necessari se NON editabile -->
-						<th:block th:if="${editabile}">
+						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${sedeWrapper.sede.id}" />
 							<input type="hidden" th:field="${sedeWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${sedeWrapper.tipologiaSede}" />
@@ -29,9 +33,9 @@
 
 						<!-- PROVINCIA -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.provincia')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.provincia') : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="provincia_sede">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.provincia}">Provincia</span>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.provincia') : ''}"></label>
+							 <label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="provincia_sede">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.provincia}">Provincia</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -43,19 +47,42 @@
 		                        	</select>
 							  	</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${sedeWrapper.sede.provincia}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('sedeWrapper.sede.provincia')}" class="alert" th:errors="${sedeWrapper.sede.provincia}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${sedeWrapper.sede.provincia}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.provincia')}__].esito}" th:value="true" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.provincia')}__].esito}" th:value="false" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.provincia')}__].note}"></textarea>
+								</div>
+								<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.provincia')}__].id}" />
+		                    </th:block>
+							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.provincia')}" class="alert" th:errors="${sedeWrapper.sede.provincia}"></div>
 						</div>
 
 						<!-- COMUNE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.comune')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.comune') : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="comune_sede">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.comune}">Comune</span>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.comune') : ''}"></label>
+							 <label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="comune_sede">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.comune}">Comune</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block  th:if="${editabile}">
@@ -65,19 +92,42 @@
 		                        	</select>
 							  	</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${sedeWrapper.sede.comune}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('sedeWrapper.sede.comune')}" class="alert" th:errors="${sedeWrapper.sede.comune}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${sedeWrapper.sede.comune}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.comune')}__].esito}" th:value="true" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.comune')}__].esito}" th:value="false" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.comune')}__].note}"></textarea>
+								</div>
+								<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.comune')}__].id}" />
+		                    </th:block>
+							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.comune')}" class="alert" th:errors="${sedeWrapper.sede.comune}"></div>
 						</div>
 
 						<!-- INDIRIZZO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.indirizzo')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.indirizzo') : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="indirizzo_sede">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.indirizzo}">Indirizzo</span>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.indirizzo') : ''}"></label>
+							 <label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="indirizzo_sede">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.indirizzo}">Indirizzo</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block  th:if="${editabile}">
@@ -88,19 +138,42 @@
 										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.indirizzo')) or sedeWrapper.coincide}"/>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${sedeWrapper.sede.indirizzo}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('sedeWrapper.sede.indirizzo')}" class="alert" th:errors="${sedeWrapper.sede.indirizzo}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${sedeWrapper.sede.indirizzo}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.indirizzo')}__].esito}" th:value="true" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.indirizzo')}__].esito}" th:value="false" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.indirizzo')}__].note}"></textarea>
+								</div>
+								<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.indirizzo')}__].id}" />
+		                    </th:block>
+							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.indirizzo')}" class="alert" th:errors="${sedeWrapper.sede.indirizzo}"></div>
 						</div>
 
 						<!-- CAP -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.cap')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.cap') : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="CAP_sede">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cap}">CAP</span>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.cap') : ''}"></label>
+							 <label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="CAP_sede">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.cap}">CAP</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block  th:if="${editabile}">
@@ -111,19 +184,42 @@
 		                        	</select>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${sedeWrapper.sede.cap}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('sedeWrapper.sede.cap')}" class="alert" th:errors="${sedeWrapper.sede.cap}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${sedeWrapper.sede.cap}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.cap')}__].esito}" th:value="true" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.cap')}__].esito}" th:value="false" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.cap')}__].note}"></textarea>
+								</div>
+								<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.cap')}__].id}" />
+		                    </th:block>
+							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.cap')}" class="alert" th:errors="${sedeWrapper.sede.cap}"></div>
 						</div>
 
 						<!-- TELEFONO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.telefono')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.telefono') : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="telefono_sede">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.telefono}">Telefono</span>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.telefono') : ''}"></label>
+							 <label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="telefono_sede">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.telefono}">Telefono</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block  th:if="${editabile}">
@@ -134,19 +230,42 @@
 										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.telefono')) or sedeWrapper.coincide}"/>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${sedeWrapper.sede.telefono}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('sedeWrapper.sede.telefono')}" class="alert" th:errors="${sedeWrapper.sede.telefono}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${sedeWrapper.sede.telefono}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.telefono')}__].esito}" th:value="true" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.telefono')}__].esito}" th:value="false" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.telefono')}__].note}"></textarea>
+								</div>
+								<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.telefono')}__].id}" />
+		                    </th:block>
+							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.telefono')}" class="alert" th:errors="${sedeWrapper.sede.telefono}"></div>
 						</div>
 
 						<!-- FAX -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.fax')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.fax') : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="fax_sede">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.fax}">FAX</span>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.fax') : ''}"></label>
+							 <label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="fax_sede">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.fax}">FAX</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block  th:if="${editabile}">
@@ -156,19 +275,42 @@
 										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.fax')) or sedeWrapper.coincide}"/>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${sedeWrapper.sede.fax}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('sedeWrapper.sede.fax')}" class="alert" th:errors="${sedeWrapper.sede.fax}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${sedeWrapper.sede.fax}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.fax')}__].esito}" th:value="true" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.fax')}__].esito}" th:value="false" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.fax')}__].note}"></textarea>
+								</div>
+								<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.fax')}__].id}" />
+		                    </th:block>
+							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.fax')}" class="alert" th:errors="${sedeWrapper.sede.fax}"></div>
 						</div>
 
 						<!-- EMAIL -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.email')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.email') : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="email_sede">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.email}">E-mail</span>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.email') : ''}"></label>
+							 <label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="email_sede">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.email}">E-mail</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block  th:if="${editabile}">
@@ -179,16 +321,40 @@
 										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede + '.email')) or sedeWrapper.coincide}"/>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${sedeWrapper.sede.email}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('sedeWrapper.sede.email')}" class="alert" th:errors="${sedeWrapper.sede.email}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${sedeWrapper.sede.email}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.email')}__].esito}" th:value="true" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.email')}__].esito}" th:value="false" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.email')}__].note}"></textarea>
+								</div>
+								<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(sedeWrapper.tipologiaSede +'.email')}__].id}" />
+		                    </th:block>
+							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.email')}" class="alert" th:errors="${sedeWrapper.sede.email}"></div>
 						</div>
 					</form>
 				</div>
 			</div>
+		</th:block>
 	</th:block>
 </body>
 </html>
