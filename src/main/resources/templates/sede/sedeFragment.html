@@ -78,6 +78,8 @@
 							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.provincia')}" class="alert" th:errors="${sedeWrapper.sede.provincia}"></div>
 						</div>
 
+						<div th:if="${valutabile}" class="divider"></div>
+
 						<!-- COMUNE -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.comune')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.comune') : ''}"></label>
@@ -122,6 +124,8 @@
 		                    </th:block>
 							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.comune')}" class="alert" th:errors="${sedeWrapper.sede.comune}"></div>
 						</div>
+
+						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- INDIRIZZO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.indirizzo')} ? 'bad'">
@@ -169,6 +173,8 @@
 							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.indirizzo')}" class="alert" th:errors="${sedeWrapper.sede.indirizzo}"></div>
 						</div>
 
+						<div th:if="${valutabile}" class="divider"></div>
+
 						<!-- CAP -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.cap')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.cap') : ''}"></label>
@@ -214,6 +220,8 @@
 		                    </th:block>
 							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.cap')}" class="alert" th:errors="${sedeWrapper.sede.cap}"></div>
 						</div>
+
+						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- TELEFONO -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.telefono')} ? 'bad'">
@@ -261,6 +269,8 @@
 							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.telefono')}" class="alert" th:errors="${sedeWrapper.sede.telefono}"></div>
 						</div>
 
+						<div th:if="${valutabile}" class="divider"></div>
+
 						<!-- FAX -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.fax')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(sedeWrapper.tipologiaSede + '.fax') : ''}"></label>
@@ -305,6 +315,8 @@
 		                    </th:block>
 							<div th:if="${editabile and #fields.hasErrors('sedeWrapper.sede.fax')}" class="alert" th:errors="${sedeWrapper.sede.fax}"></div>
 						</div>
+
+						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- EMAIL -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('sedeWrapper.sede.email')} ? 'bad'">
