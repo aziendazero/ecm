@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -29,6 +30,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
+import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
 public class ProviderController {
@@ -40,6 +42,7 @@ public class ProviderController {
 
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
+	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldEditabileAccreditamentoRepository fieldEditabileRepository;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
@@ -132,7 +135,7 @@ public class ProviderController {
 //	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)") TODO
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/validate")
 	public String validateProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id,
-			@RequestParam(required = false) String from, Model model, RedirectAttributes redirectAttrs){
+			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/validate"));
 		try {
 			return goToValidate(model, prepareProviderWrapperValidate(providerService.getProvider(id), accreditamentoId));
@@ -172,6 +175,42 @@ public class ProviderController {
 			return EDIT;
 		}
 	}
+
+	/***	SALVA VALUTAZIONE	***/
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/validate", method = RequestMethod.POST)
+	public String valutaProvider(@ModelAttribute("providerWrapper") ProviderWrapper providerWrapper, BindingResult result,
+									Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/validate"));
+		try{
+			//validazione del provider
+			valutazioneValidator.validateValutazione(providerWrapper.getMappa(), result, "provider.");
+
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+				return VALIDATE;
+			}else{
+				Accreditamento accreditamento = new Accreditamento();
+				accreditamento.setId(providerWrapper.getAccreditamentoId());
+				providerWrapper.getMappa().forEach((k, v) -> {
+					v.setIdField(k);
+					v.setAccreditamento(accreditamento);
+				});
+				fieldValutazioneAccreditamentoService.saveMapList(providerWrapper.getMappa());
+				redirectAttrs.addAttribute("accreditamentoId", providerWrapper.getAccreditamentoId());
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+				return "redirect:/accreditamento/{accreditamentoId}/validate";
+			}
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/validate"),ex);
+			model.addAttribute("accreditamentoId",providerWrapper.getAccreditamentoId());
+			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+			return VALIDATE;
+		}
+	}
+
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping("/provider/list")

@@ -14,5 +14,4 @@ import lombok.Setter;
 public class ProviderWrapper extends Wrapper{
 	private Provider provider;
 	private Long accreditamentoId;
-	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 }
