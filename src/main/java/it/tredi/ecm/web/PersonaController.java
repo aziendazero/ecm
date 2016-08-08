@@ -2,6 +2,7 @@ package it.tredi.ecm.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
@@ -39,6 +41,7 @@ import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AnagraficaService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
+import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneUtils;
 import it.tredi.ecm.service.PersonaService;
@@ -48,6 +51,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.validator.PersonaValidator;
+import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
 public class PersonaController {
@@ -55,6 +59,7 @@ public class PersonaController {
 
 	private final String EDIT = "persona/personaEdit";
 	private final String SHOW = "persona/personaShow";
+	private final String VALIDATE = "persona/personaValidate";
 
 	@Autowired private PersonaService personaService;
 	@Autowired private AnagraficaService anagraficaService;
@@ -63,10 +68,12 @@ public class PersonaController {
 	@Autowired private FileService fileService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamentoService;
 	@Autowired private PersonaValidator personaValidator;
+	@Autowired private ValutazioneValidator valutazioneValidator;
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private IntegrazioneUtils integrazioneUtils;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -103,7 +110,7 @@ public class PersonaController {
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
 				isLookup = true;
 			}
-			
+
 			return preparePersonaWrapperEdit(persona, isLookup, statoAccreditamento);
 		}
 		return new PersonaWrapper();
@@ -206,6 +213,21 @@ public class PersonaController {
 		}
 	}
 
+	/***	VALIDATE PERSONA ***/
+//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/validate")
+	public String validatePersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/validate"));
+		try {
+			return goToValidate(model, preparePersonaWrapperValidate(personaService.getPersona(id), accreditamentoId, providerId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/validate"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+			return VALIDATE;
+		}
+	}
+
 	/***	SAVE PERSONA ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/save", method = RequestMethod.POST)
 	public String savePersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
@@ -259,14 +281,57 @@ public class PersonaController {
 			}catch(Exception ex){
 				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/save"),ex);
 				model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/save"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 			return EDIT;
+		}
+	}
+
+	/***	SAVE  VALUTAZIONE PERSONA ***/
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/validate", method = RequestMethod.POST)
+	public String valutaPersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
+			RedirectAttributes redirectAttrs, Model model, @PathVariable Long accreditamentoId, @PathVariable Long providerId){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/validate"));
+		try {
+			//validazione della persona
+			valutazioneValidator.validateValutazione(personaWrapper.getMappa(), result, "persona.");
+
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("returnLink", calcolaLink(personaWrapper, "validate"));
+				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+				return VALIDATE;
+			}else{
+				Accreditamento accreditamento = new Accreditamento();
+				accreditamento.setId(personaWrapper.getAccreditamentoId());
+				personaWrapper.getMappa().forEach((k, v) -> {
+					v.setIdField(k);
+					v.setAccreditamento(accreditamento);
+					if(personaWrapper.getPersona().isComponenteComitatoScientifico())
+						v.setObjectReference(personaWrapper.getPersona().getId());
+				});
+				fieldValutazioneAccreditamentoService.saveMapList(personaWrapper.getMappa());
+				redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
+				if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())
+					redirectAttrs.addFlashAttribute("currentTab","tab2");
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+				return "redirect:/accreditamento/{accreditamentoId}/validate";
+			}
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/validate"),ex);
+			model.addAttribute("accreditamentoId",personaWrapper.getAccreditamentoId());
+			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
+			model.addAttribute("returnLink", calcolaLink(personaWrapper, "validate"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+			return VALIDATE;
 		}
 	}
 
@@ -300,6 +365,13 @@ public class PersonaController {
 		model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
+	}
+
+	private String goToValidate(Model model, PersonaWrapper personaWrapper) {
+		model.addAttribute("personaWrapper", personaWrapper);
+		model.addAttribute("returnLink", calcolaLink(personaWrapper, "validate"));
+		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+		return VALIDATE;
 	}
 
 	private String goToShow(Model model, PersonaWrapper personaWrapper){
@@ -340,7 +412,7 @@ public class PersonaController {
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
 			persona = persona.clone();
 		}
-		
+
 		personaWrapper.setPersona(persona);
 		personaWrapper.setAccreditamentoId(accreditamentoId);
 		personaWrapper.setProviderId(providerId);
@@ -377,7 +449,7 @@ public class PersonaController {
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
 			integrazioneUtils.applyIntegrazione(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
 		}
-		
+
 		personaWrapper.setIsLookup(isLookup);
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + ") - exiting"));
 		return personaWrapper;
@@ -404,6 +476,39 @@ public class PersonaController {
 		return personaWrapper;
 	}
 
+	private PersonaWrapper preparePersonaWrapperValidate(Persona persona, long accreditamentoId, long providerId){
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - entering"));
+		PersonaWrapper personaWrapper = new PersonaWrapper();
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
+		personaWrapper.setAccreditamentoId(accreditamentoId);
+		personaWrapper.setProviderId(providerId);
+		personaWrapper.setMappa(mappa);
+		personaWrapper.setPersona(persona);
+		personaWrapper.setRuolo(persona.getRuolo());
+		if(!persona.isNew()){
+			Set<File> files = persona.getFiles();
+			for(File file : files){
+				if(file.isCV())
+					personaWrapper.setCv(file);
+				else if(file.isDELEGA())
+					personaWrapper.setDelega(file);
+				else if(file.isATTONOMINA())
+					personaWrapper.setAttoNomina(file);
+			}
+		}
+
+		//TODO!!! per non caricare tutto l'accreditamento ogni volta
+//		SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
+//		if(persona.isComponenteComitatoScientifico()){
+//			personaWrapper.setFieldValutazione(Utils.getSubset(fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
+//		}else{
+//			personaWrapper.setFieldValutazione(Utils.getSubset(fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamento(accreditamentoId), subset));
+//		}
+
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - exiting"));
+		return personaWrapper;
+	}
+
 	/***	LOGICA PER SALVATAGGIO PERSONA	***/
 	private void savePersona(PersonaWrapper personaWrapper) throws Exception{
 		//non possono e non devono esistere più persone con lo stesso ruolo per ogni provider (tranne per i componenti del comitato scientifico)
@@ -413,7 +518,7 @@ public class PersonaController {
 				personaService.delete(persona.getId());
 		}
 
-		boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false; 
+		boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false;
 		personaService.save(personaWrapper.getPersona());
 
 		//inserimento nuova persona in Domanda di Accreditamento
@@ -437,7 +542,7 @@ public class PersonaController {
 	private void integraPersona(PersonaWrapper personaWrapper) throws Exception{
 		Accreditamento accreditamento = new Accreditamento();
 		accreditamento.setId(personaWrapper.getAccreditamentoId());
-		
+
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 
 		if(personaWrapper.getPersona().isNew()){
@@ -456,7 +561,7 @@ public class PersonaController {
 				}
 			}
 		}
-		
+
 		//TODO .. fare metodo update aggiorno la lista delle Integrazioni con i nuovi valori
 		fieldIntegrazioneAccreditamentoService.delete(personaWrapper.getFieldIntegrazione());
 		fieldIntegrazioneAccreditamentoService.save(fieldIntegrazioneList);
