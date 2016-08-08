@@ -1,11 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,25 +9,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
-import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
-import it.tredi.ecm.dao.enumlist.IdFieldEnum;
-import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
-import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
-import it.tredi.ecm.service.AccreditamentoService;
-import it.tredi.ecm.service.IntegrazioneUtils;
+import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.web.bean.ApprovaIntegrazioneWrapper;
-import it.tredi.ecm.web.bean.IntegrazioneWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.TestWrapper;
 
 @Controller
 @SessionAttributes("wrapper")
 public class ApprovaIntegrazioneController {
-	@Autowired private FieldEditabileAccreditamentoRepository repoEditabile;
 	@Autowired private FieldIntegrazioneAccreditamentoRepository repoIntegrazione;
-	@Autowired private IntegrazioneUtils integrazioneUtils;
+	@Autowired private IntegrazioneService integrazioneUtils;
 	
 //	@RequestMapping("/accreditamento/{accreditamentoId}/integrazione")
 //	public String integrazione(@PathVariable Long accreditamentoId, Model model){
@@ -88,7 +73,7 @@ public class ApprovaIntegrazioneController {
 	public String saveApprovaIntegrazione(@ModelAttribute("wrapper") ApprovaIntegrazioneWrapper wrapper, Model model, RedirectAttributes redirAttributes){
 		try{
 			if(wrapper.getSelected() != null && !wrapper.getSelected().isEmpty()){
-				integrazioneUtils.applyIntegrazioniAccreditamentoAndSave(wrapper.getAccreditamentoId(), wrapper.getSelected());
+				integrazioneUtils.applyIntegrazioneAccreditamentoAndSave(wrapper.getAccreditamentoId(), wrapper.getSelected());
 				repoIntegrazione.delete(wrapper.getSelected());
 			}
 			model.addAttribute("message",new Message("message.success", "message.salvatggio", "success"));

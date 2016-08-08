@@ -103,7 +103,7 @@
 				case 'fileDaFirmare' :					tipoAllegato = 'FILE_DA_FIRMARE'; break;
 			}
 
-			var stato = [[${__${wrapper}__.statoAccreditamento.name()}]];
+			var stato = [[${__${wrapper}__.statoAccreditamento?.name()}]];
 			
 	 		var oMyForm = new FormData();
             oMyForm.append("multiPartFile", $(element)[0].files[0]);

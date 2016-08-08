@@ -24,16 +24,16 @@ public class AnagraficaValidator {
 	public void validateBase(Object target, Errors errors, String prefix, Long providerId){
 		LOGGER.info(Utils.getLogMessage("Validazione Anagrafica Base"));
 		Anagrafica anagrafica = (Anagrafica)target;
-		if(anagrafica.getCognome().isEmpty())
+		if(anagrafica.getCognome() == null || anagrafica.getCognome().isEmpty())
 			errors.rejectValue(prefix + "cognome", "error.empty");
-		if(anagrafica.getNome().isEmpty())
+		if(anagrafica.getNome() == null || anagrafica.getNome().isEmpty())
 			errors.rejectValue(prefix + "nome", "error.empty");
-		if(anagrafica.getTelefono().isEmpty())
+		if(anagrafica.getTelefono() == null || anagrafica.getTelefono().isEmpty())
 			errors.rejectValue(prefix + "telefono", "error.empty");
-		if(anagrafica.getEmail().isEmpty())
+		if(anagrafica.getEmail() == null || anagrafica.getEmail().isEmpty())
 			errors.rejectValue(prefix + "email", "error.empty");
 		
-		if(anagrafica.getCodiceFiscale().isEmpty()){
+		if(anagrafica.getCodiceFiscale() == null || anagrafica.getCodiceFiscale().isEmpty()){
 			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
 		}else{
 			Optional<Long> anagraficaId = anagraficaService.getAnagraficaIdWithCodiceFiscaleForProvider(anagrafica.getCodiceFiscale(), providerId);
@@ -55,13 +55,13 @@ public class AnagraficaValidator {
 	
 	public void validateCellulare(Object target, Errors errors, String prefix){
 		Anagrafica anagrafica = (Anagrafica)target;
-		if(anagrafica.getCellulare().isEmpty())
+		if(anagrafica.getCellulare() == null || anagrafica.getCellulare().isEmpty())
 			errors.rejectValue(prefix + "cellulare", "error.empty");
 	}
 	
 	public void validatePEC(Object target, Errors errors, String prefix){
 		Anagrafica anagrafica = (Anagrafica)target;
-		if(anagrafica.getPec().isEmpty())
+		if(anagrafica.getPec() == null || anagrafica.getPec().isEmpty())
 			errors.rejectValue(prefix + "pec", "error.empty");
 	}
 	
