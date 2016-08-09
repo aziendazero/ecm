@@ -10,17 +10,15 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.visualizzazione} + ' ' + #{label.dati_attività}">Dati relativi all’attività</h2>
+						<h2 th:text="#{label.valutazione} + ' ' + #{label.dati_attività}">Dati relativi all’attività</h2>
 						<div class="pull-right buttons-header">
-							<a th:if="${mode == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}/show|}"></a>
-							<a th:if="${mode != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}/${mode}|}"></a>
+							<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formDatiAccreditamento" type="submit"></button>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}/validate|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
 
-					<div id="toModal">
-						<th:block th:include="accreditamento/datiAccreditamentoFragment :: datiAccreditamento('show')"></th:block>
-					</div>
+					<th:block th:include="accreditamento/datiAccreditamentoFragment :: datiAccreditamento('validate')"></th:block>
 
 				</div>
 			</div>
@@ -56,7 +54,13 @@
 
 					});
 
-				})
+				});
+
+				function showTable() {
+					$("#accreditamento_professioni").slideToggle("slow");
+					$(".toggleButtons").toggle();
+				}
+
 			/*]]>*/
 			</script>
 		</div>

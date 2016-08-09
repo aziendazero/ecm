@@ -27,14 +27,14 @@ public class DatiAccreditamento extends BaseEntity {
 	//TODO perchè salva l'id con inizializzazione da 0????
 	private Set<ProceduraFormativa> procedureFormative = new HashSet<ProceduraFormativa>();
 	private String professioniAccreditamento;
-	
-	@ManyToMany 
+
+	@ManyToMany
 	@JoinTable(name = "dati_accreditamento_discipline_selezionate",
 				joinColumns = @JoinColumn(name = "dati_accreditamento_id"),
 				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
-	
+
 	/*** DATI ECONOMICI ***/
 	@Embedded
 	private DatiEconomici datiEconomici = new DatiEconomici();
@@ -42,7 +42,7 @@ public class DatiAccreditamento extends BaseEntity {
 	/*** INFO RELATIVE AL PERSONALE ***/
 	private int numeroDipendentiFormazioneTempoIndeterminato;
 	private int numeroDipendentiFormazioneAltro;
-	
+
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
 		if(discipline != null){
@@ -51,10 +51,10 @@ public class DatiAccreditamento extends BaseEntity {
 		}
 		return professioniSelezionate;
 	}
-	
+
 	@OneToOne(mappedBy="datiAccreditamento")
 	private Accreditamento accreditamento;
-	
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
