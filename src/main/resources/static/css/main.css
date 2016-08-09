@@ -685,4 +685,10 @@ div.collapsible > div#toModal > div.x_content {
 .margin-valutabile {
 	height: 60px;
 	margin: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.bold {
+	font-weight: bold;
 }
