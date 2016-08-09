@@ -452,26 +452,13 @@ public class PersonaController {
 
 	private PersonaWrapper preparePersonaWrapperValidate(Persona persona, long accreditamentoId, long providerId){
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - entering"));
-		PersonaWrapper personaWrapper = new PersonaWrapper();
+		PersonaWrapper personaWrapper = new PersonaWrapper(persona, accreditamentoId, persona.getRuolo());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
-		personaWrapper.setAccreditamentoId(accreditamentoId);
 		personaWrapper.setProviderId(providerId);
 		personaWrapper.setMappa(mappa);
-		personaWrapper.setPersona(persona);
-		personaWrapper.setRuolo(persona.getRuolo());
-		if(!persona.isNew()){
-			Set<File> files = persona.getFiles();
-			for(File file : files){
-				if(file.isCV())
-					personaWrapper.setCv(file);
-				else if(file.isDELEGA())
-					personaWrapper.setDelega(file);
-				else if(file.isATTONOMINA())
-					personaWrapper.setAttoNomina(file);
-			}
-		}
+		personaWrapper.setFiles(persona.getFiles());
 
-		//TODO!!! per non caricare tutto l'accreditamento ogni volta
+		//TODO!!! per non caricare tutto l'accreditamento ogni volta e distinguere le persone del comitato scientifico
 //		SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
 //		if(persona.isComponenteComitatoScientifico()){
 //			personaWrapper.setFieldValutazione(Utils.getSubset(fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
