@@ -11,8 +11,8 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:unless="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="${sedeWrapper.tipologiaSede == 'SedeLegale'} ? #{label.sede_legale} : #{label.sede_operativa}">label.info_sede</h2>
-						<h2 th:if="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="#{label.sede_operativa_coincide}">label.sede_operativa_coincide</h2>
+						<h2 th:unless="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="#{label.modifica} + ' ' + ${sedeWrapper.tipologiaSede == 'SedeLegale' ? #messages.msg('label.sede_legale') : #messages.msg('label.sede_operativa')}">label.info_sede</h2>
+						<h2 th:if="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="#{label.modifica} + ' ' + #{label.sede_operativa_coincide}">label.sede_operativa_coincide</h2>
 						<div class="pull-right buttons-header">
 							<th:block th:unless="${#lists.isEmpty(sedeWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formSede" type="submit"></button>
