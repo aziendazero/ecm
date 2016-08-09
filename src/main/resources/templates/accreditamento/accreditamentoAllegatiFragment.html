@@ -23,7 +23,7 @@
 						novalidate="novalidate">
 
 						<!-- gli input hidden non sono necessari se NON editabile -->
-						<th:block th:if="${!showOnly}">
+						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${accreditamentoAllegatiWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${accreditamentoAllegatiWrapper.idEditabili}" />
 						</th:block>
