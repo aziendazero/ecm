@@ -207,7 +207,7 @@ public class PersonaController {
 				return "redirect:/accreditamento/"+ accreditamentoId + "/provider/" + providerId + "/persona/" + id +"/show";
 			}
 			if(model.containsAttribute("mode")) {
-				return goToShowFromEdit(model, preparePersonaWrapperShow(personaService.getPersona(id), accreditamentoId));
+				return goToShowFromMode(model, preparePersonaWrapperShow(personaService.getPersona(id), accreditamentoId));
 			}
 			return goToShow(model, preparePersonaWrapperShow(personaService.getPersona(id), accreditamentoId));
 		}catch (Exception ex){
@@ -386,9 +386,10 @@ public class PersonaController {
 		return SHOW;
 	}
 
-	private String goToShowFromEdit(Model model, PersonaWrapper personaWrapper) {
+	private String goToShowFromMode(Model model, PersonaWrapper personaWrapper) {
 		model.addAttribute("personaWrapper", personaWrapper);
-		model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
+		String mode = (String) model.asMap().get("mode");
+		model.addAttribute("returnLink", calcolaLink(personaWrapper, mode));
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
 	}
