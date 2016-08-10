@@ -323,16 +323,22 @@ public class DatiAccreditamentoController {
 		wrapper.setDatiAccreditamento(datiAccreditamento);
 		wrapper.setAccreditamentoId(accreditamentoId);
 		wrapper.setMappa(mappa);
-		Set<File> files = datiAccreditamento.getAccreditamento().getProvider().getFiles();
-		for(File file : files){
-			if(file.isESTRATTOBILANCIOFORMAZIONE())
-				wrapper.setEstrattoBilancioFormazione(file);
-			else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
-				wrapper.setEstrattoBilancioComplessivo(file);
-			else if(file.isFUNZIONIGRAMMA())
-				wrapper.setFunzionigramma(file);
-			else if(file.isORGANIGRAMMA())
-				wrapper.setOrganigramma(file);
+		if(datiAccreditamento.isNew()){
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			wrapper.setProvider(accreditamento.getProvider());
+		}else{
+			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
+			Set<File> files = wrapper.getProvider().getFiles();
+			for(File file : files){
+				if(file.isESTRATTOBILANCIOFORMAZIONE())
+					wrapper.setEstrattoBilancioFormazione(file);
+				else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+					wrapper.setEstrattoBilancioComplessivo(file);
+				else if(file.isFUNZIONIGRAMMA())
+					wrapper.setFunzionigramma(file);
+				else if(file.isORGANIGRAMMA())
+					wrapper.setOrganigramma(file);
+			}
 		}
 
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperValidate(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));

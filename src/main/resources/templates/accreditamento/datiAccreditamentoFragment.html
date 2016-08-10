@@ -215,7 +215,7 @@
 
 
 						<!-- PROFESSIONI/DISCIPLINE -->
-						<div class="item form-group">
+						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.discipline')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.discipline') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_professioni">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioni_discipline}">Professioni</span>
@@ -341,7 +341,7 @@
 							<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno1_value">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno}">2016</span>
 							</label>
-							<th:block th:with="counter=${counter}" th:if="${editabile}">
+							<th:block th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}" required="required"
