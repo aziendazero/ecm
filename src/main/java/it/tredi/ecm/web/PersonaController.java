@@ -331,7 +331,7 @@ public class PersonaController {
 				return "redirect:/accreditamento/{accreditamentoId}/validate";
 			}
 		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/validate"),ex);
+			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/persona/validate"),ex);
 			model.addAttribute("accreditamentoId",personaWrapper.getAccreditamentoId());
 			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
 			model.addAttribute("returnLink", calcolaLink(personaWrapper, "validate"));
