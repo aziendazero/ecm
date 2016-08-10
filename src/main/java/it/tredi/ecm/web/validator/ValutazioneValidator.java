@@ -17,12 +17,24 @@ public class ValutazioneValidator {
 	public void validateValutazione(Object target, Errors errors) {
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = (Map<IdFieldEnum, FieldValutazioneAccreditamento>) target;
 		for (Map.Entry<IdFieldEnum, FieldValutazioneAccreditamento> entry : mappa.entrySet()) {
-			if(entry.getValue().getEsito() == null)
-				errors.rejectValue(entry.getKey().getKey(), "error.atleast_one_empty");
+			String key = gestisciEccezioniKey(entry.getKey().getKey());
+			if(entry.getValue().getEsito() == null) {
+				errors.rejectValue(key, "error.atleast_one_empty");
+			}
 			else
 				if(entry.getValue().getEsito() == false && (entry.getValue().getNote() == null
 				|| entry.getValue().getNote().isEmpty()))
-					errors.rejectValue(entry.getKey().getKey(), "error.note_obbligatorie");
+					errors.rejectValue(key, "error.note_obbligatorie");
+		}
+	}
+
+	//gestisce le eccezioni degli input raggruppati prendendo come rejectValue il primo valore
+	private String gestisciEccezioniKey(String key) {
+		switch(key) {
+			case "datiAccreditamento.datiEconomici.fatturatoComplessivo": return "datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno";
+			case "datiAccreditamento.datiEconomici.fatturatoFormazione": return "datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno";
+			case "datiAccreditamento.numeroDipendenti": return "datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato";
+			default: return key;
 		}
 	}
 }
