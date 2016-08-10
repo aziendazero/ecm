@@ -692,3 +692,25 @@ div.collapsible > div#toModal > div.x_content {
 .bold {
 	font-weight: bold;
 }
+
+.bad div.iradio_flat-green {
+	border: 1px solid #CE5454;
+  	box-shadow: 0 0 4px -2px #CE5454;
+  	position: relative;
+  	left: 0;
+  	-moz-animation: .7s 1 shake linear;
+  	-webkit-animation: 0.7s 1 shake linear;
+  	border-radius: 10px;
+  	padding: 10px;
+}
+
+.bad div.icheckbox_flat-green {
+	border: 1px solid #CE5454;
+  	box-shadow: 0 0 4px -2px #CE5454;
+  	position: relative;
+  	left: 0;
+  	-moz-animation: .7s 1 shake linear;
+  	-webkit-animation: 0.7s 1 shake linear;
+  	border-radius: 5px;
+  	padding: 10px;
+}
