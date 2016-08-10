@@ -9,27 +9,35 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.repository.FieldValutazioneAccreditamentoRepository;
+import it.tredi.ecm.utils.Utils;
 
 @Service
 public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazioneAccreditamentoService {
 	private static Logger LOGGER = LoggerFactory.getLogger(FieldValutazioneAccreditamentoServiceImpl.class);
 
 	@Autowired
-	private FieldValutazioneAccreditamentoRepository fieldValutazioneRepository;
+	private FieldValutazioneAccreditamentoRepository fieldValutazioneAccreditamentoRepository;
 
 	@Override
 	public Set<FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamento(Long accreditamentoId) {
-		LOGGER.debug("Recupero delle valutazioni per la domanda di accreditamento: " + accreditamentoId);
-		return fieldValutazioneRepository.findAllByAccreditamentoId(accreditamentoId);
+		LOGGER.debug(Utils.getLogMessage("Recupero delle valutazioni per la domanda di accreditamento: " + accreditamentoId));
+		return fieldValutazioneAccreditamentoRepository.findAllByAccreditamentoId(accreditamentoId);
+	}
+
+	@Override
+	public Set<FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoAndObject(Long accreditamentoId, Long objectReference) {
+		LOGGER.debug(Utils.getLogMessage("Recupero lista di FieldValutazioneAccreditamento per Domanda Accreditamento: " + accreditamentoId + " riferiti all'oggetto: " + objectReference));
+		return fieldValutazioneAccreditamentoRepository.findAllByAccreditamentoIdAndObjectReference(accreditamentoId, objectReference);
 	}
 
 	@Override
 	public Map<IdFieldEnum, FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoAsMap(
 			Long accreditamentoId) {
-		LOGGER.debug("Recupero delle valutazioni as MAP per la domanda di accreditamento: " + accreditamentoId);
+		LOGGER.debug(Utils.getLogMessage("Recupero delle valutazioni as MAP per la domanda di accreditamento: " + accreditamentoId));
 		Set<FieldValutazioneAccreditamento> fieldValutazioni = getAllFieldValutazioneForAccreditamento(accreditamentoId);
 
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
@@ -41,17 +49,32 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 	}
 
 	@Override
+	public Map<IdFieldEnum, FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoAndObjectAsMap(
+			Long accreditamentoId, Long objectReference) {
+		LOGGER.debug(Utils.getLogMessage("Recupero delle valutazioni as MAP per la domanda di accreditamento: " + accreditamentoId + " riferiti all'oggetto: " + objectReference));
+		Set<FieldValutazioneAccreditamento> fieldValutazioni = getAllFieldValutazioneForAccreditamentoAndObject(accreditamentoId, objectReference);
+
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		for(FieldValutazioneAccreditamento field : fieldValutazioni){
+			mappa.put(field.getIdField(), field);
+		}
+
+		return mappa;
+	}
+
+
+	@Override
 	@Transactional
 	public void save(FieldValutazioneAccreditamento valutazione) {
-		LOGGER.debug("Salvataggio FieldValutazioni per la domanda di accreditamento");
-		fieldValutazioneRepository.save(valutazione);
+		LOGGER.debug(Utils.getLogMessage("Salvataggio FieldValutazioni per la domanda di accreditamento"));
+		fieldValutazioneAccreditamentoRepository.save(valutazione);
 	}
-	
+
 	@Override
 	@Transactional
 	public void saveMapList(Map<IdFieldEnum, FieldValutazioneAccreditamento> valutazioneAsMap) {
-		LOGGER.debug("Salvataggio FieldValutazioni per la domanda di accreditamento");
-		fieldValutazioneRepository.save(valutazioneAsMap.values());
+		LOGGER.debug(Utils.getLogMessage("Salvataggio FieldValutazioni per la domanda di accreditamento"));
+		fieldValutazioneAccreditamentoRepository.save(valutazioneAsMap.values());
 	}
 
 }

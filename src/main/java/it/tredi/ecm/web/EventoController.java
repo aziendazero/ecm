@@ -516,13 +516,16 @@ public class EventoController {
 	private EventoWrapper prepareEventoWrapperValidate(Evento evento, long providerId, long accreditamentoId, long pianoFormativoId) {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperValidate(" + evento.getId() + "," + providerId + ") - entering"));
 		EventoWrapper eventoWrapper = new EventoWrapper();
-		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
-		eventoWrapper.setMappa(mappa);
 		eventoWrapper.setEvento(evento);
 		eventoWrapper.setProviderId(providerId);
 		eventoWrapper.setAccreditamentoId(accreditamentoId);
 		eventoWrapper.setPianoFormativoId(pianoFormativoId);
 		eventoWrapper.setEventoFrom("accreditamento");
+
+		//per gestire il multistanza degli eventi
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamentoId, evento.getId());
+		eventoWrapper.setMappa(mappa);
+
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperValidate(" + evento.getId() + "," + providerId + ") - exiting"));
 		return eventoWrapper;
 	}

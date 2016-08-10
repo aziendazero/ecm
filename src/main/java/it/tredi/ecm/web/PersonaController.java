@@ -454,18 +454,17 @@ public class PersonaController {
 	private PersonaWrapper preparePersonaWrapperValidate(Persona persona, long accreditamentoId, long providerId){
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - entering"));
 		PersonaWrapper personaWrapper = new PersonaWrapper(persona, accreditamentoId, persona.getRuolo());
-		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
 		personaWrapper.setProviderId(providerId);
-		personaWrapper.setMappa(mappa);
 		personaWrapper.setFiles(persona.getFiles());
 
-		//TODO!!! per non caricare tutto l'accreditamento ogni volta e distinguere le persone del comitato scientifico
-//		SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
-//		if(persona.isComponenteComitatoScientifico()){
-//			personaWrapper.setFieldValutazione(Utils.getSubset(fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
-//		}else{
-//			personaWrapper.setFieldValutazione(Utils.getSubset(fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamento(accreditamentoId), subset));
-//		}
+		//per distinguere il multistanza delle persone del comitato scientifico
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa;
+		if(persona.isComponenteComitatoScientifico()){
+			mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamentoId, persona.getId());
+		}else{
+			mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
+		}
+		personaWrapper.setMappa(mappa);
 
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - exiting"));
 		return personaWrapper;
