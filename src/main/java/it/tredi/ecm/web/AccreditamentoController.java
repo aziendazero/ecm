@@ -1,15 +1,15 @@
 package it.tredi.ecm.web;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -19,17 +19,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
-import it.tredi.ecm.dao.enumlist.ProfileEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
-import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -41,6 +43,7 @@ public class AccreditamentoController {
 	@Autowired private PersonaService personaService;
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -335,17 +338,9 @@ public class AccreditamentoController {
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "show");
 
-		//logica per mostrare i pulsanti relativi alla valutazione della segreteria
-		CurrentUser currentUser = (CurrentUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if(currentUser.hasProfile(ProfileEnum.SEGRETERIA)){
-			accreditamentoWrapper.checkSegreteriaButtons();
-		}
-
-		//logica per mostrare i pulsanti relativi alla valutazione per la segreteria e i referee
-		if(currentUser.hasProfile(ProfileEnum.SEGRETERIA) || currentUser.hasProfile(ProfileEnum.REFEREE)) {
-			Account currentAccount = currentUser.getAccount();
-			accreditamentoWrapper.checkCanValidate(currentAccount);
-		}
+		//logica per mostrare i pulsanti relativi alla valutazione della segreteria o i referee
+		accreditamentoWrapper.setCanPrendiInCarica(accreditamentoService.canUserPrendiInCarica(accreditamento.getId(), Utils.getAuthenticatedUser()));
+		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
@@ -355,10 +350,37 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - entering"));
 
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
-		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "validate");
+		accreditamentoWrapper.setMappa(fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamento.getId()));
 
-		//logica per mostrare o meno il pulsante di conferma della valutazione
-		accreditamentoWrapper.checkConfirmValidate();
+		//init delle strutture dati che servono per la verifica degli stati di valutazione dei multistanza
+		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaComponenti = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+		Map<Long, Boolean> componentiComitatoScientificoStati = new HashMap<Long, Boolean>();
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaCoordinatore = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+		Map<Long, Boolean> eventiStati = new HashMap<Long, Boolean>();
+
+		//aggiungo i componenti del comitato scientifico
+		for(Persona p : accreditamentoWrapper.getComponentiComitatoScientifico()) {
+			mappaComponenti.put(p.getId(), fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamento.getId(), p.getId()));
+			componentiComitatoScientificoStati.put(p.getId(), false);
+		}
+		//aggiungo anche il coordinatore
+		Long coordinatoreId = accreditamentoWrapper.getCoordinatoreComitatoScientifico().getId();
+		mappaCoordinatore = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamento.getId(), coordinatoreId);
+
+		//aggiungo gli eventi
+		for(Evento e : accreditamentoWrapper.getAccreditamento().getPianoFormativo().getEventi()) {
+			mappaEventi.put(e.getId(), fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamento.getId(), e.getId()));
+			eventiStati.put(e.getId(), false);
+		}
+
+		accreditamentoWrapper.setMappaCoordinatore(mappaCoordinatore);
+		accreditamentoWrapper.setMappaComponenti(mappaComponenti);
+		accreditamentoWrapper.setComponentiComitatoScientificoStati(componentiComitatoScientificoStati);
+		accreditamentoWrapper.setMappaEventi(mappaEventi);
+		accreditamentoWrapper.setEventiStati(eventiStati);
+
+		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "validate");
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
