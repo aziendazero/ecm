@@ -1,22 +1,32 @@
 package it.tredi.ecm.web.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
+import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -63,6 +73,7 @@ public class AccreditamentoWrapper {
 	private boolean responsabileQualitaStato;
 
 	private boolean comitatoScientificoStato;
+	private boolean tuttiComponentiValutati = true;
 	private String comitatoScientificoErrorMessage;
 
 	private boolean attoCostitutivoStato;
@@ -73,10 +84,14 @@ public class AccreditamentoWrapper {
 	private boolean dichiarazioneLegaleStato;
 	private boolean dichiarazioneEsclusioneStato;
 
+	private boolean tuttiEventiValutati = true;
+
 	private boolean sezione1Stato;
 	private boolean sezione2Stato;
 	private boolean sezione3Stato;
 	private boolean sezione4Stato;
+
+	private boolean canSendValutazione;
 
 	//stati per i pulsanti segreteria
 	private boolean canPrendiInCarica;
@@ -84,8 +99,16 @@ public class AccreditamentoWrapper {
 	private boolean canAssegnaNuovoGruppo;
 	private boolean canConfermaValutazione;
 
-	//Piano Formativo
-	private PianoFormativo pianoFormativo;
+	//boolean Stati dei multistanza
+	private Map<Long, Boolean> componentiComitatoScientificoStati = new HashMap<Long, Boolean>();
+	private boolean coordinatoreComitatoScientificoStato;
+	private Map<Long, Boolean> eventiStati = new HashMap<Long, Boolean>();
+
+	//Mappe con i FieldValutazione
+	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa;
+	private Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaComponenti;
+	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaCoordinatore;
+	private Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi;
 
 
 	public AccreditamentoWrapper(){};
@@ -164,63 +187,151 @@ public class AccreditamentoWrapper {
 			sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
 		}
 		if(mode.equals("validate")) {
-			//TODO logica validazione stato
-			providerStato = false;
-			sedeLegaleStato = false;
-			sedeOperativaStato = false;
-			legaleRappresentanteStato = false;
-			delegatoLegaleRappresentanteStato = false;
 
-			datiAccreditamentoStato = false;
+			providerStato = (mappa.containsKey(IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE) &&
+				mappa.containsKey(IdFieldEnum.PROVIDER__DENOMINAZIONE_LEGALE) &&
+				mappa.containsKey(IdFieldEnum.PROVIDER__PARTITA_IVA) &&
+				mappa.containsKey(IdFieldEnum.PROVIDER__CODICE_FISCALE) &&
+				mappa.containsKey(IdFieldEnum.PROVIDER__RAGIONE_SOCIALE) &&
+				mappa.containsKey(IdFieldEnum.PROVIDER__NATURA_ORGANIZZAZIONE) &&
+				mappa.containsKey(IdFieldEnum.PROVIDER__NO_PROFIT));
 
-			responsabileSegreteriaStato = false;
-			responsabileAmministrativoStato = false;
-			responsabileSistemaInformaticoStato = false;
-			responsabileQualitaStato = false;
+			sedeLegaleStato = (mappa.containsKey(IdFieldEnum.SEDE_LEGALE__PROVINCIA) &&
+				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__COMUNE) &&
+				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__INDIRIZZO) &&
+				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__CAP) &&
+				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__TELEFONO) &&
+				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__FAX) &&
+				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__EMAIL));
 
-			attoCostitutivoStato = false;
-			esperienzaFormazioneStato = false;
-			utilizzoStato = false;
-			sistemaInformaticoStato = false;
-			pianoQualitaStato = false;
-			dichiarazioneLegaleStato = false;
-			dichiarazioneEsclusioneStato = false;
+			sedeOperativaStato = (mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__PROVINCIA) &&
+				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__COMUNE) &&
+				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__INDIRIZZO) &&
+				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__CAP) &&
+				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__TELEFONO) &&
+				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__FAX) &&
+				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__EMAIL));
+
+			legaleRappresentanteStato =	(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__COGNOME) &&
+				mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__NOME) &&
+				mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__CODICEFISCALE) &&
+				mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__CELLULARE) &&
+				mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__EMAIL) &&
+				mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__PEC) &&
+				mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__ATTO_NOMINA) &&
+				mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__CV));
+
+			delegatoLegaleRappresentanteStato = (mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__COGNOME) &&
+				mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__NOME) &&
+				mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__CODICEFISCALE) &&
+				mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__TELEFONO) &&
+				mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__CELLULARE) &&
+				mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__EMAIL) &&
+				mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__CV) &&
+				mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__DELEGA));
+
+			datiAccreditamentoStato = (mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__TIPOLOGIA_ACCREDITAMENTO) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__DISCIPLINE) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__ORGANIGRAMMA) &&
+				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__FUNZIONIGRAMMA));
+
+			responsabileSegreteriaStato = (mappa.containsKey(IdFieldEnum.RESPONSABILE_SEGRETERIA__COGNOME) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SEGRETERIA__NOME) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SEGRETERIA__CODICEFISCALE) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SEGRETERIA__TELEFONO) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SEGRETERIA__EMAIL) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SEGRETERIA__ATTO_NOMINA) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SEGRETERIA__CV));
+
+			responsabileAmministrativoStato = (mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__COGNOME) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__NOME) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__CODICEFISCALE) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__TELEFONO) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__CELLULARE) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__EMAIL) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__ATTO_NOMINA) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__CV));
+
+			responsabileSistemaInformaticoStato = (mappa.containsKey(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__COGNOME) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__NOME) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__CODICEFISCALE) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__TELEFONO) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__EMAIL) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__ATTO_NOMINA) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__CV));
+
+			responsabileQualitaStato = (mappa.containsKey(IdFieldEnum.RESPONSABILE_QUALITA__COGNOME) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_QUALITA__NOME) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_QUALITA__CODICEFISCALE) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_QUALITA__TELEFONO) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_QUALITA__EMAIL) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_QUALITA__ATTO_NOMINA) &&
+				mappa.containsKey(IdFieldEnum.RESPONSABILE_QUALITA__CV));
+
+			attoCostitutivoStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO);
+			esperienzaFormazioneStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE);
+			utilizzoStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__UTILIZZO);
+			sistemaInformaticoStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO);
+			pianoQualitaStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA);
+			dichiarazioneLegaleStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE);
+			dichiarazioneEsclusioneStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE);
+
+			//check valutazione dei multistanza
+
+			//componenti comitato scientifico N.B. NON controlla bene tutti i FieldValutazione come gli altri per semplicità TODO decidere se implementare o se semplificare anche le altre
+			for (Persona p : componentiComitatoScientifico) {
+				if(mappaComponenti.get(p.getId()) != null && !mappaComponenti.get(p.getId()).isEmpty())
+					componentiComitatoScientificoStati.replace(p.getId(), true);
+			};
+
+			//controllo anche il coordinatore N.B. stesso discorso dei componenti
+			coordinatoreComitatoScientificoStato = (mappaCoordinatore != null && !mappaCoordinatore.isEmpty()) ? true : false;
+
+//			coordinatoreComitatoScientificoStato = (mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) &&
+//				mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) &&
+//				mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) &&
+//				mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO) &&
+//				mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CELLULARE) &&
+//				mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL) &&
+//				mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE) &&
+//				mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA) &&
+//				mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV));
+
+			//eventi pianoFormativo N.B. stesso discorso dei componenti
+			for (Evento e : accreditamento.getPianoFormativo().getEventi()) {
+				if(mappaEventi.get(e.getId()) != null && !mappaEventi.get(e.getId()).isEmpty())
+					eventiStati.replace(e.getId(), true);
+			};
+
+			//ciclo la mappa degli stati dei componenti (tuttiComponentiValutati default == true)
+			componentiComitatoScientificoStati.forEach((k,v) -> {
+				if(v == false)
+					tuttiComponentiValutati = false;
+			});
+
+			comitatoScientificoStato = (coordinatoreComitatoScientificoStato && tuttiComponentiValutati) ? true : false;
+
+			//ciclo la mappa degli stati degli eventi (tuttiEventiValutati default == true)
+			eventiStati.forEach((k,v) -> {
+				if(v == false)
+					tuttiEventiValutati = false;
+			});
 
 			//sezioni validate o meno
 			sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
 			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
 			sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
-			sezione4Stato = false;
-		}
-	}
+			sezione4Stato = tuttiEventiValutati ? true : false;
 
-	public void checkSegreteriaButtons(){
-		//pulsante prendi in carica TODO sostituire con logica query Bonita
-		if(accreditamento.isValutazioneSegreteriaAssegnamento()) {
-			canPrendiInCarica = true;
-		}
-
-		//pulsante assegna nuovo gruppo crecm TODO CONTROLLARE!
-		if(accreditamento.getGruppoCrecm() == null) {
-			canAssegnaNuovoGruppo = true;
-		}
-	}
-
-	public void checkCanValidate(Account user){
-		//pulsante valuta domanda TODO CONTROLLARE!
-		if(accreditamento.getTeamValutazione() != null &&
-			accreditamento.getGruppoCrecm() != null &&
-			(accreditamento.getTeamValutazione().getComponentiSegreteria().contains(user) ||
-				accreditamento.getGruppoCrecm().getValutatori().contains(user))) {
-			canValutaDomanda = true;
-		}
-	}
-
-	//mi trovo accreditamentoValidate quindi gli stati rappresentano l'avanzamento della valutazione
-	public void checkConfirmValidate(){
-		//pulsante invia valutazione domanda TODO CONTROLLARE!
-		if(sezione1Stato && sezione2Stato && sezione3Stato && sezione4Stato) {
-			canConfermaValutazione = true;
+			//show del pulsante per inviare la valutazione
+			canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato && sezione4Stato);
 		}
 	}
 
