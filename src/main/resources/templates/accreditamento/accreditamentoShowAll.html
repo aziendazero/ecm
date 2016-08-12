@@ -304,45 +304,45 @@
  						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo?.id}/evento/|}]] + $(this).attr("data-valore-id") + "/show";
 						$(this).load(url + ' #toModal');
 					})
-
-					$('#showAll-modal').one('shown.bs.modal', function (e) {
-						//table responsive professioni/discipline show
-						$('.datatable-responsive-discipline').DataTable({
-							"bFilter" : false,
-							"bPaginate": false,
-							"bInfo" : false,
-						    "columnDefs": [
-						    	{ "targets": [ '_all' ], "orderable": false },
-						    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
-						    	{ "visible": false, "targets": 0 }
-						    ],
-						    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
-						    "drawCallback": function ( settings ) {
-					        	var api = this.api();
-					            var rows = api.rows( {page:'current'} ).nodes();
-					            var last=null;
-
-					            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
-					            	if ( last !== group ) {
-					                	$(rows).eq( i ).before(
-					                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
-					            		);
-					                    last = group;
-					                }
-					            });
-					        }
-
-						});
-					})
-
-					//ripristina/chiude tutte le favicon
-					$('#showAll-modal').on('hidden.bs.modal', function (e) {
-						$(".fa-chevron-up").each(function(index) {
-							$(this).addClass('fa-chevron-down');
-							$(this).removeClass('fa-chevron-up');
-						});
-					})
 				}
+
+				$('#showAll-modal').on('shown.bs.modal', function (e) {
+					//table responsive professioni/discipline show
+					$('.datatable-responsive-discipline').DataTable({
+						"bFilter" : false,
+						"bPaginate": false,
+						"bInfo" : false,
+					    "columnDefs": [
+					    	{ "targets": [ '_all' ], "orderable": false },
+					    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
+					    	{ "visible": false, "targets": 0 }
+					    ],
+					    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+					    "drawCallback": function ( settings ) {
+				        	var api = this.api();
+				            var rows = api.rows( {page:'current'} ).nodes();
+				            var last=null;
+
+				            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+				            	if ( last !== group ) {
+				                	$(rows).eq( i ).before(
+				                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
+				            		);
+				                    last = group;
+				                }
+				            });
+				        }
+
+					});
+				})
+
+				//ripristina/chiude tutte le favicon
+				$('#showAll-modal').on('hidden.bs.modal', function (e) {
+					$(".fa-chevron-up").each(function(index) {
+						$(this).addClass('fa-chevron-down');
+						$(this).removeClass('fa-chevron-up');
+					});
+				})
 			/*]]>*/
 			</script>
 		</th:block>
