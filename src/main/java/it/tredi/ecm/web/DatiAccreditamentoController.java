@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,6 +27,7 @@ import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Professione;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -36,6 +39,7 @@ import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.DatiAccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -61,6 +65,7 @@ public class DatiAccreditamentoController {
 	@Autowired private DatiAccreditamentoValidator datiAccreditamentoValidator;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private ValutazioneService valutazioneService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -229,7 +234,12 @@ public class DatiAccreditamentoController {
 					v.setIdField(k);
 					v.setAccreditamento(accreditamento);
 				});
-				fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa());
+
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa()));
+				valutazione.getValutazioni().addAll(values);
+				valutazioneService.save(valutazione);
+
 				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
@@ -319,10 +329,18 @@ public class DatiAccreditamentoController {
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperValidate(DatiAccreditamento datiAccreditamento, long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperValidate(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
-		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
+
+		//carico la valutazione per l'utente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		if(valutazione != null) {
+			mappa = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(valutazione.getValutazioni());
+		}
+		wrapper.setMappa(mappa);
+
 		wrapper.setDatiAccreditamento(datiAccreditamento);
 		wrapper.setAccreditamentoId(accreditamentoId);
-		wrapper.setMappa(mappa);
+
 		if(datiAccreditamento.isNew()){
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 			wrapper.setProvider(accreditamento.getProvider());

@@ -1,6 +1,8 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +36,7 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -49,6 +52,7 @@ import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PersonaWrapper;
@@ -74,6 +78,7 @@ public class PersonaController {
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamentoService;
 	@Autowired private PersonaValidator personaValidator;
 	@Autowired private ValutazioneValidator valutazioneValidator;
+	@Autowired private ValutazioneService valutazioneService;
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private IntegrazioneService integrazioneService;
@@ -322,7 +327,12 @@ public class PersonaController {
 					if(personaWrapper.getPersona().isComponenteComitatoScientifico())
 						v.setObjectReference(personaWrapper.getPersona().getId());
 				});
-				fieldValutazioneAccreditamentoService.saveMapList(personaWrapper.getMappa());
+
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(personaWrapper.getMappa()));
+				valutazione.getValutazioni().addAll(values);
+				valutazioneService.save(valutazione);
+
 				redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
 				if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())
@@ -457,13 +467,17 @@ public class PersonaController {
 		personaWrapper.setProviderId(providerId);
 		personaWrapper.setFiles(persona.getFiles());
 
+		//carico la valutazione per l'utente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 		//per distinguere il multistanza delle persone del comitato scientifico
-		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa;
-		if(persona.isComponenteComitatoScientifico()){
-			mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamentoId, persona.getId());
-		}else{
-			mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
+		if(valutazione != null) {
+			if(persona.isComponenteComitatoScientifico())
+				mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), persona.getId());
+			else
+				mappa = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(valutazione.getValutazioni());
 		}
+
 		personaWrapper.setMappa(mappa);
 
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - exiting"));

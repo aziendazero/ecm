@@ -25,6 +25,7 @@ import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -32,6 +33,7 @@ import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -44,6 +46,7 @@ public class AccreditamentoController {
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private ValutazioneService valutazioneService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -350,7 +353,16 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - entering"));
 
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
-		accreditamentoWrapper.setMappa(fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamento.getId()));
+
+		//carico la valutazione dell'utente corrente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+
+		//inserisco i suoi fieldValutazione nella mappa per il wrapper
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		if(valutazione != null) {
+			mappa = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(valutazione.getValutazioni());
+		}
+		accreditamentoWrapper.setMappa(mappa);
 
 		//init delle strutture dati che servono per la verifica degli stati di valutazione dei multistanza
 		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaComponenti = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
@@ -361,16 +373,16 @@ public class AccreditamentoController {
 
 		//aggiungo i componenti del comitato scientifico
 		for(Persona p : accreditamentoWrapper.getComponentiComitatoScientifico()) {
-			mappaComponenti.put(p.getId(), fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamento.getId(), p.getId()));
+			mappaComponenti.put(p.getId(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), p.getId()));
 			componentiComitatoScientificoStati.put(p.getId(), false);
 		}
 		//aggiungo anche il coordinatore
 		Long coordinatoreId = accreditamentoWrapper.getCoordinatoreComitatoScientifico().getId();
-		mappaCoordinatore = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamento.getId(), coordinatoreId);
+		mappaCoordinatore = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), coordinatoreId);
 
 		//aggiungo gli eventi
 		for(Evento e : accreditamentoWrapper.getAccreditamento().getPianoFormativo().getEventi()) {
-			mappaEventi.put(e.getId(), fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamento.getId(), e.getId()));
+			mappaEventi.put(e.getId(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), e.getId()));
 			eventiStati.put(e.getId(), false);
 		}
 

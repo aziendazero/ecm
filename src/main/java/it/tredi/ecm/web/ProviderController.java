@@ -204,9 +204,9 @@ public class ProviderController {
 				});
 				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(providerWrapper.getMappa()));
-				valutazione.setValutazioni(values);
+				valutazione.getValutazioni().addAll(values);
 				valutazioneService.save(valutazione);
-//
+
 				redirectAttrs.addAttribute("accreditamentoId", providerWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
@@ -284,9 +284,7 @@ public class ProviderController {
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 		if(valutazione != null) {
-			for (FieldValutazioneAccreditamento v : valutazione.getValutazioni()) {
-				mappa.put(v.getIdField(), v);
-			}
+			mappa = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(valutazione.getValutazioni());
 		}
 		providerWrapper.setMappa(mappa);
 		providerWrapper.setProvider(provider);

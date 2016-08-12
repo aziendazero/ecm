@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +28,7 @@ import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -37,6 +40,7 @@ import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.ObiettivoService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -60,6 +64,7 @@ public class EventoController {
 	@Autowired private EventoValidator eventoValidator;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private ValutazioneService valutazioneService;
 
 
 	@InitBinder
@@ -298,7 +303,12 @@ public class EventoController {
 					v.setAccreditamento(accreditamento);
 					v.setObjectReference(wrapper.getEvento().getId());
 				});
-				fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa());
+
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa()));
+				valutazione.getValutazioni().addAll(values);
+				valutazioneService.save(valutazione);
+
 				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
 				redirectAttrs.addFlashAttribute("currentTab","tab4");
@@ -522,8 +532,14 @@ public class EventoController {
 		eventoWrapper.setPianoFormativoId(pianoFormativoId);
 		eventoWrapper.setEventoFrom("accreditamento");
 
-		//per gestire il multistanza degli eventi
-		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAndObjectAsMap(accreditamentoId, evento.getId());
+		//carico la valutazione per l'utente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		//per distinguere il multistanza delle persone del comitato scientifico
+		if(valutazione != null) {
+			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), evento.getId());
+		}
+
 		eventoWrapper.setMappa(mappa);
 
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperValidate(" + evento.getId() + "," + providerId + ") - exiting"));

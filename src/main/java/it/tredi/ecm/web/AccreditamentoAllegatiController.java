@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -32,6 +34,7 @@ import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoAllegatiWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -53,6 +56,7 @@ public class AccreditamentoAllegatiController {
 	@Autowired private AccreditamentoAllegatiValidator accreditamentoAllegatiValidator;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private ValutazioneService valutazioneService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -194,7 +198,13 @@ public class AccreditamentoAllegatiController {
 					v.setIdField(k);
 					v.setAccreditamento(accreditamento);
 				});
-				fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa());
+
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa()));
+				valutazione.getValutazioni().addAll(values);
+				valutazioneService.save(valutazione);
+
+
 				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
 				redirectAttrs.addFlashAttribute("currentTab","tab3");
@@ -269,7 +279,12 @@ public class AccreditamentoAllegatiController {
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		wrapper.setProvider(accreditamento.getProvider());
 
-		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
+		//carico la valutazione per l'utente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		if(valutazione != null) {
+			mappa = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(valutazione.getValutazioni());
+		}
 		wrapper.setMappa(mappa);
 
 		Set<File> files = wrapper.getProvider().getFiles();
