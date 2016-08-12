@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -9,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.repository.FieldValutazioneAccreditamentoRepository;
@@ -44,7 +44,6 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		for(FieldValutazioneAccreditamento field : fieldValutazioni){
 			mappa.put(field.getIdField(), field);
 		}
-
 		return mappa;
 	}
 
@@ -72,9 +71,10 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 
 	@Override
 	@Transactional
-	public void saveMapList(Map<IdFieldEnum, FieldValutazioneAccreditamento> valutazioneAsMap) {
+	public Collection<FieldValutazioneAccreditamento> saveMapList(Map<IdFieldEnum, FieldValutazioneAccreditamento> valutazioneAsMap) {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio FieldValutazioni per la domanda di accreditamento"));
 		fieldValutazioneAccreditamentoRepository.save(valutazioneAsMap.values());
+		return valutazioneAsMap.values();
 	}
 
 }

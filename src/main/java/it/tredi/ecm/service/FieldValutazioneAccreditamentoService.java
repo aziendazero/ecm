@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,5 +14,5 @@ public interface FieldValutazioneAccreditamentoService {
 	public Map<IdFieldEnum,FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoAsMap(Long accreditamentoId);
 	public Map<IdFieldEnum,FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoAndObjectAsMap(Long accreditamentoId, Long objectReference);
 	public void save(FieldValutazioneAccreditamento valutazione);
-	public void saveMapList(Map<IdFieldEnum,FieldValutazioneAccreditamento> valutazioneAsMap);
+	public Collection<FieldValutazioneAccreditamento> saveMapList(Map<IdFieldEnum,FieldValutazioneAccreditamento> valutazioneAsMap);
 }
