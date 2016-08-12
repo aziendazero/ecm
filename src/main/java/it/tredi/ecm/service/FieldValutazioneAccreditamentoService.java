@@ -13,6 +13,8 @@ public interface FieldValutazioneAccreditamentoService {
 	public Set<FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoAndObject(Long accreditamentoId, Long objectReference);
 	public Map<IdFieldEnum,FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoAsMap(Long accreditamentoId);
 	public Map<IdFieldEnum,FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoAndObjectAsMap(Long accreditamentoId, Long objectReference);
+	Map<IdFieldEnum, FieldValutazioneAccreditamento> filterFieldValutazioneByObjectAsMap(Set<FieldValutazioneAccreditamento> set, Long id);
+	Map<IdFieldEnum, FieldValutazioneAccreditamento> putSetFieldValutazioneInMap(Set<FieldValutazioneAccreditamento> set);
 	public void save(FieldValutazioneAccreditamento valutazione);
 	public Collection<FieldValutazioneAccreditamento> saveMapList(Map<IdFieldEnum,FieldValutazioneAccreditamento> valutazioneAsMap);
 }

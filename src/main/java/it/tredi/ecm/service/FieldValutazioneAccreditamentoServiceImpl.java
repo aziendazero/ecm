@@ -61,6 +61,26 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		return mappa;
 	}
 
+	@Override
+	public Map<IdFieldEnum, FieldValutazioneAccreditamento> filterFieldValutazioneByObjectAsMap(Set<FieldValutazioneAccreditamento> set, Long id) {
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		for (FieldValutazioneAccreditamento f : set) {
+			if(f.getObjectReference() == id) {
+				mappa.put(f.getIdField(), f);
+			}
+		}
+		return mappa;
+	}
+
+	@Override
+	public Map<IdFieldEnum, FieldValutazioneAccreditamento> putSetFieldValutazioneInMap(Set<FieldValutazioneAccreditamento> set) {
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		for (FieldValutazioneAccreditamento f : set) {
+			mappa.put(f.getIdField(), f);
+		}
+		return mappa;
+	}
+
 
 	@Override
 	@Transactional
