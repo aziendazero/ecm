@@ -535,7 +535,7 @@ public class EventoController {
 		//carico la valutazione per l'utente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
-		//per distinguere il multistanza delle persone del comitato scientifico
+		//per distinguere il multistanza degli eventi
 		if(valutazione != null) {
 			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), evento.getId());
 		}

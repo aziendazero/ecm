@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldValutazioneAccreditamentoRepository;
 import it.tredi.ecm.utils.Utils;
 
@@ -73,6 +74,16 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 	}
 
 	@Override
+	public Map<IdFieldEnum, FieldValutazioneAccreditamento> filterFieldValutazioneBySubSetAsMap(Set<FieldValutazioneAccreditamento> set, SubSetFieldEnum subset) {
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		for (FieldValutazioneAccreditamento f : set) {
+			if(f.getIdField().getSubSetField().equals(subset))
+				mappa.put(f.getIdField(), f);
+		}
+		return mappa;
+	}
+
+	@Override
 	public Map<IdFieldEnum, FieldValutazioneAccreditamento> putSetFieldValutazioneInMap(Set<FieldValutazioneAccreditamento> set) {
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 		for (FieldValutazioneAccreditamento f : set) {
@@ -80,7 +91,6 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		}
 		return mappa;
 	}
-
 
 	@Override
 	@Transactional
@@ -96,5 +106,4 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		fieldValutazioneAccreditamentoRepository.save(valutazioneAsMap.values());
 		return valutazioneAsMap.values();
 	}
-
 }
