@@ -1,12 +1,14 @@
 package it.tredi.ecm.web.validator;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 
@@ -25,6 +27,13 @@ public class ValutazioneValidator {
 				if(entry.getValue().getEsito() == false && (entry.getValue().getNote() == null
 				|| entry.getValue().getNote().isEmpty()))
 					errors.rejectValue(key, "error.note_obbligatorie");
+		}
+	}
+
+	public void validateValutazioneComplessiva(Object target, Errors errors) {
+		Set<Account> refereeGroup = (Set<Account>)target;
+		if(refereeGroup == null || refereeGroup.size() != 3) {
+			errors.rejectValue("refereeGroup", "error.numero_referee");
 		}
 	}
 
