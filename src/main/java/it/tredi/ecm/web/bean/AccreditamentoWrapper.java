@@ -110,9 +110,18 @@ public class AccreditamentoWrapper {
 	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaCoordinatore;
 	private Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi;
 
+	//Gruppo dei referee
+	private Set<Account> refereeGroup = new HashSet<Account>();
+
+	//Valutazione Comlessiva
+	private String valutazioneComplessiva;
 
 	public AccreditamentoWrapper(){};
 	public AccreditamentoWrapper(Accreditamento accreditamento){
+		setAllAccreditamento(accreditamento);
+	}
+
+	public void setAllAccreditamento(Accreditamento accreditamento) {
 		this.setAccreditamento(accreditamento);
 
 		// PROVIDER
@@ -150,8 +159,6 @@ public class AccreditamentoWrapper {
 				this.getComponentiComitatoScientifico().add(p);
 		}
 	}
-
-
 
 
 	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider,String mode){
