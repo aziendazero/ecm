@@ -28,6 +28,66 @@
 								<th:block th:include="accreditamento/accreditamentoShowAll :: showAll"></th:block>
 
 							</div>
+
+
+						</div>
+					</div>
+				</div>
+
+				<!-- modale conferma valutazione  -->
+				<div id="confirm-modal" class="modal fade modal-confirm"
+					data-model-index="1" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">×</span>
+								</button>
+								<h4 class="modal-title" id="myModalLabel"
+									th:text="#{label.conferma_valutazione}"></h4>
+							</div>
+							<div class="modal-body">
+								<form id="formValutazioneComplessiva" class="form-horizontal"
+									th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/confirmEvaluation|}"
+									method="post" enctype="multipart/form-data"
+									novalidate="novalidate">
+
+									<div>
+										<h4 th:text="#{label.inserisci_valutazione_complessiva}"></h4>
+										<textarea th:field="${accreditamentoWrapper.valutazioneComplessiva}"></textarea>
+									</div>
+
+									<div class="divider"  th:if="${#authentication.principal.hasProfile('SEGRETERIA')}"></div>
+
+									<div th:if="${#authentication.principal.hasProfile('SEGRETERIA')}">
+										<h4 th:text="#{label.seleziona_referee}"></h4>
+										<div class="item modalAlert" th:classappend="${#fields.hasErrors('accreditamentoWrapper.refereeGroup')} ? 'bad'">
+											<select id="referee"
+												class="selectpicker required"
+												data-width="100%" data-style="btn-primary"
+												data-max-options="3"
+												multiple="multiple"
+												th:field="${accreditamentoWrapper.refereeGroup}"
+												data-actions-box="false" data-size="10"
+												data-hide-disabled="false"
+												title="Seleziona i referee..."
+												th:remove="all-but-first">
+												<option
+													th:each="referee, row: ${refereeList}"
+													th:value="${referee.id}"
+													th:text="${referee.nome + ' ' + referee.cognome}">
+												</option>
+											</select>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.refereeGroup')}" class="alert" th:errors="${accreditamentoWrapper.refereeGroup}"></div>
+										</div>
+									</div>
+
+								</form>
+							</div>
+							<div class="modal-footer">
+          						<button type="submit" class="btn btn-success pull-right" form="formValutazioneComplessiva" th:text="#{label.salva}">Save changes</button>
+          						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Close</button>
+        					</div>
 						</div>
 					</div>
 				</div>
@@ -37,7 +97,7 @@
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.codiceFiscale + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
 							<button th:if="${accreditamentoWrapper.canSendValutazione}" type="button" class="btn btn-success pull-right"
-								th:text="#{label.conferma_valutazione}" onclick="alert('TODO')"></button>
+								th:text="#{label.conferma_valutazione}" data-toggle="modal" data-target=".modal-confirm"></button>
 							<!-- mostra showAll -->
 							<button type="button" class="btn btn-primary pull-right"
 								th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()"
@@ -60,6 +120,22 @@
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
+
+			    $(document).ready(function() {
+					$('select').selectpicker({
+						maxOptionsText: function (numAll, numGroup) {
+							return [
+								(numAll == 1) ? 'Limite raggiunto (selezionare massimo {n} referee)' : 'Limite raggiunto (selezionare massimo {n} referee)',
+								(numGroup == 1) ? 'Limite raggiunto (selezionare massimo {n} referee)' : 'Limite raggiunto (selezionare massimo {n} referee)'
+							];
+						}
+					});
+
+					if([[${confirmErrors}]]) {
+						$("#confirm-modal").modal("show");
+					}
+
+			    });
 
 			    var tabSelected = "tab1";
 				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
