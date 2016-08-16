@@ -45,7 +45,7 @@
 						<div class="row"></div>
 
 						<!-- PROCEDURE FORMATIVE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.proceduraFormativa')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.proceduraFormativa')} ? 'bad'">
 							<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.proceduraFormativa') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="procedure_formative_radio">
@@ -93,13 +93,13 @@
 								</div>
 								<input type="hidden" th:field="${eventoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.proceduraFormativa')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('eventoWrapper.evento.proceduraFormativa')}" class="alert" th:errors="${eventoWrapper.evento.proceduraFormativa}"></div>
+							<div th:if="${#fields.hasErrors('eventoWrapper.evento.proceduraFormativa')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.proceduraFormativa}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- TITOLO PROGRAMMA FORMATIVO -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.titolo')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.titolo')} ? 'bad'">
 							<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.titolo') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="procedure_formative_titolo">
@@ -143,13 +143,13 @@
 								</div>
 								<input type="hidden" th:field="${eventoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.titolo')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('eventoWrapper.evento.titolo')}" class="alert" th:errors="${eventoWrapper.evento.titolo}"></div>
+							<div th:if="${#fields.hasErrors('eventoWrapper.evento.titolo')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.titolo}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- OBIETTIVO FORMATIVO NAZIONALE-->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.obiettivoNazionale')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.obiettivoNazionale')} ? 'bad'">
 							<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.obiettivoNazionale') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="obiettivo_formativo_nazionale">
@@ -210,13 +210,13 @@
 								</div>
 								<input type="hidden" th:field="${eventoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.obiettivoNazionale')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('eventoWrapper.evento.obiettivoNazionale')}" class="alert" th:errors="${eventoWrapper.evento.obiettivoNazionale}"></div>
+							<div th:if="${#fields.hasErrors('eventoWrapper.evento.obiettivoNazionale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.obiettivoNazionale}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- OBIETTIVO FORMATIVO REGIONALE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.obiettivoRegionale')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.obiettivoRegionale')} ? 'bad'">
 							<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.obiettivoRegionale') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="obiettivo_formativo_regionale">
@@ -271,13 +271,13 @@
 								</div>
 								<input type="hidden" th:field="${eventoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.obiettivoRegionale')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('eventoWrapper.evento.obiettivoRegionale')}" class="alert" th:errors="${eventoWrapper.evento.obiettivoRegionale}"></div>
+							<div th:if="${#fields.hasErrors('eventoWrapper.evento.obiettivoRegionale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.obiettivoRegionale}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- PROFESSIONI EVENTO -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')} ? 'bad'">
 							<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.professioniEvento') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="evento_professioni">
@@ -336,13 +336,13 @@
 								</div>
 								<input type="hidden" th:field="${eventoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.professioniEvento')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('eventoWrapper.evento.professioniEvento')}" class="alert" th:errors="${eventoWrapper.evento.professioniEvento}"></div>
+							<div th:if="${#fields.hasErrors('eventoWrapper.evento.professioniEvento')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.professioniEvento}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- PROFESSIONI/DISCIPLINE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('eventoWrapper.evento.discipline')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.discipline')} ? 'bad'">
 							<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.discipline') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="evento_professioni-select">
@@ -452,6 +452,7 @@
 									</div>
 								</div>
 		                    </th:block>
+		                    <div th:if="${#fields.hasErrors('eventoWrapper.evento.discipline')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.discipline}"></div>
 						</div>
 					</form>
 				</div>

@@ -12,7 +12,7 @@
 			showOnly=${mode == 'show'}">
 		<th:block th:with="idEcm=${fieldRuolo == null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(fieldKey) : T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(fieldKey,fieldRuolo)},
 							idField=${fieldRuolo == null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey) : T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey,fieldRuolo)}">
-			<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+			<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
 
 				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
@@ -68,14 +68,14 @@
 				</div>
 				<input type="hidden" th:field="${__${wrapper}__.mappa[__${idField}__].id}" />
 	        </th:block>
-			<div th:if="${editabile and #fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
+			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 		</div>
 		</th:block>
 	</th:block>
 
 	<!-- wrapper senza idEditabili -->
 	<th:block th:unless="${__withIdEditabili__}">
-		<div th:id="__${tipoAllegato}__-parent" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+		<div th:id="__${tipoAllegato}__-parent" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
 
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
@@ -96,7 +96,7 @@
 					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
 				</th:block>
 			</div>
-			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
+			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 		</div>
 	</th:block>
 	<script th:inline="javascript">

@@ -31,7 +31,7 @@
 						</th:block>
 
 						<!-- TIPOLOGIA ACCREDITAMENTO -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.tipologiaAccreditamento') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_tipologia">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.tipologiaAccreditamento}">Accreditamento per tipologia</span>
@@ -85,13 +85,13 @@
 								</div>
 								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- PROCEDURE FORMATIVE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.procedureFormative') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="procedure_formative_checkbox">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.procedure_formative}">Procedure formative</span>
@@ -148,13 +148,13 @@
 								</div>
 								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- PROFESSIONI ACCREDITAMENTO -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.professioniAccreditamento') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_professioni">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioniAccreditamento}">Accreditamento per professioni</span>
@@ -208,14 +208,14 @@
 								</div>
 								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 
 						<!-- PROFESSIONI/DISCIPLINE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.discipline')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.discipline')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.discipline') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_professioni">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioni_discipline}">Professioni</span>
@@ -325,6 +325,7 @@
 									</div>
 								</div>
 		                    </th:block>
+		                    <div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.discipline')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.discipline}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -337,7 +338,7 @@
 							</label>
 						</div>
 						<!-- ANNO 1 -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')} ? 'bad'">
 							<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno1_value">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno}">2016</span>
 							</label>
@@ -385,10 +386,10 @@
 								</div>
 								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"></div>
 						</div>
 						<!-- ANNO 2 -->
-						<div th:unless="${valutabile}" class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')} ? 'bad'">
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno2_value">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoDue}">2015</span>
 							</label>
@@ -405,10 +406,10 @@
 									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"></div>
 								</div>
 							</th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"></div>
 						</div>
 						<!-- ANNO 3 -->
-						<div th:unless="${valutabile}" class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')} ? 'bad'">
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno3_value">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre}">2014</span>
 							</label>
@@ -425,7 +426,7 @@
 									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></div>
 								</div>
 							</th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -443,7 +444,7 @@
 							</label>
 						</div>
 						<!-- ANNO 1 -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')} ? 'bad'">
 							<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno1_value">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoUno}">2016</span>
 							</label>
@@ -491,10 +492,10 @@
 								</div>
 								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"></div>
 						</div>
 						<!-- ANNO 2 -->
-						<div th:unless="${valutabile}" class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')} ? 'bad'">
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno2_value">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoDue}">2015</span>
 							</label>
@@ -511,10 +512,10 @@
 									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"></div>
 								</div>
 							</th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"></div>
 						</div>
 						<!-- ANNO 3 -->
-						<div th:unless="${valutabile}" class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')} ? 'bad'">
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno3_value">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre}">2014</span>
 							</label>
@@ -531,7 +532,7 @@
 									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></div>
 								</div>
 							</th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -550,7 +551,7 @@
 							</label>
 						</div>
 						<!-- TEMPO INDETERMINATO -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')} ? 'bad'">
 							<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="tempo_indeterminato">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.tempo_indeterminato}">Tempo indeterminato</span>
 							</label>
@@ -594,10 +595,10 @@
 								</div>
 								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></div>
 						</div>
 						<!-- ALTRO PERSONALE -->
-						<div th:unless="${valutabile}" class="item form-group" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')} ? 'bad'">
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="altro_personale">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.altro_personale}">Altro personale</span>
 							</label>
@@ -613,7 +614,7 @@
 									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
 								</div>
 							</th:block>
-							<div th:if="${editabile and #fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')}" class="alert" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>

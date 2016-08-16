@@ -30,7 +30,7 @@
 						</th:block>
 
 						<!-- TIPO ORGANIZZATORE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.tipoOrganizzatore')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('providerWrapper.provider.tipoOrganizzatore')} ? 'bad'">
 		                    <label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.tipoOrganizzatore') : ''}"></label>
 		                    <label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="tipoOrganizzatore">
 		                      	<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.tipo_organizzatore}">label.tipo_organizzatore</span>
@@ -84,13 +84,13 @@
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__].id}" />
 		                    </th:block>
-		                    <div th:if="${editabile and #fields.hasErrors('providerWrapper.provider.tipoOrganizzatore')}" class="alert" th:errors="${providerWrapper.provider.tipoOrganizzatore}"></div>
+		                    <div th:if="${#fields.hasErrors('providerWrapper.provider.tipoOrganizzatore')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.tipoOrganizzatore}"></div>
 	                    </div>
 
 	                    <div th:if="${valutabile}" class="divider"></div>
 
 	                    <!-- DENOMINAZIONE LEGALE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.denominazioneLegale')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('providerWrapper.provider.denominazioneLegale')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.denominazioneLegale') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="denominazioneLegale">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.denominazione_legale}">label.denominazione_legale</span>
@@ -131,13 +131,13 @@
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('providerWrapper.provider.denominazioneLegale')}" class="alert" th:errors="${providerWrapper.provider.denominazioneLegale}"></div>
+							<div th:if="${#fields.hasErrors('providerWrapper.provider.denominazioneLegale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.denominazioneLegale}"></div>
 						</div>
 
 						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- FLAG PARTITA IVA -->
-						<div class="item form-group" th:if="${editabile}">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:if="${editabile}">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="hasPartitaIVA">
 								<span th:text="#{label.ha_partita_IVA}">Sei titolare di Partita IVA?</span>
 							</label>
@@ -149,7 +149,7 @@
 						</div>
 
 						<!-- PARTITA IVA -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.partitaIva')} ? 'bad'" th:if="${!showOnly or providerWrapper.provider.partitaIva != null}">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('providerWrapper.provider.partitaIva')} ? 'bad'" th:if="${!showOnly or providerWrapper.provider.partitaIva != null}">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.partitaIva') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="partitaIva">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.partita_iva}">label.partita_iva</span>
@@ -190,13 +190,13 @@
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('providerWrapper.provider.partitaIva')}" class="alert" th:errors="${providerWrapper.provider.partitaIva}"></div>
+							<div th:if="${#fields.hasErrors('providerWrapper.provider.partitaIva')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.partitaIva}"></div>
 						</div>
 
 						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- CODICE FISCALE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.codiceFiscale')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('providerWrapper.provider.codiceFiscale')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.codiceFiscale') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="codiceFiscale">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.codice_fiscale}">label.codice_fiscale</span>
@@ -238,13 +238,13 @@
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('providerWrapper.provider.codiceFiscale')}" class="alert" th:errors="${providerWrapper.provider.codiceFiscale}"></div>
+							<div th:if="${#fields.hasErrors('providerWrapper.provider.codiceFiscale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.codiceFiscale}"></div>
 						</div>
 
 						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- RAGIONE SOCIALE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.ragioneSociale')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('providerWrapper.provider.ragioneSociale')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.ragioneSociale') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="ragioneSociale">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.ragione_sociale}">label.ragione_sociale</span>
@@ -298,14 +298,14 @@
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('providerWrapper.provider.ragioneSociale')}" class="alert" th:errors="${providerWrapper.provider.ragioneSociale}"></div>
+							<div th:if="${#fields.hasErrors('providerWrapper.provider.ragioneSociale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.ragioneSociale}"></div>
 						</div>
 
 						<div th:if="${editabile}" class="divider-dashed"></div>
 						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- NATURA ORGANIZZAZIONE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.naturaOrganizzazione') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="naturaOrganizzazione">
 								<span th:text="#{label.organizzazione_natura}" th:class="${showOnly ? 'label-show' : ''}">Natura dell'organizzazione</span>
@@ -355,14 +355,14 @@
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')}" class="alert" th:errors="${providerWrapper.provider.naturaOrganizzazione}"></div>
+							<div th:if="${#fields.hasErrors('providerWrapper.provider.naturaOrganizzazione')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.naturaOrganizzazione}"></div>
 						</div>
 
 						<div th:if="${editabile}" class="divider-dashed"></div>
 						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- NO PROFIT -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('providerWrapper.provider.noProfit')} ? 'bad'">
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('providerWrapper.provider.noProfit')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.noProfit') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="noProfit">
 								<span th:text="#{label.no_profit}" th:class="${showOnly ? 'label-show' : ''}">Società no-profit</span>
@@ -412,8 +412,7 @@
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__].id}" />
 		                    </th:block>
-							<div th:if="${editabile and #fields.hasErrors('providerWrapper.provider.noProfit')}" class="alert" th:errors="${providerWrapper.provider.noProfit}"></div>
-							<div th:if="${valutabile and #fields.hasErrors('providerWrapper.provider.noProfit')}" class="alert-error col-xs-12" th:errors="${providerWrapper.provider.noProfit}"></div>
+							<div th:if="${#fields.hasErrors('providerWrapper.provider.noProfit')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.noProfit}"></div>
 						</div>
 					</form>
 				</div>
