@@ -12,13 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
@@ -29,6 +33,9 @@ import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
+import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
+import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.PersonaService;
@@ -37,6 +44,7 @@ import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
 public class AccreditamentoController {
@@ -47,6 +55,8 @@ public class AccreditamentoController {
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private AccountService accountService;
+	@Autowired private ValutazioneValidator valutazioneValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -177,10 +187,17 @@ public class AccreditamentoController {
 		return "accreditamento/accreditamentoEdit";
 	}
 
-	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento){
-		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento);
+	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento) {
+		return goToAccreditamentoValidate(model, accreditamento, null);
+	}
+
+	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper){
+		//carico la valutazione dell'utente corrente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento, valutazione, wrapper);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
-		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoValidate"));
+		model.addAttribute("refereeList", accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
+ 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoValidate"));
 		return "accreditamento/accreditamentoValidate";
 	}
 
@@ -349,13 +366,13 @@ public class AccreditamentoController {
 		return accreditamentoWrapper;
 	}
 
-	private AccreditamentoWrapper prepareAccreditamentoWrapperValidate(Accreditamento accreditamento){
+	private AccreditamentoWrapper prepareAccreditamentoWrapperValidate(Accreditamento accreditamento, Valutazione valutazione, AccreditamentoWrapper accreditamentoWrapper){
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - entering"));
 
-		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
-
-		//carico la valutazione dell'utente corrente
-		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+		if(accreditamentoWrapper == null)
+			accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
+		else
+			accreditamentoWrapper.setAllAccreditamento(accreditamento);
 
 		//inserisco i suoi fieldValutazione nella mappa per il wrapper
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
@@ -417,5 +434,87 @@ public class AccreditamentoController {
 		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
 
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode);
+	}
+
+	//PARTE RELATIVA ALLA VALUTAZIONE
+
+	//prendi in carica segreteria ECM
+//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	@RequestMapping("/accreditamento/{accreditamentoId}/takeCharge")
+	public String prendiInCaricoAccreditamento(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/takeCharge"));
+		try {
+			Valutazione valutazione = new Valutazione();
+
+			//utente corrente che prende in carico
+			Account segretarioEcm = Utils.getAuthenticatedUser().getAccount();
+			valutazione.setAccount(segretarioEcm);
+
+			//accreditamento
+			valutazione.setAccreditamento(accreditamentoService.getAccreditamento(accreditamentoId));
+
+			//tipo di valutatore
+			valutazione.setTipoValutazione(ValutazioneTipoEnum.SEGRETERIA_ECM);
+
+			valutazioneService.save(valutazione);
+
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.presa_in_carico", "success"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/takeCharge"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}
+	}
+
+	// salva valutazione complessiva (inserisce data e valutazione complessiva)
+	//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/confirmEvaluation", method = RequestMethod.POST)
+	public String confermaValutazioneAccreditamento(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
+			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"));
+		try {
+			//validazione della valutazioneComplessiva
+			valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), result);
+
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("confirmErrors", true);
+				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+				return goToAccreditamentoValidate(model, accreditamento, wrapper);
+			}else {
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+
+				//setta la data
+				valutazione.setDataValutazione(LocalDate.now());
+
+				//inserisce il commento complessivo
+				valutazione.setValutazioneComplessiva(wrapper.getValutazioneComplessiva());
+
+				//crea le valutazioni per i referee TODO
+				for (Account a : wrapper.getRefereeGroup()) {
+					Valutazione valutazioneReferee = new Valutazione();
+					valutazioneReferee.setAccount(a);
+					valutazioneReferee.setAccreditamento(accreditamentoService.getAccreditamento(accreditamentoId));
+					valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+					valutazioneService.save(valutazioneReferee);
+				}
+
+				valutazioneService.save(valutazione);
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+				redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}
 	}
 }
