@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import javax.transaction.Transactional;
@@ -14,18 +15,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Profile;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
 
 @Service
 public class AccountServiceImpl implements AccountService{
 	private static Logger LOGGER = LoggerFactory.getLogger(AccountServiceImpl.class);
-	
+
 	@Autowired
 	private final AccountRepository accountRepository;
 	@Autowired
 	private final EmailService emailService;
-	
+
+	@Autowired
+	private ProfileAndRoleService profileAndRoleService;
 	@Autowired
 	private EcmProperties ecmProperties;
 
@@ -46,13 +51,23 @@ public class AccountServiceImpl implements AccountService{
 		LOGGER.debug("Getting users with email: " + email);
 		return accountRepository.findOneByEmail(email);
 	}
-	
+
 	@Override
 	public Account getUserById(Long id) {
 		LOGGER.debug("Getting users with id: " + id);
 		return accountRepository.findOne(id);
 	}
-	
+
+	@Override
+	public Set<Account> getUserByProfileEnum(ProfileEnum profileEnum) {
+		LOGGER.debug("Getting users with profile: " + profileEnum.name());
+		Set<Account> users = new HashSet<Account>();
+		Optional<Profile> profile = profileAndRoleService.getProfileByProfileEnum(profileEnum);
+		if(profile.isPresent())
+			users = accountRepository.findAllByProfiles(profile.get());
+		return users;
+	}
+
 	@Override
 	public Set<Account> getAllUsers() {
 		LOGGER.debug("Getting all users");
@@ -65,11 +80,11 @@ public class AccountServiceImpl implements AccountService{
 		if(user.isNew()){
 			create(user);
 		}else{
-			LOGGER.debug("Saving user: " + user.getUsername()); 
+			LOGGER.debug("Saving user: " + user.getUsername());
 			accountRepository.save(user);
 		}
 	}
-	
+
 	@Override
 	@Transactional
 	public void resetPassword(String email) throws Exception{
@@ -78,7 +93,7 @@ public class AccountServiceImpl implements AccountService{
 		String resetPassword = setNewRandomPassword(user);
 		sendResetPasswordEmail(user, resetPassword);
 	}
-	
+
 	@Override
 	@Transactional
 	public void changePassword(Long id, String password) throws Exception {
@@ -94,7 +109,7 @@ public class AccountServiceImpl implements AccountService{
 			throw ex;
 		}
 	}
-	
+
 	@Transactional
 	private void create(Account user) throws Exception{
 		LOGGER.debug("Creating user: " + user.getUsername());
@@ -107,7 +122,7 @@ public class AccountServiceImpl implements AccountService{
 			throw ex;
 		}
 	}
-	
+
 	@Transactional
 	private String setNewRandomPassword(Account user) throws Exception{
 		String newPassword = RandomStringUtils.random(8, true, true);
@@ -115,7 +130,7 @@ public class AccountServiceImpl implements AccountService{
 		accountRepository.save(user);
 		return newPassword;
 	}
-	
+
 	private void sendRegistrationEmail(Account user, String firstPassword){
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(user.getEmail());
@@ -126,10 +141,10 @@ public class AccountServiceImpl implements AccountService{
 							+ "Le sue credenziali d'accesso sono: \n"
 							+ "username: " + user.getUsername() + "\n"
 							+ "password: " + firstPassword);
-		
+
 		emailService.send(mailMessage);
 	}
-	
+
 	private void sendResetPasswordEmail(Account user, String password){
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(user.getEmail());
@@ -139,10 +154,10 @@ public class AccountServiceImpl implements AccountService{
 							+ "Le sue credenziali d'accesso sono: \n"
 							+ "username: " + user.getUsername() + "\n"
 							+ "password: " + password);
-		
+
 		emailService.send(mailMessage);
 	}
-	
+
 	private void sendChangePasswordEmail(Account user, String password){
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(user.getEmail());
@@ -152,7 +167,8 @@ public class AccountServiceImpl implements AccountService{
 							+ "Le sue credenziali d'accesso sono: \n"
 							+ "username: " + user.getUsername() + "\n"
 							+ "password: " + password);
-		
+
 		emailService.send(mailMessage);
 	}
+
 }
