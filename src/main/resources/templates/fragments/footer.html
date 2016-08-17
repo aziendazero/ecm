@@ -201,20 +201,6 @@
 			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
 			});
 
-			$('.datatable-responsive-search-validation').DataTable({
-				"bInfo" : false,
-				"bPaginate" : false,
-				scrollY: 300,
-				"bScrollCollapse": true,
-			    scroller: true,
-				//colonna del pulsante seleziona
-			    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
-			    "columnDefs": [
-			                   	{"targets": [ '_all' ], "orderable": false, "width": "1px" },
-			                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
-			                  ]
-			});
-
 			$('.datatable-responsive-search-anagrafica').DataTable({
 				"bInfo" : false,
 				"bPaginate" : false,
@@ -244,6 +230,20 @@
 					"sClass": "center"
 				} ]
 			});
+
+			//init datatable visualizzazione di tutte le valutazioni dell'accreditamento
+			$(".modal-altreValutazioni").one('shown.bs.modal', function() {
+				$('.datatable-responsive-search-validation').DataTable({
+					"bInfo" : false,
+					"bPaginate" : false,
+					//colonna del pulsante seleziona
+				    "order": [ 0, 'asc' ],
+				    "columnDefs": [
+				                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
+				                    {"targets": [ 0 ], "width": "1px"}
+				                  ]
+				});
+			})
 
 			$('.modal').on('shown.bs.modal', function () {
 				$($.fn.dataTable.tables(true)).DataTable()
@@ -343,8 +343,6 @@
 					});
 				});
 			});
-
-
 
 			/*]]>*/
 		</script>
