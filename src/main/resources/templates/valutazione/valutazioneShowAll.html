@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<th:block th:fragment="showAll(wrapper)">
+		<table id="tabella-modale" class="datatable-responsive-search-validation table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th th:text="#{label.id}">label.id</th>
+					<th:block th:each="valutatore, row : ${__${wrapper}__.mappaValutatoreValutazioni}">
+						<th th:text="#{label.valutazione} + ' ' + ${valutatore.key.isSegreteria() ? 'Segreteria ECM' : 'Referee ' + valutatore.key.nome + ' ' + valutatore.key.cognome}">Nome</th>
+					</th:block>
+				</tr>
+			</thead>
+			<!-- ciclo su IdField (tranne che per il FULL / idEditabile == -1)-->
+			<tbody>
+				<tr th:each="field, row : ${__${wrapper}__.idEditabili}" th:unless="${field.idEcm == -1}">
+					<td th:text="${field.idEcm}">numero idEditabile</td>
+					<!-- cerco in ogni mappa delle valutazioni la valutazione relativa all'IdField -->
+					<th:block th:each="mapValutazione, row : ${__${wrapper}__.mappaValutatoreValutazioni}">
+						<td class="otherValidationCheck">
+							<div>
+								<th:block th:unless="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__] == null}">
+									<span th:if="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__].esito == true}" class="fa table-icon fa-check green" th:title="#{label.valido}"></span>
+									<span th:if="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__].esito == false}" class="fa table-icon fa-remove red" th:title="#{label.non_valido}"></span>
+								</th:block>
+								<span th:if="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__] == null}" class="fa table-icon fa-question grey" th:title="#{label.non_valutato}"></span>
+								<div th:if="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__] != null and !#strings.isEmpty(mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__].note)}" th:text="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__].note}" class="nota-validazione">nota della valutazione</div>
+							</div>
+						</td>
+					</th:block>
+				</tr>
+			</tbody>
+		</table>
+	</th:block>
+</body>
+</html>
