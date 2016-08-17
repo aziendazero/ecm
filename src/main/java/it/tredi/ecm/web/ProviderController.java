@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
@@ -280,7 +281,7 @@ public class ProviderController {
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - entering"));
 		ProviderWrapper providerWrapper = new ProviderWrapper();
 
-		//carico la valutazione per l'utente
+		//carico la valutazione per l'utente corrente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 		if(valutazione != null) {
@@ -289,6 +290,15 @@ public class ProviderController {
 		providerWrapper.setMappa(mappa);
 		providerWrapper.setProvider(provider);
 		providerWrapper.setAccreditamentoId(accreditamentoId);
+
+		//cerco tutte le valutazioni del subset provider per ciascun valutatore dell'accreditamento
+		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.PROVIDER);
+		providerWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
+
+		//prendo tutti gli id del subset
+		Set<IdFieldEnum> idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER);
+		providerWrapper.setIdEditabili(idEditabili);
+
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}

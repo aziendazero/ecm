@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
@@ -384,13 +385,28 @@ public class SedeController {
 		//carico la valutazione per l'utente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+
+		//cerco tutte le valutazioni del subset sede per ciascun valutatore dell'accreditamento
+		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+
+		//prendo tutti gli id del subset
+		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
+
 		if(valutazione != null) {
-			if(tipologiaSede.equals("SedeLegale"))
+			if(tipologiaSede.equals("SedeLegale")) {
 				mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.SEDE_LEGALE);
-			if(tipologiaSede.equals("SedeOperativa"))
+				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.SEDE_LEGALE);
+				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_LEGALE);
+			}
+			if(tipologiaSede.equals("SedeOperativa")) {
 				mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.SEDE_OPERATIVA);
+				mappaValutatoreValutazioni  = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.SEDE_OPERATIVA);
+				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_OPERATIVA);
+			}
 		}
 
+		sedeWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
+		sedeWrapper.setIdEditabili(idEditabili);
 		sedeWrapper.setMappa(mappa);
 		sedeWrapper.setSede(sede);
 		sedeWrapper.setTipologiaSede(tipologiaSede);
