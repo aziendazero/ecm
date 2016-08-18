@@ -75,7 +75,7 @@
 
 	<!-- wrapper senza idEditabili -->
 	<th:block th:unless="${__withIdEditabili__}">
-		<div th:id="__${tipoAllegato}__-parent" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+		<div th:id="__${tipoAllegato}__-parent" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
 
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
