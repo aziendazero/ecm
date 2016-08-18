@@ -23,8 +23,10 @@
 					</div>
 					<div class="modal-body">
 
-						<!-- fragment tutte le valutazioni -->
-						<th:block th:include="valutazione/valutazioneValutatoriAll :: valutatoriAll(sedeWrapper)"></th:block>
+						<div id="toValidateModal">
+							<!-- fragment tutte le valutazioni -->
+							<th:block th:include="valutazione/valutazioneValutatoriAll :: valutatoriAll(sedeWrapper)"></th:block>
+						</div>
 
 					</div>
 
