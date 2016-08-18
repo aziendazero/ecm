@@ -271,6 +271,8 @@ public class EventoController {
 			Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/validate"));
 		try {
+			//controllo se è possibile modificare la valutazione o meno
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			//tengo traccia di dove ritornare
 			model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/validate?tab=tab4");
 			return goToValidate(model, prepareEventoWrapperValidate(eventoService.getEvento(id), providerId, accreditamentoId, pianoFormativoId));
@@ -294,6 +296,7 @@ public class EventoController {
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/validate?tab=tab4");
+				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
 			}else{
@@ -321,6 +324,7 @@ public class EventoController {
 			model.addAttribute("accreditamentoId",wrapper.getAccreditamentoId());
 			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
 			model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/validate?tab=tab4");
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 			return VALIDATE;
 		}

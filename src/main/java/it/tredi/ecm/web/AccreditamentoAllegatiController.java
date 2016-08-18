@@ -95,6 +95,8 @@ public class AccreditamentoAllegatiController {
 	public String validateAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/validate"));
 		try{
+			//controllo se è possibile modificare la valutazione o meno
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			return goToValidate(model, prepareAccreditamentoAllegatiWrapperValidate(accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/validate"),ex);
@@ -189,6 +191,7 @@ public class AccreditamentoAllegatiController {
 
 			if(result.hasErrors()){
 				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
+				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
@@ -214,6 +217,7 @@ public class AccreditamentoAllegatiController {
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /accreditamento/"+ accreditamentoId +"/allegati/validate"),ex);
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 			return VALIDATE;

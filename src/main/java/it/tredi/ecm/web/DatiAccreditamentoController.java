@@ -155,6 +155,8 @@ public class DatiAccreditamentoController {
 	public String validateDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/validate"));
 		try{
+			//controllo se è possibile modificare la valutazione o meno
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			return goToValidate(model, prepareDatiAccreditamentoWrapperValidate(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/validate"),ex);
@@ -225,6 +227,7 @@ public class DatiAccreditamentoController {
 			valutazioneValidator.validateValutazione(wrapper.getMappa(), result);
 
 			if(result.hasErrors()){
+				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
@@ -248,6 +251,7 @@ public class DatiAccreditamentoController {
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/dati/validate"),ex);
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			model.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
 			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));

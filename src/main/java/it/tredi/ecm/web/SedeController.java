@@ -31,6 +31,7 @@ import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
@@ -57,6 +58,7 @@ public class SedeController {
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private AccreditamentoService accreditamentoService;
 
 	/***	GLOBAL MODEL ATTRIBUTES	***/
 	@ModelAttribute("elencoProvince")
@@ -227,6 +229,8 @@ public class SedeController {
 			@RequestParam (value = "tipologiaSede", required = true) String tipologiaSede, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/" + id + "/validate"));
 		try {
+			//controllo se è possibile modificare la valutazione o meno
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			SedeWrapper sedeWrapper = prepareSedeWrapperValidate(sedeService.getSede(id), tipologiaSede, accreditamentoId, providerId);
 			return goToValidate(model, sedeWrapper);
 		}catch (Exception ex){
@@ -295,6 +299,7 @@ public class SedeController {
 			valutazioneValidator.validateValutazione(sedeWrapper.getMappa(), result);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
 			}else{
@@ -318,6 +323,7 @@ public class SedeController {
 			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/validate"),ex);
 			model.addAttribute("accreditamentoId",sedeWrapper.getAccreditamentoId());
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 			return VALIDATE;
 		}

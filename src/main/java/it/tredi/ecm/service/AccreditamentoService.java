@@ -41,5 +41,5 @@ public interface AccreditamentoService{
 	//Controlli valutazione
 	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser);
-
+	public boolean canUserValutaDomandaShow(Long id, CurrentUser authenticatedUser);
 }

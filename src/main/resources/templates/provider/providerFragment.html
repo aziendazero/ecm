@@ -67,20 +67,20 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__].esito}" th:value="true" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__].esito}" th:value="false" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>
 								</div>
 								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__].note}"></textarea>
+									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__].id}" />
 		                    </th:block>
@@ -114,20 +114,20 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__].esito}" th:value="true" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__].esito}" th:value="false" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>
 								</div>
 								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__].note}"></textarea>
+									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__].id}" />
 		                    </th:block>
@@ -173,20 +173,20 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__].esito}" th:value="true" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__].esito}" th:value="false" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>
 								</div>
 								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__].note}"></textarea>
+									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__].id}" />
 		                    </th:block>
@@ -221,20 +221,20 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__].esito}" th:value="true" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__].esito}" th:value="false" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>
 								</div>
 								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__].note}"></textarea>
+									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__].id}" />
 		                    </th:block>
@@ -281,20 +281,20 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__].esito}" th:value="true" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__].esito}" th:value="false" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>
 								</div>
 								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__].note}"></textarea>
+									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__].id}" />
 		                    </th:block>
@@ -338,20 +338,20 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__].esito}" th:value="true" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__].esito}" th:value="false" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>
 								</div>
 								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__].note}"></textarea>
+									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__].id}" />
 		                    </th:block>
@@ -395,20 +395,20 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__].esito}" th:value="true" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
-										<label>
-											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__].esito}" th:value="false" />
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>
 								</div>
 								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__].note}"></textarea>
+									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
 								</div>
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__].id}" />
 		                    </th:block>

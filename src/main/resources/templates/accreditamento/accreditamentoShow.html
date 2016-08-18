@@ -47,11 +47,12 @@
 									<li><a th:text="#{label.mostra_riepilogo}" class="ajaxCallShowAll" data-toggle="modal" data-target=".modal-showAll"></a></li>
 									<li class="divider actions"></li>
 									<li><a th:text="#{label.modifica}" onclick="switchMode('edit')"></a></li>
+									<li><a th:if="${accreditamentoWrapper.canShowValutazione}" th:text="#{label.mostra_valutazione}" onclick="switchMode('validate')"></a></li>
+									<li><a th:if="${accreditamentoWrapper.canValutaDomanda}" th:text="#{label.valuta_domanda}" onclick="switchMode('validate')"></a></li>
 									<li class="divider actions"></li>
 									<li><a th:text="#{label.abilita_id_editabili}" onclick="alert('TODO')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canPrendiInCarica}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/takeCharge|}" th:text="#{label.prendi_in_carica}"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canAssegnaNuovoGruppo}" th:text="#{label.assegna_nuovo_gruppo}" onclick="alert('TODO')"></a></li>
-									<li><a th:if="${accreditamentoWrapper.canValutaDomanda}" th:text="#{label.valuta_domanda}" onclick="switchMode('validate')"></a></li>
 								</ul>
 								<!-- menù a pulsanti separati per il provider -->
 								<th:block th:if="${#authentication.principal.hasProfile('PROVIDER')}">

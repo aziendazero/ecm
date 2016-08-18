@@ -96,6 +96,7 @@ public class AccreditamentoWrapper {
 	//stati per i pulsanti segreteria
 	private boolean canPrendiInCarica;
 	private boolean canValutaDomanda;
+	private boolean canShowValutazione;
 	private boolean canAssegnaNuovoGruppo;
 	private boolean canConfermaValutazione;
 
@@ -337,8 +338,10 @@ public class AccreditamentoWrapper {
 			sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
 			sezione4Stato = tuttiEventiValutati ? true : false;
 
-			//show del pulsante per inviare la valutazione
+			//stato di valutazione completa
 			canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato && sezione4Stato);
+
+			canConfermaValutazione = (canValutaDomanda && canSendValutazione) ? true : false;
 		}
 	}
 

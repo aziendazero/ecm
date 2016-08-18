@@ -39,7 +39,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.valutazione} + ' ' + #{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
 						<div class="pull-right buttons-header">
-							<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formPersona" type="submit"></button>
+							<button th:if="${canValutaDomanda}" class="btn btn-success pull-right" th:text="#{label.salva}" form="formPersona" type="submit"></button>
 							<button class="btn btn-primary pull-right" th:text="#{label.tutte_le_valutazioni}" data-toggle="modal" data-target=".modal-altreValutazioni"></button>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
 						</div>
