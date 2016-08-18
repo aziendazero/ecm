@@ -785,3 +785,8 @@ h2 {
   opacity: 1;
 }
 
+.x_menu {
+	margin-bottom: 0;
+	border: 0;
+	padding: 0;
+}
