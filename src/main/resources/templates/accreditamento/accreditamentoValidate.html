@@ -19,8 +19,10 @@
 									<span aria-hidden="true">×</span>
 								</button>
 								<h4 class="modal-title" id="myModalLabel"
-									th:text="#{label.riepilogo_accreditamento(${accreditamentoWrapper.accreditamento.tipoDomanda}, ${accreditamentoWrapper.accreditamento.stato})}">Riepilogo
+									th:text="#{label.riepilogo_accreditamento(${accreditamentoWrapper.accreditamento.tipoDomanda}, ${accreditamentoWrapper.accreditamento.stato.nome})}">Riepilogo
 									di tutto l'accreditamento</h4>
+								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" th:text="#{label.apri_tutte}" onclick="toggleAll()"></button>
+								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" style="display: none" th:text="#{label.chiudi_tutte}" onclick="toggleAll()"></button>
 							</div>
 							<div class="modal-body">
 
@@ -102,7 +104,7 @@
 									<span aria-hidden="true">×</span>
 								</button>
 								<h4 class="modal-title" id="myModalLabel"
-									th:text="#{label.riepilogo_valutazione_accreditamento(${accreditamentoWrapper.accreditamento.tipoDomanda}, ${accreditamentoWrapper.accreditamento.stato})}">Riepilogo
+									th:text="#{label.riepilogo_valutazione_accreditamento(${accreditamentoWrapper.accreditamento.tipoDomanda}, ${accreditamentoWrapper.accreditamento.stato.nome})}">Riepilogo
 									di tutto l'accreditamento</h4>
 							</div>
 							<div class="modal-body">
