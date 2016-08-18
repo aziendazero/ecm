@@ -652,11 +652,11 @@ h2 {
 	font-size: 17px;
 }
 
-div.collapsible > div#toModal > div.x_content {
+.container-collapse {
 	display: none;
 }
 
-.collapse-link {
+.link-collapse {
 	cursor: pointer;
 }
 
@@ -784,5 +784,4 @@ div.collapsible > div#toModal > div.x_content {
   left: 0;
   opacity: 1;
 }
-
 
