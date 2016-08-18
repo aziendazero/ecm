@@ -25,8 +25,7 @@
 							<div class="modal-body">
 
 								<!-- fragment show all -->
-								<th:block
-									th:include="accreditamento/accreditamentoShowAll :: showAll"></th:block>
+								<th:block th:include="accreditamento/accreditamentoShowAll :: showAll"></th:block>
 
 							</div>
 						</div>
@@ -45,7 +44,7 @@
 								</button>
 								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
-									<li><a th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()" data-toggle="modal" data-target=".modal-showAll"></a></li>
+									<li><a th:text="#{label.mostra_riepilogo}" class="ajaxCallShowAll" data-toggle="modal" data-target=".modal-showAll"></a></li>
 									<li class="divider actions"></li>
 									<li><a th:text="#{label.modifica}" onclick="switchMode('edit')"></a></li>
 									<li class="divider actions"></li>
@@ -56,12 +55,12 @@
 								</ul>
 								<!-- menù a pulsanti separati per il provider -->
 								<th:block th:if="${#authentication.principal.hasProfile('PROVIDER')}">
-									<a class="btn btn-primary" th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()" data-toggle="modal" data-target=".modal-showAll"></a>
+									<a class="btn btn-primary ajaxCallShowAll" th:text="#{label.mostra_riepilogo}" data-toggle="modal" data-target=".modal-showAll"></a>
 									<a th:if="${accreditamentoWrapper.accreditamento.bozza}" class="btn btn-success" th:text="#{label.modifica}" onclick="switchMode('edit')"></a>
 								</th:block>
 								<!-- menù a pulsanti separati per il referee -->
 								<th:block th:if="${#authentication.principal.hasProfile('REFEREE')}">
-									<a class="btn btn-primary" th:text="#{label.mostra_riepilogo}" onclick="populateShowAll()" data-toggle="modal" data-target=".modal-showAll"></a>
+									<a class="btn btn-primary ajaxCallShowAll" th:text="#{label.mostra_riepilogo}" data-toggle="modal" data-target=".modal-showAll"></a>
 									<a th:if="${accreditamentoWrapper.canValutaDomanda}" class="btn btn-sucess" th:text="#{label.valuta_domanda}" onclick="switchMode('validate')"></a>
 								</th:block>
 							</div>
@@ -84,6 +83,8 @@
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
+
+			    $('.ajaxCallShowAll').one("click", populateShowAll());
 
 			  	var tabSelected = "tab1";
 				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
