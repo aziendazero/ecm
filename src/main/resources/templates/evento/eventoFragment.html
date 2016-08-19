@@ -374,7 +374,7 @@
 										title="Seleziona una disciplina..." disabled="disabled"
 										data-selected-text-format="count" th:remove="all-but-first">
 										<optgroup class="optgroup-success" disabled="disabled"
-											th:each="professione, row: ${professioneList}"
+											th:each="professione, row: ${professioneList}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
 											th:label="${professione.nome}" th:remove="all-but-first">
 											<option th:each="disciplina, row: ${disciplinaList}"
 												th:if="${disciplina.professione == professione}"
