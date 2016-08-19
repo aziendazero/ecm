@@ -35,10 +35,8 @@ public class PersonaValidator {
 		validateBase(persona, errors, prefix);
 
 
-		//CELLULARE (LR - DLR - CCS - ComCS - RA)
-		if(	persona.isLegaleRappresentante() || persona.isDelegatoLegaleRappresentante() ||
-			persona.isCoordinatoreComitatoScientifico() || persona.isComponenteComitatoScientifico() ||
-			persona.isResponsabileAmministrativo()){
+		//CELLULARE (LR - DLR)
+		if(	persona.isLegaleRappresentante() || persona.isDelegatoLegaleRappresentante()){
 				anagraficaValidator.validateCellulare(persona.getAnagrafica(), errors, prefix + "anagrafica.");
 		}
 
@@ -47,7 +45,7 @@ public class PersonaValidator {
 			anagraficaValidator.validatePEC(persona.getAnagrafica(), errors, prefix + "anagrafica.");
 		}
 
-		//PROFESSIONE (RSI - RQ - CCS - ComCS)
+		//PROFESSIONE (CCS - ComCS)
 		if(persona.isCoordinatoreComitatoScientifico() || persona.isComponenteComitatoScientifico()){
 			if(persona.getProfessione() == null || persona.getProfessione().getNome().isEmpty())
 				errors.rejectValue(prefix + "professione", "error.empty");

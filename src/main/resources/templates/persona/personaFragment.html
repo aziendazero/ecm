@@ -202,28 +202,6 @@
 
 						<div th:if="${valutabile}" class="divider"></div>
 
-						<!-- CHECKBOX FLAG STRANIERO -->
-						<div th:if="(${personaWrapper.persona.coordinatoreComitatoScientifico} or
-									${personaWrapper.persona.componenteComitatoScientifico}) and
-									${!valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="isStraniero_persona">
-								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.cf_straniero}">Ha un codice fiscale non italiano</span>
-							</label>
-							<th:block th:if="${editabile}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<div class="checkbox">
-										<input id="isStraniero_persona" name="isStraniero_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.codiceFiscale',personaWrapper.ruolo))}"
-											class="flat" type="checkbox" th:field="${personaWrapper.persona.anagrafica.straniero}" />
-									</div>
-								</div>
-							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<div class="value" th:text="${personaWrapper.persona.anagrafica.straniero ? #messages.msg('label.sì') : #messages.msg('label.no')}">Sì</div>
-								</div>
-							</th:block>
-						</div>
-
 						<!-- TELEFONO -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.telefono',personaWrapper.ruolo)  : ''}"></label>
@@ -272,10 +250,7 @@
 						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- CELLULARE -->
-						<div th:unless="${personaWrapper.persona.responsabileSegreteria} or
-										${personaWrapper.persona.responsabileFormazione} or
-										${personaWrapper.persona.responsabileSistemaInformatico} or
-										${personaWrapper.persona.responsabileQualita}"
+						<div th:if="${personaWrapper.persona.legaleRappresentante} or ${personaWrapper.persona.delegatoLegaleRappresentante}"
 							th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cellulare',personaWrapper.ruolo)  : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="cellulare_persona">
@@ -483,17 +458,17 @@
 
 						<div th:if="${valutabile and !personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
 
-						<!--   ALLEGATO 2 (CURRICULUM VITAE)   -->
-						<div th:if="${editabile}" class="divider-dashed"></div>
-						<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${showOnly ? null : 'cv'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block>
-
-						<div th:if="${valutabile and personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
-
-						<!--   ALLEGATO 3 (DELEGA)   -->
+						<!--   ALLEGATO 2 (DELEGA)   -->
 						<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}">
 							<div th:if="${editabile}" class="divider-dashed"></div>
 							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, delega, ${showOnly ? null : 'delega'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block>
 						</div>
+
+						<div th:if="${valutabile and personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
+
+						<!--   ALLEGATO 3 (CURRICULUM VITAE)   -->
+						<div th:if="${editabile}" class="divider-dashed"></div>
+						<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${showOnly ? null : 'cv'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block>
 
 						<div th:if="${valutabile and personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
 
