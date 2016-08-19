@@ -24,12 +24,20 @@ public class DatiEconomici {
 	private int fatturatoFormazioneAnnoTre= 0;
 	private Double fatturatoFormazioneValoreTre= 0.0;
 
-	public boolean isEmpty(){
-		if(fatturatoComplessivoValoreUno == 0.0 ||
-			fatturatoComplessivoValoreDue == 0.0 ||
+	public boolean hasFatturatoComplessivo(){
+		if(fatturatoComplessivoValoreUno == 0.0 &&
+			fatturatoComplessivoValoreDue == 0.0 &&
 			fatturatoComplessivoValoreTre == 0.0)
-			return true;
-		return false;
+			return false;
+		return true;
+	}
+
+	public boolean hasFatturatoFormazione() {
+		if(fatturatoFormazioneValoreUno == 0.0 &&
+			fatturatoFormazioneValoreDue == 0.0 &&
+			fatturatoFormazioneValoreTre == 0.0)
+			return false;
+		return true;
 	}
 
 	public DatiEconomici() {

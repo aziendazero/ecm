@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.DatiEconomici;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.utils.Utils;
 
 @Component
@@ -22,8 +22,9 @@ public class DatiAccreditamentoValidator {
 
 	public void validate(Object target, Errors errors, String prefix, Set<File> files){
 		LOGGER.info(Utils.getLogMessage("Validazione DatiAccreditamento"));
+		DatiAccreditamento dati = (DatiAccreditamento) target;
 		validateDatiAccreditamento(target, errors, prefix);
-		validateFilesEconomici(files, errors, "", ((DatiAccreditamento) target).getDatiEconomici());
+		validateFilesConCondizione(files, errors, "", dati);
 		validateFilesObbligatori(files, errors, "");
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
@@ -43,24 +44,22 @@ public class DatiAccreditamentoValidator {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void validateFilesEconomici(Object target, Errors errors, String prefix, DatiEconomici datiEconomici){
-		LOGGER.debug("VALIDAZIONE ALLEGATI ECONOMICI");
-		if(!datiEconomici.isEmpty()){
-			Set<File> files = null;
-			if(target != null)
-				files = (Set<File>) target;
-			else
-				files = new HashSet<File>();
-			File estrattoBilancioFormazione = null;
+	private void validateFilesConCondizione(Object target, Errors errors, String prefix, DatiAccreditamento dati){
+		LOGGER.debug("VALIDAZIONE ALLEGATI CON CONDIZIONE");
+		Set<File> files = null;
+		if(target != null)
+			files = (Set<File>) target;
+		else
+			files = new HashSet<File>();
+		File estrattoBilancioComplessivo = null;
 
-			for(File file : files){
-				if(file != null){
-					if(file.isESTRATTOBILANCIOFORMAZIONE())
-						estrattoBilancioFormazione = file;
-				}
+		for(File file : files){
+			if(file != null){
+				if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+					estrattoBilancioComplessivo = file;
 			}
-			fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione");
 		}
+		fileValidator.validateWithCondition(estrattoBilancioComplessivo, errors, prefix + "estrattoBilancioComplessivo", dati.getDatiEconomici().hasFatturatoComplessivo());
 	}
 
 	@SuppressWarnings("unchecked")

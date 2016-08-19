@@ -41,7 +41,7 @@
 							<i class="fa fa-file-text"></i>
 							<a id="esperienzaFormazione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.esperienzaFormazioneModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${!showOnly ? 'esperienzaFormazione' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${!showOnly ? 'esperienzaFormazione' : null}, null, ${editabile ? #messages.msg('label.required_fatturato_personale_sanitario') : null}, true, ${mode}, false)" ></th:block>
 
 						<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>

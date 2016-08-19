@@ -232,7 +232,7 @@
 											th:remove="all-but-first"
 											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}">
 											<option th:each="professione, row: ${professioneList}"
-												th:value="${professione.id}" th:text="${professione.nome}"
+												th:value="${professione.id}" th:text="${professione.nome}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
 												th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniSelezionate}">Professione selezionata</option>
 										</select>
 									</div>
