@@ -104,7 +104,6 @@ public class ProviderServiceImpl implements ProviderService {
 		if(provider.isNew()){
 			File delega = new File();
 			providerRegistrationWrapper.setDelega(delega);
-			providerRegistrationWrapper.setRichiedente(new Persona(Ruolo.RICHIEDENTE));
 			providerRegistrationWrapper.setLegale(new Persona(Ruolo.LEGALE_RAPPRESENTANTE));
 		}else{
 			Persona richiedente = personaService.getPersonaByRuolo(Ruolo.RICHIEDENTE, provider.getId());
@@ -121,7 +120,6 @@ public class ProviderServiceImpl implements ProviderService {
 
 			File delega = new File();
 			providerRegistrationWrapper.setDelega(delega);
-			providerRegistrationWrapper.setRichiedente(richiedente);
 			providerRegistrationWrapper.setLegale(legale);
 		}
 
@@ -132,11 +130,12 @@ public class ProviderServiceImpl implements ProviderService {
 	@Transactional
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerRegistrationWrapper) {
 		Provider provider = providerRegistrationWrapper.getProvider();
-		Persona richiedente = providerRegistrationWrapper.getRichiedente();
-		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true)
-			richiedente.setRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
 		Persona legale = providerRegistrationWrapper.getLegale();
-		File delegaRichiedente = providerRegistrationWrapper.getDelega();
+		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true)
+			legale.setRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
+		else
+			legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
+		File delega = providerRegistrationWrapper.getDelega();
 
 		if(provider.getAccount().getProfiles().isEmpty()){
 			Optional<Profile> providerProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDER);
@@ -149,31 +148,13 @@ public class ProviderServiceImpl implements ProviderService {
 
 		//Delegato consentito solo per alcuni tipi di Provider
 		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true){
-			delegaRichiedente.setTipo(FileEnum.FILE_DELEGA);
-			fileService.save(delegaRichiedente);
-			richiedente.addFile(delegaRichiedente);
+			delega.setTipo(FileEnum.FILE_DELEGA);
+			fileService.save(delega);
+			legale.addFile(delega);
 		}
 
-		//controllo se richiedente e legale sono la stessa persona
-		if (richiedente.getAnagrafica().getCodiceFiscale().equals(legale.getAnagrafica().getCodiceFiscale())) {
-			Persona merge = new Persona();
-			merge.getAnagrafica().setNome(legale.getAnagrafica().getNome());
-			merge.getAnagrafica().setCognome(legale.getAnagrafica().getCognome());
-			merge.getAnagrafica().setCodiceFiscale(legale.getAnagrafica().getCodiceFiscale());
-			merge.getAnagrafica().setEmail(legale.getAnagrafica().getEmail());
-			merge.getAnagrafica().setPec(legale.getAnagrafica().getPec());
-			merge.getAnagrafica().setTelefono(richiedente.getAnagrafica().getTelefono());
-			merge.setIncarico(richiedente.getIncarico());
-			merge.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
-			provider.addPersona(merge);
-			personaService.save(merge);
-		}
-		else {
-			provider.addPersona(richiedente);
-			personaService.save(richiedente);
-			provider.addPersona(legale);
-			personaService.save(legale);
-		}
+		provider.addPersona(legale);
+		personaService.save(legale);
 	}
 
 	@Override

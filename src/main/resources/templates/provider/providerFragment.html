@@ -301,6 +301,53 @@
 							<div th:if="${#fields.hasErrors('providerWrapper.provider.ragioneSociale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.ragioneSociale}"></div>
 						</div>
 
+						<div th:if="${valutabile}" class="divider"></div>
+
+						 <!-- EMAIL STRUTTURA -->
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('providerWrapper.provider.emailStruttura')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('provider.emailStruttura') : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="emailStruttura">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.email}">label.email</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input type="text" id="emailStruttura" required="required" class="form-control col-md-7 col-xs-12"
+										name="emailStruttura" th:field="${providerWrapper.provider.emailStruttura}" th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.emailStruttura'))}"/>
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${providerWrapper.provider.emailStruttura}"></div>
+
+								</div>
+							</th:block>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${providerWrapper.provider.emailStruttura}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.emailStruttura')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.emailStruttura')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.emailStruttura')}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
+								</div>
+								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.emailStruttura')}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('providerWrapper.provider.emailStruttura')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.emailStruttura}"></div>
+						</div>
+
 						<div th:if="${editabile}" class="divider-dashed"></div>
 						<div th:if="${valutabile}" class="divider"></div>
 

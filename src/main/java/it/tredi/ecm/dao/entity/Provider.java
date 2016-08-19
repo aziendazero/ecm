@@ -58,6 +58,7 @@ public class Provider extends BaseEntity{
 	private String gruppo;
 	private String partitaIva;
 	private String codiceFiscale;
+	private String emailStruttura;
 
 	private boolean hasPartitaIVA = false;
 
@@ -131,14 +132,14 @@ public class Provider extends BaseEntity{
 	public void setCodiceFiscale(String codiceFiscale){
 		this.codiceFiscale = codiceFiscale.toUpperCase();
 	}
-	
+
 	public Persona getPersonaByRuolo(Ruolo ruolo){
 		for(Persona p : persone)
 			if(p.getRuolo() == ruolo)
 				return p;
 		return null;
 	}
-	
+
 	public Set<Persona> getComponentiComitatoScientifico(){
 		Set<Persona> componentiComitato = new HashSet<Persona>();
 		persone.forEach(p ->{
@@ -147,7 +148,7 @@ public class Provider extends BaseEntity{
 		});
 		return componentiComitato;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

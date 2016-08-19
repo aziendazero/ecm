@@ -23,7 +23,6 @@ public class ProviderRegistrationWrapperValidator{
 		accountValidator.validate(providerForm.getProvider().getAccount(), errors, "provider.account.");
 
 		providerValidator.validateForRegistrazione(providerForm.getProvider(), errors, "provider.");
-		validateRichiedente(providerForm.getRichiedente(), errors);
 		validateLegale(providerForm.getLegale(), errors);
 
 		//Delegato consentito solo per alcuni tipi di Provider
@@ -35,30 +34,8 @@ public class ProviderRegistrationWrapperValidator{
 			fileValidator.validate(providerForm.getDelega(), errors, "delega");
 		}
 
-		//check che il legale rappresentante e il delegato del legale rappresentante non abbiano lo stesso cv
-		if(providerForm.getDelegato() != null && providerForm.getDelegato() == true) {
-			String cvLegale = providerForm.getLegale().getAnagrafica().getCodiceFiscale();
-			String cvDelegato = providerForm.getRichiedente().getAnagrafica().getCodiceFiscale();
-			// evito il controllo se una delle due è vuota
-			if (!cvLegale.isEmpty() && cvLegale.equals(cvDelegato))
-				errors.rejectValue("richiedente.anagrafica.codiceFiscale", "error.stessoCf");
-		}
-
 		Utils.logDebugErrorFields(LOGGER, errors);
 
-	}
-
-	private void validateRichiedente(Persona richiedente, Errors errors){
-		if(richiedente.getAnagrafica().getCognome().isEmpty())
-			errors.rejectValue("richiedente.anagrafica.cognome", "error.empty");
-		if(richiedente.getAnagrafica().getNome().isEmpty())
-			errors.rejectValue("richiedente.anagrafica.nome", "error.empty");
-		if(richiedente.getAnagrafica().getCodiceFiscale().isEmpty())
-			errors.rejectValue("richiedente.anagrafica.codiceFiscale", "error.empty");
-		if(richiedente.getIncarico().isEmpty())
-			errors.rejectValue("richiedente.incarico", "error.empty");
-		if(richiedente.getAnagrafica().getTelefono().isEmpty())
-			errors.rejectValue("richiedente.anagrafica.telefono", "error.empty");
 	}
 
 	private void validateLegale(Persona legale, Errors errors){
