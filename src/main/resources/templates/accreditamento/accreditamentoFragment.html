@@ -475,7 +475,7 @@
 														</td>
 														<td	th:unless="${accreditamentoWrapper.esperienzaFormazioneStato}">
 															<i th:if="${accreditamentoWrapper.accreditamento.datiAccreditamento.datiEconomici.hasFatturatoFormazione()}" class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
-															<i th:unless="${accreditamentoWrapper.accreditamento.datiAccreditamento.datiEconomici.hasFatturatoFormazione()}" class="fa table-icon fa-remove grey" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.facoltativo')}"></i>
+															<i th:unless="${accreditamentoWrapper.accreditamento.datiAccreditamento.datiEconomici.hasFatturatoFormazione()}" class="fa table-icon fa-remove" th:classappend="${valutabile ? 'red' : 'grey'}" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.facoltativo')}"></i>
 														</td>
 														<td th:if="${editabile}">
 															<a th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>

@@ -296,10 +296,8 @@
 						</div>
 
 						<div th:if="${valutabile and
-							!(personaWrapper.persona.responsabileSegreteria or
-							personaWrapper.persona.responsabileFormazione or
-							personaWrapper.persona.responsabileSistemaInformatico or
-							personaWrapper.persona.responsabileQualita)}" class="divider"></div>
+							(personaWrapper.persona.legaleRappresentante or
+							personaWrapper.persona.delegatoLegaleRappresentante)}" class="divider"></div>
 
 						<!-- EMAIL -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')} ? 'bad'">
