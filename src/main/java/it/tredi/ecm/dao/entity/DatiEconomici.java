@@ -11,31 +11,31 @@ import lombok.Setter;
 @Setter
 public class DatiEconomici {
 	private int fatturatoComplessivoAnnoUno = 0;
-	private Double fatturatoComplessivoValoreUno = 0.0;
+	private Double fatturatoComplessivoValoreUno;
 	private int fatturatoComplessivoAnnoDue= 0;
-	private Double fatturatoComplessivoValoreDue= 0.0;
+	private Double fatturatoComplessivoValoreDue;
 	private int fatturatoComplessivoAnnoTre= 0;
-	private Double fatturatoComplessivoValoreTre= 0.0;
+	private Double fatturatoComplessivoValoreTre;
 
 	private int fatturatoFormazioneAnnoUno= 0;
-	private Double fatturatoFormazioneValoreUno= 0.0;
+	private Double fatturatoFormazioneValoreUno;
 	private int fatturatoFormazioneAnnoDue= 0;
-	private Double fatturatoFormazioneValoreDue= 0.0;
+	private Double fatturatoFormazioneValoreDue;
 	private int fatturatoFormazioneAnnoTre= 0;
-	private Double fatturatoFormazioneValoreTre= 0.0;
+	private Double fatturatoFormazioneValoreTre;
 
 	public boolean hasFatturatoComplessivo(){
-		if(fatturatoComplessivoValoreUno == 0.0 &&
-			fatturatoComplessivoValoreDue == 0.0 &&
-			fatturatoComplessivoValoreTre == 0.0)
+		if(fatturatoComplessivoValoreUno != null &&
+			fatturatoComplessivoValoreDue != null &&
+			fatturatoComplessivoValoreTre != null)
 			return false;
 		return true;
 	}
 
 	public boolean hasFatturatoFormazione() {
-		if(fatturatoFormazioneValoreUno == 0.0 &&
-			fatturatoFormazioneValoreDue == 0.0 &&
-			fatturatoFormazioneValoreTre == 0.0)
+		if(fatturatoFormazioneValoreUno != null &&
+			fatturatoFormazioneValoreDue != null &&
+			fatturatoFormazioneValoreTre != null)
 			return false;
 		return true;
 	}

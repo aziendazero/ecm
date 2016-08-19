@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.DatiEconomici;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
@@ -44,7 +45,6 @@ import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.DatiAccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.validator.DatiAccreditamentoValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
