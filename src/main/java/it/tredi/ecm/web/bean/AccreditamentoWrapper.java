@@ -201,6 +201,7 @@ public class AccreditamentoWrapper {
 				mappa.containsKey(IdFieldEnum.PROVIDER__PARTITA_IVA) &&
 				mappa.containsKey(IdFieldEnum.PROVIDER__CODICE_FISCALE) &&
 				mappa.containsKey(IdFieldEnum.PROVIDER__RAGIONE_SOCIALE) &&
+				mappa.containsKey(IdFieldEnum.PROVIDER__EMAIL_STRUTTURA) &&
 				mappa.containsKey(IdFieldEnum.PROVIDER__NATURA_ORGANIZZAZIONE) &&
 				mappa.containsKey(IdFieldEnum.PROVIDER__NO_PROFIT));
 
@@ -262,7 +263,6 @@ public class AccreditamentoWrapper {
 				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__NOME) &&
 				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__CODICEFISCALE) &&
 				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__TELEFONO) &&
-				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__CELLULARE) &&
 				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__EMAIL) &&
 				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__ATTO_NOMINA) &&
 				mappa.containsKey(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__CV));
@@ -348,7 +348,7 @@ public class AccreditamentoWrapper {
 	/*
 	 * [A] Almeno 5 componenti (coordinatore incluso)
 	 * [B] Almeno 5 professionisti Sanitari
-	 * [C] Se settato "Generale" -> Almeno 2 professioni diverse tra i componenti
+	 * [C] Se settato "Generale" -> Almeno 2 professioni diverse tra i componenti TODO rimosse come richiesto, ma commentate solamente (non si sa mai)
 	 * [D] Se settato "Settoriale" -> Almeno 2 professioni analoghe a quelle selezionate (almeno che non sia stata selezionate solo 1 professione)
 	 * [D-bis] Se Selezionata solo 1 professione -> deve conicidere con quella e UNICA dei componenti del comitato scientifico
 	 * */
@@ -365,40 +365,41 @@ public class AccreditamentoWrapper {
 		else if(numeroProfessionistiSanitari < 5){
 			comitatoScientificoStato = false;
 			comitatoScientificoErrorMessage = "error.numero_minimo_professionisti_sanitari";
-		}else{
-			// mi assicuro che sono stati gia' inseriti i dati relativi all'accreditamento
-			if(datiAccreditamentoStato){
-				//[C]
-				if(datiAccreditamento.getProfessioniAccreditamento().equalsIgnoreCase("generale")){
-					if(professioniDeiComponenti < 2){
-						comitatoScientificoStato = false;
-						comitatoScientificoErrorMessage = "error.numero_minimo_professioni";
-					}
-				}//[D]
-				else{
-					if(datiAccreditamento.getProfessioniSelezionate().size() > 1){
-						if(professioniDeiComponentiAnaloghe < 2){
-							comitatoScientificoStato = false;
-							comitatoScientificoErrorMessage = "error.numero_minimo_professioni_settoriale";
-						}
-					}//[D - bis]
-					else{
-						if(elencoProfessioniDeiComponenti.size() > 1 || elencoProfessioniDeiComponenti.size() == 0){
-							comitatoScientificoStato = false;
-							comitatoScientificoErrorMessage = "error.professioni_non_conformi_con_accreditamento";
-						}else{
-							if(elencoProfessioniDeiComponenti.iterator().next() != datiAccreditamento.getProfessioniSelezionate().iterator().next()){
-								comitatoScientificoStato = false;
-								comitatoScientificoErrorMessage = "error.professioni_non_conformi_con_accreditamento";
-							}
-						}
-					}
-				}
-			}else{
-				comitatoScientificoStato = false;
-				comitatoScientificoErrorMessage = "error.datiaccreditamento_mancanti";
-			}
 		}
+//		else{
+//			// mi assicuro che sono stati gia' inseriti i dati relativi all'accreditamento
+//			if(datiAccreditamentoStato){
+//				//[C]
+//				if(datiAccreditamento.getProfessioniAccreditamento().equalsIgnoreCase("generale")){
+//					if(professioniDeiComponenti < 2){
+//						comitatoScientificoStato = false;
+//						comitatoScientificoErrorMessage = "error.numero_minimo_professioni";
+//					}
+//				}//[D]
+//				else{
+//					if(datiAccreditamento.getProfessioniSelezionate().size() > 1){
+//						if(professioniDeiComponentiAnaloghe < 2){
+//							comitatoScientificoStato = false;
+//							comitatoScientificoErrorMessage = "error.numero_minimo_professioni_settoriale";
+//						}
+//					}//[D - bis]
+//					else{
+//						if(elencoProfessioniDeiComponenti.size() > 1 || elencoProfessioniDeiComponenti.size() == 0){
+//							comitatoScientificoStato = false;
+//							comitatoScientificoErrorMessage = "error.professioni_non_conformi_con_accreditamento";
+//						}else{
+//							if(elencoProfessioniDeiComponenti.iterator().next() != datiAccreditamento.getProfessioniSelezionate().iterator().next()){
+//								comitatoScientificoStato = false;
+//								comitatoScientificoErrorMessage = "error.professioni_non_conformi_con_accreditamento";
+//							}
+//						}
+//					}
+//				}
+//			}else{
+//				comitatoScientificoStato = false;
+//				comitatoScientificoErrorMessage = "error.datiaccreditamento_mancanti";
+//			}
+//		}
 	}
 
 	private void setFilesStato(Set<String> filesDelProvider){
