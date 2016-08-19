@@ -25,17 +25,17 @@ public class DatiEconomici {
 	private Double fatturatoFormazioneValoreTre;
 
 	public boolean hasFatturatoComplessivo(){
-		if(fatturatoComplessivoValoreUno != null &&
-			fatturatoComplessivoValoreDue != null &&
-			fatturatoComplessivoValoreTre != null)
+		if(fatturatoComplessivoValoreUno == null &&
+			fatturatoComplessivoValoreDue == null &&
+			fatturatoComplessivoValoreTre == null)
 			return false;
 		return true;
 	}
 
 	public boolean hasFatturatoFormazione() {
-		if(fatturatoFormazioneValoreUno != null &&
-			fatturatoFormazioneValoreDue != null &&
-			fatturatoFormazioneValoreTre != null)
+		if(fatturatoFormazioneValoreUno == null &&
+			fatturatoFormazioneValoreDue == null &&
+			fatturatoFormazioneValoreTre == null)
 			return false;
 		return true;
 	}
