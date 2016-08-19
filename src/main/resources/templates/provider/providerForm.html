@@ -109,14 +109,23 @@
 				                      <div th:if="${#fields.hasErrors('providerForm.provider.tipoOrganizzatore')}" class="alert" th:errors="${providerForm.provider.tipoOrganizzatore}"></div>
 				                    </div>
 
-				                    <!-- flag partita iva -->
+									<!-- flag partita iva -->
 									<div class="item form-group">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="hasPartitaIVA">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12">
 											<span th:text="#{label.ha_partita_IVA}">Sei titolare di Partita IVA?</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
-											<div class="checkbox">
-												<input id="hasPartitaIVA" name="hasPartitaIVA" class="flat" type="checkbox" th:field="${providerForm.provider.hasPartitaIVA}" />
+											<div class="radio">
+												<label>
+													<input id="hasPartitaIVA" type="radio" class="flat" name="hasPartitaIVARadio" th:field="${providerForm.provider.hasPartitaIVA}" th:value="true" />
+													<span th:text="#{label.sì}">Sì</span>
+												</label>
+											</div>
+											<div class="radio">
+												<label>
+													<input id="hasNotPartitaIVA" type="radio" class="flat" name="hasPartitaIVARadio" th:field="${providerForm.provider.hasPartitaIVA}" th:value="false" />
+													<span th:text="#{label.no}">No</span>
+												</label>
 											</div>
 										</div>
 									</div>
@@ -299,7 +308,7 @@
 		    		.prop('required', true)
 		   	});
 
-		   	$('#hasPartitaIVA').on('ifUnchecked', function() {
+		   	$('#hasNotPartitaIVA').on('ifChecked', function() {
 		   		$('#pIva').prop('disabled', true)
 			   		.prop('required', false)
 		   			.val('')
