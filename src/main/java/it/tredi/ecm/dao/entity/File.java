@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
@@ -20,15 +21,19 @@ import lombok.Setter;
 @Getter
 @Setter
 public class File extends BaseEntity{
+	@JsonView(JsonViewModel.Integrazione.class)
 	private String nomeFile;
 
+	@JsonView(JsonViewModel.Integrazione.class)
 	@JsonIgnore
 	private byte[] data;
 
+	@JsonView(JsonViewModel.Integrazione.class)
 	@JsonIgnore
 	@Column(name = "creato")
 	private LocalDate dataCreazione;
 
+	@JsonView(JsonViewModel.Integrazione.class)
 	@Enumerated(EnumType.STRING)
 	private FileEnum tipo;
 

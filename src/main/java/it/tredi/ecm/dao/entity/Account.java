@@ -54,8 +54,8 @@ public class Account extends BaseEntity{
     		)
 	private Set<Profile> profiles = new HashSet<Profile>();
 
-	public boolean isCredentialsNonExpired(){
-		return dataScadenzaPassword.isAfter(LocalDate.now());
+	public boolean isPasswordExpired(){
+		return !dataScadenzaPassword.isAfter(LocalDate.now());
 	}
 
 	public String getProfileAsString(){

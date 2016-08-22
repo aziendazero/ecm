@@ -15,10 +15,8 @@ import it.tredi.ecm.dao.repository.DatiAccreditamentoRepository;
 public class DatiAccreditamentoServiceImpl implements DatiAccreditamentoService {
 	private static Logger LOGGER = LoggerFactory.getLogger(DatiAccreditamentoServiceImpl.class);
 	
-	@Autowired
-	private DatiAccreditamentoRepository datiAccreditamentoRepository;
-	@Autowired
-	private AccreditamentoService accreditamentoService;
+	@Autowired private DatiAccreditamentoRepository datiAccreditamentoRepository;
+	@Autowired private AccreditamentoService accreditamentoService;
 	
 	@Override
 	public DatiAccreditamento getDatiAccreditamento(Long id) {

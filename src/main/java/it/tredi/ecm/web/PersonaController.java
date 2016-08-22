@@ -28,12 +28,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
@@ -86,6 +89,8 @@ public class PersonaController {
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
+	@Autowired private ObjectMapper jacksonObjectMapper;
+	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
@@ -447,7 +452,19 @@ public class PersonaController {
 		}
 
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
-			integrazioneService.applyIntegrazioneObject(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
+			if(isLookup){
+				//applico le integrazioni solo ai campi di persona e non di anagrafica
+				personaWrapper.getFieldIntegrazione().remove(Utils.getField(personaWrapper.getFieldIntegrazione(), IdFieldEnum.RESPONSABILE_SEGRETERIA__FULL));
+				integrazioneService.applyIntegrazioneObject(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
+			}else{
+				if(personaWrapper.getPersona().getAnagrafica() == null || personaWrapper.getPersona().getAnagrafica().getId() == null){
+					//inserisci nuova anagrafica e non applico nessuna integrazione
+					personaWrapper.getFieldIntegrazione().clear();
+				}else{
+					//sono in modifica e quindi applico tutte le integrazioni
+					integrazioneService.applyIntegrazioneObject(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
+				}
+			}
 		}
 
 		if(!personaWrapper.getPersona().isNew()){
@@ -580,10 +597,9 @@ public class PersonaController {
 				if(personaWrapper.getPersona().isComponenteComitatoScientifico()){
 					//gestire multi-istanza
 				}else{
-					personaWrapper.getPersona().setId(null);
-					personaWrapper.getPersona().setProvider(null);
-					personaService.save(personaWrapper.getPersona());
-					fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idFieldFull, accreditamento, personaWrapper.getPersona().getId(), TipoIntegrazioneEnum.MODIFICA));
+					String json = jacksonObjectMapper.writerWithView(JsonViewModel.Integrazione.class).writeValueAsString(personaWrapper.getPersona());
+					System.out.println(json);
+					fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idFieldFull, accreditamento, json, TipoIntegrazioneEnum.ASSEGNAMENTO));
 				}
 			}else{
 				//modifica singoli campi

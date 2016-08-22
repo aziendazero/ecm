@@ -7,9 +7,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 @MappedSuperclass
 public class BaseEntity implements Cloneable{
-    @Id @GeneratedValue(strategy=GenerationType.AUTO)
+	@JsonView(JsonViewModel.Integrazione.class)
+	@Id @GeneratedValue(strategy=GenerationType.AUTO)
     protected Long id;
 
     public void setId(Long id) {

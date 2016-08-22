@@ -16,6 +16,10 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToOne;
+import javax.swing.text.View;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import lombok.Getter;
@@ -32,18 +36,30 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Persona extends BaseEntity{
+	@JsonView(JsonViewModel.Integrazione.class)
 	@JoinColumn(name = "anagrafica_id")
 	@ManyToOne(cascade = {CascadeType.PERSIST , CascadeType.MERGE})
 	private Anagrafica anagrafica = new Anagrafica();
+	
+	@JsonView(JsonViewModel.Integrazione.class)
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;
+	
+	@JsonView(JsonViewModel.Integrazione.class)
 	@Enumerated(EnumType.STRING)
 	private Ruolo ruolo;
+	
+	@JsonView(JsonViewModel.Integrazione.class)
 	private String incarico = "";
+	
+	@JsonView(JsonViewModel.Integrazione.class)
 	@OneToOne
 	private Professione professione;
+	
+	@JsonView(JsonViewModel.Integrazione.class)
 	private Boolean coordinatoreComitatoScientifico;
 
+	@JsonView(JsonViewModel.Integrazione.class)
 	@ManyToMany(cascade= CascadeType.REMOVE)
 	@JoinTable(name="persona_files",
 				joinColumns={@JoinColumn(name="persona_id")},

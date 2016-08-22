@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.service.AccountService;
+import it.tredi.ecm.service.CurrentUserDetailsService;
 import it.tredi.ecm.service.ProfileAndRoleService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccountChangePassword;
@@ -34,11 +37,12 @@ public class AccountController{
 	@Autowired private AccountService accountService;
 	@Autowired private ProfileAndRoleService profileAndRoleService;
 	@Autowired private AccountValidator accountValidator;
-
+	@Autowired private CurrentUserDetailsService currentUserDetailsService; 
+	
 	@InitBinder
-    public void setAllowedFields(WebDataBinder dataBinder) {
-        dataBinder.setDisallowedFields("id");
-    }
+	public void setAllowedFields(WebDataBinder dataBinder) {
+		dataBinder.setDisallowedFields("id");
+	}
 
 	@ModelAttribute("account")
 	public Account getAccountPreRequest(@RequestParam(value="editId",required = false) Long id){
@@ -144,7 +148,7 @@ public class AccountController{
 
 	@RequestMapping(value = "/user/changePassword", method = RequestMethod.POST)
 	public String changePassword(@ModelAttribute("accountChangePassword") AccountChangePassword accountChangePassword,
-									BindingResult result, RedirectAttributes redirectAttrs, Model model){
+			BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
 		LOGGER.info(Utils.getLogMessage("POST /user/changePassword"));
 		try {
 			Account userAccount = accountService.getUserById(Utils.getAuthenticatedUser().getAccount().getId());
@@ -160,6 +164,7 @@ public class AccountController{
 				try{
 					accountService.changePassword(userAccount.getId(), accountChangePassword.getNewPassword());
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.password_cambiata", "success"));
+					currentUserDetailsService.authenticateUser(userAccount.getUsername(), request);
 				}catch (Exception ex){
 					LOGGER.error(Utils.getLogMessage("POST /user/changePassword"),ex);
 					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
