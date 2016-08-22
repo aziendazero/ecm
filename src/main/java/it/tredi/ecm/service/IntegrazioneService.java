@@ -22,12 +22,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.BaseEntity;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.utils.Utils;
@@ -39,6 +43,7 @@ public class IntegrazioneService {
 
 	@Autowired private ApplicationContext appContext;
 	@PersistenceContext EntityManager entityManager;
+	@Autowired private ObjectMapper jacksonObjectMapper;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(IntegrazioneService.class);
 
@@ -201,54 +206,63 @@ public class IntegrazioneService {
 		return null;
 	}
 
+	private boolean isFull(String fieldName){
+		return IdFieldEnum.isFull(fieldName);
+	}
+	
+	
 	/**
 	 * Setting del valore <param>fieldValue</param> specificato da <param>fieldName</param> nell'oggetto <param>dst</param>
 	 * */
 	public void setField(Object dst, String fieldName, Object fieldValue) throws Exception{
-		//se è un file sostituisco il file
-		if(fieldName.startsWith("files")){
+		if(isFull(fieldName)){
+			/****	 se è un FULL	****/
+			jacksonObjectMapper.readerForUpdating(dst).readValue((String)fieldValue);
+		}else if(fieldName.startsWith("files")){
+			/****	se è un file sostituisco il file 	****/
 			Method getFiles = getGetterMethodFor(dst.getClass(), "files");
 			@SuppressWarnings("unchecked")
 			Set<File> files = (Set<File>) getFiles.invoke(dst);
 			((Persona) dst).addFile((File) getEntityFromRepo(File.class, fieldValue));
-		}
-
-		//se fieldName è composto (campo1.camp2) applico ricorsivamente fino a ricondurmi al caso semplice
-		//individuando l'oggetto campo1 su cui leggere campo2
-		if(fieldName.contains(".")){
-			//campo composto --> mi riconduco al caso semplice
-			dst = getObject(dst, fieldName);
-			fieldName = fieldName.substring(fieldName.lastIndexOf(".") + 1 , fieldName.length());
-		}
-
-		//caso semplice -> dst.setFieldName(fieldValue)
-		//se fieldName e' un campo semplice -> assegno fieldValue
-		//se fieldName e' una BaseEntity -> fieldValue è l'ID dell'oggetto da caricare e assegnare
-		//se fieldName e' una Collection distinguo i 2 casi:
-		//	caso1: collection di BaseEntity -> fieldValue contiene la lista di ID degli oggetti da caricare e assegnare
-		//	caso2: collection di valori semplici -> assegno la Collection
-		Method method = getSetterMethodFor(dst.getClass(), fieldName);
-		if(method != null){
-			Class<?> clazz = method.getParameterTypes()[0];
-
-			if(BaseEntity.class.isAssignableFrom(clazz)){
-				Object object = getEntityFromRepo(clazz, fieldValue);
-				method.invoke(dst, object);
-			}else if(Collection.class.isAssignableFrom(clazz)){
-				//verifico se la collection contiene Entity oppure Altri tipi di dato
-				clazz = getTypeByField(dst.getClass(),fieldName);
+		}else {
+			/****	se è modifica a campi singoli 	****/
+			//se fieldName è composto (campo1.camp2) applico ricorsivamente fino a ricondurmi al caso semplice
+			//individuando l'oggetto campo1 su cui leggere campo2
+			if(fieldName.contains(".")){
+				//campo composto --> mi riconduco al caso semplice
+				dst = getObject(dst, fieldName);
+				fieldName = fieldName.substring(fieldName.lastIndexOf(".") + 1 , fieldName.length());
+			}
+	
+			//caso semplice -> dst.setFieldName(fieldValue)
+			//se fieldName e' un campo semplice -> assegno fieldValue
+			//se fieldName e' una BaseEntity -> fieldValue è l'ID dell'oggetto da caricare e assegnare
+			//se fieldName e' una Collection distinguo i 2 casi:
+			//	caso1: collection di BaseEntity -> fieldValue contiene la lista di ID degli oggetti da caricare e assegnare
+			//	caso2: collection di valori semplici -> assegno la Collection
+			Method method = getSetterMethodFor(dst.getClass(), fieldName);
+			if(method != null){
+				Class<?> clazz = method.getParameterTypes()[0];
+	
 				if(BaseEntity.class.isAssignableFrom(clazz)){
-					Set<Object> newSet = new HashSet<Object>();
-					for(Object obj :  (Set<?>)fieldValue){
-						newSet.add(getEntityFromRepo(clazz,obj)); 
+					Object object = getEntityFromRepo(clazz, fieldValue);
+					method.invoke(dst, object);
+				}else if(Collection.class.isAssignableFrom(clazz)){
+					//verifico se la collection contiene Entity oppure Altri tipi di dato
+					clazz = getTypeByField(dst.getClass(),fieldName);
+					if(BaseEntity.class.isAssignableFrom(clazz)){
+						Set<Object> newSet = new HashSet<Object>();
+						for(Object obj :  (Set<?>)fieldValue){
+							newSet.add(getEntityFromRepo(clazz,obj)); 
+						}
+						method.invoke(dst, newSet);
+					}else{
+						method.invoke(dst, fieldValue);
 					}
-					method.invoke(dst, newSet);
-				}else{
+				}
+				else{
 					method.invoke(dst, fieldValue);
 				}
-			}
-			else{
-				method.invoke(dst, fieldValue);
 			}
 		}
 	}

@@ -66,7 +66,7 @@ public enum IdFieldEnum {
 	DATI_ACCREDITAMENTO__ORGANIGRAMMA ("datiAccreditamento.file.organigramma", 48, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
 	DATI_ACCREDITAMENTO__FUNZIONIGRAMMA ("datiAccreditamento.file.funzionigramma", 49, null, SubSetFieldEnum.DATI_ACCREDITAMENTO),
 
-	RESPONSABILE_SEGRETERIA__FULL ("persona.anagrafica", -1, Ruolo.RESPONSABILE_SEGRETERIA, SubSetFieldEnum.RESPONSABILE_SEGRETERIA),
+	RESPONSABILE_SEGRETERIA__FULL ("persona.anagrafica", -1, Ruolo.RESPONSABILE_SEGRETERIA, SubSetFieldEnum.RESPONSABILE_SEGRETERIA, "full"),
 	RESPONSABILE_SEGRETERIA__COGNOME ("persona.anagrafica.cognome",50,Ruolo.RESPONSABILE_SEGRETERIA, SubSetFieldEnum.RESPONSABILE_SEGRETERIA, "anagrafica.cognome"),
 	RESPONSABILE_SEGRETERIA__NOME ("persona.anagrafica.nome",51,Ruolo.RESPONSABILE_SEGRETERIA, SubSetFieldEnum.RESPONSABILE_SEGRETERIA, "anagrafica.nome"),
 	RESPONSABILE_SEGRETERIA__CODICEFISCALE ("persona.anagrafica.codiceFiscale",52,Ruolo.RESPONSABILE_SEGRETERIA, SubSetFieldEnum.RESPONSABILE_SEGRETERIA, "anagrafica.codiceFiscale"),
@@ -201,5 +201,9 @@ public enum IdFieldEnum {
 				ids.add(e);
 		}
 		return ids;
+	}
+	
+	public static boolean isFull(String nameRef){
+		return nameRef.equals("full");
 	}
 }
