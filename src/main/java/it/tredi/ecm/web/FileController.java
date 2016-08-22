@@ -35,9 +35,9 @@ import it.tredi.ecm.web.validator.FileValidator;
 @Controller
 //TODO sistemare meglio la gestione dei metadati degli allegati
 public class FileController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileController.class);
-	
+
 	@Autowired private FileService fileService;
 	@Autowired private ProviderService providerService;
 	@Autowired private FileValidator fileValidator;
@@ -91,6 +91,7 @@ public class FileController {
 		try{
 			if(multiPartFile != null && !multiPartFile.isEmpty()){
 				file = Utils.convertFromMultiPart(multiPartFile);
+				file.setNomeFile(file.getNomeFile().substring(file.getNomeFile().lastIndexOf("\\") + 1));
 				file.setTipo(FileEnum.valueOf(tipo));
 				if(fileId != null && !fileId.equals(0L))
 					file.setId(fileId);
