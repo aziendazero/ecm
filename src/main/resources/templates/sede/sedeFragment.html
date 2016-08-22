@@ -363,6 +363,9 @@
 								<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.email', subSetField)}__].id}" />
 		                    </th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.email')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.email}"></div>
+
+							<input id="submitButton" type="submit" style="display: none;" />
+
 						</div>
 					</form>
 				</div>

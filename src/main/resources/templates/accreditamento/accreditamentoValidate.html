@@ -84,11 +84,13 @@
 										</div>
 									</div>
 
+									<input id="submitButtonModal" type="submit" style="display: none;" />
+
 								</form>
 							</div>
 							<div class="modal-footer">
-          						<button type="submit" class="btn btn-success pull-right" form="formValutazioneComplessiva" th:text="#{label.salva}">Save changes</button>
-          						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Close</button>
+          						<label for="submitButtonModal" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
+          						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
         					</div>
 						</div>
 					</div>

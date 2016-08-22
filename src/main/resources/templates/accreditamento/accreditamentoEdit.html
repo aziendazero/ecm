@@ -107,7 +107,7 @@
 					$.get( urlGet, function(data){
 						var start = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]];
 
-						for(item in data){
+						for(var item = 0; item < data.length; item++){
 							var obj = data[item];
 							table.row.add([
 								obj.codiceFiscale,
