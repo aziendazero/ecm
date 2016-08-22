@@ -100,8 +100,7 @@ public class AccountServiceImpl implements AccountService{
 		try{
 			Account user = getUserById(id);
 			user.setPassword(new BCryptPasswordEncoder().encode(password));
-			//user.setExpiresDate());//TODO setting new expiresdate
-			System.out.println("Scadenza password: " + ecmProperties.getAccountExpiresDay());
+			user.setDataScadenzaPassword(LocalDate.now().plusDays(ecmProperties.getAccountExpiresDay()));
 			accountRepository.save(user);
 			sendChangePasswordEmail(user, password);
 		}catch(Exception ex){

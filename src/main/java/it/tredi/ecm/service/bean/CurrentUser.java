@@ -61,5 +61,4 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 		}
 		return false;
 	}
-
 }
