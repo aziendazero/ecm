@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+
+		<!-- modale riepilogo valutazioni  -->
+		<div id="altreValutazioni-modal" class="modal fade modal-altreValutazioni"
+			data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel"
+							th:text="#{label.valutazioni_effettuate(#{label.dati_attività})}">Valutazioni effettuate</h4>
+					</div>
+					<div class="modal-body">
+
+						<div id="toValidateModal">
+							<!-- fragment tutte le valutazioni -->
+							<th:block th:include="valutazione/valutazioneValutatoriAll :: valutatoriAll(datiAccreditamentoWrapper)"></th:block>
+						</div>
+
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.valutazione} + ' ' + #{label.dati_attività}">Dati relativi all’attività</h2>
+						<div class="pull-right buttons-header">
+							<button th:if="${canValutaDomanda}" class="btn btn-success pull-right" th:text="#{label.salva}" form="formDatiAccreditamento" type="submit"></button>
+							<button class="btn btn-primary pull-right" th:text="#{label.tutte_le_valutazioni}" data-toggle="modal" data-target=".modal-altreValutazioni"></button>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}/validate|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="accreditamento/datiAccreditamentoFragment :: datiAccreditamento('validate')"></th:block>
+
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				$(document).ready(function() {
+
+					//table responsive professioni/discipline show
+					$('.datatable-responsive-discipline').DataTable({
+						"bFilter" : false,
+						"bPaginate": false,
+						"bInfo" : false,
+					    "columnDefs": [
+					    	{ "targets": [ '_all' ], "orderable": false },
+					    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
+					    	{ "visible": false, "targets": 0 }
+					    ],
+					    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+					    "drawCallback": function ( settings ) {
+				        	var api = this.api();
+				            var rows = api.rows( {page:'current'} ).nodes();
+				            var last=null;
+
+				            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+				            	if ( last !== group ) {
+				                	$(rows).eq( i ).before(
+				                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
+				            	);
+				                    last = group;
+				                }
+				            });
+				        }
+					});
+				});
+
+				function showTable() {
+					$("#accreditamento_professioni").slideToggle("slow");
+					$(".toggleButtons").toggle();
+				}
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

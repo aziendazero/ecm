@@ -9,4 +9,5 @@ import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 
 public interface FieldValutazioneAccreditamentoRepository extends CrudRepository<FieldValutazioneAccreditamento, Long> {
 	Set<FieldValutazioneAccreditamento> findAllByAccreditamentoId(Long accreditamentoId);
+	public Set<FieldValutazioneAccreditamento> findAllByAccreditamentoIdAndObjectReference(Long accreditamentoId, Long objectReference);
 }

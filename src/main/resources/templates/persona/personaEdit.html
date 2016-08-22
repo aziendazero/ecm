@@ -10,7 +10,7 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
+						<h2 th:text="#{label.modifica} + ' ' + #{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
 						<div class="pull-right buttons-header">
 							<th:block th:unless="${#lists.isEmpty(personaWrapper.idEditabili)}">
 								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formPersona" type="submit"></button>
@@ -20,7 +20,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:include="persona/personaFragment :: persona(true)"></th:block>
+					<th:block th:include="persona/personaFragment :: persona('edit')"></th:block>
 
 				</div>
 			</div>

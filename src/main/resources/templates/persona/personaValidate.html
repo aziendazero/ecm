@@ -3,11 +3,9 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
 	layout:decorator="fragments/template">
 <head lang="it">
-
 </head>
 <body>
-	<!-- coincide settato a false perchè non importante -->
-	<div layout:fragment="content" th:with="coincide=false">
+	<div layout:fragment="content">
 
 		<!-- modale riepilogo valutazioni  -->
 		<div id="altreValutazioni-modal" class="modal fade modal-altreValutazioni"
@@ -19,13 +17,13 @@
 							<span aria-hidden="true">×</span>
 						</button>
 						<h4 class="modal-title" id="myModalLabel"
-							th:text="#{label.valutazioni_effettuate(${sedeWrapper.tipologiaSede})}">Valutazioni effettuate</h4>
+							th:text="#{label.valutazioni_effettuate(${personaWrapper.persona.ruolo.nome})}">Valutazioni effettuate</h4>
 					</div>
 					<div class="modal-body">
 
 						<div id="toValidateModal">
 							<!-- fragment tutte le valutazioni -->
-							<th:block th:include="valutazione/valutazioneValutatoriAll :: valutatoriAll(sedeWrapper)"></th:block>
+							<th:block th:include="valutazione/valutazioneValutatoriAll :: valutatoriAll(personaWrapper)"></th:block>
 						</div>
 
 					</div>
@@ -39,16 +37,16 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.valutazione} + ' ' + ${sedeWrapper.tipologiaSede == 'SedeLegale' ? #messages.msg('label.sede_legale') : #messages.msg('label.sede_operativa')}">label.info_sede</h2>
+						<h2 th:text="#{label.valutazione} + ' ' + #{label.dati_del} + ' ' + ${personaWrapper.persona.ruolo.nome}">Dati del persona.ruolo</h2>
 						<div class="pull-right buttons-header">
-							<button th:if="${canValutaDomanda}" class="btn btn-success pull-right" th:text="#{label.salva}" form="formSede" type="submit"></button>
+							<button th:if="${canValutaDomanda}" class="btn btn-success pull-right" th:text="#{label.salva}" form="formPersona" type="submit"></button>
 							<button class="btn btn-primary pull-right" th:text="#{label.tutte_le_valutazioni}" data-toggle="modal" data-target=".modal-altreValutazioni"></button>
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/validate|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:include="sede/sedeFragment :: sede('validate')"></th:block>
+					<th:block th:include="persona/personaFragment :: persona('validate')"></th:block>
 
 				</div>
 			</div>

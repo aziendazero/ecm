@@ -4,20 +4,22 @@
 <head>
 </head>
 <body>
-<th:block th:fragment="allegati(wrapper, withIdEditabili, tipoAllegato, fieldKey, fieldRuolo, note, withFirma, editabile, required)">
+<th:block th:fragment="allegati(wrapper, withIdEditabili, tipoAllegato, fieldKey, fieldRuolo, note, withFirma, mode, required)">
 
 	<!-- wrapper con idEditabili -->
-	<th:block th:if="${__withIdEditabili__}">
+	<th:block th:if="${__withIdEditabili__}" th:with="editabile=${mode == 'edit'},
+			valutabile=${mode == 'validate'},
+			showOnly=${mode == 'show'}">
 		<th:block th:with="idEcm=${fieldRuolo == null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(fieldKey) : T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(fieldKey,fieldRuolo)},
 							idField=${fieldRuolo == null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey) : T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey,fieldRuolo)}">
-			<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
+			<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')} ? 'bad'">
 
 				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 				<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
 
-			<label class="control-label col-xs-1" th:text="${fieldKey != null ? idEcm : ''}">numero indice</label>
-			<label class="control-label col-md-3 col-sm-3 col-xs-7" th:for="__${tipoAllegato}__">
-				<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
+			<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${fieldKey != null ? idEcm : ''}">numero indice</label>
+			<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-7'}" th:for="__${tipoAllegato}__">
+				<span th:class="${!showOnly ? '' : 'label-show'}" th:text="#{label.__${tipoAllegato}__}">tipo allegato</span>
 				<span th:if="${note == null and editabile and required}" class="required">*</span>
 				<span class="small" style="display: block;" th:unless="${note == null}" th:text="${note}">messaggio aggiuntivo</span>
 			</label>
@@ -36,13 +38,37 @@
 					</th:block>
 				</div>
 			</th:block>
-			<th:block th:unless="${editabile}">
+			<th:block th:if="${showOnly}">
 				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 					<div class="" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}"><div class="value"><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div></div>
 					<div class="" th:if="${__${wrapper}__.__${tipoAllegato}__.new}"><div class="value danger" th:text="#{label.allegato_non_inserito}"></div></div>
 				</div>
 			</th:block>
-			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
+			<th:block th:if="${valutabile}">
+	        	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+	            	<div class="" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}"><div><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div></div>
+					<div class="" th:if="${__${wrapper}__.__${tipoAllegato}__.new}"><div class="danger" th:text="#{label.allegato_non_inserito}"></div></div>
+	            </div>
+	            <div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+					<div class="radio">
+						<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+							<input type="radio" class="flat" th:field="${__${wrapper}__.mappa[__${idField}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}"  />
+							<span th:text="#{label.sì}">Sì</span>
+						</label>
+					</div>
+					<div class="radio">
+						<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+							<input type="radio" class="flat" th:field="${__${wrapper}__.mappa[__${idField}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+							<span th:text="#{label.no}">No</span>
+						</label>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+					<textarea th:field="${__${wrapper}__.mappa[__${idField}__].note}" th:disabled="${!canValutaDomanda}" ></textarea>
+				</div>
+				<input type="hidden" th:field="${__${wrapper}__.mappa[__${idField}__].id}" />
+	        </th:block>
+			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 		</div>
 		</th:block>
 	</th:block>
@@ -70,7 +96,7 @@
 					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
 				</th:block>
 			</div>
-			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
+			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 		</div>
 	</th:block>
 	<script th:inline="javascript">
@@ -104,10 +130,10 @@
 			}
 
 			var stato = [[${__${wrapper}__.statoAccreditamento?.name()}]];
-			
+
 	 		var oMyForm = new FormData();
             oMyForm.append("multiPartFile", $(element)[0].files[0]);
-            
+
             if(stato != 'INTEGRAZIONE')
             	oMyForm.append("fileId", (!fileId) ? 0 : fileId );
             else
@@ -153,7 +179,7 @@
 						case 'FILE_DICHIARAZIONE_LEGALE' : 			inputName = 'dichiarazioneLegale'; break;
 						case 'FILE_DICHIARAZIONE_ESCLUSIONE' : 		inputName = 'dichiarazioneEsclusione'; break;
 						case 'FILE_VERBALE_VALUTAZIONE_SUL_CAMPO' : inputName = 'verbaleValutazioneSulCampo'; break;
-						
+
 						//File da firmare per engineering
 						case 'FILE_DA_FIRMARE' :					inputName = 'fileDaFirmare'; break;
 					default: break;

@@ -16,10 +16,10 @@ import it.tredi.ecm.utils.Utils;
 @Component
 public class FileValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileValidator.class);
-	
+
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private MessageSource messageSource;
-	
+
 	public void validate(Object target, Errors errors, String prefix) {
 		LOGGER.info(Utils.getLogMessage("Validazione File"));
 		File file = (File)target;
@@ -31,7 +31,7 @@ public class FileValidator {
 			}
 		}
 	}
-	
+
 	public String validate(Object target, String contentType) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione File AJAX Upload"));
 		File file = (File)target;
@@ -41,11 +41,23 @@ public class FileValidator {
 		}else{
 			if(!(contentType.equalsIgnoreCase("application/pdf") || contentType.equalsIgnoreCase("application/pkcs7-mime")))
 				error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
-			
+
 			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
 				error = messageSource.getMessage("error.maxFileSize", new Object[]{String.valueOf(ecmProperties.getMultipartMaxFileSize()/(1024*1024) )}, Locale.getDefault());
 			}
 		}
 		return error;
+	}
+
+	public void validateWithCondition(Object target, Errors errors, String prefix, Boolean condition){
+		LOGGER.info(Utils.getLogMessage("Validazione File required su condizione"));
+		File file = (File)target;
+		if(condition == true)
+			validate(target, errors, prefix);
+		else {
+			if(file != null && !file.getNomeFile().isEmpty())
+				validate(file, errors, prefix);
+		}
+
 	}
 }

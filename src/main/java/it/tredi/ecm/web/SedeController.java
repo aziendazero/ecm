@@ -2,8 +2,10 @@ package it.tredi.ecm.web;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +22,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.SedeWrapper;
@@ -51,6 +57,8 @@ public class SedeController {
 	@Autowired private SedeValidator sedeValidator;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 	@Autowired private ValutazioneValidator valutazioneValidator;
+	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private AccreditamentoService accreditamentoService;
 
 	/***	GLOBAL MODEL ATTRIBUTES	***/
 	@ModelAttribute("elencoProvince")
@@ -221,6 +229,8 @@ public class SedeController {
 			@RequestParam (value = "tipologiaSede", required = true) String tipologiaSede, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/" + id + "/validate"));
 		try {
+			//controllo se è possibile modificare la valutazione o meno
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			SedeWrapper sedeWrapper = prepareSedeWrapperValidate(sedeService.getSede(id), tipologiaSede, accreditamentoId, providerId);
 			return goToValidate(model, sedeWrapper);
 		}catch (Exception ex){
@@ -286,9 +296,10 @@ public class SedeController {
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/validate"));
 		try{
 			//validazione della sede
-			valutazioneValidator.validateValutazione(sedeWrapper.getMappa(), result, "sede.");
+			valutazioneValidator.validateValutazione(sedeWrapper.getMappa(), result);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
 			}else{
@@ -298,7 +309,11 @@ public class SedeController {
 					v.setIdField(k);
 					v.setAccreditamento(accreditamento);
 				});
-				fieldValutazioneAccreditamentoService.saveMapList(sedeWrapper.getMappa());
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(sedeWrapper.getMappa()));
+				valutazione.getValutazioni().addAll(values);
+				valutazioneService.save(valutazione);
+
 				redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
@@ -308,6 +323,7 @@ public class SedeController {
 			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/validate"),ex);
 			model.addAttribute("accreditamentoId",sedeWrapper.getAccreditamentoId());
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 			return VALIDATE;
 		}
@@ -371,7 +387,32 @@ public class SedeController {
 	private SedeWrapper prepareSedeWrapperValidate(Sede sede, String tipologiaSede, long accreditamentoId, long providerId){
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperValidate(" + sede.getId() + "," + tipologiaSede + "," + accreditamentoId + "," + providerId +") - entering"));
 		SedeWrapper sedeWrapper = new SedeWrapper();
-		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
+
+		//carico la valutazione per l'utente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+
+		//cerco tutte le valutazioni del subset sede per ciascun valutatore dell'accreditamento
+		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+
+		//prendo tutti gli id del subset
+		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
+
+		if(valutazione != null) {
+			if(tipologiaSede.equals("SedeLegale")) {
+				mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.SEDE_LEGALE);
+				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.SEDE_LEGALE);
+				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_LEGALE);
+			}
+			if(tipologiaSede.equals("SedeOperativa")) {
+				mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.SEDE_OPERATIVA);
+				mappaValutatoreValutazioni  = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.SEDE_OPERATIVA);
+				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_OPERATIVA);
+			}
+		}
+
+		sedeWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
+		sedeWrapper.setIdEditabili(idEditabili);
 		sedeWrapper.setMappa(mappa);
 		sedeWrapper.setSede(sede);
 		sedeWrapper.setTipologiaSede(tipologiaSede);

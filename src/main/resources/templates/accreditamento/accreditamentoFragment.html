@@ -12,7 +12,8 @@
 		<th:block th:with="urlParam=${mode != 'show' ? '?from='+mode : ''},
 			hasActionButtons=${mode != 'show'},
 			valutabile=${mode == 'validate'},
-			editabile=${mode == 'edit'}">
+			editabile=${mode == 'edit'},
+			showOnly=${mode == 'show'}">
 
 			<div class="x_content">
 				<div id="tabs" class="" role="tabpanel" data-example-id="togglable-tabs">
@@ -359,11 +360,17 @@
 														<td	th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.cognome}"></td>
 														<td	th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.professione.nome}"></td>
 														<th:block th:unless="${editabile}">
-															<td th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico}">
-																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
+															<td th:if="${showOnly and (accreditamentoWrapper.coordinatoreComitatoScientifico != null)}">
+																<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
 															</td>
-															<td th:unless="${accreditamentoWrapper.coordinatoreComitatoScientifico}">
-																<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
+															<td th:if="${valutabile and accreditamentoWrapper.coordinatoreComitatoScientificoStato}">
+																<i class="fa table-icon fa-check green" th:title="#{label.valutato}"></i>
+															</td>
+															<td th:if="${showOnly and (accreditamentoWrapper.coordinatoreComitatoScientifico == null)}">
+																<i class="fa table-icon fa-remove red" th:title="#{label.non_inserito}"></i>
+															</td>
+															<td th:if="${valutabile and !accreditamentoWrapper.coordinatoreComitatoScientificoStato}">
+																<i class="fa table-icon fa-remove red" th:title="#{label.non_valutato}"></i>
 															</td>
 														</th:block>
 														<th:block th:if="${hasActionButtons}">
@@ -387,11 +394,17 @@
 														<td	th:text="${componente.anagrafica.cognome}"></td>
 														<td th:text="${componente.professione.nome}"></td>
 														<th:block th:unless="${editabile}">
-															<td th:if="${!componente.new}">
-																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
+															<td th:if="${showOnly and !componente.new}">
+																<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
 															</td>
-															<td th:unless="${!componente.new}">
-																<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
+															<td th:if="${valutabile and (accreditamentoWrapper.componentiComitatoScientificoStati[__${componente.id}__] == true)}">
+																<i class="fa table-icon fa-check green" th:title="#{label.valutato}"></i>
+															</td>
+															<td th:if="${showOnly and componente.new}">
+																<i class="fa table-icon fa-remove red" th:title="#{label.non_inserito}"></i>
+															</td>
+															<td th:if="${valutabile and (accreditamentoWrapper.componentiComitatoScientificoStati[__${componente.id}__] == false)}">
+																<i class="fa table-icon fa-remove red" th:title="#{label.non_valutato}"></i>
 															</td>
 														</th:block>
 														<th:block th:if="${hasActionButtons}">
@@ -461,7 +474,8 @@
 															<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
 														</td>
 														<td	th:unless="${accreditamentoWrapper.esperienzaFormazioneStato}">
-															<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
+															<i th:if="${accreditamentoWrapper.accreditamento.datiAccreditamento.datiEconomici.hasFatturatoFormazione()}" class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
+															<i th:unless="${accreditamentoWrapper.accreditamento.datiAccreditamento.datiEconomici.hasFatturatoFormazione()}" class="fa table-icon fa-remove" th:classappend="${valutabile ? 'red' : 'grey'}" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.facoltativo')}"></i>
 														</td>
 														<td th:if="${editabile}">
 															<a th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>

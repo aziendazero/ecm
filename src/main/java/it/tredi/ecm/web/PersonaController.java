@@ -1,7 +1,10 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -27,14 +30,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -44,15 +50,18 @@ import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AnagraficaService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
+import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.validator.PersonaValidator;
+import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
 public class PersonaController {
@@ -60,6 +69,7 @@ public class PersonaController {
 
 	private final String EDIT = "persona/personaEdit";
 	private final String SHOW = "persona/personaShow";
+	private final String VALIDATE = "persona/personaValidate";
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -71,10 +81,13 @@ public class PersonaController {
 	@Autowired private FileService fileService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamentoService;
 	@Autowired private PersonaValidator personaValidator;
+	@Autowired private ValutazioneValidator valutazioneValidator;
+	@Autowired private ValutazioneService valutazioneService;
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
 	@Autowired private ObjectMapper jacksonObjectMapper;
 	
@@ -205,7 +218,7 @@ public class PersonaController {
 				return "redirect:/accreditamento/"+ accreditamentoId + "/provider/" + providerId + "/persona/" + id +"/show";
 			}
 			if(model.containsAttribute("mode")) {
-				return goToShowFromEdit(model, preparePersonaWrapperShow(personaService.getPersona(id), accreditamentoId));
+				return goToShowFromMode(model, preparePersonaWrapperShow(personaService.getPersona(id), accreditamentoId));
 			}
 			return goToShow(model, preparePersonaWrapperShow(personaService.getPersona(id), accreditamentoId));
 		}catch (Exception ex){
@@ -213,6 +226,23 @@ public class PersonaController {
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 			return "redirect: /accreditamento/" + accreditamentoId + "/show";
+		}
+	}
+
+	/***	VALIDATE PERSONA ***/
+//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/validate")
+	public String validatePersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/validate"));
+		try {
+			//controllo se è possibile modificare la valutazione o meno
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+			return goToValidate(model, preparePersonaWrapperValidate(personaService.getPersona(id), accreditamentoId, providerId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/validate"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+			return VALIDATE;
 		}
 	}
 
@@ -276,8 +306,57 @@ public class PersonaController {
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/save"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 			return EDIT;
+		}
+	}
+
+	/***	SAVE  VALUTAZIONE PERSONA ***/
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/validate", method = RequestMethod.POST)
+	public String valutaPersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
+			RedirectAttributes redirectAttrs, Model model, @PathVariable Long accreditamentoId, @PathVariable Long providerId){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/validate"));
+		try {
+			//validazione della persona
+			valutazioneValidator.validateValutazione(personaWrapper.getMappa(), result);
+
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+				model.addAttribute("returnLink", calcolaLink(personaWrapper, "validate"));
+				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+				return VALIDATE;
+			}else{
+				Accreditamento accreditamento = new Accreditamento();
+				accreditamento.setId(personaWrapper.getAccreditamentoId());
+				personaWrapper.getMappa().forEach((k, v) -> {
+					v.setIdField(k);
+					v.setAccreditamento(accreditamento);
+					if(personaWrapper.getPersona().isComponenteComitatoScientifico())
+						v.setObjectReference(personaWrapper.getPersona().getId());
+				});
+
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(personaWrapper.getMappa()));
+				valutazione.getValutazioni().addAll(values);
+				valutazioneService.save(valutazione);
+
+				redirectAttrs.addAttribute("accreditamentoId", personaWrapper.getAccreditamentoId());
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
+				if(!personaWrapper.getPersona().isLegaleRappresentante() && !personaWrapper.getPersona().isDelegatoLegaleRappresentante())
+					redirectAttrs.addFlashAttribute("currentTab","tab2");
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+				return "redirect:/accreditamento/{accreditamentoId}/validate";
+			}
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/persona/validate"),ex);
+			model.addAttribute("accreditamentoId",personaWrapper.getAccreditamentoId());
+			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+			model.addAttribute("returnLink", calcolaLink(personaWrapper, "validate"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+			return VALIDATE;
 		}
 	}
 
@@ -313,6 +392,13 @@ public class PersonaController {
 		return EDIT;
 	}
 
+	private String goToValidate(Model model, PersonaWrapper personaWrapper) {
+		model.addAttribute("personaWrapper", personaWrapper);
+		model.addAttribute("returnLink", calcolaLink(personaWrapper, "validate"));
+		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+		return VALIDATE;
+	}
+
 	private String goToShow(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
 		model.addAttribute("returnLink", calcolaLink(personaWrapper, "show"));
@@ -320,9 +406,10 @@ public class PersonaController {
 		return SHOW;
 	}
 
-	private String goToShowFromEdit(Model model, PersonaWrapper personaWrapper) {
+	private String goToShowFromMode(Model model, PersonaWrapper personaWrapper) {
 		model.addAttribute("personaWrapper", personaWrapper);
-		model.addAttribute("returnLink", calcolaLink(personaWrapper, "edit"));
+		String mode = (String) model.asMap().get("mode");
+		model.addAttribute("returnLink", calcolaLink(personaWrapper, mode));
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
 	}
@@ -396,6 +483,67 @@ public class PersonaController {
 		return personaWrapper;
 	}
 
+	private PersonaWrapper preparePersonaWrapperValidate(Persona persona, long accreditamentoId, long providerId){
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - entering"));
+		PersonaWrapper personaWrapper = new PersonaWrapper(persona, accreditamentoId, persona.getRuolo());
+		personaWrapper.setProviderId(providerId);
+		personaWrapper.setFiles(persona.getFiles());
+
+		//carico la valutazione per l'utente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+
+		//cerco tutte le valutazioni del subset o oggetto persona per ciascun valutatore dell'accreditamento
+		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+
+		//prendo tutti gli id del subset
+		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
+
+		//per distinguere il multistanza delle persone del comitato scientifico
+		if(valutazione != null) {
+			if(persona.isComponenteComitatoScientifico()) {
+				mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), persona.getId());
+				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndObjectId(accreditamentoId, persona.getId());
+				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO);
+			}
+			else
+				switch(persona.getRuolo()) {
+					case LEGALE_RAPPRESENTANTE: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
+												mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
+												idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
+												break;
+					case DELEGATO_LEGALE_RAPPRESENTANTE: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE);
+												mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE);
+												idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE);
+												break;
+					case RESPONSABILE_SEGRETERIA: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_SEGRETERIA);
+												mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.RESPONSABILE_SEGRETERIA);
+												idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SEGRETERIA);
+												break;
+					case RESPONSABILE_AMMINISTRATIVO: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO);
+												mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO);
+												idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO);
+												break;
+					case RESPONSABILE_SISTEMA_INFORMATICO: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO);
+												mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO);
+												idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO);
+												break;
+					case RESPONSABILE_QUALITA: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_QUALITA);
+												mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.RESPONSABILE_QUALITA);
+												idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_QUALITA);
+												break;
+					default: mappa = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(valutazione.getValutazioni()); break;
+				}
+		}
+
+		personaWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
+		personaWrapper.setIdEditabili(idEditabili);
+		personaWrapper.setMappa(mappa);
+
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - exiting"));
+		return personaWrapper;
+	}
+
 	/***	LOGICA PER SALVATAGGIO PERSONA	***/
 	private void savePersona(PersonaWrapper personaWrapper) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Salvataggio persona"));
@@ -406,7 +554,7 @@ public class PersonaController {
 				personaService.delete(persona.getId());
 		}
 
-		boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false; 
+		boolean insertFieldEditabile = (personaWrapper.getPersona().isNew()) ? true : false;
 		personaService.save(personaWrapper.getPersona());
 
 		//inserimento nuova persona in Domanda di Accreditamento
@@ -431,6 +579,7 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("Integrazione persona"));
 		Accreditamento accreditamento = new Accreditamento();
 		accreditamento.setId(personaWrapper.getAccreditamentoId());
+
 
 		//DETACH DELL'ENTITY NEL CASO IN CUI SIAMO IN INTEGRAZIONE E QUINDI NON APPLICARE LE MODIFICHE AL DB
 		integrazioneService.detach(personaWrapper);

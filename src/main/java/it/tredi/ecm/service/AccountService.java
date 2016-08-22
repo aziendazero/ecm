@@ -4,11 +4,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 
 public interface AccountService {
     public Optional<Account> getUserByUsername(String username);
     public Optional<Account> getUserByEmail(String email);
     public Account getUserById(Long id);
+    public Set<Account> getUserByProfileEnum(ProfileEnum profileEnum);
     public Set<Account> getAllUsers();
     public void save(Account user) throws Exception;
     public void resetPassword(String email) throws Exception;

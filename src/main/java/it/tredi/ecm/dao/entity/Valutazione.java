@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
 
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import lombok.Getter;
@@ -28,7 +30,7 @@ public class Valutazione extends BaseEntity{
 	@Column(name="tipo_valutazione")
 	@Enumerated(EnumType.STRING)
 	private ValutazioneTipoEnum tipoValutazione;
-	@OneToMany
+	@OneToMany (cascade = CascadeType.ALL)
 	private Set<FieldValutazioneAccreditamento> valutazioni = new HashSet<FieldValutazioneAccreditamento>();
 	private String valutazioneComplessiva;
 }

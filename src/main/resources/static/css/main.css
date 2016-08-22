@@ -652,11 +652,11 @@ h2 {
 	font-size: 17px;
 }
 
-div.collapsible > div#toModal > div.x_content {
+.container-collapse {
 	display: none;
 }
 
-.collapse-link {
+.link-collapse {
 	cursor: pointer;
 }
 
@@ -685,4 +685,108 @@ div.collapsible > div#toModal > div.x_content {
 .margin-valutabile {
 	height: 60px;
 	margin: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.bad div.iradio_flat-green {
+	border: 1px solid #CE5454;
+  	box-shadow: 0 0 4px -2px #CE5454;
+  	position: relative;
+  	left: 0;
+  	-moz-animation: .7s 1 shake linear;
+  	-webkit-animation: 0.7s 1 shake linear;
+  	border-radius: 10px;
+  	padding: 10px;
+}
+
+.bad div.icheckbox_flat-green {
+	border: 1px solid #CE5454;
+  	box-shadow: 0 0 4px -2px #CE5454;
+  	position: relative;
+  	left: 0;
+  	-moz-animation: .7s 1 shake linear;
+  	-webkit-animation: 0.7s 1 shake linear;
+  	border-radius: 5px;
+  	padding: 10px;
+}
+
+.item.modalAlert .alert {
+  float: left;
+  margin: 15px 0 0 0;
+  padding: 3px 10px;
+  color: #FFF;
+  border-radius: 4px;
+  background-color: #CE5454;
+  max-width: 170px;
+  white-space: inherit;
+  position: relative;
+  left: -15px;
+  opacity: 0;
+  z-index: 1;
+  transition: 0.15s ease-out;
+}
+
+.item.modalAlert .alert::after {
+  content: '';
+  display: block;
+  height: 0;
+  width: 0;
+  border-color: transparent #CE5454 transparent transparent;
+  border-style: solid;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-bottom: 7px solid #CE5454;
+  position: absolute;
+  left: 30px;
+  top: -18px;
+}
+.item.bad.modalAlert.bad .alert {
+  left: 0;
+  opacity: 1;
+}
+
+.item.validateAlert .alert {
+  float: left;
+  margin: 15px 0 0 0;
+  padding: 3px 10px;
+  color: #FFF;
+  border-radius: 4px;
+  background-color: #CE5454;
+  max-width: 100%;
+  white-space: inherit;
+  position: relative;
+  left: -15px;
+  opacity: 0;
+  z-index: 1;
+  transition: 0.15s ease-out;
+}
+
+.item.validateAlert .alert::after {
+  content: '';
+  display: block;
+  height: 0;
+  width: 0;
+  border-color: transparent #CE5454 transparent transparent;
+  border-style: solid;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-bottom: 7px solid #CE5454;
+  position: absolute;
+  left: 3%;
+  top: -18px;
+}
+.item.bad.validateAlert.bad .alert {
+  left: 0;
+  opacity: 1;
+}
+
+.x_menu {
+	margin-bottom: 0;
+	border: 0;
+	padding: 0;
 }

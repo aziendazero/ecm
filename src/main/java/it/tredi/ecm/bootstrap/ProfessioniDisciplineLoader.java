@@ -526,6 +526,9 @@ public class ProfessioniDisciplineLoader implements ApplicationListener<ContextR
 			p30.setSanitaria(true);
 			p30.addDisciplina(d101);
 			professioneService.save(p30);
+			Professione p31 = new Professione("Nessuna professione sanitaria");
+			p31.setSanitaria(false);
+			professioneService.save(p31);
 			LOGGER.info("BOOTSTRAP ECM - PROFESSIONI/DISCIPLINE create");
 		}else{
 			LOGGER.info("BOOTSTRAP ECM - PROFESSIONI/DISCIPLINE trovate(" + disciplinea.size() +")");

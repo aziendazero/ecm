@@ -1,6 +1,8 @@
 package it.tredi.ecm.web;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -19,18 +21,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
+import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoAllegatiWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.AccreditamentoAllegatiValidator;
+import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
 public class AccreditamentoAllegatiController {
@@ -38,12 +48,16 @@ public class AccreditamentoAllegatiController {
 
 	private final String EDIT = "accreditamento/accreditamentoAllegatiEdit";
 	private final String SHOW = "accreditamento/accreditamentoAllegatiShow";
+	private final String VALIDATE = "accreditamento/accreditamentoAllegatiValidate";
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
 	@Autowired private AccreditamentoAllegatiValidator accreditamentoAllegatiValidator;
+	@Autowired private ValutazioneValidator valutazioneValidator;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private ValutazioneService valutazioneService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -70,8 +84,27 @@ public class AccreditamentoAllegatiController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addFlashAttribute("currentTab","tab3");
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/"+ accreditamentoId));
-			return "redirect:/accreditamento/{accreditamentoId}";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/"+ accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/{accreditamentoId}/edit";
+		}
+	}
+
+	/***	VALIDATE	***/
+//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)") TODO
+	@RequestMapping("/accreditamento/{accreditamentoId}/allegati/validate")
+	public String validateAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/validate"));
+		try{
+			//controllo se è possibile modificare la valutazione o meno
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+			return goToValidate(model, prepareAccreditamentoAllegatiWrapperValidate(accreditamentoId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/validate"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			redirectAttrs.addFlashAttribute("currentTab","tab3");
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/"+ accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
 		}
 	}
 
@@ -147,6 +180,50 @@ public class AccreditamentoAllegatiController {
 		}
 	}
 
+	/***	 SAVE VALUTAZIONE ALLEGATI ACCREDITAMENTO	***/
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/validate", method = RequestMethod.POST)
+	public String valutaDatiAccreditamento(@ModelAttribute("accreditamentoAllegatiWrapper") AccreditamentoAllegatiWrapper wrapper, BindingResult result,
+			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
+		LOGGER.info(Utils.getLogMessage("POST /accreditamento/"+ accreditamentoId +"/allegati/validate"));
+		try {
+			//validazione dei file allegati accreditamento
+			valutazioneValidator.validateValutazione(wrapper.getMappa(), result);
+
+			if(result.hasErrors()){
+				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
+				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+				return VALIDATE;
+			}else{
+				Accreditamento accreditamento = new Accreditamento();
+				accreditamento.setId(wrapper.getAccreditamentoId());
+				wrapper.getMappa().forEach((k, v) -> {
+					v.setIdField(k);
+					v.setAccreditamento(accreditamento);
+				});
+
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa()));
+				valutazione.getValutazioni().addAll(values);
+				valutazioneService.save(valutazione);
+
+
+				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
+				redirectAttrs.addFlashAttribute("currentTab","tab3");
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+				return "redirect:/accreditamento/{accreditamentoId}/validate";
+			}
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("POST /accreditamento/"+ accreditamentoId +"/allegati/validate"),ex);
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+			return VALIDATE;
+		}
+	}
+
 	private String goToEdit(Model model, AccreditamentoAllegatiWrapper wrapper){
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
@@ -157,6 +234,12 @@ public class AccreditamentoAllegatiController {
 		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
+	}
+
+	private String goToValidate(Model model, AccreditamentoAllegatiWrapper wrapper){
+		model.addAttribute("accreditamentoAllegatiWrapper", wrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+		return VALIDATE;
 	}
 
 	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapperEdit(Long accreditamentoId){
@@ -190,6 +273,60 @@ public class AccreditamentoAllegatiController {
 		wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperEdit(" + accreditamentoId + ") - exiting"));
+		return wrapper;
+	}
+
+	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapperValidate(Long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperValidate(" + accreditamentoId + ") - entering"));
+		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
+		wrapper.setAccreditamentoId(accreditamentoId);
+
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		wrapper.setProvider(accreditamento.getProvider());
+
+		//carico la valutazione per l'utente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+
+		//cerco tutte le valutazioni del subset allegati per ciascun valutatore dell'accreditamento
+		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+
+		//prendo tutti gli id del subset
+		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
+
+		if(valutazione != null) {
+			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO);
+			mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO);
+			idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO);
+		}
+
+		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
+		wrapper.setIdEditabili(idEditabili);
+		wrapper.setMappa(mappa);
+
+		Set<File> files = wrapper.getProvider().getFiles();
+		for(File file : files){
+			if(file.isATTOCOSTITUTIVO())
+				wrapper.setAttoCostitutivo(file);
+			else if(file.isESPERIENZAFORMAZIONE())
+				wrapper.setEsperienzaFormazione(file);
+			else if(file.isDICHIARAZIONELEGALE())
+				wrapper.setDichiarazioneLegale(file);
+			else if(file.isPIANOQUALITA())
+				wrapper.setPianoQualita(file);
+			else if(file.isUTILIZZO())
+				wrapper.setUtilizzo(file);
+			else if(file.isSISTEMAINFORMATICO())
+				wrapper.setSistemaInformatico(file);
+			else if(file.isDICHIARAZIONEESCLUSIONE())
+				wrapper.setDichiarazioneEsclusione(file);
+		}
+
+//		HashMap<FileEnum, Long> modelIds = fileService.getModelFileIds();
+//		wrapper.setModelIds(modelIds);
+//		wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
+
+		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperValidate(" + accreditamentoId + ") - exiting"));
 		return wrapper;
 	}
 

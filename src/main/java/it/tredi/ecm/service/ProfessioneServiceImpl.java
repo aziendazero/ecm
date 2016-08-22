@@ -13,10 +13,10 @@ import it.tredi.ecm.dao.repository.ProfessioneRepository;
 @Service
 public class ProfessioneServiceImpl implements ProfessioneService {
 	private static Logger LOGGER = LoggerFactory.getLogger(ProfessioneServiceImpl.class);
-	
+
 	@Autowired
 	private ProfessioneRepository professioneRepository;
-	
+
 	@Override
 	public Set<Professione> getAllProfessioni() {
 		LOGGER.debug("Recupero lista professioni");
@@ -28,7 +28,7 @@ public class ProfessioneServiceImpl implements ProfessioneService {
 		LOGGER.debug("Salvataggio professione");
 		professioneRepository.save(professione);
 	}
-	
+
 	@Override
 	public void saveAll(Set<Professione> professioneList) {
 		LOGGER.debug("Salvataggio lista professioni");

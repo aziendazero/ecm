@@ -5,21 +5,24 @@
 <head lang="it">
 </head>
 <body>
-	<!-- fragment interno della persona, la parte di paginazione è gestita dai file personaShow e personaEdit -->
-	<!-- parametri del fragment: boolean passato come parametro e prende personaWrapper dal module del chiamante -->
-	<th:block th:fragment="persona(editabile)">
-		<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
-					<div class="x_content">
-						<!-- rimove il tag form se la persona NON è editabile -->
-						<div class="form-horizontal form-label-left" th:remove="${!editabile} ? none : tag">
-							<form th:remove="${editabile} ? none : tag"
-								id="formPersona" class="form-horizontal form-label-left"
-								th:action="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/save|}"
-								method="post" enctype="multipart/form-data"
-								novalidate="novalidate">
+	<!-- fragment interno della persona, la parte di paginazione è gestita dai file personaShow, personaValidate e personaEdit -->
+	<!-- parametri del fragment: String passata come parametro per definire la modalità e prende personaWrapper dal module del chiamante -->
+	<th:block th:fragment="persona(mode)">
+		<th:block th:with="editabile=${mode == 'edit'},
+			valutabile=${mode == 'validate'},
+			showOnly=${mode == 'show'}">
+			<!-- ogni parte non in comune sarà gestita in maniera appropriata -->
+			<div class="x_content">
+				<!-- rimove il tag form se la persona NON è editabile -->
+				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
+					<form th:remove="${!showOnly} ? none : tag"
+						id="formPersona" class="form-horizontal form-label-left"
+						th:action="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/|} + ${valutabile ? 'validate' : 'save'}"
+						method="post" enctype="multipart/form-data"
+						novalidate="novalidate">
 
 						<!-- gli input hidden non sono necessari se NON editabile -->
-						<th:block th:if="${editabile}">
+						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${personaWrapper.persona.id}" />
 							<input type="hidden" name="editId_Anagrafica" th:value="${personaWrapper.persona.anagrafica.id}" />
 							<input type="hidden" th:field="${personaWrapper.statoAccreditamento}" />
@@ -35,11 +38,12 @@
 						<h2 th:if="${personaWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
 
 						<!-- CHECKBOX FLAG COORDINATORE -->
-						<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
-									${personaWrapper.persona.componenteComitatoScientifico}"
-							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')} ? 'bad'">
+						<div th:if="(${personaWrapper.persona.coordinatoreComitatoScientifico} or
+									${personaWrapper.persona.componenteComitatoScientifico}) and
+									${!valutabile}"
+							th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="isCoordinatore_comitato">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="${editabile ? #messages.msg('label.is_coordinatore') : #messages.msg('label.inserito_come_coordinatore')}">Inserisci come Coordinatore del Comitato Scientifico</span>
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${editabile ? #messages.msg('label.is_coordinatore') : #messages.msg('label.inserito_come_coordinatore')}">Inserisci come Coordinatore del Comitato Scientifico</span>
 							</label>
 							<th:block th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -49,19 +53,19 @@
 									</div>
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${personaWrapper.persona.coordinatoreComitatoScientifico ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')}" class="alert" th:errors="${personaWrapper.persona.coordinatoreComitatoScientifico}"></div>
+							<div th:if="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.coordinatoreComitatoScientifico}"></div>
 						</div>
 
 						<!-- COGNOME -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
-<label class="control-label col-xs-1" th:text="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cognome',personaWrapper.ruolo)}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cognome_persona">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cognome}">Cognome</span>
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cognome',personaWrapper.ruolo) : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="cognome_persona">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.cognome}">Cognome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -71,19 +75,44 @@
 										type="text" th:field="${personaWrapper.persona.anagrafica.cognome}" />
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.cognome}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.cognome}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.persona.anagrafica.cognome}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
+								</div>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.anagrafica.cognome}"></div>
 						</div>
 
+						<div th:if="${valutabile}" class="divider"></div>
+
 						<!-- NOME -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.nome',personaWrapper.ruolo) : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cognome_persona">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.nome}">Nome</span>
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.nome',personaWrapper.ruolo) : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="cognome_persona">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.nome}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -93,19 +122,44 @@
 										type="text" th:field="${personaWrapper.persona.anagrafica.nome}" />
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.nome}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.nome}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.persona.anagrafica.nome}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.nome',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.nome',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.nome',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
+								</div>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.nome',personaWrapper.ruolo)}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.nome')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.anagrafica.nome}"></div>
 						</div>
 
+						<div th:if="${valutabile}" class="divider"></div>
+
 						<!-- CODICE FISCALE -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.codiceFiscale',personaWrapper.ruolo) : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codiceFiscale_persona">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.codice_fiscale}">Codice Fiscale</span>
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.codiceFiscale',personaWrapper.ruolo) : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="codiceFiscale_persona">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.codice_fiscale}">Codice Fiscale</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -115,40 +169,44 @@
 										type="text" th:field="${personaWrapper.persona.anagrafica.codiceFiscale}" />
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
-						</div>
-
-						<!-- CHECKBOX FLAG STRANIERO -->
-						<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
-									${personaWrapper.persona.componenteComitatoScientifico}" class="item form-group">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="isStraniero_persona">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cf_straniero}">Ha un codice fiscale non italiano</span>
-							</label>
-							<th:block th:if="${editabile}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<div class="checkbox">
-										<input id="isStraniero_persona" name="isStraniero_persona" th:disabled="${!#lists.contains(personaWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.codiceFiscale',personaWrapper.ruolo))}"
-											class="flat" type="checkbox" th:field="${personaWrapper.persona.anagrafica.straniero}" />
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.codiceFiscale',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.codiceFiscale',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
 									</div>
 								</div>
-							</th:block>
-							<th:block th:unless="${editabile}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<div class="value" th:text="${personaWrapper.persona.anagrafica.straniero ? #messages.msg('label.sì') : #messages.msg('label.no')}">Sì</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.codiceFiscale',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
 								</div>
-							</th:block>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.codiceFiscale',personaWrapper.ruolo)}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.codiceFiscale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
 						</div>
 
+						<div th:if="${valutabile}" class="divider"></div>
+
 						<!-- TELEFONO -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.telefono',personaWrapper.ruolo)  : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="telefono_persona">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.telefono}">Telefono</span>
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.telefono',personaWrapper.ruolo)  : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="telefono_persona">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.telefono}">Telefono</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -158,23 +216,45 @@
 										type="tel" th:field="${personaWrapper.persona.anagrafica.telefono}" />
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.telefono}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.telefono}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.persona.anagrafica.telefono}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.telefono',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.telefono',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.telefono',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
+								</div>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.telefono',personaWrapper.ruolo)}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.telefono')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.anagrafica.telefono}"></div>
 						</div>
 
+						<div th:if="${valutabile}" class="divider"></div>
+
 						<!-- CELLULARE -->
-						<div th:unless="${personaWrapper.persona.responsabileSegreteria} or
-										${personaWrapper.persona.responsabileFormazione} or
-										${personaWrapper.persona.responsabileSistemaInformatico} or
-										${personaWrapper.persona.responsabileQualita}"
-							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cellulare',personaWrapper.ruolo)  : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cellulare_persona">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.cellulare}">Cellulare</span>
+						<div th:if="${personaWrapper.persona.legaleRappresentante} or ${personaWrapper.persona.delegatoLegaleRappresentante}"
+							th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cellulare',personaWrapper.ruolo)  : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="cellulare_persona">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.cellulare}">Cellulare</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -184,19 +264,46 @@
 										type="tel" th:field="${personaWrapper.persona.anagrafica.cellulare}" />
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.cellulare}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.cellulare}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.persona.anagrafica.cellulare}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
+								</div>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.cellulare')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.anagrafica.cellulare}"></div>
 						</div>
 
+						<div th:if="${valutabile and
+							(personaWrapper.persona.legaleRappresentante or
+							personaWrapper.persona.delegatoLegaleRappresentante)}" class="divider"></div>
+
 						<!-- EMAIL -->
-						<div class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.email',personaWrapper.ruolo)  : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="email_persona">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.email}">Email</span>
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.email',personaWrapper.ruolo)  : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="email_persona">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.email}">Email</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -206,20 +313,45 @@
 										type="email" th:field="${personaWrapper.persona.anagrafica.email}" />
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.email}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.email}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.persona.anagrafica.email}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.email',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.email',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.email',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
+								</div>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.email',personaWrapper.ruolo)}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.email')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.anagrafica.email}"></div>
 						</div>
+
+						<div th:if="${valutabile}" class="divider"></div>
 
 						<!-- POSTA ELETTRONICA CERTIFICATA (PEC) -->
 						<div th:if="${personaWrapper.persona.legaleRappresentante}"
-							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.pec',personaWrapper.ruolo)  : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="pec_persona">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.posta_elettronica_certificata}">Posta elettronica certificata (PEC)</span>
+							th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.pec',personaWrapper.ruolo)  : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="pec_persona">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.posta_elettronica_certificata}">Posta elettronica certificata (PEC)</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -229,21 +361,45 @@
 										type="email" th:field="${personaWrapper.persona.anagrafica.pec}" />
 								</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.pec}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')}" class="alert" th:errors="${personaWrapper.persona.anagrafica.pec}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.persona.anagrafica.pec}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
+								</div>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('personaWrapper.persona.anagrafica.pec')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.anagrafica.pec}"></div>
 						</div>
 
+						<div th:if="${valutabile and personaWrapper.persona.legaleRappresentante}" class="divider"></div>
+
 						<!-- PROFESSIONE -->
-						<div th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or
-									${personaWrapper.persona.componenteComitatoScientifico}"
-							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.professione')} ? 'bad'">
-							<label class="control-label col-xs-1" th:text="${editabile ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.professione',personaWrapper.ruolo)  : ''}"></label>
-							<label class="control-label col-md-3 col-sm-3 col-xs-11" for="professione_persona">
-								<span th:class="${editabile ? '' : 'label-show'}" th:text="#{label.professione}">Professione</span>
+						<div th:if="${personaWrapper.persona.componenteComitatoScientifico}"
+							th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.professione')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.professione',personaWrapper.ruolo)  : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="professione_persona">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professione}">Professione</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -259,32 +415,65 @@
 									</select>
 							  	</div>
 							</th:block>
-							<th:block th:unless="${editabile}">
+							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="value" th:text="${personaWrapper.persona.professione.nome}"></div>
 								</div>
 							</th:block>
-							<div th:if="${#fields.hasErrors('personaWrapper.persona.professione')}" class="alert" th:errors="${personaWrapper.persona.professione}"></div>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.persona.professione.nome}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.professione',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.professione',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.professione',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda}"></textarea>
+								</div>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.professione',personaWrapper.ruolo)}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('personaWrapper.persona.professione')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.professione}"></div>
 						</div>
 
-						<!-- ALLEGATO 1 (ATTO DI NOMINA) -->
+						<div th:if="${valutabile and personaWrapper.persona.componenteComitatoScientifico}" class="divider"></div>
+
+						<!--   ALLEGATO 1 (ATTO DI NOMINA)   -->
 						<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}">
 							<div th:if="${editabile}" class="divider-dashed"></div>
-							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, attoNomina, ${editabile ? 'persona.file.attoNomina' : null}, ${personaWrapper.ruolo}, null, true, ${editabile}, true)" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, attoNomina, ${showOnly ? null : 'attoNomina'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)" ></th:block>
 						</div>
 
-						<!-- ALLEGATO 2 (CURRICULUM VITAE) -->
-						<div th:if="${editabile}" class="divider-dashed"></div>
-						<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${editabile ? 'persona.file.cv' : null}, ${personaWrapper.ruolo}, null, true, ${editabile}, true)"></th:block>
+						<div th:if="${valutabile and !personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
 
-						<!-- ALLEGATO 3 (DELEGA) -->
+						<!--   ALLEGATO 2 (DELEGA)   -->
 						<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}">
 							<div th:if="${editabile}" class="divider-dashed"></div>
-							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, delega, ${editabile ? 'persona.file.delega' : null}, ${personaWrapper.ruolo}, null, true, ${editabile}, true)"></th:block>
+							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, delega, ${showOnly ? null : 'delega'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block>
 						</div>
+
+						<div th:if="${valutabile and personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
+
+						<!--   ALLEGATO 3 (CURRICULUM VITAE)   -->
+						<div th:if="${editabile}" class="divider-dashed"></div>
+						<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${showOnly ? null : 'cv'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block>
+
+						<div th:if="${valutabile and personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
+
 					</form>
 				</div>
 			</div>
+		</th:block>
 	</th:block>
 </body>
 </html>

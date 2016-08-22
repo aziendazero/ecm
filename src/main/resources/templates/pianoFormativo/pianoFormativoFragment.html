@@ -28,11 +28,17 @@
 						<tr th:each="evento, row : ${__${pianoFormativo}__.eventi}">
 							<td><a th:text="${evento.titolo}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show${urlParam}|}"></a></td>
 							<th:block th:unless="${editabile}">
-								<td th:if="${!evento.new}">
-									<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
+								<td th:if="${showOnly and !evento.new}">
+									<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
 								</td>
-								<td th:unless="${!evento.new}">
-									<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
+								<td th:if="${valutabile and (accreditamentoWrapper.eventiStati[__${evento.id}__] == true)}">
+									<i class="fa table-icon fa-check green" th:title="#{label.valutato}"></i>
+								</td>
+								<td th:if="${showOnly and evento.new}">
+									<i class="fa table-icon fa-remove red" th:title="#{label.non_inserito}"></i>
+								</td>
+								<td th:if="${valutabile and (accreditamentoWrapper.eventiStati[__${evento.id}__] == false)}">
+									<i class="fa table-icon fa-remove red" th:title="#{label.non_valutato}"></i>
 								</td>
 							</th:block>
 							<th:block th:if="${hasActionButtons}">

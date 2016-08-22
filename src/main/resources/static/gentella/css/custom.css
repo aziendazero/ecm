@@ -2027,7 +2027,7 @@ input.parsley-error, textarea.parsley-error, select.parsley-error {
 .btn-group .parsley-errors-list {
   display: none;
 }
-.bad input, .bad select, .bad textarea {
+.bad input, .bad select, .bad textarea, .bad button.dropdown-toggle {
   border: 1px solid #CE5454;
   box-shadow: 0 0 4px -2px #CE5454;
   position: relative;
@@ -2039,6 +2039,7 @@ input.parsley-error, textarea.parsley-error, select.parsley-error {
   -webkit-transition: 0.42s;
   -moz-transition: 0.42s;
   transition: 0.42s;
+  resize: none;
 }
 
 /* alerts (when validation fails) */

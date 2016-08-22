@@ -1,6 +1,9 @@
 package it.tredi.ecm.web;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +21,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
@@ -45,6 +52,8 @@ public class ProviderController {
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldEditabileAccreditamentoRepository fieldEditabileRepository;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private AccreditamentoService accreditamentoService;
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -131,13 +140,15 @@ public class ProviderController {
 		}
 	}
 
-	/*** VALUTAZIONE SEGRETERIA ***/
+	/*** VALUTAZIONE ***/
 //	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)") TODO
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/validate")
 	public String validateProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/validate"));
 		try {
+			//controllo se è possibile modificare la valutazione o meno
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			return goToValidate(model, prepareProviderWrapperValidate(providerService.getProvider(id), accreditamentoId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/validate"),ex);
@@ -183,10 +194,11 @@ public class ProviderController {
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/validate"));
 		try{
 			//validazione del provider
-			valutazioneValidator.validateValutazione(providerWrapper.getMappa(), result, "provider.");
+			valutazioneValidator.validateValutazione(providerWrapper.getMappa(), result);
 
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
 			}else{
@@ -196,7 +208,11 @@ public class ProviderController {
 					v.setIdField(k);
 					v.setAccreditamento(accreditamento);
 				});
-				fieldValutazioneAccreditamentoService.saveMapList(providerWrapper.getMappa());
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(providerWrapper.getMappa()));
+				valutazione.getValutazioni().addAll(values);
+				valutazioneService.save(valutazione);
+
 				redirectAttrs.addAttribute("accreditamentoId", providerWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
@@ -205,6 +221,7 @@ public class ProviderController {
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/validate"),ex);
 			model.addAttribute("accreditamentoId",providerWrapper.getAccreditamentoId());
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 			return VALIDATE;
@@ -269,10 +286,25 @@ public class ProviderController {
 	private ProviderWrapper prepareProviderWrapperValidate(Provider provider, Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - entering"));
 		ProviderWrapper providerWrapper = new ProviderWrapper();
-		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoAsMap(accreditamentoId);
+
+		//carico la valutazione per l'utente corrente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		if(valutazione != null) {
+			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.PROVIDER);
+		}
 		providerWrapper.setMappa(mappa);
 		providerWrapper.setProvider(provider);
 		providerWrapper.setAccreditamentoId(accreditamentoId);
+
+		//cerco tutte le valutazioni del subset provider per ciascun valutatore dell'accreditamento
+		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.PROVIDER);
+		providerWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
+
+		//prendo tutti gli id del subset
+		Set<IdFieldEnum> idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER);
+		providerWrapper.setIdEditabili(idEditabili);
+
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}

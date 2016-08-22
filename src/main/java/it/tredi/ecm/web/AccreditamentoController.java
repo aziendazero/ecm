@@ -1,38 +1,50 @@
 package it.tredi.ecm.web;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
+import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
+import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
-import it.tredi.ecm.service.bean.CurrentUser;
+import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
 public class AccreditamentoController {
@@ -41,6 +53,10 @@ public class AccreditamentoController {
 	@Autowired private PersonaService personaService;
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private AccountService accountService;
+	@Autowired private ValutazioneValidator valutazioneValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -171,10 +187,17 @@ public class AccreditamentoController {
 		return "accreditamento/accreditamentoEdit";
 	}
 
-	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento){
-		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento);
+	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento) {
+		return goToAccreditamentoValidate(model, accreditamento, null);
+	}
+
+	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper){
+		//carico la valutazione dell'utente corrente
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento, valutazione, wrapper);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
-		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoValidate"));
+		model.addAttribute("refereeList", accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
+ 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoValidate"));
 		return "accreditamento/accreditamentoValidate";
 	}
 
@@ -335,30 +358,64 @@ public class AccreditamentoController {
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "show");
 
-		//logica per mostrare i pulsanti relativi alla valutazione della segreteria
-		CurrentUser currentUser = (CurrentUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if(currentUser.hasProfile(ProfileEnum.SEGRETERIA)){
-			accreditamentoWrapper.checkSegreteriaButtons();
-		}
+		//logica per mostrare i pulsanti relativi alla valutazione della segreteria o i referee
+		accreditamentoWrapper.setCanPrendiInCarica(accreditamentoService.canUserPrendiInCarica(accreditamento.getId(), Utils.getAuthenticatedUser()));
+		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
-		//logica per mostrare i pulsanti relativi alla valutazione per la segreteria e i referee
-		if(currentUser.hasProfile(ProfileEnum.SEGRETERIA) || currentUser.hasProfile(ProfileEnum.REFEREE)) {
-			Account currentAccount = currentUser.getAccount();
-			accreditamentoWrapper.checkCanValidate(currentAccount);
-		}
+		//controllo se l'utente può visualizzare la valutazione
+		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
 	}
 
-	private AccreditamentoWrapper prepareAccreditamentoWrapperValidate(Accreditamento accreditamento){
+	private AccreditamentoWrapper prepareAccreditamentoWrapperValidate(Accreditamento accreditamento, Valutazione valutazione, AccreditamentoWrapper accreditamentoWrapper){
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - entering"));
 
-		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
-		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "validate");
+		if(accreditamentoWrapper == null)
+			accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
+		else
+			accreditamentoWrapper.setAllAccreditamento(accreditamento);
 
-		//logica per mostrare o meno il pulsante di conferma della valutazione
-		accreditamentoWrapper.checkConfirmValidate();
+		//controllo sul pulsante conferma valutazione
+		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
+
+		//inserisco i suoi fieldValutazione nella mappa per il wrapper
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		if(valutazione != null) {
+			mappa = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(valutazione.getValutazioni());
+		}
+		accreditamentoWrapper.setMappa(mappa);
+
+		//init delle strutture dati che servono per la verifica degli stati di valutazione dei multistanza
+		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaComponenti = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+		Map<Long, Boolean> componentiComitatoScientificoStati = new HashMap<Long, Boolean>();
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaCoordinatore = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+		Map<Long, Boolean> eventiStati = new HashMap<Long, Boolean>();
+
+		//aggiungo i componenti del comitato scientifico
+		for(Persona p : accreditamentoWrapper.getComponentiComitatoScientifico()) {
+			mappaComponenti.put(p.getId(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), p.getId()));
+			componentiComitatoScientificoStati.put(p.getId(), false);
+		}
+		//aggiungo anche il coordinatore
+		Long coordinatoreId = accreditamentoWrapper.getCoordinatoreComitatoScientifico().getId();
+		mappaCoordinatore = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), coordinatoreId);
+
+		//aggiungo gli eventi
+		for(Evento e : accreditamentoWrapper.getAccreditamento().getPianoFormativo().getEventi()) {
+			mappaEventi.put(e.getId(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), e.getId()));
+			eventiStati.put(e.getId(), false);
+		}
+
+		accreditamentoWrapper.setMappaCoordinatore(mappaCoordinatore);
+		accreditamentoWrapper.setMappaComponenti(mappaComponenti);
+		accreditamentoWrapper.setComponentiComitatoScientificoStati(componentiComitatoScientificoStati);
+		accreditamentoWrapper.setMappaEventi(mappaEventi);
+		accreditamentoWrapper.setEventiStati(eventiStati);
+
+		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "validate");
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
@@ -383,5 +440,87 @@ public class AccreditamentoController {
 		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
 
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode);
+	}
+
+	//PARTE RELATIVA ALLA VALUTAZIONE
+
+	//prendi in carica segreteria ECM
+//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	@RequestMapping("/accreditamento/{accreditamentoId}/takeCharge")
+	public String prendiInCaricoAccreditamento(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/takeCharge"));
+		try {
+			Valutazione valutazione = new Valutazione();
+
+			//utente corrente che prende in carico
+			Account segretarioEcm = Utils.getAuthenticatedUser().getAccount();
+			valutazione.setAccount(segretarioEcm);
+
+			//accreditamento
+			valutazione.setAccreditamento(accreditamentoService.getAccreditamento(accreditamentoId));
+
+			//tipo di valutatore
+			valutazione.setTipoValutazione(ValutazioneTipoEnum.SEGRETERIA_ECM);
+
+			valutazioneService.save(valutazione);
+
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.presa_in_carico", "success"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/takeCharge"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}
+	}
+
+	// salva valutazione complessiva (inserisce data e valutazione complessiva)
+	//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/confirmEvaluation", method = RequestMethod.POST)
+	public String confermaValutazioneAccreditamento(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
+			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"));
+		try {
+			//validazione della valutazioneComplessiva
+			valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), result);
+
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("confirmErrors", true);
+				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+				return goToAccreditamentoValidate(model, accreditamento, wrapper);
+			}else {
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+
+				//setta la data
+				valutazione.setDataValutazione(LocalDate.now());
+
+				//inserisce il commento complessivo
+				valutazione.setValutazioneComplessiva(wrapper.getValutazioneComplessiva());
+
+				//crea le valutazioni per i referee TODO
+				for (Account a : wrapper.getRefereeGroup()) {
+					Valutazione valutazioneReferee = new Valutazione();
+					valutazioneReferee.setAccount(a);
+					valutazioneReferee.setAccreditamento(accreditamentoService.getAccreditamento(accreditamentoId));
+					valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+					valutazioneService.save(valutazioneReferee);
+				}
+
+				valutazioneService.save(valutazione);
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+				redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}
 	}
 }

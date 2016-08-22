@@ -5,22 +5,25 @@
 <head lang="it">
 </head>
 <body>
-	<!-- fragment interno del accreditamentoAllegati, la parte di paginazione è gestita dai file accreditamentoAllegatiShow e accreditamentoAllegatiEdit -->
-	<!-- parametri del fragment: boolean passato come parametro e prende accreditamentoAllegatiWrapper dal module del chiamante -->
-	<th:block th:fragment="accreditamentoAllegati(editabile)">
+	<!-- fragment interno del accreditamentoAllegati, la parte di paginazione è gestita dai file accreditamentoAllegatiShow, accreditamentoAllegatiValidate e accreditamentoAllegatiEdit -->
+	<!-- parametri del fragment: String passata come parametro che definisce la modalità e prende accreditamentoAllegatiWrapper dal module del chiamante -->
+	<th:block th:fragment="accreditamentoAllegati(mode)">
+		<th:block th:with="editabile=${mode == 'edit'},
+			valutabile=${mode == 'validate'},
+			showOnly=${mode == 'show'}">
 
-		<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
+			<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
 			<div class="x_content">
 				<!-- rimove il tag form se il accreditamentoAllegati NON è editabile -->
-				<div class="form-horizontal form-label-left" th:remove="${!editabile} ? none : tag">
-					<form th:remove="${editabile} ? none : tag"
+				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
+					<form th:remove="${!showOnly} ? none : tag"
 						id="formAccreditamentoAllegati" class="form-horizontal form-label-left"
-						th:action="@{|/accreditamento/${accreditamentoId}/allegati/save|}"
+						th:action="@{|/accreditamento/${accreditamentoId}/allegati/|} + ${valutabile ? 'validate' : 'save'}"
 						method="post" enctype="multipart/form-data"
 						novalidate="novalidate">
 
 						<!-- gli input hidden non sono necessari se NON editabile -->
-						<th:block th:if="${editabile}">
+						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${accreditamentoAllegatiWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${accreditamentoAllegatiWrapper.idEditabili}" />
 						</th:block>
@@ -30,59 +33,60 @@
 							<i class="fa fa-file-text"></i>
 							<a id="attoCostitutivo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.attoCostitutivoModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, attoCostitutivo,  ${editabile ? 'accreditamentoAllegati.file.attoCostitutivo' : null}, null, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, attoCostitutivo,  ${!showOnly ? 'attoCostitutivo' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 2 (esperienza formazione in ambito sanitario) -->
-						<div class="divider-dashed"></div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_esperienzaFormazione">
 							<i class="fa fa-file-text"></i>
 							<a id="esperienzaFormazione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.esperienzaFormazioneModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${editabile ? 'accreditamentoAllegati.file.esperienzaFormazione' : null}, null, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${!showOnly ? 'esperienzaFormazione' : null}, null, ${editabile ? #messages.msg('label.required_fatturato_personale_sanitario') : null}, true, ${mode}, false)" ></th:block>
 
 						<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
-						<div class="divider-dashed"></div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_utilizzo">
 							<i class="fa fa-file-text"></i>
 							<a id="utilizzo_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.utilizzoModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, utilizzo,  ${editabile ? 'accreditamentoAllegati.file.utilizzo' : null}, null, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, utilizzo,  ${!showOnly ? 'utilizzo' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 4 (sistema informatico dedicato alla formazione in ambito sanitario) -->
-						<div class="divider-dashed"></div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_sistemaInformatico">
 							<i class="fa fa-file-text"></i>
 							<a id="sistemaInformatico_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.sistemaInformaticoModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, sistemaInformatico,  ${editabile ? 'accreditamentoAllegati.file.sistemaInformatico' : null}, null, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, sistemaInformatico,  ${!showOnly ? 'sistemaInformatico' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 5 (piano di qualità) -->
-						<div class="divider-dashed"></div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_pianoQualita">
 							<i class="fa fa-file-text"></i>
 							<a id="pianoQualita_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.pianoQualitaModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, pianoQualita,  ${editabile ? 'accreditamentoAllegati.file.pianoQualita' : null}, null, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, pianoQualita,  ${!showOnly ? 'pianoQualita' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 6 (dichiarazione del legale rappresentante) -->
-						<div class="divider-dashed"></div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_dichiarazioneLegale">
 							<i class="fa fa-file-text"></i>
 							<a id="dichiarazioneLegale_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.dichiarazioneLegaleModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneLegale,  ${editabile ? 'accreditamentoAllegati.file.dichiarazioneLegale' : null}, null, null, true, ${editabile}, true)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneLegale,  ${!showOnly ? 'dichiarazioneLegale' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 7 (dichiarazione esclusione) -->
-						<div class="divider-dashed"></div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_dichiarazioneEsclusione">
 							<i class="fa fa-file-text"></i>
 							<a id="dichiarazioneEsclusione_esempio_link" th:text="#{label.esempio_modello}" th:href="@{|files/${accreditamentoAllegatiWrapper.dichiarazioneEsclusioneModel}|}"></a>
 						</div>
-						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneEsclusione,  ${editabile ? 'accreditamentoAllegati.file.dichiarazioneEsclusione' : null}, null, null, true, ${editabile}, false)" ></th:block>
+						<th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneEsclusione,  ${!showOnly ? 'dichiarazioneEsclusione' : null}, null, null, true, ${mode}, false)" ></th:block>
 
 					</form>
 				</div>
 			</div>
+		</th:block>
 	</th:block>
 </body>
 </html>
