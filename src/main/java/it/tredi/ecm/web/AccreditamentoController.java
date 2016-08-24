@@ -41,6 +41,7 @@ import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.ValutazioneService;
+import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -377,6 +378,9 @@ public class AccreditamentoController {
 		else
 			accreditamentoWrapper.setAllAccreditamento(accreditamento);
 
+		//lista valutazioni per la valutazione complessiva
+		accreditamentoWrapper.setValutazioniList(valutazioneService.getAllValutazioniForAccreditamentoId(accreditamento.getId()));
+
 		//controllo sul pulsante conferma valutazione
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
@@ -483,7 +487,7 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"));
 		try {
 			//validazione della valutazioneComplessiva
-			valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), result);
+			valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), result);
 
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
@@ -499,13 +503,15 @@ public class AccreditamentoController {
 				//inserisce il commento complessivo
 				valutazione.setValutazioneComplessiva(wrapper.getValutazioneComplessiva());
 
-				//crea le valutazioni per i referee TODO
-				for (Account a : wrapper.getRefereeGroup()) {
-					Valutazione valutazioneReferee = new Valutazione();
-					valutazioneReferee.setAccount(a);
-					valutazioneReferee.setAccreditamento(accreditamentoService.getAccreditamento(accreditamentoId));
-					valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
-					valutazioneService.save(valutazioneReferee);
+				//la segreteria crea le valutazioni per i referee
+				if (Utils.getAuthenticatedUser().getAccount().isSegreteria()){
+					for (Account a : wrapper.getRefereeGroup()) {
+						Valutazione valutazioneReferee = new Valutazione();
+						valutazioneReferee.setAccount(a);
+						valutazioneReferee.setAccreditamento(accreditamentoService.getAccreditamento(accreditamentoId));
+						valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+						valutazioneService.save(valutazioneReferee);
+					}
 				}
 
 				valutazioneService.save(valutazione);
@@ -521,6 +527,42 @@ public class AccreditamentoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
 			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}
+	}
+
+//	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)
+// TODO principal non può essere provider
+	@RequestMapping("/accreditamento/{gruppo}/list")
+	public String getAllAccreditamentiForGruppo(@PathVariable("gruppo") String gruppo, Model model, RedirectAttributes redirectAttrs) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list"));
+		try {
+			Set<Accreditamento> listaAccreditamenti = new HashSet<Accreditamento>();
+			Set<AccreditamentoStatoEnum> stati = AccreditamentoStatoEnum.getAllStatoByGruppo(gruppo);
+			CurrentUser currentUser = Utils.getAuthenticatedUser();
+			if(currentUser.getAccount().isSegreteria()) {
+				for (AccreditamentoStatoEnum s : stati) {
+					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStato(s));
+				}
+			}
+			else {
+				for (AccreditamentoStatoEnum s : stati) {
+					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoForAccountId(s, currentUser.getAccount().getId()));
+				}
+			}
+			String action = null;
+			if (gruppo.equals("valutazione") || gruppo.equals("valutazioneReferee"))
+				action = "label.valutare";
+			model.addAttribute("action", action);
+			model.addAttribute("accreditamentoList", listaAccreditamenti);
+			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
+			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
+			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
+			return "accreditamento/accreditamentoList";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
 		}
 	}
 }

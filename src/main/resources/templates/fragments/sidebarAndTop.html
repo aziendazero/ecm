@@ -66,7 +66,17 @@
 								<ul class="nav child_menu" style="display: none">
 									<li><a th:href="@{/provider/list}" th:text="#{label.provider}">label.provider</a></li>
 									<li><a th:href="@{/user/list}" th:text="#{label.utenti}">label.utenti</a></li>
-									<li><a th:href="@{/valutazioneDemo}" th:text="#{label.demoValutazione}">label.demoValutazione</a></li>
+									<li><a th:href="@{/accreditamento/valutazione/list}" th:text="#{label.lista_domande_da_valutare}">label.lista_domande_da_valutare</a></li>
+								</ul>
+							</li>
+
+							<li id="referee" th:if="${#authentication.principal.hasProfile('REFEREE')}">
+								<a>
+									<i class="fa fa-edit"></i> <span th:text="#{label.referee}">label.referee</span>
+									<span class="fa fa-chevron-down"></span>
+								</a>
+								<ul class="nav child_menu" style="display: none">
+									<li><a th:href="@{/accreditamento/valutazioneReferee/list}" th:text="#{label.lista_domande_da_valutare}">label.lista_domande_da_valutare</a></li>
 								</ul>
 							</li>
 
@@ -116,6 +126,9 @@
 		                  </li>
 		                </ul>
 		              </li>
+		              <li class="">
+					    <a href="http://wiki.3di.it/doku.php?id=documentazione_3di:progetto_ecm:indice" th:text="#{label.help}"></a>
+					  </li>
               		</ul>
 				</nav>
 			</div>

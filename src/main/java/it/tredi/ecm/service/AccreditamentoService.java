@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.Collection;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
@@ -38,8 +39,13 @@ public interface AccreditamentoService{
 	public int countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
 
+	//Vaschetta generica
+	public Set<Accreditamento> getAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id);
+	public int countAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id);
+
 	//Controlli valutazione
 	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserValutaDomandaShow(Long id, CurrentUser authenticatedUser);
+
 }

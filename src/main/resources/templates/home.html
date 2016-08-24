@@ -73,11 +73,29 @@
 				</div>
 				<div th:if="${homeWrapper.isProvider}" class="divider"></div>
 
+				<!-- REFEREE -->
+				<div class="row" th:if="${homeWrapper.isReferee}">
+					<div class="home-divider" th:text="#{label.dashboard_referee}">Referee dashboard</div>
+					<div class="col-xs-12 tile-stats-container">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="goTo('accreditamento/valutazioneReferee/list')">
+							<div class="tile-stats">
+								<div class="icon"><i class="fa fa-list-alt"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.richiesteInviateDaiProvider}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.richiesteInviateDaiProvider == 1 ? #messages.msg('label.richiesta_accreditamento') : #messages.msg('label.richieste_accreditamento')}"></h3>
+				                	<p class="count-text" th:text="#{label.da_valutare}">Da valutare</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:if="${homeWrapper.isReferee}" class="divider"></div>
+
 				<!-- SEGRETERIA -->
 				<div class="row" th:if="${homeWrapper.isSegreteria}">
 					<div class="home-divider" th:text="#{label.dashboard_segreteria}">Segreteria dashboard</div>
 					<div class="col-xs-12 tile-stats-container">
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="goTo('accreditamento/valutazione/list')">
 							<div class="tile-stats">
 								<div class="icon"><i class="fa fa-list-alt"></i></div>
 								<div class="col-xs-10">
@@ -130,6 +148,10 @@
 					});
 
 				});
+
+				function goTo(url) {
+					location.href = [[@{/}]] + url;
+				}
 
 			/*]]>*/
 			</script>

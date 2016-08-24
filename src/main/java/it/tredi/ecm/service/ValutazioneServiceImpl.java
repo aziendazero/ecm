@@ -50,14 +50,14 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Override
 	public Set<Valutazione> getAllValutazioniForAccreditamentoId(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le Valutazione per l'accreditamento " + accreditamentoId));
-		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoId(accreditamentoId);
+		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByDataValutazioneAsc(accreditamentoId);
 		return allValutazioni;
 	}
 
 	@Override
 	public Set<Account> getAllValutatoriForAccreditamentoId(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Ottengo la lista dei valutatori dell'accreditamento " + accreditamentoId));
-		Set<Valutazione> valutazioni = valutazioneRepository.findAllByAccreditamentoId(accreditamentoId);
+		Set<Valutazione> valutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByDataValutazioneAsc(accreditamentoId);
 		Set<Account> valutatori = new HashSet<Account>();
 		for (Valutazione v : valutazioni) {
 			valutatori.add(v.getAccount());
@@ -69,7 +69,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(Long accreditamentoId, SubSetFieldEnum subset) {
 		LOGGER.debug(Utils.getLogMessage("Genero la mappa valutatori - valutazione dell'accreditamento " + accreditamentoId + " per il subset " + subset));
 		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
-		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoId(accreditamentoId);
+		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByDataValutazioneAsc(accreditamentoId);
 		//per ogni valutazione dell'accreditamento
 		for (Valutazione v : allValutazioni) {
 			//mi faccio restituire la valutazione relativa al subset e al determinato valutatore
@@ -84,7 +84,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndObjectId(Long accreditamentoId, Long id) {
 		LOGGER.debug(Utils.getLogMessage("Genero la mappa valutatori - valutazione dell'accreditamento " + accreditamentoId + " per l'oggetto " + id));
 		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
-		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoId(accreditamentoId);
+		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByDataValutazioneAsc(accreditamentoId);
 		//per ogni valutazione dell'accreditamento
 		for (Valutazione v : allValutazioni) {
 			//mi faccio restituire la valutazione relativa al id dell'oggetto e al determinato valutatore

@@ -117,6 +117,9 @@ public class AccreditamentoWrapper {
 	//Valutazione Comlessiva
 	private String valutazioneComplessiva;
 
+	//Valutazioni per l'accreditamento
+	private Set<Valutazione> valutazioniList = new HashSet<Valutazione>();
+
 	public AccreditamentoWrapper(){};
 	public AccreditamentoWrapper(Accreditamento accreditamento){
 		setAllAccreditamento(accreditamento);

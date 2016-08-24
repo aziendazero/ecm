@@ -52,7 +52,7 @@
 									</span>
 								</td>
 								<td th:if="${valutabile}">
-									<a th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa fa-pencil"></i> <span th:text="#{label.valuta}">Valuta</span></a>
+									<a th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 								</td>
 							</th:block>
 						</tr>

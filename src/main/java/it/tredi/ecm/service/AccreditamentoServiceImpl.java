@@ -2,6 +2,7 @@ package it.tredi.ecm.service;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -248,6 +249,20 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamentoRepository.findAllByStatoAndProviderId(stato, providerId);
 	}
 
+	//metodo generico per filtrare gli accreditamenti in base allo stato e all'account id
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id) {
+		LOGGER.debug(Utils.getLogMessage("Recuper le domande di accreditamento in stato " + stato + " assegnate all'account " + id));
+		return accreditamentoRepository.findAllAccreditamentoInValutazioneAssignedToAccountId(id);
+	}
+
+	//metodo generico per contare gli accreditamenti in base allo stato e all'account id
+	@Override
+	public int countAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id) {
+		LOGGER.debug(Utils.getLogMessage("Numero delle domande di accreditamento " + stato + " assegnate all'account " + id));
+		return accreditamentoRepository.countAllAccreditamentoInValutazioneAssignedToAccountId(id);
+	}
+
 	@Override
 	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser) {
 		if(currentUser.hasProfile(ProfileEnum.SEGRETERIA) && getAccreditamento(accreditamentoId).isValutazioneSegreteriaAssegnamento()) {
@@ -281,4 +296,5 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			return true;
 		else return false;
 	}
+
 }

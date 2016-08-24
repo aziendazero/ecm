@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.utils.Utils;
 
 @Component
 public class ValutazioneValidator {
@@ -30,10 +31,14 @@ public class ValutazioneValidator {
 		}
 	}
 
-	public void validateValutazioneComplessiva(Object target, Errors errors) {
-		Set<Account> refereeGroup = (Set<Account>)target;
-		if(refereeGroup == null || refereeGroup.size() != 3) {
+	public void validateValutazioneComplessiva(Object targetReferee, Object valutazioneFull, Errors errors) {
+		Set<Account> refereeGroup = (Set<Account>)targetReferee;
+		String valutazioneComplessiva = (String) valutazioneFull;
+		if(Utils.getAuthenticatedUser().getAccount().isSegreteria() && (refereeGroup == null || refereeGroup.size() != 3)) {
 			errors.rejectValue("refereeGroup", "error.numero_referee");
+		}
+		if(valutazioneComplessiva == null || valutazioneComplessiva.isEmpty()) {
+			errors.rejectValue("valutazioneComplessiva", "error.empty");
 		}
 	}
 
