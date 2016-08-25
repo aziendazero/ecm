@@ -273,11 +273,19 @@
 						"bInfo" : false,
 						"bPaginate" : false,
 						"bFilter" : false,
-						//colonna del pulsante seleziona
 					    "order": [ 0, 'asc' ],
 					    "columnDefs": [
 					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
 					                    {"targets": [ 0 ], "width": "1px"}
+					                  ]
+					});
+					$('.datatable-responsive-search-validation-full').DataTable({
+						"bInfo" : false,
+						"bPaginate" : false,
+						"bFilter" : false,
+						"order": [ 0, 'disabled' ],
+					    "columnDefs": [
+					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
 					                  ]
 					});
 				});

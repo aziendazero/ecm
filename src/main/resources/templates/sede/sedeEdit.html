@@ -15,7 +15,7 @@
 						<h2 th:if="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="#{label.modifica} + ' ' + #{label.sede_operativa_coincide}">label.sede_operativa_coincide</h2>
 						<div class="pull-right buttons-header">
 							<th:block th:unless="${#lists.isEmpty(sedeWrapper.idEditabili)}">
-								<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formSede" type="submit"></button>
+								<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
 								<button class="btn btn-primary pull-right" onclick="loadSedeLegale()" th:if="${sedeWrapper.tipologiaSede == 'SedeOperativa' and !sedeWrapper.coincide}" th:text="#{label.coincide_con_sede_legale}"></button>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/edit|}"></a>
@@ -28,6 +28,7 @@
 				</div>
 			</div>
 			<script th:inline="javascript">
+			/*<![CDATA[*/
 			function sendAjaxRequestProvincia(){
 				var provincia = $("#provincia_sede").val();
 				var start = [[@{/comuni?provincia=}]];
@@ -37,7 +38,7 @@
 					$("#comune_sede").empty();
 					$("#comune_sede").append('<option value = "">' + "---" + "</option>")
 
-					for(item in data){
+					for(var item = 0; item < data.length; item++){
 						console.log(item);
 						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
 						$("#comune_sede").append(option);
@@ -53,7 +54,7 @@
 					$("#CAP_sede").empty();
 					$("#CAP_sede").append('<option value = "">' + "---" + "</option>")
 
-					for(item in data){
+					for(var item = 0; item < data.length; item++){
 						console.log(item);
 						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
 						$("#CAP_sede").append(option);
@@ -77,6 +78,7 @@
 					});
 				}
 			);
+		/*]]>*/
 		</script>
 		</div>
 	</div>

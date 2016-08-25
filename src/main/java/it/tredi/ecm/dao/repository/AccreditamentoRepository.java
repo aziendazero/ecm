@@ -21,12 +21,16 @@ public interface AccreditamentoRepository extends CrudRepository<Accreditamento,
 	public AccreditamentoStatoEnum getStatoByAccreditamentoId(@Param("accreditamentoId") Long accreditamentoId);
 	@Query("SELECT a.datiAccreditamento FROM Accreditamento a WHERE a.id = :accreditamentoId")
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(@Param("accreditamentoId") Long accreditamentoId);
-	
+
 	@Query("SELECT a.provider.id FROM Accreditamento a WHERE a.id = :accreditamentoId")
 	public Long getProviderIdById(@Param("accreditamentoId") Long accreditamentoId);
-	
+
 	public int countAllByStato(AccreditamentoStatoEnum stato);
 	public Set<Accreditamento> findAllByStato(AccreditamentoStatoEnum stato);
 	public int countAllByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
 	public Set<Accreditamento> findAllByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
+	@Query("SELECT v.accreditamento FROM Valutazione v WHERE v.account.id = :id")
+	public Set<Accreditamento> findAllAccreditamentoInValutazioneAssignedToAccountId(@Param("id") Long id);
+	@Query("SELECT COUNT(v.accreditamento) FROM Valutazione v WHERE v.account.id = :id")
+	public int countAllAccreditamentoInValutazioneAssignedToAccountId(@Param("id") Long id);
 }

@@ -33,4 +33,6 @@ public class Valutazione extends BaseEntity{
 	@OneToMany (cascade = CascadeType.ALL)
 	private Set<FieldValutazioneAccreditamento> valutazioni = new HashSet<FieldValutazioneAccreditamento>();
 	private String valutazioneComplessiva;
+
+	//TODO mettere unic coppia id account / id accreditamento
 }

@@ -453,6 +453,9 @@
 								</div>
 		                    </th:block>
 		                    <div th:if="${#fields.hasErrors('eventoWrapper.evento.discipline')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.discipline}"></div>
+
+							<input id="submitButton" type="submit" style="display: none;" />
+
 						</div>
 					</form>
 				</div>

@@ -54,9 +54,10 @@
 									method="post" enctype="multipart/form-data"
 									novalidate="novalidate">
 
-									<div>
+									<div class="item modalAlert" th:classappend="${#fields.hasErrors('accreditamentoWrapper.valutazioneComplessiva')} ? 'bad'">
 										<h4 th:text="#{label.inserisci_valutazione_complessiva}"></h4>
 										<textarea th:field="${accreditamentoWrapper.valutazioneComplessiva}"></textarea>
+										<div th:if="${#fields.hasErrors('accreditamentoWrapper.valutazioneComplessiva')}" class="alert" th:errors="${accreditamentoWrapper.valutazioneComplessiva}"></div>
 									</div>
 
 									<div class="divider"  th:if="${#authentication.principal.hasProfile('SEGRETERIA')}"></div>
@@ -84,11 +85,13 @@
 										</div>
 									</div>
 
+									<input id="submitButtonModal" type="submit" style="display: none;" />
+
 								</form>
 							</div>
 							<div class="modal-footer">
-          						<button type="submit" class="btn btn-success pull-right" form="formValutazioneComplessiva" th:text="#{label.salva}">Save changes</button>
-          						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Close</button>
+          						<label for="submitButtonModal" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
+          						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
         					</div>
 						</div>
 					</div>
@@ -109,6 +112,36 @@
 							</div>
 							<div class="modal-body">
 
+								<div class="row">
+									<div class="x_panel">
+					              		<div class="x_title">
+											<h2 style="display: inline" th:text="#{label.valutazioni_complessive}">label.valutazioni_complessive</h2>
+											<h2 style="display: inline" th:if="${#sets.isEmpty(accreditamentoWrapper.valutazioniList)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+											<div class="clearfix"></div>
+										</div>
+
+										<table class="datatable-responsive-search-validation-full table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+											<thead>
+												<tr>
+													<th:block th:each="valutazione, row : ${accreditamentoWrapper.valutazioniList}">
+														<th th:text="#{label.valutazione} + ' ' + ${valutazione.account.isSegreteria() ? 'Segreteria ECM' : 'Referee ' + valutazione.account.nome + ' ' + valutazione.account.cognome}">Nome</th>
+													</th:block>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<th:block th:each="valutazione, row : ${accreditamentoWrapper.valutazioniList}">
+														<td class="otherValidationCheck">
+															<div th:text="${valutazione.valutazioneComplessiva}"></div>
+														</td>
+													</th:block>
+												</tr>
+											</tbody>
+										</table>
+
+									</div>
+								</div>
+
 								<!-- fragment show all -->
 								<th:block th:include="valutazione/valutazioneShowAll :: showAllValutazioni"></th:block>
 
@@ -117,21 +150,30 @@
 					</div>
 				</div>
 
+
 				<div class="x_panel">
 					<div class="x_title x_menu">
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.codiceFiscale + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
-							<button th:if="${accreditamentoWrapper.canConfermaValutazione}" type="button" class="btn btn-success pull-right"
-								th:text="#{label.conferma_valutazione}" data-toggle="modal" data-target=".modal-confirm"></button>
+							<button type="button" class="btn btn-primary" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></button>
+							<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"  th:if="${#authentication.principal.hasProfile('SEGRETERIA') or #authentication.principal.hasProfile('REFEREE')}">
+								<span th:text="#{label.menu_azioni}"></span>
+								<span class="caret"></span>
+							</button>
+							<!-- menù raggruppato per segreteria -->
+							<ul class="dropdown-menu actions">
+								<li><a class="ajaxCallShowAll"
+									th:text="#{label.mostra_riepilogo}"
+									data-toggle="modal" data-target=".modal-showAll"></a></li>
+								<!-- mostra showAllValutazioni -->
+								<li><a type="button" class="ajaxCallShowAllValutazioni"
+									th:text="#{label.mostra_riepilogo_valutazioni}"
+									data-toggle="modal" data-target=".modal-showAllValutazioni"></a></li>
+								<li class="divider actions"></li>
+								<li><a th:if="${accreditamentoWrapper.canConfermaValutazione}"
+									th:text="#{label.conferma_valutazione}" data-toggle="modal" data-target=".modal-confirm"></a></li>
 							<!-- mostra showAll -->
-							<button type="button" class="btn btn-primary pull-right ajaxCallShowAll"
-								th:text="#{label.mostra_riepilogo}"
-								data-toggle="modal" data-target=".modal-showAll"></button>
-							<!-- mostra showAllValutazioni -->
-							<button type="button" class="btn btn-primary pull-right ajaxCallShowAllValutazioni"
-								th:text="#{label.mostra_riepilogo_valutazioni}"
-								data-toggle="modal" data-target=".modal-showAllValutazioni"></button>
-							<button type="button" class="btn btn-primary pull-right" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></button>
+							</ul>
 						</div>
 						<div class="clearfix"></div>
 					</div>

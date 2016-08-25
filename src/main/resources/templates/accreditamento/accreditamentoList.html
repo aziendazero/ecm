@@ -10,20 +10,19 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.accreditamenti_lista}">Lista degli
+						<h2 th:text="${action == null} ? #{label.accreditamenti_lista} : #{label.accreditamenti_lista_gruppo(${#messages.msg('__${action}__')})}">Lista degli
 							accreditamenti</h2>
 						<div class="pull-right buttons-header">
 							<a class="btn btn-primary pull-right"
-									th:if="${(#authentication.principal.hasProfile('PROVIDER') AND canProviderCreateAccreditamentoProvvisorio) OR #authentication.principal.hasProfile('SEGRETERIA')}"
+									th:if="${((#authentication.principal.hasProfile('PROVIDER') AND canProviderCreateAccreditamentoProvvisorio) OR #authentication.principal.hasProfile('SEGRETERIA')) AND providerId != null}"
 									th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).PROVVISORIO}/new|}"
 									th:text="#{label.nuova_domanda_provvisoria}">label.nuova_domanda_provvisoria</a>
 							<a class="btn btn-primary pull-right"
-									th:if="${(#authentication.principal.hasProfile('PROVIDER') AND canProviderCreateAccreditamentoStandard) OR #authentication.principal.hasProfile('SEGRETERIA')}"
+									th:if="${((#authentication.principal.hasProfile('PROVIDER') AND canProviderCreateAccreditamentoStandard) OR #authentication.principal.hasProfile('SEGRETERIA')) AND providerId != null}"
 									th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).STANDARD}/new|}"
 									th:text="#{label.nuova_domanda_standard}">label.nuova_domanda_standard</a>
 							<a class="btn btn-primary pull-right"
-									th:unless="${#authentication.principal.hasProfile('PROVIDER')}"
-									th:href="@{|/provider/list|}"
+									th:href="${providerId != null} ? @{|/provider/list|} : @{/home}"
 									th:text="#{label.indietro}">Indietro</a>
 						</div>
 						<div class="clearfix"></div>
@@ -35,6 +34,9 @@
 							<thead>
 								<tr>
 									<th th:text="#{label.accreditamento_tipo}">Tipo</th>
+									<th th:text="#{label.inserito_da}">inserito_da</th>
+									<th th:text="#{label.codiceFiscaleOrIVAProvider}">cf/piva</th>
+									<th th:text="#{label.gruppo_appartenenza}">Gruppo di appartenenza</th>
 									<th th:text="#{label.accreditamento_stato}">Stato</th>
 									<th th:text="#{label.accreditamento_invio}">Data invio</th>
 									<th th:text="#{label.accreditamento_validazione}">Datavalidazione</th>
@@ -43,8 +45,10 @@
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(accreditamentoList)}" th:remove="all-but-first">
 								<tr th:each="accreditamento : ${accreditamentoList}">
-									<td><a th:text="${accreditamento.tipoDomanda.nome}"
-										th:href="@{|/accreditamento/${accreditamento.id}/show|}">Provvisorio/Standard</a></td>
+									<td><a th:href="@{|/accreditamento/${accreditamento.id}/show|}" th:text="${accreditamento.tipoDomanda.nome}">Provvisorio/Standard</a></td>
+									<td th:text="${accreditamento.provider.denominazioneLegale}">Provvisorio/Standard</td>
+									<td th:text="${accreditamento.provider.partitaIva != null and !#strings.isEmpty(accreditamento.provider.partitaIva) ? accreditamento.provider.codiceFiscale + ' (' + accreditamento.provider.partitaIva +')' : accreditamento.provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</td>
+									<td th:text="${accreditamento.provider.gruppo}">informatica</td>
 									<td th:text="${accreditamento.stato.nome}">Accettata</td>
 									<td th:text="${accreditamento.dataInvio}">22/05/2014</td>
 									<td th:text="${accreditamento.dataValutazioneCrecm}">24/05/2014</td>

@@ -1,9 +1,7 @@
 package it.tredi.ecm.web;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +14,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
-import it.tredi.ecm.dao.enumlist.Costanti;
-import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.CurrentUser;
@@ -28,7 +24,7 @@ import it.tredi.ecm.web.bean.Message;
 @Controller
 public class LoginController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
-	
+
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderService providerService;
 
@@ -75,10 +71,15 @@ public class LoginController {
 				case SEGRETERIA:
 					//TODO riempe i dati relativi alla segreteria
 					wrapper.setIsSegreteria(true);
-					wrapper.setRichiesteInviateDaiProvider(accreditamentoService.countAllAccreditamentiByStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO));
+					wrapper.setRichiesteInviateDaiProvider(accreditamentoService.countAllAccreditamentiByStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) +
+							accreditamentoService.countAllAccreditamentiByStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA));
 					wrapper.setProviderQuotaAnnuale(9);
 					wrapper.setProviderQuotaEventi(23);
 					break;
+				case REFEREE:
+					//TODO riempe i dati relativi al referee
+					wrapper.setIsReferee(true);
+					wrapper.setRichiesteInviateDaiProvider(accreditamentoService.countAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, Utils.getAuthenticatedUser().getAccount().getId()));
 			}
 		}
 		return wrapper;

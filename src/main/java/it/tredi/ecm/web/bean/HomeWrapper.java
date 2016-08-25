@@ -22,9 +22,14 @@ public class HomeWrapper {
 
 	//Segreteria
 	private Boolean isSegreteria;
-	private Integer richiesteInviateDaiProvider;
 	private Integer providerQuotaAnnuale;
 	private Integer providerQuotaEventi;
+
+	//Referee
+	private Boolean isReferee;
+
+	//Segreteria + referee
+	private Integer richiesteInviateDaiProvider;
 
 	//User
 

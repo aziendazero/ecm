@@ -141,7 +141,7 @@
             oMyForm.append("tipo",tipoAllegato);
             oMyForm.append([[${_csrf.parameterName}]],[[${_csrf.token}]]);
 
-            console.log('tipoAllegato: ' + tipoAllegato + ' - fileId: ' + fileId);
+            console.log('tipoAllegato: ' + tipoAllegato + ' - fileId: ' + fileId + ' - multiPartFile ' + $(element)[0].files[0].name);
 
            	$.ajax({
                   	url : [[@{/file/upload}]],
