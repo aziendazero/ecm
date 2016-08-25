@@ -153,7 +153,7 @@ public class AccreditamentoController {
 	}
 
 	/*** Get validate Accreditamento {ID} ***/
-//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#id)") TODO
+	//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#id)") TODO
 	@RequestMapping("/accreditamento/{id}/validate")
 	public String validateAccreditamento(@PathVariable Long id, Model model, @RequestParam(required = false) String tab, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + id + "/validate"));
@@ -191,13 +191,14 @@ public class AccreditamentoController {
 		return goToAccreditamentoValidate(model, accreditamento, null);
 	}
 
+	//passo il wrapper che contiene solo la valutazione complessiva e la lista dei referee selezionati
 	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper){
 		//carico la valutazione dell'utente corrente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento, valutazione, wrapper);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		model.addAttribute("refereeList", accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
- 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoValidate"));
+		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoValidate"));
 		return "accreditamento/accreditamentoValidate";
 	}
 
@@ -206,59 +207,72 @@ public class AccreditamentoController {
 		if(tab != null) {
 			switch(tab) {
 
-			case "tab1":	model.addAttribute("currentTab", "tab1");
-			break;
+			case "tab1":	
+							model.addAttribute("currentTab", "tab1");
+							break;
 
-			case "tab2":	if(accreditamentoWrapper.isSezione1Stato()) {
-				model.addAttribute("currentTab", "tab2");
-				if (accreditamentoWrapper.getResponsabileSegreteria() == null &&
-						accreditamentoWrapper.getResponsabileAmministrativo() == null &&
-						accreditamentoWrapper.getResponsabileSistemaInformatico() == null &&
-						accreditamentoWrapper.getResponsabileQualita() == null) {
-					model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
-				}
-			}
-			else {
-				model.addAttribute("currentTab", "tab1");
-				model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
-			}
-			break;
+			case "tab2":	
+							if(accreditamentoWrapper.isSezione1Stato()) 
+							{
+								model.addAttribute("currentTab", "tab2");
+								if (accreditamentoWrapper.getResponsabileSegreteria() == null &&
+										accreditamentoWrapper.getResponsabileAmministrativo() == null &&
+										accreditamentoWrapper.getResponsabileSistemaInformatico() == null &&
+										accreditamentoWrapper.getResponsabileQualita() == null) 
+									{
+										model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
+									}
+							}
+							else 
+							{
+								model.addAttribute("currentTab", "tab1");
+								model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+							}
+							break;
 
-			case "tab3":	if(accreditamentoWrapper.isSezione2Stato())
-				model.addAttribute("currentTab", "tab3");
-			else {
-				if(accreditamentoWrapper.isSezione1Stato()) {
-					model.addAttribute("currentTab", "tab2");
-					model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
-				}
-				else {
-					model.addAttribute("currentTab", "tab1");
-					model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
-				}
-			}
-			break;
+			case "tab3":	
+							if(accreditamentoWrapper.isSezione2Stato())
+							{
+								model.addAttribute("currentTab", "tab3");
+							}
+							else 
+							{
+								if(accreditamentoWrapper.isSezione1Stato()) {
+									model.addAttribute("currentTab", "tab2");
+									model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
+								}
+								else {
+									model.addAttribute("currentTab", "tab1");
+									model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+								}
+							}
+							break;
 
-			case "tab4":  	if(accreditamentoWrapper.isCompleta())
-				model.addAttribute("currentTab", "tab4");
-			else {
-				if(accreditamentoWrapper.isSezione2Stato()) {
-					model.addAttribute("currentTab", "tab3");
-					model.addAttribute("message", new Message("message.warning", "message.compilare_altre_tab", "warning"));
-				}
-				else {
-					if(accreditamentoWrapper.isSezione1Stato()) {
-						model.addAttribute("currentTab", "tab2");
-						model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
-					}
-					else {
-						model.addAttribute("currentTab", "tab1");
-						model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
-					}
-				}
-			}
-			break;
+			case "tab4":  	
+							if(accreditamentoWrapper.isCompleta())
+							{
+								model.addAttribute("currentTab", "tab4");
+							}
+							else {
+									if(accreditamentoWrapper.isSezione2Stato()) {
+										model.addAttribute("currentTab", "tab3");
+										model.addAttribute("message", new Message("message.warning", "message.compilare_altre_tab", "warning"));
+									}
+									else {
+											if(accreditamentoWrapper.isSezione1Stato()) {
+												model.addAttribute("currentTab", "tab2");
+												model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
+											}
+											else {
+												model.addAttribute("currentTab", "tab1");
+												model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+											}
+									}
+							}
+							break;
 
-			default:		break;
+			default:		
+						break;
 			}
 		}
 	}
@@ -445,7 +459,7 @@ public class AccreditamentoController {
 	//PARTE RELATIVA ALLA VALUTAZIONE
 
 	//prendi in carica segreteria ECM
-//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
 	@RequestMapping("/accreditamento/{accreditamentoId}/takeCharge")
 	public String prendiInCaricoAccreditamento(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/takeCharge"));

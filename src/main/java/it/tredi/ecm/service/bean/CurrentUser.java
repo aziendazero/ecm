@@ -38,14 +38,6 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 		return result;
 	}
 
-//	public boolean hasProfile(String profileName){
-//		for(Profile profile : account.getProfiles()){
-//			if(profile.getName().equals(profileName))
-//				return true;
-//		}
-//		return false;
-//	}
-	
 	public boolean hasProfile(ProfileEnum profileEnum){
 		for(Profile profile : account.getProfiles()){
 			if(profile.getProfileEnum() == profileEnum)
@@ -61,4 +53,5 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 		}
 		return false;
 	}
+	
 }

@@ -99,4 +99,22 @@ public class Account extends BaseEntity{
 		}
 		return false;
 	}
+	
+	public boolean isProvider() {
+		for (Profile p : profiles){
+			if(p.getProfileEnum().equals(ProfileEnum.PROVIDER)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isReferee() {
+		for (Profile p : profiles){
+			if(p.getProfileEnum().equals(ProfileEnum.REFEREE)){
+				return true;
+			}
+		}
+		return false;
+	}
 }
