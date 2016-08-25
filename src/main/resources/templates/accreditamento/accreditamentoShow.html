@@ -85,8 +85,6 @@
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 
-			    $('.ajaxCallShowAll').one("click", populateShowAll());
-
 			  	var tabSelected = "tab1";
 				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 					tabSelected = e.target.id;
@@ -103,6 +101,8 @@
 					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/|}]] + 'approvaIntegrazione';
 					location.href = url;
 				}
+
+				$('.ajaxCallShowAll').one("click", populateShowAll);
 
 			/*]]>*/
 			</script>
