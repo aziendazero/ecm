@@ -190,7 +190,6 @@ public class PianoFormativoController {
 	private Set<Integer> getAnniDisponibiliList(){
 		int annoCorrente = LocalDate.now().getYear();
 		Set<Integer> anniDisponibiliList = new HashSet<Integer>();
-		anniDisponibiliList.add(new Integer(annoCorrente));
 		anniDisponibiliList.add(new Integer(annoCorrente + 1));
 		return anniDisponibiliList;
 	}

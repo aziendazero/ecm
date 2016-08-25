@@ -46,7 +46,7 @@ public class PianoFormativo extends BaseEntity{
 	public boolean isPianoModificabile(){
 		if(dataFineModifca == null)
 			return true;
-		if(dataFineModifca.isBefore(LocalDate.now()) || dataFineModifca.isEqual(LocalDate.now()))
+		if(dataFineModifca.isAfter(LocalDate.now()))
 			return true;
 		return false;
 	}

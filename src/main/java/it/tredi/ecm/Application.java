@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 
 import it.tredi.ecm.config.UserChangePasswordCheckFilter;
 
@@ -36,4 +37,9 @@ public class Application {
 	public Filter changePasswordFilter() {
 	    return new UserChangePasswordCheckFilter();
 	}
+	
+	@Bean
+    public Java8TimeDialect java8TimeDialect() {
+        return new Java8TimeDialect();
+    }
 }

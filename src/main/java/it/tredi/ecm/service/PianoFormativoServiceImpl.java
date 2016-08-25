@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -39,8 +40,9 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		PianoFormativo pianoFormativo = new PianoFormativo();
 		pianoFormativo.setAnnoPianoFormativo(annoPianoFormativo);
 		pianoFormativo.setProvider(provider);
+		//modificabile entro il 15 Dicembre dell'anno prima
+		pianoFormativo.setDataFineModifca(LocalDate.parse(annoPianoFormativo-1 + "-12-15"));
 		pianoFormativoRepository.save(pianoFormativo);
-		//TODO calcolare la data entro la quale il piano è modificabile
 		return pianoFormativo;
 	}
 

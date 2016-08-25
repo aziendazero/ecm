@@ -50,9 +50,9 @@
 									<td th:text="${accreditamento.provider.partitaIva != null and !#strings.isEmpty(accreditamento.provider.partitaIva) ? accreditamento.provider.codiceFiscale + ' (' + accreditamento.provider.partitaIva +')' : accreditamento.provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</td>
 									<td th:text="${accreditamento.provider.gruppo}">informatica</td>
 									<td th:text="${accreditamento.stato.nome}">Accettata</td>
-									<td th:text="${accreditamento.dataInvio}">22/05/2014</td>
-									<td th:text="${accreditamento.dataValutazioneCrecm}">24/05/2014</td>
-									<td th:text="${accreditamento.dataScadenza}">24/05/2016</td>
+									<td th:text="${accreditamento.dataInvio == null} ? '' : ${#temporals.format(accreditamento.dataInvio?,'dd/MM/yyyy')}">22/05/2014</td>
+									<td th:text="${accreditamento.dataValutazioneCrecm  == null} ? '' : ${#temporals.format(accreditamento.dataValutazioneCrecm,'dd/MM/yyyy')}">24/05/2014</td>
+									<td th:text="${accreditamento.dataScadenza  == null} ? '' : ${#temporals.format(accreditamento.dataScadenza,'dd/MM/yyyy')}">24/05/2016</td>
 								</tr>
 							</tbody>
 						</table>

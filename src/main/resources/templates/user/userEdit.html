@@ -42,6 +42,32 @@
 								<div th:if="${#fields.hasErrors('email')}" class="alert" th:errors="*{email}"></div>	
 							</div>
 							
+							<!-- cognome -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('cognome')} ? 'bad'">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12" for="cognome">
+									<span class="required" th:text="#{label.cognome}">label.cognome</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-md-6 col-sm-6 col-xs-12">
+									<input type="text" id="cognome" th:field="*{cognome}"
+										required="required" class="form-control col-md-7 col-xs-12" />
+								</div>
+								<div th:if="${#fields.hasErrors('cognome')}" class="alert" th:errors="*{cognome}"></div>	
+							</div>
+							
+							<!-- nome -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('nome')} ? 'bad'">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nome">
+									<span class="required" th:text="#{label.nome}">label.nome</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-md-6 col-sm-6 col-xs-12">
+									<input type="text" id="nome" th:field="*{nome}"
+										required="required" class="form-control col-md-7 col-xs-12" />
+								</div>
+								<div th:if="${#fields.hasErrors('nome')}" class="alert" th:errors="*{nome}"></div>	
+							</div>
+							
 							<!-- Enabled -->
 							<div class="item form-group">
 		                      <label class="control-label col-md-3 col-sm-3 col-xs-12">

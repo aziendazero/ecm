@@ -1,5 +1,6 @@
 package it.tredi.ecm.bootstrap;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -145,6 +146,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			provider.setExpiresDate(null);
 			provider.setLocked(false);
 			provider.getProfiles().add(profile_provider);
+			provider.setDataScadenzaPassword(LocalDate.now());
 			
 			accountRepository.save(provider);
 //			try{
@@ -163,6 +165,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			admin.setExpiresDate(null);
 			admin.setLocked(false);
 			admin.getProfiles().add(profile_admin);
+			admin.setDataScadenzaPassword(LocalDate.now());
 			
 			accountRepository.save(admin);
 			

@@ -1,6 +1,7 @@
 package it.tredi.ecm.web.validator;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ import it.tredi.ecm.web.bean.AccountChangePassword;
 @Component
 public class AccountValidator{
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccountValidator.class);
+	
+	private static final String PATTERN_PASSWORD = "(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)";
 
 	@Autowired private AccountService accountService;
 
@@ -45,6 +48,14 @@ public class AccountValidator{
 		
 		if(accountChangePassword.getNewPassword().isEmpty()){
 			errors.rejectValue("newPassword", "error.empty");
+		}else{
+			if(accountChangePassword.getNewPassword().length() < 8){
+				errors.rejectValue("newPassword", "error.min");
+			}else if(accountChangePassword.getNewPassword().length() > 12){
+				errors.rejectValue("newPassword", "error.max");
+			}else if(!Pattern.matches(PATTERN_PASSWORD, accountChangePassword.getNewPassword())){
+				errors.rejectValue("newPassword", "error.invalid");
+			}
 		}
 		
 		if(accountChangePassword.getConfirmNewPassword().isEmpty()){
@@ -86,6 +97,14 @@ public class AccountValidator{
 						errors.rejectValue(prefix + "email", "error.email.duplicated");
 				}
 			}
+		}
+		
+		if(account.getCognome().isEmpty()){
+			errors.rejectValue(prefix + "cognome", "error.empty");
+		}
+		
+		if(account.getNome().isEmpty()){
+			errors.rejectValue(prefix + "nome", "error.empty");
 		}
 	}
 }

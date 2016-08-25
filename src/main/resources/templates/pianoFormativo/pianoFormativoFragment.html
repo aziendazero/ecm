@@ -12,7 +12,8 @@
 			urlParam=${mode != 'show' ? '?from='+mode : ''},
 			hasActionButtons=${mode != 'show'},
 			valutabile=${mode == 'validate'},
-			editabile=${mode == 'edit'}">
+			editabile=${mode == 'edit'},
+			showOnly=${mode == 'show'}">
 
 				<div th:if="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventi)}" th:text="#{label.nessun_evento_piano_formativo}"></div>
 
