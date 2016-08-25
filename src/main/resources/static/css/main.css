@@ -62,7 +62,7 @@ body.nav-md .container.body .right_col.main{
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
-   	margin-right: 0 !important; /* TODO: trovare modo per togliere important*/
+   	margin-right: 0 !important; TODO: trovare modo per togliere important
 }
 
 .form-group .bootstrap-select.btn-group, .form-horizontal .bootstrap-select.btn-group, .form-inline .bootstrap-select.btn-group {

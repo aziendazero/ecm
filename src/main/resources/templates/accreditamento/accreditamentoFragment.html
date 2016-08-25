@@ -589,10 +589,9 @@
 												<h2 th:if="${accreditamentoWrapper.accreditamento.pianoFormativo != null and accreditamentoWrapper.accreditamento.pianoFormativo.annoPianoFormativo != 0}" th:text="#{label.inserimento_piano_formativo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.pianoFormativo.annoPianoFormativo,0)})}">Piano formativo relativo all'anno xxx</h2>
 												<h2 th:if="${accreditamentoWrapper.accreditamento.pianoFormativo == null or accreditamentoWrapper.accreditamento.pianoFormativo.annoPianoFormativo == 0}" th:text="#{label.inserimento_nuovo_piano_formativo}">Inserimento del piano formativo</h2>
 												<div class="pull-right buttons-header">
-													<a class="btn btn-primary"
+													<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".modal-confirmPiano"
 													th:if="${accreditamentoWrapper.canInsertPianoFormativo}"
-													th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/insertPianoFormativo|}"
-													th:text="#{label.inserisci_piano_formativo}">label.inserisci_piano_formativo</a>
+													th:text="#{label.inserisci_piano_formativo}">label.inserisci_piano_formativo</button>
 												</div>
 											</th:block>
 											<h2 th:unless="${editabile}" th:text="#{label.visualizzazione_piano_formativo}">Visualizzazione del piano formativo</h2>

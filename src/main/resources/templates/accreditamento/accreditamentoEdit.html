@@ -55,6 +55,28 @@
 			</div>
 		</div>
 
+		<!-- modale conferma pianoFormativo -->
+		<div id="confirmPiano-modal" class="modal fade modal-confirmPiano"
+			data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 class="modal-title" id="myModalLabel"
+							th:text="#{label.attenzione}">Attenzione!</h3>
+					</div>
+					<div class="modal-body">
+
+						<div class="panel-title" th:text="#{label.conferma_inserimento_piano}"></div>
+
+					</div>
+					<div class="modal-footer">
+						<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/insertPianoFormativo|}" class="btn btn-success pull-right" th:text="#{label.Ok}">Ok</a>
+						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 
 		<div class="row">
 			<div class="col-xs-12">
