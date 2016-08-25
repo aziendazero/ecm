@@ -54,6 +54,7 @@ import it.tredi.ecm.service.ProviderService;
 @WithUserDetails("admin")
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING) // ordina i test in base al nome crescente
 @Rollback(true)
+@Ignore
 public class PianoFormativoTest {
 
 	@Autowired

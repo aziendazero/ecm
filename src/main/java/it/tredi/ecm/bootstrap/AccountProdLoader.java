@@ -20,18 +20,18 @@ import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.RoleRepository;
 
 @Component
-@org.springframework.context.annotation.Profile({"dev","demo"})
-public class AccountLoader implements ApplicationListener<ContextRefreshedEvent> {
-
-	private final static Logger LOGGER = LoggerFactory.getLogger(AccountLoader.class);
-	private final String defaultDataScadenzaPassword = "2016-12-31";
+@org.springframework.context.annotation.Profile("prod")
+public class AccountProdLoader implements ApplicationListener<ContextRefreshedEvent> {
+	private final static Logger LOGGER = LoggerFactory.getLogger(AccountProdLoader.class);
 	
 	private final RoleRepository roleRepository;
 	private final AccountRepository accountRepository;
 	private final ProfileRepository profileRepository;
 	
+	private final String defaultDataScadenzaPassword = "2016-12-31";
+	
 	@Autowired
-	public AccountLoader(AccountRepository accountRepository, RoleRepository roleRepository, ProfileRepository profileRepository) {
+	public AccountProdLoader(AccountRepository accountRepository, RoleRepository roleRepository, ProfileRepository profileRepository) {
 		this.accountRepository = accountRepository;
 		this.roleRepository = roleRepository;
 		this.profileRepository = profileRepository;
@@ -44,7 +44,12 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 		Set<Account> accounts = accountRepository.findAll();
 			
 		if(accounts.isEmpty()){
-			/* ACCREDITAMENTO */
+			
+			/***********************
+			****	INIT ROLES	****
+			************************/
+			
+			/*	ACCREDITAMENTO	*/
 			Role role_readAccreditamento = new Role();
 			role_readAccreditamento.setName(RoleEnum.ACCREDITAMENTO_SHOW.name());
 			role_readAccreditamento.setDescription("ACCREDITAMENTO (LETTURA)");
@@ -112,6 +117,11 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			role_createUser.setDescription("UTENTI (CREAZIONE)");
 			roleRepository.save(role_createUser);
 			
+			
+			/***************************
+			****	INIT PROFILES	****
+			****************************/
+			
 			/* PROFILE PROVIDER */
 			Profile profile_provider = new Profile();
 			profile_provider.setProfileEnum(ProfileEnum.PROVIDER);
@@ -134,7 +144,6 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			
 			profile_admin.getRoles().add(role_readAllAccreditamento);
 			profile_admin.getRoles().add(role_writeAllAccreditamento);
-
 			profileRepository.save(profile_admin);
 			
 			/* PROFILE REFEREE */
@@ -164,34 +173,24 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 
 			profileRepository.save(profile_osservatore);
 			
-			Account provider = new Account();
-			provider.setUsername("provider");
-			provider.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
-			//provider.setPassword("admin");
-			provider.setEmail("tiommi@3di.it");
-			provider.setChangePassword(false);
-			provider.setEnabled(true);
-			provider.setExpiresDate(null);
-			provider.setLocked(false);
-			provider.getProfiles().add(profile_provider);
-			provider.setDataScadenzaPassword(LocalDate.now());
 			
-			accountRepository.save(provider);
+			/***************************
+			****	INIT UTENTI ECM	****
+			****************************/
 			
 			Account admin = new Account();
 			admin.setUsername("admin");
 			admin.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
 			//admin.setPassword("admin");
-			admin.setEmail("dpranteda@3di.it");
+			admin.setEmail("segreteria@ecm.it");
 			admin.setChangePassword(false);
 			admin.setEnabled(true);
 			admin.setExpiresDate(null);
 			admin.setLocked(false);
 			admin.getProfiles().add(profile_admin);
-			admin.setDataScadenzaPassword(LocalDate.now());
-			
+			admin.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
 			accountRepository.save(admin);
-			
+
 			Account referee1 = new Account();
 			referee1.setUsername("referee1");
 			referee1.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");

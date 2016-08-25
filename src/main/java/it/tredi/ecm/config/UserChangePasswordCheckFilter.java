@@ -1,4 +1,5 @@
 package it.tredi.ecm.config;
+import java.applet.AppletContext;
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -10,15 +11,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import it.tredi.ecm.service.bean.CurrentUser;
 
 @Component
 public class UserChangePasswordCheckFilter extends GenericFilterBean  {
+	
 	protected final Logger LOGGER = LoggerFactory.getLogger(UserChangePasswordCheckFilter.class);
 
 	public void destroy() {
@@ -54,7 +58,8 @@ public class UserChangePasswordCheckFilter extends GenericFilterBean  {
 		if(redirect)
 		{
 			LOGGER.info("Redirect in corso");
-			((HttpServletResponse)response).sendRedirect("/user/changePassword");
+			LOGGER.info("contextPath: " + ((HttpServletRequest)request).getContextPath());
+			((HttpServletResponse)response).sendRedirect(((HttpServletRequest)request).getContextPath() +  "/user/changePassword");
 		}
 		else{
 			chain.doFilter(request, response);

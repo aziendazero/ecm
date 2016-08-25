@@ -98,13 +98,5 @@ public class AccountValidator{
 				}
 			}
 		}
-		
-		if(account.getCognome().isEmpty()){
-			errors.rejectValue(prefix + "cognome", "error.empty");
-		}
-		
-		if(account.getNome().isEmpty()){
-			errors.rejectValue(prefix + "nome", "error.empty");
-		}
 	}
 }

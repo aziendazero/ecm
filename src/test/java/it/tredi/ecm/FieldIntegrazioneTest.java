@@ -68,6 +68,7 @@ import it.tredi.ecm.service.PersonaService;
 @WithUserDetails("admin")
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING) // ordina i test in base al nome crescente
 @Rollback(false)
+@Ignore
 public class FieldIntegrazioneTest {
 
 	@Autowired

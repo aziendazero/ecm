@@ -46,13 +46,6 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 	@Autowired private DisciplinaService disciplinaService;
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 
-//	@Autowired
-//	public ProviderLoader(ProviderRepository providerRepository, PersonaRepository personaRepository, AccountRepository accountRepository) {
-//		this.providerRepository = providerRepository;
-//		this.personaRepository = personaRepository;
-//		this.accountRepository = accountRepository;
-//	}
-//
 	@Override
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event){

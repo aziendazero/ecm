@@ -55,7 +55,7 @@ public class Account extends BaseEntity{
 	private Set<Profile> profiles = new HashSet<Profile>();
 
 	public boolean isPasswordExpired(){
-		if(dataScadenzaPassword == null || dataScadenzaPassword.isBefore(LocalDate.now()))
+		if(dataScadenzaPassword == null || !dataScadenzaPassword.isAfter(LocalDate.now()))
 			return true;
 		return false;
 	}
