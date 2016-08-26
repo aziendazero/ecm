@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
@@ -204,6 +205,74 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
+	@Transactional
+	public void assegnaGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) {
+		LOGGER.debug(Utils.getLogMessage("Assegnamento domanda di Accreditamento " + accreditamentoId + " ad un gruppo CRECM"));
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		//setta la data
+		valutazione.setDataValutazione(LocalDate.now());
+
+		//inserisce il commento complessivo
+		valutazione.setValutazioneComplessiva(valutazioneComplessiva);
+
+		//la segreteria crea le valutazioni per i referee
+		if (Utils.getAuthenticatedUser().isSegreteria()){
+			for (Account a : refereeGroup) {
+				Valutazione valutazioneReferee = new Valutazione();
+				valutazioneReferee.setAccount(a);
+				valutazioneReferee.setAccreditamento(accreditamento);
+				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+				valutazioneService.save(valutazioneReferee);
+			}
+		}
+		valutazioneService.save(valutazione);
+
+		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
+		accreditamentoRepository.save(accreditamento);
+
+
+	}
+
+	@Override
+	@Transactional
+	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup) {
+		LOGGER.debug(Utils.getLogMessage("RIassegnamento domanda di Accreditamento " + accreditamentoId + " ad un ALTRO gruppo CRECM"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		//elimino le valutazioni dei vecchi referee e i loro fieldValutazione
+		Set<Account> valutatori = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamentoId);
+		for(Account a : valutatori) {
+			if(a.isReferee()) {
+				//TODO send notifica/messaggio
+				valutazioneService.delete(valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId()));
+			}
+		}
+
+		//la segreteria crea le valutazioni per i nuovi referee
+		if (Utils.getAuthenticatedUser().isSegreteria()){
+			for (Account a : refereeGroup) {
+				Valutazione valutazioneReferee = new Valutazione();
+				valutazioneReferee.setAccount(a);
+				valutazioneReferee.setAccreditamento(accreditamento);
+				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+				valutazioneService.save(valutazioneReferee);
+			}
+		}
+
+		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
+		accreditamentoRepository.save(accreditamento);
+	}
+
+	@Override
+	@Transactional
+	public void assegnaStessoGruppoCrecm(Long accreditamentoId) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Recupero datiAccreditamento per la domanda " + accreditamentoId));
 		DatiAccreditamento datiAccreditamento = accreditamentoRepository.getDatiAccreditamentoForAccreditamento(accreditamentoId);
@@ -309,7 +378,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			return true;
 		else return false;
 	}
-	
+
 	@Override
 	/*
 	 * L'utente (segreteria | commissioneECM) può visualizzare tutte le valutazioni inviate
@@ -322,4 +391,23 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return false;
 	}
 
+	@Override
+	/*
+	 * L'utente (segreteria) può riassegnare l'accreditamento ad un altro gruppo di referee crecm
+	 */
+	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser) {
+		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isAssegnamento())
+			return true;
+		return false;
+	}
+
+	@Override
+	/*
+	 * L'utente (segreteria) può riassegnare l'accreditamento allo stesso gruppo referee crecm
+	 */
+	public boolean canRiassegnaStessoGruppo(Long accreditamentoId, CurrentUser currentUser) {
+		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isValutazioneSegreteria())
+			return true;
+		return false;
+	}
 }

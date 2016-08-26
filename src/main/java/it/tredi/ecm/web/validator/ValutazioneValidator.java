@@ -6,6 +6,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Account;
@@ -39,6 +40,13 @@ public class ValutazioneValidator {
 		}
 		if(valutazioneComplessiva == null || valutazioneComplessiva.isEmpty()) {
 			errors.rejectValue("valutazioneComplessiva", "error.empty");
+		}
+	}
+
+	public void validateGruppoCrecm(Object targetReferee, Errors errors) {
+		Set<Account> refereeGroup = (Set<Account>)targetReferee;
+		if(Utils.getAuthenticatedUser().isSegreteria() && (refereeGroup == null || refereeGroup.size() != 3)) {
+			errors.rejectValue("refereeGroup", "error.numero_referee");
 		}
 	}
 

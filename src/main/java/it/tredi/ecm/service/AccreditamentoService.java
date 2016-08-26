@@ -1,8 +1,8 @@
 package it.tredi.ecm.service;
 
-import java.util.Collection;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
@@ -28,6 +28,9 @@ public interface AccreditamentoService{
 
 	public void inviaDomandaAccreditamento(Long accreditamentoId);
 	public void inserisciPianoFormativo(Long accreditamentoId);
+	public void assegnaGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup);
+	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup);
+	public void assegnaStessoGruppoCrecm(Long accreditamentoId);
 
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception;
 	public Long getProviderIdForAccreditamento(Long accreditamentoId);
@@ -48,5 +51,8 @@ public interface AccreditamentoService{
 	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserValutaDomandaShow(Long id, CurrentUser authenticatedUser);
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canRiassegnaStessoGruppo(Long accreditamentoId, CurrentUser currentUser);
+
 
 }

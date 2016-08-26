@@ -173,9 +173,22 @@ public class AccreditamentoController {
 		}
 	}
 
-	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento){
-		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperShow(accreditamento);
+	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento) {
+		return goToAccreditamentoShow(model, accreditamento, null);
+	}
+
+	//passo il wrapper che contiene solo la lista dei referee riassegnati
+	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper){
+		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperShow(accreditamento, wrapper);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
+		if(accreditamentoWrapper.isCanAssegnaNuovoGruppo()) {
+			//inserisce una lista di referee che non contiene quelli già assegnati alla domanda
+			Set<Account> refereeList = accountService.getUserByProfileEnum(ProfileEnum.REFEREE);
+			Set<Account> oldRefereeList = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamento.getId());
+			refereeList.removeAll(oldRefereeList);
+			//rimuove dalla lista di tutti i referee selezionabili quelli che erano stati precedentemente incaricati di valutare la domanda
+			model.addAttribute("refereeList", refereeList);
+		}
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoShow"));
 		return "accreditamento/accreditamentoShow";
 	}
@@ -208,35 +221,35 @@ public class AccreditamentoController {
 		if(tab != null) {
 			switch(tab) {
 
-			case "tab1":	
+			case "tab1":
 							model.addAttribute("currentTab", "tab1");
 							break;
 
-			case "tab2":	
-							if(accreditamentoWrapper.isSezione1Stato()) 
+			case "tab2":
+							if(accreditamentoWrapper.isSezione1Stato())
 							{
 								model.addAttribute("currentTab", "tab2");
 								if (accreditamentoWrapper.getResponsabileSegreteria() == null &&
 										accreditamentoWrapper.getResponsabileAmministrativo() == null &&
 										accreditamentoWrapper.getResponsabileSistemaInformatico() == null &&
-										accreditamentoWrapper.getResponsabileQualita() == null) 
+										accreditamentoWrapper.getResponsabileQualita() == null)
 									{
 										model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
 									}
 							}
-							else 
+							else
 							{
 								model.addAttribute("currentTab", "tab1");
 								model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
 							}
 							break;
 
-			case "tab3":	
+			case "tab3":
 							if(accreditamentoWrapper.isSezione2Stato())
 							{
 								model.addAttribute("currentTab", "tab3");
 							}
-							else 
+							else
 							{
 								if(accreditamentoWrapper.isSezione1Stato()) {
 									model.addAttribute("currentTab", "tab2");
@@ -249,7 +262,7 @@ public class AccreditamentoController {
 							}
 							break;
 
-			case "tab4":  	
+			case "tab4":
 							if(accreditamentoWrapper.isCompleta())
 							{
 								model.addAttribute("currentTab", "tab4");
@@ -272,7 +285,7 @@ public class AccreditamentoController {
 							}
 							break;
 
-			default:		
+			default:
 						break;
 			}
 		}
@@ -367,19 +380,30 @@ public class AccreditamentoController {
 		return accreditamentoWrapper;
 	}
 
-	private AccreditamentoWrapper prepareAccreditamentoWrapperShow(Accreditamento accreditamento){
+	private AccreditamentoWrapper prepareAccreditamentoWrapperShow(Accreditamento accreditamento, AccreditamentoWrapper accreditamentoWrapper){
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - entering"));
 
-		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
+		if(accreditamentoWrapper == null)
+			accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
+		else
+			accreditamentoWrapper.setAllAccreditamento(accreditamento);
+
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, "show");
+		CurrentUser user = Utils.getAuthenticatedUser();
 
 		//logica per mostrare i pulsanti relativi alla valutazione della segreteria o i referee
-		accreditamentoWrapper.setCanPrendiInCarica(accreditamentoService.canUserPrendiInCarica(accreditamento.getId(), Utils.getAuthenticatedUser()));
-		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
-		accreditamentoWrapper.setCanShowValutazioneRiepilogo(accreditamentoService.canUserValutaDomandaShowRiepilogo(accreditamento.getId(), Utils.getAuthenticatedUser()));
-		
+		accreditamentoWrapper.setCanPrendiInCarica(accreditamentoService.canUserPrendiInCarica(accreditamento.getId(), user));
+		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), user));
+		accreditamentoWrapper.setCanShowValutazioneRiepilogo(accreditamentoService.canUserValutaDomandaShowRiepilogo(accreditamento.getId(), user));
+
 		//controllo se l'utente può visualizzare la valutazione
-		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), Utils.getAuthenticatedUser()));
+		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), user));
+
+		//controllo se devo mostrare il pulsante per riassegnare il gruppo crecm
+		accreditamentoWrapper.setCanAssegnaNuovoGruppo(accreditamentoService.canRiassegnaGruppo(accreditamento.getId(), user));
+
+		//controllo se devo mostrare i pulsanti presa visione/rimanda in valutazione da parte dello stesso crecm
+		accreditamentoWrapper.setCanAssegnaStessoGruppo(accreditamentoService.canRiassegnaStessoGruppo(accreditamento.getId(), user));
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
@@ -510,26 +534,8 @@ public class AccreditamentoController {
 				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 				return goToAccreditamentoValidate(model, accreditamento, wrapper);
 			}else {
-				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+				accreditamentoService.assegnaGruppoCrecm(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getRefereeGroup());
 
-				//setta la data
-				valutazione.setDataValutazione(LocalDate.now());
-
-				//inserisce il commento complessivo
-				valutazione.setValutazioneComplessiva(wrapper.getValutazioneComplessiva());
-
-				//la segreteria crea le valutazioni per i referee
-				if (Utils.getAuthenticatedUser().isSegreteria()){
-					for (Account a : wrapper.getRefereeGroup()) {
-						Valutazione valutazioneReferee = new Valutazione();
-						valutazioneReferee.setAccount(a);
-						valutazioneReferee.setAccreditamento(accreditamentoService.getAccreditamento(accreditamentoId));
-						valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
-						valutazioneService.save(valutazioneReferee);
-					}
-				}
-
-				valutazioneService.save(valutazione);
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 				redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
@@ -542,6 +548,40 @@ public class AccreditamentoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
 			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}
+	}
+
+	// riassegna la valutazioni ad un nuovo gruppo crecm, avvisa i referee precedentemente assegnati e cancella le loro valutazioni
+	//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/reassignEvaluation", method = RequestMethod.POST)
+	public String riassegnaValutazioneAccreditamento(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
+			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/reassignEvaluation"));
+		try {
+			//validazione dei nuovi referee
+			valutazioneValidator.validateGruppoCrecm(wrapper.getRefereeGroup(), result);
+
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("reassignErrors", true);
+				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+				return goToAccreditamentoShow(model, accreditamento, wrapper);
+			}else {
+				accreditamentoService.riassegnaGruppoCrecm(accreditamentoId, wrapper.getRefereeGroup());
+
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+				redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.gruppoCrecm_riassegnato", "success"));
+
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/reassignEvaluation"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
 	}
 

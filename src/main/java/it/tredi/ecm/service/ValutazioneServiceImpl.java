@@ -41,6 +41,12 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 	@Override
+	public void delete(Valutazione valutazione) {
+		LOGGER.debug(Utils.getLogMessage("Eliminazione Valutazione id: " + valutazione.getId()));
+		valutazioneRepository.delete(valutazione);
+	}
+
+	@Override
 	public Valutazione getValutazioneByAccreditamentoIdAndAccountId(Long accreditamentoId, Long accountId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Valutazione per l'accreditamento " + accreditamentoId + " eseguita dall'utente " + accountId));
 		Valutazione valutazione = valutazioneRepository.findOneByAccreditamentoIdAndAccountId(accreditamentoId, accountId);
@@ -53,7 +59,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByDataValutazioneAsc(accreditamentoId);
 		return allValutazioni;
 	}
-	
+
 	@Override
 	public Set<Valutazione> getAllValutazioniCompleteForAccreditamentoId(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le Valutazioni complete per l'accreditamento " + accreditamentoId));
@@ -83,6 +89,8 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 			Map<IdFieldEnum, FieldValutazioneAccreditamento> mapValutazioni = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(v.getValutazioni(), subset);
 			//inserisco il tutto nella mappa valutatoreValutazioni
 			mappaValutatoreValutazioni.put(v.getAccount(), mapValutazioni);
+			LOGGER.debug(Utils.getLogMessage("YOOO: " + mappaValutatoreValutazioni));
+
 		}
 		return mappaValutatoreValutazioni;
 	}

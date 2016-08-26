@@ -15,6 +15,7 @@ public interface ValutazioneService {
 	public Set<Valutazione> getAllValutazioniForAccreditamentoId(Long accreditamentoId);
 	public Set<Valutazione> getAllValutazioniCompleteForAccreditamentoId(Long accreditamentoId);
 	public void save(Valutazione valutazione);
+	public void delete(Valutazione valutazione);
 	public Set<Account> getAllValutatoriForAccreditamentoId(Long accreditamentoId);
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(Long accreditamentoId, SubSetFieldEnum subset);
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndObjectId(Long accreditamentoId, Long id);

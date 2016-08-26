@@ -166,6 +166,14 @@ public class Accreditamento extends BaseEntity{
 		return stato.equals(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
 	}
 
+	public boolean isAssegnamento(){
+		return stato.equals(AccreditamentoStatoEnum.ASSEGNAMENTO);
+	}
+
+	public boolean isValutazioneSegreteria() {
+		return stato.equals(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA);
+	}
+
 	public boolean isProcedimentoAttivo(){
 		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;
