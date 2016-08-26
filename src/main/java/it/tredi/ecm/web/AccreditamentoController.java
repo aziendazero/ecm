@@ -376,7 +376,8 @@ public class AccreditamentoController {
 		//logica per mostrare i pulsanti relativi alla valutazione della segreteria o i referee
 		accreditamentoWrapper.setCanPrendiInCarica(accreditamentoService.canUserPrendiInCarica(accreditamento.getId(), Utils.getAuthenticatedUser()));
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
-
+		accreditamentoWrapper.setCanShowValutazioneRiepilogo(accreditamentoService.canUserValutaDomandaShowRiepilogo(accreditamento.getId(), Utils.getAuthenticatedUser()));
+		
 		//controllo se l'utente può visualizzare la valutazione
 		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
@@ -518,7 +519,7 @@ public class AccreditamentoController {
 				valutazione.setValutazioneComplessiva(wrapper.getValutazioneComplessiva());
 
 				//la segreteria crea le valutazioni per i referee
-				if (Utils.getAuthenticatedUser().getAccount().isSegreteria()){
+				if (Utils.getAuthenticatedUser().isSegreteria()){
 					for (Account a : wrapper.getRefereeGroup()) {
 						Valutazione valutazioneReferee = new Valutazione();
 						valutazioneReferee.setAccount(a);
@@ -553,7 +554,7 @@ public class AccreditamentoController {
 			Set<Accreditamento> listaAccreditamenti = new HashSet<Accreditamento>();
 			Set<AccreditamentoStatoEnum> stati = AccreditamentoStatoEnum.getAllStatoByGruppo(gruppo);
 			CurrentUser currentUser = Utils.getAuthenticatedUser();
-			if(currentUser.getAccount().isSegreteria()) {
+			if(currentUser.isSegreteria()) {
 				for (AccreditamentoStatoEnum s : stati) {
 					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStato(s));
 				}

@@ -21,8 +21,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name="account",
-		indexes={ @Index(name="testIndex", columnList="username"),
-					@Index(columnList="id,password")}
+indexes={ @Index(name="testIndex", columnList="username"),
+		@Index(columnList="id,password")}
 		)
 @Getter
 @Setter
@@ -45,13 +45,13 @@ public class Account extends BaseEntity{
 	private String note;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "account_profile",
-    			joinColumns = {
-    							@JoinColumn(name = "account_id")},
-    			inverseJoinColumns = {
-    							@JoinColumn(name = "profile_id")
-    			}
-    		)
+	@JoinTable(name = "account_profile",
+	joinColumns = {
+			@JoinColumn(name = "account_id")},
+	inverseJoinColumns = {
+			@JoinColumn(name = "profile_id")
+	}
+			)
 	private Set<Profile> profiles = new HashSet<Profile>();
 
 	public boolean isPasswordExpired(){
@@ -82,16 +82,16 @@ public class Account extends BaseEntity{
 	}
 
 	@Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Account entitapiatta = (Account) o;
-        return Objects.equals(id, entitapiatta.id);
-    }
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Account entitapiatta = (Account) o;
+		return Objects.equals(id, entitapiatta.id);
+	}
 
 	public boolean isSegreteria() {
 		for (Profile p : profiles){
@@ -101,7 +101,7 @@ public class Account extends BaseEntity{
 		}
 		return false;
 	}
-	
+
 	public boolean isProvider() {
 		for (Profile p : profiles){
 			if(p.getProfileEnum().equals(ProfileEnum.PROVIDER)){
@@ -110,10 +110,19 @@ public class Account extends BaseEntity{
 		}
 		return false;
 	}
-	
+
 	public boolean isReferee() {
 		for (Profile p : profiles){
 			if(p.getProfileEnum().equals(ProfileEnum.REFEREE)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isCommissioneEcm() {
+		for (Profile p : profiles){
+			if(p.getProfileEnum().equals(ProfileEnum.COMMISSIONE)){
 				return true;
 			}
 		}

@@ -1,4 +1,4 @@
-activeProfiles=demo, \!nexus
+activeProfiles=dev, \!nexus
 eclipse.preferences.version=1
 resolveWorkspaceProjects=true
 version=1

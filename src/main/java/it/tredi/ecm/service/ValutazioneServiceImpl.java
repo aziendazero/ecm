@@ -53,6 +53,13 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByDataValutazioneAsc(accreditamentoId);
 		return allValutazioni;
 	}
+	
+	@Override
+	public Set<Valutazione> getAllValutazioniCompleteForAccreditamentoId(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero tutte le Valutazioni complete per l'accreditamento " + accreditamentoId));
+		Set<Valutazione> allCompleteValutazioni = valutazioneRepository.findAllByAccreditamentoIdAndDataValutazioneNotNullOrderByDataValutazioneAsc(accreditamentoId);
+		return allCompleteValutazioni;
+	}
 
 	@Override
 	public Set<Account> getAllValutatoriForAccreditamentoId(Long accreditamentoId) {

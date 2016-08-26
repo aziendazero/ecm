@@ -264,6 +264,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
+	/*
+	 * L'utente segreteria può prendere in carica una domanda se:
+	 * 	+ La domanda è in stato VALUTAZIONE_SEGRTERIA_ASSEGNAMENTO
+	 *  + E NON esiste già una valutazione di tipo SEGRETERIA_ECM (significa che nessun altro l'ha già presa in carico)
+	 */
 	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser) {
 		if(currentUser.hasProfile(ProfileEnum.SEGRETERIA) && getAccreditamento(accreditamentoId).isValutazioneSegreteriaAssegnamento()) {
 			Set<Valutazione> valutazioniAccreditamento = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
@@ -278,6 +283,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
+	/*
+	 * L'utente (segreteria | referee) può andare in validate e valutare se:
+	 * 	+ ESISTE una valutazione agganciata al suo account e non è stata ancora inviata (dataValutazione == NULL)
+	 */
 	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser) {
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, currentUser.getAccount().getId());
 		if(valutazione != null &&
@@ -288,13 +297,29 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
+	/*
+	 * L'utente (segreteria | referee) può visualizzare la valutazione:
+	 * 	+ ESISTE una valutazione agganciata al suo account ed è stata inviata (dataValutazione != NULL)
+	 */
 	public boolean canUserValutaDomandaShow(Long accreditamentoId, CurrentUser currentUser) {
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, currentUser.getAccount().getId());
 		if(valutazione != null &&
 				(valutazione.getDataValutazione() != null) &&
-				(currentUser.hasProfile(ProfileEnum.SEGRETERIA) || currentUser.hasProfile(ProfileEnum.REFEREE)))
+				(currentUser.isSegreteria() || currentUser.isReferee()))
 			return true;
 		else return false;
+	}
+	
+	@Override
+	/*
+	 * L'utente (segreteria | commissioneECM) può visualizzare tutte le valutazioni inviate
+	 */
+	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser) {
+		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm()){
+			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoId(accreditamentoId);
+			return !valutazioni.isEmpty();
+		}
+		return false;
 	}
 
 }

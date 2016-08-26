@@ -97,6 +97,7 @@ public class AccreditamentoWrapper {
 	private boolean canPrendiInCarica;
 	private boolean canValutaDomanda;
 	private boolean canShowValutazione;
+	private boolean canShowValutazioneRiepilogo;
 	private boolean canAssegnaNuovoGruppo;
 	private boolean canConfermaValutazione;
 

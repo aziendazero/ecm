@@ -53,5 +53,32 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
 		}
 		return false;
 	}
+
+	public boolean isSegreteria() {
+		if(account != null){
+			return account.isSegreteria();
+		}
+		return false;
+	}
+
+	public boolean isProvider() {
+		if(account != null){
+			return account.isProvider();
+		}
+		return false;
+	}
+
+	public boolean isReferee() {
+		if(account != null){
+			return account.isReferee();
+		}
+		return false;
+	}
 	
+	public boolean isCommissioneEcm() {
+		if(account != null){
+			return account.isCommissioneEcm();
+		}
+		return false;
+	}
 }

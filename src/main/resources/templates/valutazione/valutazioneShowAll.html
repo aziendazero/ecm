@@ -9,6 +9,20 @@
 		<th:block th:fragment="showAllValutazioni">
 			<div class="row">
 
+				<!-- riempito con chiamata ajax valutazioni complessive -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.valutazioni_complessive}">label.valutazioni_complessive</h2>
+						<div class="clearfix"></div>
+					</div>
+					
+					<table id="valutazioniComplessiveBlockValidate"
+									cellspacing="0" width="100%">
+									<thead></thead>
+									<tbody></tbody>
+						</table>
+				</div>
+
 				<!-- riempito con chiamata ajax provider -->
 				<div class="x_panel">
               		<div class="x_title">
@@ -183,6 +197,29 @@
 				function populateShowAllValutazioni(){
 
 					var url;
+					
+					//valutazioni complessive
+					var table = $('#valutazioniComplessiveBlockValidate');
+					//table.clear();
+					urlGet = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/valutazioniCoomplessive|}]];
+					$.get( urlGet, function(data){
+						console.log(data);
+						$('#valutazioniComplessiveBlockValidate').append("<thead><tr>");
+						for(var k in data){
+							$('#valutazioniComplessiveBlockValidate thead tr').append("<th>" + k + "</th>");
+						}
+						$('#valutazioniComplessiveBlockValidate').append("</tr></thead>");
+						
+						$('#valutazioniComplessiveBlockValidate').append("<tbody><tr>");
+						for(var k in data){
+							$('#valutazioniComplessiveBlockValidate tbody tr').append("<td>" + data[k] + "</td>");
+						}
+						$('#valutazioniComplessiveBlockValidate').append("</tr></tbody>");
+						/* table.row.add([	data[0].value
+						               	
+									]).draw(false); */
+									$('#valutazioniComplessiveBlockValidate').DataTable();
+					});
 
 					//provider
 					if([[${accreditamentoWrapper.provider != null}]]) {
@@ -289,7 +326,6 @@
 					                  ]
 					});
 				});
-
 
 			/*]]>*/
 			</script>

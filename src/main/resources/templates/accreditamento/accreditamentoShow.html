@@ -33,6 +33,8 @@
 						</div>
 					</div>
 				</div>
+				
+				<th:block th:include="fragments/modaleRiepilogoValutazioni :: modaleRiepilogoValutazioni"></th:block>
 
 				<div class="x_panel">
 					<div class="x_title x_menu">
@@ -41,12 +43,13 @@
 							<div class="dropdown pull-right">
 								<a class="btn btn-primary ajaxCallShowAll" th:text="#{label.mostra_riepilogo}" data-toggle="modal" data-target=".modal-showAll"></a>
   								<!-- button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"  th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" -->
-  								<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"  th:if="${#authentication.principal.account.isSegreteria()}">
+  								<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"  th:if="${#authentication.principal.isSegreteria()}">
 									<span th:text="#{label.menu_azioni}"></span>
 									<span class="caret"></span>
 								</button>
 								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
+									<li><a th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button" class="ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}"	data-toggle="modal" data-target=".modal-showAllValutazioni"></a></li>
 									<li><a th:text="#{label.modifica}" onclick="switchMode('edit')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canShowValutazione}" th:text="#{label.mostra_valutazione}" onclick="switchMode('validate')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canValutaDomanda}" th:text="#{label.valuta_domanda}" onclick="switchMode('validate')"></a></li>
@@ -56,11 +59,11 @@
 									<li><a th:if="${accreditamentoWrapper.canAssegnaNuovoGruppo}" th:text="#{label.assegna_nuovo_gruppo}" onclick="alert('TODO')"></a></li>
 								</ul>
 								<!-- menù a pulsanti separati per il provider -->
-								<th:block th:if="${#authentication.principal.hasProfile('PROVIDER')}">
+								<th:block th:if="${#authentication.principal.isProvider()}">
 									<a th:if="${accreditamentoWrapper.accreditamento.bozza}" class="btn btn-success" th:text="#{label.modifica}" onclick="switchMode('edit')"></a>
 								</th:block>
 								<!-- menù a pulsanti separati per il referee -->
-								<th:block th:if="${#authentication.principal.hasProfile('REFEREE')}">
+								<th:block th:if="${#authentication.principal.isReferee()}">
 									<a th:if="${accreditamentoWrapper.canValutaDomanda}" class="btn btn-success" th:text="#{label.valuta_domanda}" onclick="switchMode('validate')"></a>
 									<a th:if="${accreditamentoWrapper.canShowValutazione}" class="btn btn-success" th:text="#{label.mostra_valutazione}" onclick="switchMode('validate')"></a>
 								</th:block>
@@ -103,6 +106,7 @@
 				}
 
 				$('.ajaxCallShowAll').one("click", populateShowAll);
+				$('.ajaxCallShowAllValutazioni').one("click", populateShowAllValutazioni);
 
 			/*]]>*/
 			</script>
