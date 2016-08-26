@@ -93,6 +93,15 @@ public class Account extends BaseEntity{
 		return Objects.equals(id, entitapiatta.id);
 	}
 
+	public String getFullName(){
+		String c = "";
+		String n = "";
+		if(cognome != null) c = cognome;
+		if(nome != null) n = nome;
+		
+		return n + " " + c;
+	}
+	
 	public boolean isSegreteria() {
 		for (Profile p : profiles){
 			if(p.getProfileEnum().equals(ProfileEnum.SEGRETERIA)){

@@ -16,10 +16,15 @@
 						<div class="clearfix"></div>
 					</div>
 					
-					<table id="valutazioniComplessiveBlockValidate"
-									cellspacing="0" width="100%">
-									<thead></thead>
-									<tbody></tbody>
+					<table id="valutazioniComplessiveBlockValidate" class="datatable-responsive-search-validation-full table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- popolata con una request ajax -->
+							</tbody>
 						</table>
 				</div>
 
@@ -199,26 +204,31 @@
 					var url;
 					
 					//valutazioni complessive
-					var table = $('#valutazioniComplessiveBlockValidate');
-					//table.clear();
-					urlGet = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/valutazioniCoomplessive|}]];
+					urlGet = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/valutazioniComplessive|}]];
 					$.get( urlGet, function(data){
-						console.log(data);
-						$('#valutazioniComplessiveBlockValidate').append("<thead><tr>");
-						for(var k in data){
-							$('#valutazioniComplessiveBlockValidate thead tr').append("<th>" + k + "</th>");
+						var cols = new Array();
+						for(var item = 0; item < data.length; item++){
+							var valutazione = data[item];
+							if(item == 0){
+								$('#valutazioniComplessiveBlockValidate thead tr th').append(valutazione['header']);
+							}else{
+								$('#valutazioniComplessiveBlockValidate thead tr').append("<th>" + valutazione['header'] + "</th>");
+							}
+							cols[item] = valutazione['value'];
 						}
-						$('#valutazioniComplessiveBlockValidate').append("</tr></thead>");
 						
-						$('#valutazioniComplessiveBlockValidate').append("<tbody><tr>");
-						for(var k in data){
-							$('#valutazioniComplessiveBlockValidate tbody tr').append("<td>" + data[k] + "</td>");
-						}
-						$('#valutazioniComplessiveBlockValidate').append("</tr></tbody>");
-						/* table.row.add([	data[0].value
-						               	
-									]).draw(false); */
-									$('#valutazioniComplessiveBlockValidate').DataTable();
+						var table = $('#valutazioniComplessiveBlockValidate').DataTable({
+							"bInfo" : false,
+							"bPaginate" : false,
+							"bFilter" : false,
+							"order": [ 0, 'disabled' ],
+						    "columnDefs": [
+						                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
+						                  ]
+						});
+						table.clear();
+						
+						table.row.add(cols).draw(false);
 					});
 
 					//provider
@@ -316,7 +326,7 @@
 					                    {"targets": [ 0 ], "width": "1px"}
 					                  ]
 					});
-					$('.datatable-responsive-search-validation-full').DataTable({
+					/* $('.datatable-responsive-search-validation-full').DataTable({
 						"bInfo" : false,
 						"bPaginate" : false,
 						"bFilter" : false,
@@ -324,7 +334,7 @@
 					    "columnDefs": [
 					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
 					                  ]
-					});
+					}); */
 				});
 
 			/*]]>*/
