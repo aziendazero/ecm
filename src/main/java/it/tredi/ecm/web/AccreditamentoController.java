@@ -222,71 +222,71 @@ public class AccreditamentoController {
 			switch(tab) {
 
 			case "tab1":
-							model.addAttribute("currentTab", "tab1");
-							break;
+				model.addAttribute("currentTab", "tab1");
+				break;
 
 			case "tab2":
-							if(accreditamentoWrapper.isSezione1Stato())
-							{
-								model.addAttribute("currentTab", "tab2");
-								if (accreditamentoWrapper.getResponsabileSegreteria() == null &&
-										accreditamentoWrapper.getResponsabileAmministrativo() == null &&
-										accreditamentoWrapper.getResponsabileSistemaInformatico() == null &&
-										accreditamentoWrapper.getResponsabileQualita() == null)
-									{
-										model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
-									}
-							}
-							else
-							{
-								model.addAttribute("currentTab", "tab1");
-								model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
-							}
-							break;
+				if(accreditamentoWrapper.isSezione1Stato())
+				{
+					model.addAttribute("currentTab", "tab2");
+					if (accreditamentoWrapper.getResponsabileSegreteria() == null &&
+							accreditamentoWrapper.getResponsabileAmministrativo() == null &&
+							accreditamentoWrapper.getResponsabileSistemaInformatico() == null &&
+							accreditamentoWrapper.getResponsabileQualita() == null)
+					{
+						model.addAttribute("message", new Message("message.warning", "message.legale_non_piu_modificabile", "warning"));
+					}
+				}
+				else
+				{
+					model.addAttribute("currentTab", "tab1");
+					model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+				}
+				break;
 
 			case "tab3":
-							if(accreditamentoWrapper.isSezione2Stato())
-							{
-								model.addAttribute("currentTab", "tab3");
-							}
-							else
-							{
-								if(accreditamentoWrapper.isSezione1Stato()) {
-									model.addAttribute("currentTab", "tab2");
-									model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
-								}
-								else {
-									model.addAttribute("currentTab", "tab1");
-									model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
-								}
-							}
-							break;
+				if(accreditamentoWrapper.isSezione2Stato())
+				{
+					model.addAttribute("currentTab", "tab3");
+				}
+				else
+				{
+					if(accreditamentoWrapper.isSezione1Stato()) {
+						model.addAttribute("currentTab", "tab2");
+						model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
+					}
+					else {
+						model.addAttribute("currentTab", "tab1");
+						model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+					}
+				}
+				break;
 
 			case "tab4":
-							if(accreditamentoWrapper.isCompleta())
-							{
-								model.addAttribute("currentTab", "tab4");
-							}
-							else {
-									if(accreditamentoWrapper.isSezione2Stato()) {
-										model.addAttribute("currentTab", "tab3");
-										model.addAttribute("message", new Message("message.warning", "message.compilare_altre_tab", "warning"));
-									}
-									else {
-											if(accreditamentoWrapper.isSezione1Stato()) {
-												model.addAttribute("currentTab", "tab2");
-												model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
-											}
-											else {
-												model.addAttribute("currentTab", "tab1");
-												model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
-											}
-									}
-							}
-							break;
+				if(accreditamentoWrapper.isCompleta())
+				{
+					model.addAttribute("currentTab", "tab4");
+				}
+				else {
+					if(accreditamentoWrapper.isSezione2Stato()) {
+						model.addAttribute("currentTab", "tab3");
+						model.addAttribute("message", new Message("message.warning", "message.compilare_altre_tab", "warning"));
+					}
+					else {
+						if(accreditamentoWrapper.isSezione1Stato()) {
+							model.addAttribute("currentTab", "tab2");
+							model.addAttribute("message", new Message("message.warning", "message.compilare_tab2", "warning"));
+						}
+						else {
+							model.addAttribute("currentTab", "tab1");
+							model.addAttribute("message", new Message("message.warning", "message.compilare_tab1", "warning"));
+						}
+					}
+				}
+				break;
 
 			default:
-						break;
+				break;
 			}
 		}
 	}
@@ -402,9 +402,6 @@ public class AccreditamentoController {
 		//controllo se devo mostrare il pulsante per riassegnare il gruppo crecm
 		accreditamentoWrapper.setCanAssegnaNuovoGruppo(accreditamentoService.canRiassegnaGruppo(accreditamento.getId(), user));
 
-		//controllo se devo mostrare i pulsanti presa visione/rimanda in valutazione da parte dello stesso crecm
-		accreditamentoWrapper.setCanAssegnaStessoGruppo(accreditamentoService.canRiassegnaStessoGruppo(accreditamento.getId(), user));
-
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
 	}
@@ -422,6 +419,9 @@ public class AccreditamentoController {
 
 		//controllo sul pulsante conferma valutazione
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
+
+		//controllo se devo mostrare i pulsanti presa visione/rimanda in valutazione da parte dello stesso crecm
+		accreditamentoWrapper.setCanPresaVisione(accreditamentoService.canPresaVisione(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
 		//inserisco i suoi fieldValutazione nella mappa per il wrapper
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
@@ -519,30 +519,54 @@ public class AccreditamentoController {
 	}
 
 	// salva valutazione complessiva (inserisce data e valutazione complessiva)
+	// se lo stato è VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO assegna un gruppo crecm e crea le valutazioni corrispondenti ai referee
+	// se lo stato è VALUTAZIONE_SEGRETERIA riassegna lo stesso gruppo crecm eliminando la data della valutazione corrispondente a ciascun referee
 	//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/confirmEvaluation", method = RequestMethod.POST)
 	public String confermaValutazioneAccreditamento(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
 			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"));
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		try {
-			//validazione della valutazioneComplessiva
-			valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), result);
+			if(accreditamento.isValutazioneSegreteriaAssegnamento()) {
 
-			if(result.hasErrors()){
-				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				model.addAttribute("confirmErrors", true);
-				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-				return goToAccreditamentoValidate(model, accreditamento, wrapper);
-			}else {
-				accreditamentoService.assegnaGruppoCrecm(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getRefereeGroup());
+				//validazione della valutazioneComplessiva
+				valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, result);
 
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
-				redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
-				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
-				return "redirect:/accreditamento/{accreditamentoId}/show";
+				if(result.hasErrors()){
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+					model.addAttribute("confirmErrors", true);
+
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else {
+					accreditamentoService.assegnaGruppoCrecm(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getRefereeGroup());
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
+					return "redirect:/accreditamento/{accreditamentoId}/show";
+				}
 			}
+			// stato VALUTAZIONE_SEGRETERIA dove valuto le integrazioni
+			else {
 
-		}catch (Exception ex){
+				//validazione della valutazioneComplessiva
+				valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, result);
+
+				if(result.hasErrors()){
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+					model.addAttribute("confirmErrors", true);
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else {
+					accreditamentoService.assegnaStessoGruppoCrecm(accreditamentoId, wrapper.getValutazioneComplessiva());
+
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata_gruppo_riassegnato", "success"));
+					return "redirect:/accreditamento/{accreditamentoId}/show";
+				}
+			}
+		}
+		catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"),ex);
 			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -585,8 +609,8 @@ public class AccreditamentoController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)
-// TODO principal non può essere provider
+	//	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)
+	// TODO principal non può essere provider
 	@RequestMapping("/accreditamento/{gruppo}/list")
 	public String getAllAccreditamentiForGruppo(@PathVariable("gruppo") String gruppo, Model model, RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list"));
