@@ -267,10 +267,32 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void assegnaStessoGruppoCrecm(Long accreditamentoId) {
-		// TODO Auto-generated method stub
+	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva) {
+		LOGGER.debug(Utils.getLogMessage("RIassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
+		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
+		//setta la data
+		valutazioneSegreteria.setDataValutazione(LocalDate.now());
+
+		//inserisce il commento complessivo
+		valutazioneSegreteria.setValutazioneComplessiva(valutazioneComplessiva);
+
+		//elimino le date delle vecchie valutazioni
+		Set<Account> valutatori = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamentoId);
+		for(Account a : valutatori) {
+			if(a.isReferee()) {
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId());
+				valutazione.setDataValutazione(null);
+				valutazioneService.save(valutazione);
+			}
+		}
+
+		valutazioneService.save(valutazioneSegreteria);
+		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
+		accreditamentoRepository.save(accreditamento);
 	}
+
 
 	@Override
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception{
@@ -405,7 +427,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	/*
 	 * L'utente (segreteria) può riassegnare l'accreditamento allo stesso gruppo referee crecm
 	 */
-	public boolean canRiassegnaStessoGruppo(Long accreditamentoId, CurrentUser currentUser) {
+	public boolean canPresaVisione(Long accreditamentoId, CurrentUser currentUser) {
 		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isValutazioneSegreteria())
 			return true;
 		return false;

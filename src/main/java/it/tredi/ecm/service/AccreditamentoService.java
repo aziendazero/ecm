@@ -30,7 +30,7 @@ public interface AccreditamentoService{
 	public void inserisciPianoFormativo(Long accreditamentoId);
 	public void assegnaGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup);
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup);
-	public void assegnaStessoGruppoCrecm(Long accreditamentoId);
+	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva);
 
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception;
 	public Long getProviderIdForAccreditamento(Long accreditamentoId);
@@ -52,7 +52,7 @@ public interface AccreditamentoService{
 	public boolean canUserValutaDomandaShow(Long id, CurrentUser authenticatedUser);
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
-	public boolean canRiassegnaStessoGruppo(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canPresaVisione(Long accreditamentoId, CurrentUser currentUser);
 
 
 }
