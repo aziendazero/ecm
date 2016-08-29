@@ -110,7 +110,6 @@
 									<li><a th:text="#{label.abilita_id_editabili}" onclick="alert('TODO')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canPrendiInCarica}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/takeCharge|}" th:text="#{label.prendi_in_carica}"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canAssegnaNuovoGruppo}" th:text="#{label.assegna_nuovo_gruppo}" data-toggle="modal" data-target=".modal-reassign"></a></li>
-									<li><a th:if="${accreditamentoWrapper.canAssegnaStessoGruppo}" th:text="#{label.assegna_stesso_gruppo}" th:href="@{|accreditamento/${accreditamentoWrapper.accreditamento.id}/reassignSameCrecm|}"></a></li>
 								</ul>
 								<!-- menù a pulsanti separati per il provider -->
 								<th:block th:if="${#authentication.principal.isProvider()}">
