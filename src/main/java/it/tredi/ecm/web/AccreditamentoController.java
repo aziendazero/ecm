@@ -528,7 +528,7 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"));
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		try {
-			if(accreditamento.isValutazioneSegreteriaAssegnamento()) {
+			if(accreditamento.isValutazioneSegreteriaAssegnamento() || accreditamento.isValutazioneCrecm()) {
 
 				//validazione della valutazioneComplessiva
 				valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, result);
@@ -539,7 +539,7 @@ public class AccreditamentoController {
 
 					return goToAccreditamentoValidate(model, accreditamento, wrapper);
 				}else {
-					accreditamentoService.assegnaGruppoCrecm(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getRefereeGroup());
+					accreditamentoService.inviaValutazioneDomanda(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getRefereeGroup());
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
