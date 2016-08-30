@@ -102,6 +102,9 @@ public class AccreditamentoWrapper {
 	private boolean canConfermaValutazione;
 	private boolean canPresaVisione;
 
+	//int referee da riassegnare
+	private int refereeDaRiassegnare = 0;
+
 	//boolean Stati dei multistanza
 	private Map<Long, Boolean> componentiComitatoScientificoStati = new HashMap<Long, Boolean>();
 	private boolean coordinatoreComitatoScientificoStato;
