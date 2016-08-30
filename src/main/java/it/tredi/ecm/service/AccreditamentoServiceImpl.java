@@ -2,7 +2,6 @@ package it.tredi.ecm.service;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +25,7 @@ import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
+import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.bean.CurrentUser;
@@ -40,6 +40,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
 	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private AccountRepository accountRepository;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -210,6 +211,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Assegnamento domanda di Accreditamento " + accreditamentoId + " ad un gruppo CRECM"));
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		Account user = Utils.getAuthenticatedUser().getAccount();
 
 		//setta la data
 		valutazione.setDataValutazione(LocalDate.now());
@@ -219,8 +221,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		valutazioneService.save(valutazione);
 
+		//il referee azzera il suo contatore di valutazioni non date consecutivamente
+		if (user.isReferee()) {
+			user.setValutazioniNonDate(0);
+			accountRepository.save(user);
+		}
+
 		//la segreteria crea le valutazioni per i referee
-		if (Utils.getAuthenticatedUser().isSegreteria()){
+		if (user.isSegreteria()){
 			for (Account a : refereeGroup) {
 				Valutazione valutazioneReferee = new Valutazione();
 				valutazioneReferee.setAccount(a);
@@ -235,18 +243,25 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 	}
 
+
 	@Override
 	@Transactional
+	//ritorna il numero di referee che non hanno valutato
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup) {
 		LOGGER.debug(Utils.getLogMessage("RIassegnamento domanda di Accreditamento " + accreditamentoId + " ad un ALTRO gruppo CRECM"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
-		//elimino le valutazioni dei vecchi referee e i loro fieldValutazione
+		//elimino le valutazioni dei referee che non hanno confermato la valutazione e aumento il loro contatore
 		Set<Account> valutatori = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamentoId);
 		for(Account a : valutatori) {
 			if(a.isReferee()) {
-				//TODO send notifica/messaggio
-				valutazioneService.delete(valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId()));
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId());
+				if(valutazione.getDataValutazione() == null) {
+					//TODO send notifica/messaggio
+					a.setValutazioniNonDate(a.getValutazioniNonDate() + 1);
+					accountRepository.save(a);
+					valutazioneService.delete(valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId()));
+				}
 			}
 		}
 

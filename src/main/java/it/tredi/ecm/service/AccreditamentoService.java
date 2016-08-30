@@ -21,7 +21,6 @@ public interface AccreditamentoService{
 	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId) throws AccreditamentoNotFoundException;
 	public AccreditamentoStatoEnum getStatoAccreditamento(Long accreditamentoId);
 
-
 	public void save(Accreditamento accreditamento);
 
 	public boolean canProviderCreateAccreditamento(Long providerId,AccreditamentoTipoEnum tipoTomanda);
