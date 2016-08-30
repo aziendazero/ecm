@@ -44,7 +44,7 @@
 									<span aria-hidden="true">×</span>
 								</button>
 								<h4 class="modal-title" id="myModalLabel"
-									th:text="#{label.assegna_nuovo_gruppo_referee}">Assegna la domanda di Accreditamento ad un nuovo gruppo di Referee</h4>
+									th:text="#{label.riassegna_domanda_accreditamento}">Riassegna la domanda di accreditamento</h4>
 							</div>
 							<div class="modal-body">
 								<form id="formRiassegnaGruppoCrecm" class="form-horizontal"
@@ -52,8 +52,11 @@
 									method="post" enctype="multipart/form-data"
 									novalidate="novalidate">
 
+									<!-- input hidden per preservare il numero dei referee da riassegnare -->
+									<input type="hidden" th:field="${accreditamentoWrapper.refereeDaRiassegnare}" />
+
 									<div>
-										<h4 th:text="#{label.seleziona_referee}"></h4>
+										<h4 th:text="#{label.seleziona_referee_necessari(${accreditamentoWrapper.refereeDaRiassegnare})}"></h4>
 										<div class="item modalAlert" th:classappend="${#fields.hasErrors('accreditamentoWrapper.refereeGroup')} ? 'bad'">
 											<select id="referee"
 												class="selectpicker required"
