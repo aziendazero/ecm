@@ -399,8 +399,11 @@ public class AccreditamentoController {
 		//controllo se l'utente può visualizzare la valutazione
 		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), user));
 
-		//controllo se devo mostrare il pulsante per riassegnare il gruppo crecm
-		accreditamentoWrapper.setCanAssegnaNuovoGruppo(accreditamentoService.canRiassegnaGruppo(accreditamento.getId(), user));
+		//controllo se devo mostrare il pulsante per riassegnare i referee crecm e in caso quanti
+		if(accreditamentoService.canRiassegnaGruppo(accreditamento.getId(), user)) {
+			accreditamentoWrapper.setCanAssegnaNuovoGruppo(true);
+			accreditamentoWrapper.setRefereeDaRiassegnare(valutazioneService.countRefereeNotValutatoriForAccreditamentoId(accreditamento.getId()));
+		}
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
@@ -583,7 +586,7 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/reassignEvaluation"));
 		try {
 			//validazione dei nuovi referee
-			valutazioneValidator.validateGruppoCrecm(wrapper.getRefereeGroup(), result);
+			valutazioneValidator.validateGruppoCrecm(wrapper.getRefereeGroup(), wrapper.getRefereeDaRiassegnare(), result);
 
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
