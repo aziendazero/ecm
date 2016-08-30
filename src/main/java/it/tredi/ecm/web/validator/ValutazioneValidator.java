@@ -35,7 +35,7 @@ public class ValutazioneValidator {
 	public void validateValutazioneComplessiva(Object targetReferee, Object valutazioneFull, AccreditamentoStatoEnum stato, Errors errors) {
 		Set<Account> refereeGroup = (Set<Account>)targetReferee;
 		String valutazioneComplessiva = (String) valutazioneFull;
-		if(stato.equals(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) &&
+		if((stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) &&
 				Utils.getAuthenticatedUser().isSegreteria() && (refereeGroup == null || refereeGroup.size() != 3)) {
 			errors.rejectValue("refereeGroup", "error.numero_referee");
 		}
