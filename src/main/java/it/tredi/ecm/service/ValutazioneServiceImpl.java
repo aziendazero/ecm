@@ -109,4 +109,18 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		}
 		return mappaValutatoreValutazioni;
 	}
+
+	@Override
+	public int countRefereeNotValutatoriForAccreditamentoId(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Conto i referee che non hanno valutato l'accreditamento " + accreditamentoId));
+		return valutazioneRepository.countRefereeValutatoriWithNoDataValutazioneForAccreditamentoId(accreditamentoId);
+	}
+
+	@Override
+	public Set<Account> getAccountValutatoriWithDataForAccreditamentoId(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Restituisco i referee che hanno valutato l'accreditamento " + accreditamentoId));
+		Set<Account> valutatori = new HashSet<Account>();
+		valutatori = valutazioneRepository.getAccountValutatoriWithDataValutazioneForAccreditamentoId(accreditamentoId);
+		return valutatori;
+	}
 }

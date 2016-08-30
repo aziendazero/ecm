@@ -44,10 +44,10 @@ public class ValutazioneValidator {
 		}
 	}
 
-	public void validateGruppoCrecm(Object targetReferee, Errors errors) {
+	public void validateGruppoCrecm(Object targetReferee, int refereeDaRiassegnare, Errors errors) {
 		Set<Account> refereeGroup = (Set<Account>)targetReferee;
-		if(Utils.getAuthenticatedUser().isSegreteria() && (refereeGroup == null || refereeGroup.size() != 3)) {
-			errors.rejectValue("refereeGroup", "error.numero_referee");
+		if(Utils.getAuthenticatedUser().isSegreteria() && (refereeGroup == null || refereeGroup.size() != refereeDaRiassegnare)) {
+			errors.rejectValue("refereeGroup", "error.numero_referee_riassegnamento");
 		}
 	}
 
