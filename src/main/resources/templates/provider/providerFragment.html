@@ -469,10 +469,8 @@
 								<input type="hidden" th:field="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__].id}" />
 		                    </th:block>
 							<div th:if="${#fields.hasErrors('providerWrapper.provider.noProfit')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${providerWrapper.provider.noProfit}"></div>
-
-							<input id="submitButton" type="submit" style="display: none;" />
-
 						</div>
+						<input id="submitButton" type="submit" style="display: none;" />
 					</form>
 				</div>
 			</div>
