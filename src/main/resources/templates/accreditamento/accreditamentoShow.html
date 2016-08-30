@@ -113,7 +113,9 @@
 								</ul>
 								<!-- menù a pulsanti separati per il provider -->
 								<th:block th:if="${#authentication.principal.isProvider()}">
-									<a th:if="${accreditamentoWrapper.accreditamento.bozza}" class="btn btn-success" th:text="#{label.modifica}" onclick="switchMode('edit')"></a>
+									<a th:if="${accreditamentoWrapper.accreditamento.isBozza() or
+										accreditamentoWrapper.accreditamento.isIntegrazione() or
+										accreditamentoWrapper.accreditamento.isPreavvisoRigetto()}" class="btn btn-success" th:text="#{label.modifica}" onclick="switchMode('edit')"></a>
 								</th:block>
 								<!-- menù a pulsanti separati per il referee -->
 								<th:block th:if="${#authentication.principal.isReferee()}">
