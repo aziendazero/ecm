@@ -28,9 +28,11 @@ public interface AccreditamentoService{
 
 	public void inviaDomandaAccreditamento(Long accreditamentoId);
 	public void inserisciPianoFormativo(Long accreditamentoId);
-	public void assegnaGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup);
+	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup);
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup);
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva);
+	public void presaVisione(Long accreditamentoId);
+	public void inviaIntegrazione(Long accreditamentoId);
 
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception;
 	public Long getProviderIdForAccreditamento(Long accreditamentoId);

@@ -206,7 +206,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void assegnaGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) {
+	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) {
 		LOGGER.debug(Utils.getLogMessage("Assegnamento domanda di Accreditamento " + accreditamentoId + " ad un gruppo CRECM"));
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -217,6 +217,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//inserisce il commento complessivo
 		valutazione.setValutazioneComplessiva(valutazioneComplessiva);
 
+		valutazioneService.save(valutazione);
+
 		//la segreteria crea le valutazioni per i referee
 		if (Utils.getAuthenticatedUser().isSegreteria()){
 			for (Account a : refereeGroup) {
@@ -226,13 +228,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
 				valutazioneService.save(valutazioneReferee);
 			}
+
+			accreditamento.setDataValutazioneCrecm(LocalDate.now());
+			accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
+			accreditamentoRepository.save(accreditamento);
 		}
-		valutazioneService.save(valutazione);
-
-		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
-		accreditamentoRepository.save(accreditamento);
-
-
 	}
 
 	@Override
@@ -250,17 +250,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		}
 
-		//la segreteria crea le valutazioni per i nuovi referee
-		if (Utils.getAuthenticatedUser().isSegreteria()){
-			for (Account a : refereeGroup) {
-				Valutazione valutazioneReferee = new Valutazione();
-				valutazioneReferee.setAccount(a);
-				valutazioneReferee.setAccreditamento(accreditamento);
-				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
-				valutazioneService.save(valutazioneReferee);
-			}
+		// crea le valutazioni per i nuovi referee
+		for (Account a : refereeGroup) {
+			Valutazione valutazioneReferee = new Valutazione();
+			valutazioneReferee.setAccount(a);
+			valutazioneReferee.setAccreditamento(accreditamento);
+			valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+			valutazioneService.save(valutazioneReferee);
 		}
 
+		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
 		accreditamentoRepository.save(accreditamento);
 	}
@@ -289,10 +288,33 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 
 		valutazioneService.save(valutazioneSegreteria);
+		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
 		accreditamentoRepository.save(accreditamento);
 	}
 
+	@Override
+	@Transactional
+	public void presaVisione(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Presa visione della conferma dei dati da parte del provider e cambiamento stato della domanda " + accreditamentoId + " in INS_ODG"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		accreditamento.setDataInserimentoOdg(LocalDate.now());
+		accreditamento.setStato(AccreditamentoStatoEnum.INS_ODG);
+		accreditamentoRepository.save(accreditamento);
+	}
+
+	@Override
+	@Transactional
+	public void inviaIntegrazione(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Integrazione della domanda " + accreditamentoId + " inviata alla segreteria per essere valutata"));
+
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA);
+		accreditamentoRepository.save(accreditamento);
+
+	}
 
 	@Override
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception{
