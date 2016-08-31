@@ -15,4 +15,5 @@ public interface AccountService {
     public void save(Account user) throws Exception;
     public void resetPassword(String email) throws Exception;
     public void changePassword(Long id, String password) throws Exception;
+	public int countAllRefereeWithValutazioniNonDate();
 }

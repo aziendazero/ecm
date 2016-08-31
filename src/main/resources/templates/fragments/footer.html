@@ -24,8 +24,10 @@
 				th:src="@{/gentella/js/wizard/jquery.smartWizard.js}"></script>
 
 		<!-- DataTable -->
-		<script src="../static/gentella/js/datatables/jquery.dataTables.min.js"
-				th:src="@{/gentella/js/datatables/jquery.dataTables.min.js}"></script>
+<!-- 		<script src="../static/gentella/js/datatables/jquery.dataTables.min.js" -->
+<!-- 				th:src="@{/gentella/js/datatables/jquery.dataTables.min.js}"></script> -->
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.12/datatables.min.js"></script>
+
 		<script src="../static/gentella/js/datatables/dataTables.bootstrap.js"
 				th:src="@{/gentella/js/datatables/dataTables.bootstrap.js}"></script>
 		<script src="../static/gentella/js/datatables/dataTables.buttons.min.js"
@@ -239,27 +241,29 @@
 				    "order": [ 0, 'asc' ],
 				    "columnDefs": [
 				                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
-				                    {"targets": [ 0 ], "width": "1px"}
 				                  ]
 				});
 			})
 
 			$('.modal').on('shown.bs.modal', function () {
-				$($.fn.dataTable.tables(true)).DataTable()
-	           		.responsive.recalc()
-	           		.columns.adjust();
+				$.fn.dataTable
+		        .tables({api: true})
+		        .responsive.recalc()
+		        .columns.adjust();
 		    });
 
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-				$($.fn.dataTable.tables(true)).DataTable()
-		           	.responsive.recalc()
-		           	.columns.adjust();
+				$.fn.dataTable
+		        .tables({api: true})
+		        .responsive.recalc()
+		        .columns.adjust();
 		    });
 
 			$('.accordion').on('shown.bs.collapse', function () {
-				$($.fn.dataTable.tables(true)).DataTable()
-		           	.responsive.recalc()
-		           	.columns.adjust();
+				$.fn.dataTable
+		        .tables({api: true})
+		        .responsive.recalc()
+		        .columns.adjust();
 			});
 
 			var stack_topright = {"dir1": "down", "dir2": "left", "push": "top", "firstpos1": 25, "firstpos2": 25};

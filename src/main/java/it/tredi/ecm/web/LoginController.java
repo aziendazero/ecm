@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.CurrentUser;
@@ -27,6 +28,7 @@ public class LoginController {
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderService providerService;
+	@Autowired private AccountService accountService;
 
 	@RequestMapping("/")
 	public String root(Locale locale) {
@@ -73,6 +75,7 @@ public class LoginController {
 					wrapper.setIsSegreteria(true);
 					wrapper.setRichiesteInviateDaiProvider(accreditamentoService.countAllAccreditamentiByStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) +
 							accreditamentoService.countAllAccreditamentiByStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA));
+					wrapper.setBadReferee(accountService.countAllRefereeWithValutazioniNonDate());
 					wrapper.setProviderQuotaAnnuale(9);
 					wrapper.setProviderQuotaEventi(23);
 					break;

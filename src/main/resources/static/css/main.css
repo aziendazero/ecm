@@ -652,6 +652,19 @@ h2 {
 	font-size: 17px;
 }
 
+.yellow {
+	color: #FEF400;
+}
+
+.orange {
+	color: #FF9702;
+}
+
+.number {
+	font-size: 17px;
+	font-weight: bold;
+}
+
 .container-collapse {
 	display: none;
 }

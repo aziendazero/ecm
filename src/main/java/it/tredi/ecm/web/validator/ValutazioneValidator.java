@@ -6,11 +6,11 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.utils.Utils;
 
@@ -32,10 +32,11 @@ public class ValutazioneValidator {
 		}
 	}
 
-	public void validateValutazioneComplessiva(Object targetReferee, Object valutazioneFull, Errors errors) {
+	public void validateValutazioneComplessiva(Object targetReferee, Object valutazioneFull, AccreditamentoStatoEnum stato, Errors errors) {
 		Set<Account> refereeGroup = (Set<Account>)targetReferee;
 		String valutazioneComplessiva = (String) valutazioneFull;
-		if(Utils.getAuthenticatedUser().isSegreteria() && (refereeGroup == null || refereeGroup.size() != 3)) {
+		if((stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) &&
+				Utils.getAuthenticatedUser().isSegreteria() && (refereeGroup == null || refereeGroup.size() != 3)) {
 			errors.rejectValue("refereeGroup", "error.numero_referee");
 		}
 		if(valutazioneComplessiva == null || valutazioneComplessiva.isEmpty()) {
@@ -43,20 +44,20 @@ public class ValutazioneValidator {
 		}
 	}
 
-	public void validateGruppoCrecm(Object targetReferee, Errors errors) {
+	public void validateGruppoCrecm(Object targetReferee, int refereeDaRiassegnare, Errors errors) {
 		Set<Account> refereeGroup = (Set<Account>)targetReferee;
-		if(Utils.getAuthenticatedUser().isSegreteria() && (refereeGroup == null || refereeGroup.size() != 3)) {
-			errors.rejectValue("refereeGroup", "error.numero_referee");
+		if(Utils.getAuthenticatedUser().isSegreteria() && (refereeGroup == null || refereeGroup.size() != refereeDaRiassegnare)) {
+			errors.rejectValue("refereeGroup", "error.numero_referee_riassegnamento");
 		}
 	}
 
 	//gestisce le eccezioni degli input raggruppati prendendo come rejectValue il primo valore
 	private String gestisciEccezioniKey(String key) {
 		switch(key) {
-			case "datiAccreditamento.datiEconomici.fatturatoComplessivo": return "datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno";
-			case "datiAccreditamento.datiEconomici.fatturatoFormazione": return "datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno";
-			case "datiAccreditamento.numeroDipendenti": return "datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato";
-			default: return key;
+		case "datiAccreditamento.datiEconomici.fatturatoComplessivo": return "datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno";
+		case "datiAccreditamento.datiEconomici.fatturatoFormazione": return "datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno";
+		case "datiAccreditamento.numeroDipendenti": return "datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato";
+		default: return key;
 		}
 	}
 }

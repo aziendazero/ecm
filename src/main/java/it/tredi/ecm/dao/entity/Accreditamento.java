@@ -155,23 +155,35 @@ public class Accreditamento extends BaseEntity{
 	}
 
 	public boolean isProvvisorio(){
-		return tipoDomanda.equals(AccreditamentoTipoEnum.PROVVISORIO);
+		return tipoDomanda == AccreditamentoTipoEnum.PROVVISORIO;
 	}
 
 	public boolean isBozza(){
-		return stato.equals(AccreditamentoStatoEnum.BOZZA);
+		return stato == AccreditamentoStatoEnum.BOZZA;
 	}
 
 	public boolean isValutazioneSegreteriaAssegnamento(){
-		return stato.equals(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
+		return stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO;
 	}
 
 	public boolean isAssegnamento(){
-		return stato.equals(AccreditamentoStatoEnum.ASSEGNAMENTO);
+		return stato == AccreditamentoStatoEnum.ASSEGNAMENTO;
 	}
 
 	public boolean isValutazioneSegreteria() {
-		return stato.equals(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA);
+		return stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA;
+	}
+
+	public boolean isValutazioneCrecm() {
+		return stato == AccreditamentoStatoEnum.VALUTAZIONE_CRECM;
+	}
+
+	public boolean isIntegrazione() {
+		return stato == AccreditamentoStatoEnum.INTEGRAZIONE;
+	}
+
+	public boolean isPreavvisoRigetto() {
+		return stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO;
 	}
 
 	public boolean isProcedimentoAttivo(){

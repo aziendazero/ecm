@@ -19,4 +19,6 @@ public interface ValutazioneService {
 	public Set<Account> getAllValutatoriForAccreditamentoId(Long accreditamentoId);
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(Long accreditamentoId, SubSetFieldEnum subset);
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndObjectId(Long accreditamentoId, Long id);
+	public int countRefereeNotValutatoriForAccreditamentoId(Long accreditamentoId);
+	public Set<Account> getAccountValutatoriWithDataForAccreditamentoId(Long accreditamentoId);
 }

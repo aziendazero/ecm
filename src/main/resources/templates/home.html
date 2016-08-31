@@ -93,10 +93,9 @@
 
 				<!-- SEGRETERIA -->
 				<div class="row" th:if="${homeWrapper.isSegreteria}">
-					<div class="home-divider" th:text="#{label.dashboard_segreteria}">Segreteria dashboard</div>
 					<div class="col-xs-12 tile-stats-container">
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="goTo('accreditamento/valutazione/list')">
-							<div class="tile-stats">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
 								<div class="icon"><i class="fa fa-list-alt"></i></div>
 								<div class="col-xs-10">
 				                	<div class="count" th:text="${homeWrapper.richiesteInviateDaiProvider}"></div>
@@ -105,13 +104,13 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
-							<div class="tile-stats">
-								<div class="icon"><i class="fa fa-credit-card"></i></div>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('referee/list')">
+								<div class="icon"><i class="fa fa-exclamation-circle"></i></div>
 								<div class="col-xs-10">
-				                	<div class="count" th:text="${homeWrapper.providerQuotaAnnuale}"></div>
-				                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
-				                	<p class="count-text" th:text="#{label.devono_pagare_quota_annuale}">Devono pagare la quota annuale</p>
+				                	<div class="count" th:text="${homeWrapper.badReferee}"></div>
+				                	<h3 class="tile-h3" th:text="#{label.referee}"></h3>
+				                	<p class="count-text" th:text="${homeWrapper.badReferee == 1} ? #{label.non_ha_valutato} :  #{label.non_hanno_valutato}">Non hanno valutato le domande di accreditamento assegnate loro</p>
 								</div>
 							</div>
 						</div>
@@ -127,7 +126,6 @@
 						</div>
 					</div>
 				</div>
-
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/

@@ -19,6 +19,7 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.utils.Utils;
 
 @Service
 public class AccountServiceImpl implements AccountService{
@@ -170,4 +171,8 @@ public class AccountServiceImpl implements AccountService{
 		emailService.send(mailMessage);
 	}
 
+	@Override
+	public int countAllRefereeWithValutazioniNonDate() {
+		return accountRepository.countAllRefereeWithValutazioniNonDate();
+	}
 }

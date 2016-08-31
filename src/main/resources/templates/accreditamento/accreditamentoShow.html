@@ -44,7 +44,7 @@
 									<span aria-hidden="true">×</span>
 								</button>
 								<h4 class="modal-title" id="myModalLabel"
-									th:text="#{label.assegna_nuovo_gruppo_referee}">Assegna la domanda di Accreditamento ad un nuovo gruppo di Referee</h4>
+									th:text="#{label.riassegna_domanda_accreditamento}">Riassegna la domanda di accreditamento</h4>
 							</div>
 							<div class="modal-body">
 								<form id="formRiassegnaGruppoCrecm" class="form-horizontal"
@@ -52,8 +52,11 @@
 									method="post" enctype="multipart/form-data"
 									novalidate="novalidate">
 
+									<!-- input hidden per preservare il numero dei referee da riassegnare -->
+									<input type="hidden" th:field="${accreditamentoWrapper.refereeDaRiassegnare}" />
+
 									<div>
-										<h4 th:text="#{label.seleziona_referee}"></h4>
+										<h4 th:text="#{label.seleziona_referee_necessari(${accreditamentoWrapper.refereeDaRiassegnare})}"></h4>
 										<div class="item modalAlert" th:classappend="${#fields.hasErrors('accreditamentoWrapper.refereeGroup')} ? 'bad'">
 											<select id="referee"
 												class="selectpicker required"
@@ -112,11 +115,12 @@
 									<li><a th:text="#{label.abilita_id_editabili}" onclick="alert('TODO')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canPrendiInCarica}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/takeCharge|}" th:text="#{label.prendi_in_carica}"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canAssegnaNuovoGruppo}" th:text="#{label.assegna_nuovo_gruppo}" data-toggle="modal" data-target=".modal-reassign"></a></li>
-									<li><a th:if="${accreditamentoWrapper.canAssegnaStessoGruppo}" th:text="#{label.assegna_stesso_gruppo}" th:href="@{|accreditamento/${accreditamentoWrapper.accreditamento.id}/reassignSameCrecm|}"></a></li>
 								</ul>
 								<!-- menù a pulsanti separati per il provider -->
 								<th:block th:if="${#authentication.principal.isProvider()}">
-									<a th:if="${accreditamentoWrapper.accreditamento.bozza}" class="btn btn-success" th:text="#{label.modifica}" onclick="switchMode('edit')"></a>
+									<a th:if="${accreditamentoWrapper.accreditamento.isBozza() or
+										accreditamentoWrapper.accreditamento.isIntegrazione() or
+										accreditamentoWrapper.accreditamento.isPreavvisoRigetto()}" class="btn btn-success" th:text="#{label.modifica}" onclick="switchMode('edit')"></a>
 								</th:block>
 								<!-- menù a pulsanti separati per il referee -->
 								<th:block th:if="${#authentication.principal.isReferee()}">

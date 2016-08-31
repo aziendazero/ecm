@@ -15,17 +15,17 @@
 						<h2 style="display: inline" th:text="#{label.valutazioni_complessive}">label.valutazioni_complessive</h2>
 						<div class="clearfix"></div>
 					</div>
-					
-					<table id="valutazioniComplessiveBlockValidate" class="datatable-responsive-search-validation-full table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-							<thead>
-								<tr>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody>
-								<!-- popolata con una request ajax -->
-							</tbody>
-						</table>
+
+					<table id="valutazioniComplessiveBlockValidate" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<!-- popolata con una request ajax -->
+						<thead>
+							<tr>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
 				</div>
 
 				<!-- riempito con chiamata ajax provider -->
@@ -199,10 +199,24 @@
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
+
+				function initTable(table) {
+				table.DataTable({
+						"bInfo" : false,
+						"bPaginate" : false,
+						"bFilter" : false,
+					    "order": [ 0, 'asc' ],
+					    "columnDefs": [
+					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
+					                    {"targets": [ 0 ], "width": "1px"}
+					                  ]
+					});
+				}
+
 				function populateShowAllValutazioni(){
 
 					var url;
-					
+
 					//valutazioni complessive
 					urlGet = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/valutazioniComplessive|}]];
 					$.get( urlGet, function(data){
@@ -216,7 +230,7 @@
 							}
 							cols[item] = valutazione['value'];
 						}
-						
+
 						var table = $('#valutazioniComplessiveBlockValidate').DataTable({
 							"bInfo" : false,
 							"bPaginate" : false,
@@ -227,115 +241,121 @@
 						                  ]
 						});
 						table.clear();
-						
+
 						table.row.add(cols).draw(false);
 					});
 
 					//provider
 					if([[${accreditamentoWrapper.provider != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider?.id}/validate|}]];
-						$("#providerBlockValidate").load(url + ' #toValidateModal');
+						$("#providerBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//sede legale
 					if([[${!accreditamentoWrapper.sedeLegale.new}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale?.id}/validate?tipologiaSede=SedeLegale|}]];
-						$("#sedeLegaleBlockValidate").load(url + ' #toValidateModal');
+						$("#sedeLegaleBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//sede operativa
 					if([[${!accreditamentoWrapper.sedeOperativa.new}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeOperativa?.id}/validate?tipologiaSede=SedeOperativa|}]];
-						$("#sedeOpBlockValidate").load(url + ' #toValidateModal');
+						$("#sedeOpBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//legale rappresentante
 					if([[${accreditamentoWrapper.legaleRappresentante != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante?.id}/validate|}]];
-						$("#legaleBlockValidate").load(url + ' #toValidateModal');
+						$("#legaleBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//delegato legale rappresentante
 					if([[${accreditamentoWrapper.delegatoLegaleRappresentante != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante?.id}/validate|}]];
-						$("#delegatoBlockValidate").load(url + ' #toValidateModal');
+						$("#delegatoBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//dati accreditamento
 					if([[${!accreditamentoWrapper.datiAccreditamento.new}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/validate|}]];
-						$("#datiBlockValidate").load(url + ' #toValidateModal');
+						$("#datiBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//responsabile segreteria
 					if([[${accreditamentoWrapper.responsabileSegreteria != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria?.id}/validate|}]];
-						$("#rSegreteriaBlockValidate").load(url + ' #toValidateModal');
+						$("#rSegreteriaBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//responsabile amministrativo
 					if([[${accreditamentoWrapper.responsabileAmministrativo != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileAmministrativo?.id}/validate|}]];
-						$("#rAmministrativoBlockValidate").load(url + ' #toValidateModal');
+						$("#rAmministrativoBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//responsabile sistema informatico
 					if([[${accreditamentoWrapper.responsabileSistemaInformatico != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSistemaInformatico?.id}/validate|}]];
-						$("#rSisInformaticoBlockValidate").load(url + ' #toValidateModal');
+						$("#rSisInformaticoBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//responsabile qualità
 					if([[${accreditamentoWrapper.responsabileQualita != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileQualita?.id}/validate|}]];
-						$("#rQualitaBlockValidate").load(url + ' #toValidateModal');
+						$("#rQualitaBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//coordinatore del comitato
 					if([[${accreditamentoWrapper.coordinatoreComitatoScientifico != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.coordinatoreComitatoScientifico?.id}/validate|}]];
-						$("#coordinatoreBlockValidate").load(url + ' #toValidateModal');
+						$("#coordinatoreBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
 					}
 
 					//ciclo sui componenti del comitato grazie al campo data-valore-id precedentemente settato
 					$('div[role=iterComponenteValutazione]').each(function(index) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]] + $(this).attr("data-valore-id") + "/validate";
-						$(this).load(url + ' #toValidateModal');
+						$(this).load(url + ' #toValidateModal', function() {
+							initTable($(this).find('table'));
+						});
 					})
 
 					//allegati
 					url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}]];
-					$('#allegatiBlockValidate').load(url + " #toValidateModal");
+					$('#allegatiBlockValidate').load(url + " #toValidateModal", function(){
+						initTable($(this).find('table'));
+					});
 
 					//ciclo sugli eventi del piano formativo grazie al campo data-valore-id precedentemente settato
 					$('div[role=iterEventoValutazione]').each(function(index) {
  						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo?.id}/evento/|}]] + $(this).attr("data-valore-id") + "/validate";
-						$(this).load(url + ' #toValidateModal');
-					})
-				}
-
-				$('#showAllValutazioni-modal').one('shown.bs.modal', function (e) {
-					//table responsive valutazione
-					$('.datatable-responsive-search-validation').DataTable({
-						"bInfo" : false,
-						"bPaginate" : false,
-						"bFilter" : false,
-					    "order": [ 0, 'asc' ],
-					    "columnDefs": [
-					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
-					                    {"targets": [ 0 ], "width": "1px"}
-					                  ]
+						$(this).load(url + ' #toValidateModal', function() {
+							initTable($(this).find('table'));
+						});
 					});
-					/* $('.datatable-responsive-search-validation-full').DataTable({
-						"bInfo" : false,
-						"bPaginate" : false,
-						"bFilter" : false,
-						"order": [ 0, 'disabled' ],
-					    "columnDefs": [
-					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
-					                  ]
-					}); */
-				});
+
+				}
 
 			/*]]>*/
 			</script>

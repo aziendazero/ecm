@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.CurrentUserDetailsService;
 import it.tredi.ecm.service.ProfileAndRoleService;
@@ -37,8 +38,8 @@ public class AccountController{
 	@Autowired private AccountService accountService;
 	@Autowired private ProfileAndRoleService profileAndRoleService;
 	@Autowired private AccountValidator accountValidator;
-	@Autowired private CurrentUserDetailsService currentUserDetailsService; 
-	
+	@Autowired private CurrentUserDetailsService currentUserDetailsService;
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
@@ -64,6 +65,24 @@ public class AccountController{
 			return LIST;
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /user/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+
+	/**
+	 * Lista referee
+	 */
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllUser(principal)")
+	@RequestMapping("/referee/list")
+	public String showAllReferee(Model model, RedirectAttributes redirectAttrs){
+		try {
+			LOGGER.info(Utils.getLogMessage("GET /referee/list"));
+			model.addAttribute("refereeList", accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
+			LOGGER.info(Utils.getLogMessage("VIEW: referee/refereeList"));
+			return "referee/refereeList";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /referee/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}

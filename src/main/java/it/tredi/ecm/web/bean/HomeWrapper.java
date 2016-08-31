@@ -24,6 +24,7 @@ public class HomeWrapper {
 	private Boolean isSegreteria;
 	private Integer providerQuotaAnnuale;
 	private Integer providerQuotaEventi;
+	private Integer badReferee;
 
 	//Referee
 	private Boolean isReferee;
