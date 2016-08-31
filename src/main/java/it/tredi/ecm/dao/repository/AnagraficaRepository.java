@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import it.tredi.ecm.dao.entity.Anagrafica;
 
 public interface AnagraficaRepository extends CrudRepository<Anagrafica, Long> {
-	public Set<Anagrafica> findAllByProviderId(Long providerId);
+	public Set<Anagrafica> findAllByProviderIdAndDirty(Long providerId, boolean dirty);
 	@Query("SELECT a.id FROM Anagrafica a WHERE a.codiceFiscale = :codiceFiscale AND a.provider.id = :providerId")
 	public Optional<Long> findOneByCodiceFiscaleAndProviderId(@Param("codiceFiscale") String codiceFiscale, @Param("providerId") Long providerId);  
 }

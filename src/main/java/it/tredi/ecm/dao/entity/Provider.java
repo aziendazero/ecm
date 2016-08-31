@@ -20,6 +20,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.Where;
+import org.hibernate.annotations.WhereJoinTable;
+
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -65,6 +68,7 @@ public class Provider extends BaseEntity{
 	/*	PERSONE REGISTRATE DAL PROVIDER
 	 * 	alcune in fase di registrazione, altre in fase di accreditamento */
 	@OneToMany(mappedBy="provider")
+	@Where(clause = "dirty = 'false'")
 	private Set<Persona> persone = new HashSet<Persona>();
 
 	/*	SEDI DEL PROVIDER FORNITE IN FASE DI ACCREDITAMENTO	*/

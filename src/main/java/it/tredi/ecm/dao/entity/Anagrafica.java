@@ -31,24 +31,28 @@ public class Anagrafica extends BaseEntity{
 	private String email;
 	@JsonView(JsonViewModel.Integrazione.class)
 	private String pec;
-	
+
+	//se true significa che non è stato ancora validato dalla segreteria
+	@JsonView(JsonViewModel.Integrazione.class)
+	private boolean dirty = false;
+
 	public void setCodiceFiscale(String codiceFiscale){
 		this.codiceFiscale = codiceFiscale.toUpperCase();
 	}
-	
+
 	@JsonIgnore
 	@OneToOne
 	private Provider provider;
-	
+
 	@Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Anagrafica entitapiatta = (Anagrafica) o;
-        return Objects.equals(id, entitapiatta.id);
-    }
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Anagrafica entitapiatta = (Anagrafica) o;
+		return Objects.equals(id, entitapiatta.id);
+	}
 }

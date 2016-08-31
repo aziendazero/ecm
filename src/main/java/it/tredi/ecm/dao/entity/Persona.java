@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
@@ -66,6 +67,10 @@ public class Persona extends BaseEntity{
 				inverseJoinColumns={@JoinColumn(name="files_id")}
 	)
 	Set<File> files = new HashSet<File>();
+	
+	//se true significa che non è stato ancora validato dalla segreteria
+	@JsonView(JsonViewModel.Integrazione.class)
+	private boolean dirty = false;
 
 	public Persona(){}
 	public Persona(Ruolo ruolo){this.ruolo = ruolo;}
@@ -75,37 +80,43 @@ public class Persona extends BaseEntity{
 		this.getAnagrafica().setProvider(provider);
 	}
 
+	//nel caso esista già un file di quel tipo lo sostituisco
 	public void addFile(File file){
+		Iterator<File> it = this.getFiles().iterator();
+		while(it.hasNext()){
+			if(it.next().getTipo() == file.getTipo())
+				it.remove();
+		}
 		this.getFiles().add(file);
 	}
 	
 	/***	CHECK RUOLO DELLA PERSONA	***/
 	public boolean isResponsabileSegreteria(){
-		return ruolo.equals(Ruolo.RESPONSABILE_SEGRETERIA);
+		return ruolo == Ruolo.RESPONSABILE_SEGRETERIA;
 	}
 	public boolean isResponsabileFormazione(){
-		return ruolo.equals(Ruolo.RESPONSABILE_FORMAZIONE);
+		return ruolo == Ruolo.RESPONSABILE_FORMAZIONE;
 	}
 	public boolean isResponsabileSistemaInformatico(){
-		return ruolo.equals(Ruolo.RESPONSABILE_SISTEMA_INFORMATICO);
+		return ruolo == Ruolo.RESPONSABILE_SISTEMA_INFORMATICO;
 	}
 	public boolean isResponsabileAmministrativo(){
-		return ruolo.equals(Ruolo.RESPONSABILE_AMMINISTRATIVO);
+		return ruolo == Ruolo.RESPONSABILE_AMMINISTRATIVO;
 	}
 	public boolean isResponsabileQualita(){
-		return ruolo.equals(Ruolo.RESPONSABILE_QUALITA);
+		return ruolo == Ruolo.RESPONSABILE_QUALITA;
 	}
 	public boolean isLegaleRappresentante(){
-		return ruolo.equals(Ruolo.LEGALE_RAPPRESENTANTE);
+		return ruolo == Ruolo.LEGALE_RAPPRESENTANTE;
 	}
 	public boolean isDelegatoLegaleRappresentante(){
-		return ruolo.equals(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
+		return ruolo == Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE;
 	}
 	public boolean isCoordinatoreComitatoScientifico(){
 		return isComponenteComitatoScientifico() && (this.coordinatoreComitatoScientifico != null) && this.coordinatoreComitatoScientifico.booleanValue();
 	}
 	public boolean isComponenteComitatoScientifico(){
-		return ruolo.equals(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
+		return ruolo == Ruolo.COMPONENTE_COMITATO_SCIENTIFICO;
 	}
 
 	@Override

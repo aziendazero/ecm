@@ -87,6 +87,7 @@
 					</div>
 				</div>
 
+				<!-- Modale per riepilogo valutazione -->
 				<th:block th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" th:include="fragments/modaleRiepilogoValutazioni :: modaleRiepilogoValutazioni"></th:block>
 
 				<div class="x_panel">
@@ -95,14 +96,15 @@
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
 								<a class="btn btn-primary ajaxCallShowAll" th:text="#{label.mostra_riepilogo}" data-toggle="modal" data-target=".modal-showAll"></a>
-  								<!-- button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"  th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" -->
+  								<a class="btn btn-primary ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni" th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button"></a>
+  								
   								<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"  th:if="${#authentication.principal.isSegreteria()}">
 									<span th:text="#{label.menu_azioni}"></span>
 									<span class="caret"></span>
 								</button>
 								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
-									<li><a th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button" class="ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni"></a></li>
+									<!-- <li><a th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button" class="ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni"></a></li> -->
 									<li><a th:text="#{label.modifica}" onclick="switchMode('edit')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canShowValutazione}" th:text="#{label.mostra_valutazione}" onclick="switchMode('validate')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canValutaDomanda}" th:text="#{label.valuta_domanda}" onclick="switchMode('validate')"></a></li>

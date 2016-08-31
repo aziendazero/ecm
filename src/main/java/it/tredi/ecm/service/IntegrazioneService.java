@@ -34,17 +34,19 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.utils.Utils;
 
 @Service
 public class IntegrazioneService {
 
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private PersonaService personaService;
 
 	@Autowired private ApplicationContext appContext;
 	@PersistenceContext EntityManager entityManager;
 	@Autowired private ObjectMapper jacksonObjectMapper;
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(IntegrazioneService.class);
 
 	/**
@@ -76,6 +78,17 @@ public class IntegrazioneService {
 		}
 	}
 	
+	/**
+	 * Effettua l'attach dell'entity in modo tale da poter salvare l'entity che era stata precedentemente detachata
+	 * Il detach viene applicato a tutte le entity presenti all'interno attraverso l'introspezione e la reflection
+	 * */
+	public <T> void attach(T obj) throws Exception{
+		if(obj instanceof BaseEntity){
+			LOGGER.debug(Utils.getLogMessage("Attach object " + obj.getClass()));
+			entityManager.merge(obj);
+		}
+	}
+
 	public void applyIntegrazioneAccreditamentoAndSave(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
 		applyIntegrazioneAccreditamentoAndSave(accreditamentoService.getAccreditamento(accreditamentoId), fieldIntegrazioni);
 	}
@@ -116,7 +129,8 @@ public class IntegrazioneService {
 		}
 
 		//fieldIntegrazione per i multi-istanza
-		Set<Persona> componentiComitato = accreditamento.getProvider().getComponentiComitatoScientifico();
+		//Set<Persona> componentiComitato = accreditamento.getProvider().getComponentiComitatoScientifico();
+		Set<Persona> componentiComitato = personaService.getComponentiComitatoScientificoFromIntegrazione(accreditamento.getProvider().getId());
 		componentiComitato.forEach( p -> {
 			if(!Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO).isEmpty()){
 				try {
@@ -125,31 +139,47 @@ public class IntegrazioneService {
 					throw new RuntimeException(e);
 				}
 			}
+			
+			if(!Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.FULL).isEmpty()){
+				try {
+					applyIntegrazioneAndSave(p, Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.FULL));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
 		});
 
 	}
-	
+
 	/**
 	 * Applica le integrazioni all'oggetto passato
 	 * la lista di integrazioni deve contenere SOLO i FIELD appartenenti all'oggetto
+	 * le integrazioni di tipo ELIMINAZIONE vengono ignorate
 	 * */
 	public void applyIntegrazioneObject(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) throws Exception{
 		for(FieldIntegrazioneAccreditamento field : fieldIntegrazioneList){
-			setField(dst,field.getIdField().getNameRef(),field.getNewValue());
+			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE)
+				setField(dst,field.getIdField().getNameRef(),field.getNewValue());
 		}
 	}
-	
+
 	//applyIntegrazione + Salva oggetto su DB
 	private void applyIntegrazioneAndSave(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
-		for(FieldIntegrazioneAccreditamento field :  fieldIntegrazioni)
-			setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
+		for(FieldIntegrazioneAccreditamento field :  fieldIntegrazioni){
+			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE){
+				setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
+			}else{
+				removeEntityFromRepo(dst.getClass(), field.getNewValue());
+			}
+		}
+
 	}
-	
+
 	private void setFieldAndSave(Object dst, String fieldName, Object fieldValue) throws Exception{
 		setField(dst, fieldName, fieldValue);
 		saveEntity(dst.getClass(), dst);
 	}
-	
+
 	/**
 	 * Recupero del valore specificato da <param>fieldName</param> dall'oggetto <param>dst</param>
 	 * */
@@ -209,8 +239,8 @@ public class IntegrazioneService {
 	private boolean isFull(String fieldName){
 		return IdFieldEnum.isFull(fieldName);
 	}
-	
-	
+
+
 	/**
 	 * Setting del valore <param>fieldValue</param> specificato da <param>fieldName</param> nell'oggetto <param>dst</param>
 	 * */
@@ -233,7 +263,7 @@ public class IntegrazioneService {
 				dst = getObject(dst, fieldName);
 				fieldName = fieldName.substring(fieldName.lastIndexOf(".") + 1 , fieldName.length());
 			}
-	
+
 			//caso semplice -> dst.setFieldName(fieldValue)
 			//se fieldName e' un campo semplice -> assegno fieldValue
 			//se fieldName e' una BaseEntity -> fieldValue è l'ID dell'oggetto da caricare e assegnare
@@ -243,7 +273,7 @@ public class IntegrazioneService {
 			Method method = getSetterMethodFor(dst.getClass(), fieldName);
 			if(method != null){
 				Class<?> clazz = method.getParameterTypes()[0];
-	
+
 				if(BaseEntity.class.isAssignableFrom(clazz)){
 					Object object = getEntityFromRepo(clazz, fieldValue);
 					method.invoke(dst, object);
@@ -320,29 +350,47 @@ public class IntegrazioneService {
 		return findOne.invoke(repository, fieldValue);
 	}
 
+	//	//salva l'oggetto su DB -> save(Object objectToSave)
+	//	private void saveEntity(Class<?> clazz, Object objectToSave) throws Exception{
+	//		Object repository = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "Repository");
+	//		Class<?>[] cArg = new Class[1];
+	//		cArg[0] = Object.class;
+	//		Method save = repository.getClass().getDeclaredMethod("save", cArg);
+	//		save.invoke(repository, objectToSave);
+	//	}
+	//
+	//	//elimina l'oggetto dal DB -> delete(Long id)
+	//	private void removeEntityFromRepo(Class<?> clazz, Object fieldValue) throws Exception{
+	//		Object repository = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "Repository");
+	//		Class<?>[] cArg = new Class[1];
+	//		cArg[0] = java.io.Serializable.class;
+	//		Method delete = repository.getClass().getDeclaredMethod("delete", cArg);
+	//		delete.invoke(repository, fieldValue);
+	//	}
+
 	//salva l'oggetto su DB -> save(Object objectToSave)
 	private void saveEntity(Class<?> clazz, Object objectToSave) throws Exception{
-		Object repository = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "Repository");
+		Object service = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "ServiceImpl");
 		Class<?>[] cArg = new Class[1];
-		cArg[0] = Object.class;
-		Method save = repository.getClass().getDeclaredMethod("save", cArg);
-		save.invoke(repository, objectToSave);
+		cArg[0] = clazz;
+		Method save = service.getClass().getDeclaredMethod("saveFromIntegrazione", cArg);
+		save.invoke(service, objectToSave);
 	}
 
 	//elimina l'oggetto dal DB -> delete(Long id)
 	private void removeEntityFromRepo(Class<?> clazz, Object fieldValue) throws Exception{
-		Object repository = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "Repository");
+		Object service = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "ServiceImpl");
 		Class<?>[] cArg = new Class[1];
-		cArg[0] = java.io.Serializable.class;
-		Method delete = repository.getClass().getDeclaredMethod("delete", cArg);
-		delete.invoke(repository, fieldValue);
+		cArg[0] = java.lang.Long.class;
+		Method delete = service.getClass().getDeclaredMethod("deleteFromIntegrazione", cArg);
+		delete.invoke(service, fieldValue);
 	}
 
 	//nel caso in cui il fieldName è a più livelli, significa che si vuole accedere ad un campo di un oggetto interno
 	//attraverso la composizione dell'oggetto fino a recuperare l'oggetto reale
 	//esempio;
 	//angarfica.cognome passando un oggetto di tipo Persona
-	//getAnagrafica() -> restiytuisce un oggetto di tipo it.tredi.ecm.dao.entity.Anagrafica che ha il campo cognome recuperabile con getCognome()
+	//getAnagrafica() -> restituisce un oggetto di tipo it.tredi.ecm.dao.entity.Anagrafica che ha il campo cognome recuperabile con getCognome()
 	private Object getObject(Object dst, String fieldName) throws Exception {
 		int dot = fieldName.indexOf(".");
 		if(dot > 1){
@@ -352,5 +400,16 @@ public class IntegrazioneService {
 		}
 		return dst;
 	}
-	
+
+	private void removeDirty(Object dst) throws Exception{
+		Method getter = getGetterMethodFor(dst.getClass(), "dirty");
+		if(getter != null){
+			boolean dirty = (boolean) getter.invoke(dst);
+			if(dirty){
+				Method setter = getSetterMethodFor(dst.getClass(), "dirty");
+				setter.invoke(dst, false);
+			}
+		}
+	}
+
 }

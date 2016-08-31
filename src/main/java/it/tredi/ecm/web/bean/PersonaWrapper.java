@@ -3,6 +3,8 @@ package it.tredi.ecm.web.bean;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.security.access.method.P;
+
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.FileEnum;
@@ -34,6 +36,15 @@ public class PersonaWrapper extends Wrapper {
 		this.persona = persona;
 		this.accreditamentoId = accreditamentoId;
 		this.ruolo = ruolo;
+		
+//		for(File file : persona.getFiles()){
+//			if(file.isCV())
+//				this.cv = file;
+//			else if(file.isDELEGA())
+//				this.delega = file;
+//			else if(file.isATTONOMINA())
+//				this.attoNomina = file;
+//		}
 	}
 
 	public void setAttoNomina(File file){
@@ -63,7 +74,8 @@ public class PersonaWrapper extends Wrapper {
 	}
 	
 	public void setFiles(Set<File> files){
-		for(File file : files){
+		Set<File> fs = new HashSet<File>(files);
+		for(File file : fs){
 			if(file.isCV())
 				this.setCv(file);
 			else if(file.isDELEGA())

@@ -6,8 +6,9 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Anagrafica;
 
 public interface AnagraficaService {
-	public Set<Anagrafica> getAllAnagraficheByProviderId(Long providerId);
+	public Set<Anagrafica> getAllAnagraficheAttiveByProviderId(Long providerId);
 	public Anagrafica getAnagrafica(Long id);
 	public Optional<Long> getAnagraficaIdWithCodiceFiscaleForProvider(String codiceFiscale, Long providerId);
 	public void save(Anagrafica anagrafica);
+	public void delete(Long id);
 }
