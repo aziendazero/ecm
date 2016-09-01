@@ -89,8 +89,6 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 			Map<IdFieldEnum, FieldValutazioneAccreditamento> mapValutazioni = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(v.getValutazioni(), subset);
 			//inserisco il tutto nella mappa valutatoreValutazioni
 			mappaValutatoreValutazioni.put(v.getAccount(), mapValutazioni);
-			LOGGER.debug(Utils.getLogMessage("YOOO: " + mappaValutatoreValutazioni));
-
 		}
 		return mappaValutatoreValutazioni;
 	}
