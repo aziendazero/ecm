@@ -119,7 +119,7 @@ public class SedutaController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canShowSeduta(principal)") TODO
 	@RequestMapping("/seduta/{sedutaId}/show")
-	public String visualizzaSede(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
+	public String visualizzaSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/show"));
 		try {
 			Seduta seduta = sedutaService.getSedutaById(sedutaId);
@@ -134,7 +134,7 @@ public class SedutaController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
 	@RequestMapping("/seduta/{sedutaId}/edit")
-	public String modificaSede(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
+	public String modificaSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/edit"));
 		try {
 			Seduta seduta = sedutaService.getSedutaById(sedutaId);
@@ -149,7 +149,7 @@ public class SedutaController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
 	@RequestMapping("/seduta/{sedutaId}/remove")
-	public String rimuoviSede(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
+	public String rimuoviSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/remove"));
 		try {
 			if(sedutaService.canBeRemoved(sedutaId)) {
