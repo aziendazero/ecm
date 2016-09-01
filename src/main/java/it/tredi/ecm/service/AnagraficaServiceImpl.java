@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.aspectj.AspectJAdviceParameterNameDiscoverer.AmbiguousBindingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,9 @@ public class AnagraficaServiceImpl implements AnagraficaService {
 	@Autowired private AnagraficaRepository anagraficaRepository;
 	
 	@Override
-	public Set<Anagrafica> getAllAnagraficheByProviderId(Long providerId) {
-		LOGGER.debug(Utils.getLogMessage("Recupero tutte le anagrafiche del provider " + providerId));
-		return anagraficaRepository.findAllByProviderId(providerId);
+	public Set<Anagrafica> getAllAnagraficheAttiveByProviderId(Long providerId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero tutte le anagrafiche attive del provider " + providerId));
+		return anagraficaRepository.findAllByProviderIdAndDirty(providerId, false);
 	}
 
 	@Override
@@ -43,5 +44,12 @@ public class AnagraficaServiceImpl implements AnagraficaService {
 	public void save(Anagrafica anagrafica) {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio anagrafica"));
 		anagraficaRepository.save(anagrafica);
+	}
+	
+	@Override
+	@Transactional
+	public void delete(Long id) {
+		LOGGER.debug(Utils.getLogMessage("Eliminazione anagrafica: " + id));
+		anagraficaRepository.delete(id);
 	}
 }

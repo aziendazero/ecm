@@ -68,8 +68,11 @@ public class Utils {
 			errors.getFieldErrors().forEach( fieldError -> LOGGER.debug(fieldError.getField() + ": '" + fieldError.getRejectedValue() + "' [" + fieldError.getCode()+ "]"));
 	}
 
-	/*
-	 * Mi restituisce la lista di ENUM per legare le checkbox lato thymeleafe
+	/**
+	 * Mi restituisce la lista di ENUM a partire da una lista di FieldEditabile o FieldIntegrazione o qualsiasi {@code <T extends Field>}
+	 * 
+	 * @param src lista di {@code <T extends Field>}
+	 * @param type SubSetFieldEnum
 	 * */
 	public static <T extends Field> Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<T> src, SubSetFieldEnum type){
 		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
@@ -82,8 +85,12 @@ public class Utils {
 		return dst;
 	}
 
-	/*
-	 * Mi restituisce la lista di ENUM per legare le checkbox lato thymeleafe (per i MULTI-ISTANZA)
+	/**
+	 * Mi restituisce la lista di ENUM a partire da una lista di FieldEditabile o FieldIntegrazione o qualsiasi {@code <T extends Field>}
+	 * 
+	 * @param src lista di {@code <T extends Field>}
+	 * @param objectReference id del multi-istanza di riferimento
+	 * @param type SubSetFieldEnum
 	 * */
 	public static <T extends Field> Set<IdFieldEnum> getSubsetOfIdFieldEnum(Set<T> src, Long objectReference, SubSetFieldEnum type){
 		Set<IdFieldEnum> dst = new HashSet<IdFieldEnum>();
@@ -96,8 +103,11 @@ public class Utils {
 		return dst;
 	}
 
-	/*
-	 * Mi restituisce la sublist di record presenti su db per valutare nel save del controller quali eliminare perchè deselezionate
+	/**
+	 * Mi restituisce la sottolista di {@code <T extends Field>} a partire da una lista di {@code <T extends Field>} fornendo il SubSetFieldEnum
+	 * 
+	 * @param src lista di {@code <T extends Field>}
+	 * @param type SubSetFieldEnum
 	 * */
 	public static <T extends Field> Set<T> getSubset(Set<T> src, SubSetFieldEnum type){
 		Set<T> dst = new HashSet<T>();
@@ -110,8 +120,12 @@ public class Utils {
 		return dst;
 	}
 
-	/*
-	 * Mi restituisce la sublist di record presenti su db per valutare nel save del controller quali eliminare perchè deselezionate (per i MULTI-ISTANZA)
+	/**
+	 * Mi restituisce la sottolista di {@code <T extends Field>} a partire da una lista di {@code <T extends Field>} fornendo il SubSetFieldEnum
+	 * 
+	 * @param src lista di {@code <T extends Field>}
+	 * @param objectReference id del multi-istanza di riferimento
+	 * @param type SubSetFieldEnum
 	 * */
 	public static <T extends Field> Set<T> getSubset(Set<T> src, Long objectReference, SubSetFieldEnum type){
 		Set<T> dst = new HashSet<T>();
@@ -130,6 +144,17 @@ public class Utils {
 	public static <T extends Field> T getField(Set<T> src, IdFieldEnum idEnum){
 		for(T f : src){
 			if(f.getIdField() == idEnum)
+				return f;
+		}
+		return null;
+	}
+	
+	/*
+	 * Controllo se un determinato IdFieldEnum è presente nella lista di record
+	 * */
+	public static <T extends Field> T getField(Set<T> src, Long objectReference, IdFieldEnum idEnum){
+		for(T f : src){
+			if(f.getIdField() == idEnum && f.getObjectReference() == objectReference)
 				return f;
 		}
 		return null;

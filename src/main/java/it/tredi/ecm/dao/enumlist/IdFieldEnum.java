@@ -34,7 +34,7 @@ public enum IdFieldEnum {
 	SEDE_OPERATIVA__FAX ("sede.fax", 21, null, SubSetFieldEnum.SEDE_OPERATIVA, "fax"),
 	SEDE_OPERATIVA__EMAIL ("sede.email", 22, null, SubSetFieldEnum.SEDE_OPERATIVA, "email"),
 
-	LEGALE_RAPPRESENTANTE__FULL ("persona.legaleRappresentante",-1,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE),
+	LEGALE_RAPPRESENTANTE__FULL ("persona.legaleRappresentante",-1,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "full"),
 	LEGALE_RAPPRESENTANTE__COGNOME ("persona.anagrafica.cognome",23,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.cognome"),
 	LEGALE_RAPPRESENTANTE__NOME ("persona.anagrafica.nome",24,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.nome"),
 	LEGALE_RAPPRESENTANTE__CODICEFISCALE ("persona.anagrafica.codiceFiscale",25,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.codiceFiscale"),
@@ -45,7 +45,7 @@ public enum IdFieldEnum {
 	LEGALE_RAPPRESENTANTE__ATTO_NOMINA ("attoNomina",30,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "files.FILE_ATTO_NOMINA"),
 	LEGALE_RAPPRESENTANTE__CV ("cv",31,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "files.FILE_CV"),
 
-	DELEGATO_LEGALE_RAPPRESENTANTE__FULL ("persona.delegatoLegaleRappresentante",-1,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE),
+	DELEGATO_LEGALE_RAPPRESENTANTE__FULL ("persona.delegatoLegaleRappresentante",-1,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "full"),
 	DELEGATO_LEGALE_RAPPRESENTANTE__COGNOME ("persona.anagrafica.cognome",32,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.cognome"),
 	DELEGATO_LEGALE_RAPPRESENTANTE__NOME ("persona.anagrafica.nome",33,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.nome"),
 	DELEGATO_LEGALE_RAPPRESENTANTE__CODICEFISCALE ("persona.anagrafica.codiceFiscale",34,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.codiceFiscale"),
@@ -76,7 +76,7 @@ public enum IdFieldEnum {
 	RESPONSABILE_SEGRETERIA__ATTO_NOMINA ("attoNomina",56,Ruolo.RESPONSABILE_SEGRETERIA, SubSetFieldEnum.RESPONSABILE_SEGRETERIA, "files.FILE_ATTO_NOMINA"),
 	RESPONSABILE_SEGRETERIA__CV ("cv",57,Ruolo.RESPONSABILE_SEGRETERIA, SubSetFieldEnum.RESPONSABILE_SEGRETERIA, "files.FILE_CV"),
 
-	RESPONSABILE_AMMINISTRATIVO__FULL ("persona.anagrafica", -1, Ruolo.RESPONSABILE_AMMINISTRATIVO, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO),
+	RESPONSABILE_AMMINISTRATIVO__FULL ("persona.anagrafica", -1, Ruolo.RESPONSABILE_AMMINISTRATIVO, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO, "full"),
 	RESPONSABILE_AMMINISTRATIVO__COGNOME ("persona.anagrafica.cognome", 58, Ruolo.RESPONSABILE_AMMINISTRATIVO, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO, "anagrafica.cognome"),
 	RESPONSABILE_AMMINISTRATIVO__NOME ("persona.anagrafica.nome", 59, Ruolo.RESPONSABILE_AMMINISTRATIVO, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO, "anagrafica.nome"),
 	RESPONSABILE_AMMINISTRATIVO__CODICEFISCALE ("persona.anagrafica.codiceFiscale", 60, Ruolo.RESPONSABILE_AMMINISTRATIVO, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO, "anagrafica.codiceFiscale"),
@@ -85,7 +85,7 @@ public enum IdFieldEnum {
 	RESPONSABILE_AMMINISTRATIVO__ATTO_NOMINA ("attoNomina", 63, Ruolo.RESPONSABILE_AMMINISTRATIVO, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO, "files.FILE_ATTO_NOMINA"),
 	RESPONSABILE_AMMINISTRATIVO__CV ("cv", 64, Ruolo.RESPONSABILE_AMMINISTRATIVO, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO, "files.FILE_CV"),
 
-	RESPONSABILE_SISTEMA_INFORMATICO__FULL ("persona.anagrafica", -1, Ruolo.RESPONSABILE_SISTEMA_INFORMATICO, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO),
+	RESPONSABILE_SISTEMA_INFORMATICO__FULL ("persona.anagrafica", -1, Ruolo.RESPONSABILE_SISTEMA_INFORMATICO, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO, "full"),
 	RESPONSABILE_SISTEMA_INFORMATICO__COGNOME ("persona.anagrafica.cognome", 74, Ruolo.RESPONSABILE_SISTEMA_INFORMATICO, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO, "anagrafica.cognome"),
 	RESPONSABILE_SISTEMA_INFORMATICO__NOME ("persona.anagrafica.nome", 75, Ruolo.RESPONSABILE_SISTEMA_INFORMATICO, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO, "anagrafica.nome"),
 	RESPONSABILE_SISTEMA_INFORMATICO__CODICEFISCALE ("persona.anagrafica.codiceFiscale", 76, Ruolo.RESPONSABILE_SISTEMA_INFORMATICO, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO, "anagrafica.codiceFiscale"),
@@ -94,7 +94,7 @@ public enum IdFieldEnum {
 	RESPONSABILE_SISTEMA_INFORMATICO__ATTO_NOMINA ("attoNomina", 79, Ruolo.RESPONSABILE_SISTEMA_INFORMATICO, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO, "files.FILE_ATTO_NOMINA"),
 	RESPONSABILE_SISTEMA_INFORMATICO__CV ("cv", 80, Ruolo.RESPONSABILE_SISTEMA_INFORMATICO, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO, "files.FILE_CV"),
 
-	RESPONSABILE_QUALITA__FULL ("persona.anagrafica", -1, Ruolo.RESPONSABILE_QUALITA, SubSetFieldEnum.RESPONSABILE_QUALITA),
+	RESPONSABILE_QUALITA__FULL ("persona.anagrafica", -1, Ruolo.RESPONSABILE_QUALITA, SubSetFieldEnum.RESPONSABILE_QUALITA, "full"),
 	RESPONSABILE_QUALITA__COGNOME ("persona.anagrafica.cognome", 81, Ruolo.RESPONSABILE_QUALITA, SubSetFieldEnum.RESPONSABILE_QUALITA, "anagrafica.cognome"),
 	RESPONSABILE_QUALITA__NOME ("persona.anagrafica.nome", 82, Ruolo.RESPONSABILE_QUALITA, SubSetFieldEnum.RESPONSABILE_QUALITA, "anagrafica.nome"),
 	RESPONSABILE_QUALITA__CODICEFISCALE ("persona.anagrafica.codiceFiscale", 83, Ruolo.RESPONSABILE_QUALITA, SubSetFieldEnum.RESPONSABILE_QUALITA, "anagrafica.codiceFiscale"),
@@ -127,8 +127,8 @@ public enum IdFieldEnum {
 	EVENTO_PIANO_FORMATIVO__PROFESSIONI_EVENTO ("evento.professioniEvento", 5, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),
 	EVENTO_PIANO_FORMATIVO__DISCIPLINE ("evento.discipline", 6, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),
 
-	COMPONENTE_COMITATO_SCIENTIFICO__FULL ("comitatoScientifico", -1, null, SubSetFieldEnum.FULL),
-	EVENTO_PIANO_FORMATIVO__FULL ("pianoFormativo", -1, null, SubSetFieldEnum.FULL);//gestiamo la possibilità di modificare o meno il piano formativo dentro l'accreditamento
+	COMPONENTE_COMITATO_SCIENTIFICO__FULL ("comitatoScientifico", -1, null, SubSetFieldEnum.FULL, "full"),
+	EVENTO_PIANO_FORMATIVO__FULL ("pianoFormativo", -1, null, SubSetFieldEnum.FULL, "full");//gestiamo la possibilità di modificare o meno il piano formativo dentro l'accreditamento
 
 	private int idEcm;
 	private String key;
@@ -206,6 +206,15 @@ public enum IdFieldEnum {
 		Set<IdFieldEnum> ids = new HashSet<IdFieldEnum>();
 		for(IdFieldEnum e : IdFieldEnum.values()){
 			if(e.getSubSetField() == subset)
+				ids.add(e);
+		}
+		return ids;
+	}
+	
+	public static Set<IdFieldEnum> getAllForSubsetWithNameRefPrefix(SubSetFieldEnum subset, String nameRefPrefix){
+		Set<IdFieldEnum> ids = new HashSet<IdFieldEnum>();
+		for(IdFieldEnum e : IdFieldEnum.values()){
+			if(e.getSubSetField() == subset && e.getNameRef().startsWith(nameRefPrefix))
 				ids.add(e);
 		}
 		return ids;

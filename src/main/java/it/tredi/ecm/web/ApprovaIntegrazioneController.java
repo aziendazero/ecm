@@ -18,7 +18,7 @@ import it.tredi.ecm.web.bean.Message;
 @SessionAttributes("wrapper")
 public class ApprovaIntegrazioneController {
 	@Autowired private FieldIntegrazioneAccreditamentoRepository repoIntegrazione;
-	@Autowired private IntegrazioneService integrazioneUtils;
+	@Autowired private IntegrazioneService integrazioneService;
 	
 //	@RequestMapping("/accreditamento/{accreditamentoId}/integrazione")
 //	public String integrazione(@PathVariable Long accreditamentoId, Model model){
@@ -73,11 +73,12 @@ public class ApprovaIntegrazioneController {
 	public String saveApprovaIntegrazione(@ModelAttribute("wrapper") ApprovaIntegrazioneWrapper wrapper, Model model, RedirectAttributes redirAttributes){
 		try{
 			if(wrapper.getSelected() != null && !wrapper.getSelected().isEmpty()){
-				integrazioneUtils.applyIntegrazioneAccreditamentoAndSave(wrapper.getAccreditamentoId(), wrapper.getSelected());
+				integrazioneService.applyIntegrazioneAccreditamentoAndSave(wrapper.getAccreditamentoId(), wrapper.getSelected());
 				repoIntegrazione.delete(wrapper.getSelected());
 			}
 			model.addAttribute("message",new Message("message.success", "message.salvatggio", "success"));
 		}catch (Exception ex){
+			ex.printStackTrace();
 			model.addAttribute("message",new Message("message.error", "message.exception", "error"));
 		}
 		

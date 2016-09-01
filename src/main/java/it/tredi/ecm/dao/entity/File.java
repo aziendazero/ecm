@@ -48,7 +48,11 @@ public class File extends BaseEntity{
 		this.nomeFile = "";
 		this.dataCreazione = LocalDate.now();
 	}
-
+	
+	public void setId(Long id){
+		this.id = id;
+	}
+	
 	@JsonIgnore	public boolean isCV(){
 		return this.tipo.equals(FileEnum.FILE_CV);
 	}
@@ -116,7 +120,7 @@ public class File extends BaseEntity{
 			return false;
 		File other = (File) obj;
 		if (tipo == other.tipo)
-			return false;
+			return true;
 		return true;
 	}
  

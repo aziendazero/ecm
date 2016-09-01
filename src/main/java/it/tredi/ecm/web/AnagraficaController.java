@@ -56,7 +56,7 @@ public class AnagraficaController {
 		try {
 			LOGGER.info(Utils.getLogMessage("GET /provider/anagrafica/list"));
 			Provider provider = providerService.getProvider();
-			model.addAttribute("anagraficaList", anagraficaService.getAllAnagraficheByProviderId(provider.getId()));
+			model.addAttribute("anagraficaList", anagraficaService.getAllAnagraficheAttiveByProviderId(provider.getId()));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 			return LIST;
 		}catch (Exception ex){
