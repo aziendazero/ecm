@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<!-- fragment interno della seduta, la parte di paginazione è gestita dai file sedutaShow e sedutaValidate -->
+	<!-- parametri del fragment: string passato come parametro per capire la modalità di visualizzazione -->
+	<th:block th:fragment="seduta(mode)">
+		<th:block th:with="editabile=${mode == 'edit'},
+			showOnly=${mode == 'show'}">
+
+			<!-- ogni parte non in comune tra sarà gestita in maniera appropriata -->
+			<div class="x_content">
+				<!-- rimove il tag form se la seduta NON è editabile -->
+				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
+					<form th:remove="${!showOnly} ? none : tag"
+						id="formSeduta" class="form-horizontal form-label-left"
+						th:action="@{|/seduta/save|}"
+						method="post" enctype="multipart/form-data"
+						novalidate="novalidate">
+
+						<!-- DATA -->
+						<div class="item form-group" th:classappend="${#fields.hasErrors('seduta.data')} ? 'bad'">
+							<span class="col-xs-1"></span>
+		                    <label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataInput">
+		                    	<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.data}">Data</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 input-group datapick">
+									<input type="text" id="data" required="required" class="form-control col-md-7 col-xs-12"
+										name="data" th:field="${seduta.data}" th:disabled="${!canEdit}" />
+									<span class="input-group-addon" onclick="$('#data').click()">
+       									<i class="glyphicon glyphicon-calendar"></i>
+    								</span>
+								</div>
+
+							</th:block>
+							<th:block th:if="${showOnly}">
+			           			<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			              			<div class="value" th:text="${#temporals.format(seduta.data, 'dd/MM/yyyy')}"></div>
+		                    	</div>
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('seduta.data')}" class="alert" th:errors="${seduta.data}"></div>
+						</div>
+
+						<div class="divider-dashed"></div>
+
+						<!-- ORA -->
+						<div class="item form-group" th:classappend="${#fields.hasErrors('seduta.ora')} ? 'bad'">
+		                    <span class="col-xs-1"></span>
+		                    <label class="control-label col-md-3 col-sm-3 col-xs-11">
+		                      	<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.ora}">Ora</span>
+		                    </label>
+		                    <th:block th:if="${editabile}">
+			                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 input-group">
+									<input type="text" id="ora" required="required" class="form-control"
+										name="ora" th:field="${seduta.ora}" th:disabled="${!canEdit}" />
+									<span class="input-group-addon" id="openClock">
+       									<i class="glyphicon glyphicon-time"></i>
+    								</span>
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly}">
+			           			<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			              			<div class="value" th:text="${#temporals.format(seduta.ora, 'HH:mm')}"></div>
+		                    	</div>
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('seduta.ora')}" class="alert" th:errors="${seduta.ora}"></div>
+	                    </div>
+
+						<div class="divider-dashed"></div>
+
+	                    <!-- DOMANDE DI ACCREDITAMENTO -->
+	                    <div class="item form-group">
+	                    	<span class="col-xs-1"></span>
+		                    <label class="control-label col-md-3 col-sm-3 col-xs-11">
+		                      	<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.domande_accreditamento_in_odg}">Domande di accreditamento in ODG</span>
+		                    </label>
+							<div th:if="${#lists.isEmpty(seduta.valutazioniCommissione)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+								<div class="with-padding-top" th:classappend="${showOnly} ? 'value'" th:text="#{label.nessuna_valutazione_commissione}"></div>
+		           			</div>
+		           			<th:block th:unless="${#lists.isEmpty(seduta.valutazioniCommissione)}">
+			           			<div class="row" style="clear: both; padding: 4px;"></div>
+								<div class="row" style="clear: both">
+									<div class="col-md-3 col-sm-3 col-xs-12"></div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<table class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline" cellspacing="0" width="100%" th:classappend="${editabile ? 'domande-table-edit' : 'domande-table-show'}">
+											<thead>
+												<tr>
+													<th th:text="#{label.domanda_id}">ID Domanda</th>
+													<th th:text="#{label.provider}">Provider</th>
+													<th th:text="#{label.oggetto_discussione}"></th>
+													<th th:if="${editabile and canEdit}" th:text="#{label.azioni}"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="domanda, row: ${seduta.valutazioniCommissione}">
+													<td><a th:text="${domanda.accreditamento.id}" th:href="@{|/accreditamento/${domanda.accreditamento.id}/show|}">id_domanda</a></td>
+													<td th:text="${domanda.accreditamento.provider.denominazioneLegale}">nome_provider</td>
+													<td th:text="${domanda.oggettoDiscussione}"></td>
+													<td th:if="${editabile and canEdit}">
+														<a class="btn btn-table btn-danger single" th:href="@{|/home|}"><i class="fa fa-trash"></i> <span th:text="#{label.elimina}"></span></a>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</th:block>
+							<div class="col-md-3 col-sm-3 col-xs-12"></div>
+							<div class="col-md-6 col-sm-6 col-xs-12">
+								<a th:if="${editabile and canEdit}" th:text="#{label.aggiungi_domanda_in_odg}" class="btn btn-primary with-margin-top" th:href="@{|/home|}"></a>
+							</div>
+	                    </div>
+
+	                    <input type="hidden" name="editId" th:value="${seduta.id}" />
+	                    <input type="hidden" name="flag" th:value="${canEdit}" />
+
+						<input id="submitButton" type="submit" style="display: none;" />
+
+					</form>
+				</div>
+			</div>
+		</th:block>
+	</th:block>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.lista_sedute}">Lista delle sedute</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right"
+									th:href="@{|/seduta/new|}"
+									th:text="#{label.inserisci_nuova_seduta}">label.inserisci_nuova_seduta</a>
+							<a class="btn btn-primary pull-right"
+									th:href="@{/home}"
+									th:text="#{label.indietro}">Indietro</a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<div id='calendar'></div>
+
+						<div class="divider"></div>
+
+						<h2 th:text="#{label.sedute_inserite}"></h2>
+
+						<table th:unless="${#lists.isEmpty(sedutaList)}" id="datatable-seduta"
+							class="table table-striped table-bordered dt-responsive nowrap"
+							cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.data}">Data</th>
+									<th th:text="#{label.ora}">Ora</th>
+									<th th:text="#{label.azioni}">Azioni</th>
+								</tr>
+							</thead>
+							<tbody th:unless="${#lists.isEmpty(sedutaList)}" th:remove="all-but-first">
+								<tr th:each="seduta : ${sedutaList}">
+									<td><a th:href="@{|/seduta/${seduta.id}/show|}" th:text="${seduta.data}">2016-08-31</a></td>
+									<td th:text="${seduta.ora}">17:05</td>
+									<td><a class="btn btn-primary btn-table single" th:onclick="'find(\''+${seduta.data}+'\')'"><span class="fa fa-search"></span> <span th:text="#{label.trova}"></span></a></td>
+								</tr>
+							</tbody>
+						</table>
+						<div th:if="${#lists.isEmpty(sedutaList)}">
+							<h2 class="col-xs-12 text-center">
+								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessuna_seduta}">Non sono state trovate Sedute nel database!</i>
+							</h2>
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+			    $(document).ready(function() {
+					$("#datatable-seduta").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"columnDefs": [ {
+							"targets": 2,
+							"width": "70px",
+							"sClass": "center"
+						} ],
+					});
+
+					var json = JSON.parse([[${sedutaListJSON}]]);
+					var days = getDayNamesShort();
+					var months = getMonthNames();
+
+					$('#calendar').fullCalendar({
+						dayClick: function(date, jsEvent, view) {
+// 					        alert('Cliccato il giorno: ' + date.format('YYYY-MM-DD'));
+					        var now = new moment().format('YYYY-MM-DD');
+					        if(date.isBefore(now)) {
+					        	var exists = false;
+						        $(".ui-pnotify-text").each(function() {
+						            if ($(this).html() == [[#{message.impossibile_inserire_seduta_nel_passato}]]) {
+						                exists = true;
+						                animate($(this).parent().parent());
+						            }
+						        });
+						        if (!exists) {
+						        	sendNotifyStatic([[#{message.warning}]], [[#{message.impossibile_inserire_seduta_nel_passato}]], "warning");
+						        }
+					        }
+					        else {
+					        	var url = [[@{|/seduta/new?date=|}]] + date.format('YYYY-MM-DD');
+								location.href = url;
+					        }
+					    },
+					    height: 600,
+					    monthNames: months,
+						dayNamesShort: days,
+						buttonText: {
+							today:    [[#{label.oggi}]],
+						    month:    [[#{label.mese}]],
+						    week:     [[#{label.settimana}]],
+						    day:      [[#{label.giorno}]]
+						},
+						events: json,
+						eventClick: function(calEvent, jsEvent, view) {
+							var url = [[@{|/seduta/|}]] + calEvent.id + "/show";
+							location.href = url;
+					    }
+					})
+
+			    });
+
+				function find(dataString) {
+					var date = new moment(dataString, "YYYY-MM-DD");
+					$('#calendar').fullCalendar( 'gotoDate', date);
+					$('#calendar').fullCalendar( 'select', date);
+				}
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>
