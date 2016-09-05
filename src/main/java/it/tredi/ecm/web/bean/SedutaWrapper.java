@@ -15,4 +15,6 @@ public class SedutaWrapper {
 	private String motivazioneDaInserire;
 	private Long idAccreditamentoDaInserire;
 	private Set<Accreditamento> domandeSelezionabili;
+	private Set<Seduta> seduteSelezionabili;
+	private Seduta sedutaTarget;
 }

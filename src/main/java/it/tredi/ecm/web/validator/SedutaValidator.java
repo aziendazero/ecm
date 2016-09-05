@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Seduta;
@@ -32,12 +33,21 @@ public class SedutaValidator {
 	}
 
 	public void validateValutazioneCommissione(Object target, Errors errors, String prefix) {
-		LOGGER.info(Utils.getLogMessage("Validazione Valutazione Commissione"));
+		LOGGER.info(Utils.getLogMessage("Validazione Creazione Valutazione Commissione"));
 		SedutaWrapper wrapper = (SedutaWrapper) target;
 		if(wrapper.getIdAccreditamentoDaInserire() == null)
 			errors.rejectValue(prefix + "idAccreditamentoDaInserire", "error.empty");
 		if(wrapper.getMotivazioneDaInserire() == null || wrapper.getMotivazioneDaInserire().isEmpty()) {
 			errors.rejectValue(prefix + "motivazioneDaInserire", "error.empty");
 		}
+		Utils.logDebugErrorFields(LOGGER, errors);
+	}
+
+	public void validateSpostamentoValutazioneCommissione(Object target, Errors errors, String prefix) {
+		LOGGER.info(Utils.getLogMessage("Validazione Spostamento Valutazione Commissione"));
+		SedutaWrapper wrapper = (SedutaWrapper) target;
+		if(wrapper.getSedutaTarget() == null)
+			errors.rejectValue(prefix + "sedutaTarget", "error.empty");
+		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 }

@@ -104,7 +104,8 @@
 													<td th:text="${domanda.accreditamento.provider.codiceFiscale}">codice_fiscale_provider</td>
 													<td th:text="${domanda.oggettoDiscussione}">oggetto_discussione</td>
 													<td th:if="${sedutaWrapper.canEdit and gestibile}">
-														<a class="btn btn-table btn-danger single" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/valutazioneCommissione/${domanda.id}/remove|}"><i class="fa fa-trash"></i> <span th:text="#{label.elimina}"></span></a>
+														<a th:id="'moveButton'+${domanda.id}" class="btn btn-table btn-primary double" th:onclick="'prepareFormMove(' + ${domanda.id} + ')'"><i class="fa fa-mail-forward"></i> <span th:text="#{label.sposta}"></span></a>
+														<a class="btn btn-table btn-danger double" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/valutazioneCommissione/${domanda.id}/remove|}"><i class="fa fa-trash"></i> <span th:text="#{label.elimina}"></span></a>
 													</td>
 												</tr>
 											</tbody>

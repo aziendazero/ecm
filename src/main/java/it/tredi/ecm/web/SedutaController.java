@@ -242,6 +242,36 @@ public class SedutaController {
 		}
 	}
 
+//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@RequestMapping(value = "/seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/move", method = RequestMethod.POST)
+	public String spostaValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
+			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs){
+		try {
+			sedutaValidator.validateSpostamentoValutazioneCommissione(sedutaWrapper, result, "");
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("modalErrorMove", valutazioneCommissioneId);
+				model.addAttribute("sedutaWrapper", sedutaWrapper);
+				LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
+				return HANDLE;
+			}else{
+				//sposto la valutazione commissione dalla seduta corrente a quella target
+				ValutazioneCommissione val = valutazioneCommissioneRepository.findOne(valutazioneCommissioneId);
+				Seduta from =  sedutaWrapper.getSeduta();
+				Seduta to = sedutaWrapper.getSedutaTarget();
+				sedutaService.moveValutazioneCommissione(val, from, to);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.domanda_spostata", "success"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/handle"));
+				return "redirect:/seduta/{sedutaId}/handle";
+			}
+		}catch(Exception ex){
+			LOGGER.error(Utils.getLogMessage("POST /seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/move"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
+			return HANDLE;
+		}
+	}
+
 	/** metodi privati di support **/
 	private String goToEdit(Model model, SedutaWrapper sedutaWrapper) {
 		model.addAttribute("sedutaWrapper", sedutaWrapper);
@@ -258,6 +288,11 @@ public class SedutaController {
 	private String goToHandle(Model model, SedutaWrapper sedutaWrapper) {
 		Set<Accreditamento> accreditamentiODG = accreditamentoService.getAllAccreditamentiByStato(AccreditamentoStatoEnum.INS_ODG);
 		accreditamentiODG.removeAll(sedutaService.getAccreditamentiInSeduta(sedutaWrapper.getSeduta().getId()));
+		//cerca le sedute disponibili per un eventuale spostamento di valutazione commissione
+		Set<Seduta> seduteDisponibili = sedutaService.getAllSeduteAfter(LocalDate.now());
+		//rimuove anche la seduta corrente (per evitare spostamenti da a la stessa seduta)
+		seduteDisponibili.remove(sedutaWrapper.getSeduta());
+		sedutaWrapper.setSeduteSelezionabili(seduteDisponibili);
 		sedutaWrapper.setDomandeSelezionabili(accreditamentiODG);
 		model.addAttribute("sedutaWrapper", sedutaWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));

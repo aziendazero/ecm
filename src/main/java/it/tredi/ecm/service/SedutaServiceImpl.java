@@ -11,11 +11,13 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.repository.SedutaRepository;
+import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
 
 @Service
 public class SedutaServiceImpl implements SedutaService {
 
 	@Autowired SedutaRepository sedutaRepository;
+	@Autowired ValutazioneCommissioneRepository valutazioneCommissioneRepository;
 
 	@Override
 	public Set<Seduta> getAllSedute() {
@@ -54,6 +56,26 @@ public class SedutaServiceImpl implements SedutaService {
 			result.add(vc.getAccreditamento());
 		}
 		return result;
+	}
+
+	@Override
+	public Set<Seduta> getAllSeduteAfter(LocalDate date) {
+		Set<Seduta> sedute = sedutaRepository.findAllByDataAfter(date);
+		return sedute;
+	}
+
+	@Override
+	public void moveValutazioneCommissione(ValutazioneCommissione val, Seduta from, Seduta to) {
+		Set<ValutazioneCommissione> valutazioniFrom = from.getValutazioniCommissione();
+		Set<ValutazioneCommissione> valutazioniTo = to.getValutazioniCommissione();
+		valutazioniFrom.remove(val);
+		valutazioniTo.add(val);
+		from.setValutazioniCommissione(valutazioniFrom);
+		to.setValutazioniCommissione(valutazioniTo);
+		val.setSeduta(to);
+		sedutaRepository.save(from);
+		sedutaRepository.save(to);
+		valutazioneCommissioneRepository.save(val);
 	}
 
 }
