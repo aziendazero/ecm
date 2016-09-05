@@ -1,6 +1,8 @@
 package it.tredi.ecm.web;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -16,16 +18,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Seduta;
+import it.tredi.ecm.dao.entity.ValutazioneCommissione;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.repository.SedutaRepository;
+import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.SedutaService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.SedutaWrapper;
 import it.tredi.ecm.web.validator.SedutaValidator;
 
+@SessionAttributes("valutazioniTemporanee")
 @Controller
 public class SedutaController {
 	private static Logger LOGGER = LoggerFactory.getLogger(SedutaController.class);
@@ -33,24 +43,24 @@ public class SedutaController {
 	private final String EDIT = "seduta/sedutaEdit";
 	private final String SHOW = "seduta/sedutaShow";
 	private final String LIST = "seduta/sedutaList";
+	private final String HANDLE =  "seduta/sedutaHandle";
 
 	@Autowired SedutaService sedutaService;
 	@Autowired SedutaRepository sedutaRepository;
 	@Autowired SedutaValidator sedutaValidator;
+	@Autowired AccreditamentoService accreditamentoService;
+	@Autowired ValutazioneCommissioneRepository valutazioneCommissioneRepository;
 
-	@ModelAttribute("seduta")
-	public Seduta getSedutaPreRequest(@RequestParam(value="editId",required = false) Long id){
-		if(id != null)
-			return sedutaService.getSedutaById(id);
-		return new Seduta();
+	@ModelAttribute("sedutaWrapper")
+	public SedutaWrapper getSedutaWrapperPreRequest(@RequestParam(value="editId",required = false) Long id){
+		if(id != null){
+			SedutaWrapper sedutaWrapper = new SedutaWrapper();
+			sedutaWrapper.setSeduta(sedutaService.getSedutaById(id));
+			return sedutaWrapper;
+		}
+		return new SedutaWrapper();
 	}
 
-	@ModelAttribute("canEdit")
-	public boolean getCanEditPreRequest(@RequestParam(value="flag", required = false) Boolean flag){
-		if(flag != null)
-			return flag;
-		else return false;
-	}
 	/***	Get Lista Sedute ***/
 
 //	@PreAuthorize("@securityAccessServiceImpl.canShowSedute(principal)") TODO
@@ -81,9 +91,9 @@ public class SedutaController {
 		try {
 			if(date != null) {
 				LocalDate localDate = LocalDate.parse(date);
-				return goToEdit(model, new Seduta(localDate));
+				return goToEdit(model, prepareWrapper(new Seduta(localDate)));
 			}
-			else return goToEdit(model, new Seduta());
+			else return goToEdit(model, prepareWrapper(new Seduta()));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /seduta/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -94,17 +104,16 @@ public class SedutaController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
 	@RequestMapping(value = "/seduta/save", method = RequestMethod.POST)
-	public String salvaSeduta(@ModelAttribute("canEdit") boolean canEdit, @ModelAttribute("seduta") Seduta seduta, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
+	public String salvaSeduta(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("POST /seduta/save"));
 		try{
-			sedutaValidator.validate(seduta, result, "");
+			sedutaValidator.validate(sedutaWrapper.getSeduta(), result, "seduta.");
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				model.addAttribute("canEdit", canEdit);
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				sedutaRepository.save(seduta);
+				sedutaRepository.save(sedutaWrapper.getSeduta());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.seduta_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/list"));
 				return "redirect:/seduta/list";
@@ -123,7 +132,7 @@ public class SedutaController {
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/show"));
 		try {
 			Seduta seduta = sedutaService.getSedutaById(sedutaId);
-			return goToShow(model, seduta);
+			return goToShow(model, prepareWrapper(seduta));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /seduta/" + sedutaId + "/show"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -138,9 +147,24 @@ public class SedutaController {
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/edit"));
 		try {
 			Seduta seduta = sedutaService.getSedutaById(sedutaId);
-			return goToEdit(model, seduta);
+			return goToEdit(model, prepareWrapper(seduta));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /seduta/" + sedutaId + "/edit"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+			return SHOW;
+		}
+	}
+
+//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@RequestMapping("/seduta/{sedutaId}/handle")
+	public String modificaValutazioniCommissioneSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/handle"));
+		try {
+			Seduta seduta = sedutaService.getSedutaById(sedutaId);
+			return goToHandle(model, prepareWrapper(seduta));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /seduta/" + sedutaId + "/handle"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 			return SHOW;
@@ -169,19 +193,85 @@ public class SedutaController {
 
 	}
 
+//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@RequestMapping(value= "/seduta/{sedutaId}/valutazioneCommissione/save", method = RequestMethod.POST)
+	public String aggiungiValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result,
+			Model model, RedirectAttributes redirectAttrs){
+		try {
+			sedutaValidator.validateValutazioneCommissione(sedutaWrapper, result, "");
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("modalError", true);
+				LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
+				return HANDLE;
+			}else{
+				//aggiungo la valutazioni commissione quella appena inserita
+				Seduta seduta = sedutaWrapper.getSeduta();
+				ValutazioneCommissione newValutazione = new ValutazioneCommissione();
+				newValutazione.setOggettoDiscussione(sedutaWrapper.getMotivazioneDaInserire());
+				newValutazione.setAccreditamento(accreditamentoService.getAccreditamento(sedutaWrapper.getIdAccreditamentoDaInserire()));
+				newValutazione.setSeduta(seduta);
+				Set<ValutazioneCommissione> setValutazioni = seduta.getValutazioniCommissione();
+				setValutazioni.add(newValutazione);
+				seduta.setValutazioniCommissione(setValutazioni);
+				valutazioneCommissioneRepository.save(newValutazione);
+				sedutaRepository.save(seduta);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.domanda_aggiunta", "success"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/handle"));
+				return "redirect:/seduta/{sedutaId}/handle";
+			}
+		}catch(Exception ex){
+			LOGGER.error(Utils.getLogMessage("POST /seduta/{sedutaId}/valutazioneCommissione/save"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
+			return HANDLE;
+		}
+	}
+
+//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@RequestMapping("/seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/remove")
+	public String rimuoviValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
+			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs){
+		try {
+			valutazioneCommissioneRepository.delete(valutazioneCommissioneId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.domanda_rimossa", "success"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/edit"));
+			return "redirect:/seduta/{sedutaId}/handle";
+		}catch(Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/remove"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
+			return HANDLE;
+		}
+	}
+
 	/** metodi privati di support **/
-	private String goToEdit(Model model, Seduta seduta) {
-		model.addAttribute("seduta", seduta);
-		model.addAttribute("canEdit", sedutaService.canEditSeduta(seduta));
+	private String goToEdit(Model model, SedutaWrapper sedutaWrapper) {
+		model.addAttribute("sedutaWrapper", sedutaWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
 
-	private String goToShow(Model model, Seduta seduta) {
-		model.addAttribute("seduta", seduta);
-		model.addAttribute("canEdit", sedutaService.canEditSeduta(seduta));
+	private String goToShow(Model model, SedutaWrapper sedutaWrapper) {
+		model.addAttribute("sedutaWrapper", sedutaWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
+	}
+
+	private String goToHandle(Model model, SedutaWrapper sedutaWrapper) {
+		Set<Accreditamento> accreditamentiODG = accreditamentoService.getAllAccreditamentiByStato(AccreditamentoStatoEnum.INS_ODG);
+		accreditamentiODG.removeAll(sedutaService.getAccreditamentiInSeduta(sedutaWrapper.getSeduta().getId()));
+		sedutaWrapper.setDomandeSelezionabili(accreditamentiODG);
+		model.addAttribute("sedutaWrapper", sedutaWrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
+		return HANDLE;
+	}
+
+	private SedutaWrapper prepareWrapper(Seduta seduta) {
+		SedutaWrapper wrapper = new SedutaWrapper();
+		wrapper.setSeduta(seduta);
+		wrapper.setCanEdit(sedutaService.canEditSeduta(seduta));
+		return wrapper;
 	}
 
 	private JSONArray seduteToJSON(Set<Seduta> sedute) {

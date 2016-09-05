@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.Collection;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
@@ -54,6 +55,4 @@ public interface AccreditamentoService{
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canPresaVisione(Long accreditamentoId, CurrentUser currentUser);
-
-
 }

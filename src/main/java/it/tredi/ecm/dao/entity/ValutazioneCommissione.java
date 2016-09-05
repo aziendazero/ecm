@@ -11,13 +11,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ValutazioneCommissione extends BaseEntity{
-	@OneToOne 
+	@OneToOne
 	private Seduta seduta;
 	@OneToOne
 	private Accreditamento accreditamento;
-	
+
 	private String oggettoDiscussione;
-	
+
 	@Column(name="valutazione_commissione")
 	private String valutazioneCommissione;
 }

@@ -6,10 +6,12 @@ import java.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.SedutaWrapper;
 
 @Component
 public class SedutaValidator {
@@ -28,5 +30,15 @@ public class SedutaValidator {
 		else if(seduta.getData().isEqual(LocalDate.now()) && seduta.getOra().isBefore(LocalTime.now()))
 			errors.rejectValue(prefix + "ora", "error.ora_non_valida");
 		Utils.logDebugErrorFields(LOGGER, errors);
+	}
+
+	public void validateValutazioneCommissione(Object target, Errors errors, String prefix) {
+		LOGGER.info(Utils.getLogMessage("Validazione Valutazione Commissione"));
+		SedutaWrapper wrapper = (SedutaWrapper) target;
+		if(wrapper.getIdAccreditamentoDaInserire() == null)
+			errors.rejectValue(prefix + "idAccreditamentoDaInserire", "error.empty");
+		if(wrapper.getMotivazioneDaInserire() == null || wrapper.getMotivazioneDaInserire().isEmpty()) {
+			errors.rejectValue(prefix + "motivazioneDaInserire", "error.empty");
+		}
 	}
 }
