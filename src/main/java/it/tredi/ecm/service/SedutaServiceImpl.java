@@ -1,12 +1,15 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Seduta;
+import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.repository.SedutaRepository;
 
 @Service
@@ -41,6 +44,16 @@ public class SedutaServiceImpl implements SedutaService {
 	public boolean canBeRemoved(Long sedutaId) {
 		Seduta seduta = sedutaRepository.findOne(sedutaId);
 		return (seduta.getValutazioniCommissione() == null || seduta.getValutazioniCommissione().isEmpty());
+	}
+
+	@Override
+	public Set<Accreditamento> getAccreditamentiInSeduta(Long sedutaId) {
+		Seduta seduta = sedutaRepository.findOne(sedutaId);
+		Set<Accreditamento> result = new HashSet<Accreditamento>();
+		for (ValutazioneCommissione vc : seduta.getValutazioniCommissione()) {
+			result.add(vc.getAccreditamento());
+		}
+		return result;
 	}
 
 }
