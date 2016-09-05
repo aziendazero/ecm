@@ -12,8 +12,9 @@
 					<div class="x_title">
 						<h2 th:text="#{label.visualizzazione_seduta}">Seduta</h2>
 						<div class="pull-right buttons-header">
-							<a th:if="${canEdit == true}" class="btn btn-success pull-right" th:text="#{label.modifica}" th:href="@{|/seduta/${seduta.id}/edit|}"></a>
-							<a th:if="${canEdit == true}" class="btn btn-danger pull-right" th:text="#{label.elimina}" th:href="@{|/seduta/${seduta.id}/remove|}"></a>
+						<a th:if="${sedutaWrapper.canEdit == true}" class="btn btn-danger pull-right" th:text="#{label.elimina}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/remove|}"></a>
+							<a th:if="${sedutaWrapper.canEdit == true}" class="btn btn-success pull-right" th:text="#{label.modifica}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/edit|}"></a>
+							<a th:if="${sedutaWrapper.canEdit == true}" class="btn btn-primary pull-right" th:text="#{label.gestione_domande}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/handle|}"></a>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/seduta/list|}"></a>
 						</div>
 						<div class="clearfix"></div>
@@ -33,7 +34,7 @@
 						"bPaginate" : false,
 						"ordering" : false,
 						"columnDefs": [
-							{"targets": 0, "width": "72px", "sClass": "center" }
+							{"targets": 0, "width": "1px", "sClass": "center" }
 						],
 					})
 				})

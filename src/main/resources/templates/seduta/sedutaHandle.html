@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+
+			<!-- modale creazione valutazioneCommissione -->
+			<div id="valCommissione-modal" class="modal fade modal-valCommissione"
+				data-model-index="1" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">
+								<span aria-hidden="true">×</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel"
+								th:text="#{label.inserimento_valutazione_commissione_in_ODG}">Inserisci una Domanda di Accreditamento da valutare nell'Ordine del Giorno</h4>
+						</div>
+						<div class="modal-body">
+							<form id="formInsertValCommissione" class="form-horizontal"
+								th:action="@{|/seduta/${sedutaWrapper.seduta.id}/valutazioneCommissione/save|}"
+								method="post" enctype="multipart/form-data"
+								novalidate="novalidate">
+
+								<div class="item form-group" th:classappend="${#fields.hasErrors('sedutaWrapper.idAccreditamentoDaInserire')} ? 'bad'">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.domanda_accreditamento}">Motivazione</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-6 col-md-8 col-sm-8 col-xs-12">
+										<button th:if="${#lists.isEmpty(sedutaWrapper.domandeSelezionabili)}" type="button" disabled="disabled" class="btn btn-primary single" th:text="#{label.nessuna_domanda_selezionabile}"></button>
+										<select id="selectAccreditamenti" class="selectpicker required" th:unless="${#lists.isEmpty(sedutaWrapper.domandeSelezionabili)}"
+													th:field="${sedutaWrapper.idAccreditamentoDaInserire}"
+													data-width="100%"
+													data-style="btn-primary"
+													data-size="10" title="Seleziona Domanda di Accreditamento da inserire...">
+											<option th:each="domanda, row : ${sedutaWrapper.domandeSelezionabili}" th:value="${domanda.id}"
+												th:text="#{label.opzione_selezione_domanda(${domanda.id}, ${domanda.provider.denominazioneLegale}, ${domanda.provider.codiceFiscale})}">
+											</option>
+										</select>
+									</div>
+									<div th:if="${#fields.hasErrors('sedutaWrapper.idAccreditamentoDaInserire')}" class="alert" th:errors="${sedutaWrapper.idAccreditamentoDaInserire}"></div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<div class="item form-group" th:classappend="${#fields.hasErrors('sedutaWrapper.motivazioneDaInserire')} ? 'bad'">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.oggetto_discussione}">Motivazione</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-6 col-md-8 col-sm-8 col-xs-12">
+										<input required="required" class="form-control col-xs-12" type="text" id="motivazione" th:field="${sedutaWrapper.motivazioneDaInserire}" />
+									</div>
+									<div th:if="${#fields.hasErrors('sedutaWrapper.motivazioneDaInserire')}" class="alert" th:errors="${sedutaWrapper.motivazioneDaInserire}"></div>
+								</div>
+
+								<input type="hidden" name="editId" th:value="${sedutaWrapper.seduta.id}" />
+		                   		<input type="hidden" th:field="${sedutaWrapper.canEdit}" />
+								<input id="submitButtonModal" type="submit" style="display: none;" />
+
+							</form>
+						</div>
+						<div class="modal-footer">
+         						<label for="submitButtonModal" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
+         						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+       					</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="${sedutaWrapper.seduta.id} ? #{label.gestione_domande_seduta(${#temporals.format(sedutaWrapper.seduta.data, 'dd/MM/yyyy')})} : #{label.inserimento_seduta}">Seduta</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="${sedutaWrapper.seduta.id != null} ? @{|/seduta/${sedutaWrapper.seduta.id}/show|} : @{|/seduta/list|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="seduta/sedutaFragment :: seduta('handle')"></th:block>
+
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				$(document).ready(function() {
+					$(".domande-table-edit").DataTable( {
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [
+							{"targets": 0, "width": "1px", "sClass": "center" },
+							{"targets": 4, "width": "1px", "sClass": "center"},
+						],
+					})
+
+				})
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>
