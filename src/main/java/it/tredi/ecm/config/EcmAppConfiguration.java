@@ -18,12 +18,15 @@ public class EcmAppConfiguration {
 	private int accountExpiresDay = 10;
 	@Value("${file.multipart.maxFileSize}")
 	private int multipartMaxFileSize = 3;
-	
+	@Value("${seduta.validation.minutes}")
+	private int sedutaValidationMinutes = 30;
+
 	@Bean
 	public EcmProperties ecmProperties(){
 		EcmProperties ecmProperties = new EcmProperties();
 		ecmProperties.setAccountExpiresDay(accountExpiresDay);
 		ecmProperties.setMultipartMaxFileSize(multipartMaxFileSize*1024*1024);
+		ecmProperties.setSedutaValidationMinutes(sedutaValidationMinutes);
 		return ecmProperties;
 	}
 }
