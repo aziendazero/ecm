@@ -60,6 +60,7 @@
 								</div>
 
 								<input type="hidden" name="editId" th:value="${sedutaWrapper.seduta.id}" />
+								<input type="hidden" th:field="${sedutaWrapper.domandeSelezionabili}" />
 		                   		<input type="hidden" th:field="${sedutaWrapper.canEdit}" />
 								<input id="submitButtonModal" type="submit" style="display: none;" />
 
@@ -103,7 +104,7 @@
 													data-style="btn-primary"
 													data-size="10" title="Seleziona Seduta...">
 											<option th:each="domanda, row : ${sedutaWrapper.seduteSelezionabili}" th:value="${domanda.id}"
-												th:text="#{label.opzione_selezione_seduta(${#numbers.formatInteger(domanda.id, 3, 'NONE')}, ${#temporals.format(domanda.data, 'dd/MM/yyyy')}, ${domanda.ora})}">
+												th:text="#{label.opzione_selezione_seduta(${#temporals.format(domanda.data, 'dd/MM/yyyy')}, ${domanda.ora})}">
 											</option>
 										</select>
 									</div>
@@ -114,7 +115,8 @@
 		                   		<input type="hidden" th:field="${sedutaWrapper.canEdit}" />
 		                   		<input type="hidden" th:field="${sedutaWrapper.seduteSelezionabili}" />
 								<input id="submitButtonModal2" type="submit" style="display: none;" />
-								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />							</form>
+								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+							</form>
 						</div>
 						<div class="modal-footer">
          						<label for="submitButtonModal2" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
@@ -164,7 +166,7 @@
 
 				})
 
-				//setta l'action del from per spostare la seduta
+				//setta l'action del from per spostare la domanda in un'altra seduta
 				function prepareFormMove(id) {
 					url = [[@{|/seduta/${sedutaWrapper.seduta.id}/valutazioneCommissione/|}]] + id + "/move";
 					$("#formMoveValCommissione").attr("action", url);

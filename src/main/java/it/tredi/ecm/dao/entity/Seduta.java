@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +36,7 @@ public class Seduta extends BaseEntity{
 	@JsonIgnore
 	@OneToMany(mappedBy="seduta")
 	private Set<ValutazioneCommissione> valutazioniCommissione = new HashSet<ValutazioneCommissione>();
+	private boolean locked;
 
 	public Seduta(){}
 	public Seduta(LocalDate data) {

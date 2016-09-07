@@ -41,7 +41,7 @@
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(sedutaList)}" th:remove="all-but-first">
 								<tr th:each="seduta : ${sedutaList}">
-									<td><a th:href="@{|/seduta/${seduta.id}/show|}" th:text="${seduta.data}">2016-08-31</a></td>
+									<td><a th:href="@{|/seduta/${seduta.id}/show|}" th:text="${#temporals.format(seduta.data, 'dd/MM/yyyy')}">31/08/2016</a></td>
 									<td th:text="${seduta.ora}">17:05</td>
 									<td><a class="btn btn-primary btn-table single" th:onclick="'find(\''+${seduta.data}+'\')'"><span class="fa fa-search"></span> <span th:text="#{label.trova}"></span></a></td>
 								</tr>
@@ -92,6 +92,7 @@
 						        }
 					        }
 					        else {
+								$('#calendar').fullCalendar( 'select', date);
 					        	var url = [[@{|/seduta/new?date=|}]] + date.format('YYYY-MM-DD');
 								location.href = url;
 					        }
@@ -112,6 +113,12 @@
 					    }
 					})
 
+					var localDate = [[${dataSedutaInserita?.toString()}]]
+					var momentDate = new moment(localDate);
+					if(momentDate.isValid()) {
+						$('#calendar').fullCalendar( 'gotoDate', momentDate);
+						$('#calendar').fullCalendar( 'select', momentDate);
+					}
 			    });
 
 				function find(dataString) {

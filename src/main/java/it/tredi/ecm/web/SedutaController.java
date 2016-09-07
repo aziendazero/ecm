@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
@@ -27,12 +27,12 @@ import it.tredi.ecm.dao.repository.SedutaRepository;
 import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.SedutaService;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.SedutaWrapper;
 import it.tredi.ecm.web.validator.SedutaValidator;
 
-@SessionAttributes("valutazioniTemporanee")
 @Controller
 public class SedutaController {
 	private static Logger LOGGER = LoggerFactory.getLogger(SedutaController.class);
@@ -41,15 +41,17 @@ public class SedutaController {
 	private final String SHOW = "seduta/sedutaShow";
 	private final String LIST = "seduta/sedutaList";
 	private final String HANDLE =  "seduta/sedutaHandle";
+	private final String VALIDATE = "seduta/sedutaValidate";
 
-	@Autowired SedutaService sedutaService;
-	@Autowired SedutaRepository sedutaRepository;
-	@Autowired SedutaValidator sedutaValidator;
-	@Autowired AccreditamentoService accreditamentoService;
-	@Autowired ValutazioneCommissioneRepository valutazioneCommissioneRepository;
+	@Autowired private SedutaService sedutaService;
+	@Autowired private SedutaRepository sedutaRepository;
+	@Autowired private SedutaValidator sedutaValidator;
+	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private ValutazioneCommissioneRepository valutazioneCommissioneRepository;
+	@Autowired private EcmProperties ecmProperties;
 
 	@ModelAttribute("sedutaWrapper")
-	public SedutaWrapper getSedutaWrapperPreRequest(@RequestParam(value="editId",required = false) Long id){
+	public SedutaWrapper getSedutaWrapperPreRequest(@RequestParam(value="editId", required = false) Long id){
 		if(id != null){
 			SedutaWrapper sedutaWrapper = new SedutaWrapper();
 			sedutaWrapper.setSeduta(sedutaService.getSedutaById(id));
@@ -113,6 +115,7 @@ public class SedutaController {
 				sedutaRepository.save(sedutaWrapper.getSeduta());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.seduta_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/list"));
+				redirectAttrs.addFlashAttribute("dataSedutaInserita", sedutaWrapper.getSeduta().getData());
 				return "redirect:/seduta/list";
 			}
 		}catch(Exception ex){
@@ -169,6 +172,21 @@ public class SedutaController {
 	}
 
 //	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@RequestMapping("/seduta/{sedutaId}/validate")
+	public String inserisciValutazioneValutazioniCommissioneSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/validate"));
+		try {
+			Seduta seduta = sedutaService.getSedutaById(sedutaId);
+			return goToValidate(model, prepareWrapper(seduta));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /seduta/" + sedutaId + "/validate"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+			return SHOW;
+		}
+	}
+
+//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
 	@RequestMapping("/seduta/{sedutaId}/remove")
 	public String rimuoviSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/remove"));
@@ -202,17 +220,9 @@ public class SedutaController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
 				return HANDLE;
 			}else{
-				//aggiungo la valutazioni commissione quella appena inserita
+				//aggiungo la valutazioni commissione
 				Seduta seduta = sedutaWrapper.getSeduta();
-				ValutazioneCommissione newValutazione = new ValutazioneCommissione();
-				newValutazione.setOggettoDiscussione(sedutaWrapper.getMotivazioneDaInserire());
-				newValutazione.setAccreditamento(accreditamentoService.getAccreditamento(sedutaWrapper.getIdAccreditamentoDaInserire()));
-				newValutazione.setSeduta(seduta);
-				Set<ValutazioneCommissione> setValutazioni = seduta.getValutazioniCommissione();
-				setValutazioni.add(newValutazione);
-				seduta.setValutazioniCommissione(setValutazioni);
-				valutazioneCommissioneRepository.save(newValutazione);
-				sedutaRepository.save(seduta);
+				sedutaService.addValutazioneCommissioneToSeduta(sedutaWrapper.getMotivazioneDaInserire(), sedutaWrapper.getIdAccreditamentoDaInserire(), seduta);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.domanda_aggiunta", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/handle"));
 				return "redirect:/seduta/{sedutaId}/handle";
@@ -230,7 +240,7 @@ public class SedutaController {
 	public String rimuoviValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
 			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs){
 		try {
-			valutazioneCommissioneRepository.delete(valutazioneCommissioneId);
+			sedutaService.removeValutazioneCommissioneFromSeduta(valutazioneCommissioneId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.domanda_rimossa", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/edit"));
 			return "redirect:/seduta/{sedutaId}/handle";
@@ -245,15 +255,21 @@ public class SedutaController {
 //	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
 	@RequestMapping(value = "/seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/move", method = RequestMethod.POST)
 	public String spostaValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
-			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs){
+			@PathVariable Long valutazioneCommissioneId, @RequestParam(required = false) String caller, Model model, RedirectAttributes redirectAttrs){
 		try {
 			sedutaValidator.validateSpostamentoValutazioneCommissione(sedutaWrapper, result, "");
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				model.addAttribute("modalErrorMove", valutazioneCommissioneId);
 				model.addAttribute("sedutaWrapper", sedutaWrapper);
-				LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
-				return HANDLE;
+				if(caller != null && caller.equals("validate")) {
+					LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+					return VALIDATE;
+				}
+				else {
+					LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
+					return HANDLE;
+				}
 			}else{
 				//sposto la valutazione commissione dalla seduta corrente a quella target
 				ValutazioneCommissione val = valutazioneCommissioneRepository.findOne(valutazioneCommissioneId);
@@ -261,14 +277,75 @@ public class SedutaController {
 				Seduta to = sedutaWrapper.getSedutaTarget();
 				sedutaService.moveValutazioneCommissione(val, from, to);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.domanda_spostata", "success"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/handle"));
-				return "redirect:/seduta/{sedutaId}/handle";
+				if(caller != null && caller.equals("validate")) {
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/validate"));
+					return "redirect:/seduta/{sedutaId}/validate";
+				}
+				else {
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/handle"));
+					return "redirect:/seduta/{sedutaId}/handle";
+				}
+
 			}
 		}catch(Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/move"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
-			return HANDLE;
+			if(caller != null && caller.equals("validate")) {
+				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+				return VALIDATE;
+			}
+			else {
+				LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
+				return HANDLE;
+			}
+		}
+	}
+
+//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@RequestMapping(value = "/seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/validate", method = RequestMethod.POST)
+	public String valutaValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
+			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs){
+		try {
+			sedutaValidator.validateCompletamentoValutazioneCommissione(sedutaWrapper.getValutazioneTarget(), result, "valutazioneTarget.");
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("modalErrorValidate", valutazioneCommissioneId);
+				sedutaWrapper.setMappaStatiValutazione(sedutaService.prepareMappaStatiValutazione(sedutaWrapper.getSeduta()));
+				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+				return VALIDATE;
+			}else{
+				//salvo i valori nella valutazione commissione
+				ValutazioneCommissione val = valutazioneCommissioneRepository.findOne(valutazioneCommissioneId);
+				val.setValutazioneCommissione(sedutaWrapper.getValutazioneTarget().getValutazioneCommissione());
+				val.setStato(sedutaWrapper.getValutazioneTarget().getStato());
+				valutazioneCommissioneRepository.save(val);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_commissione_salvata", "success"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/validate"));
+				return "redirect:/seduta/{sedutaId}/validate";
+			}
+		}catch(Exception ex){
+			LOGGER.error(Utils.getLogMessage("POST /seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/validate"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			sedutaWrapper.setMappaStatiValutazione(sedutaService.prepareMappaStatiValutazione(sedutaWrapper.getSeduta()));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+			return VALIDATE;
+		}
+	}
+
+//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@RequestMapping("/seduta/{sedutaId}/lock")
+	public String bloccaSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
+		try {
+			//Conferma della valutazione della seduta
+			sedutaService.lockSeduta(sedutaId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.seduta_valutata", "success"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/show"));
+			return "redirect:/seduta/{sedutaId}/show";
+		}catch(Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /seduta/{sedutaId}/lock"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: redirect:/seduta/{sedutaId}/validate"));
+			return "redirect:/seduta/{sedutaId}/validate";
 		}
 	}
 
@@ -288,8 +365,8 @@ public class SedutaController {
 	private String goToHandle(Model model, SedutaWrapper sedutaWrapper) {
 		Set<Accreditamento> accreditamentiODG = accreditamentoService.getAllAccreditamentiByStato(AccreditamentoStatoEnum.INS_ODG);
 		accreditamentiODG.removeAll(sedutaService.getAccreditamentiInSeduta(sedutaWrapper.getSeduta().getId()));
-		//cerca le sedute disponibili per un eventuale spostamento di valutazione commissione
-		Set<Seduta> seduteDisponibili = sedutaService.getAllSeduteAfter(LocalDate.now());
+		//cerca le sedute disponibili per un eventuale spostamento di valutazione commissione (almeno 30 min da adesso)
+		Set<Seduta> seduteDisponibili = sedutaService.getAllSeduteAfter(LocalDate.now(), LocalTime.now().plusMinutes(ecmProperties.getSedutaValidationMinutes()));
 		//rimuove anche la seduta corrente (per evitare spostamenti da a la stessa seduta)
 		seduteDisponibili.remove(sedutaWrapper.getSeduta());
 		sedutaWrapper.setSeduteSelezionabili(seduteDisponibili);
@@ -299,10 +376,24 @@ public class SedutaController {
 		return HANDLE;
 	}
 
+	private String goToValidate(Model model, SedutaWrapper sedutaWrapper) {
+		//cerca le sedute disponibili per un eventuale spostamento di valutazione commissione
+		Set<Seduta> seduteDisponibili = sedutaService.getAllSeduteAfter(LocalDate.now(), LocalTime.now().plusMinutes(ecmProperties.getSedutaValidationMinutes()));
+		//rimuove la seduta corrente (per evitare spostamenti da a la stessa seduta)
+		seduteDisponibili.remove(sedutaWrapper.getSeduta());
+		sedutaWrapper.setSeduteSelezionabili(seduteDisponibili);
+		sedutaWrapper.setCanConfirmEvaluation(sedutaService.canBeLocked(sedutaWrapper.getSeduta()));
+		sedutaWrapper.setMappaStatiValutazione(sedutaService.prepareMappaStatiValutazione(sedutaWrapper.getSeduta()));
+		model.addAttribute("sedutaWrapper", sedutaWrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+		return VALIDATE;
+	}
+
 	private SedutaWrapper prepareWrapper(Seduta seduta) {
 		SedutaWrapper wrapper = new SedutaWrapper();
 		wrapper.setSeduta(seduta);
 		wrapper.setCanEdit(sedutaService.canEditSeduta(seduta));
+		wrapper.setCanValidate(sedutaService.canBeEvaluated(seduta));
 		return wrapper;
 	}
 
@@ -313,6 +404,9 @@ public class SedutaController {
 			temp.put("title", "ODG delle: " + s.getOra().toString());
 			temp.put("start", s.getData().toString());
 			temp.put("id", s.getId());
+			if (s.isLocked())
+				temp.put("color", "#1abc9c");
+			else temp.put("color", "#337ab7");
 			result.put(temp);
 		}
 		return result;
