@@ -817,7 +817,6 @@ h2 {
 	background-color: rgba(0, 0, 0, 0.05) !important;
 }
 .fc-event {
-	background-color: #337ab7 !important;
 	padding-left: 8px;
 	cursor: pointer;
 }
@@ -835,3 +834,4 @@ h2 {
 	border-bottom-left-radius: 0;
 	cursor: pointer;
 }
+
