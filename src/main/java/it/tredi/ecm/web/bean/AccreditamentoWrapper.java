@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
@@ -16,17 +14,13 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
-import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
-import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
-import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,7 +36,7 @@ public class AccreditamentoWrapper {
 	private Provider provider;
 
 	private Sede sedeLegale;
-	private Sede sedeOperativa;
+	private Set<Sede> sedi = new HashSet<Sede>();
 
 	private Persona legaleRappresentante;
 	private Persona delegatoLegaleRappresentante;
@@ -60,8 +54,7 @@ public class AccreditamentoWrapper {
 
 	/*	flag per stato avanzamento domanda	*/
 	private boolean providerStato;
-	private boolean sedeLegaleStato;
-	private boolean sedeOperativaStato;
+	private boolean sediStato;
 	private boolean legaleRappresentanteStato;
 	private boolean delegatoLegaleRappresentanteStato;
 
@@ -107,12 +100,15 @@ public class AccreditamentoWrapper {
 
 	//boolean Stati dei multistanza
 	private Map<Long, Boolean> componentiComitatoScientificoStati = new HashMap<Long, Boolean>();
+	private Map<Long, Boolean> sediStati = new HashMap<Long, Boolean>();
 	private boolean coordinatoreComitatoScientificoStato;
+	private boolean sedeLegaleStato;
 	private Map<Long, Boolean> eventiStati = new HashMap<Long, Boolean>();
 
 	//Mappe con i FieldValutazione
 	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa;
 	private Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaComponenti;
+	private Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaSedi;
 	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaCoordinatore;
 	private Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi;
 
@@ -135,14 +131,6 @@ public class AccreditamentoWrapper {
 
 		// PROVIDER
 		this.setProvider(accreditamento.getProvider());
-
-		//SEDE LEGALE
-		Sede sede = accreditamento.getProvider().getSedeLegale();
-		this.setSedeLegale( sede != null ? sede : new Sede());
-
-		//SEDE OPERATIVA
-		sede = accreditamento.getProvider().getSedeOperativa();
-		this.setSedeOperativa( sede != null ? sede : new Sede());
 
 		//DATI ACCREDITAMENTO
 		DatiAccreditamento datiAccreditamento = accreditamento.getDatiAccreditamento();
@@ -167,6 +155,13 @@ public class AccreditamentoWrapper {
 			else if(p.isComponenteComitatoScientifico())
 				this.getComponentiComitatoScientifico().add(p);
 		}
+
+		for(Sede s : accreditamento.getProvider().getSedi()) {
+			if(s.isSedeLegale())
+				this.setSedeLegale(s);
+			else
+				this.getSedi().add(s);
+		}
 	}
 
 
@@ -181,8 +176,15 @@ public class AccreditamentoWrapper {
 		if(mode.equals("show") || mode.equals("edit")) {
 			providerStato = (provider.getRagioneSociale()!= null) ? true : false;
 
-			sedeLegaleStato = (sedeLegale != null && !sedeLegale.isNew()) ? true : false;
-			sedeOperativaStato = (sedeOperativa != null && !sedeOperativa.isNew()) ? true : false;
+			//
+			sediStato = (sedi != null && !sedi.isEmpty()) ? true : false;
+
+			//check inserimento sede Legale
+			sedeLegaleStato = false;
+			for (Sede s : sedi) {
+				if (s.isSedeLegale())
+					sedeLegaleStato = true;
+			}
 
 			//check sul cv unico campo non settabile in registrazione o in modifica delle anagrafiche, ma solo durante la domanda di accreditamento
 			legaleRappresentanteStato = (legaleRappresentante != null && !legaleRappresentante.isNew() && legaleRappresentante.getAnagrafica().getCellulare() != null && !legaleRappresentante.getAnagrafica().getCellulare().isEmpty()) ? true : false;
@@ -198,7 +200,7 @@ public class AccreditamentoWrapper {
 			checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe);
 			setFilesStato(filesDelProvider);
 
-			sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
+			sezione1Stato = (providerStato && sediStato && sedeLegaleStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
 			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
 			sezione3Stato = (attoCostitutivoStato && (esperienzaFormazioneStato || !accreditamento.getDatiAccreditamento().getDatiEconomici().hasFatturatoFormazione()) && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
 		}
@@ -212,22 +214,6 @@ public class AccreditamentoWrapper {
 				mappa.containsKey(IdFieldEnum.PROVIDER__EMAIL_STRUTTURA) &&
 				mappa.containsKey(IdFieldEnum.PROVIDER__NATURA_ORGANIZZAZIONE) &&
 				mappa.containsKey(IdFieldEnum.PROVIDER__NO_PROFIT));
-
-			sedeLegaleStato = (mappa.containsKey(IdFieldEnum.SEDE_LEGALE__PROVINCIA) &&
-				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__COMUNE) &&
-				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__INDIRIZZO) &&
-				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__CAP) &&
-				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__TELEFONO) &&
-				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__FAX) &&
-				mappa.containsKey(IdFieldEnum.SEDE_LEGALE__EMAIL));
-
-			sedeOperativaStato = (mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__PROVINCIA) &&
-				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__COMUNE) &&
-				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__INDIRIZZO) &&
-				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__CAP) &&
-				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__TELEFONO) &&
-				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__FAX) &&
-				mappa.containsKey(IdFieldEnum.SEDE_OPERATIVA__EMAIL));
 
 			legaleRappresentanteStato =	(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__COGNOME) &&
 				mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__NOME) &&
@@ -307,6 +293,12 @@ public class AccreditamentoWrapper {
 					componentiComitatoScientificoStati.replace(p.getId(), true);
 			};
 
+			//sedi N.B. NON controlla bene tutti i FieldValutazione come gli altri per semplicità TODO decidere se implementare o se semplificare anche le altre
+			for (Sede s : sedi) {
+				if(mappaComponenti.get(s.getId()) != null && !mappaSedi.get(s.getId()).isEmpty())
+					componentiComitatoScientificoStati.replace(s.getId(), true);
+			};
+
 			//controllo anche il coordinatore N.B. stesso discorso dei componenti
 			coordinatoreComitatoScientificoStato = (mappaCoordinatore != null && !mappaCoordinatore.isEmpty()) ? true : false;
 
@@ -341,7 +333,7 @@ public class AccreditamentoWrapper {
 			});
 
 			//sezioni validate o meno
-			sezione1Stato = (providerStato && sedeLegaleStato && sedeOperativaStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
+			sezione1Stato = (providerStato && sediStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
 			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
 			sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
 			sezione4Stato = tuttiEventiValutati ? true : false;
@@ -363,7 +355,7 @@ public class AccreditamentoWrapper {
 	public void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitari, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe){
 		comitatoScientificoStato = true;
 
-		int professioniDeiComponenti = elencoProfessioniDeiComponenti.size();
+//		int professioniDeiComponenti = elencoProfessioniDeiComponenti.size();
 
 		//[A]
 		if(numeroComponentiComitatoScientifico < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){

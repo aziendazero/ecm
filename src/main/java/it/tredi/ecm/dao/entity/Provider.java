@@ -72,10 +72,9 @@ public class Provider extends BaseEntity{
 	private Set<Persona> persone = new HashSet<Persona>();
 
 	/*	SEDI DEL PROVIDER FORNITE IN FASE DI ACCREDITAMENTO	*/
-	@OneToOne
-	private Sede sedeLegale;
-	@OneToOne
-	private Sede sedeOperativa;
+	@OneToMany(mappedBy="provider")
+	@Where(clause = "dirty = 'false'")
+	private Set<Sede> sedi = new HashSet<Sede>();
 
 	/*	INFO PROVIDER FORNITE IN FASE DI ACCREDITAMENTO	*/
 	@Enumerated(EnumType.STRING)
@@ -125,12 +124,9 @@ public class Provider extends BaseEntity{
 		persona.setProvider(this);
 	}
 
-	public boolean isSedeCoincide(){
-		if(sedeLegale != null && sedeOperativa != null){
-			return sedeLegale.getId().equals(sedeOperativa.getId());
-		}else{
-			return false;
-		}
+	public void addSede(Sede sede) {
+		this.sedi.add(sede);
+		sede.setProvider(this);
 	}
 
 	public void setCodiceFiscale(String codiceFiscale){
