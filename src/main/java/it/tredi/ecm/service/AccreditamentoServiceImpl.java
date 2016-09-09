@@ -478,6 +478,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			return true;
 		return false;
 	}
+<<<<<<< HEAD
 	
 	@Override
 	/*
@@ -491,4 +492,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) {
 		return canUserEnableField(currentUser);
 	}
+=======
+
+>>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 }

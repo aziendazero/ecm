@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.visualizzazione_seduta(${#temporals.format(sedutaWrapper.seduta.data, 'dd/MM/yyyy')})}">Seduta</h2>
+						<div class="pull-right buttons-header">
+							<a th:if="${#sets.isEmpty(sedutaWrapper.seduta.valutazioniCommissione)}" class="btn btn-danger pull-right" th:text="#{label.elimina}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/remove|}"></a>
+							<a th:if="${sedutaWrapper.canEdit == true}" class="btn btn-success pull-right" th:text="#{label.modifica}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/edit|}"></a>
+							<a th:if="${sedutaWrapper.canEdit == true}" class="btn btn-primary pull-right" th:text="#{label.gestione_domande}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/handle|}"></a>
+							<a th:if="${sedutaWrapper.canValidate == true and !#lists.isEmpty(sedutaWrapper.seduta.valutazioniCommissione)}" class="btn btn-success pull-right" th:text="#{label.inserisci_valutazione}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/validate|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/seduta/list|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="seduta/sedutaFragment :: seduta('show')"></th:block>
+
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				$(document).ready(function() {
+					$(".domande-table-show").DataTable( {
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [
+							{"targets": 0, "width": "1px", "sClass": "center" }
+						],
+					})
+				})
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

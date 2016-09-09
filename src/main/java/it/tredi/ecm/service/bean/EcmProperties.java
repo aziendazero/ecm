@@ -8,4 +8,6 @@ import lombok.Setter;
 public class EcmProperties {
 	private int accountExpiresDay;
 	private int multipartMaxFileSize;
+	private int sedutaValidationMinutes;
+
 }

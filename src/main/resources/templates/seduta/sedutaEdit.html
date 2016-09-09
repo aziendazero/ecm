@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="${sedutaWrapper.seduta.id} ? #{label.modifica_seduta(${#temporals.format(sedutaWrapper.seduta.data, 'dd/MM/yyyy')})} : #{label.inserimento_seduta}">Seduta</h2>
+						<div class="pull-right buttons-header">
+							<label th:if="${sedutaWrapper.canEdit}" class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="${sedutaWrapper.seduta.id != null} ? @{|/seduta/${sedutaWrapper.seduta.id}/show|} : @{|/seduta/list|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="seduta/sedutaFragment :: seduta('edit')"></th:block>
+
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				$(document).ready(function() {
+					$(".domande-table-show").DataTable( {
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [
+							{"targets": 0, "width": "1px", "sClass": "center" }
+						],
+					})
+
+					var days = getDayNamesShort();
+					var months = getMonthNames();
+
+				    $('#data').daterangepicker({
+				        singleDatePicker: true,
+				        format: "DD/MM/YYYY",
+				        locale: {
+
+					        daysOfWeek: days,
+			                monthNames: months,
+				        }
+				    })
+
+				    $('#data').on("hide.daterangepicker", function() {
+						$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+							$(this).remove();
+						});
+					});
+
+				    var handler = $('#ora').clockpicker({
+				    	donetext: [[#{label.applica}]],
+				    	align: 'left',
+				        autoclose: true,
+				        'default': 'now'
+				    });
+
+				    $('#openClock').click(function(e) {
+				    	e.stopPropagation();
+	                    handler.clockpicker('show');
+				    })
+
+				})
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

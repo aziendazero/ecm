@@ -192,6 +192,10 @@ table.datatable-responsive-search-validation thead .sorting_asc:after {
 	cursor: not-allowed !important;
 }
 
+.with-padding-top {
+	padding-top: 7px;
+}
+
 .with-margin-top {
 	margin-top: 20px;
 }
@@ -807,3 +811,27 @@ h2 {
 .dropdown-menu.open {
 	width: 100%;
 }
+
+/* sovrascrive classi fullcalendar */
+.fc-today {
+	background-color: rgba(0, 0, 0, 0.05) !important;
+}
+.fc-event {
+	padding-left: 8px;
+	cursor: pointer;
+}
+
+.daterangepicker {
+	width: auto;
+}
+.input-group {
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+	float: left !important;
+}
+.input-group-addon {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	cursor: pointer;
+}
+

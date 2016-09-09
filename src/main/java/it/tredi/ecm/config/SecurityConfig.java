@@ -16,14 +16,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-	
+
 	@Autowired
 	private UserDetailsService userDetailsService;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		 .antMatchers("/", "/gentella/**", "/engineering/**", "/shared/**", "/main", "/providerRegistration", "/user/resetPassword", "/file/upload", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**").permitAll()
+		 .antMatchers("/", "/gentella/**", "/engineering/**", "/clockpicker/**", "/shared/**", "/main", "/providerRegistration", "/user/resetPassword", "/file/upload", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**").permitAll()
 
 		 .antMatchers("/admin/**").hasAuthority("ADMIN")
          .anyRequest().fullyAuthenticated()
@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	     	.exceptionHandling().accessDeniedPage("/403")
 	     .and()
 	     	.rememberMe();
-		
+
 		//http.addFilterAfter(new UserChangePasswordCheckFilter(), FilterSecurityInterceptor.class);
 	}
 
@@ -51,7 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.userDetailsService(userDetailsService)
 			.passwordEncoder(new BCryptPasswordEncoder());
 	}
-	
+
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		 web.ignoring().antMatchers("/", "/gentella/**", "/engineering/**", "/shared/**", "/main", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**");
