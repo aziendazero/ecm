@@ -55,11 +55,8 @@ public interface AccreditamentoService{
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canPresaVisione(Long accreditamentoId, CurrentUser currentUser);
-<<<<<<< HEAD
 	
 	//RichiestaIntegrazione
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserEnableField(CurrentUser currentUser);
-=======
->>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 }

@@ -49,7 +49,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Override
 	public Valutazione getValutazioneByAccreditamentoIdAndAccountId(Long accreditamentoId, Long accountId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Valutazione per l'accreditamento " + accreditamentoId + " eseguita dall'utente " + accountId));
-		Valutazione valutazione = valutazioneRepository.findOneByAccreditamentoIdAndAccountId(accreditamentoId, accountId);
+		Valutazione valutazione = valutazioneRepository.findOneByAccreditamentoIdAndAccountIdAndDataValutazioneNull(accreditamentoId, accountId);
 		return valutazione;
 	}
 
