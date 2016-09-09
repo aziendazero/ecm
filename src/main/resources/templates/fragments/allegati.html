@@ -38,11 +38,14 @@
 					</th:block>
 				</div>
 			</th:block>
-			<th:block th:if="${showOnly}">
-				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			<th:block th:if="${showOnly or enableField}">
+				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 					<div class="" th:unless="${__${wrapper}__.__${tipoAllegato}__.new}"><div class="value"><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div></div>
 					<div class="" th:if="${__${wrapper}__.__${tipoAllegato}__.new}"><div class="value danger" th:text="#{label.allegato_non_inserito}"></div></div>
 				</div>
+				<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+               		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${idField}" /> 
+               	</div>
 			</th:block>
 			<th:block th:if="${valutabile}">
 	        	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">

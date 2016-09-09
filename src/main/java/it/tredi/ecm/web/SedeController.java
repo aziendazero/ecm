@@ -223,7 +223,7 @@ public class SedeController {
 	}
 
 	/*** VALUTAZIONE SEDE ***/
-//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sede/{id}/validate")
 	public String validateSede(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id,
 			@RequestParam (value = "tipologiaSede", required = true) String tipologiaSede, Model model, RedirectAttributes redirectAttrs){

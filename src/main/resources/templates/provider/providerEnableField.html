@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.abilita_modifica_campi} + ' ' + #{label.info_provider}">label.info_provider</h2>
+						<div class="pull-right buttons-header">
+							<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoId}/enableField|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<div id="toModal">
+						<th:block th:include="provider/providerFragment :: provider('enableField')"></th:block>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

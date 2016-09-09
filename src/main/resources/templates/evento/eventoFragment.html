@@ -10,7 +10,8 @@
 	<th:block th:fragment="evento(mode, fromAccreditamento)">
 		<th:block th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
-			showOnly=${mode == 'show'}">
+			showOnly=${mode == 'show'},
+			enableField=${mode == 'enableField'}">
 
 			<!-- ogni parte non in comune tra le varie modalità sarà gestita in maniera appropriata -->
 			<div class="x_content">
@@ -18,7 +19,7 @@
 				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
 					<form th:remove="${!showOnly} ? none : tag"
 						id="formEvento" class="form-horizontal form-label-left"
-						th:action="@{${fromAccreditamento} ? |/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/pianoFormativo/${eventoWrapper.pianoFormativoId}/evento/| : |/provider/${eventoWrapper.providerId}/pianoFormativo/${eventoWrapper.pianoFormativoId}/evento/|} + ${valutabile ? 'validate' : 'save'}"
+						th:action="@{${fromAccreditamento} ? |/accreditamento/${eventoWrapper.accreditamentoId}/provider/${eventoWrapper.providerId}/pianoFormativo/${eventoWrapper.pianoFormativoId}/evento/| : |/provider/${eventoWrapper.providerId}/pianoFormativo/${eventoWrapper.pianoFormativoId}/evento/|} + ${editabile ? 'save' : mode}"
 						method="post" enctype="multipart/form-data"
 						novalidate="novalidate">
 
@@ -30,6 +31,11 @@
 							<input type="hidden" th:field="${eventoWrapper.idEditabili}" />
 							<input type="hidden" th:field="${eventoWrapper.evento.pianoFormativo}" />
 							<input type="hidden" name="eventoFrom" th:value="${eventoWrapper.eventoFrom}" />
+							<th:block th:if="${enableField}">
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.accreditamentoId}" />
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.subset}" />
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.objRef}" />
+							</th:block>
 						</th:block>
 
 						<!-- CLASSIFICAZIONE EVENTO (inserito o meno nel piano formativo) -->
@@ -65,10 +71,13 @@
 									</div>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_radio">
-										<div class="value" th:text="${eventoWrapper.evento.proceduraFormativa.nome}"></div>
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="procedure_formative_radio">
+									<div class="value" th:text="${eventoWrapper.evento.proceduraFormativa.nome}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.proceduraFormativa')}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -115,10 +124,13 @@
 									<div id="counter"></div>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_titolo">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="procedure_formative_titolo">
 									<div class="value" th:text="${eventoWrapper.evento.titolo}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.titolo')}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -182,10 +194,13 @@
 									</select>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="obiettivo_formativo_nazionale">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="obiettivo_formativo_nazionale">
 									<div class="value" th:text="${eventoWrapper.evento.obiettivoNazionale.nome}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.obiettivoNazionale')}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -243,10 +258,13 @@
 									</select>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="obiettivo_formativo_regionale">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="obiettivo_formativo_regionale">
 									<div class="value" th:text="${eventoWrapper.evento.obiettivoRegionale.nome}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.obiettivoRegionale')}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -308,10 +326,13 @@
 									</div>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="evento_professioni">
 									<div class="value" th:text="${eventoWrapper.evento.professioniEvento}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.professioniEvento')}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -384,11 +405,11 @@
 									</select>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
+							<th:block th:if="${showOnly or enableField}">
 								<div class="row" style="clear: both; padding: 2px;"></div>
 								<div class="row" style="clear: both">
-									<div class="col-md-3 col-sm-3 col-xs-12"></div>
-									<div class="col-md-6 col-sm-6 col-xs-12" id="evento-professioni-select">
+									<div class="col-md-3 col-sm-3 col-xs-11"></div>
+									<div class="col-md-6 col-sm-6 col-xs-11" id="evento-professioni-select">
 										<table class="professioni-discipline table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline" cellspacing="0" width="100%">
 											<thead>
 												<tr>
@@ -404,6 +425,9 @@
 											</tbody>
 										</table>
 									</div>
+									<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+			                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline')}" /> 
+			                    	</div>
 								</div>
 							</th:block>
 							<th:block th:if="${valutabile}">

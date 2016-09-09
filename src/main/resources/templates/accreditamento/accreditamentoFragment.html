@@ -13,7 +13,8 @@
 			hasActionButtons=${mode != 'show'},
 			valutabile=${mode == 'validate'},
 			editabile=${mode == 'edit'},
-			showOnly=${mode == 'show'}">
+			showOnly=${mode == 'show'},
+			enableField=${mode == 'enableField'}">
 
 			<div class="x_content">
 				<div id="tabs" class="" role="tabpanel" data-example-id="togglable-tabs">
@@ -75,6 +76,9 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
 													</tr>
 													<!-- SEDE LEGALE -->
 													<tr>
@@ -96,6 +100,8 @@
 														</td>
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale.id}/validate?tipologiaSede=SedeLegale|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
 														</td>
 													</tr>
 													<!-- SEDE OPERATIVA -->
@@ -119,6 +125,8 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale.id}/validate?tipologiaSede=SedeOperativa|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+														</td>
 													</tr>
 													<!-- LEGALE RAPPRESENTANTE -->
 													<tr>
@@ -141,9 +149,12 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
 													</tr>
 													<!-- DELEGATO LEGALE RAPPRESENTANTE -->
-													<tr th:if="${accreditamentoWrapper.provider.tipoOrganizzatore.tipoP and (mode != 'validate' or accreditamentoWrapper.delegatoLegaleRappresentante != null)}">
+													<tr th:if="${accreditamentoWrapper.provider.tipoOrganizzatore.tipoP and ((mode != 'validate' and mode != 'enableField') or accreditamentoWrapper.delegatoLegaleRappresentante != null)}">
 														<td th:unless="${accreditamentoWrapper.delegatoLegaleRappresentante == null}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.delegatoLegaleRappresentante == null}"><div th:text="#{label.delegato_legale_rappresentante}"></div></td>
 														<td	th:if="${accreditamentoWrapper.delegatoLegaleRappresentanteStato}">
@@ -162,6 +173,9 @@
 														</td>
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 														</td>
 													</tr>
 												</tbody>
@@ -208,6 +222,9 @@
 														</td>
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 														</td>
 													</tr>
 												</tbody>
@@ -258,6 +275,9 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
 													</tr>
 													<!-- RESPONSABILE AMMINISTRATIVO -->
 													<tr>
@@ -279,6 +299,9 @@
 														</td>
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileAmministrativo.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileAmministrativo.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 														</td>
 													</tr>
 													<!--  RESPONSABILE SISTEMA INFORMATICO -->
@@ -302,6 +325,9 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSistemaInformatico.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSistemaInformatico.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
 													</tr>
 													<!-- RESPONSABILE QUALITÀ -->
 													<tr>
@@ -324,6 +350,9 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileQualita.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileQualita.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
 													</tr>
 												</tbody>
 											</table>
@@ -336,6 +365,10 @@
 									<div class="x_panel">
 										<div class="x_title">
 											<h2 th:text="#{label.comitato_scientifico}">Comitato Scientifico</h2>
+											<div th:if="${enableField}" class="pull-right buttons-header item form-group text-uppercase">
+												<label th:text="#{label.modifica_comitato}"></label>
+												<input class="flat" id="ablitaComitatoFull" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}" />
+											</div>
 											<div class="clearfix"></div>
 										</div>
 										<div class="x_content">
@@ -360,13 +393,13 @@
 														<td	th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.cognome}"></td>
 														<td	th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.professione.nome}"></td>
 														<th:block th:unless="${editabile}">
-															<td th:if="${showOnly and (accreditamentoWrapper.coordinatoreComitatoScientifico != null)}">
+															<td th:if="${(showOnly or enableField) and (accreditamentoWrapper.coordinatoreComitatoScientifico != null)}">
 																<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
 															</td>
 															<td th:if="${valutabile and accreditamentoWrapper.coordinatoreComitatoScientificoStato}">
 																<i class="fa table-icon fa-check green" th:title="#{label.valutato}"></i>
 															</td>
-															<td th:if="${showOnly and (accreditamentoWrapper.coordinatoreComitatoScientifico == null)}">
+															<td th:if="${(showOnly or enableField) and (accreditamentoWrapper.coordinatoreComitatoScientifico == null)}">
 																<i class="fa table-icon fa-remove red" th:title="#{label.non_inserito}"></i>
 															</td>
 															<td th:if="${valutabile and !accreditamentoWrapper.coordinatoreComitatoScientificoStato}">
@@ -385,6 +418,9 @@
 															<td th:if="${valutabile}">
 																<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.coordinatoreComitatoScientifico.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 															</td>
+															<td th:if="${enableField}">
+																<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.coordinatoreComitatoScientifico.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+															</td>
 														</th:block>
 													</tr>
 													<!-- COMPONENTI COMITATO SCIENTIFICO -->
@@ -394,7 +430,7 @@
 														<td	th:text="${componente.anagrafica.cognome}"></td>
 														<td th:text="${componente.professione.nome}"></td>
 														<th:block th:unless="${editabile}">
-															<td th:if="${showOnly and !componente.new}">
+															<td th:if="${(showOnly or enableField) and !componente.new}">
 																<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
 															</td>
 															<td th:if="${valutabile and (accreditamentoWrapper.componentiComitatoScientificoStati[__${componente.id}__] == true)}">
@@ -418,6 +454,9 @@
 															</td>
 															<td th:if="${valutabile}">
 																<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${componente.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+															</td>
+															<td th:if="${enableField}">
+																<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${componente.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 															</td>
 														</th:block>
 													</tr>
@@ -466,6 +505,9 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
 													</tr>
 													<!-- ALLEGATO ESPERIENZA FORMAZIONE -->
 													<tr>
@@ -484,6 +526,9 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
 													</tr>
 													<!-- ALLEGATO UTILIZZO -->
 													<tr>
@@ -500,6 +545,9 @@
 														</td>
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 														</td>
 													</tr>
 													<!-- ALLEGATO SISTEMA INFORMATICO -->
@@ -518,6 +566,9 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
 													</tr>
 													<!-- ALLEGATO PIANO QUALITÀ -->
 													<tr>
@@ -534,6 +585,9 @@
 														</td>
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 														</td>
 													</tr>
 													<!-- ALLEGATO DICHIARAZIONE LEGALE -->
@@ -552,6 +606,9 @@
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
 													</tr>
 													<!-- ALLEGATO DICHIARAZIONE ESCLUSIONE -->
 													<tr>
@@ -568,6 +625,9 @@
 														</td>
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 														</td>
 													</tr>
 												</tbody>
@@ -595,6 +655,14 @@
 												</div>
 											</th:block>
 											<h2 th:unless="${editabile}" th:text="#{label.visualizzazione_piano_formativo}">Visualizzazione del piano formativo</h2>
+											<div th:if="${enableField}" class="pull-right buttons-header item form-group text-uppercase">
+												<label th:text="#{label.modifica_eventi}"></label>
+												<input class="flat" id="abilitaPianoFormativoFull" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('pianoFormativo')}" />
+					                    		<!-- 
+					                    		<a class="btn btn-primary pull-right"  th:if="${#lists.contains(richiestaIntegrazioneWrapper.selected,T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico'))}" th:text="#{label.disabilita_modifica_comitato}"></a>						                    		
+					                    		<a class="btn btn-primary pull-right"  th:unless="${#lists.contains(richiestaIntegrazioneWrapper.selected,T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico'))}" th:text="#{label.abilita_modifica_comitato}"></a>
+												 -->
+											</div>
 											<div class="clearfix"></div>
 										</div>
 										<div class="x_content">
@@ -655,7 +723,19 @@
 							{"targets": 2, "width": "92px", "sClass": "center"}
 						]
 					});
-
+					
+					//table responsive generica enableField
+					$('.datatable-responsive-accreditamento-enableField').DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [
+							{"targets": 1, "width": "70px", "sClass": "center"},
+							{"targets": 2, "width": "92px", "sClass": "center"}
+						]
+					});
+					
 					//table responsive allegati edit e validate
 					$('.datatable-responsive-allegati').DataTable({
 						"bFilter" : false,
@@ -705,6 +785,19 @@
 							{ "targets": 5, "width": "92px", "sClass": "center" }
 						],
 					});
+					
+					//table responsive comitato scientifico enableField
+					$('.datatable-responsive-comitato-enableField').DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"autoWidth": false,
+						"columnDefs": [
+							{ "targets": 4, "width": "70px", "sClass": "center" },
+							{ "targets": 5, "width": "92px", "sClass": "center" }
+						],
+					});
 
 					//table responsive evento edit
 					$('.datatable-responsive-evento-edit').DataTable({
@@ -731,8 +824,21 @@
 						} ],
 					});
 
-					//table responsive evento edit
+					//table responsive evento validate
 					$('.datatable-responsive-evento-validate').DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"autoWidth": false,
+						"columnDefs": [
+							{ "targets": 1, "width": "70px", "sClass": "center" },
+							{ "targets": 2, "width": "92px", "sClass": "center" }
+						],
+					});
+
+					//table responsive evento enableField
+					$('.datatable-responsive-evento-enableField').DataTable({
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,

@@ -10,7 +10,8 @@
 	<th:block th:fragment="accreditamentoAllegati(mode)">
 		<th:block th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
-			showOnly=${mode == 'show'}">
+			showOnly=${mode == 'show'},
+			enableField=${mode == 'enableField'}">
 
 			<!-- ogni parte non in comune tra le due sarà gestito in maniera appropriata -->
 			<div class="x_content">
@@ -18,7 +19,7 @@
 				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
 					<form th:remove="${!showOnly} ? none : tag"
 						id="formAccreditamentoAllegati" class="form-horizontal form-label-left"
-						th:action="@{|/accreditamento/${accreditamentoId}/allegati/|} + ${valutabile ? 'validate' : 'save'}"
+						th:action="@{|/accreditamento/${accreditamentoId}/allegati/|} + ${editabile ? 'save' : mode}"
 						method="post" enctype="multipart/form-data"
 						novalidate="novalidate">
 
@@ -26,6 +27,11 @@
 						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${accreditamentoAllegatiWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${accreditamentoAllegatiWrapper.idEditabili}" />
+							<th:block th:if="${enableField}">
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.accreditamentoId}" />
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.subset}" />
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.objRef}" />
+							</th:block>
 						</th:block>
 
 						<!-- allegato 1 (atto costitutivo e statuto) -->

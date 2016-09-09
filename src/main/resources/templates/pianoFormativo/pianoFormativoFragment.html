@@ -13,7 +13,8 @@
 			hasActionButtons=${mode != 'show'},
 			valutabile=${mode == 'validate'},
 			editabile=${mode == 'edit'},
-			showOnly=${mode == 'show'}">
+			showOnly=${mode == 'show'},
+			enableField=${mode == 'enableField'}">
 
 				<div th:if="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventi)}" th:text="#{label.nessun_evento_piano_formativo}"></div>
 
@@ -29,13 +30,13 @@
 						<tr th:each="evento, row : ${__${pianoFormativo}__.eventi}">
 							<td><a th:text="${evento.titolo}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show${urlParam}|}"></a></td>
 							<th:block th:unless="${editabile}">
-								<td th:if="${showOnly and !evento.new}">
+								<td th:if="${(showOnly or enableField) and !evento.new}">
 									<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
 								</td>
 								<td th:if="${valutabile and (accreditamentoWrapper.eventiStati[__${evento.id}__] == true)}">
 									<i class="fa table-icon fa-check green" th:title="#{label.valutato}"></i>
 								</td>
-								<td th:if="${showOnly and evento.new}">
+								<td th:if="${(showOnly or enableField) and evento.new}">
 									<i class="fa table-icon fa-remove red" th:title="#{label.non_inserito}"></i>
 								</td>
 								<td th:if="${valutabile and (accreditamentoWrapper.eventiStati[__${evento.id}__] == false)}">
@@ -54,6 +55,9 @@
 								</td>
 								<td th:if="${valutabile}">
 									<a th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+								</td>
+								<td th:if="${enableField}">
+									<a th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 								</td>
 							</th:block>
 						</tr>

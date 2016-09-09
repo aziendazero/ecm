@@ -38,6 +38,14 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 	}
 	
 	@Override
+	public Set<FieldEditabileAccreditamento> getFullLista(Long accreditamentoId, Long objectReference) {
+		if(objectReference == null)
+			return getAllFieldEditabileForAccreditamento(accreditamentoId);
+		else
+			return getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, objectReference);
+	}
+	
+	@Override
 	@Transactional
 	public void insertFieldEditabileForAccreditamento(Long accreditamentoId, Long objectReference, SubSetFieldEnum subset, Set<IdFieldEnum> toInsert) {
 		LOGGER.debug(Utils.getLogMessage("Inserimento di " + toInsert + " IdEditabili per Domanda Accreditamento: " + accreditamentoId));
@@ -76,8 +84,16 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 	}
 	
 	@Override
+	@Transactional
 	public void removeAllFieldEditabileForAccreditamento(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Eliminazione di tutti gli IdEditabili per Domanda Accreditamento: " + accreditamentoId));
 		fieldEditabileAccreditamentoRepository.deleteAllByAccreditamentoId(accreditamentoId);
+	}
+	
+	@Override
+	@Transactional
+	public void delete(FieldEditabileAccreditamento field){
+		LOGGER.debug(Utils.getLogMessage("Eliminazione di un IdEditabili"));
+		fieldEditabileAccreditamentoRepository.delete(field);
 	}
 }

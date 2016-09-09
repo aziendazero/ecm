@@ -14,8 +14,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class IntegrazioneWrapper {
+public class IntegrazioneWrapper_old {
 	private long accreditamentoId;
-	private List<FieldIntegrazioneAccreditamento> fullLista = new ArrayList<FieldIntegrazioneAccreditamento>();
+	private List<FieldIntegrazioneAccreditamento> fullList = new ArrayList<FieldIntegrazioneAccreditamento>();
 	private Map<IdFieldEnum,FieldIntegrazioneAccreditamento> map = new HashMap<IdFieldEnum, FieldIntegrazioneAccreditamento>();
 }

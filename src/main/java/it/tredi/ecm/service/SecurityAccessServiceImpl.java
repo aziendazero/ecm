@@ -193,4 +193,21 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		return true;
 	}
 	
+	@Override
+	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
+		return accreditamentoService.canUserPrendiInCarica(accreditamentoId, currentUser);
+	}
+	
+	@Override
+	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
+		if(currentUser.isSegreteria() || currentUser.isReferee()){
+			return accreditamentoService.canUserValutaDomanda(accreditamentoId, currentUser);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean canEnableField(CurrentUser currentUser) {
+		return accreditamentoService.canUserEnableField(currentUser);
+	}
 }

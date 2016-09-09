@@ -31,11 +31,13 @@ import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
+import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
+import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
@@ -46,6 +48,7 @@ public class ProviderController {
 	private final String EDIT = "provider/providerEdit";
 	private final String SHOW = "provider/providerShow";
 	private final String VALIDATE = "provider/providerValidate";
+	private final String ENABLEFIELD = "provider/providerEnableField";
 
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
@@ -54,11 +57,12 @@ public class ProviderController {
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private IntegrazioneService integrazioneService;
 
 	@InitBinder
-    public void setAllowedFields(WebDataBinder dataBinder) {
-        dataBinder.setDisallowedFields("id");
-    }
+	public void setAllowedFields(WebDataBinder dataBinder) {
+		dataBinder.setDisallowedFields("id");
+	}
 
 	/*** GLOBAL MODEL ATTRIBUTES***/
 
@@ -141,7 +145,7 @@ public class ProviderController {
 	}
 
 	/*** VALUTAZIONE ***/
-//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/validate")
 	public String validateProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
@@ -158,10 +162,26 @@ public class ProviderController {
 		}
 	}
 
+	/*** ENABLE_FIELD ***/
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/enableField")
+	public String enableFieldProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id,
+			Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/enableField"));
+		try {
+			return goToEnableField(model, prepareProviderWrapperEnableField(providerService.getProvider(id), accreditamentoId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/enableField"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/enableField"));
+			return "redirect:/accreditamento/" + accreditamentoId + "/enableField";
+		}
+	}
+
 	/***	SAVE	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/save", method = RequestMethod.POST)
 	public String salvaProvider(@ModelAttribute("providerWrapper") ProviderWrapper providerWrapper, BindingResult result,
-									Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
+			Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/save"));
 		try{
 			//validazione del provider
@@ -190,8 +210,8 @@ public class ProviderController {
 	/***	SALVA VALUTAZIONE	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/validate", method = RequestMethod.POST)
 	public String valutaProvider(@ModelAttribute("providerWrapper") ProviderWrapper providerWrapper, BindingResult result,
-									Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
-		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/validate"));
+			Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("POST: /accreditamento/" + accreditamentoId + "/provider/validate"));
 		try{
 			//validazione del provider
 			valutazioneValidator.validateValutazione(providerWrapper.getMappa(), result);
@@ -228,6 +248,22 @@ public class ProviderController {
 		}
 	}
 
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/enableField", method = RequestMethod.POST)
+	public String enableFieldProvider(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, Model model, 
+			RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
+		LOGGER.info(Utils.getLogMessage("POST: /accreditamento/" + accreditamentoId + "/provider/enableField"));
+		try{
+			integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
+		}
+		catch(Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/enableField"),ex);
+			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/enablField"));
+		}
+		return "redirect:/accreditamento/{accreditamentoId}/enableField";
+	}
+
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping("/provider/list")
@@ -261,6 +297,13 @@ public class ProviderController {
 		model.addAttribute("providerWrapper", providerWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 		return VALIDATE;
+	}
+
+	private String goToEnableField(Model model, ProviderWrapper providerWrapper){
+		model.addAttribute("providerWrapper", providerWrapper);
+		model.addAttribute("richiestaIntegrazioneWrapper", integrazioneService.prepareRichiestaIntegrazioneWrapper(providerWrapper.getAccreditamentoId(), SubSetFieldEnum.PROVIDER, null));
+		LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
+		return ENABLEFIELD;
 	}
 
 	private ProviderWrapper prepareProviderWrapperEdit(Provider provider, Long accreditamentoId){
@@ -306,6 +349,13 @@ public class ProviderController {
 		providerWrapper.setIdEditabili(idEditabili);
 
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - exiting"));
+		return providerWrapper;
+	}
+
+	private ProviderWrapper prepareProviderWrapperEnableField(Provider provider, Long accreditamentoId) {
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEnableField("+ provider.getId() + "," + accreditamentoId +") - entering"));
+		ProviderWrapper providerWrapper = prepareProviderWrapperShow(provider, accreditamentoId);
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEnableField("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}
 
