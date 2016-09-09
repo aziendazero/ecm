@@ -20,6 +20,10 @@ public class EcmAppConfiguration {
 	private int multipartMaxFileSize = 3;
 	@Value("${seduta.validation.minutes}")
 	private int sedutaValidationMinutes = 30;
+	@Value("${application.baseurl}")
+	private String applicationBaseUrl = "http://localhost:8080/";
+	@Value("${email.segreteriaEcm}")
+	private String emailSegreteriaEcm = "segreteria@ecm.it";
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -27,6 +31,8 @@ public class EcmAppConfiguration {
 		ecmProperties.setAccountExpiresDay(accountExpiresDay);
 		ecmProperties.setMultipartMaxFileSize(multipartMaxFileSize*1024*1024);
 		ecmProperties.setSedutaValidationMinutes(sedutaValidationMinutes);
+		ecmProperties.setApplicationBaseUrl(applicationBaseUrl);
+		ecmProperties.setEmailSegreteriaEcm(emailSegreteriaEcm);
 		return ecmProperties;
 	}
 }

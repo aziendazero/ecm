@@ -27,7 +27,7 @@ public interface AccreditamentoService{
 
 	public void inviaDomandaAccreditamento(Long accreditamentoId);
 	public void inserisciPianoFormativo(Long accreditamentoId);
-	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup);
+	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) throws Exception;
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup);
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva);
 	public void presaVisione(Long accreditamentoId);
@@ -55,11 +55,8 @@ public interface AccreditamentoService{
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canPresaVisione(Long accreditamentoId, CurrentUser currentUser);
-<<<<<<< HEAD
 	
 	//RichiestaIntegrazione
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserEnableField(CurrentUser currentUser);
-=======
->>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 }

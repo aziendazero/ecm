@@ -41,6 +41,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private AccountRepository accountRepository;
+	@Autowired private EmailService emailService;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -207,7 +208,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) {
+	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Assegnamento domanda di Accreditamento " + accreditamentoId + " ad un gruppo CRECM"));
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -235,6 +236,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				valutazioneReferee.setAccreditamento(accreditamento);
 				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
 				valutazioneService.save(valutazioneReferee);
+				emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			}
 
 			accreditamento.setDataValutazioneCrecm(LocalDate.now());
@@ -478,7 +480,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			return true;
 		return false;
 	}
-<<<<<<< HEAD
 	
 	@Override
 	/*
@@ -492,7 +493,4 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) {
 		return canUserEnableField(currentUser);
 	}
-=======
-
->>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 }

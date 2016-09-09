@@ -26,4 +26,6 @@ public interface SecurityAccessService {
 	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId);
 	
 	public boolean canEnableField(CurrentUser currentUser);
+	
+	public boolean canShowGruppo(CurrentUser currentUser, String gruppo);
 }
