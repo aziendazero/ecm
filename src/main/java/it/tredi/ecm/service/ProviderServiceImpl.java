@@ -13,6 +13,7 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
@@ -179,5 +180,15 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public boolean canInsertEvento(Long providerId) {
 		return providerRepository.canInsertEvento(providerId);
+	}
+
+	@Override
+	public boolean hasAlreadySedeLegaleProvider(Provider provider, Sede sede) {
+		boolean result = false;
+		for (Sede s : provider.getSedi()) {
+			if(s.isSedeLegale() && !s.equals(sede))
+				result = true;
+		}
+		return result;
 	}
 }
