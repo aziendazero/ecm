@@ -21,8 +21,8 @@
 								<h4 class="modal-title" id="myModalLabel"
 									th:text="#{label.riepilogo_accreditamento(${accreditamentoWrapper.accreditamento.tipoDomanda}, ${accreditamentoWrapper.accreditamento.stato.nome})}">Riepilogo
 									di tutto l'accreditamento</h4>
-								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" th:text="#{label.apri_tutte}" onclick="toggleAll()"></button>
-								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" style="display: none" th:text="#{label.chiudi_tutte}" onclick="toggleAll()"></button>
+								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" th:text="#{label.apri_tutte}" onclick="openAll()"></button>
+								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" style="display: none" th:text="#{label.chiudi_tutte}" onclick="closeAll()"></button>
 							</div>
 							<div class="modal-body">
 
@@ -100,7 +100,7 @@
 							<div class="dropdown pull-right">
 								<a class="btn btn-primary ajaxCallShowAll" th:text="#{label.mostra_riepilogo}" data-toggle="modal" data-target=".modal-showAll"></a>
   								<a class="btn btn-primary ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni" th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button"></a>
-  								
+
   								<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"  th:if="${#authentication.principal.isSegreteria()}">
 									<span th:text="#{label.menu_azioni}"></span>
 									<span class="caret"></span>

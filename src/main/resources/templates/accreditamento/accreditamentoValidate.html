@@ -21,8 +21,8 @@
 								<h4 class="modal-title" id="myModalLabel"
 									th:text="#{label.riepilogo_accreditamento(${accreditamentoWrapper.accreditamento.tipoDomanda}, ${accreditamentoWrapper.accreditamento.stato.nome})}">Riepilogo
 									di tutto l'accreditamento</h4>
-								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" th:text="#{label.apri_tutte}" onclick="toggleAll()"></button>
-								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" style="display: none" th:text="#{label.chiudi_tutte}" onclick="toggleAll()"></button>
+								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" th:text="#{label.apri_tutte}" onclick="openAll()"></button>
+								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" style="display: none" th:text="#{label.chiudi_tutte}" onclick="closeAll()"></button>
 							</div>
 							<div class="modal-body">
 
@@ -167,17 +167,17 @@
 							</button>
 							<!-- menù raggruppato per segreteria -->
 							<ul class="dropdown-menu actions">
+								<!-- mostra showAll -->
 								<li><a class="ajaxCallShowAll"
 									th:text="#{label.mostra_riepilogo}"
 									data-toggle="modal" data-target=".modal-showAll"></a></li>
 								<!-- mostra showAllValutazioni -->
-								<li><a type="button" class="ajaxCallShowAllValutazioni"
+								<li><a class="ajaxCallShowAllValutazioni"
 									th:text="#{label.mostra_riepilogo_valutazioni}"  data-toggle="modal" data-target=".modal-showAllValutazioni"></a></li>
 								<li class="divider actions"></li>
 								<li><a th:if="${accreditamentoWrapper.canConfermaValutazione}"
 									th:text="#{label.conferma_valutazione}" data-toggle="modal" data-target=".modal-confirm"></a></li>
 								<li><a th:if="${accreditamentoWrapper.canPresaVisione}" th:text="#{label.presa_visione}" onclick="alert('TODO')"></a></li>
-							<!-- mostra showAll -->
 							</ul>
 						</div>
 						<div class="clearfix"></div>

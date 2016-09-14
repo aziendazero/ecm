@@ -99,13 +99,11 @@ public class Accreditamento extends BaseEntity{
 				idEditabili.add(new FieldEditabileAccreditamento(id, this));
 		}
 
-		//SEDE LEGALE
-		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_LEGALE))
-			idEditabili.add(new FieldEditabileAccreditamento(id, this));
-
-		//SEDE OPERATIVA
-		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE_OPERATIVA))
-			idEditabili.add(new FieldEditabileAccreditamento(id, this));
+		//SEDI
+		for(Sede s : this.getProvider().getSedi()){
+			for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE))
+				idEditabili.add(new FieldEditabileAccreditamento(id, this, s.getId()));
+		}
 
 		//LEGALE RAPPRESENTANTE
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.LEGALE_RAPPRESENTANTE))
