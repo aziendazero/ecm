@@ -40,8 +40,8 @@
 						<!-- CHECKBOX FLAG COORDINATORE -->
 						<div th:if="(${personaWrapper.persona.coordinatoreComitatoScientifico} or
 									${personaWrapper.persona.componenteComitatoScientifico}) and
-									${!valutabile}"
-							th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')} ? 'bad'">
+									${!valutabile and !showOnly}"
+							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="isCoordinatore_comitato">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${editabile ? #messages.msg('label.is_coordinatore') : #messages.msg('label.inserito_come_coordinatore')}">Inserisci come Coordinatore del Comitato Scientifico</span>
 							</label>
