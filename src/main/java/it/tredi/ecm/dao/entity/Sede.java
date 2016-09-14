@@ -25,8 +25,10 @@ public class Sede extends BaseEntity{
 	private String altroTelefono;
 	private String fax;
 	private String email;
-	private boolean sedeLegale;
-	private boolean sedeOperativa;
+
+	//boolean controllo tipologia sede (default operativa)
+	private boolean sedeLegale = false;
+	private boolean sedeOperativa = true;
 
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;

@@ -363,7 +363,7 @@ public class SedutaController {
 	}
 
 	private String goToHandle(Model model, SedutaWrapper sedutaWrapper) {
-		Set<Accreditamento> accreditamentiODG = accreditamentoService.getAllAccreditamentiByStato(AccreditamentoStatoEnum.INS_ODG);
+		Set<Accreditamento> accreditamentiODG = accreditamentoService.getAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.INS_ODG, null, null);
 		accreditamentiODG.removeAll(sedutaService.getAccreditamentiInSeduta(sedutaWrapper.getSeduta().getId()));
 		//cerca le sedute disponibili per un eventuale spostamento di valutazione commissione (almeno 30 min da adesso)
 		Set<Seduta> seduteDisponibili = sedutaService.getAllSeduteAfter(LocalDate.now(), LocalTime.now().plusMinutes(ecmProperties.getSedutaValidationMinutes()));

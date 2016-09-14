@@ -8,12 +8,6 @@ import lombok.Setter;
 @Setter
 public class SedeWrapper extends Wrapper{
 	private Sede sede;
-	private String tipologiaSede; 
 	private Long accreditamentoId;
 	private Long providerId;
-	private boolean coincide;
-	
-	public void setTipologiaSede(String tipologiaSede){
-		this.tipologiaSede = tipologiaSede;
-	}
 }

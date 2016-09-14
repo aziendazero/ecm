@@ -11,12 +11,11 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:unless="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="#{label.modifica} + ' ' + ${sedeWrapper.tipologiaSede == 'SedeLegale' ? #messages.msg('label.sede_legale') : #messages.msg('label.sede_operativa')}">label.info_sede</h2>
-						<h2 th:if="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="#{label.modifica} + ' ' + #{label.sede_operativa_coincide}">label.sede_operativa_coincide</h2>
+						<h2 th:if="${sedeWrapper.sede.new}" th:text="#{label.inserimento_sede}">label.inserimento_sede</h2>
+						<h2 th:unless="${sedeWrapper.sede.new}" th:text="${sedeWrapper.sede.sedeLegale == true} ? #{label.modifica_sede_legale} : #{label.modifica_sede_operativa}"></h2>
 						<div class="pull-right buttons-header">
 							<th:block th:unless="${#lists.isEmpty(sedeWrapper.idEditabili)}">
 								<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
-								<button class="btn btn-primary pull-right" onclick="loadSedeLegale()" th:if="${sedeWrapper.tipologiaSede == 'SedeOperativa' and !sedeWrapper.coincide}" th:text="#{label.coincide_con_sede_legale}"></button>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/edit|}"></a>
 						</div>
@@ -62,21 +61,32 @@
 				});
 			};
 
+			$(document).ready(function() {
 
-			function loadSedeLegale(){
-				var url = [[@{|/accreditamento/${sedeWrapper.accreditamentoId}/provider/${sedeWrapper.providerId}/sede/copia|}]];
-				$("#main-container").load(url);
+				$("#provincia_sede").click(function() {
+					sendAjaxRequestProvincia();
+				});
+				$("#comune_sede").click(function() {
+					sendAjaxRequestCAP();
+				});
+
+				//controllo su radio legale/delegato per inserire allegato delega
+			   	$('#isSedeLegale').on('ifChecked', function() {
+			   		$('#isSedeOperativa').iCheck('enable');
+			   		$('#isNotSedeOperativa').iCheck('enable');
+			   		$('#operativaRadioContainer').removeClass('hidden');
+			   	});
+
+			   	$('#isNotSedeLegale').on('ifChecked', function() {
+			   		$('#isSedeOperativa').iCheck('disable');
+			   		$('#isNotSedeOperativa').iCheck('disable');
+			   		$('#operativaRadioContainer').addClass('hidden');
+			   	});
+
 			}
 
-			$(document).ready(
-				function() {
-					$("#provincia_sede").click(function() {
-						sendAjaxRequestProvincia();
-					});
-					$("#comune_sede").click(function() {
-						sendAjaxRequestCAP();
-					});
-				}
+
+
 			);
 		/*]]>*/
 		</script>

@@ -19,7 +19,7 @@
 							<span aria-hidden="true">×</span>
 						</button>
 						<h4 class="modal-title" id="myModalLabel"
-							th:text="#{label.valutazioni_effettuate(${sedeWrapper.tipologiaSede})}">Valutazioni effettuate</h4>
+							th:text="#{label.valutazioni_effettuate(${sedeWrapper.sede.sedeLegale == true} ? #{label.sede_legale} : #{label.sede_operativa})}">Valutazioni effettuate</h4>
 					</div>
 					<div class="modal-body">
 
@@ -39,7 +39,7 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.valutazione} + ' ' + ${sedeWrapper.tipologiaSede == 'SedeLegale' ? #messages.msg('label.sede_legale') : #messages.msg('label.sede_operativa')}">label.info_sede</h2>
+						<h2 th:text="#{label.valutazione} + ' ' + ${sedeWrapper.sede.sedeLegale == true ? #messages.msg('label.sede_legale') : #messages.msg('label.sede_operativa')}">label.info_sede</h2>
 						<div class="pull-right buttons-header">
 							<label th:if="${canValutaDomanda}" class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
 							<button class="btn btn-primary pull-right" th:text="#{label.tutte_le_valutazioni}" data-toggle="modal" data-target=".modal-altreValutazioni"></button>
