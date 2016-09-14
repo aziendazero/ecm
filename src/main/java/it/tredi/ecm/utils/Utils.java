@@ -70,7 +70,7 @@ public class Utils {
 
 	/**
 	 * Mi restituisce la lista di ENUM a partire da una lista di FieldEditabile o FieldIntegrazione o qualsiasi {@code <T extends Field>}
-	 * 
+	 *
 	 * @param src lista di {@code <T extends Field>}
 	 * @param type SubSetFieldEnum
 	 * */
@@ -87,7 +87,7 @@ public class Utils {
 
 	/**
 	 * Mi restituisce la lista di ENUM a partire da una lista di FieldEditabile o FieldIntegrazione o qualsiasi {@code <T extends Field>}
-	 * 
+	 *
 	 * @param src lista di {@code <T extends Field>}
 	 * @param objectReference id del multi-istanza di riferimento
 	 * @param type SubSetFieldEnum
@@ -105,7 +105,7 @@ public class Utils {
 
 	/**
 	 * Mi restituisce la sottolista di {@code <T extends Field>} a partire da una lista di {@code <T extends Field>} fornendo il SubSetFieldEnum
-	 * 
+	 *
 	 * @param src lista di {@code <T extends Field>}
 	 * @param type SubSetFieldEnum
 	 * */
@@ -122,7 +122,7 @@ public class Utils {
 
 	/**
 	 * Mi restituisce la sottolista di {@code <T extends Field>} a partire da una lista di {@code <T extends Field>} fornendo il SubSetFieldEnum
-	 * 
+	 *
 	 * @param src lista di {@code <T extends Field>}
 	 * @param objectReference id del multi-istanza di riferimento
 	 * @param type SubSetFieldEnum
@@ -148,7 +148,7 @@ public class Utils {
 		}
 		return null;
 	}
-	
+
 	/*
 	 * Controllo se un determinato IdFieldEnum è presente nella lista di record
 	 * */
@@ -183,14 +183,6 @@ public class Utils {
 			case RESPONSABILE_QUALITA: return IdFieldEnum.RESPONSABILE_QUALITA__FULL;
 			case COMPONENTE_COMITATO_SCIENTIFICO: return IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL;
 			default: return null;
-		}
-	}
-
-	public static SubSetFieldEnum getSubsetFromTipologia(String tipologia) {
-		switch (tipologia){
-		case "SedeLegale": return SubSetFieldEnum.SEDE_LEGALE;
-		case "SedeOperativa": return SubSetFieldEnum.SEDE_OPERATIVA;
-		default: return null;
 		}
 	}
 }
