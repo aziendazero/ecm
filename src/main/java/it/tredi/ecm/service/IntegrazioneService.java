@@ -77,7 +77,7 @@ public class IntegrazioneService {
 			}
 		}
 	}
-	
+
 	/**
 	 * Effettua l'attach dell'entity in modo tale da poter salvare l'entity che era stata precedentemente detachata
 	 * Il detach viene applicato a tutte le entity presenti all'interno attraverso l'introspezione e la reflection
@@ -97,11 +97,11 @@ public class IntegrazioneService {
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER).isEmpty())
 			applyIntegrazioneAndSave(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER));
 
-		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_LEGALE).isEmpty())
-			applyIntegrazioneAndSave(accreditamento.getProvider().getSedeLegale(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_LEGALE));
-
-		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_OPERATIVA).isEmpty())
-			applyIntegrazioneAndSave(accreditamento.getProvider().getSedeOperativa(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_OPERATIVA));
+//		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_LEGALE).isEmpty())
+//			applyIntegrazioneAndSave(accreditamento.getProvider().getSedeLegale(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_LEGALE));
+//
+//		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_OPERATIVA).isEmpty())
+//			applyIntegrazioneAndSave(accreditamento.getProvider().getSedeOperativa(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_OPERATIVA));
 
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE).isEmpty())
 			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE));
@@ -139,7 +139,7 @@ public class IntegrazioneService {
 					throw new RuntimeException(e);
 				}
 			}
-			
+
 			if(!Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.FULL).isEmpty()){
 				try {
 					applyIntegrazioneAndSave(p, Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.FULL));
@@ -283,7 +283,7 @@ public class IntegrazioneService {
 					if(BaseEntity.class.isAssignableFrom(clazz)){
 						Set<Object> newSet = new HashSet<Object>();
 						for(Object obj :  (Set<?>)fieldValue){
-							newSet.add(getEntityFromRepo(clazz,obj)); 
+							newSet.add(getEntityFromRepo(clazz,obj));
 						}
 						method.invoke(dst, newSet);
 					}else{
