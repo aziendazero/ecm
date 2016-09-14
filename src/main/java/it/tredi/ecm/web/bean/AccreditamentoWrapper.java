@@ -18,6 +18,7 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -168,7 +169,7 @@ public class AccreditamentoWrapper {
 	}
 
 
-	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider,String mode){
+	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider, AccreditamentoWrapperModeEnum mode){
 		//TODO migliorare la logica per evitare di fare troppi if
 		// ad esempio inizializzare gli stati a true e poi ad ogni controllo se fallisce si mette il false sia allo stato che al valid
 		// cosi facendo valid è settato in automatico senza rifare tutti i controlli
@@ -176,7 +177,7 @@ public class AccreditamentoWrapper {
 		//NON lo faccio adesso perchè voglio capire in fase di validazione della domanda come gestiremo i vari stati
 
 		//check sulla modalità di visualizzazione
-		if(mode.equals("show") || mode.equals("edit")) {
+		if(mode == AccreditamentoWrapperModeEnum.SHOW || mode == AccreditamentoWrapperModeEnum.EDIT) {
 			providerStato = (provider.getRagioneSociale()!= null) ? true : false;
 
 			//check inserimento sede Legale
@@ -200,7 +201,7 @@ public class AccreditamentoWrapper {
 			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
 			sezione3Stato = (attoCostitutivoStato && (esperienzaFormazioneStato || !accreditamento.getDatiAccreditamento().getDatiEconomici().hasFatturatoFormazione()) && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
 		}
-		if(mode.equals("validate")) {
+		if(mode == AccreditamentoWrapperModeEnum.VALIDATE) {
 
 			providerStato = (mappa.containsKey(IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE) &&
 				mappa.containsKey(IdFieldEnum.PROVIDER__DENOMINAZIONE_LEGALE) &&

@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TestWrapper {
+public class RichiestaIntegrazioneWrapper {
 	private long accreditamentoId;
 	private SubSetFieldEnum subset;
 	private Long objRef;

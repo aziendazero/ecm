@@ -10,14 +10,15 @@
 	<th:block th:fragment="persona(mode)">
 		<th:block th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
-			showOnly=${mode == 'show'}">
+			showOnly=${mode == 'show'},
+			enableField=${mode == 'enableField'}">
 			<!-- ogni parte non in comune sarà gestita in maniera appropriata -->
 			<div class="x_content">
 				<!-- rimove il tag form se la persona NON è editabile -->
 				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
 					<form th:remove="${!showOnly} ? none : tag"
 						id="formPersona" class="form-horizontal form-label-left"
-						th:action="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/|} + ${valutabile ? 'validate' : 'save'}"
+						th:action="@{|/accreditamento/${personaWrapper.accreditamentoId}/provider/${personaWrapper.providerId}/persona/|} + ${editabile ? 'save' : mode}"
 						method="post" enctype="multipart/form-data"
 						novalidate="novalidate">
 
@@ -32,6 +33,11 @@
 							<input type="hidden" th:field="${personaWrapper.idEditabili}" />
 							<input type="hidden" th:field="${personaWrapper.fieldIntegrazione}" />
 							<input id="hidden-lookup" type="hidden" th:field="${personaWrapper.isLookup}" />
+							<th:block th:if="${enableField}">
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.accreditamentoId}" />
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.subset}" />
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.objRef}" />
+							</th:block>
 						</th:block>
 
 						<!-- info -->
@@ -60,7 +66,20 @@
 							</th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.coordinatoreComitatoScientifico}"></div>
 						</div>
-
+						<th:block th:if="${enableField and personaWrapper.ruolo != T(it.tredi.ecm.dao.enumlist.Ruolo).COMPONENTE_COMITATO_SCIENTIFICO}">
+							<div class="item form-group">
+								<label class="control-label col-xs-1" th:text="${''}"></label>
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span th:text="#{label.sostituisci_anagrafica}">Sostituisci Anagrafica</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value"></div>
+								</div>
+								<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica',personaWrapper.ruolo)}" /> 
+		                    	</div>
+		                    </div>
+						</th:block>
 						<!-- COGNOME -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cognome',personaWrapper.ruolo) : ''}"></label>
@@ -75,10 +94,13 @@
 										type="text" th:field="${personaWrapper.persona.anagrafica.cognome}" />
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.cognome}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -122,10 +144,13 @@
 										type="text" th:field="${personaWrapper.persona.anagrafica.nome}" />
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.nome}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.nome',personaWrapper.ruolo)}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -169,10 +194,13 @@
 										type="text" th:field="${personaWrapper.persona.anagrafica.codiceFiscale}" />
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.codiceFiscale',personaWrapper.ruolo)}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -216,10 +244,13 @@
 										type="tel" th:field="${personaWrapper.persona.anagrafica.telefono}" />
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.telefono}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.telefono',personaWrapper.ruolo)}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -264,10 +295,13 @@
 										type="tel" th:field="${personaWrapper.persona.anagrafica.cellulare}" />
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.cellulare}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -313,10 +347,13 @@
 										type="email" th:field="${personaWrapper.persona.anagrafica.email}" />
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.email}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.email',personaWrapper.ruolo)}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -361,10 +398,13 @@
 										type="email" th:field="${personaWrapper.persona.anagrafica.pec}" />
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${personaWrapper.persona.anagrafica.pec}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -415,10 +455,13 @@
 									</select>
 							  	</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${personaWrapper.persona.professione.nome}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.professione',personaWrapper.ruolo)}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">

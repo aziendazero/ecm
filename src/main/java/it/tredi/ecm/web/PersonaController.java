@@ -53,7 +53,7 @@ import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
-import it.tredi.ecm.service.IntegrazioneService;
+import it.tredi.ecm.service.IntegrazioneServiceImpl;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
@@ -61,6 +61,7 @@ import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PersonaWrapper;
+import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.PersonaValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
@@ -71,6 +72,7 @@ public class PersonaController {
 	private final String EDIT = "persona/personaEdit";
 	private final String SHOW = "persona/personaShow";
 	private final String VALIDATE = "persona/personaValidate";
+	private final String ENABLEFIELD = "persona/personaEnableField";
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -86,7 +88,7 @@ public class PersonaController {
 	@Autowired private ValutazioneService valutazioneService;
 
 	@Autowired private AccreditamentoService accreditamentoService;
-	@Autowired private IntegrazioneService integrazioneService;
+	@Autowired private IntegrazioneServiceImpl integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
@@ -233,9 +235,9 @@ public class PersonaController {
 	}
 
 	/***	VALIDATE PERSONA ***/
-	//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId) TODO
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/validate")
-	public String validatePersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
+	public String validatePersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/validate"));
 		try {
 			//controllo se è possibile modificare la valutazione o meno
@@ -246,6 +248,21 @@ public class PersonaController {
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 			return VALIDATE;
+		}
+	}
+	
+	/***	ENABLEFIELD PERSONA ***/
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/enableField")
+	public String enableFieldPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/enableField"));
+		try {
+			return goToEnableField(model, preparePersonaWrapperEnableField(personaService.getPersona(id), accreditamentoId, providerId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/enableField"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
+			return ENABLEFIELD;
 		}
 	}
 
@@ -363,6 +380,24 @@ public class PersonaController {
 		}
 	}
 
+	/*** 	SAVE  ENABLEFIELD   ***/
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/enableField", method = RequestMethod.POST)
+	public String enableFieldPersona(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId, 
+												Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/persona/enableField"));
+		try{
+			integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/persona/enableField"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/enableField"));
+		}
+		if(!(richiestaIntegrazioneWrapper.getSubset() == SubSetFieldEnum.LEGALE_RAPPRESENTANTE) && !(richiestaIntegrazioneWrapper.getSubset() == SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE))
+			redirectAttrs.addFlashAttribute("currentTab","tab2");
+		return "redirect:/accreditamento/{accreditamentoId}/enableField";
+	};
+	
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/delete")
 	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId,
@@ -405,6 +440,17 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 		return VALIDATE;
 	}
+	
+	private String goToEnableField(Model model, PersonaWrapper personaWrapper) {
+		model.addAttribute("personaWrapper", personaWrapper);
+		model.addAttribute("returnLink", calcolaLink(personaWrapper, "enableField"));
+		if(personaWrapper.getPersona().isComponenteComitatoScientifico())
+			model.addAttribute("richiestaIntegrazioneWrapper",integrazioneService.prepareRichiestaIntegrazioneWrapper(personaWrapper.getAccreditamentoId(), Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo()), personaWrapper.getPersona().getId()));
+		else
+			model.addAttribute("richiestaIntegrazioneWrapper",integrazioneService.prepareRichiestaIntegrazioneWrapper(personaWrapper.getAccreditamentoId(), Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo()), null));
+		LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
+		return ENABLEFIELD;
+	}
 
 	private String goToShow(Model model, PersonaWrapper personaWrapper){
 		model.addAttribute("personaWrapper", personaWrapper);
@@ -424,7 +470,7 @@ public class PersonaController {
 	private String calcolaLink(PersonaWrapper wrapper, String mode) {
 		String tab;
 
-		if(wrapper.getRuolo().equals(Ruolo.LEGALE_RAPPRESENTANTE) || wrapper.getRuolo().equals(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE))
+		if(wrapper.getRuolo() == Ruolo.LEGALE_RAPPRESENTANTE || wrapper.getRuolo() == Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE)
 			tab = "tab1";
 		else
 			tab = "tab2";
@@ -587,6 +633,14 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - exiting"));
 		return personaWrapper;
 	}
+	
+	private PersonaWrapper preparePersonaWrapperEnableField(Persona persona, long accreditamentoId, long providerId){
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEnableField(" + persona.getId() + ") - entering"));
+		PersonaWrapper personaWrapper = preparePersonaWrapperShow(persona, accreditamentoId);
+		personaWrapper.setProviderId(providerId);
+		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEnableField(" + persona.getId() + ") - exiting"));
+		return personaWrapper;
+	}
 
 	/***	LOGICA PER SALVATAGGIO PERSONA	***/
 	private void savePersona(PersonaWrapper personaWrapper) throws Exception{
@@ -624,7 +678,7 @@ public class PersonaController {
 	 * 
 	 * caso 1: MODIFICA SINGOLO CAMPO
 	 * 		(+) Viene salvato un fieldIntegrazione per ogni fieldEditabile abilitato
-	 * 		(+) Ogni fieldIntegrazione contiene il nuovo valore serializzato in funzione del setField/getField di IntegrazioneService 
+	 * 		(+) Ogni fieldIntegrazione contiene il nuovo valore serializzato in funzione del setField/getField di IntegrazioneServiceImpl 
 	 * 
 	 * caso 2/3: ASSEGNAMENTO a persone no/si multi-istanza 
 	 * 		(*) ASSEGNAMENTO nuova anagrafica

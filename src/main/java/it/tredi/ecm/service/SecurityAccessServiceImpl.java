@@ -1,8 +1,11 @@
 package it.tredi.ecm.service;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.RoleEnum;
 import it.tredi.ecm.service.bean.CurrentUser;
 
@@ -193,4 +196,32 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		return true;
 	}
 	
+	@Override
+	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
+		return accreditamentoService.canUserPrendiInCarica(accreditamentoId, currentUser);
+	}
+	
+	@Override
+	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
+		if(currentUser.isSegreteria() || currentUser.isReferee()){
+			return (accreditamentoService.canUserValutaDomanda(accreditamentoId, currentUser) || accreditamentoService.canUserValutaDomandaShow(accreditamentoId, currentUser));
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean canEnableField(CurrentUser currentUser) {
+		return accreditamentoService.canUserEnableField(currentUser);
+	}
+	
+	@Override
+	public boolean canShowGruppo(CurrentUser currentUser, String gruppo) {
+		if(gruppo == null || gruppo.isEmpty())
+			return false;
+		
+		if(!currentUser.isProvider())
+			return true;
+		else
+			return false;
+	}
 }

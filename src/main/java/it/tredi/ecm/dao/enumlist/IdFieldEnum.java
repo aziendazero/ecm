@@ -16,7 +16,7 @@ public enum IdFieldEnum {
 	PROVIDER__NATURA_ORGANIZZAZIONE ("provider.naturaOrganizzazione", 7, null, SubSetFieldEnum.PROVIDER, "naturaOrganizzazione"),
 	PROVIDER__NO_PROFIT ("provider.noProfit", 8, null, SubSetFieldEnum.PROVIDER, "noProfit"),
 
-	LEGALE_RAPPRESENTANTE__FULL ("persona.legaleRappresentante",-1,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "full"),
+	LEGALE_RAPPRESENTANTE__FULL ("persona.anagrafica",-1,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "full"),
 	LEGALE_RAPPRESENTANTE__COGNOME ("persona.anagrafica.cognome",9,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.cognome"),
 	LEGALE_RAPPRESENTANTE__NOME ("persona.anagrafica.nome",10,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.nome"),
 	LEGALE_RAPPRESENTANTE__CODICEFISCALE ("persona.anagrafica.codiceFiscale",11,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.codiceFiscale"),
@@ -27,7 +27,7 @@ public enum IdFieldEnum {
 	LEGALE_RAPPRESENTANTE__ATTO_NOMINA ("attoNomina",16,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "files.FILE_ATTO_NOMINA"),
 	LEGALE_RAPPRESENTANTE__CV ("cv",17,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "files.FILE_CV"),
 
-	DELEGATO_LEGALE_RAPPRESENTANTE__FULL ("persona.delegatoLegaleRappresentante",-1,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "full"),
+	DELEGATO_LEGALE_RAPPRESENTANTE__FULL ("persona.anagrafica",-1,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "full"),
 	DELEGATO_LEGALE_RAPPRESENTANTE__COGNOME ("persona.anagrafica.cognome",18,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.cognome"),
 	DELEGATO_LEGALE_RAPPRESENTANTE__NOME ("persona.anagrafica.nome",19,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.nome"),
 	DELEGATO_LEGALE_RAPPRESENTANTE__CODICEFISCALE ("persona.anagrafica.codiceFiscale",20,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.codiceFiscale"),

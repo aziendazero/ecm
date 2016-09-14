@@ -10,7 +10,8 @@
 	<th:block th:fragment="provider(mode)">
 		<th:block th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
-			showOnly=${mode == 'show'}">
+			showOnly=${mode == 'show'},
+			enableField=${mode == 'enableField'}">
 
 			<!-- ogni parte non in comune tra sarà gestita in maniera appropriata -->
 			<div class="x_content">
@@ -18,7 +19,7 @@
 				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
 					<form th:remove="${!showOnly} ? none : tag"
 						id="formProvider" class="form-horizontal form-label-left"
-						th:action="@{|/accreditamento/${accreditamentoId}/provider/|} + ${valutabile ? 'validate' : 'save'}"
+						th:action="@{|/accreditamento/${accreditamentoId}/provider/|} + ${editabile ? 'save' : mode}"
 						method="post" enctype="multipart/form-data"
 						novalidate="novalidate">
 
@@ -27,6 +28,11 @@
 							<input type="hidden" name="editId" th:value="${providerWrapper.provider.id}" />
 							<input type="hidden" th:field="${providerWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${providerWrapper.idEditabili}" />
+							<th:block th:if="${enableField}">
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.accreditamentoId}" />
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.subset}" />
+								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.objRef}" />
+							</th:block>
 						</th:block>
 
 						<!-- TIPO ORGANIZZATORE -->
@@ -56,9 +62,12 @@
 									</select>
 			                    </div>
 			           		</th:block>
-			           		<th:block th:if="${showOnly}">
-			           			<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			           		<th:block th:if="${showOnly or enableField}">
+			           			<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 			              			<div class="value" th:text="${providerWrapper.provider.tipoOrganizzatore.nome}"></div>
+		                    	</div>
+		                    	<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}" /> 
 		                    	</div>
 		                    </th:block>
 		                    <th:block th:if="${valutabile}">
@@ -102,11 +111,13 @@
 										name="denominazioneLegale" th:field="${providerWrapper.provider.denominazioneLegale}" th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale'))}"/>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${providerWrapper.provider.denominazioneLegale}"></div>
-
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -171,10 +182,13 @@
 										th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')) or !providerWrapper.provider.hasPartitaIVA}"/>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${providerWrapper.provider.partitaIva}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}" /> 
+		                    	</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -218,11 +232,13 @@
 										th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale'))}"/>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${providerWrapper.provider.codiceFiscale}"></div>
-
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+	                    			<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}" /> 
+	                    		</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -279,10 +295,13 @@
 									</select>
 			                    </div>
 			             	</th:block>
-			             	<th:block th:if="${showOnly}">
-			             		<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			             	<th:block th:if="${showOnly or enableField}">
+			             		<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 			                    	<div class="value" th:text="${providerWrapper.provider.ragioneSociale}"></div>
 			                   	</div>
+			                   	<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+	                    			<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}" /> 
+	                    		</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -325,11 +344,13 @@
 										name="emailStruttura" th:field="${providerWrapper.provider.emailStruttura}" th:disabled="${!#lists.contains(providerWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.emailStruttura'))}"/>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${providerWrapper.provider.emailStruttura}"></div>
-
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+	                    			<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.emailStruttura')}" /> 
+	                    		</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -383,10 +404,13 @@
 									</div>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="naturaOrganizzazione">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="naturaOrganizzazione">
 									<div class="value" th:text="${providerWrapper.provider.naturaOrganizzazione}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+	                    			<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}" /> 
+	                    		</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -440,10 +464,13 @@
 									</div>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="noProfit">
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="noProfit">
 									<div class="value" th:text="${providerWrapper.provider.noProfit ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
 								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+	                    			<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}" /> 
+	                    		</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
