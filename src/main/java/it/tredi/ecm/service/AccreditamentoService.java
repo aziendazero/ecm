@@ -1,5 +1,7 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
@@ -37,15 +39,19 @@ public interface AccreditamentoService{
 	public Long getProviderIdForAccreditamento(Long accreditamentoId);
 
 	//Vaschetta segreteria
-	public Set<Accreditamento> getAllAccreditamentiInviati();
-	public int countAllAccreditamentiByStato(AccreditamentoStatoEnum stato);
-	public Set<Accreditamento> getAllAccreditamentiByStato(AccreditamentoStatoEnum stato);
-	public int countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
-	public Set<Accreditamento> getAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Boolean filterTaken);
+	public int countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Boolean filterTaken);
+
+	public Set<Accreditamento> getAllAccreditamentiInScadenza();
+	public int countAllAccreditamentiInScadenza();
 
 	//Vaschetta generica
-	public Set<Accreditamento> getAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id);
-	public int countAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id);
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Long id);
+	public int countAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id);
+
+	public Set<Accreditamento> getAllAccreditamentiInviati();
+	public int countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
 
 	//Controlli valutazione
 	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser);

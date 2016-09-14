@@ -3,6 +3,7 @@ package it.tredi.ecm.service;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -354,18 +355,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public int countAllAccreditamentiByStato(AccreditamentoStatoEnum stato) {
-		LOGGER.debug(Utils.getLogMessage("Conto delle domande di accreditamento " + stato));
-		return accreditamentoRepository.countAllByStato(stato);
-	}
-
-	@Override
-	public Set<Accreditamento> getAllAccreditamentiByStato(AccreditamentoStatoEnum stato) {
-		LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato));
-		return accreditamentoRepository.findAllByStato(stato);
-	}
-
-	@Override
 	public int countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Numero delle domande di accreditamento " + stato + " per provider " + providerId));
 		return accreditamentoRepository.countAllByStatoAndProviderId(stato, providerId);
@@ -377,18 +366,100 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamentoRepository.findAllByStatoAndProviderId(stato, providerId);
 	}
 
-	//metodo generico per filtrare gli accreditamenti in base allo stato e all'account id
+	//recupera tutti gli accreditamenti a seconda dello stato e del tipo, il flag filterTaken settato a true aggiunge la richiesta
+	//di filtrare tutti gli accreditamenti già presi in carica (la funzione restituisce così solo gli accreditamenti che possono essere presi in carica)
 	@Override
-	public Set<Accreditamento> getAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id) {
-		LOGGER.debug(Utils.getLogMessage("Recuper le domande di accreditamento in stato " + stato + " assegnate all'account " + id));
-		return accreditamentoRepository.findAllAccreditamentoInValutazioneAssignedToAccountId(id);
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Boolean filterTaken) {
+		if (tipo != null) {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato + " di tipo " + tipo + " NON prese in carica"));
+				return accreditamentoRepository.findAllByStatoAndTipoDomandaNotTaken(stato, tipo);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato + " di tipo " + tipo));
+				return accreditamentoRepository.findAllByStatoAndTipoDomanda(stato, tipo);
+			}
+		}
+		else {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato + " NON prese in carica"));
+				return accreditamentoRepository.findAllByStatoNotTaken(stato);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato));
+				return accreditamentoRepository.findAllByStato(stato);
+			}
+		}
 	}
 
-	//metodo generico per contare gli accreditamenti in base allo stato e all'account id
+	//conta tutti gli accreditamenti a seconda dello stato e del tipo, il flag filterTaken settato a true aggiunge la richiesta
+	//di filtrare tutti gli accreditamenti già presi in carica (la funzione restituisce così solo il numero degli accreditamenti che possono essere presi in carica)
 	@Override
-	public int countAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id) {
-		LOGGER.debug(Utils.getLogMessage("Numero delle domande di accreditamento " + stato + " assegnate all'account " + id));
-		return accreditamentoRepository.countAllAccreditamentoInValutazioneAssignedToAccountId(id);
+	public int countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Boolean filterTaken) {
+		if (tipo != null) {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " NON prese in carica"));
+				return accreditamentoRepository.countAllByStatoAndTipoDomandaNotTaken(stato, tipo);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo));
+				return accreditamentoRepository.countAllByStatoAndTipoDomanda(stato, tipo);
+			}
+		}
+		else {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " NON prese in carica"));
+				return accreditamentoRepository.countAllByStatoNotTaken(stato);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato));
+				return accreditamentoRepository.countAllByStato(stato);
+			}
+		}
+	}
+
+	//recupera tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate ad un certo id utente
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
+		if (tipo != null) {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
+			return accreditamentoRepository.findAllByStatoAndTipoDomandaForAccountId(stato, tipo, id);
+		}
+		else {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id));
+			return accreditamentoRepository.findAllByStatoForAccountId(stato, id);
+		}
+	}
+
+	//conta tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate ad un certo id utente
+	@Override
+	public int countAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
+		if (tipo != null) {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
+			return accreditamentoRepository.countAllByStatoAndTipoDomandaForAccountId(stato, tipo, id);
+		}
+		else {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id));
+			return accreditamentoRepository.countAllByStatoForAccountId(stato, id);
+		}
+	}
+
+	//recupera tutte le domande di accreditamento in scadenza
+	//controlla se la data è compresa tra la data di scadenza e 10 giorni alla data di scadenza
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiInScadenza() {
+		LocalDate oggi = LocalDate.now();
+		LocalDate dateScadenza = LocalDate.now().plusDays(10);
+		return accreditamentoRepository.findAllByDataScadenzaProssima(oggi, dateScadenza);
+	}
+
+	//conta tutte le domande di accreditamento in scadenza
+	//controlla se oggi + 10 giorni supera la data di scadenza
+	@Override
+	public int countAllAccreditamentiInScadenza() {
+		LocalDate oggi = LocalDate.now();
+		LocalDate dateScadenza = LocalDate.now().plusDays(10);
+		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
 	}
 
 	@Override
@@ -469,5 +540,4 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			return true;
 		return false;
 	}
-
 }

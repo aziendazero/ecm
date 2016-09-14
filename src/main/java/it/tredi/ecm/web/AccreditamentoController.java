@@ -29,6 +29,7 @@ import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
@@ -434,11 +435,23 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setMappa(mappa);
 
 		//init delle strutture dati che servono per la verifica degli stati di valutazione dei multistanza
+		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaSedi = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+		Map<Long, Boolean> sediStati = new HashMap<Long, Boolean>();
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaSedeLegale = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaComponenti = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
 		Map<Long, Boolean> componentiComitatoScientificoStati = new HashMap<Long, Boolean>();
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaCoordinatore = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
 		Map<Long, Boolean> eventiStati = new HashMap<Long, Boolean>();
+
+		//aggiungo le sedi
+		for(Sede s : accreditamentoWrapper.getSedi()) {
+			mappaSedi.put(s.getId(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), s.getId()));
+			sediStati.put(s.getId(), false);
+		}
+		//aggiungo anche la sede legale
+		Long sedeLegaleId = accreditamentoWrapper.getSedeLegale().getId();
+		mappaSedeLegale = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), sedeLegaleId);
 
 		//aggiungo i componenti del comitato scientifico
 		for(Persona p : accreditamentoWrapper.getComponentiComitatoScientifico()) {
@@ -455,6 +468,9 @@ public class AccreditamentoController {
 			eventiStati.put(e.getId(), false);
 		}
 
+		accreditamentoWrapper.setMappaSedeLegale(mappaSedeLegale);
+		accreditamentoWrapper.setMappaSedi(mappaSedi);
+		accreditamentoWrapper.setSediStati(sediStati);
 		accreditamentoWrapper.setMappaCoordinatore(mappaCoordinatore);
 		accreditamentoWrapper.setMappaComponenti(mappaComponenti);
 		accreditamentoWrapper.setComponentiComitatoScientificoStati(componentiComitatoScientificoStati);
@@ -615,26 +631,42 @@ public class AccreditamentoController {
 	//	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)
 	// TODO principal non può essere provider
 	@RequestMapping("/accreditamento/{gruppo}/list")
-	public String getAllAccreditamentiForGruppo(@PathVariable("gruppo") String gruppo, Model model, RedirectAttributes redirectAttrs) throws Exception{
-		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list"));
+	public String getAllAccreditamentiForGruppo(@PathVariable("gruppo") String gruppo, Model model,
+			@RequestParam(name="tipo", required = false) String tipo,
+			@RequestParam(name="filterTaken", required = false) Boolean filterTaken, RedirectAttributes redirectAttrs) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list, tipo = " + tipo + ", filterTaken = " + filterTaken));
 		try {
 			Set<Accreditamento> listaAccreditamenti = new HashSet<Accreditamento>();
 			Set<AccreditamentoStatoEnum> stati = AccreditamentoStatoEnum.getAllStatoByGruppo(gruppo);
 			CurrentUser currentUser = Utils.getAuthenticatedUser();
 			if(currentUser.isSegreteria()) {
-				for (AccreditamentoStatoEnum s : stati) {
-					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStato(s));
+				for (AccreditamentoStatoEnum stato : stati) {
+					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomanda(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), filterTaken));
 				}
 			}
 			else {
-				for (AccreditamentoStatoEnum s : stati) {
-					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoForAccountId(s, currentUser.getAccount().getId()));
+				for (AccreditamentoStatoEnum stato : stati) {
+					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomandaForAccountId(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), currentUser.getAccount().getId()));
 				}
 			}
-			String action = null;
+			//mappo la giusta label da visualizzare
+			String stringTipo;
+			if (tipo != null)
+				stringTipo = tipo;
+			else
+				stringTipo = "";
+			String label = null;
+			if (gruppo.equals("valutazioneAssegnamento"))
+				label = "label.listaDomandeDaPrendereInCarica" + stringTipo;
 			if (gruppo.equals("valutazione") || gruppo.equals("valutazioneReferee"))
-				action = "label.valutare";
-			model.addAttribute("action", action);
+				label = "label.listaDomandeDaValutare" + stringTipo;
+			if (gruppo.equals("richiestaIntegrazione"))
+				label = "label.listaDomandeRichiestaIntegrazione" + stringTipo;
+			if (gruppo.equals("preavvisoRigetto"))
+				label= "label.listaDomandePreavvisoRigetto" + stringTipo;
+			if (gruppo.equals("assegnamento"))
+				label = "label.listaDomandeDaRiassegnare" + stringTipo;
+			model.addAttribute("label", label);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
 			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
@@ -642,6 +674,27 @@ public class AccreditamentoController {
 			return "accreditamento/accreditamentoList";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
+	//	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)
+	// TODO solo segreteria
+	@RequestMapping("/accreditamento/scadenza/list")
+	public String getAllAccreditamentiInScadenza(Model model, RedirectAttributes redirectAttrs) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/scadenza/list"));
+		try {
+			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiInScadenza();
+			model.addAttribute("label", "label.listaDomandeInScadenza");
+			model.addAttribute("accreditamentoList", listaAccreditamenti);
+			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
+			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
+			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
+			return "accreditamento/accreditamentoList";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/scadenza/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";
