@@ -1,5 +1,6 @@
 package it.tredi.ecm.web;
 
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
@@ -73,16 +75,20 @@ public class LoginController {
 				case SEGRETERIA:
 					//TODO riempe i dati relativi alla segreteria
 					wrapper.setIsSegreteria(true);
-					wrapper.setRichiesteInviateDaiProvider(accreditamentoService.countAllAccreditamentiByStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) +
-							accreditamentoService.countAllAccreditamentiByStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA));
+					wrapper.setDomandeProvvisorieNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, AccreditamentoTipoEnum.PROVVISORIO, true));
+					wrapper.setDomandeStandardNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, AccreditamentoTipoEnum.STANDARD, true));
+					wrapper.setDomandeAssegnamento(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.ASSEGNAMENTO, null, null));
+					wrapper.setDomandeProvvisorieRichiestaIntegrazione(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE, AccreditamentoTipoEnum.PROVVISORIO, null));
+					wrapper.setDomandeProvvisorieValutazioneIntegrazione(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, AccreditamentoTipoEnum.PROVVISORIO, null));
+					wrapper.setDomandeProvvisoriePreavvisoRigetto(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.PREAVVISO_RIGETTO, AccreditamentoTipoEnum.PROVVISORIO, null));
+					wrapper.setDomandeInScadenza(accreditamentoService.countAllAccreditamentiInScadenza());
 					wrapper.setBadReferee(accountService.countAllRefereeWithValutazioniNonDate());
-					wrapper.setProviderQuotaAnnuale(9);
-					wrapper.setProviderQuotaEventi(23);
 					break;
 				case REFEREE:
 					//TODO riempe i dati relativi al referee
 					wrapper.setIsReferee(true);
-					wrapper.setRichiesteInviateDaiProvider(accreditamentoService.countAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, Utils.getAuthenticatedUser().getAccount().getId()));
+					wrapper.setDomandeInCarica(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId()));
+					wrapper.setDomandeNonValutateConsecutivamente(accountService.getUserById(currentUser.getAccount().getId()).getValutazioniNonDate());
 			}
 		}
 		return wrapper;
