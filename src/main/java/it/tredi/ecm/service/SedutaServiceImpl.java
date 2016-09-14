@@ -171,4 +171,15 @@ public class SedutaServiceImpl implements SedutaService {
 		valutazioneCommissioneRepository.delete(valutazioneDaEliminare);
 	}
 
+	//cerca nel DB la prossima Seduta (a partire da oggi)
+	@Override
+	public Seduta getNextSeduta() {
+		LocalDate oggi = LocalDate.now();
+		Seduta prossimaSedutaOggi = sedutaRepository.findFirstByDataAndOraAfterOrderByOraAsc(oggi, LocalTime.now());
+		if (prossimaSedutaOggi != null)
+			return prossimaSedutaOggi;
+		else
+			return sedutaRepository.findFirstByDataAfterOrderByDataAsc(oggi);
+	}
+
 }

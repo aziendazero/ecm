@@ -33,7 +33,6 @@
 						</div>
 					</div>
 				</div>
-				<div th:if="${homeWrapper.isAdmin}" class="divider"></div>
 
 				<!-- PROVIDER -->
 				<div class="row" th:if="${homeWrapper.isProvider}">
@@ -71,7 +70,6 @@
 						</div>
 					</div>
 				</div>
-				<div th:if="${homeWrapper.isProvider}" class="divider"></div>
 
 				<!-- REFEREE -->
 				<div class="row" th:if="${homeWrapper.isReferee}">
@@ -96,7 +94,6 @@
 						</div>
 					</div>
 				</div>
-				<div th:if="${homeWrapper.isReferee}" class="divider"></div>
 
 				<!-- SEGRETERIA -->
 				<div class="row" th:if="${homeWrapper.isSegreteria}">
@@ -182,27 +179,20 @@
 							</div>
 						</div>
 					</div>
-<!-- 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4"> -->
-<!-- 						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')"> -->
-<!-- 							<div class="icon"><i class="fa fa-list-ul"></i></div> -->
-<!-- 							<div class="col-xs-10"> -->
-<!-- 			                	<div class="count" th:text="${homeWrapper.richiesteStandardInviateDaiProvider}"></div> -->
-<!-- 			                	<h3 class="tile-h3" th:text="${homeWrapper.richiesteStandardInviateDaiProvider == 1} ? #{label.domanda_standard} : #{label.domande_standard}"></h3> -->
-<!-- 			                	<p class="count-text" th:text="#{label.da_valutare}"></p> -->
-<!-- 							</div> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
+				</div>
 
-<!-- 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4"> -->
-<!-- 						<div class="tile-stats clickable" onclick="goTo('referee/list')"> -->
-<!-- 							<div class="icon"><i class="fa fa-eye-slash"></i></div> -->
-<!-- 							<div class="col-xs-10"> -->
-<!-- 			                	<div class="count" th:text="${homeWrapper.badReferee}"></div> -->
-<!-- 			                	<h3 class="tile-h3" th:text="#{label.referee}"></h3> -->
-<!-- 			                	<p class="count-text" th:text="${homeWrapper.badReferee == 1} ? #{label.non_ha_valutato} :  #{label.non_hanno_valutato}"></p> -->
-<!-- 							</div> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
+				<!-- COMMISSIONE -->
+				<div class="row" th:if="${(homeWrapper.isCommissione == true)  and (homeWrapper.prossimaSeduta != null)}">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" th:onclick="'goTo(\'seduta/' + ${homeWrapper.prossimaSeduta.id} + '/show\')'">
+							<div class="icon"><i class="fa fa-calendar"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${#sets.size(homeWrapper.prossimaSeduta.valutazioniCommissione)}"></div>
+			                	<h3 class="tile-h3" th:text="${#sets.size(homeWrapper.prossimaSeduta.valutazioniCommissione) == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.inserite_nella_prossima_seduta(${#temporals.format(homeWrapper.prossimaSeduta.data, 'dd/MM/yyyy')}, ${#temporals.format(homeWrapper.prossimaSeduta.ora, 'HH:mm')})}">Nella prossima seduta del ...</p>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<script th:inline="javascript">

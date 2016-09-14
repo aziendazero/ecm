@@ -1,5 +1,6 @@
 package it.tredi.ecm.web.bean;
 
+import it.tredi.ecm.dao.entity.Seduta;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,7 +37,7 @@ public class HomeWrapper {
 	private Integer domandeInCarica;
 	private Integer domandeNonValutateConsecutivamente;
 
-
-	//User
-
+	//Commissione
+	private Boolean isCommissione;
+	private Seduta prossimaSeduta;
 }

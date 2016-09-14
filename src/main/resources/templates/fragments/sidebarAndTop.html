@@ -81,6 +81,17 @@
 								</ul>
 							</li>
 
+
+							<li id="commissione" th:if="${#authentication.principal.hasProfile('COMMISSIONE')}">
+								<a>
+									<i class="fa fa-edit"></i> <span th:text="#{label.commissione}">label.commissione</span>
+									<span class="fa fa-chevron-down"></span>
+								</a>
+								<ul class="nav child_menu" style="display: none">
+									<li><a th:href="@{/seduta/list}" th:text="#{label.lista_sedute}">label.lista_sedute</a></li>
+								</ul>
+							</li>
+
 							<!-- ENGEENERING TEST firma & mypay -->
 							<li id="engineering" th:if="${#authentication.principal.hasProfile('ENGINEERING')}">
 								<a>

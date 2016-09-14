@@ -25,4 +25,5 @@ public interface SedutaService {
 	Map<Long, Set<AccreditamentoStatoEnum>> prepareMappaStatiValutazione(Seduta seduta);
 	void addValutazioneCommissioneToSeduta(String motivazioneDaInserire, Long idAccreditamentoDaInserire, Seduta seduta);
 	void removeValutazioneCommissioneFromSeduta(Long valutazioneCommissioneId);
+	Seduta getNextSeduta();
 }
