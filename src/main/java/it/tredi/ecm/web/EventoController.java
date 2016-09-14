@@ -55,7 +55,6 @@ public class EventoController {
 	private final String SHOW = "evento/eventoShow";
 	private final String VALIDATE  = "evento/eventoValidate";
 
-
 	@Autowired private EventoService eventoService;
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
