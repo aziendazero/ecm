@@ -11,7 +11,7 @@
 				<!-- title -->
 				<div class="row">
 					<div class="col-xs-12">
-						<div class="home-title" th:text="#{label.home_page}">Home page</div>
+						<div class="home-title" th:text="${homeWrapper.isProvider} ? #{label.home_page_provider_welcome('TODOproviderName')} : #{label.home_page_user_welcome(${homeWrapper.user.nome}, ${homeWrapper.user.cognome})}">Home page</div>
 					</div>
 				</div>
 
@@ -206,9 +206,19 @@
 							$('#provider').click();
 							return;
 						}
-						//Se l'utente è l'admin il menù segreteria sarà aperto
-						if ([[${homeWrapper.isProvider}]]) {
-							$('#admin').click();
+						//Se l'utente è il segreteria il menù provider sarà aperto
+						if ([[${homeWrapper.isSegreteria}]]) {
+							$('#segreteria').click();
+							return;
+						}
+						//Se l'utente è il referee il menù referee sarà aperto
+						if ([[${homeWrapper.isReferee}]]) {
+							$('#referee').click();
+							return;
+						}
+						//Se l'utente è il commissario ECM il menù commissario sarà aperto
+						if ([[${homeWrapper.isCommissione}]]) {
+							$('#commissione').click();
 							return;
 						}
 					});

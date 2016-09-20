@@ -58,6 +58,7 @@ public class LoginController {
 
 	private HomeWrapper prepareHomeWrapper(CurrentUser currentUser) {
 		HomeWrapper wrapper = new HomeWrapper();
+		wrapper.setUser(currentUser.getAccount());
 		Iterator<Profile> iterator = currentUser.getAccount().getProfiles().iterator();
 		while(iterator.hasNext()) {
 			switch(iterator.next().getProfileEnum()) {

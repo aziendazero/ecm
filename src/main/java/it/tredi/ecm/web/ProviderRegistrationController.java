@@ -65,7 +65,7 @@ public class ProviderRegistrationController {
 		LOGGER.info(Utils.getLogMessage("POST /providerRegistration"));
 		try{
 			//Delegato consentito solo per alcuni tipi di Provider
-			if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true){
+			if(providerRegistrationWrapper.isDelegato()){
 				File file = providerRegistrationWrapper.getDelega();
 				if(file != null && !file.isNew())
 					providerRegistrationWrapper.setDelega(fileService.getFile(file.getId()));

@@ -1,5 +1,6 @@
 package it.tredi.ecm.web.bean;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Seduta;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,8 @@ import lombok.Setter;
 @Setter
 public class HomeWrapper {
 
-	//TODO inserire tutte le info necessarie nella home per i vari profili utente
+	//User
+	private Account user;
 
 	//Admin
 	private Boolean isAdmin;

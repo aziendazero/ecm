@@ -21,7 +21,9 @@
 				<table th:unless="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventi)}" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${'datatable-responsive-evento-'+mode}">
 					<thead>
 						<tr>
-							<th th:text="#{label.tipologia_evento}">Tipologia dell'evento</th>
+							<th th:text="#{label.titolo}">Titolo</th>
+							<th th:text="#{label.id}">Id</th>
+							<th th:text="#{label.procedura_formativa}">Tipologia Formazione</th>
 							<th th:unless="${editabile}" th:text="${valutabile ? #messages.msg('label.stato_valutazione') : #messages.msg('label.stato_inserimento')}">label.stato_inserimento/valutazione</th>
 							<th th:if="${hasActionButtons}" th:text="#{label.azioni}">Azioni</th>
 						</tr>
@@ -29,6 +31,8 @@
 					<tbody>
 						<tr th:each="evento, row : ${__${pianoFormativo}__.eventi}">
 							<td><a th:text="${evento.titolo}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show${urlParam}|}"></a></td>
+							<td th:text="${evento.id}"></td>
+							<td th:text="${evento.proceduraFormativa.nome}"></td>
 							<th:block th:unless="${editabile}">
 								<td th:if="${(showOnly or enableField) and !evento.new}">
 									<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
