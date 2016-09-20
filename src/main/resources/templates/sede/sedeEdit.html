@@ -29,46 +29,37 @@
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 			function sendAjaxRequestProvincia(){
-				var provincia = $("#provincia_sede").val();
+				var provincia = $('#provincia_sede option:selected').val();
 				var start = [[@{/comuni?provincia=}]];
 				var end = provincia;
 				var url = start + end;
 				$.get(url, function(data){
 					$("#comune_sede").empty();
-					$("#comune_sede").append('<option value = "">' + "---" + "</option>")
-
+					$("#CAP_sede").empty();
 					for(var item = 0; item < data.length; item++){
-						console.log(item);
 						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
 						$("#comune_sede").append(option);
 					}
+					$("#comune_sede").selectpicker('refresh');
+					$("#CAP_sede").selectpicker('refresh');
 				});
 			};
 			function sendAjaxRequestCAP(){
-				var comune = $("#comune_sede").val();
+				var comune = $('#comune_sede option:selected').val();
 				var start = [[@{/cap?comune=}]];
 				var end = comune;
 				var url = start + end;
 				$.get(url, function(data){
 					$("#CAP_sede").empty();
-					$("#CAP_sede").append('<option value = "">' + "---" + "</option>")
-
 					for(var item = 0; item < data.length; item++){
-						console.log(item);
 						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
 						$("#CAP_sede").append(option);
 					}
+					$("#CAP_sede").selectpicker('refresh');
 				});
 			};
 
 			$(document).ready(function() {
-
-				$("#provincia_sede").click(function() {
-					sendAjaxRequestProvincia();
-				});
-				$("#comune_sede").click(function() {
-					sendAjaxRequestCAP();
-				});
 
 				//controllo su radio legale/delegato per inserire allegato delega
 			   	$('#isSedeLegale').on('ifChecked', function() {
@@ -83,11 +74,7 @@
 			   		$('#operativaRadioContainer').addClass('hidden');
 			   	});
 
-			}
-
-
-
-			);
+			});
 		/*]]>*/
 		</script>
 		</div>
