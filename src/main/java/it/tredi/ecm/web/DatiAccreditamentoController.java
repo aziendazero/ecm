@@ -52,7 +52,6 @@ import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.DatiAccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.DatiAccreditamentoValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;

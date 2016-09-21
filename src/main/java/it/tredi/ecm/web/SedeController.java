@@ -1,6 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.lang.Character.Subset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,12 +47,10 @@ import it.tredi.ecm.service.SedeService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.bean.SedeWrapper;
 import it.tredi.ecm.web.validator.SedeValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
-import scala.collection.convert.Wrappers.SetWrapper;
 
 @Controller
 public class SedeController {
@@ -400,13 +397,6 @@ public class SedeController {
 		model.addAttribute("richiestaIntegrazioneWrapper",integrazioneService.prepareRichiestaIntegrazioneWrapper(sedeWrapper.getAccreditamentoId(), SubSetFieldEnum.SEDE, sedeWrapper.getSede().getId()));
 		LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
 		return ENABLEFIELD;
-	}
-
-	//TODO bisogna togliere?
-	private String goToEditWhitFragment(Model model, SedeWrapper sedeWrapper, String fragment){
-		model.addAttribute("sedeWrapper", sedeWrapper);
-		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT + " :: " + fragment));
-		return EDIT + " :: " + fragment;
 	}
 
 	private SedeWrapper prepareSedeWrapperEdit(Sede sede, long accreditamentoId, long providerId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{

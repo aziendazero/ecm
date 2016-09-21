@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
-import it.tredi.ecm.dao.entity.Account;
-import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
 
 @Service

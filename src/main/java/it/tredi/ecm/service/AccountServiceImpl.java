@@ -4,13 +4,13 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -21,7 +21,6 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
-import it.tredi.ecm.utils.Utils;
 
 @Service
 public class AccountServiceImpl implements AccountService{

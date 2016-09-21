@@ -2,7 +2,6 @@ package it.tredi.ecm.dao.entity;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;

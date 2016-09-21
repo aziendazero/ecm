@@ -1,8 +1,5 @@
 package it.tredi.ecm.dao.enumlist;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import lombok.Getter;
 
 @Getter
