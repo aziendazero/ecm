@@ -22,6 +22,7 @@ public class HomeWrapper {
 	private Integer eventiDaPagare;
 	private Integer messaggi;
 	private Integer accreditamentiDaIntegrare;
+	private String nomeProvider;
 
 	//Segreteria
 	private Boolean isSegreteria;
@@ -33,6 +34,7 @@ public class HomeWrapper {
 	private Integer domandeProvvisorieValutazioneIntegrazione;
 	private Integer domandeProvvisoriePreavvisoRigetto;
 	private Integer domandeInScadenza;
+	private Integer domandeDaValutareAll;
 
 	//Referee
 	private Boolean isReferee;

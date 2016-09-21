@@ -12,10 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ValutazioneRepository;
 import it.tredi.ecm.utils.Utils;
 
@@ -25,6 +28,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 
 	@Autowired private ValutazioneRepository valutazioneRepository;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private ProfileRepository profileRepository;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -120,5 +124,17 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		Set<Account> valutatori = new HashSet<Account>();
 		valutatori = valutazioneRepository.getAccountValutatoriWithDataValutazioneForAccreditamentoId(accreditamentoId);
 		return valutatori;
+	}
+
+	@Override
+	public Map<Long, Account> getValutatoreSegreteriaForAccreditamentiList(Set<Accreditamento> accreditamentoSet) {
+		LOGGER.debug(Utils.getLogMessage("Carico la mappa di chi ha preso in carica gli accreditamenti"));
+		Map<Long, Account> mappaAccreditamentoAccountValutatore = new HashMap<Long, Account>();
+		for (Accreditamento a : accreditamentoSet) {
+			Account account = valutazioneRepository.getAccountSegreteriaValutatoreForAccreditamentoId(a.getId(), profileRepository.findOneByProfileEnum(ProfileEnum.SEGRETERIA).get());
+			if (account != null)
+				mappaAccreditamentoAccountValutatore.put(a.getId(), account);
+		}
+		return mappaAccreditamentoAccountValutatore;
 	}
 }

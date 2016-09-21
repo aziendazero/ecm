@@ -63,15 +63,15 @@ public class AccreditamentoController {
 	@Autowired private ProviderService providerService;
 	@Autowired private PersonaService personaService;
 	@Autowired private SedeService sedeService;
-	
+
 	@Autowired private AccountService accountService;
-	
+
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
-	
-	@Autowired private IntegrazioneService integrazioneService; 
-	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService; 
+
+	@Autowired private IntegrazioneService integrazioneService;
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -431,8 +431,8 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}/edit";
 		}
 	}
-	
-	
+
+
 
 	/*** METODI PRIVATI PER IL SUPPORTO ***/
 	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento){
@@ -443,7 +443,7 @@ public class AccreditamentoController {
 			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
 			accreditamentoWrapper.setCanSendIntegrazione(accreditamentoService.canUserInviaIntegrazione(accreditamento.getId(),Utils.getAuthenticatedUser()));
 		}
-		
+
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, AccreditamentoWrapperModeEnum.EDIT);
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - exiting"));
@@ -582,20 +582,20 @@ public class AccreditamentoController {
 
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode);
 	}
-	
+
 	private void integrazionePrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper){
 		Set<Sede> sediIntegrazione = sedeService.getSediFromIntegrazione(accreditamentoWrapper.getProvider().getId());
 		for(Sede s : sediIntegrazione){
 			if(s.isDirty())
 				accreditamentoWrapper.getSedi().add(s);
 		}
-		
+
 		Set<Persona> comitatoIntegrazione = personaService.getComponentiComitatoScientificoFromIntegrazione(accreditamentoWrapper.getProvider().getId());
 		for(Persona p : comitatoIntegrazione){
 			if(p.isDirty())
 				accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
 		}
-		
+
 		accreditamentoWrapper.setAggiunti(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.CREAZIONE));
 		accreditamentoWrapper.setEliminati(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.ELIMINAZIONE));
 	}
@@ -723,7 +723,7 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
 	}
-	
+
 	/***	INVIA DOMANDA RICHIESTA_INTEGRAZIONE	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/sendRichiestaIntegrazione")
@@ -739,7 +739,7 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{id}/enableField";
 		}
 	}
-	
+
 	/***	INVIA DOMANDA INTEGRAZIONE	***/
 	@PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sendIntegrazione")
@@ -760,7 +760,9 @@ public class AccreditamentoController {
 	@RequestMapping("/accreditamento/{gruppo}/list")
 	public String getAllAccreditamentiForGruppo(@PathVariable("gruppo") String gruppo, Model model,
 			@RequestParam(name="tipo", required = false) String tipo,
-			@RequestParam(name="filterTaken", required = false) Boolean filterTaken, RedirectAttributes redirectAttrs) throws Exception{
+			@RequestParam(name="filterTaken", required = false) Boolean filterTaken,
+			@RequestParam(name="showCarica", required = false) Boolean showCarica,
+			RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list, tipo = " + tipo + ", filterTaken = " + filterTaken));
 		try {
 			Set<Accreditamento> listaAccreditamenti = new HashSet<Accreditamento>();
@@ -793,6 +795,13 @@ public class AccreditamentoController {
 				label= "label.listaDomandePreavvisoRigetto" + stringTipo;
 			if (gruppo.equals("assegnamento"))
 				label = "label.listaDomandeDaRiassegnare" + stringTipo;
+
+			Map<Long, Account> mappaCarica = new HashMap<Long, Account>();
+			//prende la mappa<id domanda, account di chi ha preso in carica la domanda> per la lista di accreditamenti
+			if (showCarica != null && showCarica == true) {
+				mappaCarica = valutazioneService.getValutatoreSegreteriaForAccreditamentiList(listaAccreditamenti);
+				model.addAttribute("mappaCarica", mappaCarica);
+			}
 			model.addAttribute("label", label);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);

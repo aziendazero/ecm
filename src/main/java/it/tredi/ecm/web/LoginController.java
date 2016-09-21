@@ -74,6 +74,7 @@ public class LoginController {
 					wrapper.setEventiDaPagare(3);
 					wrapper.setMessaggi(9);
 					wrapper.setAccreditamentiDaIntegrare(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.INTEGRAZIONE, wrapper.getProviderId()));
+					wrapper.setNomeProvider(providerService.getProvider(providerService.getProviderIdByAccountId(currentUser.getAccount().getId())).getDenominazioneLegale()); //TODO fare con query
 					break;
 				case SEGRETERIA:
 					//TODO riempe i dati relativi alla segreteria
@@ -86,6 +87,7 @@ public class LoginController {
 					wrapper.setDomandeProvvisoriePreavvisoRigetto(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.PREAVVISO_RIGETTO, AccreditamentoTipoEnum.PROVVISORIO, null));
 					wrapper.setDomandeInScadenza(accreditamentoService.countAllAccreditamentiInScadenza());
 					wrapper.setBadReferee(accountService.countAllRefereeWithValutazioniNonDate());
+					wrapper.setDomandeDaValutareAll(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, null));
 					break;
 				case REFEREE:
 					//TODO riempe i dati relativi al referee
