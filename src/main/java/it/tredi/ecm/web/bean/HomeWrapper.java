@@ -1,5 +1,7 @@
 package it.tredi.ecm.web.bean;
 
+import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Seduta;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +9,8 @@ import lombok.Setter;
 @Setter
 public class HomeWrapper {
 
-	//TODO inserire tutte le info necessarie nella home per i vari profili utente
+	//User
+	private Account user;
 
 	//Admin
 	private Boolean isAdmin;
@@ -22,16 +25,21 @@ public class HomeWrapper {
 
 	//Segreteria
 	private Boolean isSegreteria;
-	private Integer providerQuotaAnnuale;
-	private Integer providerQuotaEventi;
 	private Integer badReferee;
+	private Integer domandeStandardNotTaken;
+	private Integer domandeProvvisorieNotTaken;
+	private Integer domandeAssegnamento;
+	private Integer domandeProvvisorieRichiestaIntegrazione;
+	private Integer domandeProvvisorieValutazioneIntegrazione;
+	private Integer domandeProvvisoriePreavvisoRigetto;
+	private Integer domandeInScadenza;
 
 	//Referee
 	private Boolean isReferee;
+	private Integer domandeInCarica;
+	private Integer domandeNonValutateConsecutivamente;
 
-	//Segreteria + referee
-	private Integer richiesteInviateDaiProvider;
-
-	//User
-
+	//Commissione
+	private Boolean isCommissione;
+	private Seduta prossimaSeduta;
 }

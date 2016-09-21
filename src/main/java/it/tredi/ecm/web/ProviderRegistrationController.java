@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
@@ -65,7 +64,7 @@ public class ProviderRegistrationController {
 		LOGGER.info(Utils.getLogMessage("POST /providerRegistration"));
 		try{
 			//Delegato consentito solo per alcuni tipi di Provider
-			if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true){
+			if(providerRegistrationWrapper.isDelegato()){
 				File file = providerRegistrationWrapper.getDelega();
 				if(file != null && !file.isNew())
 					providerRegistrationWrapper.setDelega(fileService.getFile(file.getId()));

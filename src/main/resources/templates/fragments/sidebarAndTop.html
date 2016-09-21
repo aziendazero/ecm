@@ -47,18 +47,18 @@
 									<li><a th:href="@{/provider/accreditamento/list}" th:text="#{label.domande_accreditamento}">label.domande_accreditamento</a></li>
 									<li><a th:href="@{/provider/anagrafica/list}" th:text="#{label.anagrafiche}">label.anagrafiche</a></li>
 									<li><a th:href="@{/provider/pianoFormativo/list}" th:text="#{label.piano_formativo}">label.piano_formativo</a></li>
+									<li><a th:href="@{/comunicazione/dashboard}" th:text="#{label.comunicazioni}"></a></li>
 									<!--
 									<li><a href="#" th:text="#{label.eventi}">label.eventi</a></li>
 									<li><a href="#" th:text="#{label.relazione_annuale}">label.relazione_annuale</a></li>
 									<li><a href="#" th:text="#{label.contributo_annuale}">label.contributo_annuale</a></li>
-									<li><a href="#" th:text="#{label.comunicazioni}">label.comunicazioni</a></li>
 									<li><a href="#" th:text="#{label.gestione_utenti}">label.gestione_utenti</a></li>
 									<li><a th:href="@{/user/changePassword}" th:text="#{label.gestione_password}">label.gestione_password</a></li>
 									 -->
 								</ul>
 							</li>
 
-							<li id="admin" th:if="${#authentication.principal.hasProfile('SEGRETERIA')}">
+							<li id="segreteria" th:if="${#authentication.principal.hasProfile('SEGRETERIA')}">
 								<a>
 									<i class="fa fa-edit"></i> <span th:text="#{label.segreteria}">label.segreteria</span>
 									<span class="fa fa-chevron-down"></span>
@@ -67,6 +67,8 @@
 									<li><a th:href="@{/provider/list}" th:text="#{label.provider}">label.provider</a></li>
 									<li><a th:href="@{/user/list}" th:text="#{label.utenti}">label.utenti</a></li>
 									<li><a th:href="@{/accreditamento/valutazione/list}" th:text="#{label.lista_domande_da_valutare}">label.lista_domande_da_valutare</a></li>
+									<li><a th:href="@{/seduta/list}" th:text="#{label.lista_sedute}">label.lista_sedute</a></li>
+									<li><a th:href="@{/comunicazione/dashboard}" th:text="#{label.comunicazioni}"></a></li>
 								</ul>
 							</li>
 
@@ -77,6 +79,17 @@
 								</a>
 								<ul class="nav child_menu" style="display: none">
 									<li><a th:href="@{/accreditamento/valutazioneReferee/list}" th:text="#{label.lista_domande_da_valutare}">label.lista_domande_da_valutare</a></li>
+								</ul>
+							</li>
+
+
+							<li id="commissione" th:if="${#authentication.principal.hasProfile('COMMISSIONE')}">
+								<a>
+									<i class="fa fa-edit"></i> <span th:text="#{label.commissione}">label.commissione</span>
+									<span class="fa fa-chevron-down"></span>
+								</a>
+								<ul class="nav child_menu" style="display: none">
+									<li><a th:href="@{/seduta/list}" th:text="#{label.lista_sedute}">label.lista_sedute</a></li>
 								</ul>
 							</li>
 
@@ -91,6 +104,7 @@
 									<li><a th:href="@{/engineering/test/mypay}" th:text="#{engineering.test_mypay}">engineering.test_mypay</a></li>
 								</ul>
 							</li>
+
 						</ul>
 					</div>
 				</div>

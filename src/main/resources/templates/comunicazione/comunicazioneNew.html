@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content" id="main-container" th:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.composizione_comunicazione}">label.composizione_comunicazione</h2>
+						<div class="pull-right buttons-header">
+							<label class="btn btn-success pull-right" for="submitButton"><i class="fa fa-paper-plane"></i> <span class="white" th:text="#{label.invia}"></span></label>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/comunicazione/dashboard|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<div class="x_content">
+						<form
+							id="formComunicazione" class="form-horizontal form-label-left"
+							th:action="@{/comunicazione/send}"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+
+							<input type="hidden" name="editId" th:value="${comunicazioneWrapper.comunicazione.id}" />
+							<input type="hidden" th:field="${comunicazioneWrapper.comunicazione.mittente}" />
+							<input type="hidden" th:field="${comunicazioneWrapper.ambitoList}" />
+							<input type="hidden" th:field="${comunicazioneWrapper.tipologiaList}" />
+
+							<div class="header row">
+								<div class="header-comunicazione col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<div class="mittente-container item form-group">
+										<div class="col-sm-2 col-xs-2 text-right">
+											<label class="control-label" th:text="#{label.from}"></label>
+										</div>
+										<div class="col-xs-12 col-sm-10">
+											<div class="fixed-value">
+												<div class="comunicazione-input" th:text="${comunicazioneWrapper.comunicazione.mittente.username} + ' &lt;' + ${comunicazioneWrapper.comunicazione.mittente.email} + '&gt;' "></div>
+											</div>
+										</div>
+									</div>
+
+									<div class="destinatari-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.destinatari')} ? 'bad-remade'">
+										<div class="col-sm-2 col-xs-2 text-right">
+											<label class="control-label" th:text="#{label.to}"></label>
+										</div>
+										<div class="col-xs-12 col-sm-10">
+											<select th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}" id="destinatari" class="comunicazione-input select2_multiple" multiple="multiple"
+													data-width="100%"
+													th:field="${comunicazioneWrapper.comunicazione.destinatari}"
+													data-style="btn-primary" data-actions-box="true"
+													data-size="10" title="Seleziona destinatari..."
+													onchange="removeAlerts()"
+													th:remove="all-but-first">
+													<optgroup th:each="destinatario, row: ${comunicazioneWrapper.destinatariMap}"
+														th:label="${destinatario.key}">
+														<option
+															th:value="${destinatario.value.id}" th:text="${destinatario.value.username} + ' &lt;' + ${destinatario.value.email} + '&gt;'">
+														</option>
+													</optgroup>
+											</select>
+											<div class="fixed-value" th:unless="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}"
+												th:text="#{label.segreteria_ecm} + ' &lt;' + #{label.segreteria_ecm_mail} + '&gt;' ">
+											</div>
+											<div th:if="${#fields.hasErrors('comunicazioneWrapper.comunicazione.destinatari')}" class="alert" th:errors="${comunicazioneWrapper.comunicazione.destinatari}"></div>
+										</div>
+									</div>
+
+									<div class="oggetto-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.oggetto')} ? 'bad'">
+										<div class="col-sm-2 col-xs-2 text-right">
+											<label class="control-label" th:text="#{label.oggetto}"></label>
+										</div>
+										<div class="col-xs-12 col-sm-10">
+											<div class="no-padding">
+												<input th:field="${comunicazioneWrapper.comunicazione.oggetto}" type="text"
+													class="form-control comunicazione-input"/>
+											</div>
+											<div th:if="${#fields.hasErrors('comunicazioneWrapper.comunicazione.oggetto')}" class="alert" th:errors="${comunicazioneWrapper.comunicazione.oggetto}"></div>
+										</div>
+									</div>
+								</div>
+
+								<div class="subheader-comunicazione col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<div class="ambito-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.ambito')} ? 'bad'">
+										<div class="col-sm-5 col-xs-2 text-right">
+											<label class="control-label" th:text="#{label.ambito}"></label>
+										</div>
+										<div class="col-xs-12 col-sm-7">
+											<div class="no-padding">
+												<select
+													class="selectpicker required"
+													th:field="${comunicazioneWrapper.comunicazione.ambito}"
+													data-width="100%" data-style="btn-primary"
+													data-actions-box="true" data-size="10"
+													data-hide-disabled="false"
+													title="Seleziona un ambito...">
+													<option
+														th:each="ambito, row: ${comunicazioneWrapper.ambitoList}"
+														th:value="${ambito}"
+														th:text="${ambito}">
+													</option>
+												</select>
+											</div>
+											<div th:if="${#fields.hasErrors('comunicazioneWrapper.comunicazione.ambito')}" class="alert" th:errors="${comunicazioneWrapper.comunicazione.ambito}"></div>
+										</div>
+									</div>
+
+									<div class="tipologia-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.tipologia')} ? 'bad'">
+										<div class="col-sm-5 col-xs-2 text-right">
+											<label class="control-label" th:text="#{label.tipologia}"></label>
+										</div>
+										<div class="col-xs-12 col-sm-7">
+											<div class="no-padding">
+												<select
+													class="selectpicker required"
+													th:field="${comunicazioneWrapper.comunicazione.tipologia}"
+													data-width="100%" data-style="btn-primary"
+													data-actions-box="true" data-size="10"
+													data-hide-disabled="false"
+													title="Seleziona una tipologia...">
+													<option
+														th:each="tipo, row: ${comunicazioneWrapper.tipologiaList}"
+														th:value="${tipo}"
+														th:text="${tipo}">
+													</option>
+												</select>
+												<div th:if="${#fields.hasErrors('comunicazioneWrapper.comunicazione.tipologia')}" class="alert" th:errors="${comunicazioneWrapper.comunicazione.tipologia}"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="divider"></div>
+
+							<div class="comunicazione-content row">
+								<div class="col-xs-12">
+									<textarea class="comunicazione-testo" th:field="${comunicazioneWrapper.comunicazione.messaggio}"></textarea>
+								</div>
+
+								<button type="button" class="btn btn-primary with-margin-top with-margin-left" onclick="alert('TODO')"><i class="fa fa-paperclip"></i> <span th:text="#{label.allega}" ></span></button>
+							</div>
+
+							<input id="submitButton" type="submit" style="display: none;" />
+
+						</form>
+
+					</div>
+				</div>
+			</div>
+			<script th:inline="javascript">
+				$(document).ready(function() {
+					$(".select2_multiple").select2({
+				    	placeholder: "Seleziona destinatari",
+				    	allowClear: true
+				    });
+				});
+
+				function removeAlerts() {
+					$(".destinatari-container").removeClass('bad-remade').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
+				}
+			</script>
+		</div>
+	</div>
+</body>
+</html>

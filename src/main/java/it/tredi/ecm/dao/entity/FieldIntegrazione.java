@@ -25,6 +25,7 @@ public abstract class FieldIntegrazione extends Field{
 	private LocalDate dataModifica;
 	@Enumerated(EnumType.STRING)
 	private TipoIntegrazioneEnum tipoIntegrazioneEnum;
+	private boolean modificato = false;
 	
 	@Override
     public boolean equals(Object o) {

@@ -24,10 +24,8 @@
 				th:src="@{/gentella/js/wizard/jquery.smartWizard.js}"></script>
 
 		<!-- DataTable -->
-<!-- 		<script src="../static/gentella/js/datatables/jquery.dataTables.min.js" -->
-<!-- 				th:src="@{/gentella/js/datatables/jquery.dataTables.min.js}"></script> -->
-<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.12/datatables.min.js"></script>
-
+		<script src="../static/gentella/js/datatables/jquery.dataTables.min.js"
+				th:src="@{/gentella/js/datatables/jquery.dataTables.min.js}"></script>
 		<script src="../static/gentella/js/datatables/dataTables.bootstrap.js"
 				th:src="@{/gentella/js/datatables/dataTables.bootstrap.js}"></script>
 		<script src="../static/gentella/js/datatables/dataTables.buttons.min.js"
@@ -38,10 +36,6 @@
 		<!--  DataTable responsive -->
 		<script src="../static/gentella/js/datatables/dataTables.responsive.min.js"
 				th:src="@{/gentella/js/datatables/dataTables.responsive.min.js}"></script>
-
-		<!-- iCheck -->
-		<script src="../static/gentella/js/icheck/icheck.min.js"
-				th:src="@{/gentella/js/icheck/icheck.min.js}"></script>
 
 		<!-- Switch dei form -->
 		<script src="../static/gentella/js/switchery/switchery.min.js"
@@ -63,13 +57,20 @@
 		<script src="../static/js/main.js"
 				th:src="@{/js/main.js}"></script>
 
+		<!-- iCheck -->
+		<script src="../static/gentella/js/icheck/icheck.min.js"
+				th:src="@{/gentella/js/icheck/icheck.min.js}"></script>
+
 		<!-- bootstrap-select -->
 		<script	src="../static/bootstrapSelect/js/bootstrapSelect.min.js"
 			th:src="@{/bootstrapSelect/js/bootstrapSelect.min.js}"></script>
-
 		<script
 			src="../static/bootstrapSelect/js/bootstrapSelect.js"
 			th:src="@{/bootstrapSelect/js/bootstrapSelect.js}"></script>
+
+		<!-- select2 -->
+		<script src="../static/gentella/js/select/select2.full.js"
+				th:src="@{/gentella/js/select/select2.full.js}"></script>
 
 		<!-- back to top -->
 		<script
@@ -78,6 +79,20 @@
 		<script
 			src="../static/backToTop/js/modernizr.js"
 			th:src="@{/backToTop/js/modernizr.js}"></script>
+
+		<!-- calendar -->
+		<script src="../static/gentella/js/moment/moment.min.js"
+				th:src="@{/gentella/js/moment/moment.min.js}"></script>
+		<script src="../static/gentella/js/calendar/fullcalendar.min.js"
+				th:src="@{/gentella/js/calendar/fullcalendar.min.js}"></script>
+
+		<!-- dateRangePicker -->
+		<script src="../static/gentella/js/datepicker/daterangepicker.js"
+				th:src="@{/gentella/js/datepicker/daterangepicker.js}"></script>
+
+		<!-- clockpicker -->
+		<script src="../static/clockpicker/js/clockpicker.js"
+				th:src="@{/clockpicker/js/clockpicker.js}"></script>
 
 		<!-- spin.js loading spinner -->
 		<script
@@ -346,6 +361,25 @@
 					});
 				});
 			});
+
+			function getDayNamesShort() {
+				var array = [
+								[[#{dayshort.domenica}]], [[#{dayshort.lunedi}]], [[#{dayshort.martedi}]],
+								[[#{dayshort.mercoledi}]], [[#{dayshort.giovedi}]], [[#{dayshort.venerdi}]],
+								[[#{dayshort.sabato}]]
+				             ];
+				return array;
+			}
+
+			function getMonthNames() {
+				var array = [
+								[[#{month.gennaio}]], [[#{month.febbraio}]], [[#{month.marzo}]],
+								[[#{month.aprile}]], [[#{month.maggio}]], [[#{month.giugno}]],
+								[[#{month.luglio}]], [[#{month.agosto}]], [[#{month.settembre}]],
+								[[#{month.ottobre}]], [[#{month.novembre}]], [[#{month.dicembre}]]
+				            ];
+				return array;
+			}
 
 			/*]]>*/
 		</script>

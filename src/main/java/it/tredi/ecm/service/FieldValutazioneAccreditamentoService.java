@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -18,5 +17,6 @@ public interface FieldValutazioneAccreditamentoService {
 	Map<IdFieldEnum, FieldValutazioneAccreditamento> filterFieldValutazioneBySubSetAsMap(Set<FieldValutazioneAccreditamento> set, SubSetFieldEnum subset);
 	Map<IdFieldEnum, FieldValutazioneAccreditamento> putSetFieldValutazioneInMap(Set<FieldValutazioneAccreditamento> set);
 	public void save(FieldValutazioneAccreditamento valutazione);
+	public void delete(Long id);
 	public Collection<FieldValutazioneAccreditamento> saveMapList(Map<IdFieldEnum,FieldValutazioneAccreditamento> valutazioneAsMap);
 }

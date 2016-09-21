@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
@@ -36,11 +38,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoServiceImpl.class);
 
 	@Autowired private AccreditamentoRepository accreditamentoRepository;
+
 	@Autowired private ProviderService providerService;
 	@Autowired private PianoFormativoService pianoFormativoService;
-	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
-	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private AccountRepository accountRepository;
+	@Autowired private EmailService emailService;
+
+	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+
+	@Autowired private IntegrazioneService integrazioneService;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -163,8 +172,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				return false;
 			}
 			//TODO gestire la distinzione tra domanda inviata ma ancora non accreditata e domanda accreditata
-//				if(accreditamento.isInviato())
-//					return false;
+			//				if(accreditamento.isInviato())
+			//					return false;
 		}
 		return canProvider;
 	}
@@ -207,7 +216,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) {
+	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Assegnamento domanda di Accreditamento " + accreditamentoId + " ad un gruppo CRECM"));
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -235,12 +244,31 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				valutazioneReferee.setAccreditamento(accreditamento);
 				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
 				valutazioneService.save(valutazioneReferee);
+				emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			}
 
 			accreditamento.setDataValutazioneCrecm(LocalDate.now());
 			accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
 			accreditamentoRepository.save(accreditamento);
 		}
+	}
+
+	@Override
+	@Transactional
+	public void approvaIntegrazione(Long accreditamentoId) throws Exception{
+		Set<FieldValutazioneAccreditamento> fieldValutazioni = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamento(accreditamentoId);
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
+
+		Set<FieldIntegrazioneAccreditamento> approved = new HashSet<FieldIntegrazioneAccreditamento>();
+
+		fieldValutazioni.forEach(v -> {
+			if(v.getEsito().booleanValue()){
+				approved.add(Utils.getField(fieldIntegrazione, v.getIdField()));
+			}
+		});
+
+		integrazioneService.applyIntegrazioneAccreditamentoAndSave(accreditamentoId, approved);
+		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazione);
 	}
 
 
@@ -321,14 +349,50 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
+	public void inviaRichiestaIntegrazione(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Invio RIchiesta Integrazione della domanda " + accreditamentoId + " al Provider"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		accreditamento.setStato(AccreditamentoStatoEnum.INTEGRAZIONE);
+		accreditamentoRepository.save(accreditamento);
+	}
+
+	@Override
+	@Transactional
 	public void inviaIntegrazione(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Integrazione della domanda " + accreditamentoId + " inviata alla segreteria per essere valutata"));
 
+		//cambio stato alla domanda
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-
 		accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA);
 		accreditamentoRepository.save(accreditamento);
 
+		//controllo quali campi sono stati modificati e quali confermati
+		integrazioneService.checkIfFieldIntegraizoniConfirmedForAccreditamento(accreditamentoId, fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId));
+
+		//per i campi modificati...elimino i field valutazione su tutte le valutazioni presenti
+		Set<FieldIntegrazioneAccreditamento> fieldModificati = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId);
+
+		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
+		FieldValutazioneAccreditamento field = null;
+		for(Valutazione valutazione : valutazioni){
+			Set<FieldValutazioneAccreditamento> fieldValutazioni = valutazione.getValutazioni();
+			for(FieldIntegrazioneAccreditamento fieldIntegrazione : fieldModificati){
+				if(fieldIntegrazione.isModificato()){
+					LOGGER.debug(Utils.getLogMessage("Eliminazione valutazione per " + fieldIntegrazione.getIdField()));
+					if(fieldIntegrazione.getObjectReference() != -1){
+						//multi-istanza
+						field = Utils.getField(fieldValutazioni, fieldIntegrazione.getObjectReference(), fieldIntegrazione.getIdField());
+					}else{
+						//non multi-istanza
+						field = Utils.getField(fieldValutazioni, fieldIntegrazione.getIdField());
+					}
+					if(field != null){
+						fieldValutazioni.remove(field);
+						fieldValutazioneAccreditamentoService.delete(field.getId());
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -336,8 +400,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Recupero datiAccreditamento per la domanda " + accreditamentoId));
 		DatiAccreditamento datiAccreditamento = accreditamentoRepository.getDatiAccreditamentoForAccreditamento(accreditamentoId);
 		if(datiAccreditamento == null)
-				throw new Exception("Dati non presenti");
-
+			throw new Exception("Dati non presenti");
 		return datiAccreditamento;
 	}
 
@@ -354,18 +417,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public int countAllAccreditamentiByStato(AccreditamentoStatoEnum stato) {
-		LOGGER.debug(Utils.getLogMessage("Conto delle domande di accreditamento " + stato));
-		return accreditamentoRepository.countAllByStato(stato);
-	}
-
-	@Override
-	public Set<Accreditamento> getAllAccreditamentiByStato(AccreditamentoStatoEnum stato) {
-		LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato));
-		return accreditamentoRepository.findAllByStato(stato);
-	}
-
-	@Override
 	public int countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Numero delle domande di accreditamento " + stato + " per provider " + providerId));
 		return accreditamentoRepository.countAllByStatoAndProviderId(stato, providerId);
@@ -377,18 +428,100 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamentoRepository.findAllByStatoAndProviderId(stato, providerId);
 	}
 
-	//metodo generico per filtrare gli accreditamenti in base allo stato e all'account id
+	//recupera tutti gli accreditamenti a seconda dello stato e del tipo, il flag filterTaken settato a true aggiunge la richiesta
+	//di filtrare tutti gli accreditamenti già presi in carica (la funzione restituisce così solo gli accreditamenti che possono essere presi in carica)
 	@Override
-	public Set<Accreditamento> getAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id) {
-		LOGGER.debug(Utils.getLogMessage("Recuper le domande di accreditamento in stato " + stato + " assegnate all'account " + id));
-		return accreditamentoRepository.findAllAccreditamentoInValutazioneAssignedToAccountId(id);
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Boolean filterTaken) {
+		if (tipo != null) {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato + " di tipo " + tipo + " NON prese in carica"));
+				return accreditamentoRepository.findAllByStatoAndTipoDomandaNotTaken(stato, tipo);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato + " di tipo " + tipo));
+				return accreditamentoRepository.findAllByStatoAndTipoDomanda(stato, tipo);
+			}
+		}
+		else {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato + " NON prese in carica"));
+				return accreditamentoRepository.findAllByStatoNotTaken(stato);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento " + stato));
+				return accreditamentoRepository.findAllByStato(stato);
+			}
+		}
 	}
 
-	//metodo generico per contare gli accreditamenti in base allo stato e all'account id
+	//conta tutti gli accreditamenti a seconda dello stato e del tipo, il flag filterTaken settato a true aggiunge la richiesta
+	//di filtrare tutti gli accreditamenti già presi in carica (la funzione restituisce così solo il numero degli accreditamenti che possono essere presi in carica)
 	@Override
-	public int countAllAccreditamentiByStatoForAccountId(AccreditamentoStatoEnum stato, Long id) {
-		LOGGER.debug(Utils.getLogMessage("Numero delle domande di accreditamento " + stato + " assegnate all'account " + id));
-		return accreditamentoRepository.countAllAccreditamentoInValutazioneAssignedToAccountId(id);
+	public int countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Boolean filterTaken) {
+		if (tipo != null) {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " NON prese in carica"));
+				return accreditamentoRepository.countAllByStatoAndTipoDomandaNotTaken(stato, tipo);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo));
+				return accreditamentoRepository.countAllByStatoAndTipoDomanda(stato, tipo);
+			}
+		}
+		else {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " NON prese in carica"));
+				return accreditamentoRepository.countAllByStatoNotTaken(stato);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato));
+				return accreditamentoRepository.countAllByStato(stato);
+			}
+		}
+	}
+
+	//recupera tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate ad un certo id utente
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
+		if (tipo != null) {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
+			return accreditamentoRepository.findAllByStatoAndTipoDomandaForAccountId(stato, tipo, id);
+		}
+		else {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id));
+			return accreditamentoRepository.findAllByStatoForAccountId(stato, id);
+		}
+	}
+
+	//conta tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate ad un certo id utente
+	@Override
+	public int countAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
+		if (tipo != null) {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
+			return accreditamentoRepository.countAllByStatoAndTipoDomandaForAccountId(stato, tipo, id);
+		}
+		else {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id));
+			return accreditamentoRepository.countAllByStatoForAccountId(stato, id);
+		}
+	}
+
+	//recupera tutte le domande di accreditamento in scadenza
+	//controlla se la data è compresa tra la data di scadenza e 30 giorni alla data di scadenza
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiInScadenza() {
+		LocalDate oggi = LocalDate.now();
+		LocalDate dateScadenza = LocalDate.now().plusDays(30);
+		return accreditamentoRepository.findAllByDataScadenzaProssima(oggi, dateScadenza);
+	}
+
+	//conta tutte le domande di accreditamento in scadenza
+	//controlla se oggi + 30 giorni supera la data di scadenza
+	@Override
+	public int countAllAccreditamentiInScadenza() {
+		LocalDate oggi = LocalDate.now();
+		LocalDate dateScadenza = LocalDate.now().plusDays(30);
+		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
 	}
 
 	@Override
@@ -401,7 +534,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(currentUser.hasProfile(ProfileEnum.SEGRETERIA) && getAccreditamento(accreditamentoId).isValutazioneSegreteriaAssegnamento()) {
 			Set<Valutazione> valutazioniAccreditamento = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
 			for (Valutazione v : valutazioniAccreditamento) {
-				if(v.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM)
+				if(v.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM && v.getDataValutazione() == null)
 					return false;
 			}
 			return true;
@@ -416,10 +549,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 * 	+ ESISTE una valutazione agganciata al suo account e non è stata ancora inviata (dataValutazione == NULL)
 	 */
 	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser) {
+		//TODO
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, currentUser.getAccount().getId());
 		if(valutazione != null &&
 				(valutazione.getDataValutazione() == null) &&
-				(currentUser.hasProfile(ProfileEnum.SEGRETERIA) || currentUser.hasProfile(ProfileEnum.REFEREE)))
+				(currentUser.isSegreteria() || currentUser.isReferee()))
 			return true;
 		else return false;
 	}
@@ -465,8 +599,46 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 * L'utente (segreteria) può riassegnare l'accreditamento allo stesso gruppo referee crecm
 	 */
 	public boolean canPresaVisione(Long accreditamentoId, CurrentUser currentUser) {
-		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isValutazioneSegreteria())
-			return true;
+		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isValutazioneSegreteria()){
+			Set<FieldIntegrazioneAccreditamento> fields = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId);
+			if(fields.isEmpty())
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	/*
+	 * L'utente (segreteria) può abilitare i campi per eventuale modifica
+	 */
+	public boolean canUserEnableField(CurrentUser currentUser) {
+		return currentUser.isSegreteria();
+	}
+
+	@Override
+	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) {
+		return canUserEnableField(currentUser);
+	}
+
+	@Override
+	/*
+	 * La domanda deve essere in INTEGRAZIONE
+	 * 	+	L'utente provider titolare della domanda
+	 * 	+ 	La segreteria
+	 * */
+	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser) {
+		AccreditamentoStatoEnum statoDomanda = getStatoAccreditamento(accreditamentoId);
+		if(statoDomanda == AccreditamentoStatoEnum.INTEGRAZIONE){
+			if(currentUser.isSegreteria())
+				return true;
+			if(currentUser.isProvider()){
+				Long providerId = getProviderIdForAccreditamento(accreditamentoId);
+				Long accountIdForProvider = providerService.getAccountIdForProvider(providerId);
+
+				if(currentUser.getAccount().getId() == accountIdForProvider)
+					return true;
+			}
+		}
 		return false;
 	}
 	

@@ -11,3 +11,4 @@ function showNotify(title, text, type){
 		}
 	});
 }
+

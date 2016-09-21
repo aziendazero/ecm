@@ -11,12 +11,11 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:unless="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="#{label.modifica} + ' ' + ${sedeWrapper.tipologiaSede == 'SedeLegale' ? #messages.msg('label.sede_legale') : #messages.msg('label.sede_operativa')}">label.info_sede</h2>
-						<h2 th:if="${(sedeWrapper.tipologiaSede == 'SedeOperativa') and sedeWrapper.coincide}" th:text="#{label.modifica} + ' ' + #{label.sede_operativa_coincide}">label.sede_operativa_coincide</h2>
+						<h2 th:if="${sedeWrapper.sede.new}" th:text="#{label.inserimento_sede}">label.inserimento_sede</h2>
+						<h2 th:unless="${sedeWrapper.sede.new}" th:text="${sedeWrapper.sede.sedeLegale == true} ? #{label.modifica_sede_legale} : #{label.modifica_sede_operativa}"></h2>
 						<div class="pull-right buttons-header">
 							<th:block th:unless="${#lists.isEmpty(sedeWrapper.idEditabili)}">
 								<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
-								<button class="btn btn-primary pull-right" onclick="loadSedeLegale()" th:if="${sedeWrapper.tipologiaSede == 'SedeOperativa' and !sedeWrapper.coincide}" th:text="#{label.coincide_con_sede_legale}"></button>
 							</th:block>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/edit|}"></a>
 						</div>
@@ -30,54 +29,51 @@
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 			function sendAjaxRequestProvincia(){
-				var provincia = $("#provincia_sede").val();
+				var provincia = $('#provincia_sede option:selected').val();
 				var start = [[@{/comuni?provincia=}]];
 				var end = provincia;
 				var url = start + end;
 				$.get(url, function(data){
 					$("#comune_sede").empty();
-					$("#comune_sede").append('<option value = "">' + "---" + "</option>")
-
+					$("#CAP_sede").empty();
 					for(var item = 0; item < data.length; item++){
-						console.log(item);
 						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
 						$("#comune_sede").append(option);
 					}
+					$("#comune_sede").selectpicker('refresh');
+					$("#CAP_sede").selectpicker('refresh');
 				});
 			};
 			function sendAjaxRequestCAP(){
-				var comune = $("#comune_sede").val();
+				var comune = $('#comune_sede option:selected').val();
 				var start = [[@{/cap?comune=}]];
 				var end = comune;
 				var url = start + end;
 				$.get(url, function(data){
 					$("#CAP_sede").empty();
-					$("#CAP_sede").append('<option value = "">' + "---" + "</option>")
-
 					for(var item = 0; item < data.length; item++){
-						console.log(item);
 						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
 						$("#CAP_sede").append(option);
 					}
+					$("#CAP_sede").selectpicker('refresh');
 				});
 			};
 
+			$(document).ready(function() {
 
-			function loadSedeLegale(){
-				var url = [[@{|/accreditamento/${sedeWrapper.accreditamentoId}/provider/${sedeWrapper.providerId}/sede/copia|}]];
-				$("#main-container").load(url);
-			}
+			   	$('#isSedeLegale').on('ifChecked', function() {
+			   		$('#isSedeOperativa').iCheck('enable');
+			   		$('#isNotSedeOperativa').iCheck('enable');
+			   		$('#operativaRadioContainer').removeClass('hidden');
+			   	});
 
-			$(document).ready(
-				function() {
-					$("#provincia_sede").click(function() {
-						sendAjaxRequestProvincia();
-					});
-					$("#comune_sede").click(function() {
-						sendAjaxRequestCAP();
-					});
-				}
-			);
+			   	$('#isNotSedeLegale').on('ifChecked', function() {
+			   		$('#isSedeOperativa').iCheck('disable');
+			   		$('#isNotSedeOperativa').iCheck('disable');
+			   		$('#operativaRadioContainer').addClass('hidden');
+			   	});
+
+			});
 		/*]]>*/
 		</script>
 		</div>

@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
@@ -10,18 +11,17 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedSubgraph;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Where;
-import org.hibernate.annotations.WhereJoinTable;
 
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
@@ -72,10 +72,9 @@ public class Provider extends BaseEntity{
 	private Set<Persona> persone = new HashSet<Persona>();
 
 	/*	SEDI DEL PROVIDER FORNITE IN FASE DI ACCREDITAMENTO	*/
-	@OneToOne
-	private Sede sedeLegale;
-	@OneToOne
-	private Sede sedeOperativa;
+	@OneToMany(mappedBy="provider")
+	@Where(clause = "dirty = 'false'")
+	private Set<Sede> sedi = new HashSet<Sede>();
 
 	/*	INFO PROVIDER FORNITE IN FASE DI ACCREDITAMENTO	*/
 	@Enumerated(EnumType.STRING)
@@ -106,6 +105,11 @@ public class Provider extends BaseEntity{
 	Set<File> files = new HashSet<File>();
 
 	public void addFile(File file){
+		Iterator<File> it = this.getFiles().iterator();
+		while(it.hasNext()){
+			if(it.next().getTipo() == file.getTipo())
+				it.remove();
+		}
 		this.getFiles().add(file);
 	}
 
@@ -125,12 +129,9 @@ public class Provider extends BaseEntity{
 		persona.setProvider(this);
 	}
 
-	public boolean isSedeCoincide(){
-		if(sedeLegale != null && sedeOperativa != null){
-			return sedeLegale.getId().equals(sedeOperativa.getId());
-		}else{
-			return false;
-		}
+	public void addSede(Sede sede) {
+		this.sedi.add(sede);
+		sede.setProvider(this);
 	}
 
 	public void setCodiceFiscale(String codiceFiscale){

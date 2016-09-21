@@ -11,8 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
-import javax.print.attribute.HashAttributeSet;
-
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,8 +38,8 @@ public class DatiAccreditamento extends BaseEntity {
 	private DatiEconomici datiEconomici = new DatiEconomici();
 
 	/*** INFO RELATIVE AL PERSONALE ***/
-	private int numeroDipendentiFormazioneTempoIndeterminato;
-	private int numeroDipendentiFormazioneAltro;
+	private Integer numeroDipendentiFormazioneTempoIndeterminato;
+	private Integer numeroDipendentiFormazioneAltro;
 
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
@@ -50,6 +48,14 @@ public class DatiAccreditamento extends BaseEntity {
 				professioniSelezionate.add(d.getProfessione());
 		}
 		return professioniSelezionate;
+	}
+	
+	public Set<File> getFiles(){
+		return this.accreditamento.getProvider().getFiles();
+	}
+	
+	public void addFile(File file){
+		this.accreditamento.getProvider().addFile(file);
 	}
 
 	@OneToOne(mappedBy="datiAccreditamento")

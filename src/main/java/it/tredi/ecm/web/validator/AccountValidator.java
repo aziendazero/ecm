@@ -18,7 +18,7 @@ import it.tredi.ecm.web.bean.AccountChangePassword;
 @Component
 public class AccountValidator{
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccountValidator.class);
-	
+
 	private static final String PATTERN_PASSWORD = "(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)";
 
 	@Autowired private AccountService accountService;
@@ -26,26 +26,25 @@ public class AccountValidator{
 	public void validate(Object target, Errors errors) {
 		validate(target, errors, "");
 	}
-	
+
 	public void validate(Object target, Errors errors, String prefix) {
 		LOGGER.info(Utils.getLogMessage("Validazione Account"));
 		Account account = (Account)target;
 		validateAccount(account, errors, prefix);
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
-	
+
 	public void validateChangePassword(Object target, Errors errors, Account account){
 		LOGGER.info(Utils.getLogMessage("Validzione Account per ChangePassword"));
 		AccountChangePassword accountChangePassword = (AccountChangePassword)target;
+		BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
 		if(accountChangePassword.getOldPassword().isEmpty())
 			errors.rejectValue("oldPassword", "error.empty");
 		else{
-			BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
-			if(!bcrypt.matches(accountChangePassword.getOldPassword(), account.getPassword())){
+			if(!bcrypt.matches(accountChangePassword.getOldPassword(), account.getPassword()))
 				errors.rejectValue("oldPassword", "error.password.incorrect");
-			}
 		}
-		
+
 		if(accountChangePassword.getNewPassword().isEmpty()){
 			errors.rejectValue("newPassword", "error.empty");
 		}else{
@@ -56,8 +55,10 @@ public class AccountValidator{
 			}else if(!Pattern.matches(PATTERN_PASSWORD, accountChangePassword.getNewPassword())){
 				errors.rejectValue("newPassword", "error.invalid");
 			}
+			if(bcrypt.matches(accountChangePassword.getNewPassword(), account.getPassword()))
+				errors.rejectValue("newPassword", "error.same_password");
 		}
-		
+
 		if(accountChangePassword.getConfirmNewPassword().isEmpty()){
 			errors.rejectValue("confirmNewPassword", "error.empty");
 		}else{
@@ -67,7 +68,7 @@ public class AccountValidator{
 		}
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
-	
+
 	private void validateAccount(Account account, Errors errors, String prefix){
 		//Presenza e univocità dello username
 		if(account.getUsername().isEmpty()){

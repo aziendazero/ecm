@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,7 +28,7 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 @WithUserDetails("admin")
 @Ignore
 public class FileControllerTest {
-	
+
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 
@@ -42,8 +41,8 @@ public class FileControllerTest {
 
 	@Test
 	public void uploadFile() throws Exception {
-		FileInputStream inputFile = new FileInputStream("C:\\Users\\dpranteda\\Pictures\\Balocco.jpg");  
-		MockMultipartFile multiPartFile = new MockMultipartFile("multiPartFile", "pippo150.jpg", "multipart/form-data", inputFile); 
+		FileInputStream inputFile = new FileInputStream("C:\\Users\\dpranteda\\Pictures\\Balocco.jpg");
+		MockMultipartFile multiPartFile = new MockMultipartFile("multiPartFile", "pippo150.jpg", "multipart/form-data", inputFile);
 
 		ResultActions actions = this.mockMvc.perform(fileUpload("/file/upload")
 				.file(multiPartFile)
@@ -51,10 +50,10 @@ public class FileControllerTest {
 				.param("fileId", "156")
 				.param("tipoAllegato", FileEnum.FILE_ATTO_NOMINA.name())
 				);
-		
+
 		String response = actions.andReturn().getResponse().getContentAsString();
-		
+
 		System.out.println(response);
 	}
-	
+
 }

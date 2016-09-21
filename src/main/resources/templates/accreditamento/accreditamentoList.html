@@ -10,7 +10,7 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="${action == null} ? #{label.accreditamenti_lista} : #{label.accreditamenti_lista_gruppo(${#messages.msg('__${action}__')})}">Lista degli
+						<h2 th:text="${label == null} ? #{label.accreditamenti_lista} : #{__${label}__}">Lista degli
 							accreditamenti</h2>
 						<div class="pull-right buttons-header">
 							<a class="btn btn-primary pull-right"
@@ -29,7 +29,7 @@
 					</div>
 					<div class="x_content">
 						<table th:unless="${#lists.isEmpty(accreditamentoList)}" id="datatable-accreditamento"
-							class="table table-striped table-bordered dt-responsive nowrap datatable-responsive"
+							class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-list-accreditamento"
 							cellspacing="0" width="100%">
 							<thead>
 								<tr>
@@ -38,9 +38,11 @@
 									<th th:text="#{label.codiceFiscaleOrIVAProvider}">cf/piva</th>
 									<th th:text="#{label.gruppo_appartenenza}">Gruppo di appartenenza</th>
 									<th th:text="#{label.accreditamento_stato}">Stato</th>
-									<th th:text="#{label.accreditamento_invio}">Data invio</th>
-									<th th:text="#{label.accreditamento_validazione}">Datavalidazione</th>
-									<th th:text="#{label.accreditamento_scadenza}">Scadenza</th>
+									<th:block th:unless="${#authentication.principal.hasProfile('REFEREE')}">
+										<th th:text="#{label.accreditamento_invio}">Data invio</th>
+										<th th:text="#{label.accreditamento_validazione}">Datavalidazione</th>
+										<th th:text="#{label.accreditamento_scadenza}">Scadenza</th>
+									</th:block>
 								</tr>
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(accreditamentoList)}" th:remove="all-but-first">
@@ -50,9 +52,11 @@
 									<td th:text="${accreditamento.provider.partitaIva != null and !#strings.isEmpty(accreditamento.provider.partitaIva) ? accreditamento.provider.codiceFiscale + ' (' + accreditamento.provider.partitaIva +')' : accreditamento.provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</td>
 									<td th:text="${accreditamento.provider.gruppo}">informatica</td>
 									<td th:text="${accreditamento.stato.nome}">Accettata</td>
-									<td th:text="${accreditamento.dataInvio == null} ? '' : ${#temporals.format(accreditamento.dataInvio, 'dd/MM/yyyy')}">22/05/2014</td>
-									<td th:text="${accreditamento.dataValutazioneCrecm  == null} ? '' : ${#temporals.format(accreditamento.dataValutazioneCrecm, 'dd/MM/yyyy')}">24/05/2014</td>
-									<td th:text="${accreditamento.dataScadenza  == null} ? '' : ${#temporals.format(accreditamento.dataScadenza, 'dd/MM/yyyy')}">24/05/2016</td>
+									<th:block th:unless="${#authentication.principal.hasProfile('REFEREE')}">
+										<td th:text="${accreditamento.dataInvio == null} ? '' : ${#temporals.format(accreditamento.dataInvio, 'dd/MM/yyyy')}">22/05/2014</td>
+										<td th:text="${accreditamento.dataValutazioneCrecm  == null} ? '' : ${#temporals.format(accreditamento.dataValutazioneCrecm, 'dd/MM/yyyy')}">24/05/2014</td>
+										<td th:text="${accreditamento.dataScadenza  == null} ? '' : ${#temporals.format(accreditamento.dataScadenza, 'dd/MM/yyyy')}">24/05/2016</td>
+									</th:block>
 								</tr>
 							</tbody>
 						</table>
@@ -64,6 +68,19 @@
 					</div>
 				</div>
 			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+			    $(document).ready(function() {
+			    	$('.datatable-responsive-list-accreditamento').DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+					});
+			    });
+
+			/*]]>*/
+			</script>
 		</div>
 	</div>
 </body>

@@ -21,4 +21,15 @@ public interface SecurityAccessService {
 	public boolean canEditPianoFormativo(CurrentUser currentUser, Long providerId, Long pianoFormativoId);
 	
 	public boolean canShowFile(CurrentUser currentUser, Long fileId);
+	
+	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId);
+	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId);
+	
+	public boolean canEnableField(CurrentUser currentUser);
+	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId);
+	
+	public boolean canShowGruppo(CurrentUser currentUser, String gruppo);
+	
+	public boolean canShowSeduta(CurrentUser currentUser);
+	public boolean canEditSeduta(CurrentUser currentUser);
 }

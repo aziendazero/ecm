@@ -3,6 +3,7 @@ package it.tredi.ecm.service;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 
 public interface ProviderService {
@@ -12,15 +13,18 @@ public interface ProviderService {
 	public Provider getProviderByPartitaIva(String partitaIva);
 	public Set<Provider> getAll();
 	public void save(Provider provider);
-	
+
 	public Set<String> getFileTypeUploadedByProviderId(Long id);
-	
+
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper);
-	
+
 	public Long getProviderIdByAccountId(Long accountId);
 	public Long getAccountIdForProvider(Long providerId);
 	public boolean canInsertPianoFormativo(Long providerId);
 	public boolean canInsertEvento(Long providerId);
 	public boolean canInsertAccreditamentoStandard(Long providerId);
+	public boolean hasAlreadySedeLegaleProvider(Provider provider, Sede sede);
+	
+	public void saveFromIntegrazione(Provider provider);
 }

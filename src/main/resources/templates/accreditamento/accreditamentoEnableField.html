@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title x_menu">
+						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.codiceFiscale + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
+						<div class="pull-right buttons-header">
+							<button type="button" class="btn btn-primary" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></button>
+							<a th:text="#{label.invia_richiesta_integrazione}" class="btn btn-success btn-primary" th:if="${userCanSendRichiestaIntegrazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sendRichiestaIntegrazione|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+
+				<div class="x_panel">
+
+					<div class="x_title">
+						<h2 th:text="#{label.accreditamento_titolo(#{label.abilita_modifica_campi}, ${accreditamentoWrapper.accreditamento.tipoDomanda.nome},${accreditamentoWrapper.accreditamento.stato.nome})}"></h2>
+						<div class="clearfix"></div>
+					</div>
+					<th:block th:include="accreditamento/accreditamentoFragment :: accreditamento('enableField')"></th:block>
+
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+			    var tabSelected = "tab1";
+				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+					tabSelected = e.target.id;
+					console.log(tabSelected);
+				});
+
+				function switchMode(mode) {
+					var param = "?tab=" + tabSelected;
+					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/|}]] + mode + param;
+					location.href = url;
+				}
+				
+				//gestione ablita/disabilita FULL del comitato scientifico e del piano formativo in accreditamento
+				$('#abilitaComitatoFull').on('ifChecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaComitatoFull');
+				});
+				
+				$('#abilitaComitatoFull').on('ifUnchecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaComitatoFull');
+				});
+				
+				$('#abilitaPianoFormativoFull').on('ifChecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaPianoFormativoFull');
+				});
+
+				$('#abilitaPianoFormativoFull').on('ifUnchecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaPianoFormativoFull');
+				});
+				
+				$('#abilitaSediFull').on('ifChecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaSediFull');
+				});
+
+				$('#abilitaSediFull').on('ifUnchecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaSediFull');
+				});
+				
+				function ajaxCallToEnableFieldFull(checkboxId){
+					var field = $(checkboxId).val() ;
+					var state = $(checkboxId).is(':checked');
+					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/|}]] + field + '/' + state;
+					$.get(url);
+				}
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

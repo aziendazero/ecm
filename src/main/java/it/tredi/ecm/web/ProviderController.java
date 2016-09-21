@@ -1,9 +1,13 @@
 package it.tredi.ecm.web;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +30,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
+import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
+import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
@@ -43,6 +52,7 @@ import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.ResponseUsername;
+import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 

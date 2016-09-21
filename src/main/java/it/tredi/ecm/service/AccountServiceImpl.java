@@ -4,36 +4,33 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
-import it.tredi.ecm.utils.Utils;
 
 @Service
 public class AccountServiceImpl implements AccountService{
 	private static Logger LOGGER = LoggerFactory.getLogger(AccountServiceImpl.class);
 
-	@Autowired
-	private final AccountRepository accountRepository;
-	@Autowired
-	private final EmailService emailService;
-
-	@Autowired
-	private ProfileAndRoleService profileAndRoleService;
-	@Autowired
-	private EcmProperties ecmProperties;
+	@Autowired private final AccountRepository accountRepository;
+	@Autowired private final EmailService emailService;
+	@Autowired private ProfileAndRoleService profileAndRoleService;
+	@Autowired private EcmProperties ecmProperties;
+	@Autowired private SpringTemplateEngine templateEngine;
 	
 	@Autowired
 	private WorkflowService workflowService;
@@ -135,44 +132,34 @@ public class AccountServiceImpl implements AccountService{
 		return newPassword;
 	}
 
-	private void sendRegistrationEmail(Account user, String firstPassword){
-		SimpleMailMessage mailMessage = new SimpleMailMessage();
-		mailMessage.setTo(user.getEmail());
-		mailMessage.setFrom("segreteria@ecm.it");//TODO definire le property per caricare i dati
-		mailMessage.setSubject("Creazione Account ECM");
-		mailMessage.setText("Complimenti la registrazione al portale ECM è avvenuta con successo!\n"
-							+ "Cliccare sul seguente link per attivare il suo account http://localhost:8080\n"
-							+ "Le sue credenziali d'accesso sono: \n"
-							+ "username: " + user.getUsername() + "\n"
-							+ "password: " + firstPassword);
-
-		emailService.send(mailMessage);
+	private void sendRegistrationEmail(Account user, String firstPassword) throws Exception{
+		 Context context = new Context();
+	     context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
+	     context.setVariable("username", user.getUsername());
+	     context.setVariable("password", firstPassword);
+	     String message = templateEngine.process("creazioneAccount", context);
+	     
+	     emailService.send(ecmProperties.getEmailSegreteriaEcm(), user.getEmail(), "Creazione Account ECM", message, true);
 	}
 
-	private void sendResetPasswordEmail(Account user, String password){
-		SimpleMailMessage mailMessage = new SimpleMailMessage();
-		mailMessage.setTo(user.getEmail());
-		mailMessage.setFrom("segreteria@ecm.it");//TODO definire le property per caricare i dati
-		mailMessage.setSubject("Reset Password Account ECM");
-		mailMessage.setText("Come da sua richiesta è stata rigenerata la password di accesso al sistema ECM!\n"
-							+ "Le sue credenziali d'accesso sono: \n"
-							+ "username: " + user.getUsername() + "\n"
-							+ "password: " + password);
-
-		emailService.send(mailMessage);
+	private void sendResetPasswordEmail(Account user, String password) throws Exception{
+		 Context context = new Context();
+	     context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
+	     context.setVariable("username", user.getUsername());
+	     context.setVariable("password", password);
+	     String message = templateEngine.process("resetPassword", context);
+	    
+	     emailService.send(ecmProperties.getEmailSegreteriaEcm(), user.getEmail(), "Cambio Password Account ECM", message, true);
 	}
 
-	private void sendChangePasswordEmail(Account user, String password){
-		SimpleMailMessage mailMessage = new SimpleMailMessage();
-		mailMessage.setTo(user.getEmail());
-		mailMessage.setFrom("segreteria@ecm.it");//TODO definire le property per caricare i dati
-		mailMessage.setSubject("Cambio Password Account ECM");
-		mailMessage.setText("Come da sua richiesta è stata cambiata la password di accesso al sistema ECM!\n"
-							+ "Le sue credenziali d'accesso sono: \n"
-							+ "username: " + user.getUsername() + "\n"
-							+ "password: " + password);
-
-		emailService.send(mailMessage);
+	private void sendChangePasswordEmail(Account user, String password) throws Exception{
+		 Context context = new Context();
+	     context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
+	     context.setVariable("username", user.getUsername());
+	     context.setVariable("password", password);
+	     String message = templateEngine.process("cambioPassword", context);
+	    
+	     emailService.send(ecmProperties.getEmailSegreteriaEcm(), user.getEmail(), "Cambio Password Account ECM", message, true);
 	}
 
 	@Override

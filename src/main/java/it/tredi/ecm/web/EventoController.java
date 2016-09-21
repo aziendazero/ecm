@@ -33,11 +33,11 @@ import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
+import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.ObiettivoService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
@@ -45,6 +45,7 @@ import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.EventoValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
@@ -54,7 +55,7 @@ public class EventoController {
 	private final String EDIT = "evento/eventoEdit";
 	private final String SHOW = "evento/eventoShow";
 	private final String VALIDATE  = "evento/eventoValidate";
-
+	private final String ENABLEFIELD  = "evento/eventoEnableField";
 
 	@Autowired private EventoService eventoService;
 	@Autowired private ProviderService providerService;
@@ -66,6 +67,7 @@ public class EventoController {
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private IntegrazioneService integrazioneService;
 
 
 	@InitBinder
@@ -265,7 +267,7 @@ public class EventoController {
 	/*
 	 * VALUTAZIONE EVENTO IN PIANO FORMATIVO (accreditamento)
 	 */
-//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/validate")
 	public String validateEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs) {
@@ -281,6 +283,26 @@ public class EventoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
 			return "redirect:/accreditamento/" + accreditamentoId + "/validate";
+		}
+	}
+	
+	/*
+	 * ENABLE FIELD EVENTO IN PIANO FORMATIVO (accreditamento)
+	 */
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/enableField")
+	public String enableFieldEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
+			Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/enableField"));
+		try {
+			//tengo traccia di dove ritornare
+			model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/enableField?tab=tab4");
+			return goToEnableField(model, prepareEventoWrapperEnableField(eventoService.getEvento(id), providerId, accreditamentoId, pianoFormativoId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/enableField"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/enableField"));
+			return "redirect:/accreditamento/" + accreditamentoId + "/enableField";
 		}
 	}
 
@@ -349,6 +371,23 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/save"));
 		return saveEvento(wrapper, null, providerId, pianoFormativoId, result, model, redirectAttrs);
 	}
+	
+	/*** 	SAVE  ENABLEFIELD   ***/
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/enableField", method = RequestMethod.POST)
+	public String enableFieldAllegatiAccreditamento(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId, 
+												Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/" + richiestaIntegrazioneWrapper.getObjRef() + "/enableField"));
+		try{
+			integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/" + richiestaIntegrazioneWrapper.getObjRef() + "/enableField"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/enableField"));
+		}
+		redirectAttrs.addFlashAttribute("currentTab","tab4");
+		return "redirect:/accreditamento/{accreditamentoId}/enableField";
+	};
 
 	//Logica in comune tra i salvataggi dell'evento
 	private String saveEvento (EventoWrapper wrapper, Long accreditamentoId, Long providerId, Long pianoFormativoId, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
@@ -562,6 +601,13 @@ public class EventoController {
 		return eventoWrapper;
 	}
 
+	private EventoWrapper prepareEventoWrapperEnableField(Evento evento, long providerId, long accreditamentoId, long pianoFormativoId) {
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEnableField(" + evento.getId() + "," + providerId + ") - entering"));
+		EventoWrapper eventoWrapper = prepareEventoWrapperShow(evento, providerId, accreditamentoId);
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEnableField(" + evento.getId() + "," + providerId + ") - exiting"));
+		return eventoWrapper;
+	}
+	
 	private String goToValidate(Model model, EventoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
 		model.addAttribute("proceduraFormativaList", wrapper.getEvento().getAccreditamento().getDatiAccreditamento().getProcedureFormative());
@@ -569,6 +615,13 @@ public class EventoController {
 		return VALIDATE;
 	}
 
+	private String goToEnableField(Model model, EventoWrapper wrapper) {
+		model.addAttribute("eventoWrapper", wrapper);
+		model.addAttribute("richiestaIntegrazioneWrapper",integrazioneService.prepareRichiestaIntegrazioneWrapper(wrapper.getAccreditamentoId(), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO, wrapper.getEvento().getId()));
+		LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
+		return ENABLEFIELD;
+	}
+	
 	private void populateListFromAccreditamento(Model model, long accreditamentoId) throws Exception{
 		DatiAccreditamento datiAccreditamento = accreditamentoService.getDatiAccreditamentoForAccreditamento(accreditamentoId);
 		model.addAttribute("proceduraFormativaList", datiAccreditamento.getProcedureFormative());

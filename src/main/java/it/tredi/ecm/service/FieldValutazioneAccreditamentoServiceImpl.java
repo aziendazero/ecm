@@ -98,6 +98,13 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		LOGGER.debug(Utils.getLogMessage("Salvataggio FieldValutazioni per la domanda di accreditamento"));
 		fieldValutazioneAccreditamentoRepository.save(valutazione);
 	}
+	
+	@Override
+	@Transactional
+	public void delete(Long id) {
+		LOGGER.debug(Utils.getLogMessage("Eliminazione FieldValutazione " + id));
+		fieldValutazioneAccreditamentoRepository.delete(id);
+	}
 
 	@Override
 	@Transactional

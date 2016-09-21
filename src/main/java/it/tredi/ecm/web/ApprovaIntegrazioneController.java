@@ -27,7 +27,7 @@ public class ApprovaIntegrazioneController {
 //	}
 //	
 //	@RequestMapping("/accreditamento/{accreditamentoId}/integrazione/save")
-//	public String saveIntegrazione(@ModelAttribute("wrapper") IntegrazioneWrapper wrapper, Model model, RedirectAttributes redirAttributes){
+//	public String saveIntegrazione(@ModelAttribute("wrapper") IntegrazioneWrapper_old wrapper, Model model, RedirectAttributes redirAttributes){
 //		try{
 //			if(wrapper.getFullLista() != null && !wrapper.getFullLista().isEmpty()){
 //				for(FieldIntegrazioneAccreditamento field : wrapper.getFullLista()){
@@ -43,8 +43,8 @@ public class ApprovaIntegrazioneController {
 //		return "segreteria/applicaIntegrazione";
 //	}
 	
-//	private IntegrazioneWrapper prepareIntegrazioneWrapper(Long accreditamentoId){
-//		IntegrazioneWrapper wrapper = new IntegrazioneWrapper();
+//	private IntegrazioneWrapper_old prepareIntegrazioneWrapper(Long accreditamentoId){
+//		IntegrazioneWrapper_old wrapper = new IntegrazioneWrapper_old();
 //		
 //		Set<FieldEditabileAccreditamento> idEditabili = repoEditabile.findAllByAccreditamentoId(accreditamentoId);
 //		

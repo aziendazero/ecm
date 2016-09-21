@@ -89,6 +89,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			sedeLegale.setTelefono("123456");
 			sedeLegale.setFax("01234567");
 			sedeLegale.setEmail("sedeLegale@3di.it");
+			sedeLegale.setSedeLegale(true);
 			sedeRepository.save(sedeLegale);
 
 			provider = new Provider();
@@ -105,8 +106,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			provider.setAccount(account);
 			provider.addPersona(legale);
 			provider.addPersona(richiedente);
-			provider.setSedeLegale(sedeLegale);
-			provider.setSedeOperativa(sedeLegale);
+			provider.addSede(sedeLegale);
 			legale.getAnagrafica().setTelefono("123456");
 			providerRepository.save(provider);
 

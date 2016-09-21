@@ -18,8 +18,7 @@
 							<thead>
 								<tr>
 									<th th:text="#{label.denominazione_legale}">Denominazione legale</th>
-									<th th:text="#{label.codiceFiscaleOrIVA}">Codice fiscale / Partita IVA</th>
-									<th th:text="#{label.gruppo_appartenenza}">Gruppo di appartenenza</th>
+									<th th:text="#{label.tipoOrganizzatore_nome}"></th>
 									<th th:text="#{label.status}">Status del provider</th>
 									<th th:text="#{label.caninsert_piano_formativo}">Inserimento Piano Formativo</th>
 									<th th:text="#{label.caninsert_eventi}">Inserimento Eventi</th>
@@ -27,10 +26,9 @@
 								</tr>
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(providerList)}" th:remove="all-but-first">
-								<tr th:each="provider : ${providerList}">
+								<tr th:each="provider : ${providerList}" th:class="${provider.gruppo == 'A'} ? 'whiteBGround' : 'yellowBGround'">
 									<td><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/accreditamento/list|}">3d informatica</a></td>
-									<td th:text="${provider.partitaIva != null and !#strings.isEmpty(provider.partitaIva) ? provider.codiceFiscale + ' (' + provider.partitaIva +')' : provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</td>
-									<td th:text="${provider.gruppo}">informatica</td>
+									<td th:text="${provider.tipoOrganizzatore.nome}">informatica</td>
 									<td th:text="${provider.status.nome}">stato</td>
 									<td th:text="${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}">abilitato/non abilitato</td>

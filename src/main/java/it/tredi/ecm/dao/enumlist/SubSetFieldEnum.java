@@ -3,14 +3,13 @@ package it.tredi.ecm.dao.enumlist;
 /*
  * Raggruppiamo gli IdFieldEnum per gruppo in linea con le show della GUI di ECM
  * in modo tale da ricavare velocemente solo le righe della sezione interessata
- * 
+ *
  * */
 public enum SubSetFieldEnum {
 	PROVIDER,
-	SEDE_LEGALE,
-	SEDE_OPERATIVA,
 	LEGALE_RAPPRESENTANTE,
 	DELEGATO_LEGALE_RAPPRESENTANTE,
+	SEDE,
 	DATI_ACCREDITAMENTO,
 	RESPONSABILE_SEGRETERIA,
 	RESPONSABILE_SISTEMA_INFORMATICO,

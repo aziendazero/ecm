@@ -25,12 +25,12 @@ public class ProviderRegistrationWrapperValidator{
 		providerValidator.validateForRegistrazione(providerForm.getProvider(), errors, "provider.");
 		validateLegale(providerForm.getLegale(), errors);
 
-		//Delegato consentito solo per alcuni tipi di Provider
-		//allegato obbligatorio solo se e' stato selezionato il flag delegato
-		if(providerForm.getProvider().getTipoOrganizzatore() != null && providerForm.getProvider().getTipoOrganizzatore().isTipoP() && providerForm.getDelegato() == null)
-			errors.rejectValue("delegato", "error.empty");
+//		//Delegato consentito solo per alcuni tipi di Provider
+//		//allegato obbligatorio solo se e' stato selezionato il flag delegato
+//		if(providerForm.getProvider().getTipoOrganizzatore() != null && providerForm.getProvider().getTipoOrganizzatore().isTipoP() && providerForm.isDelegato() == null)
+//			errors.rejectValue("delegato", "error.empty");
 
-		if(providerForm.getDelegato() != null && providerForm.getDelegato() == true){
+		if(providerForm.isDelegato()) {
 			fileValidator.validate(providerForm.getDelega(), errors, "delega");
 		}
 

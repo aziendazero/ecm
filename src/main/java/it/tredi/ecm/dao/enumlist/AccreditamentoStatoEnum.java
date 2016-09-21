@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public enum AccreditamentoStatoEnum {
 	BOZZA (1, "Bozza", ""), //domanda non ufficiale
-	VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO (2, "Valutazione da parte della segreteria", "valutazione"),//domanda inviata alla segreteria che deve valutarla e assegnare il gruppo CRECM
+	VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO (2, "Valutazione da parte della segreteria", "valutazioneAssegnamento"),//domanda inviata alla segreteria che deve valutarla e assegnare il gruppo CRECM
 	VALUTAZIONE_CRECM (3, "Valutazione CRECM", "valutazioneReferee"),//[SOLO PROVVISORIA] - domanda assegnata al gruppo CRECM, che deve valutarla
 	ASSEGNAMENTO (4, "Assegnamento nuovo gruppo CRECM", "assegnamento"),//[SOLO PROVVISORIA] - //domanda restituita alla segreteria che deve assegnare un nuovo gruppo CRECM (perchè 2/3 del primo gruppo non hanno valutato)
 	INS_ODG (5, "Inserimento nell'Ordine del giorno", "odg"),//domanda deve essere inserita in ODG per valutazione della Commissione ECM
@@ -17,8 +17,8 @@ public enum AccreditamentoStatoEnum {
 	ACCREDITATO (8, "Accreditato", "accreditato"),//domanda approvata...90gg di tempo per pagare
 	RICHIESTA_INTEGRAZIONE (9, "Richiesta integrazione", "richiestaIntegrazione"),//segreteria deve selezionare gli id dei campi da modificare
 	INTEGRAZIONE (10, "Integrazione", "integrazione"),//provider deve modificare i campi da richiesta integrazione
-	RICHIESTA_PREAVVISO_RIGETTO (11, "Richiesta preavviso integrazione", "richiestaIntegrazione"),//segreteria deve selezionare gli id dei campi da modificare
-	PREAVVISO_RIGETTO (12, "Preavviso di rigetto", "integrazione"),//provider deve modificare i campi da richiesta preavviso di rigetto
+	RICHIESTA_PREAVVISO_RIGETTO (11, "Richiesta preavviso integrazione", "richiestaPreavvisoRigetto"),//segreteria deve selezionare gli id dei campi da modificare
+	PREAVVISO_RIGETTO (12, "Preavviso di rigetto", "preavvisoRigetto"),//provider deve modificare i campi da richiesta preavviso di rigetto
 	VALUTAZIONE_SEGRETERIA (13, "Valutazione Segreteria", "valutazione"),//domanda rimandata in valutazione alla segretria in seguito alle integrazioni effettuate (assegnamento CRECM mantenuto in automatico)
 
 	/*

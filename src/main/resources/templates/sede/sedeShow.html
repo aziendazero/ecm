@@ -12,7 +12,7 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.visualizzazione} + ' ' + ${sedeWrapper.tipologiaSede == 'SedeLegale' ? #messages.msg('label.sede_legale') : #messages.msg('label.sede_operativa')}">label.info_sede</h2>
+						<h2 th:text="#{label.visualizzazione} + ' ' + ${sedeWrapper.sede.sedeLegale == true ? #messages.msg('label.sede_legale') : #messages.msg('label.sede_operativa')}">label.info_sede</h2>
 						<div class="pull-right buttons-header">
 							<a th:if="${mode == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/show|}"></a>
 							<a th:if="${mode != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/${mode}|}"></a>

@@ -193,4 +193,52 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		return true;
 	}
 	
+	@Override
+	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
+		return accreditamentoService.canUserPrendiInCarica(accreditamentoId, currentUser);
+	}
+	
+	@Override
+	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
+		if(currentUser.isSegreteria() || currentUser.isReferee()){
+			return (accreditamentoService.canUserValutaDomanda(accreditamentoId, currentUser) || accreditamentoService.canUserValutaDomandaShow(accreditamentoId, currentUser));
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean canEnableField(CurrentUser currentUser) {
+		return accreditamentoService.canUserEnableField(currentUser);
+	}
+	
+	@Override
+	public boolean canShowGruppo(CurrentUser currentUser, String gruppo) {
+		if(gruppo == null || gruppo.isEmpty())
+			return false;
+		
+		if(!currentUser.isProvider())
+			return true;
+		else
+			return false;
+	}
+	
+	@Override
+	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) {
+		return accreditamentoService.canUserInviaIntegrazione(accreditamentoId, currentUser);
+	}
+	
+	@Override
+	public boolean canShowSeduta(CurrentUser currentUser) {
+		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm())
+			return true;
+		return false;
+	}
+	
+	@Override
+	public boolean canEditSeduta(CurrentUser currentUser) {
+		if(currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+	
 }

@@ -24,33 +24,27 @@
 
 				</div>
 
-				<!-- riempito con chiamata ajax sede legale -->
+				<!-- riempito con ciclo di chiamate ajax per le sedi  -->
 				<div class="x_panel">
               		<div class="x_title">
-						<h2 style="display: inline" th:text="#{label.sede_legale}">label.sede_legale</h2>
-						<h2 style="display: inline" th:if="${accreditamentoWrapper.sedeLegale.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox" th:unless="${accreditamentoWrapper.sedeLegale.new}">
+						<h2 style="display: inline" th:text="#{label.sedi_provider}">label.sedi_provider</h2>
+						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.sedi) and accreditamentoWrapper.sedeLegale == null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi) and accreditamentoWrapper.sedeLegale == null}">
 		                    <li><a class="link-collapse"><i class="fa iconToggle fa-chevron-down"></i></a></li>
                   		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:unless="${accreditamentoWrapper.sedeLegale.new}" id="sedeLegaleBlock" class="container-collapse"></div>
-
-				</div>
-
-				<!-- riempito con chiamata ajax sede operativa -->
-				<div class="x_panel">
-              		<div class="x_title">
-						<h2 style="display: inline" th:text="#{label.sede_operativa}">label.sede_operativa</h2>
-						<h2 style="display: inline" th:if="${accreditamentoWrapper.sedeOperativa.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox" th:unless="${accreditamentoWrapper.sedeOperativa.new}">
-		                    <li><a class="link-collapse"><i class="fa iconToggle fa-chevron-down"></i></a></li>
-                  		</ul>
-						<div class="clearfix"></div>
-					</div>
-
-					<div th:unless="${accreditamentoWrapper.sedeOperativa.new}" id="sedeOpBlock" class="container-collapse"></div>
+					<th:block th:if="${accreditamentoWrapper.sedeLegale != null}">
+						<h2 th:text="#{label.sede_legale} + ': ' + ${accreditamentoWrapper.sedeLegale.indirizzo + ' (' + accreditamentoWrapper.sedeLegale.comune + ')'}">label.sede_legale + indirizzo</h2>
+						<div th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi)}" class="divider-dashed"></div>
+						<div th:id="sedeLegaleBlock" class="container-collapse"></div>
+					</th:block>
+					<th:block th:each="sede, row : ${accreditamentoWrapper.sedi}">
+						<h2 th:text="#{label.sede_operativa} + ': ' + ${sede.indirizzo} + ' (' + ${sede.comune} + ')'">label.sede_operativa + indirizzo</h2>
+						<div th:unless="${row.last}" class="divider-dashed"></div>
+						<div th:id="sede+${sede.id}+Block" class="container-collapse" role="iterSede" th:attr="data-valore-id=${sede.id}"></div>
+					</th:block>
 
 				</div>
 
@@ -171,7 +165,7 @@
 
 					<th:block th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico != null}">
 						<h2 th:text="#{label.coordinatore_comitato} + ': ' + ${accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.nome + ' ' + accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.cognome}">label.coordinatore_comitato</h2>
-						<div class="divider-dashed"></div>
+						<div th:unless="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico)}" class="divider-dashed"></div>
 						<div th:id="coordinatoreBlock" class="container-collapse"></div>
 					</th:block>
 					<th:block th:each="componente, row : ${accreditamentoWrapper.componentiComitatoScientifico}">
@@ -229,18 +223,6 @@
 						$("#providerBlock").load(url + ' #toModal');
 					}
 
-					//sede legale
-					if([[${!accreditamentoWrapper.sedeLegale.new}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale?.id}/show?tipologiaSede=SedeLegale|}]];
-						$("#sedeLegaleBlock").load(url + ' #toModal');
-					}
-
-					//sede operativa
-					if([[${!accreditamentoWrapper.sedeOperativa.new}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeOperativa?.id}/show?tipologiaSede=SedeOperativa|}]];
-						$("#sedeOpBlock").load(url + ' #toModal');
-					}
-
 					//legale rappresentante
 					if([[${accreditamentoWrapper.legaleRappresentante != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante?.id}/show|}]];
@@ -252,6 +234,18 @@
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante?.id}/show|}]];
 						$("#delegatoBlock").load(url + ' #toModal');
 					}
+
+					//sedeLegale
+					if([[${accreditamentoWrapper.sedeLegale != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale?.id}/show|}]];
+						$("#sedeLegaleBlock").load(url + ' #toModal');
+					}
+
+					//ciclo sulle sedi operativa grazie al campo data-valore-id precedentemente settato
+					$('div[role=iterSede]').each(function(index) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/|}]] + $(this).attr("data-valore-id") + "/show";
+						$(this).load(url + ' #toModal');
+					})
 
 					//dati accreditamento
 					if([[${!accreditamentoWrapper.datiAccreditamento.new}]]) {
@@ -342,9 +336,15 @@
 					$(this).parents(".x_title").siblings(".container-collapse").slideToggle("slow");
 				});
 
-				function toggleAll() {
-					$('.iconToggle').toggleClass("fa-chevron-down fa-chevron-up");
-					$(".container-collapse").slideToggle("slow");
+				function openAll() {
+					$('.iconToggle').addClass("fa-chevron-up").removeClass("fa-chevron-down");
+					$(".container-collapse").slideDown("slow");
+					$('.toggleButtons').toggle();
+				}
+
+				function closeAll() {
+					$('.iconToggle').addClass("fa-chevron-down").removeClass("fa-chevron-up");
+					$(".container-collapse").slideUp("slow");
 					$('.toggleButtons').toggle();
 				}
 

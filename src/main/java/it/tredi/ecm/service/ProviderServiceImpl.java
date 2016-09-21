@@ -13,6 +13,7 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
@@ -131,7 +132,7 @@ public class ProviderServiceImpl implements ProviderService {
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerRegistrationWrapper) {
 		Provider provider = providerRegistrationWrapper.getProvider();
 		Persona legale = providerRegistrationWrapper.getLegale();
-		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true)
+		if(providerRegistrationWrapper.isDelegato())
 			legale.setRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
 		else
 			legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
@@ -147,7 +148,7 @@ public class ProviderServiceImpl implements ProviderService {
 		save(provider);
 
 		//Delegato consentito solo per alcuni tipi di Provider
-		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true){
+		if(providerRegistrationWrapper.isDelegato()){
 			delega.setTipo(FileEnum.FILE_DELEGA);
 			fileService.save(delega);
 			legale.addFile(delega);
@@ -179,5 +180,22 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public boolean canInsertEvento(Long providerId) {
 		return providerRepository.canInsertEvento(providerId);
+	}
+
+	@Override
+	public boolean hasAlreadySedeLegaleProvider(Provider provider, Sede sede) {
+		boolean result = false;
+		for (Sede s : provider.getSedi()) {
+			if(s.isSedeLegale() && !s.equals(sede))
+				result = true;
+		}
+		return result;
+	}
+	
+	@Override
+	@Transactional
+	public void saveFromIntegrazione(Provider provider) {
+		LOGGER.debug(Utils.getLogMessage("Salvataggio Provider da Integrazione"));
+		save(provider);
 	}
 }

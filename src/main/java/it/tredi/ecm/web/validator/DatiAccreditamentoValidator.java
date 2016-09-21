@@ -11,7 +11,6 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.utils.Utils;
 
 @Component
@@ -37,10 +36,19 @@ public class DatiAccreditamentoValidator {
 			errors.rejectValue(prefix + "procedureFormative", "error.empty");
 		if(datiAccreditamento.getProfessioniAccreditamento() == null || datiAccreditamento.getProfessioniAccreditamento().isEmpty())
 			errors.rejectValue(prefix + "professioniAccreditamento", "error.empty");
-		if(datiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato() == 0)
+		if(datiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato() == null)
 			errors.rejectValue(prefix + "numeroDipendentiFormazioneTempoIndeterminato", "error.empty");
-		if(datiAccreditamento.getNumeroDipendentiFormazioneAltro() == 0)
+		if(datiAccreditamento.getNumeroDipendentiFormazioneAltro() == null)
 			errors.rejectValue(prefix + "numeroDipendentiFormazioneAltro", "error.empty");
+		//controllo di tipo cronologico, non posso avere un buco di un anno nei dati inseriti
+		if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreUno() != null &&
+				datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreTre() != null &&
+				datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreDue() == null)
+			errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreDue", "error.empty");
+		if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() != null &&
+				datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreTre() != null &&
+				datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreDue() == null)
+			errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreDue", "error.empty");
 	}
 
 	@SuppressWarnings("unchecked")

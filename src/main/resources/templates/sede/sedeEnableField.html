@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+
+</head>
+<body>
+	<!-- coincide settato a false perchè non importante -->
+	<div layout:fragment="content" th:with="coincide=false">
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.abilita_modifica_campi} + ' ' + ${sedeWrapper.sede.sedeLegale == true ? #messages.msg('label.sede_legale') : #messages.msg('label.sede_operativa')}">label.info_sede</h2>
+						<div class="pull-right buttons-header">
+							<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/enableField|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="sede/sedeFragment :: sede('enableField')"></th:block>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

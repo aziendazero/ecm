@@ -40,30 +40,6 @@
 
 				</div>
 
-				<!-- riempito con chiamata ajax sede legale -->
-				<div class="x_panel">
-              		<div class="x_title">
-						<h2 style="display: inline" th:text="#{label.sede_legale}">label.sede_legale</h2>
-						<h2 style="display: inline" th:if="${accreditamentoWrapper.sedeLegale.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<div class="clearfix"></div>
-					</div>
-
-					<div th:unless="${accreditamentoWrapper.sedeLegale.new}" id="sedeLegaleBlockValidate" ></div>
-
-				</div>
-
-				<!-- riempito con chiamata ajax sede operativa -->
-				<div class="x_panel">
-              		<div class="x_title">
-						<h2 style="display: inline" th:text="#{label.sede_operativa}">label.sede_operativa</h2>
-						<h2 style="display: inline" th:if="${accreditamentoWrapper.sedeOperativa.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<div class="clearfix"></div>
-					</div>
-
-					<div th:unless="${accreditamentoWrapper.sedeOperativa.new}" id="sedeOpBlockValidate" ></div>
-
-				</div>
-
 				<!-- riempito con chiamata ajax legale rappresentante -->
 				<div class="x_panel">
               		<div class="x_title">
@@ -85,6 +61,27 @@
 					</div>
 
 					<div th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" id="delegatoBlockValidate" ></div>
+
+				</div>
+
+				<!-- riempito con ciclo di chiamate ajax per le sedi del provider  -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.sedi_provider}">label.sedi_provider</h2>
+						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.sedi) and accreditamentoWrapper.sedeLegale == null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:if="${accreditamentoWrapper.sedeLegale != null}">
+						<h2 th:text="#{label.sede_legale} + ': ' + ${accreditamentoWrapper.sedeLegale.indirizzo + ' (' + accreditamentoWrapper.sedeLegale.comune + ')'}">label.sede_legale + indirizzo</h2>
+						<div th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi)}" class="divider-dashed"></div>
+						<div id="sedeLegaleBlockValidate" ></div>
+					</th:block>
+					<th:block th:each="sede, row : ${accreditamentoWrapper.sedi}">
+						<h2 th:text="#{label.sede_operativa} + ': ' + ${sede.indirizzo} + ' (' + ${sede.comune} + ')'">label.sede_operativa</h2>
+						<div th:unless="${row.last}" class="divider-dashed"></div>
+						<div th:id="sede+${sede.id}+BlockValidate"  role="iterSedeOperativa" th:attr="data-valore-id=${sede.id}"></div>
+					</th:block>
 
 				</div>
 
@@ -253,22 +250,6 @@
 						});
 					}
 
-					//sede legale
-					if([[${!accreditamentoWrapper.sedeLegale.new}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale?.id}/validate?tipologiaSede=SedeLegale|}]];
-						$("#sedeLegaleBlockValidate").load(url + ' #toValidateModal', function(){
-							initTable($(this).find('table'));
-						});
-					}
-
-					//sede operativa
-					if([[${!accreditamentoWrapper.sedeOperativa.new}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeOperativa?.id}/validate?tipologiaSede=SedeOperativa|}]];
-						$("#sedeOpBlockValidate").load(url + ' #toValidateModal', function(){
-							initTable($(this).find('table'));
-						});
-					}
-
 					//legale rappresentante
 					if([[${accreditamentoWrapper.legaleRappresentante != null}]]) {
 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante?.id}/validate|}]];
@@ -284,6 +265,22 @@
 							initTable($(this).find('table'));
 						});
 					}
+
+					//sede Legale
+					if([[${accreditamentoWrapper.sedeLegale != null}]]) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale?.id}/validate|}]];
+						$("#sedeLegaleBlockValidate").load(url + ' #toValidateModal', function(){
+							initTable($(this).find('table'));
+						});
+					}
+
+					//ciclo sulle sedi operative grazie al campo data-valore-id precedentemente settato
+					$('div[role=iterSedeOperativa]').each(function(index) {
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/|}]] + $(this).attr("data-valore-id") + "/validate";
+						$(this).load(url + ' #toValidateModal', function() {
+							initTable($(this).find('table'));
+						});
+					})
 
 					//dati accreditamento
 					if([[${!accreditamentoWrapper.datiAccreditamento.new}]]) {

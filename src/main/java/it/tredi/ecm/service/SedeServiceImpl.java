@@ -1,5 +1,7 @@
 package it.tredi.ecm.service;
 
+import java.util.Set;
+
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -9,41 +11,63 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.enumlist.Costanti;
 import it.tredi.ecm.dao.repository.SedeRepository;
+import it.tredi.ecm.utils.Utils;
 
 @Service
 public class SedeServiceImpl implements SedeService{
 	private static Logger LOGGER = LoggerFactory.getLogger(SedeServiceImpl.class);
-	
-	@Autowired
-	private SedeRepository sedeRepository;
-	@Autowired
-	private ProviderService providerService;
+
+	@Autowired private SedeRepository sedeRepository;
+	@Autowired private ProviderService providerService;
 
 	@Override
 	public Sede getSede(Long id) {
 		LOGGER.debug("Recupero Sede: " + id);
 		return sedeRepository.findOne(id);
 	}
-	
+
 	@Override
 	@Transactional
 	public void save(Sede sede) {
 		LOGGER.debug("Salvataggio Sede");
 		sedeRepository.save(sede);
 	}
-	
+
 	@Override
 	@Transactional
-	public void save(Sede sede, Provider currentProvider, String tipologiaSede) {
+	public void save(Sede sede, Provider provider) {
 		save(sede);
-		
-		if(tipologiaSede.equals(Costanti.SEDE_LEGALE))
-			currentProvider.setSedeLegale(sede);
-		else if(tipologiaSede.equals(Costanti.SEDE_OPERATIVA))
-			currentProvider.setSedeOperativa(sede);
-		
-		providerService.save(currentProvider);
+
+		provider.addSede(sede);
+
+		providerService.save(provider);
+	}
+
+	@Override
+	public void delete(Long sedeId) {
+		LOGGER.debug("Eliminazione Sede");
+		sedeRepository.delete(sedeId);
+	}
+	
+	@Transactional
+	@Override
+	public void saveFromIntegrazione(Sede sede){
+		LOGGER.debug(Utils.getLogMessage("Salvataggio Sede da Integrazione"));
+		sede.setDirty(false);
+		save(sede);
+	}
+	
+	@Transactional
+	@Override
+	public void deleteFromIntegrazione(Long id){
+		LOGGER.debug("Eliminazione Sede da Integrazione" + id);
+		delete(id);
+	}
+	
+	@Override
+	public Set<Sede> getSediFromIntegrazione(Long providerId) {
+		LOGGER.debug("Recupero sedi per approvazione integrazione per il provider:" + providerId);
+		return sedeRepository.findAllByProviderId(providerId);
 	}
 }

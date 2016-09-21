@@ -105,4 +105,24 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 		files.add(dichiarazioneEsclusione);
 		return files;
 	}
+	
+	public void setFiles(Set<File> files){
+		Set<File> fs = new HashSet<File>(files);
+		for(File file : fs){
+			if(file.isATTOCOSTITUTIVO())
+				this.setAttoCostitutivo(file);
+			else if(file.isESPERIENZAFORMAZIONE())
+				this.setEsperienzaFormazione(file);
+			else if(file.isUTILIZZO())
+				this.setUtilizzo(file);
+			else if(file.isSISTEMAINFORMATICO())
+				this.setSistemaInformatico(file);
+			else if(file.isPIANOQUALITA())
+				this.setPianoQualita(file);
+			else if(file.isDICHIARAZIONELEGALE())
+				this.setDichiarazioneLegale(file);
+			else if(file.isDICHIARAZIONEESCLUSIONE())
+				this.setDichiarazioneEsclusione(file);
+		}
+	}
 }

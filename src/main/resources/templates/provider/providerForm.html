@@ -47,10 +47,10 @@
 								<input th:if="${providerForm.provider.id}" type="hidden" name="editId" th:value="${providerForm.provider.id}" />
 
 								<div id="step-1" class="wizard_content" style="display: block;">
-								
+
 									<!-- info -->
 									<h2 class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{message.info_login}"></h2>
-								
+
 									<!-- username -->
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.account.username')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeUtente">
@@ -243,28 +243,28 @@
 									</div>
 
 									<!-- radio rappresentante -->
-									<div id="radio_delegato" class="item form-group hidden" th:classappend="${#fields.hasErrors('providerForm.delegato')} ? 'bad'">
-										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delega_checkbox">
-											<span th:text="#{label.rappresentante_radio}">label.rappresentante_radio</span> <span class="required">*</span>
-										</label>
-										<div class="col-md-6 col-sm-6 col-xs-12" id="delegato_radio">
-											<div class="radio">
-												<label>
-													<input type="radio" class="flat" id="legaleRadio"
-														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="false" />
-													<span th:text="#{label.legale_radio}">Il richiedente è il Legale Rappresentante</span>
-												</label>
-											</div>
-											<div class="radio">
-												<label>
-													<input type="radio" class="flat" id="delegatoRadio"
-														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="true" />
-													<span th:text="#{label.delegato_radio}">Il richiedente è delegato dal Legale Rappresentante</span>
-												</label>
-											</div>
-										</div>
-										<div th:if="${#fields.hasErrors('providerForm.delegato')}" class="alert" th:errors="${providerForm.delegato}"></div>
-									</div>
+<!-- 									<div id="radio_delegato" class="item form-group hidden" th:classappend="${#fields.hasErrors('providerForm.delegato')} ? 'bad'"> -->
+<!-- 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="delega_checkbox"> -->
+<!-- 											<span th:text="#{label.rappresentante_radio}">label.rappresentante_radio</span> <span class="required">*</span> -->
+<!-- 										</label> -->
+<!-- 										<div class="col-md-6 col-sm-6 col-xs-12" id="delegato_radio"> -->
+<!-- 											<div class="radio"> -->
+<!-- 												<label> -->
+<!-- 													<input type="radio" class="flat" id="legaleRadio" -->
+<!-- 														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="false" /> -->
+<!-- 													<span th:text="#{label.legale_radio}">Il richiedente è il Legale Rappresentante</span> -->
+<!-- 												</label> -->
+<!-- 											</div> -->
+<!-- 											<div class="radio"> -->
+<!-- 												<label> -->
+<!-- 													<input type="radio" class="flat" id="delegatoRadio" -->
+<!-- 														name="rappresentanteRadio" th:field="${providerForm.delegato}" th:value="true" /> -->
+<!-- 													<span th:text="#{label.delegato_radio}">Il richiedente è delegato dal Legale Rappresentante</span> -->
+<!-- 												</label> -->
+<!-- 											</div> -->
+<!-- 										</div> -->
+<!-- 										<div th:if="${#fields.hasErrors('providerForm.delegato')}" class="alert" th:errors="${providerForm.delegato}"></div> -->
+<!-- 									</div> -->
 
 									<!-- delega -->
 									<div id="delegaFile" th:class="${providerForm.delegato == true} ? '' : 'hidden'">
@@ -305,7 +305,7 @@
 		          return true;
 		      };
 
-		      inputDelegaControl();
+// 		      inputDelegaControl();
 		    });
 
 		    $('#hasPartitaIVA').on('ifChecked', function(){
