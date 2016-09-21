@@ -26,12 +26,13 @@
 						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${personaWrapper.persona.id}" />
 							<input type="hidden" name="editId_Anagrafica" th:value="${personaWrapper.persona.anagrafica.id}" />
-							<input type="hidden" th:field="${personaWrapper.statoAccreditamento}" />
 							<input type="hidden" th:field="${personaWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${personaWrapper.providerId}" />
 							<input type="hidden" th:field="${personaWrapper.ruolo}" />
 							<input type="hidden" th:field="${personaWrapper.idEditabili}" />
+							<input type="hidden" th:field="${personaWrapper.statoAccreditamento}" />
 							<input type="hidden" th:field="${personaWrapper.fieldIntegrazione}" />
+							<input type="hidden" th:field="${personaWrapper.wrapperMode}" />
 							<input id="hidden-lookup" type="hidden" th:field="${personaWrapper.isLookup}" />
 							<th:block th:if="${enableField}">
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.accreditamentoId}" />

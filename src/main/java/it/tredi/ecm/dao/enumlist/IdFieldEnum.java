@@ -1,6 +1,9 @@
 package it.tredi.ecm.dao.enumlist;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import lombok.Getter;
@@ -37,6 +40,8 @@ public enum IdFieldEnum {
 	DELEGATO_LEGALE_RAPPRESENTANTE__DELEGA ("delega",24,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "files.FILE_DELEGA"),
 	DELEGATO_LEGALE_RAPPRESENTANTE__CV ("cv",25,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "files.FILE_CV"),
 
+	SEDE__IS_LEGALE ("sede.sedeLegale", -1, null, SubSetFieldEnum.SEDE, "sedeLegale"),
+	SEDE__IS_OPERATIVA ("sede.sedeOperativa", -1, null, SubSetFieldEnum.SEDE, "sedeOperativa"),
 	SEDE__PROVINCIA ("sede.provincia", 26, null, SubSetFieldEnum.SEDE, "provincia"),
 	SEDE__COMUNE ("sede.comune", 27, null, SubSetFieldEnum.SEDE, "comune"),
 	SEDE__INDIRIZZO ("sede.indirizzo", 28, null, SubSetFieldEnum.SEDE, "indirizzo"),
@@ -49,11 +54,25 @@ public enum IdFieldEnum {
 	DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE ("datiAccreditamento.procedureFormative", 34, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "procedureFormative"),
 	DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO ("datiAccreditamento.professioniAccreditamento", 35, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "professioniAccreditamento"),
 	DATI_ACCREDITAMENTO__DISCIPLINE ("datiAccreditamento.discipline", 36, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "discipline"),
-	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO ("datiAccreditamento.datiEconomici.fatturatoComplessivo", 37, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "fatturatoComplessivo"),
+	
+	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO ("datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoComplessivoValoreUno"),
+	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE ("datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoComplessivoValoreDue"),
+	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE ("datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoComplessivoValoreTre"),
+	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO ("datiAccreditamento.datiEconomici.fatturatoComplessivo", 37, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "fatturatoComplessivo",Arrays.asList(DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO,DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE,DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE)),
+	
 	DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO ("estrattoBilancioComplessivo", 38, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "files.FILE_ESTRATTO_BILANCIO_COMPLESSIVO"),
-	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE ("datiAccreditamento.datiEconomici.fatturatoFormazione", 39, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "fatturatoFormazione"),
+
+	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO ("datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoFormazioneValoreUno"),
+	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE ("datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoFormazioneValoreDue"),
+	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE ("datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoFormazioneValoreTre"),
+	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE ("datiAccreditamento.datiEconomici.fatturatoFormazione", 39, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "fatturatoFormazione",Arrays.asList(DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO,DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE,DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE)),
+	
 	DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE ("estrattoBilancioFormazione", 40, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "files.FILE_ESTRATTO_BILANCIO_FORMAZIONE"),
-	DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI ("datiAccreditamento.numeroDipendenti", 41, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "numeroDipendentiFormazioneTempoIndeterminato"),
+	
+	DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO ("datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "numeroDipendentiFormazioneTempoIndeterminato"),
+	DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO ("datiAccreditamento.numeroDipendentiFormazioneAltro", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "numeroDipendentiFormazioneAltro"),
+	DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI ("datiAccreditamento.numeroDipendenti", 41, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "numeroDipendentiFormazioneTempoIndeterminato", Arrays.asList(DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO, DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO)),
+
 	DATI_ACCREDITAMENTO__ORGANIGRAMMA ("organigramma", 42, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "files.FILE_ORGANIGRAMMA"),
 	DATI_ACCREDITAMENTO__FUNZIONIGRAMMA ("funzionigramma", 43, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "files.FILE_FUNZIONIGRAMMA"),
 
@@ -102,13 +121,13 @@ public enum IdFieldEnum {
 	COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA ("attoNomina", 78, Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO, "files.FILE_ATTO_NOMINA"),
 	COMPONENTE_COMITATO_SCIENTIFICO__CV ("cv", 79, Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO, "files.FILE_CV"),
 
-	ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO ("attoCostitutivo", 80, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.ATTO_COSTITUTIVO"),
-	ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE ("esperienzaFormazione", 81, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.ESPERIENZA_FORMAZIONE"),
-	ACCREDITAMENTO_ALLEGATI__UTILIZZO ("utilizzo", 82, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.UTILIZZO"),
-	ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO ("sistemaInformatico", 83, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.SISTEMA_INFORMATICO"),
-	ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA ("pianoQualita", 84, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.PIANO_QUALITA"),
-	ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE ("dichiarazioneLegale", 85, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.DICHIARAZIONE_LEGALE"),
-	ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE ("dichiarazioneEsclusione", 86, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.DICHIARAZIONE_ESCLUSIONE"),
+	ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO ("attoCostitutivo", 80, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.FILE_ATTO_COSTITUTIVO"),
+	ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE ("esperienzaFormazione", 81, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.FILE_ESPERIENZA_FORMAZIONE"),
+	ACCREDITAMENTO_ALLEGATI__UTILIZZO ("utilizzo", 82, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.FILE_UTILIZZO"),
+	ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO ("sistemaInformatico", 83, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.FILE_SISTEMA_INFORMATICO"),
+	ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA ("pianoQualita", 84, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.FILE_PIANO_QUALITA"),
+	ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE ("dichiarazioneLegale", 85, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.FILE_DICHIARAZIONE_LEGALE"),
+	ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE ("dichiarazioneEsclusione", 86, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.FILE_DICHIARAZIONE_ESCLUSIONE"),
 
 	EVENTO_PIANO_FORMATIVO__PROCEDURA_FORMATIVA ("evento.proceduraFormativa", 1, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),
 	EVENTO_PIANO_FORMATIVO__TITOLO ("evento.titolo", 2, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),
@@ -128,6 +147,7 @@ public enum IdFieldEnum {
 	private Class parentClassRef;//it.tredi.ecm.dao.entity.Persona
 	private String nameRef;//nome
 	private String typeRef;//java.lang.String
+	private List<IdFieldEnum> gruppo = new ArrayList<IdFieldEnum>();
 
 	private IdFieldEnum(String key, int idEcm, Ruolo ruolo, SubSetFieldEnum subSetField){
 		this.key = key;
@@ -142,6 +162,15 @@ public enum IdFieldEnum {
 		this.ruolo = ruolo;
 		this.subSetField = subSetField;
 		this.nameRef = nameRef;
+	}
+	
+	private IdFieldEnum(String key, int idEcm, Ruolo ruolo, SubSetFieldEnum subSetField, String nameRef, List<IdFieldEnum> gruppo){
+		this.key = key;
+		this.idEcm = idEcm;
+		this.ruolo = ruolo;
+		this.subSetField = subSetField;
+		this.nameRef = nameRef;
+		this.gruppo = gruppo;
 	}
 
 	public static int getIdEcm(String key){

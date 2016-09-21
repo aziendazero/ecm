@@ -35,6 +35,7 @@ public interface AccreditamentoService{
 	public void presaVisione(Long accreditamentoId);
 	public void inviaRichiestaIntegrazione(Long accreditamentoId);
 	public void inviaIntegrazione(Long accreditamentoId);
+	public void approvaIntegrazione(Long accreditamentoId) throws Exception;
 
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception;
 	public Long getProviderIdForAccreditamento(Long accreditamentoId);
@@ -65,4 +66,7 @@ public interface AccreditamentoService{
 	//RichiestaIntegrazione
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserEnableField(CurrentUser currentUser);
+	
+	//InviaIntegrazione
+	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser);
 }

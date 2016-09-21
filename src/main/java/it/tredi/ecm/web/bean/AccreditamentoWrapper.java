@@ -87,6 +87,7 @@ public class AccreditamentoWrapper {
 	private boolean sezione4Stato;
 
 	private boolean canSendValutazione;
+	private boolean canSendIntegrazione;
 
 	//stati per i pulsanti segreteria
 	private boolean canPrendiInCarica;
@@ -118,11 +119,15 @@ public class AccreditamentoWrapper {
 	//Gruppo dei referee
 	private Set<Account> refereeGroup = new HashSet<Account>();
 
-	//Valutazione Comlessiva
+	//Valutazione Complessiva
 	private String valutazioneComplessiva;
 
 	//Valutazioni per l'accreditamento
 	private Set<Valutazione> valutazioniList = new HashSet<Valutazione>();
+	
+	//Elenco MultiIstanza aggiunti e eliminati durante Integrazione
+	private Set<Long> aggiunti = new HashSet<Long>();
+	private Set<Long> eliminati = new HashSet<Long>();
 
 	public AccreditamentoWrapper(){};
 	public AccreditamentoWrapper(Accreditamento accreditamento){
@@ -201,6 +206,7 @@ public class AccreditamentoWrapper {
 			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
 			sezione3Stato = (attoCostitutivoStato && (esperienzaFormazioneStato || !accreditamento.getDatiAccreditamento().getDatiEconomici().hasFatturatoFormazione()) && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
 		}
+		
 		if(mode == AccreditamentoWrapperModeEnum.VALIDATE) {
 
 			providerStato = (mappa.containsKey(IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE) &&

@@ -27,12 +27,18 @@
 						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${accreditamentoAllegatiWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${accreditamentoAllegatiWrapper.idEditabili}" />
+							<input type="hidden" th:field="${accreditamentoAllegatiWrapper.statoAccreditamento}" />
+							<input type="hidden" th:field="${accreditamentoAllegatiWrapper.fieldIntegrazione}" />
+							<input type="hidden" th:field="${accreditamentoAllegatiWrapper.wrapperMode}" />
 							<th:block th:if="${enableField}">
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.accreditamentoId}" />
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.subset}" />
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.objRef}" />
 							</th:block>
 						</th:block>
+						
+						<!-- info -->
+						<h2 th:if="${accreditamentoAllegatiWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
 
 						<!-- allegato 1 (atto costitutivo e statuto) -->
 						<div th:if="${editabile}" class="model-link" id="esempio_attoCostitutivo">

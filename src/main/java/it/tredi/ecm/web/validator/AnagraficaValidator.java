@@ -24,6 +24,8 @@ public class AnagraficaValidator {
 	public void validateBase(Object target, Errors errors, String prefix, Long providerId){
 		LOGGER.info(Utils.getLogMessage("Validazione Anagrafica Base"));
 		Anagrafica anagrafica = (Anagrafica)target;
+		if(anagrafica == null)
+			anagrafica = new Anagrafica();
 		if(anagrafica.getCognome() == null || anagrafica.getCognome().isEmpty())
 			errors.rejectValue(prefix + "cognome", "error.empty");
 		if(anagrafica.getNome() == null || anagrafica.getNome().isEmpty())

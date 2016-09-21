@@ -1,9 +1,13 @@
 package it.tredi.ecm.web;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +27,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
+import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.ProviderService;
@@ -52,12 +61,15 @@ public class ProviderController {
 
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
-	@Autowired private ValutazioneValidator valutazioneValidator;
-	@Autowired private FieldEditabileAccreditamentoRepository fieldEditabileRepository;
-	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+
 	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private ValutazioneValidator valutazioneValidator;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamenoService;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private IntegrazioneService integrazioneService;
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -67,14 +79,29 @@ public class ProviderController {
 	/*** GLOBAL MODEL ATTRIBUTES***/
 
 	@ModelAttribute("providerWrapper")
-	public ProviderWrapper getProvider(@RequestParam(name = "editId", required = false) Long id){
+	public ProviderWrapper getProvider(@RequestParam(name = "editId", required = false) Long id,
+			@RequestParam(value="statoAccreditamento",required = false) AccreditamentoStatoEnum statoAccreditamento,
+			@RequestParam(value="wrapperMode",required = false) AccreditamentoWrapperModeEnum wrapperMode,
+			@RequestParam(value="accreditamentoId",required = false) Long accreditamentoId) throws Exception{
 		if(id != null){
-			ProviderWrapper providerWrapper = new ProviderWrapper();
-			providerWrapper.setProvider(providerService.getProvider(id));
-			return providerWrapper;
+			//return prepareProviderWrapperEdit(providerService.getProvider(id), statoAccreditamento);
+			return prepareWrapperForReloadByEditId(providerService.getProvider(id), accreditamentoId, statoAccreditamento, wrapperMode);
 		}
 		return new ProviderWrapper();
 	}
+	
+	//Distinguo il prepareWrapper dalla verisione chiamata in caricamento della View da quella chiamata per il reload e merge con il form
+	//nel secondo caso non riapplico le eventuali integrazioni altrimenti mi ritroverei delle entity attached me mi danno errore.
+	//Distinguo inoltre il prepareWrapper in funzione dello stato della domanda
+	private ProviderWrapper prepareWrapperForReloadByEditId(Provider provider, Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, AccreditamentoWrapperModeEnum wrapperMode) throws Exception{
+		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
+			return prepareProviderWrapperEdit(provider, statoAccreditamento, true);
+		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
+			return prepareProviderWrapperValidate(provider, accreditamentoId, statoAccreditamento, false);
+		
+		return new ProviderWrapper();
+	}
+	
 	/*** GLOBAL MODEL ATTRIBUTES***/
 
 	/***	SHOW	***/
@@ -116,12 +143,12 @@ public class ProviderController {
 	public String editProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/edit"));
 		try {
-			return goToEdit(model, prepareProviderWrapperEdit(providerService.getProvider(id), accreditamentoId));
+			return goToEdit(model, prepareProviderWrapperEdit(providerService.getProvider(id), accreditamentoId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));
-			return "redirect:/accreditamento/" + accreditamentoId;
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/" + accreditamentoId + "/edit";
 		}
 	}
 
@@ -153,7 +180,7 @@ public class ProviderController {
 		try {
 			//controllo se è possibile modificare la valutazione o meno
 			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
-			return goToValidate(model, prepareProviderWrapperValidate(providerService.getProvider(id), accreditamentoId));
+			return goToValidate(model, prepareProviderWrapperValidate(providerService.getProvider(id), accreditamentoId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/validate"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -192,7 +219,13 @@ public class ProviderController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				providerService.save(providerWrapper.getProvider());
+
+				if(providerWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || providerWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+					integra(providerWrapper);
+				}else{
+					salva(providerWrapper);					
+				}
+
 				redirectAttrs.addAttribute("accreditamentoId", providerWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.provider_salvato", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
@@ -248,6 +281,7 @@ public class ProviderController {
 		}
 	}
 
+	/***	SALVA ENABLEFIELD	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/enableField", method = RequestMethod.POST)
 	public String enableFieldProvider(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, Model model, 
 			RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
@@ -263,7 +297,6 @@ public class ProviderController {
 		}
 		return "redirect:/accreditamento/{accreditamentoId}/enableField";
 	}
-
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping("/provider/list")
@@ -306,47 +339,106 @@ public class ProviderController {
 		return ENABLEFIELD;
 	}
 
-	private ProviderWrapper prepareProviderWrapperEdit(Provider provider, Long accreditamentoId){
+	private ProviderWrapper prepareProviderWrapperEdit(Provider provider, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
+		return prepareProviderWrapperEdit(provider, 0L, statoAccreditamento, reloadByEditId);
+	}
+
+	/*
+	 * Se INTEGRAZIONE:
+	 * caso 1: MODIFICA SINGOLO CAMPO
+	 * 		(+) Saranno sbloccati SOLO gli IdFieldEnum eslpicitamente abilitati dalla segreteria (creazione di FieldEditabileAccreditamento)
+	 * 		(+) Vengono applicati eventuali fieldIntegrazioneAccreditamento già salvati per visualizzare correttamente lo stato attuale delle modifiche
+	 */
+	private ProviderWrapper prepareProviderWrapperEdit(Provider provider, Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEdit("+ provider.getId() + "," + accreditamentoId +") - entering"));
-		ProviderWrapper providerWrapper = new ProviderWrapper();
-		providerWrapper.setProvider(provider);
-		providerWrapper.setAccreditamentoId(accreditamentoId);
-		providerWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileRepository.findAllByAccreditamentoId(accreditamentoId), SubSetFieldEnum.PROVIDER));
-		//providerWrapper.setOffsetAndIds(new LinkedList<Integer>(Costanti.IDS_PROVIDER), accreditamentoService.getIdEditabili(accreditamentoId));
+		
+		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
+		providerWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamenoService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.PROVIDER));
+		providerWrapper.setStatoAccreditamento(statoAccreditamento);
+		providerWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
+
+		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+			prepareApplyIntegrazione(providerWrapper, SubSetFieldEnum.PROVIDER, reloadByEditId);
+		}
+
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEdit("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}
 
+	private void prepareApplyIntegrazione(ProviderWrapper providerWrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
+		providerWrapper.getProvider().getFiles().size();
+		providerWrapper.getProvider().getComponentiComitatoScientifico().size();
+		integrazioneService.detach(providerWrapper.getProvider());
+		providerWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(providerWrapper.getAccreditamentoId()), SubSetFieldEnum.PROVIDER));
+		if(!reloadByEditId)
+			integrazioneService.applyIntegrazioneObject(providerWrapper.getProvider(), providerWrapper.getFieldIntegrazione());
+	}
+
+	/*
+	 * Se INTEGRAZIONE:
+	 * 
+	 * caso 1: MODIFICA SINGOLO CAMPO
+	 * 		(+) Viene salvato un fieldIntegrazione per ogni fieldEditabile abilitato
+	 * 		(+) Ogni fieldIntegrazione contiene il nuovo valore serializzato in funzione del setField/getField di IntegrazioneServiceImpl 
+	 */
+	@Transactional
+	private void integra(ProviderWrapper wrapper) throws Exception{
+		LOGGER.info(Utils.getLogMessage("Integrazione provider"));
+		Accreditamento accreditamento = new Accreditamento();
+		accreditamento.setId(wrapper.getAccreditamentoId());
+
+		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
+		for(IdFieldEnum idField : wrapper.getIdEditabili()){
+			fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getProvider(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+		}
+
+		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);
+	}
+
+	@Transactional
+	private void salva(ProviderWrapper wrapper){
+		LOGGER.info(Utils.getLogMessage("Salvataggio provider"));
+		providerService.save(wrapper.getProvider());
+	}
+
 	private ProviderWrapper prepareProviderWrapperShow(Provider provider, Long accreditamentoId) {
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperShow("+ provider.getId() + "," + accreditamentoId +") - entering"));
-		ProviderWrapper providerWrapper = new ProviderWrapper();
-		providerWrapper.setProvider(provider);
-		providerWrapper.setAccreditamentoId(accreditamentoId);
+		
+		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
+		
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperShow("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}
 
-	private ProviderWrapper prepareProviderWrapperValidate(Provider provider, Long accreditamentoId){
+	private ProviderWrapper prepareProviderWrapperValidate(Provider provider, Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - entering"));
-		ProviderWrapper providerWrapper = new ProviderWrapper();
+		
+		SubSetFieldEnum subset = SubSetFieldEnum.PROVIDER;
+		
+		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
+		providerWrapper.setStatoAccreditamento(statoAccreditamento);
+		providerWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
 
 		//carico la valutazione per l'utente corrente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 		if(valutazione != null) {
-			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.PROVIDER);
+			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), subset);
 		}
 		providerWrapper.setMappa(mappa);
-		providerWrapper.setProvider(provider);
-		providerWrapper.setAccreditamentoId(accreditamentoId);
 
 		//cerco tutte le valutazioni del subset provider per ciascun valutatore dell'accreditamento
-		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.PROVIDER);
+		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, subset);
 		providerWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 
 		//prendo tutti gli id del subset
-		Set<IdFieldEnum> idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER);
+		Set<IdFieldEnum> idEditabili = IdFieldEnum.getAllForSubset(subset);
 		providerWrapper.setIdEditabili(idEditabili);
+
+		//solo se la valutazione è della segretaeria dopo l'INTEGRAZIONE
+		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+			prepareApplyIntegrazione(providerWrapper, subset, reloadByEditId);
+		}
 
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;

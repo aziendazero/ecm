@@ -18,5 +18,6 @@ public interface FieldValutazioneAccreditamentoService {
 	Map<IdFieldEnum, FieldValutazioneAccreditamento> filterFieldValutazioneBySubSetAsMap(Set<FieldValutazioneAccreditamento> set, SubSetFieldEnum subset);
 	Map<IdFieldEnum, FieldValutazioneAccreditamento> putSetFieldValutazioneInMap(Set<FieldValutazioneAccreditamento> set);
 	public void save(FieldValutazioneAccreditamento valutazione);
+	public void delete(Long id);
 	public Collection<FieldValutazioneAccreditamento> saveMapList(Map<IdFieldEnum,FieldValutazioneAccreditamento> valutazioneAsMap);
 }

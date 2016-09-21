@@ -224,4 +224,9 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		else
 			return false;
 	}
+	
+	@Override
+	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) {
+		return accreditamentoService.canUserInviaIntegrazione(accreditamentoId, currentUser);
+	}
 }

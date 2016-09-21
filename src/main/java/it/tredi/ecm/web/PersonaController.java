@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
@@ -43,6 +41,7 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -53,7 +52,7 @@ import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
-import it.tredi.ecm.service.IntegrazioneServiceImpl;
+import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
@@ -74,24 +73,22 @@ public class PersonaController {
 	private final String VALIDATE = "persona/personaValidate";
 	private final String ENABLEFIELD = "persona/personaEnableField";
 
-	@PersistenceContext
-	EntityManager entityManager;
-
+ 	@Autowired private AnagraficaService anagraficaService;
 	@Autowired private PersonaService personaService;
-	@Autowired private AnagraficaService anagraficaService;
+	@Autowired private PersonaValidator personaValidator;
+	
 	@Autowired private ProviderService providerService;
 	@Autowired private ProfessioneService professioneService;
 	@Autowired private FileService fileService;
-	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamentoService;
-	@Autowired private PersonaValidator personaValidator;
-	@Autowired private ValutazioneValidator valutazioneValidator;
+	
 	@Autowired private ValutazioneService valutazioneService;
-
-	@Autowired private AccreditamentoService accreditamentoService;
-	@Autowired private IntegrazioneServiceImpl integrazioneService;
-	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+	@Autowired private ValutazioneValidator valutazioneValidator;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamentoService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
+	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private IntegrazioneService integrazioneService;
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 	@Autowired private ObjectMapper jacksonObjectMapper;
 
 	@InitBinder
@@ -114,13 +111,14 @@ public class PersonaController {
 	@ModelAttribute("personaWrapper")
 	public PersonaWrapper getPersonaWrapper(@RequestParam(value="editId",required = false) Long id,
 			@RequestParam(value="editId_Anagrafica",required = false) Long anagraficaId,
+			@RequestParam(value="ruolo",required = false) Ruolo ruolo,
 			@RequestParam(value="statoAccreditamento",required = false) AccreditamentoStatoEnum statoAccreditamento,
-			@RequestParam(value="ruolo",required = false) Ruolo ruolo) throws Exception{
+			@RequestParam(value="wrapperMode",required = false) AccreditamentoWrapperModeEnum wrapperMode,
+			@RequestParam(value="accreditamentoId",required = false) Long accreditamentoId) throws Exception{
 		//se sto chiamando il SAVE vedo se caricare da DB le entity per fare il merge con il wrapper arrivato dal form
 		//il wrapper ha scopo REQUEST e quindi tutti i campi non agganciati al form arrivano NULL dal client
 		if(id != null || anagraficaId != null){
 			Persona persona = (id != null) ? personaService.getPersona(id) : new Persona(ruolo);
-
 			boolean isLookup = false;
 			if(anagraficaId == null){
 				//NUOVA ANGARFICA
@@ -132,8 +130,21 @@ public class PersonaController {
 				isLookup = true;
 			}
 
-			return preparePersonaWrapperEdit(persona, isLookup, statoAccreditamento);
+			//return preparePersonaWrapperEdit(persona, isLookup, statoAccreditamento, false);
+			return prepareWrapperForReloadByEditId(persona, accreditamentoId, isLookup, statoAccreditamento, wrapperMode);
 		}
+		return new PersonaWrapper();
+	}
+	
+	//Distinguo il prepareWrapper dalla verisione chiamata in caricamento della View da quella chiamata per il reload e merge con il form
+	//nel secondo caso non riapplico le eventuali integrazioni altrimenti mi ritroverei delle entity attached me mi danno errore.
+	//Distinguo inoltre il prepareWrapper in funzione dello stato della domanda
+	private PersonaWrapper prepareWrapperForReloadByEditId(Persona persona, Long accreditamentoId, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento, AccreditamentoWrapperModeEnum wrapperMode) throws Exception{
+		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
+			return preparePersonaWrapperEdit(persona, isLookup, statoAccreditamento, true);
+		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
+			return preparePersonaWrapperValidate(persona, accreditamentoId, 0L, statoAccreditamento, false);
+		
 		return new PersonaWrapper();
 	}
 
@@ -145,7 +156,7 @@ public class PersonaController {
 			@RequestParam(name="ruolo", required = true) String ruolo, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/new"));
 		try {
-			return goToEdit(model, preparePersonaWrapperEdit(new Persona(Ruolo.valueOf(ruolo)), accreditamentoId, providerId, false, accreditamentoService.getStatoAccreditamento(accreditamentoId)));
+			return goToEdit(model, preparePersonaWrapperEdit(new Persona(Ruolo.valueOf(ruolo)), accreditamentoId, providerId, false, accreditamentoService.getStatoAccreditamento(accreditamentoId), false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -187,7 +198,7 @@ public class PersonaController {
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
 				isLookup = true;
 			}
-			return goToEdit(model, preparePersonaWrapperEdit(persona, accreditamentoId, providerId, isLookup, accreditamentoService.getStatoAccreditamento(accreditamentoId)));
+			return goToEdit(model, preparePersonaWrapperEdit(persona, accreditamentoId, providerId, isLookup, accreditamentoService.getStatoAccreditamento(accreditamentoId),false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + ruolo + "/setAnagrafica"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -202,7 +213,7 @@ public class PersonaController {
 	public String editPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model, HttpServletRequest req){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/edit"));
 		try {
-			return goToEdit(model, preparePersonaWrapperEdit(personaService.getPersona(id), accreditamentoId, providerId, false, accreditamentoService.getStatoAccreditamento(accreditamentoId)));
+			return goToEdit(model, preparePersonaWrapperEdit(personaService.getPersona(id), accreditamentoId, providerId, false, accreditamentoService.getStatoAccreditamento(accreditamentoId),false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/edit"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -242,12 +253,12 @@ public class PersonaController {
 		try {
 			//controllo se è possibile modificare la valutazione o meno
 			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
-			return goToValidate(model, preparePersonaWrapperValidate(personaService.getPersona(id), accreditamentoId, providerId));
+			return goToValidate(model, preparePersonaWrapperValidate(personaService.getPersona(id), accreditamentoId, providerId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/validate"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
-			return VALIDATE;
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/" + accreditamentoId + "/validate";
 		}
 	}
 	
@@ -261,8 +272,8 @@ public class PersonaController {
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/enableField"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
-			return ENABLEFIELD;
+			LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+			return "redirect:/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/show";
 		}
 	}
 
@@ -278,8 +289,8 @@ public class PersonaController {
 				Provider provider = providerService.getProvider(personaWrapper.getProviderId());
 				persona.setProvider(provider);
 			}
-
-			//TODO getFile da testare se funziona anche senza reload -> NON è possibile finchè c'è il validator dei file nel salvatggio della persona (file.data = null)
+			
+			//TODO getFile da testare se funziona anche senza reload -> NON è possibile finchè c'è il validator dei file nel salvataggio della persona (file.data = null)
 			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a personaId
 			for(File file : personaWrapper.getFiles()){
 				if(file != null && !file.isNew()){
@@ -291,7 +302,16 @@ public class PersonaController {
 						personaWrapper.setAttoNomina(fileService.getFile(file.getId()));
 				}
 			}
-
+			
+			//Ri-effettuo il detach..non sarebbe indispensabile...ma e' una precauzione a eventuali modifiche future
+			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
+			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(personaWrapper.getAccreditamentoId());
+			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+				integrazioneService.detach(personaWrapper.getPersona());
+				LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: PersonaSave:__AFTER SET__"));
+				integrazioneService.isManaged(personaWrapper.getPersona());
+			}
+			
 			personaValidator.validate(personaWrapper.getPersona(), result, "persona.", personaWrapper.getFiles());
 
 			try{
@@ -302,7 +322,7 @@ public class PersonaController {
 					return EDIT;
 				}else{
 
-					if(personaWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE){
+					if(personaWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || personaWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
 						integraPersona(personaWrapper,false);
 					}else{
 						savePersona(personaWrapper);
@@ -389,7 +409,7 @@ public class PersonaController {
 			integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
 		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/persona/enableField"),ex);
+			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/persona/enableField"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/enableField"));
 		}
@@ -407,7 +427,7 @@ public class PersonaController {
 			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(accreditamentoId);
 			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
 				Persona persona = personaService.getPersona(personaId);
-				integraPersona(new PersonaWrapper(persona, accreditamentoId, persona.getRuolo()), true);
+				integraPersona(new PersonaWrapper(persona, persona.getRuolo(), accreditamentoId, providerId, AccreditamentoWrapperModeEnum.EDIT), true);
 			}else{
 				//rimozione persona multi-istanza dalla Domanda di Accreditamento e relativi IdEditabili
 				personaService.delete(personaId);
@@ -478,8 +498,8 @@ public class PersonaController {
 		return "/accreditamento/" + wrapper.getAccreditamentoId() + "/" + mode + "?tab=" + tab;
 	}
 
-	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento) throws Exception{
-		return preparePersonaWrapperEdit(persona,0,0, isLookup, statoAccreditamento);
+	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
+		return preparePersonaWrapperEdit(persona,0,0, isLookup, statoAccreditamento, reloadByEditId);
 	}
 
 	/*
@@ -504,81 +524,101 @@ public class PersonaController {
 	 * 		(**) ANDANDO IN MODIFICA VIENE APPLICATA L'UNICA INTEGRAZIONE PRESENTE (FULL) E QUINDI SI VEDE LA PERSONA INSERITA
 	 * 		(**) ANDANDO IN MODIFICA SE SONO ABILITATI CAMPI EXTRA (files, professione ...) è possibile modificarli e al salvataggio si aggiorna il json di fieldIntegrazione
 	 * */
-	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, long accreditamentoId, long providerId, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento) throws Exception{
+	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, long accreditamentoId, long providerId, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento,  boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + "," + statoAccreditamento +") - entering"));
-		PersonaWrapper personaWrapper = new PersonaWrapper(persona, accreditamentoId, persona.getRuolo());
-		personaWrapper.setProviderId(providerId);
-		personaWrapper.setStatoAccreditamento(accreditamentoService.getStatoAccreditamento(personaWrapper.getAccreditamentoId()));
+		PersonaWrapper personaWrapper = new PersonaWrapper(persona, persona.getRuolo(), accreditamentoId, providerId, AccreditamentoWrapperModeEnum.EDIT);
+		personaWrapper.setStatoAccreditamento(statoAccreditamento);
 		personaWrapper.setIsLookup(isLookup);
 
+		SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
+		
 		if(accreditamentoId != 0){
-			SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
 			if(persona.isNew()){
 				personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 			}else{
 				if(persona.isComponenteComitatoScientifico()){
 					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
-					personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
+					//personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
 				}else{
 					personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
-					personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId), subset));
+					//personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId), subset));
 				}
 			}
 		}
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
-			//detach dei files...fatto qui perchè altrimenti hibernate segnala che è stato modificato l'ID di una entity (file) e durante un salvataggio da errore.
-			//Inoltre una volta fatto il detach non è possibile cariare i LazyField...quindi facciamo una chiamata prima per caricarli
-			persona.getFiles().size();
-			integrazioneService.detach(persona);
-			//caso 2 (B): ASSEGNAMENTO lookup anagrafica esistente
-			if(isLookup){
-				/*
-				applico le integrazioni solo ai campi di persona e non di anagrafica
-				personaWrapper.getFieldIntegrazione().remove(Utils.getField(personaWrapper.getFieldIntegrazione(), IdFieldEnum.RESPONSABILE_SEGRETERIA__FULL));
-				integrazioneService.applyIntegrazioneObject(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
-				 */
-				//aggiunta manuale degli IdFieldEnum per permettere il corretto salvataggio della persona
-				//inserisci nuova anagrafica e quindi non applico nessuna integrazione
-				//rimozione manuale degli IdFieldEnum relativi all'anagrafica
-				personaWrapper.getIdEditabili().addAll(IdFieldEnum.getAllForSubset(Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo())));
-				personaWrapper.getIdEditabili().removeAll(IdFieldEnum.getAllForSubsetWithNameRefPrefix(Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo()),"anagrafica"));
-			}else{
-				//caso 2 (A): ASSEGNAMENTO nuova anagrafica
-				if(personaWrapper.getPersona().getAnagrafica() == null || personaWrapper.getPersona().getAnagrafica().getId() == null){
-					//aggiunta manuale degli IdFieldEnum per permettere il corretto salvataggio della persona
-					//inserisci nuova anagrafica e quindi non applico nessuna integrazione
-					personaWrapper.getIdEditabili().addAll(IdFieldEnum.getAllForSubset(Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo())));
-				}else{
-					//caso 1: MODIFICA SINGOLO CAMPO
-					integrazioneService.applyIntegrazioneObject(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
-				}
-			}
+		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId);
 		}
-
+		
 		//set dei files sul wrapper, per allinearmi nel caso ci fossero dei fieldIntegrazione relativi a files
 		if(!personaWrapper.getPersona().isNew()){
 			personaWrapper.setFiles(personaWrapper.getPersona().getFiles());
 		}
-
+		
+		LOGGER.debug(Utils.getLogMessage("__EXITING PREPAREWRAPPER__"));
+		integrazioneService.isManaged(personaWrapper.getPersona());
+		
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + "," + statoAccreditamento +") - exiting"));
 		return personaWrapper;
+	}
+	
+	private void prepareApplyIntegrazione(PersonaWrapper personaWrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
+		if(personaWrapper.getPersona().isComponenteComitatoScientifico())
+			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(personaWrapper.getAccreditamentoId(), personaWrapper.getPersona().getId()), subset));
+		else
+			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(personaWrapper.getAccreditamentoId()), subset));
+		
+		//detach dei files...fatto qui perchè altrimenti hibernate segnala che è stato modificato l'ID di una entity (file) e durante un salvataggio da errore.
+		//Inoltre una volta fatto il detach non è possibile cariare i LazyField...quindi facciamo una chiamata prima per caricarli
+		personaWrapper.getPersona().getFiles().size();
+		integrazioneService.detach(personaWrapper.getPersona());
+		//caso 2 (B): ASSEGNAMENTO lookup anagrafica esistente
+		if(personaWrapper.getIsLookup()){
+			/*
+			applico le integrazioni solo ai campi di persona e non di anagrafica
+			personaWrapper.getFieldIntegrazione().remove(Utils.getField(personaWrapper.getFieldIntegrazione(), IdFieldEnum.RESPONSABILE_SEGRETERIA__FULL));
+			integrazioneService.applyIntegrazioneObject(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
+			 */
+			//aggiunta manuale degli IdFieldEnum per permettere il corretto salvataggio della persona
+			//inserisci nuova anagrafica e quindi non applico nessuna integrazione
+			//rimozione manuale degli IdFieldEnum relativi all'anagrafica
+			personaWrapper.getIdEditabili().addAll(IdFieldEnum.getAllForSubset(Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo())));
+			personaWrapper.getIdEditabili().removeAll(IdFieldEnum.getAllForSubsetWithNameRefPrefix(Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo()),"anagrafica"));
+		}else{
+			//caso 2 (A): ASSEGNAMENTO nuova anagrafica
+			if(personaWrapper.getPersona().getAnagrafica() == null || personaWrapper.getPersona().getAnagrafica().getId() == null){
+				//aggiunta manuale degli IdFieldEnum per permettere il corretto salvataggio della persona
+				//inserisci nuova anagrafica e quindi non applico nessuna integrazione
+				personaWrapper.getIdEditabili().addAll(IdFieldEnum.getAllForSubset(Utils.getSubsetFromRuolo(personaWrapper.getPersona().getRuolo())));
+			}else{
+				//caso 1: MODIFICA SINGOLO CAMPO
+				if(!reloadByEditId)
+					integrazioneService.applyIntegrazioneObject(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
+			}
+		}
 	}
 
 	private PersonaWrapper preparePersonaWrapperShow(Persona persona, long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperShow(" + persona.getId() + ") - entering"));
-		PersonaWrapper personaWrapper = new PersonaWrapper(persona, accreditamentoId, persona.getRuolo());
+		PersonaWrapper personaWrapper = new PersonaWrapper(persona, persona.getRuolo(), accreditamentoId, persona.getProvider().getId(), AccreditamentoWrapperModeEnum.SHOW);
 		personaWrapper.setFiles(persona.getFiles());
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperShow(" + persona.getId() + ") - exiting"));
 		return personaWrapper;
 	}
 
-	private PersonaWrapper preparePersonaWrapperValidate(Persona persona, long accreditamentoId, long providerId){
+	private PersonaWrapper preparePersonaWrapperValidate(Persona persona, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
+		return preparePersonaWrapperValidate(persona, 0L, 0L, statoAccreditamento, reloadByEditId);
+	}
+	
+	private PersonaWrapper preparePersonaWrapperValidate(Persona persona, long accreditamentoId, long providerId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - entering"));
-		PersonaWrapper personaWrapper = new PersonaWrapper(persona, accreditamentoId, persona.getRuolo());
-		personaWrapper.setProviderId(providerId);
-		personaWrapper.setFiles(persona.getFiles());
-
+		
+		SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
+		
+		PersonaWrapper personaWrapper = new PersonaWrapper(persona, persona.getRuolo(), accreditamentoId, providerId, AccreditamentoWrapperModeEnum.VALIDATE);
+		personaWrapper.setStatoAccreditamento(statoAccreditamento);
+		personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
+		
 		//carico la valutazione per l'utente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
@@ -586,50 +626,28 @@ public class PersonaController {
 		//cerco tutte le valutazioni del subset o oggetto persona per ciascun valutatore dell'accreditamento
 		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
 
-		//prendo tutti gli id del subset
-		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
-
 		//per distinguere il multistanza delle persone del comitato scientifico
 		if(valutazione != null) {
 			if(persona.isComponenteComitatoScientifico()) {
 				mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), persona.getId());
 				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndObjectId(accreditamentoId, persona.getId());
-				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO);
 			}
-			else
-				switch(persona.getRuolo()) {
-				case LEGALE_RAPPRESENTANTE: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
-				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
-				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
-				break;
-				case DELEGATO_LEGALE_RAPPRESENTANTE: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE);
-				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE);
-				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE);
-				break;
-				case RESPONSABILE_SEGRETERIA: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_SEGRETERIA);
-				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.RESPONSABILE_SEGRETERIA);
-				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SEGRETERIA);
-				break;
-				case RESPONSABILE_AMMINISTRATIVO: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO);
-				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO);
-				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO);
-				break;
-				case RESPONSABILE_SISTEMA_INFORMATICO: mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO);
-				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO);
-				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO);
-				break;
-				case RESPONSABILE_QUALITA:  mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_QUALITA);
-				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.RESPONSABILE_QUALITA);
-				idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.RESPONSABILE_QUALITA);
-				break;
-				default: mappa = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(valutazione.getValutazioni()); break;
-				}
+			else{
+				mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), subset);
+				mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, subset);
+			}
 		}
-
+		
 		personaWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
-		personaWrapper.setIdEditabili(idEditabili);
 		personaWrapper.setMappa(mappa);
-
+		
+		//solo se la valutazione è della segretaeria dopo l'INTEGRAZIONE
+		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId);
+		}
+			
+		personaWrapper.setFiles(persona.getFiles());
+		
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - exiting"));
 		return personaWrapper;
 	}
@@ -643,6 +661,7 @@ public class PersonaController {
 	}
 
 	/***	LOGICA PER SALVATAGGIO PERSONA	***/
+	@Transactional
 	private void savePersona(PersonaWrapper personaWrapper) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Salvataggio persona"));
 		//non possono e non devono esistere più persone con lo stesso ruolo per ogni provider (tranne per i componenti del comitato scientifico)

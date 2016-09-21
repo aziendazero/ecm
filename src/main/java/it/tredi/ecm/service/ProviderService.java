@@ -25,4 +25,6 @@ public interface ProviderService {
 	public boolean canInsertEvento(Long providerId);
 	public boolean canInsertAccreditamentoStandard(Long providerId);
 	public boolean hasAlreadySedeLegaleProvider(Provider provider, Sede sede);
+	
+	public void saveFromIntegrazione(Provider provider);
 }

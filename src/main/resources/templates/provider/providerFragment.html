@@ -28,12 +28,18 @@
 							<input type="hidden" name="editId" th:value="${providerWrapper.provider.id}" />
 							<input type="hidden" th:field="${providerWrapper.accreditamentoId}" />
 							<input type="hidden" th:field="${providerWrapper.idEditabili}" />
+							<input type="hidden" th:field="${providerWrapper.statoAccreditamento}" />
+							<input type="hidden" th:field="${providerWrapper.fieldIntegrazione}" />
+							<input type="hidden" th:field="${providerWrapper.wrapperMode}" />
 							<th:block th:if="${enableField}">
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.accreditamentoId}" />
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.subset}" />
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.objRef}" />
 							</th:block>
 						</th:block>
+						
+						<!-- info -->
+						<h2 th:if="${providerWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
 
 						<!-- TIPO ORGANIZZATORE -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('providerWrapper.provider.tipoOrganizzatore')} ? 'bad'">

@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
@@ -105,6 +106,11 @@ public class Provider extends BaseEntity{
 	Set<File> files = new HashSet<File>();
 
 	public void addFile(File file){
+		Iterator<File> it = this.getFiles().iterator();
+		while(it.hasNext()){
+			if(it.next().getTipo() == file.getTipo())
+				it.remove();
+		}
 		this.getFiles().add(file);
 	}
 

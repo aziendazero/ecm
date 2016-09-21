@@ -37,13 +37,16 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.SedeService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
@@ -51,20 +54,24 @@ import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
-import javassist.bytecode.analysis.Util;
 
 @Controller
 public class AccreditamentoController {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoController.class);
 
-	@Autowired private PersonaService personaService;
-	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
-	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
-	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private ProviderService providerService;
+	@Autowired private PersonaService personaService;
+	@Autowired private SedeService sedeService;
+	
 	@Autowired private AccountService accountService;
+	
+	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private ValutazioneValidator valutazioneValidator;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	
 	@Autowired private IntegrazioneService integrazioneService; 
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService; 
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -432,6 +439,11 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - entering"));
 
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
+		if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE){
+			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
+			accreditamentoWrapper.setCanSendIntegrazione(accreditamentoService.canUserInviaIntegrazione(accreditamento.getId(),Utils.getAuthenticatedUser()));
+		}
+		
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, AccreditamentoWrapperModeEnum.EDIT);
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - exiting"));
@@ -563,12 +575,29 @@ public class AccreditamentoController {
 		int professioniDeiComponentiAnaloghe 	= (professioniSelezionate.size() > 0) ? personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate) : 0;
 		Set<Professione> elencoProfessioniDeiComponenti = personaService.elencoProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
 
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico));
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie));
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + elencoProfessioniDeiComponenti.size()));
-		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
+//		LOGGER.debug(Utils.getLogMessage("<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico));
+//		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie));
+//		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + elencoProfessioniDeiComponenti.size()));
+//		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
 
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode);
+	}
+	
+	private void integrazionePrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper){
+		Set<Sede> sediIntegrazione = sedeService.getSediFromIntegrazione(accreditamentoWrapper.getProvider().getId());
+		for(Sede s : sediIntegrazione){
+			if(s.isDirty())
+				accreditamentoWrapper.getSedi().add(s);
+		}
+		
+		Set<Persona> comitatoIntegrazione = personaService.getComponentiComitatoScientificoFromIntegrazione(accreditamentoWrapper.getProvider().getId());
+		for(Persona p : comitatoIntegrazione){
+			if(p.isDirty())
+				accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
+		}
+		
+		accreditamentoWrapper.setAggiunti(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.CREAZIONE));
+		accreditamentoWrapper.setEliminati(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.ELIMINAZIONE));
 	}
 
 	//PARTE RELATIVA ALLA VALUTAZIONE
@@ -706,8 +735,24 @@ public class AccreditamentoController {
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));;
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/enableField"));
 			return "redirect:/accreditamento/{id}/enableField";
+		}
+	}
+	
+	/***	INVIA DOMANDA INTEGRAZIONE	***/
+	@PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sendIntegrazione")
+	public String sendIntegrazione(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sendIntegrazione"));
+		try{
+			accreditamentoService.inviaIntegrazione(accreditamentoId);
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sendIntegrazione"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));;
+			return "redirect:/accreditamento/{id}/edit";
 		}
 	}
 

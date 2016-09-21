@@ -7,6 +7,7 @@ import org.springframework.security.access.method.P;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import lombok.Getter;
@@ -31,11 +32,14 @@ public class PersonaWrapper extends Wrapper {
 		setDelega(new File(FileEnum.FILE_DELEGA));
 	}
 	
-	public PersonaWrapper(Persona persona, Long accreditamentoId, Ruolo ruolo){
+	public PersonaWrapper(Persona persona, Ruolo ruolo, Long accreditamentoId, Long providerId, AccreditamentoWrapperModeEnum wrapperMode){
 		this();
 		this.persona = persona;
-		this.accreditamentoId = accreditamentoId;
 		this.ruolo = ruolo;
+		this.accreditamentoId = accreditamentoId;
+		this.providerId = providerId;
+		this.isLookup = false;
+		setWrapperMode(wrapperMode);
 		
 //		for(File file : persona.getFiles()){
 //			if(file.isCV())

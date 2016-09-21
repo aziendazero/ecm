@@ -85,6 +85,10 @@
 					<div class="x_title x_menu">
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.codiceFiscale + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
+							<a th:if="${accreditamentoWrapper.canSendIntegrazione}"
+									class="btn btn-success pull-right"
+									th:text="#{label.invia_integrazione}"
+									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sendIntegrazione|}"></a>
 							<a th:if="${accreditamentoWrapper.canSend}"
 									class="btn btn-success pull-right"
 									th:text="#{label.invia_domanda}"

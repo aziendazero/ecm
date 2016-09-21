@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
 import it.tredi.ecm.utils.Utils;
 
@@ -54,5 +56,17 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	public void update(Set<FieldIntegrazioneAccreditamento> toRemove, List<FieldIntegrazioneAccreditamento> toInsert) {
 		delete(toRemove);
 		save(toInsert);
+	}
+	
+	@Override
+	public Set<Long> getAllObjectIdByTipoIntegrazione(Long accreditamentoId, TipoIntegrazioneEnum tipo) {
+		LOGGER.debug(Utils.getLogMessage("Recupero oggetti integrazione di tipo " + tipo + " per accreditamento " + accreditamentoId));
+		return fieldIntegrazioneAccreditamentoRepository.findAllByAccreditamentoIdAndTipoIntegrazioneEnum(accreditamentoId,tipo);
+	}
+	
+	@Override
+	public Set<FieldIntegrazioneAccreditamento> getModifiedFieldIntegrazioneForAccreditamento(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero oggetti integrazione modificati per accreditamento " + accreditamentoId));
+		return fieldIntegrazioneAccreditamentoRepository.findAllByAccreditamentoIdAndModificato(accreditamentoId, true);
 	}
 }

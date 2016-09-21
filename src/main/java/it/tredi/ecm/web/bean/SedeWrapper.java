@@ -10,4 +10,11 @@ public class SedeWrapper extends Wrapper{
 	private Sede sede;
 	private Long accreditamentoId;
 	private Long providerId;
+	
+	public SedeWrapper(){}
+	
+	public SedeWrapper(Sede sede, Long accreditamentoId){
+		this.sede = sede;
+		this.accreditamentoId = accreditamentoId;
+	}
 }

@@ -16,6 +16,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.hibernate.collection.internal.PersistentSet;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Provider_;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -43,6 +48,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private PersonaService personaService;
+	@Autowired private SedeService sedeService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamentoService;
 
 	@Autowired private ApplicationContext appContext;
@@ -57,10 +63,6 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 	 * */
 	@Override
 	public <T> void detach(T obj) throws Exception{
-		if(obj instanceof BaseEntity){
-			LOGGER.debug(Utils.getLogMessage("Detach object " + obj.getClass()));
-			entityManager.detach(obj);
-		}
 		BeanInfo info;
 		info = Introspector.getBeanInfo(obj.getClass());
 		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
@@ -69,7 +71,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 			if(innerEntity instanceof BaseEntity){
 				LOGGER.debug(Utils.getLogMessage("Detach object " + innerEntity.getClass() + ": " + ((BaseEntity) innerEntity).getId()));
 				entityManager.detach(innerEntity);
-			}else if(innerEntity instanceof PersistentSet){
+			}else if(innerEntity instanceof PersistentSet || innerEntity instanceof Collection){
 				Class<?> clazz = getTypeByField(obj.getClass(),pd.getName());
 				if(clazz != null && BaseEntity.class.isAssignableFrom(clazz)){
 					for(Object o : (Set<?>)innerEntity){
@@ -78,6 +80,39 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 					}
 				}
 			}
+		}
+		if(obj instanceof BaseEntity){
+			if(obj instanceof	HibernateProxy){
+				obj = (T) entityManager.unwrap(SessionImplementor.class).getPersistenceContext().unproxy(obj);
+			}
+			LOGGER.debug(Utils.getLogMessage("Detach object " + obj.getClass()));
+			entityManager.detach(obj);
+		}
+	}
+	
+	@Override
+	public <T> void isManaged(T obj) throws Exception {
+		BeanInfo info;
+		info = Introspector.getBeanInfo(obj.getClass());
+		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
+			Method method = pd.getReadMethod();
+			Object innerEntity = method.invoke(obj);
+			if(innerEntity instanceof BaseEntity){
+				LOGGER.debug(Utils.getLogMessage("MANAGED: object " + innerEntity.getClass() + ": " + ((BaseEntity) innerEntity).getId() + " - managed: " + entityManager.contains(innerEntity)));
+			}else if(innerEntity instanceof PersistentSet || innerEntity instanceof Collection){
+				Class<?> clazz = getTypeByField(obj.getClass(),pd.getName());
+				if(clazz != null && BaseEntity.class.isAssignableFrom(clazz)){
+					for(Object o : (Set<?>)innerEntity){
+						LOGGER.debug(Utils.getLogMessage("MANAGED: object " + o.getClass() + ": " + ((BaseEntity) o).getId() + " - managed: " + entityManager.contains(o)));
+					}
+				}
+			}
+		}
+		if(obj instanceof BaseEntity){
+			if(obj instanceof	HibernateProxy){
+				obj = (T) entityManager.unwrap(SessionImplementor.class).getPersistenceContext().unproxy(obj);
+			}
+			LOGGER.debug(Utils.getLogMessage("MANAGED: object " + obj.getClass() + " - managed: " + entityManager.contains(obj)));
 		}
 	}
 
@@ -102,20 +137,36 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER).isEmpty())
 			applyIntegrazioneAndSave(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER));
 
-//		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_LEGALE).isEmpty())
-//			applyIntegrazioneAndSave(accreditamento.getProvider().getSedeLegale(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_LEGALE));
-//
-//		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_OPERATIVA).isEmpty())
-//			applyIntegrazioneAndSave(accreditamento.getProvider().getSedeOperativa(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.SEDE_OPERATIVA));
+		//fieldIntegrazione per i multi-istanza
+		Set<Sede> sedi = sedeService.getSediFromIntegrazione(accreditamento.getProvider().getId());
+		sedi.forEach( s -> {
+			if(!Utils.getSubset(fieldIntegrazioni, s.getId(), SubSetFieldEnum.SEDE).isEmpty()){
+				try {
+					applyIntegrazioneAndSave(s, Utils.getSubset(fieldIntegrazioni, s.getId(), SubSetFieldEnum.SEDE));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
 
+			if(!Utils.getSubset(fieldIntegrazioni, s.getId(), SubSetFieldEnum.FULL).isEmpty()){
+				try {
+					applyIntegrazioneAndSave(s, Utils.getSubset(fieldIntegrazioni, s.getId(), SubSetFieldEnum.FULL));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE).isEmpty())
 			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE));
 
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE).isEmpty())
 			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE));
 
-		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DATI_ACCREDITAMENTO).isEmpty())
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DATI_ACCREDITAMENTO).isEmpty()){
 			applyIntegrazioneAndSave(accreditamento.getDatiAccreditamento(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DATI_ACCREDITAMENTO));
+			//applyIntegrazioneAndSave(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DATI_ACCREDITAMENTO));
+		}
 
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SEGRETERIA).isEmpty()){
 			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_SEGRETERIA), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SEGRETERIA));
@@ -153,6 +204,9 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				}
 			}
 		});
+		
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO).isEmpty())
+			applyIntegrazioneAndSave(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
 
 	}
 
@@ -165,17 +219,28 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 	public void applyIntegrazioneObject(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) throws Exception{
 		for(FieldIntegrazioneAccreditamento field : fieldIntegrazioneList){
 			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE)
-				setField(dst,field.getIdField().getNameRef(),field.getNewValue());
+				try{
+					if(field.getIdField().getGruppo().isEmpty())
+						setField(dst,field.getIdField().getNameRef(),field.getNewValue());
+					LOGGER.debug(Utils.getLogMessage("Applicazione integrazione su entity -> " + field.getIdField().getNameRef() + " a " + dst.getClass()));
+				}catch (Exception ex){
+					LOGGER.debug(Utils.getLogMessage("Impossibile applicare integrazione su entity -> " + field.getIdField().getNameRef() + " su " + dst.getClass()));
+				}
 		}
 	}
 
 	//applyIntegrazione + Salva oggetto su DB
 	private void applyIntegrazioneAndSave(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
 		for(FieldIntegrazioneAccreditamento field :  fieldIntegrazioni){
-			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE){
-				setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
-			}else{
-				removeEntityFromRepo(dst.getClass(), field.getNewValue());
+			try{
+				if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE){
+					setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
+				}else{
+					removeEntityFromRepo(dst.getClass(), field.getNewValue());
+				}
+				LOGGER.debug(Utils.getLogMessage("Applicazione integrazione su DB -> " + field.getIdField().getNameRef() + " a " + dst.getClass()));
+			}catch (Exception ex){
+				LOGGER.debug(Utils.getLogMessage("Impossibile applicare integrazione su DB -> " + field.getIdField().getNameRef() + " a " + dst.getClass()));
 			}
 		}
 
@@ -215,7 +280,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		//se fieldName e' un campo semplice -> restituisco il suo valore
 		//se fieldName e' una BaseEntity -> restituisco il suo ID
 		//se fieldName e' una Collection distinguo i 2 casi:
-		//	caso1: collection di BaseEntity -> restituisco una Collecction<ID>
+		//	caso1: collection di BaseEntity -> restituisco una Collection<ID>
 		//	caso2: collection di valori semplici -> restituisco la Collection
 		Method method = getGetterMethodFor(dst.getClass(), fieldName);
 		if(method != null){
@@ -223,7 +288,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 			if(newValue instanceof BaseEntity){
 				return ((BaseEntity) newValue).getId();
 			}
-			else if(newValue instanceof PersistentSet)
+			else if(newValue instanceof PersistentSet || newValue instanceof Collection)
 			{
 				Set<Object> newSet = new HashSet<Object>();
 				Class<?> clazz = getTypeByField(dst.getClass(),fieldName);
@@ -261,7 +326,15 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 			Method getFiles = getGetterMethodFor(dst.getClass(), "files");
 			@SuppressWarnings("unchecked")
 			Set<File> files = (Set<File>) getFiles.invoke(dst);
-			((Persona) dst).addFile((File) getEntityFromRepo(File.class, fieldValue));
+			Class<?> clazz;
+			if (dst instanceof HibernateProxy) {
+				clazz = entityManager.unwrap(SessionImplementor.class).getPersistenceContext().unproxy(dst).getClass();
+			}else{
+				clazz = dst.getClass();
+			}
+			Method m = clazz.getMethod("addFile", File.class);
+			File f = (File) getEntityFromRepo(File.class, fieldValue);
+			m.invoke(dst, f);
 		}else {
 			/****	se è modifica a campi singoli 	****/
 			//se fieldName è composto (campo1.camp2) applico ricorsivamente fino a ricondurmi al caso semplice
@@ -313,7 +386,11 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		try{
 			field = clazz.getDeclaredField(fieldName);
 		}catch (Exception ex){
-			field = clazz.getSuperclass().getDeclaredField(fieldName);
+			try{
+				field = clazz.getSuperclass().getDeclaredField(fieldName);
+			}catch  (Exception ex1){
+				return null;
+			}
 		}
 
 		Type genericFieldType = field.getGenericType();
@@ -378,6 +455,11 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 
 	//salva l'oggetto su DB -> save(Object objectToSave)
 	private void saveEntity(Class<?> clazz, Object objectToSave) throws Exception{
+		if(objectToSave instanceof	HibernateProxy){
+			objectToSave = entityManager.unwrap(SessionImplementor.class).getPersistenceContext().unproxy(objectToSave);
+			clazz = objectToSave.getClass();
+		}
+		
 		Object service = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "ServiceImpl");
 		Class<?>[] cArg = new Class[1];
 		cArg[0] = clazz;
@@ -441,6 +523,17 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 	@Override
 	public void saveEnableField(RichiestaIntegrazioneWrapper wrapper) {
 		Set<IdFieldEnum> listaDaView = wrapper.getSelected();
+		Set<IdFieldEnum> gruppo = new HashSet<IdFieldEnum>();
+		
+		
+		if(!listaDaView.isEmpty())
+			listaDaView.forEach( f -> {
+				if(!f.getGruppo().isEmpty())
+					for(IdFieldEnum field : f.getGruppo())
+						gruppo.add(field);
+			});
+		
+		listaDaView.addAll(gruppo);
 
 		Set<FieldEditabileAccreditamento> listaFull = fieldEditabileAccreditamentoService.getFullLista(wrapper.getAccreditamentoId(), wrapper.getObjRef());
 		Set<FieldEditabileAccreditamento> listaSubset = Utils.getSubset(listaFull, wrapper.getSubset());
@@ -452,5 +545,106 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		});
 
 		fieldEditabileAccreditamentoService.insertFieldEditabileForAccreditamento(wrapper.getAccreditamentoId(), wrapper.getObjRef(), wrapper.getSubset(), listaDaView);
+	}
+	
+	@Override
+	public void checkIfFieldIntegraizoniConfirmedForAccreditamento(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) {
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER).isEmpty())
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER));
+		
+		//fieldIntegrazione per i multi-istanza
+		Set<Sede> sedi = sedeService.getSediFromIntegrazione(accreditamento.getProvider().getId());
+		sedi.forEach( s -> {
+			if(!Utils.getSubset(fieldIntegrazioni, s.getId(), SubSetFieldEnum.SEDE).isEmpty()){
+				try {
+					checkIfFieldIntegraizoniConfirmed(s, Utils.getSubset(fieldIntegrazioni, s.getId(), SubSetFieldEnum.SEDE));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+			if(!Utils.getSubset(fieldIntegrazioni, s.getId(), SubSetFieldEnum.FULL).isEmpty()){
+				try {
+					checkIfFieldIntegraizoniConfirmed(s, Utils.getSubset(fieldIntegrazioni, s.getId(), SubSetFieldEnum.FULL));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE).isEmpty())
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider().getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE));
+
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE).isEmpty())
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider().getPersonaByRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE));
+
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DATI_ACCREDITAMENTO).isEmpty()){
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getDatiAccreditamento(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.DATI_ACCREDITAMENTO));
+		}
+
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SEGRETERIA).isEmpty()){
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_SEGRETERIA), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SEGRETERIA));
+		}
+
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO).isEmpty()){
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_AMMINISTRATIVO), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO));
+		}
+
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO).isEmpty()){
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_SISTEMA_INFORMATICO), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO));
+		}
+
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_QUALITA).isEmpty()){
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider().getPersonaByRuolo(Ruolo.RESPONSABILE_QUALITA), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.RESPONSABILE_QUALITA));
+		}
+
+		//fieldIntegrazione per i multi-istanza
+		//Set<Persona> componentiComitato = accreditamento.getProvider().getComponentiComitatoScientifico();
+		Set<Persona> componentiComitato = personaService.getComponentiComitatoScientificoFromIntegrazione(accreditamento.getProvider().getId());
+		componentiComitato.forEach( p -> {
+			if(!Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO).isEmpty()){
+				try {
+					checkIfFieldIntegraizoniConfirmed(p, Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+			if(!Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.FULL).isEmpty()){
+				try {
+					checkIfFieldIntegraizoniConfirmed(p, Utils.getSubset(fieldIntegrazioni, p.getId(), SubSetFieldEnum.FULL));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		
+		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO).isEmpty())
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
+	}
+	
+	private void checkIfFieldIntegraizoniConfirmed(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList){
+		for(FieldIntegrazioneAccreditamento field : fieldIntegrazioneList){
+			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE){
+				try{
+					if(field.getIdField().getGruppo().isEmpty()){
+						if(field.getNewValue().equals(getField(dst, field.getIdField().getNameRef()))){
+							field.setModificato(false);
+							LOGGER.info(Utils.getLogMessage(field.getIdField() + " CONFERMATO"));
+						}else{
+							field.setModificato(true);
+							LOGGER.info(Utils.getLogMessage(field.getIdField() + " AGGIORNATO"));
+						}
+					}
+				}catch (Exception ex){
+					LOGGER.debug(Utils.getLogMessage("Impossibile controllare integrazione su entity " + field.getIdField().getNameRef() + " su " + dst.getClass()));
+				}
+			}else{
+				field.setModificato(true);
+				LOGGER.info(Utils.getLogMessage(field.getIdField() + " AGGIORNATO"));
+			}
+		}
 	}
 }

@@ -191,4 +191,11 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 		return result;
 	}
+	
+	@Override
+	@Transactional
+	public void saveFromIntegrazione(Provider provider) {
+		LOGGER.debug(Utils.getLogMessage("Salvataggio Provider da Integrazione"));
+		save(provider);
+	}
 }

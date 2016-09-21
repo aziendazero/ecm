@@ -835,3 +835,31 @@ h2 {
 	cursor: pointer;
 }
 
+tr.integrazione-creazione{
+	background-color: rgba(38, 185, 154, 0.7) !important;
+	color: white;
+}
+tr.integrazione-creazione td:first-child{
+	border-left: 5px solid #1abc9c !important;
+}
+tr.integrazione-creazione td:last-child{
+	border-right: 5px solid #1abc9c !important;
+}
+tr.integrazione-creazione td:first-child a{
+	color: white;
+}
+
+tr.integrazione-eliminazione{
+	background-color: rgba(231, 76, 60, 0.7) !important;
+	color: white;
+}
+tr.integrazione-eliminazione td:first-child{
+	border-left: 5px solid #e47777 !important;
+}
+tr.integrazione-eliminazione td:last-child{
+	border-right: 5px solid #e47777 !important;
+}
+tr.integrazione-eliminazione td:first-child a{
+	color: white;
+}
+

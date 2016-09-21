@@ -9,4 +9,11 @@ import lombok.Setter;
 public class ProviderWrapper extends Wrapper{
 	private Provider provider;
 	private Long accreditamentoId;
+	
+	public ProviderWrapper(){};
+	
+	public ProviderWrapper(Provider provider, Long accreditamentoId){
+		this.provider = provider;
+		this.accreditamentoId = accreditamentoId;
+	}
 }

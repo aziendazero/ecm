@@ -10,6 +10,7 @@ import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Wrapper {
+	private AccreditamentoWrapperModeEnum wrapperMode;
 	private AccreditamentoStatoEnum statoAccreditamento;
 	private Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
 	private Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = new HashSet<FieldIntegrazioneAccreditamento>();

@@ -1,7 +1,9 @@
 package it.tredi.ecm.web;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,17 +27,22 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Disciplina;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
+import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
@@ -45,6 +52,7 @@ import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.DatiAccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.DatiAccreditamentoValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
@@ -59,17 +67,20 @@ public class DatiAccreditamentoController {
 	private final String ENABLEFIELD = "accreditamento/datiAccreditamentoEnableField";
 
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
+	@Autowired private DatiAccreditamentoValidator datiAccreditamentoValidator;
 	@Autowired private DisciplinaService disciplinaService;
 	@Autowired private ProfessioneService professioneService;
 	@Autowired private FileService fileService;
 	@Autowired private ProviderService providerService;
-	@Autowired private AccreditamentoService accreditamentoService;
-	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
-	@Autowired private DatiAccreditamentoValidator datiAccreditamentoValidator;
-	@Autowired private ValutazioneValidator valutazioneValidator;
-	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	
 	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private ValutazioneValidator valutazioneValidator;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
+	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	
+	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private IntegrazioneService integrazioneService;
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -77,10 +88,24 @@ public class DatiAccreditamentoController {
 	}
 
 	@ModelAttribute("datiAccreditamentoWrapper")
-	public DatiAccreditamentoWrapper getDatiAccreditamentoWrapper(@RequestParam(value="editId",required = false) Long id){
+	public DatiAccreditamentoWrapper getDatiAccreditamentoWrapper(@RequestParam(value="editId",required = false) Long id,
+			@RequestParam(value="statoAccreditamento",required = false) AccreditamentoStatoEnum statoAccreditamento,
+			@RequestParam(value="wrapperMode",required = false) AccreditamentoWrapperModeEnum wrapperMode,
+			@RequestParam(value="accreditamentoId",required = false) Long accreditamentoId) throws Exception{
 		if(id != null){
-			return prepareDatiAccreditamentoWrapperEdit(datiAccreditamentoService.getDatiAccreditamento(id));
+			//return prepareDatiAccreditamentoWrapperEdit(datiAccreditamentoService.getDatiAccreditamento(id), statoAccreditamento, true);
+			return prepareWrapperForReloadByEditId(datiAccreditamentoService.getDatiAccreditamento(id), accreditamentoId, statoAccreditamento, wrapperMode);
 		}
+		return new DatiAccreditamentoWrapper();
+	}
+	
+	private DatiAccreditamentoWrapper prepareWrapperForReloadByEditId(DatiAccreditamento datiAccreditamento, Long accreditamentoId, 
+				AccreditamentoStatoEnum statoAccreditamento, AccreditamentoWrapperModeEnum wrapperMode) throws Exception{
+		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
+			return prepareDatiAccreditamentoWrapperEdit(datiAccreditamento, statoAccreditamento, true);
+		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
+			return prepareDatiAccreditamentoWrapperValidate(datiAccreditamento, accreditamentoId, statoAccreditamento, false);
+		
 		return new DatiAccreditamentoWrapper();
 	}
 
@@ -105,7 +130,7 @@ public class DatiAccreditamentoController {
 	public String newDatiAccreditamento(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/new"));
 		try {
-			return goToEdit(model, prepareDatiAccreditamentoWrapperEdit(new DatiAccreditamento(),accreditamentoId));
+			return goToEdit(model, prepareDatiAccreditamentoWrapperEdit(new DatiAccreditamento(),accreditamentoId,accreditamentoService.getStatoAccreditamento(accreditamentoId),false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -121,7 +146,7 @@ public class DatiAccreditamentoController {
 	public String editDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/edit"));
 		try{
-			return goToEdit(model, prepareDatiAccreditamentoWrapperEdit(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
+			return goToEdit(model, prepareDatiAccreditamentoWrapperEdit(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId,accreditamentoService.getStatoAccreditamento(accreditamentoId),false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -160,7 +185,7 @@ public class DatiAccreditamentoController {
 		try{
 			//controllo se è possibile modificare la valutazione o meno
 			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
-			return goToValidate(model, prepareDatiAccreditamentoWrapperValidate(datiAccreditamentoService.getDatiAccreditamento(id),accreditamentoId));
+			return goToValidate(model, prepareDatiAccreditamentoWrapperValidate(datiAccreditamentoService.getDatiAccreditamento(id), accreditamentoId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/validate"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -211,6 +236,16 @@ public class DatiAccreditamentoController {
 				}
 			}
 
+			//Ri-effettuo il detach..non sarebbe indispensabile...ma e' una precauzione a eventuali modifiche future
+			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
+			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(wrapper.getAccreditamentoId());
+			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+				integrazioneService.detach(wrapper.getDatiAccreditamento());
+				integrazioneService.detach(wrapper.getProvider());
+			}
+			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: DatiAccreditamentoSave:__AFTER SET__"));
+			integrazioneService.isManaged(wrapper.getDatiAccreditamento());
+			
 			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
 
 			if(result.hasErrors()){
@@ -219,9 +254,11 @@ public class DatiAccreditamentoController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				LOGGER.debug(Utils.getLogMessage("Salvataggio DatiAccrdeditmento"));
-				providerService.save(wrapper.getProvider());
-				datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), accreditamentoId);
+				if(wrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+					integra(wrapper);
+				}else{
+					salva(wrapper);
+				}
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.dati_attivita_inseriti", "success"));
 				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
@@ -234,7 +271,27 @@ public class DatiAccreditamentoController {
 			return EDIT;
 		}
 	}
+	
+	private void integra(DatiAccreditamentoWrapper wrapper) throws Exception{
+		LOGGER.info(Utils.getLogMessage("Integrazione DatiAccreditamento"));
+		Accreditamento accreditamento = new Accreditamento();
+		accreditamento.setId(wrapper.getAccreditamentoId());
+		
+		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
+		for(IdFieldEnum idField : wrapper.getIdEditabili()){
+			if(idField.getGruppo().isEmpty())
+				fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+		}
 
+		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);
+	}
+
+	private void salva(DatiAccreditamentoWrapper wrapper){
+		LOGGER.debug(Utils.getLogMessage("Salvataggio DatiAccrdeditmento"));
+		providerService.save(wrapper.getProvider());
+		datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), wrapper.getAccreditamentoId());
+	}
+	
 	/*** SAVE VALUTAZIONE ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/validate", method = RequestMethod.POST)
 	public String valutaDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
@@ -319,64 +376,77 @@ public class DatiAccreditamentoController {
 		return ENABLEFIELD;
 	}
 
-	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperEdit(DatiAccreditamento datiAccreditamento){
-		return prepareDatiAccreditamentoWrapperEdit(datiAccreditamento, 0);
+	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperEdit(DatiAccreditamento datiAccreditamento, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
+		return prepareDatiAccreditamentoWrapperEdit(datiAccreditamento, 0, statoAccreditamento, reloadByEditId);
 	}
 
-	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperEdit(DatiAccreditamento datiAccreditamento, long accreditamentoId){
+	/*
+	 * Se INTEGRAZIONE:
+	 * caso 1: MODIFICA SINGOLO CAMPO
+	 * 		(+) Saranno sbloccati SOLO gli IdFieldEnum eslpicitamente abilitati dalla segreteria (creazione di FieldEditabileAccreditamento)
+	 * 		(+) Vengono applicati eventuali fieldIntegrazioneAccreditamento già salvati per visualizzare correttamente lo stato attuale delle modifiche
+	 */
+	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperEdit(DatiAccreditamento datiAccreditamento, long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperEdit(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
-		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
-		wrapper.setDatiAccreditamento(datiAccreditamento);
-		wrapper.setAccreditamentoId(accreditamentoId);
+		
+		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
+		
+		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
+		wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
+		wrapper.setStatoAccreditamento(statoAccreditamento);
+		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
 
 		if(datiAccreditamento.isNew()){
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 			wrapper.setProvider(accreditamento.getProvider());
 		}else{
 			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
-			Set<File> files = wrapper.getProvider().getFiles();
-			for(File file : files){
-				if(file.isESTRATTOBILANCIOFORMAZIONE())
-					wrapper.setEstrattoBilancioFormazione(file);
-				else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
-					wrapper.setEstrattoBilancioComplessivo(file);
-				else if(file.isFUNZIONIGRAMMA())
-					wrapper.setFunzionigramma(file);
-				else if(file.isORGANIGRAMMA())
-					wrapper.setOrganigramma(file);
-			}
+			wrapper.setFiles(wrapper.getProvider().getFiles());
+		}
+		
+		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
+		}
+		
+		if(!wrapper.getDatiAccreditamento().isNew()){
+			wrapper.setFiles(wrapper.getProvider().getFiles());
 		}
 
-		wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.DATI_ACCREDITAMENTO));
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperEdit(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;
-	};
+	}
+	
+	private void prepareApplyIntegrazione(DatiAccreditamentoWrapper wrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
+		wrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(wrapper.getAccreditamentoId()), subset));
+		wrapper.getProvider().getFiles().size();
+		wrapper.getDatiAccreditamento().getProcedureFormative().size();
+		integrazioneService.detach(wrapper.getDatiAccreditamento());
+		integrazioneService.detach(wrapper.getProvider());
+		if(!reloadByEditId){
+			integrazioneService.applyIntegrazioneObject(wrapper.getDatiAccreditamento(), wrapper.getFieldIntegrazione());
+		}
+	}
 
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperShow(DatiAccreditamento datiAccreditamento, long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperShow(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
-		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
-		wrapper.setDatiAccreditamento(datiAccreditamento);
-		wrapper.setAccreditamentoId(accreditamentoId);
-		Set<File> files = datiAccreditamento.getAccreditamento().getProvider().getFiles();
-		for(File file : files){
-			if(file.isESTRATTOBILANCIOFORMAZIONE())
-				wrapper.setEstrattoBilancioFormazione(file);
-			else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
-				wrapper.setEstrattoBilancioComplessivo(file);
-			else if(file.isFUNZIONIGRAMMA())
-				wrapper.setFunzionigramma(file);
-			else if(file.isORGANIGRAMMA())
-				wrapper.setOrganigramma(file);
-		}
+		
+		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
+		wrapper.setFiles(datiAccreditamento.getAccreditamento().getProvider().getFiles());
 
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperShow(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;
 	};
 
-	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperValidate(DatiAccreditamento datiAccreditamento, long accreditamentoId){
+	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperValidate(DatiAccreditamento datiAccreditamento, long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperValidate(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
-		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper();
-
+	
+		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
+		
+		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
+		wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
+		wrapper.setStatoAccreditamento(statoAccreditamento);
+		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
+		
 		//carico la valutazione per l'utente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
@@ -388,35 +458,21 @@ public class DatiAccreditamentoController {
 		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
 
 		if(valutazione != null) {
-			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.DATI_ACCREDITAMENTO);
-			mappaValutatoreValutazioni  = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, SubSetFieldEnum.DATI_ACCREDITAMENTO);
-			idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.DATI_ACCREDITAMENTO);
+			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), subset);
+			mappaValutatoreValutazioni  = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, subset);
+			idEditabili = IdFieldEnum.getAllForSubset(subset);
 		}
 
-		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		wrapper.setIdEditabili(idEditabili);
+		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		wrapper.setMappa(mappa);
-		wrapper.setDatiAccreditamento(datiAccreditamento);
-		wrapper.setAccreditamentoId(accreditamentoId);
-
-		if(datiAccreditamento.isNew()){
-			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-			wrapper.setProvider(accreditamento.getProvider());
-		}else{
-			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
-			Set<File> files = wrapper.getProvider().getFiles();
-			for(File file : files){
-				if(file.isESTRATTOBILANCIOFORMAZIONE())
-					wrapper.setEstrattoBilancioFormazione(file);
-				else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
-					wrapper.setEstrattoBilancioComplessivo(file);
-				else if(file.isFUNZIONIGRAMMA())
-					wrapper.setFunzionigramma(file);
-				else if(file.isORGANIGRAMMA())
-					wrapper.setOrganigramma(file);
-			}
+		
+		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
-
+		
+		wrapper.setFiles(wrapper.getProvider().getFiles());
+		
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperValidate(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;
 	};

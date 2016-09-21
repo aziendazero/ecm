@@ -44,12 +44,12 @@
 				}
 				
 				//gestione ablita/disabilita FULL del comitato scientifico e del piano formativo in accreditamento
-				$('#ablitaComitatoFull').on('ifChecked', function(event){
-					ajaxCallToEnableFieldFull('#ablitaComitatoFull');
+				$('#abilitaComitatoFull').on('ifChecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaComitatoFull');
 				});
 				
-				$('#ablitaComitatoFull').on('ifUnchecked', function(event){
-					ajaxCallToEnableFieldFull('#ablitaComitatoFull');
+				$('#abilitaComitatoFull').on('ifUnchecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaComitatoFull');
 				});
 				
 				$('#abilitaPianoFormativoFull').on('ifChecked', function(event){
@@ -58,6 +58,14 @@
 
 				$('#abilitaPianoFormativoFull').on('ifUnchecked', function(event){
 					ajaxCallToEnableFieldFull('#abilitaPianoFormativoFull');
+				});
+				
+				$('#abilitaSediFull').on('ifChecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaSediFull');
+				});
+
+				$('#abilitaSediFull').on('ifUnchecked', function(event){
+					ajaxCallToEnableFieldFull('#abilitaSediFull');
 				});
 				
 				function ajaxCallToEnableFieldFull(checkboxId){

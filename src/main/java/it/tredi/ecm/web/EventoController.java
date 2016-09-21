@@ -33,7 +33,6 @@ import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.dao.repository.FieldEditabileAccreditamentoRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
