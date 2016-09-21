@@ -204,14 +204,14 @@
 							type: "radio",
 							class: "flat",
 							name: "valutazioneTarget.stato",
-							value: setStati[i].$name
+							value: setStati[i]
 						}).appendTo(label);
 						//inizializza l'input (icheck)
 						input.iCheck({
 							radioClass: 'iradio_flat-green'
 						});
 						var span = $("<span/>", {
-							text: " " + mappaLabel[setStati[i].$name]
+							text: " " + mappaLabel[setStati[i]]
 						}).appendTo(label);
 					}
 					//prepara url action del form di valutazione
@@ -226,7 +226,8 @@
 					ACCREDITATO: [[#{label.accreditato}]],
 					DINIEGO: [[#{label.diniego}]],
 					RICHIESTA_INTEGRAZIONE: [[#{label.richiesta_integrazione}]],
-					RICHIESTA_PREAVVISO_RIGETTO: [[#{label.richiesta_preavviso_rigetto}]]
+					RICHIESTA_PREAVVISO_RIGETTO: [[#{label.richiesta_preavviso_rigetto}]],
+					INS_ODG: [[#{label.ins_odg}]]
 				};
 
 			/*]]>*/

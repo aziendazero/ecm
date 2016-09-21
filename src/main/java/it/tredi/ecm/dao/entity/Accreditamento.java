@@ -176,6 +176,14 @@ public class Accreditamento extends BaseEntity{
 		return stato == AccreditamentoStatoEnum.VALUTAZIONE_CRECM;
 	}
 
+	public boolean isInsOdg() {
+		return stato == AccreditamentoStatoEnum.INS_ODG;
+	}
+
+	public boolean isValutazioneCommissione() {
+		return stato == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE;
+	}
+	
 	public boolean isIntegrazione() {
 		return stato == AccreditamentoStatoEnum.INTEGRAZIONE;
 	}
@@ -183,7 +191,15 @@ public class Accreditamento extends BaseEntity{
 	public boolean isPreavvisoRigetto() {
 		return stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO;
 	}
-
+	
+	public boolean isRichiestaIntegrazione() {
+		return stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE;
+	}
+	
+	public boolean isRichiestaPreavvisoRigetto() {
+		return stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO;
+	}
+	
 	public boolean isProcedimentoAttivo(){
 		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;

@@ -22,7 +22,7 @@ public interface SedutaService {
 	void moveValutazioneCommissione(ValutazioneCommissione val, Seduta from, Seduta to);
 	Set<Seduta> getAllSeduteAfter(LocalDate date, LocalTime time);
 	void lockSeduta(Long sedutaId) throws Exception;
-	Map<Long, Set<AccreditamentoStatoEnum>> prepareMappaStatiValutazione(Seduta seduta);
+	Map<Long, Set<AccreditamentoStatoEnum>> prepareMappaStatiValutazione(Seduta seduta) throws Exception;
 	void addValutazioneCommissioneToSeduta(String motivazioneDaInserire, Long idAccreditamentoDaInserire, Seduta seduta);
 	void removeValutazioneCommissioneFromSeduta(Long valutazioneCommissioneId);
 	Seduta getNextSeduta();

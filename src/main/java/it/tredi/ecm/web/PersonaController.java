@@ -352,10 +352,11 @@ public class PersonaController {
 		}
 	}
 
-	/***	SAVE  VALUTAZIONE PERSONA ***/
+	/***	SAVE  VALUTAZIONE PERSONA 
+	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/validate", method = RequestMethod.POST)
 	public String valutaPersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper, BindingResult result,
-			RedirectAttributes redirectAttrs, Model model, @PathVariable Long accreditamentoId, @PathVariable Long providerId){
+			RedirectAttributes redirectAttrs, Model model, @PathVariable Long accreditamentoId, @PathVariable Long providerId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/validate"));
 		try {
 			//validazione della persona

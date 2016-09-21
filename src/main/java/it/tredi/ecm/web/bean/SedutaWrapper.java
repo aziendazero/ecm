@@ -24,4 +24,5 @@ public class SedutaWrapper {
 	private Seduta sedutaTarget;
 	private ValutazioneCommissione valutazioneTarget;
 	private Map<Long, Set<AccreditamentoStatoEnum>> mappaStatiValutazione;
+	private boolean canBloccaSeduta;
 }

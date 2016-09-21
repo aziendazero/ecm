@@ -305,7 +305,7 @@ public class SedutaController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping(value = "/seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/validate", method = RequestMethod.POST)
 	public String valutaValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
-			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs){
+			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs) throws Exception{
 		try {
 			sedutaValidator.validateCompletamentoValutazioneCommissione(sedutaWrapper.getValutazioneTarget(), result, "valutazioneTarget.");
 			if(result.hasErrors()){
@@ -320,6 +320,9 @@ public class SedutaController {
 				val.setValutazioneCommissione(sedutaWrapper.getValutazioneTarget().getValutazioneCommissione());
 				val.setStato(sedutaWrapper.getValutazioneTarget().getStato());
 				valutazioneCommissioneRepository.save(val);
+				
+				accreditamentoService.inviaValutazioneCommissione(val.getAccreditamento().getId(), Utils.getAuthenticatedUser(), val.getStato());
+				
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_commissione_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/validate"));
 				return "redirect:/seduta/{sedutaId}/validate";
@@ -377,7 +380,7 @@ public class SedutaController {
 		return HANDLE;
 	}
 
-	private String goToValidate(Model model, SedutaWrapper sedutaWrapper) {
+	private String goToValidate(Model model, SedutaWrapper sedutaWrapper) throws Exception {
 		//cerca le sedute disponibili per un eventuale spostamento di valutazione commissione
 		Set<Seduta> seduteDisponibili = sedutaService.getAllSeduteAfter(LocalDate.now(), LocalTime.now().plusMinutes(ecmProperties.getSedutaValidationMinutes()));
 		//rimuove la seduta corrente (per evitare spostamenti da a la stessa seduta)
@@ -395,6 +398,17 @@ public class SedutaController {
 		wrapper.setSeduta(seduta);
 		wrapper.setCanEdit(sedutaService.canEditSeduta(seduta));
 		wrapper.setCanValidate(sedutaService.canBeEvaluated(seduta));
+		wrapper.setCanBloccaSeduta(true);
+		
+		if(!seduta.isNew()){
+			Set<Accreditamento> listaAccreditamentiInSeduta = sedutaService.getAccreditamentiInSeduta(seduta.getId());
+			for(Accreditamento a : listaAccreditamentiInSeduta){
+				if(a.isValutazioneCommissione()){
+					wrapper.setCanBloccaSeduta(false);
+				}
+			}
+		}
+		
 		return wrapper;
 	}
 
@@ -411,6 +425,15 @@ public class SedutaController {
 			result.put(temp);
 		}
 		return result;
+	}
+	
+	@RequestMapping("/seduta/{sedutaId}/bloccaSeduta")
+	public String bloccaSeduta(@PathVariable Long sedutaId) throws Exception{
+		Set<Accreditamento> listaInOdg = sedutaService.getAccreditamentiInSeduta(sedutaId);
+		for(Accreditamento a : listaInOdg){
+			accreditamentoService.inserisciInValutazioneCommissione(a.getId(), Utils.getAuthenticatedUser());
+		}
+		return "redirect:/seduta/list";
 	}
 
 }

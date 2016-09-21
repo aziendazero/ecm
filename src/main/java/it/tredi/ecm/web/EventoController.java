@@ -306,10 +306,11 @@ public class EventoController {
 		}
 	}
 
-	/***	SAVE  VALUTAZIONE EVENTO ***/
+	/***	SAVE  VALUTAZIONE EVENTO 
+	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/validate", method=RequestMethod.POST)
 	public String valutaEventoAccreditamento(@ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
-			Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId){
+			Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/validate"));
 		try {
 			//validazione della persona

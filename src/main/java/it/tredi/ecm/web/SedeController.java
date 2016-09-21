@@ -316,10 +316,11 @@ public class SedeController {
 		return "redirect:/accreditamento/{accreditamentoId}/edit";
 	}
 
-	/***	SALVA VALUTAZIONE 	***/
+	/***	SALVA VALUTAZIONE 	
+	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/sede/validate", method = RequestMethod.POST)
 	public String valutaSede(@ModelAttribute("sedeWrapper") SedeWrapper sedeWrapper, BindingResult result,
-			Model model, @PathVariable Long providerId, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
+			Model model, @PathVariable Long providerId, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/validate"));
 		try{
 			//validazione della sede
