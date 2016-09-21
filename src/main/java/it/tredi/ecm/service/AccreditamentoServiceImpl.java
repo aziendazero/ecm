@@ -469,4 +469,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			return true;
 		return false;
 	}
+	
+	@Override
+	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) {
+		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
+		accreditamento.setStato(stato);
+		accreditamentoRepository.save(accreditamento);
+	}
 }

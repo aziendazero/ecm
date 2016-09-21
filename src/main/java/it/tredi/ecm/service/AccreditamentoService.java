@@ -55,5 +55,6 @@ public interface AccreditamentoService{
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canPresaVisione(Long accreditamentoId, CurrentUser currentUser);
 
+	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato);
 
 }

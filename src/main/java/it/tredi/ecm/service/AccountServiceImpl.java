@@ -34,6 +34,9 @@ public class AccountServiceImpl implements AccountService{
 	private ProfileAndRoleService profileAndRoleService;
 	@Autowired
 	private EcmProperties ecmProperties;
+	
+	@Autowired
+	private WorkflowService workflowService;
 
 	@Autowired
 	public AccountServiceImpl(AccountRepository userRepository, EmailService emailService) {
@@ -84,6 +87,7 @@ public class AccountServiceImpl implements AccountService{
 			LOGGER.debug("Saving user: " + user.getUsername());
 			accountRepository.save(user);
 		}
+		workflowService.saveOrUpdateBonitaUserByAccount(user);
 	}
 
 	@Override

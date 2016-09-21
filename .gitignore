@@ -27,6 +27,8 @@
 *.bak
 *.swp
 *~.nib
+*.settings
+.factorypath
 local.properties
 .classpath
 .settings/**
