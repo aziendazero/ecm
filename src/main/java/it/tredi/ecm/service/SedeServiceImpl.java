@@ -9,11 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.tredi.ecm.dao.entity.Anagrafica;
-import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.repository.SedeRepository;
 import it.tredi.ecm.utils.Utils;
 

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Profile;
-import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.service.AccountService;
@@ -63,12 +62,10 @@ public class LoginController {
 		while(iterator.hasNext()) {
 			switch(iterator.next().getProfileEnum()) {
 				case ADMIN:
-					//TODO riempe i dati relativi ad admin
 					wrapper.setIsAdmin(true);
 					wrapper.setUtentiInAttesaDiAttivazione(1);
 					break;
 				case PROVIDER:
-					//TODO riempe i dati relativi al provider
 					wrapper.setIsProvider(true);
 					wrapper.setProviderId(providerService.getProviderIdByAccountId(currentUser.getAccount().getId()));
 					wrapper.setEventiDaPagare(3);
@@ -77,7 +74,6 @@ public class LoginController {
 					wrapper.setNomeProvider(providerService.getProvider(providerService.getProviderIdByAccountId(currentUser.getAccount().getId())).getDenominazioneLegale()); //TODO fare con query
 					break;
 				case SEGRETERIA:
-					//TODO riempe i dati relativi alla segreteria
 					wrapper.setIsSegreteria(true);
 					wrapper.setDomandeProvvisorieNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, AccreditamentoTipoEnum.PROVVISORIO, true));
 					wrapper.setDomandeStandardNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, AccreditamentoTipoEnum.STANDARD, true));
@@ -90,12 +86,10 @@ public class LoginController {
 					wrapper.setDomandeDaValutareAll(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, null));
 					break;
 				case REFEREE:
-					//TODO riempe i dati relativi al referee
 					wrapper.setIsReferee(true);
 					wrapper.setDomandeInCarica(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId()));
 					wrapper.setDomandeNonValutateConsecutivamente(accountService.getUserById(currentUser.getAccount().getId()).getValutazioniNonDate());
 				case COMMISSIONE:
-					//TODO riempe i dati relativi alla commissione
 					wrapper.setIsCommissione(true);
 					wrapper.setProssimaSeduta(sedutaService.getNextSeduta());
 			}

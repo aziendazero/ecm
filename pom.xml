@@ -138,6 +138,12 @@
 			<artifactId>thymeleaf-extras-java8time</artifactId>
 			<version>2.1.0.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>it.tredi.bonita7</groupId>
+			<artifactId>Bonita7APIWrapper</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

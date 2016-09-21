@@ -144,7 +144,7 @@ public enum IdFieldEnum {
 	private String key;
 	private Ruolo ruolo;
 	private SubSetFieldEnum subSetField;
-	private Class parentClassRef;//it.tredi.ecm.dao.entity.Persona
+	private Class<?> parentClassRef;//it.tredi.ecm.dao.entity.Persona
 	private String nameRef;//nome
 	private String typeRef;//java.lang.String
 	private List<IdFieldEnum> gruppo = new ArrayList<IdFieldEnum>();

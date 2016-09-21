@@ -1,7 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

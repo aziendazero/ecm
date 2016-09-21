@@ -3,8 +3,6 @@ package it.tredi.ecm.web.bean;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.security.access.method.P;
-
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;

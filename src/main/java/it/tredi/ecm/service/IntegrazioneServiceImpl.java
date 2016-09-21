@@ -32,8 +32,6 @@ import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
-import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.entity.Provider_;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;

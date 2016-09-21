@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
@@ -46,12 +47,14 @@ import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.SedeService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
@@ -68,6 +71,7 @@ public class AccreditamentoController {
 
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private ValutazioneValidator valutazioneValidator;
+	@Autowired private TokenService tokenService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 
 	@Autowired private IntegrazioneService integrazioneService;
@@ -78,12 +82,29 @@ public class AccreditamentoController {
 		dataBinder.setDisallowedFields("id");
 	}
 
-	@RequestMapping("/accreditamento/{accreditamentoId}/stato/{stato}")
-	public String SetStatoFromBonita(@PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato) throws Exception{
+	@RequestMapping("/workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}")
+	@ResponseBody
+	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato} token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato));
+
+		if(!tokenService.checkTokenAndDelete(token)) {
+			String msg = "Impossibile trovare il token passato token: " + token;
+			LOGGER.error(msg);
+			return new ResponseState(true, msg);
+		}
+		//modifico lo stato
+		accreditamentoService.changeState(accreditamentoId, stato);
+		return new ResponseState(false, "Stato modificato");
+		
+/*
+		Account account = accountRepository.findOneByUsername("provider").orElse(null);
+		if(account != null) {
+			workflowService.saveOrUpdateBonitaUserByAccount(account);
+		}
+ */
 		//TODO modifica stato della domanda da parte del flusso
 		//lo facciamo cosi in modo tale da non dover disabilitare la cache di hibernate
 		//accreditamentoService.setStato(accreditamentoId, stato);
-		return "";
 	}
 
 	/***	Get Lista Accreditamenti per provider CORRENTE	***/

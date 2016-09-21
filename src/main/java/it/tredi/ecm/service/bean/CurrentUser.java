@@ -9,16 +9,19 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.RoleEnum;
 import lombok.Getter;
+import it.tredi.bonita.api.model.UserDataModel;
 import it.tredi.ecm.dao.entity.Account;
 
 @Getter
 public class CurrentUser extends org.springframework.security.core.userdetails.User {
 	private static final long serialVersionUID = 1L;
 	private Account account;
+	private UserDataModel workflowUserDataModel;
 
-	public CurrentUser(Account account, Collection<SimpleGrantedAuthority> auth) {
+	public CurrentUser(Account account, Collection<SimpleGrantedAuthority> auth, UserDataModel workflowUserDataModel) {
 		super(account.getUsername(),account.getPassword(),account.isEnabled(),true,true,!account.isLocked(),auth);
 		this.account = account;
+		this.workflowUserDataModel = workflowUserDataModel;
 	}
 
 	public String getProfile(){

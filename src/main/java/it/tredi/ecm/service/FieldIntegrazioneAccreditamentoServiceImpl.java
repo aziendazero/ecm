@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
-import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
 import it.tredi.ecm.utils.Utils;

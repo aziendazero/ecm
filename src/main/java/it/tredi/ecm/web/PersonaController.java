@@ -606,10 +606,6 @@ public class PersonaController {
 		return personaWrapper;
 	}
 
-	private PersonaWrapper preparePersonaWrapperValidate(Persona persona, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
-		return preparePersonaWrapperValidate(persona, 0L, 0L, statoAccreditamento, reloadByEditId);
-	}
-	
 	private PersonaWrapper preparePersonaWrapperValidate(Persona persona, long accreditamentoId, long providerId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - entering"));
 		

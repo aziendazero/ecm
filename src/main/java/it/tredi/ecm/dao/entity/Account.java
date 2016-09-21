@@ -44,6 +44,9 @@ public class Account extends BaseEntity{
 	private int valutazioniNonDate = 0;
 	private String note;
 
+	@Column(name = "username_workflow")
+	private String usernameWorkflow;
+	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "account_profile",
 	joinColumns = {

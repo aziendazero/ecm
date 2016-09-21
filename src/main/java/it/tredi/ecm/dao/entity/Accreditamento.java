@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -18,13 +19,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import org.hibernate.annotations.Type;
-
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -85,6 +83,8 @@ public class Accreditamento extends BaseEntity{
 	@OneToMany(mappedBy = "accreditamento")
 	Set<ValutazioneCommissione> valutazioniCommissione = new HashSet<ValutazioneCommissione>();
 
+	@Embedded
+	private WorkflowInfo workflowInfoAccreditamento = null;
 
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){

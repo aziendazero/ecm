@@ -179,7 +179,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			accountRepository.save(provider);
 			
 			Account admin = new Account();
-			admin.setUsername("admin");
+			admin.setUsername("segreteria");
 			admin.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
 			//admin.setPassword("admin");
 			admin.setEmail("dpranteda@3di.it");

@@ -1,7 +1,5 @@
 package it.tredi.ecm.web.validator;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,7 @@ import it.tredi.ecm.utils.Utils;
 public class ProfileValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileValidator.class);
 	
-	@Autowired
-	private ProfileRepository profileRepository;
+	@Autowired private ProfileRepository profileRepository;
 
 	public void validate(Object target, Errors errors) {
 		LOGGER.info(Utils.getLogMessage("Validazione Profile"));

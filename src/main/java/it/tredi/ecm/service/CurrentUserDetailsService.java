@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Role;
+import it.tredi.bonita.api.model.UserDataModel;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
@@ -32,6 +33,9 @@ public class CurrentUserDetailsService implements UserDetailsService {
     public CurrentUserDetailsService(AccountService userService) {
         this.accountService = userService;
     }
+    
+	@Autowired 
+	private WorkflowService workflowService;
 
     @Override
     public CurrentUser loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -44,7 +48,22 @@ public class CurrentUserDetailsService implements UserDetailsService {
                 authorities.add(new SimpleGrantedAuthority(role.getName()));
             }
         }
-        CurrentUser actor = new CurrentUser(user, authorities);
+        UserDataModel userDataModel = null;
+        if(workflowService.isCreateAccountOnLogin() && (user.getUsernameWorkflow() == null || user.getUsernameWorkflow().isEmpty())) {
+        	try {
+        		workflowService.saveOrUpdateBonitaUserByAccount(user);
+        	} catch( Exception ex) {
+            	LOGGER.error("Impossibile creare l'utente su bonita corrispondente all'utente username" + user.getUsername() + ".", ex);
+            	throw new UsernameNotFoundException(String.format("Bonita account with usernameWorkflow=%s was not create", user.getUsername()));
+        	}
+        }
+        try {
+        	userDataModel = workflowService.getUserByLogin(user.getUsernameWorkflow());
+        } catch (Exception ex) {
+        	LOGGER.error("Impossibile ricavare l'utente usernameWorkflow: " + user.getUsernameWorkflow() + " da Bonita.", ex);
+        	throw new UsernameNotFoundException(String.format("Bonita account with usernameWorkflow=%s was not found", user.getUsernameWorkflow()));
+        }
+        CurrentUser actor = new CurrentUser(user, authorities, userDataModel);
         
         LOGGER.info("Account: " + actor.getUsername() + " is logged with roles: " + actor.getAuthorities().toString());
         

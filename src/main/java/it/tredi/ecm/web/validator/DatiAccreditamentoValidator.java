@@ -11,7 +11,6 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.utils.Utils;
 
 @Component

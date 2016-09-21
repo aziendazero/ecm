@@ -1,11 +1,8 @@
 package it.tredi.ecm.service;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.RoleEnum;
 import it.tredi.ecm.service.bean.CurrentUser;
 
@@ -229,4 +226,19 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) {
 		return accreditamentoService.canUserInviaIntegrazione(accreditamentoId, currentUser);
 	}
+	
+	@Override
+	public boolean canShowSeduta(CurrentUser currentUser) {
+		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm())
+			return true;
+		return false;
+	}
+	
+	@Override
+	public boolean canEditSeduta(CurrentUser currentUser) {
+		if(currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+	
 }

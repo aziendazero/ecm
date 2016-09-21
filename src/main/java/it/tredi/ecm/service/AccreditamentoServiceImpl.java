@@ -3,7 +3,6 @@ package it.tredi.ecm.service;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -641,5 +640,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) {
+		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
+		accreditamento.setStato(stato);
+		accreditamentoRepository.save(accreditamento);
 	}
 }
