@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.comunicazioni_dashboard}"></h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-success pull-right"
+									th:href="@{/comunicazione/new}"
+									th:text="#{label.componi}">Componi</a>
+							<a class="btn btn-primary pull-right"
+									th:href="@{/home}"
+									th:text="#{label.indietro}">Indietro</a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<!-- VASCHETTE -->
+						<div class="row">
+
+							<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+								<div class="tile-stats clickable" onclick="goTo('comunicazione/received/list')">
+									<div class="icon"><i class="fa fa-inbox"></i></div>
+									<div class="col-xs-10">
+					                	<div class="count" th:text="${numeroComunicazioniRicevute}"></div>
+					                	<h3 class="tile-h3" th:text="${numeroComunicazioniRicevute == 1} ? #{label.comunicazione} : #{label.comunicazioni}"></h3>
+					                	<p class="count-text" th:text="${numeroComunicazioniRicevute == 1} ? #{label.ricevuta} : #{label.ricevute}"></p>
+									</div>
+								</div>
+							</div>
+							<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+								<div class="tile-stats clickable" onclick="goTo('comunicazione/sent/list')">
+									<div class="icon"><i class="fa fa-paper-plane"></i></div>
+									<div class="col-xs-10">
+					                	<div class="count" th:text="${numeroComunicazioniInviate}"></div>
+					                	<h3 class="tile-h3" th:text="${numeroComunicazioniInviate == 1} ? #{label.comunicazione} : #{label.comunicazioni}"></h3>
+					                	<p class="count-text" th:text="${numeroComunicazioniInviate == 1} ? #{label.inviata} : #{label.inviate}"></p>
+									</div>
+								</div>
+							</div>
+							<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+								<div class="tile-stats clickable" onclick="goTo('comunicazione/locked/list')">
+									<div class="icon"><i class="fa fa-lock"></i></div>
+									<div class="col-xs-10">
+					                	<div class="count" th:text="${numeroComunicazioniBloccate}"></div>
+					                	<h3 class="tile-h3" th:text="${numeroComunicazioniBloccate == 1} ? #{label.comunicazione} : #{label.comunicazioni}"></h3>
+					                	<p class="count-text" th:text="${numeroComunicazioniBloccate == 1} ? #{label.chiusa} : #{label.chiuse}"></p>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.ultimi_messaggi_ricevuti(${#lists.size(ultimiMessaggiNonLetti)}, ${numeroMessaggiNonLetti})}"></h2>
+						<div th:unless="${#lists.isEmpty(ultimiMessaggiNonLetti)}" class="pull-right buttons-header">
+							<a class="btn btn-success pull-right" id="comunicazione-letta-button" th:text="#{label.archivia}"></a>
+							<a class="btn btn-primary pull-right" id="comunicazione-link-button" th:text="#{label.visualizza}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+
+						<div class="row comunicazione-show-container">
+
+							<!-- LISTA ULTIME COMUNICAZIONI RICEVUTE -->
+							<div class="col-sm-3 mail_list_column">
+								<th:block th:unless="${#lists.isEmpty(ultimiMessaggiNonLetti)}">
+									<a class="clickable noselect" th:onclick="'loadComunicazione(' + ${comunicazione.id} + ')'"
+										th:each="comunicazione, row : ${ultimiMessaggiNonLetti}">
+										<div class="mail_list">
+											<div class="left">
+												<i class="fa fa-paper-plane"></i>
+											</div>
+											<div class="right">
+												<h3>
+													<span th:text="${comunicazione.oggetto}"></span> <small th:text="${#temporals.format(comunicazione.dataCreazione, 'HH:mm - dd/MM/yy')}"></small>
+												</h3>
+												<p th:text="${comunicazione.dataCreazione == comunicazione.dataUltimaModifica} ? #{label.nuova_comunicazione} : #{label.risposta_a_comunicazione}"></p>
+											</div>
+										</div>
+									</a>
+									<a class="btn btn-primary pull-right with-margin-top" th:text="#{label.vedi_tutte}"></a>
+								</th:block>
+								<div th:if="${#lists.isEmpty(ultimiMessaggiNonLetti)}" th:text="#{label.nessun_messaggio_non_letto}"></div>
+							</div>
+
+							<!-- CONTENUTO COMUNICAZIONE (riempito con chiamata ajax) -->
+							<div id="comunicazione-container" class="col-sm-9 col-xs-12 mail_view"></div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+			    $(document).ready(function() {
+			    	//carica l'ultima comunicazione ricevuta
+			    	if ([[${idUltimoMessaggioNonLetto}]] != 0) {
+			    		loadComunicazione([[${idUltimoMessaggioNonLetto}]]);
+			    	}
+				})
+
+				//carica con una chiamata ajax sul div container lo show di una parte della comunicazione selezionata
+				function loadComunicazione(id) {
+					var urlShow = [[@{/comunicazione/}]] + id + "/show";
+					var urlRead = [[@{/comunicazione/}]] + id + "/read";
+					$("#comunicazione-container").load(urlShow + " #comunicazione-head");
+					$("#comunicazione-link-button").attr("href", urlShow);
+					$("#comunicazione-letta-button").attr("href", urlRead);
+				}
+
+				function toggleDestinatari() {
+					$(".destinatari").slideToggle();
+					$(".toggleIcon").toggleClass("fa-chevron-down");
+					$(".toggleIcon").toggleClass("fa-chevron-up");
+				}
+
+				function goTo(url) {
+					location.href = [[@{/}]] + url;
+				}
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

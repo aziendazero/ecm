@@ -261,7 +261,7 @@ public class PersonaController {
 			return "redirect:/accreditamento/" + accreditamentoId + "/validate";
 		}
 	}
-	
+
 	/***	ENABLEFIELD PERSONA ***/
 	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/enableField")
@@ -402,7 +402,7 @@ public class PersonaController {
 
 	/*** 	SAVE  ENABLEFIELD   ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/enableField", method = RequestMethod.POST)
-	public String enableFieldPersona(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId, 
+	public String enableFieldPersona(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId,
 												Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/persona/enableField"));
 		try{
@@ -417,7 +417,7 @@ public class PersonaController {
 			redirectAttrs.addFlashAttribute("currentTab","tab2");
 		return "redirect:/accreditamento/{accreditamentoId}/enableField";
 	};
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId) and @securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/delete")
 	public String removeComponenteComitatoScientifico(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long personaId,
@@ -460,7 +460,7 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 		return VALIDATE;
 	}
-	
+
 	private String goToEnableField(Model model, PersonaWrapper personaWrapper) {
 		model.addAttribute("personaWrapper", personaWrapper);
 		model.addAttribute("returnLink", calcolaLink(personaWrapper, "enableField"));
@@ -504,12 +504,12 @@ public class PersonaController {
 
 	/*
 	 * Se INTEGRAZIONE:
-	 * 
+	 *
 	 * caso 1: MODIFICA SINGOLO CAMPO
 	 * 		(+) Saranno sbloccati SOLO gli IdFieldEnum eslpicitamente abilitati dalla segreteria (creazione di FieldEditabileAccreditamento)
 	 * 		(+) Vengono applicati eventuali fieldIntegrazioneAccreditamento già salvati per visualizzare correttamente lo stato attuale delle modifiche
-	 * 
-	 * caso 2: ASSEGNAMENTO a persone no multi-istanza 
+	 *
+	 * caso 2: ASSEGNAMENTO a persone no multi-istanza
 	 * 		(*) ASSEGNAMENTO nuova anagrafica
 	 * 			(+) L'unico IdFieldEnum esplicitamente abilitato dalla segreteria dovrebbe essere il FULL
 	 * 			(+) In realtà conviene abilitare anche esplicitamente i campi per permettere eventuali modifiche
@@ -651,7 +651,7 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - exiting"));
 		return personaWrapper;
 	}
-	
+
 	private PersonaWrapper preparePersonaWrapperEnableField(Persona persona, long accreditamentoId, long providerId){
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEnableField(" + persona.getId() + ") - entering"));
 		PersonaWrapper personaWrapper = preparePersonaWrapperShow(persona, accreditamentoId);
@@ -688,18 +688,20 @@ public class PersonaController {
 		// consentita la modifica del legale rappresentante
 		if(personaWrapper.getPersona().isResponsabileSegreteria() || personaWrapper.getPersona().isResponsabileAmministrativo() ||
 				personaWrapper.getPersona().isComponenteComitatoScientifico() || personaWrapper.getPersona().isCoordinatoreComitatoScientifico()||
-				personaWrapper.getPersona().isResponsabileSistemaInformatico() || personaWrapper.getPersona().isResponsabileQualita())
+				personaWrapper.getPersona().isResponsabileSistemaInformatico() || personaWrapper.getPersona().isResponsabileQualita()) {
 			fieldEditabileAccreditamentoService.removeFieldEditabileForAccreditamento(personaWrapper.getAccreditamentoId(), null, SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
+			fieldEditabileAccreditamentoService.removeFieldEditabileForAccreditamento(personaWrapper.getAccreditamentoId(), null, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE);
+		}
 	}
 
 	/*
 	 * Se INTEGRAZIONE:
-	 * 
+	 *
 	 * caso 1: MODIFICA SINGOLO CAMPO
 	 * 		(+) Viene salvato un fieldIntegrazione per ogni fieldEditabile abilitato
-	 * 		(+) Ogni fieldIntegrazione contiene il nuovo valore serializzato in funzione del setField/getField di IntegrazioneServiceImpl 
-	 * 
-	 * caso 2/3: ASSEGNAMENTO a persone no/si multi-istanza 
+	 * 		(+) Ogni fieldIntegrazione contiene il nuovo valore serializzato in funzione del setField/getField di IntegrazioneServiceImpl
+	 *
+	 * caso 2/3: ASSEGNAMENTO a persone no/si multi-istanza
 	 * 		(*) ASSEGNAMENTO nuova anagrafica
 	 * 			(+) Viene salvato un unico fieldIntegrazione per l'unico fieldEditabile presente (FULL)
 	 * 			(+) Il fieldIntegrazione contiene il json della persona
@@ -707,13 +709,13 @@ public class PersonaController {
 	 * 		(*) ASSEGNAMENTO lookup anagrafica esistente
 	 * 			(+) Viene salvatao un unico fieldIntegrazione per l'unico fieldEditabile presente (FULL)
 	 * 			(+) Il fieldIntegrazione contiene il json della persona
-	 * 
+	 *
 	 * caso 2: CREAZIONE persona multi-istanza
 	 * 		(*) ASSEGNAMENTO nuova anagrafica
 	 * 			(+) Uguale a caso 2, l'unica differenza è che viene creata anche la persona con il flag dirty
 	 * 		(*) ASSEGNAMENTO lookup anagrafica esistente
 	 * 			(+) Uguale a caso 2, l'unica differenza è che viene creata anche la persona con il flag dirty
-	 *   
+	 *
 	 * */
 	@Transactional
 	private void integraPersona(PersonaWrapper personaWrapper, boolean eliminazione) throws Exception{

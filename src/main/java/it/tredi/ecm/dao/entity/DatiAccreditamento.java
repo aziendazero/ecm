@@ -38,8 +38,8 @@ public class DatiAccreditamento extends BaseEntity {
 	private DatiEconomici datiEconomici = new DatiEconomici();
 
 	/*** INFO RELATIVE AL PERSONALE ***/
-	private int numeroDipendentiFormazioneTempoIndeterminato;
-	private int numeroDipendentiFormazioneAltro;
+	private Integer numeroDipendentiFormazioneTempoIndeterminato;
+	private Integer numeroDipendentiFormazioneAltro;
 
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();

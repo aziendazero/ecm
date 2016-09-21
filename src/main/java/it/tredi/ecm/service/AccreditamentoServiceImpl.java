@@ -508,20 +508,20 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	//recupera tutte le domande di accreditamento in scadenza
-	//controlla se la data è compresa tra la data di scadenza e 10 giorni alla data di scadenza
+	//controlla se la data è compresa tra la data di scadenza e 30 giorni alla data di scadenza
 	@Override
 	public Set<Accreditamento> getAllAccreditamentiInScadenza() {
 		LocalDate oggi = LocalDate.now();
-		LocalDate dateScadenza = LocalDate.now().plusDays(10);
+		LocalDate dateScadenza = LocalDate.now().plusDays(30);
 		return accreditamentoRepository.findAllByDataScadenzaProssima(oggi, dateScadenza);
 	}
 
 	//conta tutte le domande di accreditamento in scadenza
-	//controlla se oggi + 10 giorni supera la data di scadenza
+	//controlla se oggi + 30 giorni supera la data di scadenza
 	@Override
 	public int countAllAccreditamentiInScadenza() {
 		LocalDate oggi = LocalDate.now();
-		LocalDate dateScadenza = LocalDate.now().plusDays(10);
+		LocalDate dateScadenza = LocalDate.now().plusDays(30);
 		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
 	}
 

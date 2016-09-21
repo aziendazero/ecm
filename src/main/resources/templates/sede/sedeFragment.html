@@ -117,13 +117,23 @@
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<select id="provincia_sede" class="form-control required" th:field="${sedeWrapper.sede.provincia}"
+							  	<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<select id="provincia_sede"
+										class="selectpicker required"
+										th:field="${sedeWrapper.sede.provincia}"
+										data-width="100%" data-style="btn-primary"
+										data-actions-box="true" data-size="10"
+										data-hide-disabled="false"
+										onchange="sendAjaxRequestProvincia()"
+										title="Seleziona una provincia..."
 										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.provincia'))}">
-	                          			<option value="" th:text="#{label.seleziona}">label.seleziona</option>
-	                          			<option th:each="provincia : ${elencoProvince}" th:value="${provincia}" th:text="${provincia}">Choose option</option>
-		                        	</select>
-							  	</div>
+										<option
+											th:each="provincia : ${elencoProvince}"
+											th:value="${provincia}"
+											th:text="${provincia}">
+										</option>
+									</select>
+								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
@@ -170,9 +180,18 @@
 							</label>
 							<th:block  th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<select th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune'))}" id="comune_sede" class="form-control required" th:field="${sedeWrapper.sede.comune}">
-										<option th:value="${sedeWrapper.sede.comune}" th:text="${sedeWrapper.sede.comune}"/>
-		                        	</select>
+		                        	<select id="comune_sede"
+										class="selectpicker required"
+										th:field="${sedeWrapper.sede.comune}"
+										data-width="100%" data-style="btn-primary"
+										data-actions-box="true" data-size="10"
+										data-hide-disabled="false"
+										onchange="sendAjaxRequestCAP()"
+										title="Seleziona un comune..."
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune'))}">
+										<option th:value="${sedeWrapper.sede.comune}"
+											th:text="${sedeWrapper.sede.comune}"/>
+									</select>
 							  	</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
@@ -271,10 +290,17 @@
 							</label>
 							<th:block  th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<select id="CAP_sede" class="form-control required" th:field="${sedeWrapper.sede.cap}"
-										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.cap')) }">
-										<option th:value="${sedeWrapper.sede.cap}" th:text="${sedeWrapper.sede.cap}"/>
-		                        	</select>
+		                        	<select id="CAP_sede"
+										class="selectpicker required"
+										th:field="${sedeWrapper.sede.cap}"
+										data-width="100%" data-style="btn-primary"
+										data-actions-box="true" data-size="10"
+										data-hide-disabled="false"
+										title="Seleziona un CAP..."
+										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.cap'))}">
+										<option th:value="${sedeWrapper.sede.cap}"
+											th:text="${sedeWrapper.sede.cap}"/>
+									</select>
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+
+				<!-- modale riepilogo  -->
+				<div id="response-modal" class="modal fade modal-response"
+					data-model-index="1" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">×</span>
+								</button>
+								<h4 class="modal-title" id="myModalLabel"
+									th:text="#{label.risposta}"></h4>
+							</div>
+							<div class="modal-body">
+								<form id="formRisposta" class="form-horizontal"
+									th:action="@{|/comunicazione/${comunicazioneWrapper.comunicazione.id}/reply|}"
+									method="post" enctype="multipart/form-data"
+									novalidate="novalidate">
+
+									<input type="hidden" name="editId" th:value="${comunicazioneWrapper.comunicazione.id}"/>
+									<input type="hidden" th:field="${comunicazioneWrapper.canRespond}"/>
+
+									<div class="mittente-response item form-group">
+										<div class="col-sm-2 col-xs-2 text-right">
+											<label class="control-label" th:text="#{label.from}"></label>
+										</div>
+										<div class="col-xs-12 col-sm-10">
+											<div class="fixed-value">
+												<div class="comunicazione-input" th:text="${comunicazioneWrapper.risposta.mittente.username} + ' &lt;' + ${comunicazioneWrapper.risposta.mittente.email} + '&gt;' "></div>
+												<input type="hidden" th:field="${comunicazioneWrapper.risposta.mittente}"/>
+											</div>
+										</div>
+									</div>
+
+									<div class="mittente-response item form-group">
+										<div class="col-sm-2 col-xs-2 text-right">
+											<label class="control-label" th:text="#{label.oggetto}"></label>
+										</div>
+										<div class="col-xs-12 col-sm-10">
+											<div class="fixed-value">
+												<div class="comunicazione-input" th:text="'Re: ' + ${comunicazioneWrapper.comunicazione.oggetto}"></div>
+											</div>
+										</div>
+									</div>
+
+									<div class="divider"></div>
+
+									<div class="response-content row">
+										<div class="col-xs-12 item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.risposta.messaggio')} ? 'bad'">
+											<textarea class="response-testo" th:field="${comunicazioneWrapper.risposta.messaggio}"></textarea>
+											<div th:if="${#fields.hasErrors('comunicazioneWrapper.risposta.messaggio')}" class="alert" th:errors="${comunicazioneWrapper.risposta.messaggio}"></div>
+										</div>
+
+										<button type="button" class="btn btn-primary with-margin-top with-margin-left" onclick="alert('TODO')"><i class="fa fa-paperclip"></i> <span th:text="#{label.allega}" ></span></button>
+									</div>
+
+									<input id="submitButtonModal" type="submit" style="display: none;" />
+
+								</form>
+							</div>
+							<div class="modal-footer">
+								<label for="submitButtonModal" class="btn btn-success pull-right"><i class="fa fa-reply"></i> <span th:text="#{label.rispondi}">Rispondi</span></label>
+          						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.visualizzazione_comunicazione}"></h2>
+						<div class="pull-right buttons-header">
+							<a th:if="${comunicazioneWrapper.canRespond}" class="btn btn-success pull-right"
+									data-toggle="modal" data-target=".modal-response"
+									th:text="#{label.rispondi}">Rispondi</a>
+							<a class="btn btn-primary pull-right"
+									th:href="@{/comunicazione/dashboard}"
+									th:text="#{label.indietro}">Indietro</a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<div class="row">
+
+							<!-- CONTENT MAIL -->
+							<div id="comunicazione-head">
+								<div class="inbox-body">
+									<div class="mail_heading row">
+										<div class="col-xs-8">
+											<h4 th:text="#{label.oggetto} + ' ' + ${comunicazioneWrapper.comunicazione.oggetto}"></h4>
+										</div>
+										<div class="col-xs-4 text-right">
+											<p class="date" th:text="${#temporals.format(comunicazioneWrapper.comunicazione.dataCreazione, 'HH:mm - dd/MM/yyyy')}"></p>
+										</div>
+									</div>
+									<div class="sender-info">
+										<div class="row">
+											<div class="col-xs-12">
+												<strong th:text="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()} ? #{label.from_segreteria} : #{label.from_provider(${comunicazioneWrapper.comunicazione.mittente.username}, 'TODOproviderName')}"></strong>
+												<span th:text="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()} ? '&lt;' + #{label.segreteria_ecm_mail} + '&gt;' : '&lt;' + ${comunicazioneWrapper.comunicazione.mittente.email} + '&gt;'"></span>
+												<br/>
+												<th:block th:unless="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
+													<strong th:text="#{label.to_segreteria}"></strong>
+													<span th:text="'&lt;' + #{label.segreteria_ecm_mail} + '&gt;'"></span>
+												</th:block>
+												<th:block th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
+													<!--  un solo destinatario -->
+													<th:block th:if="${#lists.size(comunicazioneWrapper.comunicazione.destinatari) == 1}">
+														<strong th:text="#{label.to_provider(${comunicazioneWrapper.comunicazione.destinatari[0].username}, 'TODOproviderName')}"></strong>
+														<span th:text="'&lt;' + ${comunicazioneWrapper.comunicazione.destinatari[0].email} + '&gt;'"></span>
+													</th:block>
+													<!--  destinatari multipli -->
+													<th:block th:if="${#lists.size(comunicazioneWrapper.comunicazione.destinatari) gt 1}">
+														<strong th:text="#{label.to_provider_multipli}"></strong>
+														<a onclick="toggleDestinatari()" class="sender-dropdown clickable"><i class="fa fa-chevron-down toggleIcon"></i></a>
+														<div class="destinatari" style="display: none">
+															<div class="with-margin-left" th:each="destinatario, row : ${comunicazioneWrapper.comunicazione.destinatari}">
+																<strong th:text="#{label.to_provider(${destinatario.username}, 'TODOproviderName')}"></strong>
+																<span th:text="'&lt;' + ${destinatario.email} + '&gt;'"></span>
+															</div>
+														</div>
+													</th:block>
+												</th:block>
+												<br/>
+												<strong th:text="#{label.ambito}"></strong>
+												<span th:text="${comunicazioneWrapper.comunicazione.ambito}"></span>
+												<br/>
+												<strong th:text="#{label.tipologia}"></strong>
+												<span th:text="${comunicazioneWrapper.comunicazione.tipologia}"></span>
+											</div>
+										</div>
+									</div>
+									<div class="view-mail with-margin-top">
+										<pre class="comunicazione-messaggio" th:text="${comunicazioneWrapper.comunicazione.messaggio}"></pre>
+									</div>
+								</div>
+							</div>
+
+							<div class="divider-dashed with-margin-top"></div>
+							<div class="view-response with-margin-top"
+								th:unless="${#sets.isEmpty(comunicazioneWrapper.comunicazione.risposte)}"
+								th:each="risposta, row : ${comunicazioneWrapper.comunicazione.risposte}">
+
+								<!-- RISPOSTA -->
+								<div class="inbox-body">
+									<div class="mail_heading row">
+										<div class="col-xs-8">
+											<h4 th:text="'RE: ' + ${comunicazioneWrapper.comunicazione.oggetto}"></h4>
+										</div>
+										<div class="col-xs-4 text-right">
+											<p class="date" th:text="${#temporals.format(risposta.dataRisposta, 'HH:mm - dd/MM/yyyy')}"></p>
+										</div>
+									</div>
+									<div class="sender-info">
+										<div class="row">
+											<div class="col-xs-12">
+												<strong th:text="${risposta.mittente.isSegreteria()} ? #{label.from_segreteria} : #{label.from_provider(${risposta.mittente.username}, 'TODOproviderName')}"></strong>
+												<span th:text="${risposta.mittente.isSegreteria()} ? '&lt;' + #{label.segreteria_ecm_mail} + '&gt;' : '&lt;' + ${risposta.mittente.email} + '&gt;'"></span>
+											</div>
+										</div>
+									</div>
+									<div class="view-mail with-margin-top">
+										<pre class="risposta-messaggio" th:text="${risposta.messaggio}"></pre>
+									</div>
+								</div>
+							</div>
+							<strong class="view-response with-margin-top"
+								th:if="${#sets.isEmpty(comunicazioneWrapper.comunicazione.risposte)}"
+								th:text="#{label.nessuna_risposta}">
+							</strong>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				$(document).ready(function() {
+
+					if([[${replyError}]]) {
+						$("#response-modal").modal("show");
+					}
+
+			    });
+
+				function toggleDestinatari() {
+					$(".destinatari").slideToggle();
+					$(".toggleIcon").toggleClass("fa-chevron-down");
+					$(".toggleIcon").toggleClass("fa-chevron-up");
+				}
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

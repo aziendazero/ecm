@@ -132,7 +132,7 @@ public class ProviderServiceImpl implements ProviderService {
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerRegistrationWrapper) {
 		Provider provider = providerRegistrationWrapper.getProvider();
 		Persona legale = providerRegistrationWrapper.getLegale();
-		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true)
+		if(providerRegistrationWrapper.isDelegato())
 			legale.setRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
 		else
 			legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
@@ -148,7 +148,7 @@ public class ProviderServiceImpl implements ProviderService {
 		save(provider);
 
 		//Delegato consentito solo per alcuni tipi di Provider
-		if(providerRegistrationWrapper.getDelegato() != null && providerRegistrationWrapper.getDelegato() == true){
+		if(providerRegistrationWrapper.isDelegato()){
 			delega.setTipo(FileEnum.FILE_DELEGA);
 			fileService.save(delega);
 			legale.addFile(delega);

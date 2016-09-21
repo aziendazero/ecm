@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Profile;
+import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.SedutaService;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.HomeWrapper;
@@ -30,6 +32,7 @@ public class LoginController {
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderService providerService;
 	@Autowired private AccountService accountService;
+	@Autowired private SedutaService sedutaService;
 
 	@RequestMapping("/")
 	public String root(Locale locale) {
@@ -55,6 +58,7 @@ public class LoginController {
 
 	private HomeWrapper prepareHomeWrapper(CurrentUser currentUser) {
 		HomeWrapper wrapper = new HomeWrapper();
+		wrapper.setUser(currentUser.getAccount());
 		Iterator<Profile> iterator = currentUser.getAccount().getProfiles().iterator();
 		while(iterator.hasNext()) {
 			switch(iterator.next().getProfileEnum()) {
@@ -88,6 +92,10 @@ public class LoginController {
 					wrapper.setIsReferee(true);
 					wrapper.setDomandeInCarica(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId()));
 					wrapper.setDomandeNonValutateConsecutivamente(accountService.getUserById(currentUser.getAccount().getId()).getValutazioniNonDate());
+				case COMMISSIONE:
+					//TODO riempe i dati relativi alla commissione
+					wrapper.setIsCommissione(true);
+					wrapper.setProssimaSeduta(sedutaService.getNextSeduta());
 			}
 		}
 		return wrapper;

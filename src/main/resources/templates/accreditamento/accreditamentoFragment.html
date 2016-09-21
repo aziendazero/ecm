@@ -51,6 +51,7 @@
 											<div class="clearfix"></div>
 										</div>
 										<div class="x_content">
+											<div th:if="${editabile}" th:text="#{label.info_blocco_legali}" class="alert alert-info"></div>
 											<table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${'datatable-responsive-accreditamento-'+mode}">
 												<thead>
 													<tr>
@@ -98,8 +99,8 @@
 															<span style="white-space: nowrap">
 																<button th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'LEGALE_RAPPRESENTANTE'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).LEGALE_RAPPRESENTANTE__FULL)}" type="button" onclick="setEditURLs('LEGALE_RAPPRESENTANTE')" class="btn btn-success btn-table double" data-toggle="modal" data-target=".modal-scelta"><i class="fa fa-sign-in"></i> <span th:text="#{label.assegna}">Assegna</span></button>
 																<button th:unless="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'LEGALE_RAPPRESENTANTE'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).LEGALE_RAPPRESENTANTE__FULL)}" type="button" class="btn btn-success btn-table double disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.assegna}">Assegna</span></button>
-																<a th:if="${accreditamentoWrapper.legaleRappresentante != null and !#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'LEGALE_RAPPRESENTANTE'))}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/edit|}" class="btn btn-primary btn-table double"><i class="fa fa-pencil"></i> <span th:text="#{label.modifica}">Modifica</span></a>
-																<a th:if="${accreditamentoWrapper.legaleRappresentante == null or #lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'LEGALE_RAPPRESENTANTE'))}" class="btn btn-primary btn-table double disabled"><i class="fa fa-pencil"></i> <span th:text="#{label.modifica}">Modifica</span></a>
+																<a th:if="${accreditamentoWrapper.legaleRappresentante != null and !#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'LEGALE_RAPPRESENTANTE'))}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/edit|}" class="btn btn-primary btn-table double"><i class="fa fa-pencil"></i> <span th:text="#{label.completa}">Completa</span></a>
+																<a th:if="${accreditamentoWrapper.legaleRappresentante == null or #lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'LEGALE_RAPPRESENTANTE'))}" class="btn btn-primary btn-table double disabled"><i class="fa fa-pencil"></i> <span th:text="#{label.completa}">Completa</span></a>
 															</span>
 														</td>
 														<td th:if="${valutabile}">
@@ -262,7 +263,7 @@
 								<div class="col-xs-12">
 									<div class="x_panel">
 										<div class="x_title">
-											<h2 th:text="#{label.richiesta_accreditamento}">label.richiesta_accreditamento</h2>
+											<h2 th:text="#{label.dati_di_accreditamento}">label.dati_di_accreditamento</h2>
 											<div class="clearfix"></div>
 										</div>
 										<div class="x_content">
@@ -566,6 +567,7 @@
 							<!--  TAB 3 -->
 							<div class="row">
 								<div class="col-xs-12">
+									<div th:if="${editabile}" th:text="#{label.info_inserimento_piano_formativo}" class="alert alert-info"></div>
 									<div class="x_panel">
 										<div class="x_title">
 											<h2 th:text="#{label.allegati}">allegati</h2>
@@ -595,6 +597,26 @@
 														<td th:if="${editabile}">
 															<a th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
 															<a th:unless="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO)}" class="btn btn-success btn-table single disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+														</td>
+														<td th:if="${valutabile}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
+													</tr>
+													<!-- ALLEGATO DICHIARAZIONE ESCLUSIONE -->
+													<tr>
+														<td><a th:text="#{label.dichiarazioneEsclusione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show${urlParam}|}"></a></td>
+														<td	th:if="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
+															<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
+														</td>
+														<td	th:unless="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
+															<i class="fa table-icon fa-remove" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.facoltativo')}" th:classappend="${valutabile ? 'red' : 'grey'}"></i>
+														</td>
+														<td th:if="${editabile}">
+															<a th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+															<a th:unless="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE)}" class="btn btn-success btn-table single disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
 														</td>
 														<td th:if="${valutabile}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
@@ -714,28 +736,6 @@
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 														</td>
 													</tr>
-													<!-- ALLEGATO DICHIARAZIONE ESCLUSIONE -->
-													<tr>
-														<td><a th:text="#{label.dichiarazioneEsclusione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show${urlParam}|}"></a></td>
-														<th:block th:unless="${enableField}">
-															<td	th:if="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
-																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
-															</td>
-															<td	th:unless="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
-																<i class="fa table-icon fa-remove" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.facoltativo')}" th:classappend="${valutabile ? 'red' : 'grey'}"></i>
-															</td>
-														</th:block>
-														<td th:if="${editabile}">
-															<a th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
-															<a th:unless="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE)}" class="btn btn-success btn-table single disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
-														</td>
-														<td th:if="${valutabile}">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
-														</td>
-														<td th:if="${enableField}">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
-														</td>
-													</tr>
 												</tbody>
 											</table>
 										</div>
@@ -825,7 +825,7 @@
 							{"targets": 2, "width": "92px", "sClass": "center"}
 						]
 					});
-					
+
 					//table responsive generica enableField
 					$('.datatable-responsive-accreditamento-enableField').DataTable({
 						"bFilter" : false,
@@ -836,7 +836,7 @@
 							{"targets": 1, "width": "92px", "sClass": "center"}
 						]
 					});
-					
+
 					//table responsive allegati edit e validate
 					$('.datatable-responsive-allegati').DataTable({
 						"bFilter" : false,
@@ -886,7 +886,7 @@
 							{ "targets": 5, "width": "92px", "sClass": "center" }
 						],
 					});
-					
+
 					//table responsive comitato scientifico enableField
 					$('.datatable-responsive-comitato-enableField').DataTable({
 						"bFilter" : false,
@@ -957,7 +957,7 @@
 						"ordering" : false,
 						"autoWidth": false,
 						"columnDefs": [
-							{ "targets": 1, "width": "210px", "sClass": "center" },
+							{ "targets": 3, "width": "210px", "sClass": "center" },
 						],
 					});
 
@@ -968,7 +968,7 @@
 						"bPaginate" : false,
 						"ordering" : false,
 						"columnDefs": [ {
-							"targets": 1,
+							"targets": 3,
 							"width": "70px",
 							"sClass": "center"
 						} ],
@@ -982,8 +982,8 @@
 						"ordering" : false,
 						"autoWidth": false,
 						"columnDefs": [
-							{ "targets": 1, "width": "70px", "sClass": "center" },
-							{ "targets": 2, "width": "92px", "sClass": "center" }
+							{ "targets": 3, "width": "70px", "sClass": "center" },
+							{ "targets": 4, "width": "92px", "sClass": "center" }
 						],
 					});
 
@@ -995,7 +995,7 @@
 						"ordering" : false,
 						"autoWidth": false,
 						"columnDefs": [
-							{ "targets": 1, "width": "70px", "sClass": "center" }
+							{ "targets": 3, "width": "70px", "sClass": "center" }
 						],
 					});
 

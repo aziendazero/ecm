@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class ProviderRegistrationWrapper {
 	private Provider provider;
-	private Boolean delegato;
+	private boolean delegato = false;
 	private File delega;
 	private Persona legale;
 	private AccreditamentoStatoEnum statoAccreditamento;
