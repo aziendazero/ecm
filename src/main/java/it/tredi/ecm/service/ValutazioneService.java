@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -21,4 +22,5 @@ public interface ValutazioneService {
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndObjectId(Long accreditamentoId, Long id);
 	public int countRefereeNotValutatoriForAccreditamentoId(Long accreditamentoId);
 	public Set<Account> getAccountValutatoriWithDataForAccreditamentoId(Long accreditamentoId);
+	public Map<Long, Account> getValutatoreSegreteriaForAccreditamentiList(Set<Accreditamento> accreditamentoSet);
 }

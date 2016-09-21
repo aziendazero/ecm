@@ -770,7 +770,9 @@ public class AccreditamentoController {
 	@RequestMapping("/accreditamento/{gruppo}/list")
 	public String getAllAccreditamentiForGruppo(@PathVariable("gruppo") String gruppo, Model model,
 			@RequestParam(name="tipo", required = false) String tipo,
-			@RequestParam(name="filterTaken", required = false) Boolean filterTaken, RedirectAttributes redirectAttrs) throws Exception{
+			@RequestParam(name="filterTaken", required = false) Boolean filterTaken,
+			@RequestParam(name="showCarica", required = false) Boolean showCarica,
+			RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list, tipo = " + tipo + ", filterTaken = " + filterTaken));
 		try {
 			Set<Accreditamento> listaAccreditamenti = new HashSet<Accreditamento>();
@@ -803,6 +805,13 @@ public class AccreditamentoController {
 				label= "label.listaDomandePreavvisoRigetto" + stringTipo;
 			if (gruppo.equals("assegnamento"))
 				label = "label.listaDomandeDaRiassegnare" + stringTipo;
+
+			Map<Long, Account> mappaCarica = new HashMap<Long, Account>();
+			//prende la mappa<id domanda, account di chi ha preso in carica la domanda> per la lista di accreditamenti
+			if (showCarica != null && showCarica == true) {
+				mappaCarica = valutazioneService.getValutatoreSegreteriaForAccreditamentiList(listaAccreditamenti);
+				model.addAttribute("mappaCarica", mappaCarica);
+			}
 			model.addAttribute("label", label);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);

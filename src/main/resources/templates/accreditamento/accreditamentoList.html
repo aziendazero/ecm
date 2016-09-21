@@ -43,6 +43,7 @@
 										<th th:text="#{label.accreditamento_validazione}">Datavalidazione</th>
 										<th th:text="#{label.accreditamento_scadenza}">Scadenza</th>
 									</th:block>
+									<th th:if="${mappaCarica != null}" th:text="#{label.presa_in_carico_da}">Presa in carico da</th>
 								</tr>
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(accreditamentoList)}" th:remove="all-but-first">
@@ -57,6 +58,7 @@
 										<td th:text="${accreditamento.dataValutazioneCrecm  == null} ? '' : ${#temporals.format(accreditamento.dataValutazioneCrecm, 'dd/MM/yyyy')}">24/05/2014</td>
 										<td th:text="${accreditamento.dataScadenza  == null} ? '' : ${#temporals.format(accreditamento.dataScadenza, 'dd/MM/yyyy')}">24/05/2016</td>
 									</th:block>
+									<td th:if="${mappaCarica != null}" th:text="${(mappaCarica.get(accreditamento.id) != null) ? (mappaCarica.get(accreditamento.id).nome + ' ' + mappaCarica.get(accreditamento.id).cognome) : 'N\D'}">Presa in carico da</td>
 								</tr>
 							</tbody>
 						</table>
