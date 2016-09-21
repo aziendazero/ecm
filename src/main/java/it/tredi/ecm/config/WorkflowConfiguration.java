@@ -1,19 +1,12 @@
 package it.tredi.ecm.config;
 
-import java.util.Properties;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-
 import it.tredi.bonita.api.IBonitaAPIWrapper;
 import it.tredi.bonita7.Bonita7APIWrapper;
 
 @Configuration
-@PropertySource("classpath:workflow.properties")
 public class WorkflowConfiguration {
 
 	/*
