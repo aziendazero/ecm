@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -62,7 +63,7 @@ public class SedutaController {
 
 	/***	Get Lista Sedute ***/
 
-//	@PreAuthorize("@securityAccessServiceImpl.canShowSedute(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canShowSeduta(principal)")
 	@RequestMapping("/seduta/list")
 	public String getAllSedute(Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET /seduta/list"));
@@ -83,7 +84,7 @@ public class SedutaController {
 
 	/*** Inserisce nuova Seduta ***/
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping("/seduta/new")
 	public String insertSeduta(@RequestParam(name = "date", required = false) String date, Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET /seduta/new"));
@@ -101,7 +102,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping(value = "/seduta/save", method = RequestMethod.POST)
 	public String salvaSeduta(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("POST /seduta/save"));
@@ -126,7 +127,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canShowSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canShowSeduta(principal)")
 	@RequestMapping("/seduta/{sedutaId}/show")
 	public String visualizzaSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/show"));
@@ -141,7 +142,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping("/seduta/{sedutaId}/edit")
 	public String modificaSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/edit"));
@@ -156,7 +157,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping("/seduta/{sedutaId}/handle")
 	public String modificaValutazioniCommissioneSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/handle"));
@@ -171,7 +172,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping("/seduta/{sedutaId}/validate")
 	public String inserisciValutazioneValutazioniCommissioneSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/validate"));
@@ -186,7 +187,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping("/seduta/{sedutaId}/remove")
 	public String rimuoviSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/remove"));
@@ -208,7 +209,7 @@ public class SedutaController {
 
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping(value= "/seduta/{sedutaId}/valutazioneCommissione/save", method = RequestMethod.POST)
 	public String aggiungiValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result,
 			Model model, RedirectAttributes redirectAttrs){
@@ -235,7 +236,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping("/seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/remove")
 	public String rimuoviValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
 			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs){
@@ -252,7 +253,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping(value = "/seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/move", method = RequestMethod.POST)
 	public String spostaValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
 			@PathVariable Long valutazioneCommissioneId, @RequestParam(required = false) String caller, Model model, RedirectAttributes redirectAttrs){
@@ -301,7 +302,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping(value = "/seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/validate", method = RequestMethod.POST)
 	public String valutaValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
 			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs){
@@ -332,7 +333,7 @@ public class SedutaController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping("/seduta/{sedutaId}/lock")
 	public String bloccaSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		try {

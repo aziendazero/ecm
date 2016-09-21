@@ -29,4 +29,7 @@ public interface SecurityAccessService {
 	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId);
 	
 	public boolean canShowGruppo(CurrentUser currentUser, String gruppo);
+	
+	public boolean canShowSeduta(CurrentUser currentUser);
+	public boolean canEditSeduta(CurrentUser currentUser);
 }

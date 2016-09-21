@@ -226,4 +226,19 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) {
 		return accreditamentoService.canUserInviaIntegrazione(accreditamentoId, currentUser);
 	}
+	
+	@Override
+	public boolean canShowSeduta(CurrentUser currentUser) {
+		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm())
+			return true;
+		return false;
+	}
+	
+	@Override
+	public boolean canEditSeduta(CurrentUser currentUser) {
+		if(currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+	
 }
