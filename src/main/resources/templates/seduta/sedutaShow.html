@@ -12,6 +12,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.visualizzazione_seduta(${#temporals.format(sedutaWrapper.seduta.data, 'dd/MM/yyyy')})}">Seduta</h2>
 						<div class="pull-right buttons-header">
+							<a th:if="${sedutaWrapper.canBloccaSeduta == true}" class="btn btn-warning pull-right" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/bloccaSeduta|}">Blocca Seduta</a>
 							<div class="dropdown pull-right">
 								<a class="btn btn-primary" th:text="#{label.indietro}" th:href="@{|/seduta/list|}"></a>
 

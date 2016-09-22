@@ -243,7 +243,7 @@ public class DatiAccreditamentoController {
 				integrazioneService.detach(wrapper.getProvider());
 			}
 			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: DatiAccreditamentoSave:__AFTER SET__"));
-			integrazioneService.isManaged(wrapper.getDatiAccreditamento());
+			//integrazioneService.isManaged(wrapper.getDatiAccreditamento());
 			
 			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
 
@@ -291,10 +291,11 @@ public class DatiAccreditamentoController {
 		datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), wrapper.getAccreditamentoId());
 	}
 	
-	/*** SAVE VALUTAZIONE ***/
+	/*** SAVE VALUTAZIONE 
+	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/validate", method = RequestMethod.POST)
 	public String valutaDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
-											@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
+											@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model) throws Exception{
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/dati/validate"));
 		try {
 			//validazione del provider

@@ -97,6 +97,7 @@ public class AccreditamentoWrapper {
 	private boolean canAssegnaNuovoGruppo;
 	private boolean canConfermaValutazione;
 	private boolean canPresaVisione;
+	private boolean canEnableField;
 
 	//int referee da riassegnare
 	private int refereeDaRiassegnare = 0;

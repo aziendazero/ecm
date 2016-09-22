@@ -66,16 +66,16 @@ public class AccreditamentoController {
 	@Autowired private ProviderService providerService;
 	@Autowired private PersonaService personaService;
 	@Autowired private SedeService sedeService;
-
+	
 	@Autowired private AccountService accountService;
-
+	
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private TokenService tokenService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
-
-	@Autowired private IntegrazioneService integrazioneService;
-	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+	
+	@Autowired private IntegrazioneService integrazioneService; 
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService; 
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -228,12 +228,12 @@ public class AccreditamentoController {
 		}
 	}
 
-	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento) {
+	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento) throws Exception{
 		return goToAccreditamentoShow(model, accreditamento, null);
 	}
 
 	//passo il wrapper che contiene solo la lista dei referee riassegnati
-	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper){
+	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper) throws Exception{
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperShow(accreditamento, wrapper);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		if(accreditamentoWrapper.isCanAssegnaNuovoGruppo()) {
@@ -256,12 +256,12 @@ public class AccreditamentoController {
 		return "accreditamento/accreditamentoEdit";
 	}
 
-	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento) {
+	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento) throws Exception {
 		return goToAccreditamentoValidate(model, accreditamento, null);
 	}
 
 	//passo il wrapper che contiene solo la valutazione complessiva e la lista dei referee selezionati
-	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper){
+	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper) throws Exception{
 		//carico la valutazione dell'utente corrente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento, valutazione, wrapper);
@@ -452,8 +452,8 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}/edit";
 		}
 	}
-
-
+	
+	
 
 	/*** METODI PRIVATI PER IL SUPPORTO ***/
 	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento){
@@ -464,14 +464,14 @@ public class AccreditamentoController {
 			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
 			accreditamentoWrapper.setCanSendIntegrazione(accreditamentoService.canUserInviaIntegrazione(accreditamento.getId(),Utils.getAuthenticatedUser()));
 		}
-
+		
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, AccreditamentoWrapperModeEnum.EDIT);
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
 	}
 
-	private AccreditamentoWrapper prepareAccreditamentoWrapperShow(Accreditamento accreditamento, AccreditamentoWrapper accreditamentoWrapper){
+	private AccreditamentoWrapper prepareAccreditamentoWrapperShow(Accreditamento accreditamento, AccreditamentoWrapper accreditamentoWrapper) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - entering"));
 
 		if(accreditamentoWrapper == null)
@@ -486,7 +486,8 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setCanPrendiInCarica(accreditamentoService.canUserPrendiInCarica(accreditamento.getId(), user));
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), user));
 		accreditamentoWrapper.setCanShowValutazioneRiepilogo(accreditamentoService.canUserValutaDomandaShowRiepilogo(accreditamento.getId(), user));
-
+		accreditamentoWrapper.setCanEnableField(accreditamentoService.canUserEnableField(user, accreditamento.getId()));
+		
 		//controllo se l'utente può visualizzare la valutazione
 		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), user));
 
@@ -510,7 +511,7 @@ public class AccreditamentoController {
 		return accreditamentoWrapper;
 	}
 
-	private AccreditamentoWrapper prepareAccreditamentoWrapperValidate(Accreditamento accreditamento, Valutazione valutazione, AccreditamentoWrapper accreditamentoWrapper){
+	private AccreditamentoWrapper prepareAccreditamentoWrapperValidate(Accreditamento accreditamento, Valutazione valutazione, AccreditamentoWrapper accreditamentoWrapper) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - entering"));
 
 		if(accreditamentoWrapper == null)
@@ -603,20 +604,20 @@ public class AccreditamentoController {
 
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode);
 	}
-
+	
 	private void integrazionePrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper){
 		Set<Sede> sediIntegrazione = sedeService.getSediFromIntegrazione(accreditamentoWrapper.getProvider().getId());
 		for(Sede s : sediIntegrazione){
 			if(s.isDirty())
 				accreditamentoWrapper.getSedi().add(s);
 		}
-
+		
 		Set<Persona> comitatoIntegrazione = personaService.getComponentiComitatoScientificoFromIntegrazione(accreditamentoWrapper.getProvider().getId());
 		for(Persona p : comitatoIntegrazione){
 			if(p.isDirty())
 				accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
 		}
-
+		
 		accreditamentoWrapper.setAggiunti(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.CREAZIONE));
 		accreditamentoWrapper.setEliminati(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.ELIMINAZIONE));
 	}
@@ -629,20 +630,7 @@ public class AccreditamentoController {
 	public String prendiInCaricoAccreditamento(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/takeCharge"));
 		try {
-			Valutazione valutazione = new Valutazione();
-
-			//utente corrente che prende in carico
-			Account segretarioEcm = Utils.getAuthenticatedUser().getAccount();
-			valutazione.setAccount(segretarioEcm);
-
-			//accreditamento
-			valutazione.setAccreditamento(accreditamentoService.getAccreditamento(accreditamentoId));
-
-			//tipo di valutatore
-			valutazione.setTipoValutazione(ValutazioneTipoEnum.SEGRETERIA_ECM);
-
-			valutazioneService.save(valutazione);
-
+			accreditamentoService.prendiInCarica(accreditamentoId, Utils.getAuthenticatedUser());
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.presa_in_carico", "success"));
 			return "redirect:/accreditamento/{accreditamentoId}/validate";
 		}catch (Exception ex){
@@ -744,14 +732,15 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
 	}
-
+	
 	/***	INVIA DOMANDA RICHIESTA_INTEGRAZIONE	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/sendRichiestaIntegrazione")
 	public String sendRichiestaIntegrazione(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"));
 		try{
-			accreditamentoService.inviaRichiestaIntegrazione(accreditamentoId);
+			//TODO modale per prendere i giorni
+			accreditamentoService.inviaRichiestaIntegrazione(accreditamentoId, 1L);
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"),ex);
@@ -760,7 +749,7 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{id}/enableField";
 		}
 	}
-
+	
 	/***	INVIA DOMANDA INTEGRAZIONE	***/
 	@PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sendIntegrazione")

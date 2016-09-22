@@ -26,24 +26,28 @@ public interface AccreditamentoService{
 	public void save(Accreditamento accreditamento);
 	public void inserisciPianoFormativo(Long accreditamentoId);
 
-	public void inviaDomandaAccreditamento(Long accreditamentoId);
-	//PRENDI IN CARICA??
+	public void inviaDomandaAccreditamento(Long accreditamentoId) throws Exception;
+	public void prendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) throws Exception;
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup);
-	// TODO ?? INVIA VALUTAZIONE COMMISSIONE	
-	public void inviaRichiestaIntegrazione(Long accreditamentoId);
+	public void inserisciInValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser) throws Exception;
+	public void inviaValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception;
+	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaIntegrazione(Long accreditamentoId);
 	public void presaVisione(Long accreditamentoId);
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva);
 
-	//Controlli valutazione
 	//modifica??
 	//inserisciPianoFormativo
 	//invia domanda
-	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser);
-	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser);//goto Validate
+	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserValutaDomandaShow(Long id, CurrentUser authenticatedUser);
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canUserInviaAValutazioneCommissione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	
+	public boolean canUserInserisciValutazioneCommissione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserEnableField(CurrentUser currentUser);
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser);
@@ -70,4 +74,5 @@ public interface AccreditamentoService{
 	public Set<Accreditamento> getAllAccreditamentiInviati();
 	public int countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
+	boolean canUserEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception;
 }

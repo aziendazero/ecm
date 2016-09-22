@@ -22,8 +22,8 @@ public interface SecurityAccessService {
 	
 	public boolean canShowFile(CurrentUser currentUser, Long fileId);
 	
-	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId);
-	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId);
+	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId) throws Exception;
+	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId) throws Exception;
 	
 	public boolean canEnableField(CurrentUser currentUser);
 	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId);

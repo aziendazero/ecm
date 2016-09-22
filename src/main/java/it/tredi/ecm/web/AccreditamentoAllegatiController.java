@@ -251,10 +251,11 @@ public class AccreditamentoAllegatiController {
 		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);
 	}
 
-	/***	 SAVE VALUTAZIONE ALLEGATI ACCREDITAMENTO	***/
+	/***	 SAVE VALUTAZIONE ALLEGATI ACCREDITAMENTO	
+	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/validate", method = RequestMethod.POST)
 	public String valutaAllegatiAccreditamento(@ModelAttribute("accreditamentoAllegatiWrapper") AccreditamentoAllegatiWrapper wrapper, BindingResult result,
-			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
+			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model) throws Exception{
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/"+ accreditamentoId +"/allegati/validate"));
 		try {
 			//validazione dei file allegati accreditamento
