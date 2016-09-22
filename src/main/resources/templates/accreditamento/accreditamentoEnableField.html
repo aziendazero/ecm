@@ -6,6 +6,46 @@
 </head>
 <body>
 	<div layout:fragment="content">
+
+		<!-- modale inserimento giorni per effettuare l'integrazione -->
+		<div id="integrazione-modal" class="modal fade modal-integrazione"
+			data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel"
+							th:text="#{label.inserimento_giorni_integrazione}"></h4>
+					</div>
+					<div class="modal-body">
+						<form id="formGiorniIntegrazione" class="form-horizontal"
+							th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sendRichiestaIntegrazione|}"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+
+							<select class="selectpicker required"
+									data-width="100%" data-style="btn-primary"
+									name="giorniIntegrazione"
+									data-actions-box="false" data-size="10"
+									data-hide-disabled="false">
+									<option th:each="i : ${#numbers.sequence(giorniIntegrazioneMin, giorniIntegrazioneMax)}" th:value="${i}" th:text="${i}"></option>
+								</select>
+
+							<input id="submitButtonModal" type="submit" style="display: none;" />
+
+						</form>
+					</div>
+					<div class="modal-footer">
+        				<label for="submitButtonModal" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
+        				<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+      				</div>
+				</div>
+			</div>
+		</div>
+
+
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -13,7 +53,7 @@
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.codiceFiscale + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
 							<button type="button" class="btn btn-primary" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></button>
-							<a th:text="#{label.invia_richiesta_integrazione}" class="btn btn-success btn-primary" th:if="${userCanSendRichiestaIntegrazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sendRichiestaIntegrazione|}"></a>
+							<a th:text="#{label.invia_richiesta_integrazione}" class="btn btn-success btn-primary" th:if="${userCanSendRichiestaIntegrazione}" data-toggle="modal" data-target=".modal-integrazione"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
@@ -42,16 +82,16 @@
 					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/|}]] + mode + param;
 					location.href = url;
 				}
-				
+
 				//gestione ablita/disabilita FULL del comitato scientifico e del piano formativo in accreditamento
 				$('#abilitaComitatoFull').on('ifChecked', function(event){
 					ajaxCallToEnableFieldFull('#abilitaComitatoFull');
 				});
-				
+
 				$('#abilitaComitatoFull').on('ifUnchecked', function(event){
 					ajaxCallToEnableFieldFull('#abilitaComitatoFull');
 				});
-				
+
 				$('#abilitaPianoFormativoFull').on('ifChecked', function(event){
 					ajaxCallToEnableFieldFull('#abilitaPianoFormativoFull');
 				});
@@ -59,7 +99,7 @@
 				$('#abilitaPianoFormativoFull').on('ifUnchecked', function(event){
 					ajaxCallToEnableFieldFull('#abilitaPianoFormativoFull');
 				});
-				
+
 				$('#abilitaSediFull').on('ifChecked', function(event){
 					ajaxCallToEnableFieldFull('#abilitaSediFull');
 				});
@@ -67,7 +107,7 @@
 				$('#abilitaSediFull').on('ifUnchecked', function(event){
 					ajaxCallToEnableFieldFull('#abilitaSediFull');
 				});
-				
+
 				function ajaxCallToEnableFieldFull(checkboxId){
 					var field = $(checkboxId).val() ;
 					var state = $(checkboxId).is(':checked');
