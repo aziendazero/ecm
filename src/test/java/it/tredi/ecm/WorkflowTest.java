@@ -235,7 +235,7 @@ public class WorkflowTest {
 		usernameWorkflowValutatoriCrecm.add("referee1");
 		usernameWorkflowValutatoriCrecm.add("referee2");
 		usernameWorkflowValutatoriCrecm.add("referee3");
-		workflowService.eseguiTaskValutazioneAssegnazioneCrecmForUser(currentUser, accreditamento, usernameWorkflowValutatoriCrecm);
+		workflowService.eseguiTaskValutazioneAssegnazioneCrecmForUser(currentUser, accreditamento, usernameWorkflowValutatoriCrecm, usernameWorkflowValutatoriCrecm.size() - 1);
 		System.out.println("-- eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser --");
 		System.out.println("OK");
 	}

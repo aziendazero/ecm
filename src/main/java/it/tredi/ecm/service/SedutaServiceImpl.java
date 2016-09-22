@@ -8,18 +8,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.validator.internal.util.privilegedactions.SetAccessibility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.SedutaRepository;
 import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.utils.Utils;
 import lombok.val;
 
 @Service
@@ -31,6 +35,8 @@ public class SedutaServiceImpl implements SedutaService {
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private WorkflowService workflowService;
+	@Autowired private EmailService emailService;
+	@Autowired private AccountService accountService;
 
 	@Override
 	public Set<Seduta> getAllSedute() {
@@ -191,6 +197,13 @@ public class SedutaServiceImpl implements SedutaService {
 			return prossimaSedutaOggi;
 		else
 			return sedutaRepository.findFirstByDataAfterOrderByDataAsc(oggi);
+	}
+	
+	@Override
+	public void inviaMailACommissioneEcm() throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Inio email ai componenti della Commissione ECM"));
+		Set<String> commissioneECM = accountService.getEmailByProfileEnum(ProfileEnum.COMMISSIONE);
+		emailService.inviaConvocazioneACommissioneECM(commissioneECM);
 	}
 
 }
