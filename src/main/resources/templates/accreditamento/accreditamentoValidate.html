@@ -177,7 +177,10 @@
 								<li class="divider actions"></li>
 								<li><a th:if="${accreditamentoWrapper.canConfermaValutazione}"
 									th:text="#{label.conferma_valutazione}" data-toggle="modal" data-target=".modal-confirm"></a></li>
-								<li><a th:if="${accreditamentoWrapper.canPresaVisione}" th:text="#{label.presa_visione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/presaVisione|}"></a></li>
+								<th:block th:if="${accreditamentoWrapper.canPresaVisione}">
+									<li><a th:text="#{label.presa_visione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/presaVisione|}"></a></li>
+									<li><a th:text="#{label.rivaluta}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/rivaluta|}"></a></li>
+								</th:block>
 							</ul>
 						</div>
 						<div class="clearfix"></div>

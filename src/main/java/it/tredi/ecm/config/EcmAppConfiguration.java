@@ -22,6 +22,8 @@ public class EcmAppConfiguration {
 	private String applicationBaseUrl = "http://localhost:8080/";
 	@Value("${email.segreteriaEcm}")
 	private String emailSegreteriaEcm = "segreteria@ecm.it";
+	@Value("${debugTestMode}")
+	private boolean debugTestMode = false;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -31,6 +33,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setSedutaValidationMinutes(sedutaValidationMinutes);
 		ecmProperties.setApplicationBaseUrl(applicationBaseUrl);
 		ecmProperties.setEmailSegreteriaEcm(emailSegreteriaEcm);
+		ecmProperties.setDebugTestMode(debugTestMode);
 		return ecmProperties;
 	}
 }

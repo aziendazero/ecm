@@ -241,7 +241,7 @@ public class ProviderController {
 	}
 
 	/*** ENABLE_FIELD ***/
-	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/enableField")
 	public String enableFieldProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){

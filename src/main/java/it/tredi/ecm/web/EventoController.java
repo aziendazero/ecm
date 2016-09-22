@@ -289,7 +289,7 @@ public class EventoController {
 	/*
 	 * ENABLE FIELD EVENTO IN PIANO FORMATIVO (accreditamento)
 	 */
-	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#accreditamentoId)")
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/enableField")
 	public String enableFieldEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs) {

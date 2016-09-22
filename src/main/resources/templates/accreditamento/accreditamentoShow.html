@@ -98,6 +98,7 @@
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.codiceFiscale + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
+								<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/runtimeTest|}" type="button" class="btn btn-primary pull-right">RunTimeTest</a>
 								<a class="btn btn-primary ajaxCallShowAll" th:text="#{label.mostra_riepilogo}" data-toggle="modal" data-target=".modal-showAll"></a>
   								<a class="btn btn-primary ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni" th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button"></a>
 
