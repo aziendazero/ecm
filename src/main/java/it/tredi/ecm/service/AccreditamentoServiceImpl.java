@@ -373,7 +373,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	@Transactional
 	public void inviaIntegrazione(Long accreditamentoId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Integrazione della domanda " + accreditamentoId + " inviata alla segreteria per essere valutata"));
 
@@ -389,8 +388,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(fieldModificati == null || fieldModificati.isEmpty()){
 			//elimina data valutazione
 			Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
-			if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM)
+			if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
 				valutazione.setDataValutazione(null);
+				valutazioneService.save(valutazione);
+			}
 		}
 		
 		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
@@ -413,6 +414,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					}
 				}
 			}
+			valutazioneService.save(valutazione);
 		}
 		
 		workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
