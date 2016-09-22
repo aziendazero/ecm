@@ -204,8 +204,8 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	}
 	
 	@Override
-	public boolean canEnableField(CurrentUser currentUser) {
-		return accreditamentoService.canUserEnableField(currentUser);
+	public boolean canEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception {
+		return accreditamentoService.canUserEnableField(currentUser, accreditamentoId);
 	}
 	
 	@Override

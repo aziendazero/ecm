@@ -29,12 +29,14 @@ public interface AccreditamentoService{
 	public void inviaDomandaAccreditamento(Long accreditamentoId) throws Exception;
 	public void prendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) throws Exception;
-	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup);
+	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup) throws Exception;
 	public void inserisciInValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser) throws Exception;
 	public void inviaValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception;
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
+	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaIntegrazione(Long accreditamentoId) throws Exception;
 	public void presaVisione(Long accreditamentoId) throws Exception;
+	public void rivaluta(Long accreditamentoId);
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 
 	//modifica??
@@ -49,8 +51,7 @@ public interface AccreditamentoService{
 	public boolean canUserInserisciValutazioneCommissione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
-	public boolean canUserEnableField(CurrentUser currentUser);
-	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserPresaVisione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 

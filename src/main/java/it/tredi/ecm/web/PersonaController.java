@@ -263,7 +263,7 @@ public class PersonaController {
 	}
 
 	/***	ENABLEFIELD PERSONA ***/
-	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{id}/enableField")
 	public String enableFieldPersona(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long id, Model model){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/enableField"));

@@ -195,7 +195,7 @@ public class DatiAccreditamentoController {
 	};
 	
 	/***	ENABLEFIELD	***/
-	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/{id}/enableField")
 	public String enabelFieldDatiAccreditamento(@PathVariable Long id, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/enableField"));

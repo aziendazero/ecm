@@ -43,6 +43,13 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	
 	@Override
 	@Transactional
+	public void saveSet(Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) {
+		LOGGER.debug(Utils.getLogMessage("Salvataggio lista di FieldIntegrazioneAccreditamento"));
+		fieldIntegrazioneAccreditamentoRepository.save(fieldIntegrazioneList);
+	}
+	
+	@Override
+	@Transactional
 	public void delete(Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) {
 		LOGGER.debug(Utils.getLogMessage("Eliminazione lista di FieldIntegrazioneAccreditamento"));
 		for(FieldIntegrazioneAccreditamento f : fieldIntegrazioneList)

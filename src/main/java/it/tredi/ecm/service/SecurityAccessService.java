@@ -25,7 +25,7 @@ public interface SecurityAccessService {
 	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId) throws Exception;
 	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId) throws Exception;
 	
-	public boolean canEnableField(CurrentUser currentUser);
+	public boolean canEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception;
 	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) throws Exception;
 	
 	public boolean canShowGruppo(CurrentUser currentUser, String gruppo);
