@@ -36,16 +36,6 @@
 				<div class="row" th:if="${homeWrapper.isProvider}">
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="show('XXX')">
 						<div class="tile-stats clickable">
-							<div class="icon"><i th:class="${homeWrapper.messaggi == 1 ? 'fa fa-comment-o' : 'fa fa-comments-o'}"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.messaggi}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.messaggi == 1 ? #messages.msg('label.messaggio') : #messages.msg('label.messaggi')}"></h3>
-			                	<p class="count-text" th:text="#{label.da_leggere}">Da leggere</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="show('XXX')">
-						<div class="tile-stats clickable">
 							<div class="icon"><i class="fa fa-euro"></i></div>
 							<div class="col-xs-10">
 			                	<div class="count" th:text="${homeWrapper.eventiDaPagare}"></div>
@@ -54,7 +44,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="show('XXX')">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/integrazione/list')">
 						<div class="tile-stats clickable">
 							<div class="icon"><i class="fa fa-edit"></i></div>
 							<div class="col-xs-10">
