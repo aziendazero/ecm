@@ -163,8 +163,8 @@ body.nav-sm span.fa, body.nav-sm .menu_section h3 {
 }
 .nav_menu {
   float: left;
-  /*background: #F4F6F9;
-    border-bottom: 1px solid #E6E9ED;*/
+/*  	background: #F4F6F9; */
+/*     border-bottom: 1px solid #E6E9ED; */
   background: #EDEDED;
   border-bottom: 1px solid #D9DEE4;
   margin-bottom: 10px;
