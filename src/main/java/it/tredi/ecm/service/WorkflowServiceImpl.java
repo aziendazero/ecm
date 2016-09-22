@@ -239,12 +239,16 @@ public class WorkflowServiceImpl implements WorkflowService {
 	}
 
 	public List<AccreditamentoStatoEnum> getInserimentoEsitoOdgStatiPossibiliAccreditamento(long processInstanceId) throws Exception {
-		List<AccreditamentoStatoEnum> stati = new ArrayList<AccreditamentoStatoEnum>();
+		List<String> stati = new ArrayList<String>();
 		Serializable val = bonitaAPIWrapper.getProcessVariable(processInstanceId, "statiPossibiliEsitoODG");
 		if(val != null) {
-			stati = (List<AccreditamentoStatoEnum>)val;
+			stati = (List<String>)val;
 		}
-		return stati;
+		
+		List<AccreditamentoStatoEnum> result = new ArrayList<AccreditamentoStatoEnum>();
+		stati.forEach(s -> result.add(AccreditamentoStatoEnum.valueOf(s)));
+		
+		return result;
 	}
 
 	public void eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm) throws Exception {

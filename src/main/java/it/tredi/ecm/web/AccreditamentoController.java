@@ -248,7 +248,7 @@ public class AccreditamentoController {
 		return "accreditamento/accreditamentoShow";
 	}
 
-	private String goToAccreditamentoEdit(Model model, Accreditamento accreditamento, String tab){
+	private String goToAccreditamentoEdit(Model model, Accreditamento accreditamento, String tab) throws Exception{
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperEdit(accreditamento);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		selectCorrectTab(tab, accreditamentoWrapper, model);
@@ -455,8 +455,9 @@ public class AccreditamentoController {
 	
 	
 
-	/*** METODI PRIVATI PER IL SUPPORTO ***/
-	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento){
+	/*** METODI PRIVATI PER IL SUPPORTO 
+	 * @throws Exception ***/
+	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - entering"));
 
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
@@ -487,6 +488,8 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), user));
 		accreditamentoWrapper.setCanShowValutazioneRiepilogo(accreditamentoService.canUserValutaDomandaShowRiepilogo(accreditamento.getId(), user));
 		accreditamentoWrapper.setCanEnableField(accreditamentoService.canUserEnableField(user, accreditamento.getId()));
+		//controllo se devo mostrare i pulsanti presa visione/rimanda in valutazione da parte dello stesso crecm
+		accreditamentoWrapper.setCanPresaVisione(accreditamentoService.canUserPresaVisione(accreditamento.getId(), Utils.getAuthenticatedUser()));
 		
 		//controllo se l'utente può visualizzare la valutazione
 		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), user));
@@ -524,9 +527,8 @@ public class AccreditamentoController {
 
 		//controllo sul pulsante conferma valutazione
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
-
 		//controllo se devo mostrare i pulsanti presa visione/rimanda in valutazione da parte dello stesso crecm
-		accreditamentoWrapper.setCanPresaVisione(accreditamentoService.canPresaVisione(accreditamento.getId(), Utils.getAuthenticatedUser()));
+		accreditamentoWrapper.setCanPresaVisione(accreditamentoService.canUserPresaVisione(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
 		//inserisco i suoi fieldValutazione nella mappa per il wrapper
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
@@ -671,7 +673,7 @@ public class AccreditamentoController {
 				}
 			}
 			// stato VALUTAZIONE_SEGRETERIA dove valuto le integrazioni
-			else {
+			else if(accreditamento.isValutazioneSegreteria()){
 
 				//validazione della valutazioneComplessiva
 				valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, result);
@@ -689,6 +691,8 @@ public class AccreditamentoController {
 					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 			}
+			
+			return goToAccreditamentoValidate(model, accreditamento, wrapper);
 		}
 		catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"),ex);
@@ -746,7 +750,7 @@ public class AccreditamentoController {
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/enableField"));
-			return "redirect:/accreditamento/{id}/enableField";
+			return "redirect:/accreditamento/{accreditamentoId}/enableField";
 		}
 	}
 	
@@ -762,7 +766,7 @@ public class AccreditamentoController {
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sendIntegrazione"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));;
-			return "redirect:/accreditamento/{id}/edit";
+			return "redirect:/accreditamento/{accreditamentoId}/edit";
 		}
 	}
 
@@ -844,6 +848,21 @@ public class AccreditamentoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";
+		}
+	}
+	
+	//TODO @PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/presaVisione")
+	public String presaVisione(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"));
+		try{
+			accreditamentoService.presaVisione(accreditamentoId);
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
 	}
 }

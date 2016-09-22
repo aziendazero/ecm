@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
@@ -42,10 +45,13 @@ import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
+import it.tredi.ecm.web.bean.ResponseState;
+import it.tredi.ecm.web.bean.ResponseUsername;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
@@ -71,6 +77,8 @@ public class ProviderController {
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
+	@Autowired private TokenService tokenService;
+	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
@@ -117,6 +125,49 @@ public class ProviderController {
 			return "redirect: /home";
 		}
 	}
+	
+	/*** WORKFLOW ***/
+	@RequestMapping("/workflow/token/{token}/provider/{providerId}")
+	@ResponseBody
+	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("providerId") Long providerId) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato} token: " + token + "; providerId: " + providerId));
+
+		if(!tokenService.checkTokenAndDelete(token)) {
+			String msg = "Impossibile trovare il token passato token: " + token;
+			LOGGER.error(msg);
+			return new ResponseState(true, msg);
+		}
+		//recupero la lista degli usernamebonita degli utenti del provider
+		Provider provider = providerService.getProvider(providerId);
+		
+		if(provider == null) {
+			String msg = "Impossibile trovare il provider passato providerId: " + providerId;
+			LOGGER.error(msg);
+			return new ResponseState(true, msg);
+		}
+		
+		ResponseUsername responseUsername = new ResponseUsername();
+		Set<String> usernames = new HashSet<>();
+		if(provider.getAccount() != null && provider.getAccount().getUsernameWorkflow() != null && !provider.getAccount().getUsernameWorkflow().isEmpty()) 
+			usernames.add(provider.getAccount().getUsernameWorkflow());
+		responseUsername.setUserNames(usernames);
+		ResponseState responseState = new ResponseState(false, "Elenco usernames");
+		ObjectMapper objMapper = new ObjectMapper();
+	    String responseUsernameJson = objMapper.writeValueAsString(responseUsername);
+	    responseState.setJsonObject(responseUsernameJson);
+		
+		return responseState;
+		
+/*
+		Account account = accountRepository.findOneByUsername("provider").orElse(null);
+		if(account != null) {
+			workflowService.saveOrUpdateBonitaUserByAccount(account);
+		}
+ */
+		//TODO modifica stato della domanda da parte del flusso
+		//lo facciamo cosi in modo tale da non dover disabilitare la cache di hibernate
+		//accreditamentoService.setStato(accreditamentoId, stato);
+	}	
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#id)")
 	@RequestMapping("/provider/{id}/show/all")
