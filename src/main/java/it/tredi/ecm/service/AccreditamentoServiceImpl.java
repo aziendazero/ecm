@@ -268,7 +268,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	@Transactional
 	public void approvaIntegrazione(Long accreditamentoId) throws Exception{
 		Set<FieldValutazioneAccreditamento> fieldValutazioni = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamento(accreditamentoId);
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
@@ -277,7 +276,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		fieldValutazioni.forEach(v -> {
 			if(v.getEsito().booleanValue()){
-				approved.add(Utils.getField(fieldIntegrazione, v.getIdField()));
+				if(v.getObjectReference() == -1)
+					approved.add(Utils.getField(fieldIntegrazione, v.getIdField()));
+				else
+					approved.add(Utils.getField(fieldIntegrazione,v.getObjectReference(), v.getIdField()));
 			}
 		});
 
@@ -322,17 +324,19 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	@Transactional
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("RIassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
 		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
+		approvaIntegrazione(accreditamentoId);
+		
 		//setta la data
 		valutazioneSegreteria.setDataValutazione(LocalDate.now());
 
 		//inserisce il commento complessivo
 		valutazioneSegreteria.setValutazioneComplessiva(valutazioneComplessiva);
+		valutazioneService.save(valutazioneSegreteria);
 
 		//elimino le date delle vecchie valutazioni
 		Set<Account> valutatori = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamentoId);
@@ -344,7 +348,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		}
 
-		valutazioneService.save(valutazioneSegreteria);
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
 		
@@ -379,8 +382,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
 		//controllo quali campi sono stati modificati e quali confermati
-		integrazioneService.checkIfFieldIntegraizoniConfirmedForAccreditamento(accreditamentoId, fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId));
-
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
+		integrazioneService.checkIfFieldIntegraizoniConfirmedForAccreditamento(accreditamentoId, fieldIntegrazioneList);
+		fieldIntegrazioneAccreditamentoService.saveSet(fieldIntegrazioneList);
+		
 		//per i campi modificati...elimino i field valutazione su tutte le valutazioni presenti
 		Set<FieldIntegrazioneAccreditamento> fieldModificati = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId);
 		
@@ -414,6 +419,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					}
 				}
 			}
+			valutazione.setValutazioni(fieldValutazioni);
 			valutazioneService.save(valutazione);
 		}
 		
