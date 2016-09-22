@@ -11,5 +11,6 @@ public class EcmProperties {
 	private int sedutaValidationMinutes;
 	private String applicationBaseUrl;
 	private String emailSegreteriaEcm;
+	private boolean debugTestMode;
 
 }

@@ -136,7 +136,7 @@ public class AccreditamentoAllegatiController {
 	}
 
 	/***	ENABLEFIELD	***/
-	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/allegati/enableField")
 	public String enableFieldAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/enableField"));
