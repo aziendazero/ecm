@@ -67,7 +67,7 @@ import it.tredi.ecm.web.bean.PersonaWrapper;
 @WebAppConfiguration
 //@Ignore
 @ActiveProfiles("dev")
-@WithUserDetails("admin")
+@WithUserDetails("segreteria")
 @Rollback(false)
 public class WorkflowTest {
 
@@ -235,13 +235,13 @@ public class WorkflowTest {
 		usernameWorkflowValutatoriCrecm.add("referee1");
 		usernameWorkflowValutatoriCrecm.add("referee2");
 		usernameWorkflowValutatoriCrecm.add("referee3");
-		workflowService.eseguiTaskValutazioneAssegnazioneCrecmForUser(currentUser, accreditamento, usernameWorkflowValutatoriCrecm);
+		workflowService.eseguiTaskValutazioneAssegnazioneCrecmForUser(currentUser, accreditamento, usernameWorkflowValutatoriCrecm, usernameWorkflowValutatoriCrecm.size() - 1);
 		System.out.println("-- eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser --");
 		System.out.println("OK");
 	}
 	
 	@Test
-	//@Ignore
+	@Ignore
 	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
 	public void eseguiTaskValutazioneCrecm() throws Exception {
 		//CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("provider");
@@ -254,6 +254,19 @@ public class WorkflowTest {
 		System.out.println("-- eseguiTaskValutazioneCrecm --");
 		System.out.println("OK");
 	}	
+	
+	@Test
+	@Ignore
+	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
+	public void eseguiTaskInviaRichiestaPreavvisoRigetto() throws Exception {
+		//CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("provider");
+		CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("segreteria");
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(1911L);
+		
+		workflowService.eseguiTaskRichiestaPreavvisoRigettoForUser(currentUser, accreditamento, 100L);
+		System.out.println("-- eseguiTaskRichiestaPreavvisoRigettoForUser --");
+		System.out.println("OK");
+	}
 
 	private void printPersona(Persona persona){
 		if(persona != null){

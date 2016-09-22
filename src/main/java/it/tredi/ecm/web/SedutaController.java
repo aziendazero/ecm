@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.repository.SedutaRepository;
 import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.EmailService;
 import it.tredi.ecm.service.SedutaService;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
@@ -434,6 +436,22 @@ public class SedutaController {
 			accreditamentoService.inserisciInValutazioneCommissione(a.getId(), Utils.getAuthenticatedUser());
 		}
 		return "redirect:/seduta/list";
+	}
+	
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
+	@RequestMapping("/seduta/{sedutaId}/convocazioneCommissione")
+	public String convocazioneCommissione(@PathVariable Long sedutaId, RedirectAttributes redirectAttrs){
+		try {
+			sedutaService.inviaMailACommissioneEcm();
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.mail_inviata", "success"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/show"));
+		}catch(Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /seduta/{sedutaId}/lock"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: redirect:/seduta/{sedutaId}/validate"));
+		}
+		
+		return "redirect:/seduta/{sedutaId}/show";
 	}
 
 }

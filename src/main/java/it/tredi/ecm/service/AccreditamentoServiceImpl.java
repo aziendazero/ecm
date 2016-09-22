@@ -263,7 +263,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.setDataValutazioneCrecm(LocalDate.now());
 			accreditamentoRepository.save(accreditamento);
 			
-			workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm);
+			//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
+			Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
+			workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
 		}
 	}
 
@@ -325,7 +327,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
 		
-		workflowService.eseguiTaskAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm);
+		//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
+		Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
+		workflowService.eseguiTaskAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
 	}
 
 	@Override
@@ -376,7 +380,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Provider"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		
-		Long timerIntegrazioneRigetto = giorniTimer * 86400;
+		Long timerIntegrazioneRigetto = giorniTimer * 86400000;
 		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
 	}
 	
@@ -711,6 +715,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 			if(!task.isAssigned())
 				return true;
+			return true;
 		}
 		return false;
 	}

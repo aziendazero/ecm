@@ -251,13 +251,13 @@ public class WorkflowServiceImpl implements WorkflowService {
 		return result;
 	}
 
-	public void eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm) throws Exception {
+	public void eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception {
 		//Ricavo l'utente corrente
 		CurrentUser user = Utils.getAuthenticatedUser();
-		eseguiTaskValutazioneAssegnazioneCrecmForUser(user, accreditamento, usernameWorkflowValutatoriCrecm);
+		eseguiTaskValutazioneAssegnazioneCrecmForUser(user, accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
 	}
 
-	public void eseguiTaskValutazioneAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm) throws Exception {
+	public void eseguiTaskValutazioneAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) {
 			LOGGER.error("Non è possibile eseguire il task Valutazione Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 			throw new Exception("Non è possibile eseguire il task Valutazione Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
@@ -272,6 +272,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
 		}
 		bonitaAPIWrapper.setTaskVariable(task.getId(), "usernameListValutazioneCrecm", (Serializable)usernameWorkflowValutatoriCrecm);
+		bonitaAPIWrapper.setTaskVariable(task.getId(), "numeroValutazioniCrecmRichieste", (Serializable)numeroValutazioniCrecmRichieste);
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
 
@@ -389,13 +390,13 @@ public class WorkflowServiceImpl implements WorkflowService {
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
 
-	public void eseguiTaskAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm) throws Exception {
+	public void eseguiTaskAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception {
 		//Ricavo l'utente corrente
 		CurrentUser user = Utils.getAuthenticatedUser();
-		eseguiTaskAssegnazioneCrecmForUser(user, accreditamento, usernameWorkflowValutatoriCrecm);
+		eseguiTaskAssegnazioneCrecmForUser(user, accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
 	}
 	
-	public void eseguiTaskAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm) throws Exception {
+	public void eseguiTaskAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.ASSEGNAMENTO) {
 			LOGGER.error("Non è possibile eseguire il task Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 			throw new Exception("Non è possibile eseguire il task Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
@@ -410,6 +411,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
 		}
 		bonitaAPIWrapper.setTaskVariable(task.getId(), "usernameListValutazioneCrecm", (Serializable)usernameWorkflowValutatoriCrecm);
+		bonitaAPIWrapper.setTaskVariable(task.getId(), "numeroValutazioniCrecmRichieste", (Serializable)numeroValutazioniCrecmRichieste);
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
 	

@@ -83,7 +83,8 @@ public class AccreditamentoController {
 
 	@RequestMapping("/workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}")
 	@ResponseBody
-	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato) throws Exception{
+	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato,
+			@RequestParam(required = false) Integer numeroValutazioniNonDate) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato} token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato));
 
 		if(!tokenService.checkTokenAndDelete(token)) {
@@ -93,6 +94,11 @@ public class AccreditamentoController {
 		}
 		//modifico lo stato
 		accreditamentoService.changeState(accreditamentoId, stato);
+		
+		if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
+			valutazioneService.updateValutazioniNonDate(accreditamentoId);
+		}
+		
 		return new ResponseState(false, "Stato modificato");
 
 /*
@@ -275,6 +281,9 @@ public class AccreditamentoController {
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		model.addAttribute("richiestaIntegrazioneWrapper", integrazioneService.prepareRichiestaIntegrazioneWrapper(accreditamento.getId(), SubSetFieldEnum.FULL, null));
 		model.addAttribute("userCanSendRichiestaIntegrazione",accreditamentoService.canUserInviaRichiestaIntegrazione(accreditamento.getId(), Utils.getAuthenticatedUser()));
+		model.addAttribute("giorniIntegrazioneMax", new Integer(20)); //TODO evitare hardcode
+		model.addAttribute("giorniIntegrazioneMin", new Integer(5));	//TODO evitare hardcode
+		model.addAttribute("giorniIntegrazione", new Integer(15)); //TODO evitare hardcode
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoEnableField"));
 		return "accreditamento/accreditamentoEnableField";
 	}
@@ -454,7 +463,7 @@ public class AccreditamentoController {
 
 
 
-	/*** METODI PRIVATI PER IL SUPPORTO 
+	/*** METODI PRIVATI PER IL SUPPORTO
 	 * @throws Exception ***/
 	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - entering"));
@@ -691,7 +700,7 @@ public class AccreditamentoController {
 					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 			}
-			
+
 			return goToAccreditamentoValidate(model, accreditamento, wrapper);
 		}
 		catch (Exception ex){
@@ -739,18 +748,22 @@ public class AccreditamentoController {
 
 	/***	INVIA DOMANDA RICHIESTA_INTEGRAZIONE	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#accreditamentoId)")
-	@RequestMapping("/accreditamento/{accreditamentoId}/sendRichiestaIntegrazione")
-	public String sendRichiestaIntegrazione(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/sendRichiestaIntegrazione", method = RequestMethod.POST)
+	public String sendRichiestaIntegrazione(@ModelAttribute("giorniIntegrazione") Integer giorniIntegrazione,
+			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"));
 		try{
-			//TODO modale per prendere i giorni
-			Long giorniTimer = 1L;
-			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(accreditamentoId);
-			if(statoAccreditamento == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE)
-				accreditamentoService.inviaRichiestaIntegrazione(accreditamentoId, giorniTimer);
-			else if(statoAccreditamento == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO)
-				accreditamentoService.inviaRichiestaPreavvisoRigetto(accreditamentoId, giorniTimer);
-			return "redirect:/accreditamento/{accreditamentoId}/show";
+			//TODO controllare meglio questo punto (modale in accreditamento/enableField)
+			if(giorniIntegrazione != null) {
+				LOGGER.info(Utils.getLogMessage("Settato timer Bonita Integrazione a: " + giorniIntegrazione + " giorni"));
+				AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(accreditamentoId);
+				if(statoAccreditamento == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE)
+					accreditamentoService.inviaRichiestaIntegrazione(accreditamentoId, (long) giorniIntegrazione);
+				else if(statoAccreditamento == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO)
+					accreditamentoService.inviaRichiestaPreavvisoRigetto(accreditamentoId, (long) giorniIntegrazione);
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+			else throw new Exception("Error! giorniIntegrazione is null");
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -855,7 +868,7 @@ public class AccreditamentoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	//TODO @PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/presaVisione")
 	public String presaVisione(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{

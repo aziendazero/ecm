@@ -21,8 +21,8 @@ public interface WorkflowService {
 	public List<AccreditamentoStatoEnum> getInserimentoEsitoOdgStatiPossibiliAccreditamento(long processInstanceId) throws Exception;
 	public TaskInstanceDataModel currentUserGetTaskForState(Accreditamento accreditamento) throws Exception;
 	public TaskInstanceDataModel userGetTaskForState(CurrentUser user, Accreditamento accreditamento) throws Exception;
-	public void eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm) throws Exception;
-	public void eseguiTaskValutazioneAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm) throws Exception;
+	public void eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception;
+	public void eseguiTaskValutazioneAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception;
 	
 	public void eseguiTaskValutazioneCrecmForCurrentUser(Accreditamento accreditamento) throws Exception;
 	public void eseguiTaskValutazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento) throws Exception;
@@ -31,8 +31,8 @@ public interface WorkflowService {
 	
 	public void eseguiTaskInserimentoEsitoOdgForCurrentUser(Accreditamento accreditamento, AccreditamentoStatoEnum stato) throws Exception;
 	public void eseguiTaskTaskInserimentoEsitoOdgForUser(CurrentUser user, Accreditamento accreditamento, AccreditamentoStatoEnum stato) throws Exception;
-	public void eseguiTaskAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm) throws Exception;
-	public void eseguiTaskAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm) throws Exception;
+	public void eseguiTaskAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception;
+	public void eseguiTaskAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception;
 	public void eseguiTaskRichiestaIntegrazioneForCurrentUser(Accreditamento accreditamento, Long timerIntegrazioneRigetto) throws Exception;
 	public void eseguiTaskRichiestaIntegrazioneForUser(CurrentUser user, Accreditamento accreditamento, Long timerIntegrazioneRigetto) throws Exception;
 	public void eseguiTaskIntegrazioneForCurrentUser(Accreditamento accreditamento) throws Exception;
