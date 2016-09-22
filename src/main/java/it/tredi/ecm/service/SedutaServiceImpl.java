@@ -144,6 +144,15 @@ public class SedutaServiceImpl implements SedutaService {
 			
 			List<AccreditamentoStatoEnum> possibiliStati = workflowService.getInserimentoEsitoOdgStatiPossibiliAccreditamento(vc.getAccreditamento().getWorkflowInfoAccreditamento().getProcessInstanceId());
 			value.addAll(possibiliStati);
+			
+			//TODO bugfix al volo
+			value.remove(AccreditamentoStatoEnum.INS_ODG);
+			
+			if(value.contains(AccreditamentoStatoEnum.PREAVVISO_RIGETTO)){
+				value.remove(AccreditamentoStatoEnum.PREAVVISO_RIGETTO);
+				value.add(AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO);
+			}
+			
 			mappa.put(vc.getAccreditamento().getId(), value);
 		}
 		return mappa;

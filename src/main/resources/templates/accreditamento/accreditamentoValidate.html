@@ -177,7 +177,7 @@
 								<li class="divider actions"></li>
 								<li><a th:if="${accreditamentoWrapper.canConfermaValutazione}"
 									th:text="#{label.conferma_valutazione}" data-toggle="modal" data-target=".modal-confirm"></a></li>
-								<li><a th:if="${accreditamentoWrapper.canPresaVisione}" th:text="#{label.presa_visione}" onclick="alert('TODO')"></a></li>
+								<li><a th:if="${accreditamentoWrapper.canPresaVisione}" th:text="#{label.presa_visione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/presaVisione|}"></a></li>
 							</ul>
 						</div>
 						<div class="clearfix"></div>

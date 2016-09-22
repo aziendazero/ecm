@@ -33,9 +33,9 @@ public interface AccreditamentoService{
 	public void inserisciInValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser) throws Exception;
 	public void inviaValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception;
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
-	public void inviaIntegrazione(Long accreditamentoId);
-	public void presaVisione(Long accreditamentoId);
-	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva);
+	public void inviaIntegrazione(Long accreditamentoId) throws Exception;
+	public void presaVisione(Long accreditamentoId) throws Exception;
+	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 
 	//modifica??
 	//inserisciPianoFormativo
@@ -51,8 +51,8 @@ public interface AccreditamentoService{
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserEnableField(CurrentUser currentUser);
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser);
-	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser);
-	public boolean canPresaVisione(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	public boolean canUserPresaVisione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato);
 	public void approvaIntegrazione(Long accreditamentoId) throws Exception;

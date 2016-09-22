@@ -12,7 +12,7 @@ import it.tredi.ecm.dao.entity.Valutazione;
 
 public interface ValutazioneRepository extends CrudRepository<Valutazione, Long>{
 	public Valutazione findOne(Long id);
-	public Valutazione findOneByAccreditamentoIdAndAccountIdAndDataValutazioneNull(Long accreditamentoId, Long accountId);
+	public Valutazione findOneByAccreditamentoIdAndAccountId(Long accreditamentoId, Long accountId);
 	public Set<Valutazione> findAllByAccreditamentoIdOrderByDataValutazioneAsc(Long accreditamentoId);
 	public Set<Valutazione> findAllByAccreditamentoIdAndDataValutazioneNotNullOrderByDataValutazioneAsc(Long accreditamentoId);
 	@Query("SELECT COUNT(v.account) FROM Valutazione v WHERE v.accreditamento.id = :id AND v.dataValutazione = null")

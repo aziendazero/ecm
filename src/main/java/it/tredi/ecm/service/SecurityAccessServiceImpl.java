@@ -220,7 +220,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	}
 	
 	@Override
-	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) {
+	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) throws Exception{
 		return accreditamentoService.canUserInviaIntegrazione(accreditamentoId, currentUser);
 	}
 	

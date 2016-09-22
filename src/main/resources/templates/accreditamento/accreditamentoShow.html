@@ -114,6 +114,7 @@
 									<li class="divider actions"></li>
 									<li><a th:if="${accreditamentoWrapper.canEnableField}" th:text="#{label.abilita_id_editabili}" onclick="switchMode('enableField')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canPrendiInCarica}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/takeCharge|}" th:text="#{label.prendi_in_carica}"></a></li>
+									<li><a th:if="${accreditamentoWrapper.canPresaVisione}" th:text="#{label.presa_visione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/presaVisione|}"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canAssegnaNuovoGruppo}" th:text="#{label.assegna_nuovo_gruppo}" data-toggle="modal" data-target=".modal-reassign"></a></li>
 								</ul>
 								<!-- menù a pulsanti separati per il provider -->
