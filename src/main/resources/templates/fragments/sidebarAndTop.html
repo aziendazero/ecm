@@ -22,7 +22,8 @@
 					<div class="profile_info">
 						<span th:text="#{label.benvenuto}+','">label.benvenuto,</span>
 						<h2>
-							<span th:text="${#authentication.name}" th:remove="tag">username</span>
+							<span th:unless="${#authentication.principal.hasProfile('PROVIDER')}" th:text="${#authentication.principal.account.nome} + ' ' + ${#authentication.principal.account.cognome}" th:remove="tag">username</span>
+							<span th:if="${#authentication.principal.hasProfile('PROVIDER')}" th:text="'TODOProviderName'" th:remove="tag">username</span>
 						</h2>
 					</div>
 				</div>
