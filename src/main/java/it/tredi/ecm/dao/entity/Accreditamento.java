@@ -83,6 +83,12 @@ public class Accreditamento extends BaseEntity{
 	@OneToMany(mappedBy = "accreditamento")
 	Set<ValutazioneCommissione> valutazioniCommissione = new HashSet<ValutazioneCommissione>();
 
+	@OneToOne
+	private File NoteOsservazioniIntegrazione;
+
+	@OneToOne
+	private File NoteOsservazioniPreavvisoRigetto;
+
 	@Embedded
 	private WorkflowInfo workflowInfoAccreditamento = null;
 
@@ -183,7 +189,7 @@ public class Accreditamento extends BaseEntity{
 	public boolean isValutazioneCommissione() {
 		return stato == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE;
 	}
-	
+
 	public boolean isIntegrazione() {
 		return stato == AccreditamentoStatoEnum.INTEGRAZIONE;
 	}
@@ -191,15 +197,15 @@ public class Accreditamento extends BaseEntity{
 	public boolean isPreavvisoRigetto() {
 		return stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO;
 	}
-	
+
 	public boolean isRichiestaIntegrazione() {
 		return stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE;
 	}
-	
+
 	public boolean isRichiestaPreavvisoRigetto() {
 		return stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO;
 	}
-	
+
 	public boolean isProcedimentoAttivo(){
 		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;

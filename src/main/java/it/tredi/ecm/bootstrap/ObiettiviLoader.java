@@ -19,34 +19,38 @@ import it.tredi.ecm.service.ObiettivoService;
 @org.springframework.context.annotation.Profile({"dev","demo","prod"})
 public class ObiettiviLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ObiettiviLoader.class);
-	
+
 	@Autowired
 	private ObiettivoService obiettivoService;
-	
+
 	@Override
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
 		LOGGER.info("BOOTSTRAP ECM - Inizializzazione OBIETTIVI/EVENTI...");
-		
+
 		Set<Obiettivo> obiettivi = obiettivoService.getAllObiettivi();
-		
+
 		if(obiettivi.isEmpty()){
 			boolean nazionale = true;
 			boolean regionale = false;
-			
+
 			//Obiettivi Regionali
 			obiettivi.add(new Obiettivo("Non rientra in uno degli obiettivi regionali",regionale,null));
+			obiettivi.add(new Obiettivo("Appropriatezza delle prestazioni sanitarie in conformità ai LEA",regionale,null));
+			obiettivi.add(new Obiettivo("Governo clinico, qualità e sicurezza del paziente",regionale,null));
+			obiettivi.add(new Obiettivo("Adozione di linee guida basate sull’evidenza, qualità dei sistemi e dei processi clinico assistenziali",regionale,null));
 			obiettivi.add(new Obiettivo("Umanizzazione delle cure/relazione/comunicazione",regionale,null));
-			obiettivi.add(new Obiettivo("Sicurezza del paziente (risk management)",regionale,null));
-			obiettivi.add(new Obiettivo("Sicurezza degli operatori nell’ambiente di lavoro (t.u. 81/2008)",regionale,null));
-			obiettivi.add(new Obiettivo("Cure palliative e terapia del dolore (applicazione legge 38/2010)",regionale,null));
-			obiettivi.add(new Obiettivo("Integrazione professionale tra ospedale e territorio, con sviluppo pdta (prioritarimente su bpcp, scompenso cardiaco, fibrillazione atriale, diabete)",regionale,null));
-			obiettivi.add(new Obiettivo("Gestione integrata del paziente anziano, fragile, pluripatologico",regionale,null));
+			obiettivi.add(new Obiettivo("Cure palliative e terapia del dolore",regionale,null));
+			obiettivi.add(new Obiettivo("Prevenzione e presa in carico della persona affetta da cronicità",regionale,null));
+			obiettivi.add(new Obiettivo("Integrazione professionale tra ospedale e territorio, con sviluppo e implementazione dei PDTA (prioritariamente su BPCO, scompenso cardiaco, fibrillazione atriale, diabete, sclerosi multipla)",regionale,null));
+			obiettivi.add(new Obiettivo("Malattia di Alzheimer e altri tipi di declino cognitivo e demenze",regionale,null));
 			obiettivi.add(new Obiettivo("Promozione corretti stili di vita",regionale,null));
-			obiettivi.add(new Obiettivo("Adozione di linee guida EBM sull’evidenza dei sistemi e dei processi clinico-assistenziali",regionale,null));
-			obiettivi.add(new Obiettivo("Cultura del lavoro in team multiprofessionale e adozioni di modelli di lavoro in rete (ad esempio nell’infarto miocardico acuto, ictus, politrauma, emergenza pediatrica, parto)",regionale,null));
-			obiettivi.add(new Obiettivo("Valorizzazione e motivazione delle risorse umane affidate",regionale,null));
-			
+			obiettivi.add(new Obiettivo("Promozione dell’appropriatezza prescrittiva dei farmaci",regionale,null));
+			obiettivi.add(new Obiettivo("Interventi socio-sanitari (famiglia, infanzia, adolescenza, giovani, anziani, disabilità, dipendenze, salute mentale)",regionale,null));
+			obiettivi.add(new Obiettivo("Cultura del lavoro in team multiprofessionale e adozioni di modelli di lavoro in rete",regionale,null));
+			obiettivi.add(new Obiettivo("Sicurezza degli operatori nell'ambiente di lavoro (T.U. 81/2008)",regionale,null));
+			obiettivi.add(new Obiettivo("Valorizzazione delle risorse umane",regionale,null));
+
 			//Obettivi Nazionali
 			//TECNICO-PROFESSIONALI
 			obiettivi.add(new Obiettivo("Epidemiologia- prevenzione e primozione della salute. (ob.10)", nazionale, CategoriaObiettivoNazionale.TECNICO_PROFESSIONALI));
@@ -61,9 +65,9 @@ public class ObiettiviLoader implements ApplicationListener<ContextRefreshedEven
 			obiettivi.add(new Obiettivo("Sanita’ veterinaria. (24)", nazionale, CategoriaObiettivoNazionale.TECNICO_PROFESSIONALI));
 			obiettivi.add(new Obiettivo("Farmacoepidemiologia, farmacoeconomia, farmacovigilanza.(25)", nazionale, CategoriaObiettivoNazionale.TECNICO_PROFESSIONALI));
 			obiettivi.add(new Obiettivo("Implementazione della cultura e della sicurezza in ,ateire di donazione trapianto.(28)", nazionale, CategoriaObiettivoNazionale.TECNICO_PROFESSIONALI));
-			obiettivi.add(new Obiettivo("Innovazione tecnologicca: valutazione. miglioramento dei processi di gestione delle tecnologie biomediche e dei dispositivi medici. helath technology assessment.(29)", nazionale, CategoriaObiettivoNazionale.TECNICO_PROFESSIONALI));
+			obiettivi.add(new Obiettivo("Innovazione tecnologicca: valutazione. miglioramento dei processi di gestione delle tecnologie biomediche e dei dispositivi medici. Health technology assessment.(29)", nazionale, CategoriaObiettivoNazionale.TECNICO_PROFESSIONALI));
 			obiettivi.add(new Obiettivo("Tematiche speciali del SSN e SSR ed a carattere urgente e/o straordinario individuate dalla commissione nazionale ECM e dalle regioni/province autonome per far fronte a specifiche emergenze sanitarie.(20)", nazionale, CategoriaObiettivoNazionale.TECNICO_PROFESSIONALI));
-			
+
 			//DI PROCESSO
 			obiettivi.add(new Obiettivo("Documentazione clinica, percorsi clinico-assistenziali diagnostici e riabilitativi, profili di assistenza-profili di cura. (ob.3)", nazionale, CategoriaObiettivoNazionale.DI_PROCESSO));
 			obiettivi.add(new Obiettivo("Appropriatezza prestazioni sanitarie nei LEA. Sistemi di valutazione, verifica e miglioramento dell’efficienza e dell’efficacia. (4)", nazionale, CategoriaObiettivoNazionale.DI_PROCESSO));
@@ -75,7 +79,7 @@ public class ObiettiviLoader implements ApplicationListener<ContextRefreshedEven
 			obiettivi.add(new Obiettivo("Metoddologia e tecniche di comunicazione sociale per lo sviluppo dei programmi nazionali e regionali di prevenzione primaria. (13)", nazionale, CategoriaObiettivoNazionale.DI_PROCESSO));
 			obiettivi.add(new Obiettivo("Multiculturalita’ e cultura dell’accoglienza nell’attivita’ sanitaria. (15)", nazionale, CategoriaObiettivoNazionale.DI_PROCESSO));
 			obiettivi.add(new Obiettivo("Tematiche speciali del SSN e SSR ed a carattere urgente e/o straordinario individuate dalla commissione nazionale ECM e dalle regioni/province autonome per far fronte a specficfiche emergenze sanitarie. (20)", nazionale, CategoriaObiettivoNazionale.DI_PROCESSO));
-			
+
 			//DI SISTEMA
 			obiettivi.add(new Obiettivo("Applicazione nella pratica quotidiana dei principi e delle prodcedure dell’evidenze based practice (EBM. EBN. EBP). (ob.1)", nazionale, CategoriaObiettivoNazionale.DI_SISTEMA));
 			obiettivi.add(new Obiettivo("Linee guida protocolli-procedure. (ob.2)", nazionale, CategoriaObiettivoNazionale.DI_SISTEMA));
@@ -85,9 +89,9 @@ public class ObiettiviLoader implements ApplicationListener<ContextRefreshedEven
 			obiettivi.add(new Obiettivo("Etica, bioetica e deontologia. (16)", nazionale, CategoriaObiettivoNazionale.DI_SISTEMA));
 			obiettivi.add(new Obiettivo("Argomenti di carattere generale: informatica ed ingleser scientifico livello avanzato; normativa in materia sanitaria: i principi etici e civili del ssn. (17)", nazionale, CategoriaObiettivoNazionale.DI_SISTEMA));
 			obiettivi.add(new Obiettivo("Tematiche speciali del SSN e SSR ed a carattere urgente e/o straordinario individuate dalla commissione nazionale ECM e dalle regioni/province autonome per far fronte a specifiche emergenze sanitarie. (20)", nazionale, CategoriaObiettivoNazionale.DI_SISTEMA));
-						
+
 			obiettivoService.save(obiettivi);
-			
+
 			LOGGER.info("BOOTSTRAP ECM - OBIETTIVI/EVENTI creati");
 		}else{
 			LOGGER.info("BOOTSTRAP ECM - OBIETTIVI/EVENTI trovati (" + obiettivi.size() +")");

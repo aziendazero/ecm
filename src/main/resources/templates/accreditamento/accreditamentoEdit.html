@@ -77,6 +77,42 @@
 			</div>
 		</div>
 
+		<!-- modale conferma integrazione/preavviso rigetto -->
+		<div th:if="${accreditamentoWrapper.canSendIntegrazione}" id="fileIntegrazione-modal" class="modal fade modal-fileIntegrazione"
+			data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 class="modal-title" id="myModalLabel"
+							th:text="#{label.inserimento_file_note}">label.inserimento_file_note</h3>
+					</div>
+					<div class="modal-body">
+						<form id="formFileIntegrazione" class="form-horizontal"
+							th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sendIntegrazione|}"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+
+							<th:block th:if="${accreditamentoWrapper.accreditamento.isIntegrazione()}">
+								<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, NoteOsservazioniIntegrazione, null, null, null, true, null, false)" ></th:block>
+							</th:block>
+							<th:block th:if="${accreditamentoWrapper.accreditamento.isPreavvisoRigetto()}">
+								<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, NoteOsservazioniPreavvisoRigetto, null, null, null, true, null, false)" ></th:block>
+							</th:block>
+
+							<input id="submitButtonModal" type="submit" style="display: none;" />
+
+						</form>
+
+					</div>
+					<div class="modal-footer">
+						<label for="submitButtonModal" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
+						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
 
 		<div class="row">
 			<div class="col-xs-12">
@@ -88,7 +124,7 @@
 							<a th:if="${accreditamentoWrapper.canSendIntegrazione}"
 									class="btn btn-success pull-right"
 									th:text="#{label.invia_integrazione}"
-									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sendIntegrazione|}"></a>
+									data-toggle="modal" data-target=".modal-fileIntegrazione"></a>
 							<a th:if="${accreditamentoWrapper.canSend}"
 									class="btn btn-success pull-right"
 									th:text="#{label.invia_domanda}"

@@ -39,7 +39,6 @@ import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
-import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
@@ -47,10 +46,11 @@ import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
-import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.SedeService;
+import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.service.bean.CurrentUser;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -76,6 +76,8 @@ public class AccreditamentoController {
 
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+
+	@Autowired private EcmProperties ecmProperties;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -276,9 +278,9 @@ public class AccreditamentoController {
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		model.addAttribute("richiestaIntegrazioneWrapper", integrazioneService.prepareRichiestaIntegrazioneWrapper(accreditamento.getId(), SubSetFieldEnum.FULL, null));
 		model.addAttribute("userCanSendRichiestaIntegrazione",accreditamentoService.canUserInviaRichiestaIntegrazione(accreditamento.getId(), Utils.getAuthenticatedUser()));
-		model.addAttribute("giorniIntegrazioneMax", new Integer(20)); //TODO evitare hardcode
-		model.addAttribute("giorniIntegrazioneMin", new Integer(5));	//TODO evitare hardcode
-		model.addAttribute("giorniIntegrazione", new Integer(15)); //TODO evitare hardcode
+		model.addAttribute("giorniIntegrazioneMax", ecmProperties.getGiorniIntegrazioneMin());
+		model.addAttribute("giorniIntegrazioneMin", ecmProperties.getGiorniIntegrazioneMax());
+		model.addAttribute("giorniIntegrazione", 5);
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoEnableField"));
 		return "accreditamento/accreditamentoEnableField";
 	}
@@ -430,7 +432,7 @@ public class AccreditamentoController {
 			redirectAttrs.addAttribute("id",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));;
-			return "redirect:/accreditamento/{id}";
+			return "redirect:/accreditamento/{id}/edit";
 		}
 	}
 
@@ -878,7 +880,7 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
 	}
-	
+
 	//TODO @PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
 		@RequestMapping("/accreditamento/{accreditamentoId}/rivaluta")
 		public String rivaluta(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
@@ -893,7 +895,7 @@ public class AccreditamentoController {
 				return "redirect:/accreditamento/{accreditamentoId}/show";
 			}
 		}
-		
+
 		@RequestMapping("/accreditamento/{accreditamentoId}/runtimeTest")
 		public String runtimeTest(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
 			LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/runtimeTest"));
