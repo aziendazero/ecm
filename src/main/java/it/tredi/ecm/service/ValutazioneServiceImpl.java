@@ -18,6 +18,7 @@ import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ValutazioneRepository;
 import it.tredi.ecm.utils.Utils;
@@ -29,6 +30,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private ValutazioneRepository valutazioneRepository;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 	@Autowired private ProfileRepository profileRepository;
+	@Autowired private AccountService accountService;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -136,5 +138,18 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 				mappaAccreditamentoAccountValutatore.put(a.getId(), account);
 		}
 		return mappaAccreditamentoAccountValutatore;
+	}
+	
+	@Override
+	public void updateValutazioniNonDate(Long accreditamentoId) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Aggiornamento valutazioni non date per accreditamento: " + accreditamentoId));
+		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoId(accreditamentoId);
+		for(Valutazione v : valutazioni){
+			if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE && v.getDataValutazione() == null){
+				Account referee = v.getAccount();
+				referee.setValutazioniNonDate(referee.getValutazioniNonDate() + 1);
+				accountService.save(referee);
+			}
+		}
 	}
 }

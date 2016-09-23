@@ -23,4 +23,5 @@ public interface ValutazioneService {
 	public int countRefereeNotValutatoriForAccreditamentoId(Long accreditamentoId);
 	public Set<Account> getAccountValutatoriWithDataForAccreditamentoId(Long accreditamentoId);
 	public Map<Long, Account> getValutatoreSegreteriaForAccreditamentiList(Set<Accreditamento> accreditamentoSet);
+	public void updateValutazioniNonDate(Long accreditamentoId) throws Exception;
 }

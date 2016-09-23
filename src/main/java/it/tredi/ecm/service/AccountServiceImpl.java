@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.aspectj.AspectJAdviceParameterNameDiscoverer.AmbiguousBindingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -165,5 +166,19 @@ public class AccountServiceImpl implements AccountService{
 	@Override
 	public int countAllRefereeWithValutazioniNonDate() {
 		return accountRepository.countAllRefereeWithValutazioniNonDate();
+	}
+	
+	@Override
+	public Set<String> getEmailByProfileEnum(ProfileEnum profileEnum) {
+		LOGGER.debug("Recupero indirizzi email per : " + profileEnum);
+		Set<String> emailList = new HashSet<String>();
+		
+		Optional<Profile> profile = profileAndRoleService.getProfileByProfileEnum(profileEnum);
+		if(profile.isPresent()){
+			Set<Account> commissione = accountRepository.findAllByProfiles(profile.get());
+			for(Account a : commissione)
+				emailList.add(a.getEmail());
+		}
+		return emailList;
 	}
 }

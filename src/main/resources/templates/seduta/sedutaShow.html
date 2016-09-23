@@ -25,7 +25,7 @@
 									<li><a th:if="${#sets.isEmpty(sedutaWrapper.seduta.valutazioniCommissione)}" th:text="#{label.elimina}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/remove|}"></a></li>
 									<li><a th:if="${sedutaWrapper.canEdit == true}" th:text="#{label.modifica}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/edit|}"></a></li>
 									<li><a th:if="${sedutaWrapper.canEdit == true}" th:text="#{label.gestione_domande}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/handle|}"></a></li>
-									<li><a th:if="${sedutaWrapper.canEdit == true}" th:text="#{label.invia_email_commissione_seduta}" onclick="alert('TODO')"></a></li>
+									<li><a th:text="#{label.invia_email_commissione_seduta}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/convocazioneCommissione|}"></a></li>
 									<li><a th:if="${sedutaWrapper.canValidate == true and !#lists.isEmpty(sedutaWrapper.seduta.valutazioniCommissione)}" th:text="#{label.inserisci_valutazione}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/validate|}"></a></li>
 								</ul>
 							</div>

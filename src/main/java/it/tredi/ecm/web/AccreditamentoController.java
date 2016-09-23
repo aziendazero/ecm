@@ -86,7 +86,8 @@ public class AccreditamentoController {
 
 	@RequestMapping("/workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}")
 	@ResponseBody
-	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato) throws Exception{
+	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato,
+			@RequestParam(required = false) Integer numeroValutazioniNonDate) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato} token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato));
 
 		if(!tokenService.checkTokenAndDelete(token)) {
@@ -96,6 +97,11 @@ public class AccreditamentoController {
 		}
 		//modifico lo stato
 		accreditamentoService.changeState(accreditamentoId, stato);
+		
+		if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
+			valutazioneService.updateValutazioniNonDate(accreditamentoId);
+		}
+		
 		return new ResponseState(false, "Stato modificato");
 
 /*
