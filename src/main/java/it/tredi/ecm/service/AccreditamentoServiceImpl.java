@@ -382,11 +382,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Provider"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-<<<<<<< HEAD
 
-=======
-		
->>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 		Long timerIntegrazioneRigetto = giorniTimer * 86400000;
 		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
 	}
