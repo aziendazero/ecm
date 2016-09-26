@@ -87,7 +87,7 @@ public class LoginController {
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);
-					wrapper.setDomandeInCarica(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId()));
+					wrapper.setDomandeInCarica(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId()));
 					wrapper.setDomandeNonValutateConsecutivamente(accountService.getUserById(currentUser.getAccount().getId()).getValutazioniNonDate());
 				case COMMISSIONE:
 					wrapper.setIsCommissione(true);
