@@ -59,4 +59,8 @@ public class Comunicazione extends BaseEntity{
 	@Column(name="utenti_che_devono_leggere")
     @ElementCollection(targetClass=Long.class)
 	private Set<Long> utentiCheDevonoLeggere = new HashSet<Long>();
+
+	//allegato
+	@OneToOne
+	private File allegatoComunicazione;
 }
