@@ -96,11 +96,12 @@
 													data-width="100%" data-style="btn-primary"
 													data-actions-box="true" data-size="10"
 													data-hide-disabled="false"
+													id="ambitoSelect"
 													title="Seleziona un ambito...">
 													<option
 														th:each="ambito, row: ${comunicazioneWrapper.ambitoList}"
 														th:value="${ambito}"
-														th:text="${ambito}">
+														th:text="${ambito.nome}">
 													</option>
 												</select>
 											</div>
@@ -120,11 +121,13 @@
 													data-width="100%" data-style="btn-primary"
 													data-actions-box="true" data-size="10"
 													data-hide-disabled="false"
+													id="tipologiaSelect"
 													title="Seleziona una tipologia...">
 													<option
 														th:each="tipo, row: ${comunicazioneWrapper.tipologiaList}"
 														th:value="${tipo}"
-														th:text="${tipo}">
+														th:text="${tipo.nome}"
+														th:name="${tipo.ambito}">
 													</option>
 												</select>
 												<div th:if="${#fields.hasErrors('comunicazioneWrapper.comunicazione.tipologia')}" class="alert" th:errors="${comunicazioneWrapper.comunicazione.tipologia}"></div>
@@ -141,7 +144,8 @@
 									<textarea class="comunicazione-testo" th:field="${comunicazioneWrapper.comunicazione.messaggio}"></textarea>
 								</div>
 
-								<button type="button" class="btn btn-primary with-margin-top with-margin-left" onclick="alert('TODO')"><i class="fa fa-paperclip"></i> <span th:text="#{label.allega}" ></span></button>
+								<div class="with-margin-top"></div>
+								<th:block th:include="fragments/allegati :: allegati(comunicazioneWrapper, false, allegatoComunicazione, null, null, null, false, null, false)" ></th:block>
 							</div>
 
 							<input id="submitButton" type="submit" style="display: none;" />
@@ -164,6 +168,22 @@
 						$(this).remove();
 					});
 				}
+
+				$("#ambitoSelect").on("change", abilitaTipologia);
+
+				function abilitaTipologia(){
+					// abilita la select della tipologia
+					$("#tipologiaSelect").prop("disabled", false);
+					// cicla le tipologie mostrando quelle relative all'ambito e nascondendo le altre
+					$.each($("#tipologiaSelect option"), function() {
+						if($(this).attr("name") == $("#ambitoSelect").val())
+							$(this).show();
+						else $(this).hide();
+					});
+					$("#tipologiaSelect").selectpicker('deselectAll');
+					$("#tipologiaSelect").selectpicker("refresh");
+				}
+
 			</script>
 		</div>
 	</div>

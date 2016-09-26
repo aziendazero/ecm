@@ -13,6 +13,7 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
@@ -97,6 +98,7 @@ public class AccreditamentoWrapper {
 	private boolean canAssegnaNuovoGruppo;
 	private boolean canConfermaValutazione;
 	private boolean canPresaVisione;
+	private boolean canEnableField;
 
 	//int referee da riassegnare
 	private int refereeDaRiassegnare = 0;
@@ -124,10 +126,14 @@ public class AccreditamentoWrapper {
 
 	//Valutazioni per l'accreditamento
 	private Set<Valutazione> valutazioniList = new HashSet<Valutazione>();
-	
+
 	//Elenco MultiIstanza aggiunti e eliminati durante Integrazione
 	private Set<Long> aggiunti = new HashSet<Long>();
 	private Set<Long> eliminati = new HashSet<Long>();
+
+	//File allegati integrazione
+	private File noteOsservazioniIntegrazione;
+	private File noteOsservazioniPreavvisoRigetto;
 
 	public AccreditamentoWrapper(){};
 	public AccreditamentoWrapper(Accreditamento accreditamento){
@@ -206,7 +212,7 @@ public class AccreditamentoWrapper {
 			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
 			sezione3Stato = (attoCostitutivoStato && (esperienzaFormazioneStato || !accreditamento.getDatiAccreditamento().getDatiEconomici().hasFatturatoFormazione()) && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
 		}
-		
+
 		if(mode == AccreditamentoWrapperModeEnum.VALIDATE) {
 
 			providerStato = (mappa.containsKey(IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE) &&

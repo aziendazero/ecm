@@ -12,10 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
+import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ValutazioneRepository;
 import it.tredi.ecm.utils.Utils;
 
@@ -25,6 +29,8 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 
 	@Autowired private ValutazioneRepository valutazioneRepository;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
+	@Autowired private ProfileRepository profileRepository;
+	@Autowired private AccountService accountService;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -49,7 +55,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Override
 	public Valutazione getValutazioneByAccreditamentoIdAndAccountId(Long accreditamentoId, Long accountId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Valutazione per l'accreditamento " + accreditamentoId + " eseguita dall'utente " + accountId));
-		Valutazione valutazione = valutazioneRepository.findOneByAccreditamentoIdAndAccountIdAndDataValutazioneNull(accreditamentoId, accountId);
+		Valutazione valutazione = valutazioneRepository.findOneByAccreditamentoIdAndAccountId(accreditamentoId, accountId);
 		return valutazione;
 	}
 
@@ -120,5 +126,30 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		Set<Account> valutatori = new HashSet<Account>();
 		valutatori = valutazioneRepository.getAccountValutatoriWithDataValutazioneForAccreditamentoId(accreditamentoId);
 		return valutatori;
+	}
+
+	@Override
+	public Map<Long, Account> getValutatoreSegreteriaForAccreditamentiList(Set<Accreditamento> accreditamentoSet) {
+		LOGGER.debug(Utils.getLogMessage("Carico la mappa di chi ha preso in carica gli accreditamenti"));
+		Map<Long, Account> mappaAccreditamentoAccountValutatore = new HashMap<Long, Account>();
+		for (Accreditamento a : accreditamentoSet) {
+			Account account = valutazioneRepository.getAccountSegreteriaValutatoreForAccreditamentoId(a.getId(), profileRepository.findOneByProfileEnum(ProfileEnum.SEGRETERIA).get());
+			if (account != null)
+				mappaAccreditamentoAccountValutatore.put(a.getId(), account);
+		}
+		return mappaAccreditamentoAccountValutatore;
+	}
+	
+	@Override
+	public void updateValutazioniNonDate(Long accreditamentoId) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Aggiornamento valutazioni non date per accreditamento: " + accreditamentoId));
+		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoId(accreditamentoId);
+		for(Valutazione v : valutazioni){
+			if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE && v.getDataValutazione() == null){
+				Account referee = v.getAccount();
+				referee.setValutazioniNonDate(referee.getValutazioniNonDate() + 1);
+				accountService.save(referee);
+			}
+		}
 	}
 }

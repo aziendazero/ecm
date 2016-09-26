@@ -79,9 +79,9 @@ public class ProviderRegistrationController {
 				return EDIT;
 			}else{
 				providerService.saveProviderRegistrationWrapper(providerRegistrationWrapper);
-				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.conferma_registrazione", "success"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /login"));
-				return "redirect:/login";
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /registration/confirmed"));
+				redirectAttrs.addFlashAttribute("provider", providerRegistrationWrapper.getProvider());
+				return "redirect:/confirmRegistration";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /providerRegistration"),ex);
@@ -91,6 +91,20 @@ public class ProviderRegistrationController {
 			return EDIT;
 		}
 
+	}
+
+	@RequestMapping(value = "/confirmRegistration", method = RequestMethod.GET)
+	public String providerRegistrationCorfirm(Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /confirmRegistration"));
+		try {
+			LOGGER.info(Utils.getLogMessage("VIEW: /confirmRegistration"));
+			return "confirmRegistration";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /confirmRegistration"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /login"));
+			return "redirect:/login";
+		}
 	}
 
 	private int evaluateErrorStep(BindingResult result){

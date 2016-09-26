@@ -11,7 +11,7 @@
 				<!-- title -->
 				<div class="row">
 					<div class="col-xs-12">
-						<div class="home-title" th:text="${homeWrapper.isProvider} ? #{label.home_page_provider_welcome('TODOproviderName')} : #{label.home_page_user_welcome(${homeWrapper.user.nome}, ${homeWrapper.user.cognome})}">Home page</div>
+						<div class="home-title" th:text="#{label.homepage}">Home page</div>
 					</div>
 				</div>
 
@@ -20,15 +20,13 @@
 				<!-- ADMIN -->
 				<div class="row" th:if="${homeWrapper.isAdmin}">
 					<div class="home-divider" th:text="#{label.dashboard_admin}">Admin dashboard</div>
-					<div class="col-xs-12 tile-stats-container">
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 clickable" onclick="show('XXX')">
-							<div class="tile-stats">
-								<div class="icon"><i th:class="${homeWrapper.utentiInAttesaDiAttivazione == 1 ? 'fa fa-user' : 'fa fa-users'}"></i></div>
-								<div class="col-xs-10">
-				                	<div class="count" th:text="${homeWrapper.utentiInAttesaDiAttivazione}"></div>
-				                	<h3 class="tile-h3" th:text="${homeWrapper.utentiInAttesaDiAttivazione == 1 ? #messages.msg('label.utente') : #messages.msg('label.utenti')}"></h3>
-				                	<p class="count-text" th:text="#{label.in_attesa_attivazione}">In attesa di attivazione</p>
-								</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 clickable" onclick="show('XXX')">
+						<div class="tile-stats">
+							<div class="icon"><i th:class="${homeWrapper.utentiInAttesaDiAttivazione == 1 ? 'fa fa-user' : 'fa fa-users'}"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.utentiInAttesaDiAttivazione}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.utentiInAttesaDiAttivazione == 1 ? #messages.msg('label.utente') : #messages.msg('label.utenti')}"></h3>
+			                	<p class="count-text" th:text="#{label.in_attesa_attivazione}">In attesa di attivazione</p>
 							</div>
 						</div>
 					</div>
@@ -36,36 +34,23 @@
 
 				<!-- PROVIDER -->
 				<div class="row" th:if="${homeWrapper.isProvider}">
-					<div class="home-divider" th:text="#{label.dashboard_provider}">Provider dashboard</div>
-					<div class="col-xs-12 tile-stats-container">
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
-							<div class="tile-stats">
-								<div class="icon"><i th:class="${homeWrapper.messaggi == 1 ? 'fa fa-comment-o' : 'fa fa-comments-o'}"></i></div>
-								<div class="col-xs-10">
-				                	<div class="count" th:text="${homeWrapper.messaggi}"></div>
-				                	<h3 class="tile-h3" th:text="${homeWrapper.messaggi == 1 ? #messages.msg('label.messaggio') : #messages.msg('label.messaggi')}"></h3>
-				                	<p class="count-text" th:text="#{label.da_leggere}">Da leggere</p>
-								</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="show('XXX')">
+						<div class="tile-stats clickable">
+							<div class="icon"><i class="fa fa-euro"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.eventiDaPagare}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiDaPagare == 1 ? #messages.msg('label.evento') : #messages.msg('label.eventi')}"></h3>
+			                	<p class="count-text" th:text="#{label.da_pagare}">Da pagare</p>
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
-							<div class="tile-stats">
-								<div class="icon"><i class="fa fa-euro"></i></div>
-								<div class="col-xs-10">
-				                	<div class="count" th:text="${homeWrapper.eventiDaPagare}"></div>
-				                	<h3 class="tile-h3" th:text="${homeWrapper.eventiDaPagare == 1 ? #messages.msg('label.evento') : #messages.msg('label.eventi')}"></h3>
-				                	<p class="count-text" th:text="#{label.da_pagare}">Da pagare</p>
-								</div>
-							</div>
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="show('XXX')">
-							<div class="tile-stats">
-								<div class="icon"><i class="fa fa-edit"></i></div>
-								<div class="col-xs-10">
-				                	<div class="count" th:text="${homeWrapper.accreditamentiDaIntegrare}"></div>
-				                	<h3 class="tile-h3" th:text="${homeWrapper.accreditamentiDaIntegrare == 1 ? #messages.msg('label.accreditamento') : #messages.msg('label.accreditamenti')}"></h3>
-				                	<p class="count-text" th:text="#{label.da_integrare}">Da integrare</p>
-								</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/integrazione/list')">
+						<div class="tile-stats clickable">
+							<div class="icon"><i class="fa fa-edit"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.accreditamentiDaIntegrare}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.accreditamentiDaIntegrare == 1 ? #messages.msg('label.accreditamento') : #messages.msg('label.accreditamenti')}"></h3>
+			                	<p class="count-text" th:text="#{label.da_integrare}">Da integrare</p>
 							</div>
 						</div>
 					</div>
@@ -83,8 +68,8 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 clickable" onclick="goTo('accreditamento/valutazioneReferee/list')">
-						<div class="tile-stats">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/valutazioneReferee/list')">
+						<div class="tile-stats clickable">
 							<div class="icon"><i class="fa fa-list-alt"></i></div>
 							<div class="col-xs-10">
 			                	<div class="count" th:text="${homeWrapper.domandeInCarica}"></div>
@@ -176,6 +161,16 @@
 			                	<div class="count" th:text="${homeWrapper.badReferee}"></div>
 			                	<h3 class="tile-h3" th:text="#{label.referee}"></h3>
 			                	<p class="count-text" th:text="${homeWrapper.badReferee == 1} ? #{label.non_ha_valutato} :  #{label.non_hanno_valutato}"></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list?showCarica=true')">
+							<div class="icon"><i class="fa fa-list"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.domandeDaValutareAll}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeDaValutareAll == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.da_valutare}"></p>
 							</div>
 						</div>
 					</div>

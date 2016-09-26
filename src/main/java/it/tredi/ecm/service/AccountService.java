@@ -16,4 +16,5 @@ public interface AccountService {
     public void resetPassword(String email) throws Exception;
     public void changePassword(Long id, String password) throws Exception;
 	public int countAllRefereeWithValutazioniNonDate();
+	public Set<String> getEmailByProfileEnum(ProfileEnum profileEnum);
 }

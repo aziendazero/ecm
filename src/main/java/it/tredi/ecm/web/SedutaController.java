@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.repository.SedutaRepository;
 import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.EmailService;
 import it.tredi.ecm.service.SedutaService;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
@@ -305,7 +307,7 @@ public class SedutaController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping(value = "/seduta/{sedutaId}/valutazioneCommissione/{valutazioneCommissioneId}/validate", method = RequestMethod.POST)
 	public String valutaValutazioneCommissione(@ModelAttribute("sedutaWrapper") SedutaWrapper sedutaWrapper, BindingResult result, @PathVariable Long sedutaId,
-			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs){
+			@PathVariable Long valutazioneCommissioneId, Model model, RedirectAttributes redirectAttrs) throws Exception{
 		try {
 			sedutaValidator.validateCompletamentoValutazioneCommissione(sedutaWrapper.getValutazioneTarget(), result, "valutazioneTarget.");
 			if(result.hasErrors()){
@@ -320,6 +322,9 @@ public class SedutaController {
 				val.setValutazioneCommissione(sedutaWrapper.getValutazioneTarget().getValutazioneCommissione());
 				val.setStato(sedutaWrapper.getValutazioneTarget().getStato());
 				valutazioneCommissioneRepository.save(val);
+				
+				accreditamentoService.inviaValutazioneCommissione(val.getAccreditamento().getId(), Utils.getAuthenticatedUser(), val.getStato());
+				
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_commissione_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/validate"));
 				return "redirect:/seduta/{sedutaId}/validate";
@@ -377,7 +382,7 @@ public class SedutaController {
 		return HANDLE;
 	}
 
-	private String goToValidate(Model model, SedutaWrapper sedutaWrapper) {
+	private String goToValidate(Model model, SedutaWrapper sedutaWrapper) throws Exception {
 		//cerca le sedute disponibili per un eventuale spostamento di valutazione commissione
 		Set<Seduta> seduteDisponibili = sedutaService.getAllSeduteAfter(LocalDate.now(), LocalTime.now().plusMinutes(ecmProperties.getSedutaValidationMinutes()));
 		//rimuove la seduta corrente (per evitare spostamenti da a la stessa seduta)
@@ -395,6 +400,17 @@ public class SedutaController {
 		wrapper.setSeduta(seduta);
 		wrapper.setCanEdit(sedutaService.canEditSeduta(seduta));
 		wrapper.setCanValidate(sedutaService.canBeEvaluated(seduta));
+		wrapper.setCanBloccaSeduta(true);
+		
+		if(!seduta.isNew()){
+			Set<Accreditamento> listaAccreditamentiInSeduta = sedutaService.getAccreditamentiInSeduta(seduta.getId());
+			for(Accreditamento a : listaAccreditamentiInSeduta){
+				if(a.isValutazioneCommissione()){
+					wrapper.setCanBloccaSeduta(false);
+				}
+			}
+		}
+		
 		return wrapper;
 	}
 
@@ -411,6 +427,31 @@ public class SedutaController {
 			result.put(temp);
 		}
 		return result;
+	}
+	
+	@RequestMapping("/seduta/{sedutaId}/bloccaSeduta")
+	public String bloccaSeduta(@PathVariable Long sedutaId) throws Exception{
+		Set<Accreditamento> listaInOdg = sedutaService.getAccreditamentiInSeduta(sedutaId);
+		for(Accreditamento a : listaInOdg){
+			accreditamentoService.inserisciInValutazioneCommissione(a.getId(), Utils.getAuthenticatedUser());
+		}
+		return "redirect:/seduta/list";
+	}
+	
+	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
+	@RequestMapping("/seduta/{sedutaId}/convocazioneCommissione")
+	public String convocazioneCommissione(@PathVariable Long sedutaId, RedirectAttributes redirectAttrs){
+		try {
+			sedutaService.inviaMailACommissioneEcm();
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.mail_inviata", "success"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/show"));
+		}catch(Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /seduta/{sedutaId}/lock"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: redirect:/seduta/{sedutaId}/validate"));
+		}
+		
+		return "redirect:/seduta/{sedutaId}/show";
 	}
 
 }

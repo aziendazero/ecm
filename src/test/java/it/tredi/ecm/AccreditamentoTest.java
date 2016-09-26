@@ -25,7 +25,7 @@ import it.tredi.ecm.service.AccreditamentoService;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 //@WithUserDetails("provider")
-//@Ignore
+@Ignore
 public class AccreditamentoTest {
 
 	@Autowired

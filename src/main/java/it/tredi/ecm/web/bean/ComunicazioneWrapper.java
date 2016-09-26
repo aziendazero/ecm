@@ -6,6 +6,7 @@ import java.util.Map;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.ComunicazioneAmbitoEnum;
 import it.tredi.ecm.dao.enumlist.ComunicazioneTipologiaEnum;
 import lombok.Getter;
@@ -28,4 +29,5 @@ public class ComunicazioneWrapper {
 	private ComunicazioneTipologiaEnum[] tipologiaList;
 	private boolean canRespond;
 	private ComunicazioneResponse risposta;
+	private File allegatoComunicazione;
 }

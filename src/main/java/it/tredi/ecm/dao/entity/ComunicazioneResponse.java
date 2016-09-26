@@ -31,4 +31,7 @@ public class ComunicazioneResponse extends BaseEntity{
 	private String messaggio;
 	@Column(name="data_risposta")
 	private LocalDateTime dataRisposta;
+
+	@OneToOne
+	private File allegatoRisposta;
 }

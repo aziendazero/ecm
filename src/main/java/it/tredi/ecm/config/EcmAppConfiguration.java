@@ -22,6 +22,12 @@ public class EcmAppConfiguration {
 	private String applicationBaseUrl = "http://localhost:8080/";
 	@Value("${email.segreteriaEcm}")
 	private String emailSegreteriaEcm = "segreteria@ecm.it";
+	@Value("${debugTestMode}")
+	private boolean debugTestMode = false;
+	@Value("${giorni.integrazione.min}")
+	private int giorniIntegrazioneMin = 5;
+	@Value("${giorni.integrazione.max}")
+	private int giorniIntegrazioneMax = 20;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -31,6 +37,9 @@ public class EcmAppConfiguration {
 		ecmProperties.setSedutaValidationMinutes(sedutaValidationMinutes);
 		ecmProperties.setApplicationBaseUrl(applicationBaseUrl);
 		ecmProperties.setEmailSegreteriaEcm(emailSegreteriaEcm);
+		ecmProperties.setDebugTestMode(debugTestMode);
+		ecmProperties.setGiorniIntegrazioneMin(giorniIntegrazioneMin);
+		ecmProperties.setGiorniIntegrazioneMax(giorniIntegrazioneMax);
 		return ecmProperties;
 	}
 }

@@ -30,7 +30,7 @@
 					<tbody>
 						<tr th:each="evento, row : ${__${pianoFormativo}__.eventi}">
 							<td><a th:text="${evento.titolo}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show${urlParam}|}"></a></td>
-							<td th:text="${evento.id}"></td>
+							<td th:text="${evento.id} + '-' + ${evento.edizione}"></td>
 							<td th:text="${evento.proceduraFormativa.nome}"></td>
 							<th:block th:unless="${editabile or enableField}">
 								<td th:if="${(showOnly or enableField) and !evento.new}">

@@ -44,7 +44,7 @@
 					<div class="" th:if="${__${wrapper}__.__${tipoAllegato}__.new}"><div class="value danger" th:text="#{label.allegato_non_inserito}"></div></div>
 				</div>
 				<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-               		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${idField}" /> 
+               		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${idField}" />
                	</div>
 			</th:block>
 			<th:block th:if="${valutabile}">
@@ -112,27 +112,29 @@
 			var tipoAllegato = $(element).attr("id");
 			var fileId = $("#"+tipoAllegato+"\\.id").attr('value');
 			switch(tipoAllegato){
-				case 'cv' : 							tipoAllegato = 'FILE_CV'; break;
-				case 'delega' : 						tipoAllegato = 'FILE_DELEGA'; break;
-				case 'attoNomina' : 					tipoAllegato = 'FILE_ATTO_NOMINA'; break;
-				case 'organigramma' : 					tipoAllegato = 'FILE_ORGANIGRAMMA'; break;
-				case 'funzionigramma' :					tipoAllegato = 'FILE_FUNZIONIGRAMMA'; break;
-				case 'estrattoBilancioFormazione' : 	tipoAllegato = 'FILE_ESTRATTO_BILANCIO_FORMAZIONE'; break;
-				case 'estrattoBilancioComplessivo' : 	tipoAllegato = 'FILE_ESTRATTO_BILANCIO_COMPLESSIVO'; break;
-				case 'attoCostitutivo' : 				tipoAllegato = 'FILE_ATTO_COSTITUTIVO'; break;
-				case 'esperienzaFormazione' : 			tipoAllegato = 'FILE_ESPERIENZA_FORMAZIONE'; break;
-				case 'utilizzo' : 						tipoAllegato = 'FILE_UTILIZZO'; break;
-				case 'sistemaInformatico' : 			tipoAllegato = 'FILE_SISTEMA_INFORMATICO'; break;
-				case 'pianoQualita' : 					tipoAllegato = 'FILE_PIANO_QUALITA'; break;
-				case 'dichiarazioneLegale' : 			tipoAllegato = 'FILE_DICHIARAZIONE_LEGALE'; break;
-				case 'dichiarazioneEsclusione' : 		tipoAllegato = 'FILE_DICHIARAZIONE_ESCLUSIONE'; break;
-				case 'verbaleValutazioneSulCampo' : 	tipoAllegato = 'FILE_VERBALE_VALUTAZIONE_SUL_CAMPO'; break;
+				case 'cv' : 								tipoAllegato = 'FILE_CV'; break;
+				case 'delega' : 							tipoAllegato = 'FILE_DELEGA'; break;
+				case 'attoNomina' : 						tipoAllegato = 'FILE_ATTO_NOMINA'; break;
+				case 'organigramma' : 						tipoAllegato = 'FILE_ORGANIGRAMMA'; break;
+				case 'funzionigramma' :						tipoAllegato = 'FILE_FUNZIONIGRAMMA'; break;
+				case 'estrattoBilancioFormazione' : 		tipoAllegato = 'FILE_ESTRATTO_BILANCIO_FORMAZIONE'; break;
+				case 'estrattoBilancioComplessivo' : 		tipoAllegato = 'FILE_ESTRATTO_BILANCIO_COMPLESSIVO'; break;
+				case 'attoCostitutivo' : 					tipoAllegato = 'FILE_ATTO_COSTITUTIVO'; break;
+				case 'esperienzaFormazione' : 				tipoAllegato = 'FILE_ESPERIENZA_FORMAZIONE'; break;
+				case 'utilizzo' : 							tipoAllegato = 'FILE_UTILIZZO'; break;
+				case 'sistemaInformatico' : 				tipoAllegato = 'FILE_SISTEMA_INFORMATICO'; break;
+				case 'pianoQualita' : 						tipoAllegato = 'FILE_PIANO_QUALITA'; break;
+				case 'dichiarazioneLegale' : 				tipoAllegato = 'FILE_DICHIARAZIONE_LEGALE'; break;
+				case 'dichiarazioneEsclusione' : 			tipoAllegato = 'FILE_DICHIARAZIONE_ESCLUSIONE'; break;
+				case 'verbaleValutazioneSulCampo' : 		tipoAllegato = 'FILE_VERBALE_VALUTAZIONE_SUL_CAMPO'; break;
+				case 'noteOsservazioniIntegrazione':		tipoAllegato = 'FILE_NOTE_OSSERVAZIONI_INTEGRAZIONE'; break;
+				case 'noteOsservazioniPreavvisoRigetto':	tipoAllegato = 'FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO'; break;
 
 				//File da firmare per engineering
-				case 'fileDaFirmare' :					tipoAllegato = 'FILE_DA_FIRMARE'; break;
+				case 'fileDaFirmare' :						tipoAllegato = 'FILE_DA_FIRMARE'; break;
 			}
 
-			var stato = [[${__${wrapper}__.statoAccreditamento?.name()}]];
+			var stato = [[(${__${wrapper}__ != accreditamentoWrapper} and ${__${wrapper}__ != comunicazioneWrapper) ? ${__${wrapper}__.statoAccreditamento?.name()}]];
 
 	 		var oMyForm = new FormData();
             oMyForm.append("multiPartFile", $(element)[0].files[0]);
@@ -167,24 +169,26 @@
 					var inputName = '';
 
 					switch (response.tipo) {
-						case 'FILE_CV': 							inputName = 'cv'; break;
-						case 'FILE_DELEGA': 						inputName = 'delega'; break;
-						case 'FILE_ATTO_NOMINA': 					inputName = 'attoNomina'; break;
-						case 'FILE_ORGANIGRAMMA' : 					inputName = 'organigramma'; break;
-						case 'FILE_FUNZIONIGRAMMA' :				inputName = 'funzionigramma'; break;
-						case 'FILE_ESTRATTO_BILANCIO_FORMAZIONE' : 	inputName = 'estrattoBilancioFormazione'; break;
-						case 'FILE_ESTRATTO_BILANCIO_COMPLESSIVO' : inputName = 'estrattoBilancioComplessivo'; break;
-						case 'FILE_ATTO_COSTITUTIVO' : 				inputName = 'attoCostitutivo'; break;
-						case 'FILE_ESPERIENZA_FORMAZIONE' : 		inputName = 'esperienzaFormazione'; break;
-						case 'FILE_UTILIZZO' : 						inputName = 'utilizzo'; break;
-						case 'FILE_SISTEMA_INFORMATICO' : 			inputName = 'sistemaInformatico'; break;
-						case 'FILE_PIANO_QUALITA' : 				inputName = 'pianoQualita'; break;
-						case 'FILE_DICHIARAZIONE_LEGALE' : 			inputName = 'dichiarazioneLegale'; break;
-						case 'FILE_DICHIARAZIONE_ESCLUSIONE' : 		inputName = 'dichiarazioneEsclusione'; break;
-						case 'FILE_VERBALE_VALUTAZIONE_SUL_CAMPO' : inputName = 'verbaleValutazioneSulCampo'; break;
+						case 'FILE_CV': 									inputName = 'cv'; break;
+						case 'FILE_DELEGA': 								inputName = 'delega'; break;
+						case 'FILE_ATTO_NOMINA': 							inputName = 'attoNomina'; break;
+						case 'FILE_ORGANIGRAMMA' : 							inputName = 'organigramma'; break;
+						case 'FILE_FUNZIONIGRAMMA' :						inputName = 'funzionigramma'; break;
+						case 'FILE_ESTRATTO_BILANCIO_FORMAZIONE' : 			inputName = 'estrattoBilancioFormazione'; break;
+						case 'FILE_ESTRATTO_BILANCIO_COMPLESSIVO' : 		inputName = 'estrattoBilancioComplessivo'; break;
+						case 'FILE_ATTO_COSTITUTIVO' : 						inputName = 'attoCostitutivo'; break;
+						case 'FILE_ESPERIENZA_FORMAZIONE' : 				inputName = 'esperienzaFormazione'; break;
+						case 'FILE_UTILIZZO' : 								inputName = 'utilizzo'; break;
+						case 'FILE_SISTEMA_INFORMATICO' : 					inputName = 'sistemaInformatico'; break;
+						case 'FILE_PIANO_QUALITA' : 						inputName = 'pianoQualita'; break;
+						case 'FILE_DICHIARAZIONE_LEGALE' : 					inputName = 'dichiarazioneLegale'; break;
+						case 'FILE_DICHIARAZIONE_ESCLUSIONE' : 				inputName = 'dichiarazioneEsclusione'; break;
+						case 'FILE_VERBALE_VALUTAZIONE_SUL_CAMPO' : 		inputName = 'verbaleValutazioneSulCampo'; break;
+						case 'FILE_NOTE_OSSERVAZIONI_INTEGRAZIONE' : 		inputName = 'noteOsservazioniIntegrazione'; break;
+						case 'FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO' : 	inputName = 'noteOsservazioniPreavvisoRigetto'; break;
 
 						//File da firmare per engineering
-						case 'FILE_DA_FIRMARE' :					inputName = 'fileDaFirmare'; break;
+						case 'FILE_DA_FIRMARE' :							inputName = 'fileDaFirmare'; break;
 					default: break;
 						}
 

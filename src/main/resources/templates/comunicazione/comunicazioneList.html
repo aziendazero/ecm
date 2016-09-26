@@ -37,8 +37,8 @@
 										<td><a th:text="${comunicazione.oggetto}" th:href="@{|/comunicazione/${comunicazione.id}/show|}"></a></td>
 										<td th:text="${comunicazione.mittente.isSegreteria()} ? #{label.from_segreteria_list} : #{label.from_provider_list(${comunicazione.mittente.username}, 'TODOproviderName')}"></td>
 										<td th:text="${comunicazione.chiusa == true} ? #{label.chiusa} : #{label.aperta}"></td>
-										<td th:text="${comunicazione.ambito}"></td>
-										<td th:text="${comunicazione.tipologia}"></td>
+										<td th:text="${comunicazione.ambito.nome}"></td>
+										<td th:text="${comunicazione.tipologia.nome}"></td>
 										<td th:text="${#temporals.format(comunicazione.dataCreazione, 'HH:mm - dd/MM/yyyy')}"></td>
 										<td th:text="${#temporals.format(comunicazione.dataUltimaModifica, 'HH:mm - dd/MM/yyyy')}"></td>
 									</tr>

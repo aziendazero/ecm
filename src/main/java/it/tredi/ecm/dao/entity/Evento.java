@@ -38,7 +38,7 @@ public class Evento extends BaseEntity{
 
 	@Column(name="anno_piano_formativo")
 	private Integer pianoFormativo;
-	
+
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;
 	@ManyToOne @JoinColumn(name = "accreditamento_id")
@@ -55,6 +55,8 @@ public class Evento extends BaseEntity{
 	private Double costo = 0.00;
 
 	private Boolean pagato = false;
+
+	private Integer edizione = 1;
 
 	@Type(type = "serializable")
 	private List<Integer> idEditabili = new ArrayList<Integer>();

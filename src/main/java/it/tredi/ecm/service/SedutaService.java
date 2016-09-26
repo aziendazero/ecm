@@ -11,19 +11,20 @@ import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 
 public interface SedutaService {
-	Set<Seduta> getAllSedute();
-	Seduta getSedutaById(Long sedutaId);
-	void removeSedutaById(Long sedutaId);
-	boolean canEditSeduta(Seduta seduta);
-	boolean canBeEvaluated(Seduta seduta);
-	boolean canBeLocked(Seduta seduta);
-	boolean canBeRemoved(Long sedutaId);
-	Set<Accreditamento> getAccreditamentiInSeduta(Long sedutaId);
-	void moveValutazioneCommissione(ValutazioneCommissione val, Seduta from, Seduta to);
-	Set<Seduta> getAllSeduteAfter(LocalDate date, LocalTime time);
-	void lockSeduta(Long sedutaId) throws Exception;
-	Map<Long, Set<AccreditamentoStatoEnum>> prepareMappaStatiValutazione(Seduta seduta);
-	void addValutazioneCommissioneToSeduta(String motivazioneDaInserire, Long idAccreditamentoDaInserire, Seduta seduta);
-	void removeValutazioneCommissioneFromSeduta(Long valutazioneCommissioneId);
-	Seduta getNextSeduta();
+	public Set<Seduta> getAllSedute();
+	public Seduta getSedutaById(Long sedutaId);
+	public void removeSedutaById(Long sedutaId);
+	public boolean canEditSeduta(Seduta seduta);
+	public boolean canBeEvaluated(Seduta seduta);
+	public boolean canBeLocked(Seduta seduta);
+	public boolean canBeRemoved(Long sedutaId);
+	public Set<Accreditamento> getAccreditamentiInSeduta(Long sedutaId);
+	public void moveValutazioneCommissione(ValutazioneCommissione val, Seduta from, Seduta to);
+	public Set<Seduta> getAllSeduteAfter(LocalDate date, LocalTime time);
+	public void lockSeduta(Long sedutaId) throws Exception;
+	public Map<Long, Set<AccreditamentoStatoEnum>> prepareMappaStatiValutazione(Seduta seduta) throws Exception;
+	public void addValutazioneCommissioneToSeduta(String motivazioneDaInserire, Long idAccreditamentoDaInserire, Seduta seduta);
+	public void removeValutazioneCommissioneFromSeduta(Long valutazioneCommissioneId);
+	public 	Seduta getNextSeduta();
+	public void inviaMailACommissioneEcm() throws Exception;
 }

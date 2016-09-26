@@ -194,21 +194,18 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	}
 	
 	@Override
-	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
+	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId) throws Exception{
 		return accreditamentoService.canUserPrendiInCarica(accreditamentoId, currentUser);
 	}
 	
 	@Override
-	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
-		if(currentUser.isSegreteria() || currentUser.isReferee()){
-			return (accreditamentoService.canUserValutaDomanda(accreditamentoId, currentUser) || accreditamentoService.canUserValutaDomandaShow(accreditamentoId, currentUser));
-		}
-		return false;
+	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId) throws Exception {
+		return (accreditamentoService.canUserValutaDomanda(accreditamentoId, currentUser) || accreditamentoService.canUserValutaDomandaShow(accreditamentoId, currentUser));
 	}
 	
 	@Override
-	public boolean canEnableField(CurrentUser currentUser) {
-		return accreditamentoService.canUserEnableField(currentUser);
+	public boolean canEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception {
+		return accreditamentoService.canUserEnableField(currentUser, accreditamentoId);
 	}
 	
 	@Override
@@ -223,7 +220,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	}
 	
 	@Override
-	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) {
+	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) throws Exception{
 		return accreditamentoService.canUserInviaIntegrazione(accreditamentoId, currentUser);
 	}
 	

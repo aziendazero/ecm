@@ -4,21 +4,27 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.validator.internal.util.privilegedactions.SetAccessibility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.SedutaRepository;
 import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.utils.Utils;
+import lombok.val;
 
 @Service
 public class SedutaServiceImpl implements SedutaService {
@@ -28,6 +34,9 @@ public class SedutaServiceImpl implements SedutaService {
 	@Autowired private ValutazioneCommissioneRepository valutazioneCommissioneRepository;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private EcmProperties ecmProperties;
+	@Autowired private WorkflowService workflowService;
+	@Autowired private EmailService emailService;
+	@Autowired private AccountService accountService;
 
 	@Override
 	public Set<Seduta> getAllSedute() {
@@ -134,14 +143,22 @@ public class SedutaServiceImpl implements SedutaService {
 	}
 
 	@Override
-	public Map<Long, Set<AccreditamentoStatoEnum>> prepareMappaStatiValutazione(Seduta seduta) {
+	public Map<Long, Set<AccreditamentoStatoEnum>> prepareMappaStatiValutazione(Seduta seduta) throws Exception {
 		Map<Long, Set<AccreditamentoStatoEnum>> mappa = new HashMap<Long, Set<AccreditamentoStatoEnum>>();
 		for (ValutazioneCommissione vc : seduta.getValutazioniCommissione()) {
 			Set<AccreditamentoStatoEnum> value = new HashSet<AccreditamentoStatoEnum>();
-			//TODO chiedere a Bonita gli stati dove può finire la domanda di accreditamento (sostituire parte fatta a manazza)
-			value.add(AccreditamentoStatoEnum.ACCREDITATO);
-			value.add(AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE);
-			value.add(AccreditamentoStatoEnum.DINIEGO);
+			
+			List<AccreditamentoStatoEnum> possibiliStati = workflowService.getInserimentoEsitoOdgStatiPossibiliAccreditamento(vc.getAccreditamento().getWorkflowInfoAccreditamento().getProcessInstanceId());
+			value.addAll(possibiliStati);
+			
+			//TODO bugfix al volo
+			value.remove(AccreditamentoStatoEnum.INS_ODG);
+			
+			if(value.contains(AccreditamentoStatoEnum.PREAVVISO_RIGETTO)){
+				value.remove(AccreditamentoStatoEnum.PREAVVISO_RIGETTO);
+				value.add(AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO);
+			}
+			
 			mappa.put(vc.getAccreditamento().getId(), value);
 		}
 		return mappa;
@@ -180,6 +197,13 @@ public class SedutaServiceImpl implements SedutaService {
 			return prossimaSedutaOggi;
 		else
 			return sedutaRepository.findFirstByDataAfterOrderByDataAsc(oggi);
+	}
+	
+	@Override
+	public void inviaMailACommissioneEcm() throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Inio email ai componenti della Commissione ECM"));
+		Set<String> commissioneECM = accountService.getEmailByProfileEnum(ProfileEnum.COMMISSIONE);
+		emailService.inviaConvocazioneACommissioneECM(commissioneECM);
 	}
 
 }

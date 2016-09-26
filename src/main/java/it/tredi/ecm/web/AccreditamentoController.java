@@ -39,18 +39,19 @@ import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
-import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
-import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.SedeService;
+import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.service.bean.CurrentUser;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -66,16 +67,19 @@ public class AccreditamentoController {
 	@Autowired private ProviderService providerService;
 	@Autowired private PersonaService personaService;
 	@Autowired private SedeService sedeService;
-	
+
 	@Autowired private AccountService accountService;
-	
+
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private TokenService tokenService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
-	
-	@Autowired private IntegrazioneService integrazioneService; 
-	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService; 
+
+	@Autowired private IntegrazioneService integrazioneService;
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+	@Autowired private FileService fileService;
+
+	@Autowired private EcmProperties ecmProperties;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -84,7 +88,8 @@ public class AccreditamentoController {
 
 	@RequestMapping("/workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}")
 	@ResponseBody
-	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato) throws Exception{
+	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato,
+			@RequestParam(required = false) Integer numeroValutazioniNonDate) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato} token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato));
 
 		if(!tokenService.checkTokenAndDelete(token)) {
@@ -94,8 +99,13 @@ public class AccreditamentoController {
 		}
 		//modifico lo stato
 		accreditamentoService.changeState(accreditamentoId, stato);
+
+		if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
+			valutazioneService.updateValutazioniNonDate(accreditamentoId);
+		}
+
 		return new ResponseState(false, "Stato modificato");
-		
+
 /*
 		Account account = accountRepository.findOneByUsername("provider").orElse(null);
 		if(account != null) {
@@ -209,7 +219,7 @@ public class AccreditamentoController {
 	}
 
 	/*** Get enableField Accreditamento {ID} ***/
-	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#id)")
 	@RequestMapping("/accreditamento/{id}/enableField")
 	public String enableFieldAccreditamento(@PathVariable Long id, Model model, @RequestParam(required = false) String tab, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + id + "/enableField"));
@@ -228,12 +238,12 @@ public class AccreditamentoController {
 		}
 	}
 
-	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento) {
+	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento) throws Exception{
 		return goToAccreditamentoShow(model, accreditamento, null);
 	}
 
 	//passo il wrapper che contiene solo la lista dei referee riassegnati
-	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper){
+	private String goToAccreditamentoShow(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper) throws Exception{
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperShow(accreditamento, wrapper);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		if(accreditamentoWrapper.isCanAssegnaNuovoGruppo()) {
@@ -248,7 +258,7 @@ public class AccreditamentoController {
 		return "accreditamento/accreditamentoShow";
 	}
 
-	private String goToAccreditamentoEdit(Model model, Accreditamento accreditamento, String tab){
+	private String goToAccreditamentoEdit(Model model, Accreditamento accreditamento, String tab) throws Exception{
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperEdit(accreditamento);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		selectCorrectTab(tab, accreditamentoWrapper, model);
@@ -256,12 +266,12 @@ public class AccreditamentoController {
 		return "accreditamento/accreditamentoEdit";
 	}
 
-	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento) {
+	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento) throws Exception {
 		return goToAccreditamentoValidate(model, accreditamento, null);
 	}
 
 	//passo il wrapper che contiene solo la valutazione complessiva e la lista dei referee selezionati
-	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper){
+	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper) throws Exception{
 		//carico la valutazione dell'utente corrente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento, valutazione, wrapper);
@@ -271,16 +281,19 @@ public class AccreditamentoController {
 		return "accreditamento/accreditamentoValidate";
 	}
 
-	private String goToAccreditamentoEnableField(Model model, Accreditamento accreditamento, String tab){
+	private String goToAccreditamentoEnableField(Model model, Accreditamento accreditamento, String tab) throws Exception{
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperEnableField(accreditamento);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		model.addAttribute("richiestaIntegrazioneWrapper", integrazioneService.prepareRichiestaIntegrazioneWrapper(accreditamento.getId(), SubSetFieldEnum.FULL, null));
 		model.addAttribute("userCanSendRichiestaIntegrazione",accreditamentoService.canUserInviaRichiestaIntegrazione(accreditamento.getId(), Utils.getAuthenticatedUser()));
+		model.addAttribute("giorniIntegrazioneMax", ecmProperties.getGiorniIntegrazioneMax());
+		model.addAttribute("giorniIntegrazioneMin", ecmProperties.getGiorniIntegrazioneMin());
+		model.addAttribute("giorniIntegrazione", 5);
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoEnableField"));
 		return "accreditamento/accreditamentoEnableField";
 	}
 
-	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/{idFieldEnum}/{state}")
 	public String enableFieldFull(@PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("idFieldEnum") IdFieldEnum field, @PathVariable("state") boolean state){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/" + field + "/" + state));
@@ -427,7 +440,7 @@ public class AccreditamentoController {
 			redirectAttrs.addAttribute("id",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId));;
-			return "redirect:/accreditamento/{id}";
+			return "redirect:/accreditamento/{id}/edit";
 		}
 	}
 
@@ -452,26 +465,27 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}/edit";
 		}
 	}
-	
-	
 
-	/*** METODI PRIVATI PER IL SUPPORTO ***/
-	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento){
+
+
+	/*** METODI PRIVATI PER IL SUPPORTO
+	 * @throws Exception ***/
+	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - entering"));
 
 		AccreditamentoWrapper accreditamentoWrapper = new AccreditamentoWrapper(accreditamento);
-		if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE){
+		if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE || accreditamento.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
 			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
 			accreditamentoWrapper.setCanSendIntegrazione(accreditamentoService.canUserInviaIntegrazione(accreditamento.getId(),Utils.getAuthenticatedUser()));
 		}
-		
+
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, AccreditamentoWrapperModeEnum.EDIT);
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
 	}
 
-	private AccreditamentoWrapper prepareAccreditamentoWrapperShow(Accreditamento accreditamento, AccreditamentoWrapper accreditamentoWrapper){
+	private AccreditamentoWrapper prepareAccreditamentoWrapperShow(Accreditamento accreditamento, AccreditamentoWrapper accreditamentoWrapper) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - entering"));
 
 		if(accreditamentoWrapper == null)
@@ -486,6 +500,9 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setCanPrendiInCarica(accreditamentoService.canUserPrendiInCarica(accreditamento.getId(), user));
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), user));
 		accreditamentoWrapper.setCanShowValutazioneRiepilogo(accreditamentoService.canUserValutaDomandaShowRiepilogo(accreditamento.getId(), user));
+		accreditamentoWrapper.setCanEnableField(accreditamentoService.canUserEnableField(user, accreditamento.getId()));
+		//controllo se devo mostrare i pulsanti presa visione/rimanda in valutazione da parte dello stesso crecm
+		accreditamentoWrapper.setCanPresaVisione(accreditamentoService.canUserPresaVisione(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
 		//controllo se l'utente può visualizzare la valutazione
 		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), user));
@@ -510,7 +527,7 @@ public class AccreditamentoController {
 		return accreditamentoWrapper;
 	}
 
-	private AccreditamentoWrapper prepareAccreditamentoWrapperValidate(Accreditamento accreditamento, Valutazione valutazione, AccreditamentoWrapper accreditamentoWrapper){
+	private AccreditamentoWrapper prepareAccreditamentoWrapperValidate(Accreditamento accreditamento, Valutazione valutazione, AccreditamentoWrapper accreditamentoWrapper) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - entering"));
 
 		if(accreditamentoWrapper == null)
@@ -525,7 +542,7 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
 		//controllo se devo mostrare i pulsanti presa visione/rimanda in valutazione da parte dello stesso crecm
-		accreditamentoWrapper.setCanPresaVisione(accreditamentoService.canPresaVisione(accreditamento.getId(), Utils.getAuthenticatedUser()));
+		accreditamentoWrapper.setCanPresaVisione(accreditamentoService.canUserPresaVisione(accreditamento.getId(), Utils.getAuthenticatedUser()));
 
 		//inserisco i suoi fieldValutazione nella mappa per il wrapper
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
@@ -596,27 +613,31 @@ public class AccreditamentoController {
 		int professioniDeiComponentiAnaloghe 	= (professioniSelezionate.size() > 0) ? personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate) : 0;
 		Set<Professione> elencoProfessioniDeiComponenti = personaService.elencoProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
 
+		accreditamentoWrapper.setNoteOsservazioniIntegrazione(accreditamentoWrapper.getAccreditamento().getNoteOsservazioniIntegrazione());
+		accreditamentoWrapper.setNoteOsservazioniPreavvisoRigetto(accreditamentoWrapper.getAccreditamento().getNoteOsservazioniPreavvisoRigetto());
+
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico));
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie));
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + elencoProfessioniDeiComponenti.size()));
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
 
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode);
+
 	}
-	
+
 	private void integrazionePrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper){
 		Set<Sede> sediIntegrazione = sedeService.getSediFromIntegrazione(accreditamentoWrapper.getProvider().getId());
 		for(Sede s : sediIntegrazione){
 			if(s.isDirty())
 				accreditamentoWrapper.getSedi().add(s);
 		}
-		
+
 		Set<Persona> comitatoIntegrazione = personaService.getComponentiComitatoScientificoFromIntegrazione(accreditamentoWrapper.getProvider().getId());
 		for(Persona p : comitatoIntegrazione){
 			if(p.isDirty())
 				accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
 		}
-		
+
 		accreditamentoWrapper.setAggiunti(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.CREAZIONE));
 		accreditamentoWrapper.setEliminati(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.ELIMINAZIONE));
 	}
@@ -629,20 +650,7 @@ public class AccreditamentoController {
 	public String prendiInCaricoAccreditamento(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/takeCharge"));
 		try {
-			Valutazione valutazione = new Valutazione();
-
-			//utente corrente che prende in carico
-			Account segretarioEcm = Utils.getAuthenticatedUser().getAccount();
-			valutazione.setAccount(segretarioEcm);
-
-			//accreditamento
-			valutazione.setAccreditamento(accreditamentoService.getAccreditamento(accreditamentoId));
-
-			//tipo di valutatore
-			valutazione.setTipoValutazione(ValutazioneTipoEnum.SEGRETERIA_ECM);
-
-			valutazioneService.save(valutazione);
-
+			accreditamentoService.prendiInCarica(accreditamentoId, Utils.getAuthenticatedUser());
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.presa_in_carico", "success"));
 			return "redirect:/accreditamento/{accreditamentoId}/validate";
 		}catch (Exception ex){
@@ -683,7 +691,7 @@ public class AccreditamentoController {
 				}
 			}
 			// stato VALUTAZIONE_SEGRETERIA dove valuto le integrazioni
-			else {
+			else if(accreditamento.isValutazioneSegreteria()){
 
 				//validazione della valutazioneComplessiva
 				valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, result);
@@ -701,6 +709,8 @@ public class AccreditamentoController {
 					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 			}
+
+			return goToAccreditamentoValidate(model, accreditamento, wrapper);
 		}
 		catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"),ex);
@@ -744,44 +754,66 @@ public class AccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
 	}
-	
+
 	/***	INVIA DOMANDA RICHIESTA_INTEGRAZIONE	***/
-	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal)")
-	@RequestMapping("/accreditamento/{accreditamentoId}/sendRichiestaIntegrazione")
-	public String sendRichiestaIntegrazione(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
+	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#accreditamentoId)")
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/sendRichiestaIntegrazione", method = RequestMethod.POST)
+	public String sendRichiestaIntegrazione(@ModelAttribute("giorniIntegrazione") Integer giorniIntegrazione,
+			@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"));
 		try{
-			accreditamentoService.inviaRichiestaIntegrazione(accreditamentoId);
-			return "redirect:/accreditamento/{accreditamentoId}/show";
+			//TODO controllare meglio questo punto (modale in accreditamento/enableField)
+			if(giorniIntegrazione != null) {
+				LOGGER.info(Utils.getLogMessage("Settato timer Bonita Integrazione a: " + giorniIntegrazione + " giorni"));
+				AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(accreditamentoId);
+				if(statoAccreditamento == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE)
+					accreditamentoService.inviaRichiestaIntegrazione(accreditamentoId, (long) giorniIntegrazione);
+				else if(statoAccreditamento == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO)
+					accreditamentoService.inviaRichiestaPreavvisoRigetto(accreditamentoId, (long) giorniIntegrazione);
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+			else throw new Exception("Error! giorniIntegrazione is null");
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/enableField"));
-			return "redirect:/accreditamento/{id}/enableField";
+			return "redirect:/accreditamento/{accreditamentoId}/enableField";
 		}
 	}
-	
+
 	/***	INVIA DOMANDA INTEGRAZIONE	***/
 	@PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sendIntegrazione")
-	public String sendIntegrazione(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
+	public String sendIntegrazione(@RequestParam(name="noteOsservazioniIntegrazione.id", required = false) Long idFileIntegrazione,
+			@RequestParam(name="noteOsservazioniPreavvisoRigetto.id", required = false) Long idFilePreavvisoRigetto,
+			@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sendIntegrazione"));
 		try{
+			if(idFileIntegrazione != null) {
+				LOGGER.info(Utils.getLogMessage("Arrivato file note integrazione id: " + idFileIntegrazione));
+				accreditamentoService.saveFileNoteOsservazioni(idFileIntegrazione, accreditamentoId);
+			}
+			if(idFilePreavvisoRigetto != null) {
+				LOGGER.info(Utils.getLogMessage("Arrivato file note preavviso rigetto id: " + idFilePreavvisoRigetto));
+				accreditamentoService.saveFileNoteOsservazioni(idFilePreavvisoRigetto, accreditamentoId);
+			}
 			accreditamentoService.inviaIntegrazione(accreditamentoId);
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sendIntegrazione"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));;
-			return "redirect:/accreditamento/{id}/edit";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/{accreditamentoId}/edit";
 		}
 	}
 
-	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)")
+//	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)")
 	@RequestMapping("/accreditamento/{gruppo}/list")
 	public String getAllAccreditamentiForGruppo(@PathVariable("gruppo") String gruppo, Model model,
 			@RequestParam(name="tipo", required = false) String tipo,
-			@RequestParam(name="filterTaken", required = false) Boolean filterTaken, RedirectAttributes redirectAttrs) throws Exception{
+			@RequestParam(name="filterTaken", required = false) Boolean filterTaken,
+			@RequestParam(name="showCarica", required = false) Boolean showCarica,
+			RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list, tipo = " + tipo + ", filterTaken = " + filterTaken));
 		try {
 			Set<Accreditamento> listaAccreditamenti = new HashSet<Accreditamento>();
@@ -792,9 +824,14 @@ public class AccreditamentoController {
 					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomanda(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), filterTaken));
 				}
 			}
-			else {
+			if(currentUser.isReferee()) {
 				for (AccreditamentoStatoEnum stato : stati) {
-					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomandaForAccountId(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), currentUser.getAccount().getId()));
+					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), currentUser.getAccount().getId()));
+				}
+			}
+			if(currentUser.isProvider()) {
+				for (AccreditamentoStatoEnum stato : stati) {
+					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomandaForProviderId(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), providerService.getProviderIdByAccountId(currentUser.getAccount().getId())));
 				}
 			}
 			//mappo la giusta label da visualizzare
@@ -814,6 +851,13 @@ public class AccreditamentoController {
 				label= "label.listaDomandePreavvisoRigetto" + stringTipo;
 			if (gruppo.equals("assegnamento"))
 				label = "label.listaDomandeDaRiassegnare" + stringTipo;
+
+			Map<Long, Account> mappaCarica = new HashMap<Long, Account>();
+			//prende la mappa<id domanda, account di chi ha preso in carica la domanda> per la lista di accreditamenti
+			if (showCarica != null && showCarica == true) {
+				mappaCarica = valutazioneService.getValutatoreSegreteriaForAccreditamentiList(listaAccreditamenti);
+				model.addAttribute("mappaCarica", mappaCarica);
+			}
 			model.addAttribute("label", label);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
@@ -848,4 +892,48 @@ public class AccreditamentoController {
 			return "redirect:/home";
 		}
 	}
+
+	//TODO @PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/presaVisione")
+	public String presaVisione(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"));
+		try{
+			accreditamentoService.presaVisione(accreditamentoId);
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}
+	}
+
+	//TODO @PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
+		@RequestMapping("/accreditamento/{accreditamentoId}/rivaluta")
+		public String rivaluta(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
+			LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"));
+			try{
+				accreditamentoService.rivaluta(accreditamentoId);
+				return "redirect:/accreditamento/{accreditamentoId}/validate";
+			}catch (Exception ex){
+				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+		}
+
+		@RequestMapping("/accreditamento/{accreditamentoId}/runtimeTest")
+		public String runtimeTest(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
+			LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/runtimeTest"));
+			try{
+				accreditamentoService.approvaIntegrazione(accreditamentoId);
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}catch (Exception ex){
+				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+		}
 }

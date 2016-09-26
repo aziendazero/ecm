@@ -36,7 +36,13 @@
 						</li>
 						<li role="presentation" class="presentation">
 							<a href="#tab_content4" role="tab" id="tab4" data-toggle="tab" aria-expanded="false" th:text="#{label.piano_formativo}">
-								Allegati
+								Piano Formativo
+							</a>
+						</li>
+						<li th:if="${(accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione != null and !accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.new) or
+										(accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto)}" class="presentation">
+							<a href="#tab_content5" role="tab" id="tab5" data-toggle="tab" aria-expanded="false" th:text="#{label.allegati_note_osservazioni}">
+								Note/Osservazioni
 							</a>
 						</li>
 					</ul>
@@ -114,14 +120,14 @@
 													<tr th:if="${accreditamentoWrapper.provider.tipoOrganizzatore.tipoP and ((mode != 'validate' and mode != 'enableField') or accreditamentoWrapper.delegatoLegaleRappresentante != null)}">
 														<td th:unless="${accreditamentoWrapper.delegatoLegaleRappresentante == null}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.delegatoLegaleRappresentante == null}"><div th:text="#{label.delegato_legale_rappresentante}"></div></td>
-														<th:block th:unless="${enableField}">	
+														<th:block th:unless="${enableField}">
 															<td	th:if="${accreditamentoWrapper.delegatoLegaleRappresentanteStato}">
 																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
 															</td>
 															<td	th:unless="${accreditamentoWrapper.delegatoLegaleRappresentanteStato}">
 																<i class="fa table-icon fa-remove" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.facoltativo')}" th:classappend="${valutabile ? 'red' : 'grey'}"></i>
 															</td>
-														</th:block>	
+														</th:block>
 														<td th:if="${editabile}">
 															<span style="white-space: nowrap">
 																<button th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'DELEGATO_LEGALE_RAPPRESENTANTE'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).DELEGATO_LEGALE_RAPPRESENTANTE__FULL)}" type="button" onclick="setEditURLs('DELEGATO_LEGALE_RAPPRESENTANTE')" class="btn btn-success btn-table double" data-toggle="modal" data-target=".modal-scelta"><i class="fa fa-sign-in"></i> <span th:text="#{label.assegna}">Assegna</span></button>
@@ -361,7 +367,7 @@
 													<tr>
 														<td th:unless="${accreditamentoWrapper.responsabileAmministrativo == null}"><a th:text="#{label.responsabile_amministrativo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileAmministrativo.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.responsabileAmministrativo == null}"><div th:text="#{label.responsabile_amministrativo}"></div></td>
-														<th:block th:unless="${enableField}">	
+														<th:block th:unless="${enableField}">
 															<td	th:if="${accreditamentoWrapper.responsabileAmministrativoStato}">
 																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
 															</td>
@@ -388,14 +394,14 @@
 													<tr>
 														<td th:unless="${accreditamentoWrapper.responsabileSistemaInformatico == null}"><a th:text="#{label.responsabile_sistema_informatico}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSistemaInformatico.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.responsabileSistemaInformatico == null}"><div th:text="#{label.responsabile_sistema_informatico}"></div></td>
-														<th:block th:unless="${enableField}">	
+														<th:block th:unless="${enableField}">
 															<td	th:if="${accreditamentoWrapper.responsabileSistemaInformaticoStato}">
 																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
 															</td>
 															<td	th:unless="${accreditamentoWrapper.responsabileSistemaInformaticoStato}">
 																<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
 															</td>
-														</th:block>	
+														</th:block>
 														<td th:if="${editabile}">
 															<span style="white-space: nowrap">
 																<button th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'RESPONSABILE_SISTEMA_INFORMATICO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SISTEMA_INFORMATICO__FULL)}" type="button" onclick="setEditURLs('RESPONSABILE_SISTEMA_INFORMATICO')" class="btn btn-success btn-table double" data-toggle="modal" data-target=".modal-scelta"><i class="fa fa-sign-in"></i> <span th:text="#{label.assegna}">Assegna</span></button>
@@ -608,12 +614,14 @@
 													<!-- ALLEGATO DICHIARAZIONE ESCLUSIONE -->
 													<tr>
 														<td><a th:text="#{label.dichiarazioneEsclusione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show${urlParam}|}"></a></td>
-														<td	th:if="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
-															<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
-														</td>
-														<td	th:unless="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
-															<i class="fa table-icon fa-remove" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.facoltativo')}" th:classappend="${valutabile ? 'red' : 'grey'}"></i>
-														</td>
+														<th:block th:unless="${enableField}">
+															<td	th:if="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
+																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
+															</td>
+															<td	th:unless="${accreditamentoWrapper.dichiarazioneEsclusioneStato}">
+																<i class="fa table-icon fa-remove" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.facoltativo')}" th:classappend="${valutabile ? 'red' : 'grey'}"></i>
+															</td>
+														</th:block>
 														<td th:if="${editabile}">
 															<a th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
 															<a th:unless="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE)}" class="btn btn-success btn-table single disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
@@ -779,6 +787,42 @@
 							</div>
 							<!-- /TAB 4 -->
 						</div>
+						<div th:if="${(accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione != null and !accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.new) or
+										(accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto)}" role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="tab5">
+							<!--  TAB 4 -->
+							<div class="row">
+								<div class="col-xs-12">
+
+									<div class="x_panel">
+										<div class="x_title">
+											<h2 th:text="#{label.allegati_note_osservazioni_integrazione_preavviso_rigetto}"></h2>
+											<div class="clearfix"></div>
+										</div>
+										<div class="x_content">
+
+											<div th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione}">
+												<label class="control-label">
+													<span class="label-show" th:text="#{label.note_osservazioni_integrazione}">note e osservazioni sull'integrazione</span>
+												</label>
+												<div>
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.id}|}"></a></div>
+												</div>
+											</div>
+											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione} and ${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto}"></div>
+											<div th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto}">
+												<label class="control-label">
+													<span th:class="label-show" th:text="#{label.note_osservazioni_preavviso_rigetto}">note e osservazioni sul preavviso di rigetto</span>
+												</label>
+												<div>
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto.id}|}"></a></div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- /TAB 5 -->
+						</div>
 					</div>
 				</div>
 			</div>
@@ -848,7 +892,7 @@
 							{"targets": 2, "width": "92px", "sClass": "center"}
 						],
 					});
-					
+
 					//table responsive comitato scientifico show
 					$('.datatable-responsive-comitato-show').DataTable({
 						"bFilter" : false,
@@ -936,7 +980,7 @@
 							{ "targets": 4, "width": "92px", "sClass": "center" }
 						],
 					});
-					
+
 					//table responsive sedi enableField
 					$('.datatable-responsive-sedi-enableField').DataTable({
 						"bFilter" : false,

@@ -10,6 +10,7 @@ public interface FieldIntegrazioneAccreditamentoService {
 	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneForAccreditamento(Long accreditamentoId);
 	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneForAccreditamentoAndObject(Long accreditamentoId, Long objectReference);
 	public void save(List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList);
+	public void saveSet(Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList);
 	public void delete(Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList);
 	public void update(Set<FieldIntegrazioneAccreditamento> toRemove, List<FieldIntegrazioneAccreditamento> toInsert);
 	
