@@ -20,6 +20,7 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
@@ -53,6 +54,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private WorkflowService workflowService;
+
+	@Autowired private FileService fileService;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -203,7 +206,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			LOGGER.debug(Utils.getLogMessage("Errore avvio Workflow Accreditamento per la domanda " + accreditamentoId));
 			throw new Exception("Errore avvio Workflow Accreditamento per la domanda " + accreditamentoId);
 		}
-		
+
 		accreditamentoRepository.save(accreditamento);
 	}
 
@@ -262,7 +265,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			accreditamento.setDataValutazioneCrecm(LocalDate.now());
 			accreditamentoRepository.save(accreditamento);
-			
+
 			//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
 			Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
 			workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
@@ -326,7 +329,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
-		
+
 		//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
 		Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
 		workflowService.eseguiTaskAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
@@ -339,7 +342,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
 		approvaIntegrazione(accreditamentoId);
-		
+
 		//setta la data
 		valutazioneSegreteria.setDataValutazione(LocalDate.now());
 
@@ -359,7 +362,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
-		
+
 		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, false);
 	}
 
@@ -370,7 +373,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		accreditamento.setDataInserimentoOdg(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
-		
+
 		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, true);
 	}
 
@@ -379,17 +382,17 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Provider"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-		
-		Long timerIntegrazioneRigetto = giorniTimer * 86400;
+
+		Long timerIntegrazioneRigetto = giorniTimer * 86400000;
 		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
 	}
-	
+
 	@Override
 	@Transactional
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " al Provider"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-		
+
 		Long timerIntegrazioneRigetto = giorniTimer * 86400000;
 		workflowService.eseguiTaskRichiestaPreavvisoRigettoForCurrentUser(accreditamento, timerIntegrazioneRigetto);
 	}
@@ -404,14 +407,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
 		integrazioneService.checkIfFieldIntegraizoniConfirmedForAccreditamento(accreditamentoId, fieldIntegrazioneList);
 		fieldIntegrazioneAccreditamentoService.saveSet(fieldIntegrazioneList);
-		
+
 		//per i campi modificati...elimino i field valutazione su tutte le valutazioni presenti
 		Set<FieldIntegrazioneAccreditamento> fieldModificati = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId);
-		
+
 		//se ci sono state delle modifiche ri-abilito la valutazione cancellando la data
 		if(fieldModificati != null && !fieldModificati.isEmpty()){
 			//elimina data valutazione
-			
+
 			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoId(accreditamentoId);
 			for(Valutazione valutazione : valutazioni){
 				if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
@@ -420,7 +423,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				}
 			}
 		}
-		
+
 		//se ci sono state delle modifiche elimino i fieldValutazione corrispondenti
 		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
 		FieldValutazioneAccreditamento field = null;
@@ -445,10 +448,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			valutazione.setValutazioni(fieldValutazioni);
 			valutazioneService.save(valutazione);
 		}
-		
+
 		//TODO non spacca niente???
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
-		
+
 		if(accreditamento.isIntegrazione())
 			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
 		else if(accreditamento.isPreavvisoRigetto())
@@ -540,29 +543,55 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 	}
 
-	//recupera tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate ad un certo id utente
+	//recupera tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate in valutazione ad un certo id utente
 	@Override
-	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
 		if (tipo != null) {
 			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
-			return accreditamentoRepository.findAllByStatoAndTipoDomandaForAccountId(stato, tipo, id);
+			return accreditamentoRepository.findAllByStatoAndTipoDomandaInValutazioneAssignedToAccountId(stato, tipo, id);
 		}
 		else {
 			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id));
-			return accreditamentoRepository.findAllByStatoForAccountId(stato, id);
+			return accreditamentoRepository.findAllByStatoInValutazioneAssignedToAccountId(stato, id);
 		}
 	}
 
-	//conta tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate ad un certo id utente
+	//conta tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate in valutazione ad un certo id utente
 	@Override
-	public int countAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
+	public int countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
 		if (tipo != null) {
 			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
-			return accreditamentoRepository.countAllByStatoAndTipoDomandaForAccountId(stato, tipo, id);
+			return accreditamentoRepository.countAllByStatoAndTipoDomandaInValutazioneAssignedToAccountId(stato, tipo, id);
 		}
 		else {
 			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id));
-			return accreditamentoRepository.countAllByStatoForAccountId(stato, id);
+			return accreditamentoRepository.countAllByStatoInValutazioneAssignedToAccountId(stato, id);
+		}
+	}
+
+	//recupera tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate ad un certo id provider
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForProviderId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long providerId) {
+		if (tipo != null) {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate al provider: " + providerId));
+			return accreditamentoRepository.findAllByStatoAndTipoDomandaAndProviderId(stato, tipo, providerId);
+		}
+		else {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate al provider: " + providerId));
+			return accreditamentoRepository.findAllByStatoAndProviderId(stato, providerId);
+		}
+	}
+
+	//conta tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate ad un certo id provider
+	@Override
+	public int countAllAccreditamentiByStatoAndTipoDomandaForProviderId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
+		if (tipo != null) {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate al provider: " + id));
+			return accreditamentoRepository.countAllByStatoAndTipoDomandaAndProviderId(stato, tipo, id);
+		}
+		else {
+			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate al provider: " + id));
+			return accreditamentoRepository.countAllByStatoAndProviderId(stato, id);
 		}
 	}
 
@@ -589,7 +618,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 * L'utente segreteria può prendere in carica una domanda se:
 	 * 	+ La domanda è in stato VALUTAZIONE_SEGRTERIA_ASSEGNAMENTO
 	 *  + E NON esiste già una valutazione di tipo SEGRETERIA_ECM (significa che nessun altro l'ha già presa in carico)
-	 *	+ Deve esistere il corrispondente Task da prendere in carica nel flusso 
+	 *	+ Deve esistere il corrispondente Task da prendere in carica nel flusso
 	 */
 	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception {
 		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isValutazioneSegreteriaAssegnamento()) {
@@ -598,15 +627,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				if(v.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM)
 					return false;
 			}
-			
+
 			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(getAccreditamento(accreditamentoId));
 			if(task == null){
 				return false;
 			}
-			
+
 			if(task.isAssigned())
 				return false;
-			
+
 			return true;
 		}
 		else
@@ -621,7 +650,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 */
 	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser) throws Exception{
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-		
+
 		if( ((accreditamento.isValutazioneSegreteriaAssegnamento() || accreditamento.isValutazioneSegreteria()) && currentUser.isSegreteria()) ||
 			(accreditamento.isValutazioneCrecm() && currentUser.isReferee())){
 			Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, currentUser.getAccount().getId());
@@ -637,7 +666,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					if(!task.isAssigned())
 						return false;
 				}
-				
+
 				return true;
 			}
 		}
@@ -694,7 +723,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				if(task == null){
 					return false;
 				}
-				
+
 				if(fields.isEmpty())
 					return true;
 			}
@@ -741,7 +770,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					if(task == null){
 						return false;
 					}
-					
+
 					return true;
 				}
 				return false;
@@ -749,19 +778,19 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
 		accreditamento.setStato(stato);
 		accreditamentoRepository.save(accreditamento);
 	}
-	
+
 	@Override
 	public void prendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception{
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		workflowService.prendiTaskInCarica(currentUser, accreditamento);
-		
+
 		Valutazione valutazione = new Valutazione();
 
 		//utente corrente che prende in carico
@@ -776,7 +805,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		valutazioneService.save(valutazione);
 	}
-	
+
 	public boolean canUserInviaAValutazioneCommissione(Long accreditamentoId, CurrentUser currentUser) throws Exception {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		if(currentUser.isSegreteria() && accreditamento.isInsOdg()){
@@ -789,13 +818,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 		return false;
 	};
-	
+
 	@Override
 	@Transactional
 	public void inserisciInValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser) throws Exception{
 		workflowService.eseguiTaskInsOdgForCurrentUser(getAccreditamento(accreditamentoId));
 	}
-	
+
 	@Override
 	public boolean canUserInserisciValutazioneCommissione(Long accreditamentoId, CurrentUser currentUser) throws Exception {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -809,17 +838,28 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void inviaValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
 		workflowService.eseguiTaskTaskInserimentoEsitoOdgForUser(curentUser, getAccreditamento(accreditamentoId), stato);
 	}
-	
+
 	@Override
 	public void rivaluta(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Rivaluta Domanda : " + accreditamentoId));
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		valutazione.setDataValutazione(null);
 		valutazioneService.save(valutazione);
+	}
+
+	@Override
+	public void saveFileNoteOsservazioni(Long fileId, Long accreditamentoId) {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		File file = fileService.getFile(fileId);
+		if (accreditamento.getStato().equals(AccreditamentoStatoEnum.INTEGRAZIONE))
+			accreditamento.setNoteOsservazioniIntegrazione(file);
+		else
+			accreditamento.setNoteOsservazioniPreavvisoRigetto(file);
+		accreditamentoRepository.save(accreditamento);
 	}
 }

@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.Collection;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
@@ -47,9 +48,9 @@ public interface AccreditamentoService{
 	public boolean canUserValutaDomandaShow(Long id, CurrentUser authenticatedUser);
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserInviaAValutazioneCommissione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
-	
+
 	public boolean canUserInserisciValutazioneCommissione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
-	
+
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
@@ -68,12 +69,18 @@ public interface AccreditamentoService{
 	public Set<Accreditamento> getAllAccreditamentiInScadenza();
 	public int countAllAccreditamentiInScadenza();
 
-	//Vaschetta generica
-	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Long id);
-	public int countAllAccreditamentiByStatoAndTipoDomandaForAccountId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id);
+	//Vaschetta Referee
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Long refereeId);
+	public int countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long refereeId);
+
+	//Vaschetta Provider
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForProviderId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipoByNome, Long providerId);
+	public int countAllAccreditamentiByStatoAndTipoDomandaForProviderId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipoByNome, Long providerId);
 
 	public Set<Accreditamento> getAllAccreditamentiInviati();
 	public int countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
 	boolean canUserEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception;
+
+	public void saveFileNoteOsservazioni(Long fileId, Long accreditamentoId);
 }

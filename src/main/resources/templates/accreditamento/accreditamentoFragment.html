@@ -36,7 +36,13 @@
 						</li>
 						<li role="presentation" class="presentation">
 							<a href="#tab_content4" role="tab" id="tab4" data-toggle="tab" aria-expanded="false" th:text="#{label.piano_formativo}">
-								Allegati
+								Piano Formativo
+							</a>
+						</li>
+						<li th:if="${(accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione != null and !accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.new) or
+										(accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto)}" class="presentation">
+							<a href="#tab_content5" role="tab" id="tab5" data-toggle="tab" aria-expanded="false" th:text="#{label.allegati_note_osservazioni}">
+								Note/Osservazioni
 							</a>
 						</li>
 					</ul>
@@ -780,6 +786,42 @@
 								</div>
 							</div>
 							<!-- /TAB 4 -->
+						</div>
+						<div th:if="${(accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione != null and !accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.new) or
+										(accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto)}" role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="tab5">
+							<!--  TAB 4 -->
+							<div class="row">
+								<div class="col-xs-12">
+
+									<div class="x_panel">
+										<div class="x_title">
+											<h2 th:text="#{label.allegati_note_osservazioni_integrazione_preavviso_rigetto}"></h2>
+											<div class="clearfix"></div>
+										</div>
+										<div class="x_content">
+
+											<div th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione}">
+												<label class="control-label">
+													<span class="label-show" th:text="#{label.note_osservazioni_integrazione}">note e osservazioni sull'integrazione</span>
+												</label>
+												<div>
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.id}|}"></a></div>
+												</div>
+											</div>
+											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione} and ${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto}"></div>
+											<div th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto}">
+												<label class="control-label">
+													<span th:class="label-show" th:text="#{label.note_osservazioni_preavviso_rigetto}">note e osservazioni sul preavviso di rigetto</span>
+												</label>
+												<div>
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto.id}|}"></a></div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- /TAB 5 -->
 						</div>
 					</div>
 				</div>

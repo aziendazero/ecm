@@ -80,7 +80,7 @@
 		<!-- modale conferma integrazione/preavviso rigetto -->
 		<div th:if="${accreditamentoWrapper.canSendIntegrazione}" id="fileIntegrazione-modal" class="modal fade modal-fileIntegrazione"
 			data-model-index="1" role="dialog">
-			<div class="modal-dialog modal-sm">
+			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h3 class="modal-title" id="myModalLabel"
@@ -93,10 +93,10 @@
 							novalidate="novalidate">
 
 							<th:block th:if="${accreditamentoWrapper.accreditamento.isIntegrazione()}">
-								<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, NoteOsservazioniIntegrazione, null, null, null, true, null, false)" ></th:block>
+								<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, noteOsservazioniIntegrazione, null, null, null, false, null, false)" ></th:block>
 							</th:block>
 							<th:block th:if="${accreditamentoWrapper.accreditamento.isPreavvisoRigetto()}">
-								<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, NoteOsservazioniPreavvisoRigetto, null, null, null, true, null, false)" ></th:block>
+								<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, noteOsservazioniPreavvisoRigetto, null, null, null, false, null, false)" ></th:block>
 							</th:block>
 
 							<input id="submitButtonModal" type="submit" style="display: none;" />

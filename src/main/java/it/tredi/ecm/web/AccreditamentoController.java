@@ -43,6 +43,7 @@ import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
@@ -76,6 +77,7 @@ public class AccreditamentoController {
 
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+	@Autowired private FileService fileService;
 
 	@Autowired private EcmProperties ecmProperties;
 
@@ -97,11 +99,11 @@ public class AccreditamentoController {
 		}
 		//modifico lo stato
 		accreditamentoService.changeState(accreditamentoId, stato);
-		
+
 		if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
 			valutazioneService.updateValutazioniNonDate(accreditamentoId);
 		}
-		
+
 		return new ResponseState(false, "Stato modificato");
 
 /*
@@ -284,8 +286,8 @@ public class AccreditamentoController {
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		model.addAttribute("richiestaIntegrazioneWrapper", integrazioneService.prepareRichiestaIntegrazioneWrapper(accreditamento.getId(), SubSetFieldEnum.FULL, null));
 		model.addAttribute("userCanSendRichiestaIntegrazione",accreditamentoService.canUserInviaRichiestaIntegrazione(accreditamento.getId(), Utils.getAuthenticatedUser()));
-		model.addAttribute("giorniIntegrazioneMax", ecmProperties.getGiorniIntegrazioneMin());
-		model.addAttribute("giorniIntegrazioneMin", ecmProperties.getGiorniIntegrazioneMax());
+		model.addAttribute("giorniIntegrazioneMax", ecmProperties.getGiorniIntegrazioneMax());
+		model.addAttribute("giorniIntegrazioneMin", ecmProperties.getGiorniIntegrazioneMin());
 		model.addAttribute("giorniIntegrazione", 5);
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoEnableField"));
 		return "accreditamento/accreditamentoEnableField";
@@ -611,12 +613,16 @@ public class AccreditamentoController {
 		int professioniDeiComponentiAnaloghe 	= (professioniSelezionate.size() > 0) ? personaService.numeroProfessioniDistinteAnalogheAProfessioniSelezionateDeiComponentiComitatoScientifico(providerId, professioniSelezionate) : 0;
 		Set<Professione> elencoProfessioniDeiComponenti = personaService.elencoProfessioniDistinteDeiComponentiComitatoScientifico(providerId);
 
+		accreditamentoWrapper.setNoteOsservazioniIntegrazione(accreditamentoWrapper.getAccreditamento().getNoteOsservazioniIntegrazione());
+		accreditamentoWrapper.setNoteOsservazioniPreavvisoRigetto(accreditamentoWrapper.getAccreditamento().getNoteOsservazioniPreavvisoRigetto());
+
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico));
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie));
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + elencoProfessioniDeiComponenti.size()));
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
 
 		accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode);
+
 	}
 
 	private void integrazionePrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper){
@@ -778,15 +784,25 @@ public class AccreditamentoController {
 	/***	INVIA DOMANDA INTEGRAZIONE	***/
 	@PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sendIntegrazione")
-	public String sendIntegrazione(@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
+	public String sendIntegrazione(@RequestParam(name="noteOsservazioniIntegrazione.id", required = false) Long idFileIntegrazione,
+			@RequestParam(name="noteOsservazioniPreavvisoRigetto.id", required = false) Long idFilePreavvisoRigetto,
+			@PathVariable Long accreditamentoId, @PathVariable Long providerId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sendIntegrazione"));
 		try{
+			if(idFileIntegrazione != null) {
+				LOGGER.info(Utils.getLogMessage("Arrivato file note integrazione id: " + idFileIntegrazione));
+				accreditamentoService.saveFileNoteOsservazioni(idFileIntegrazione, accreditamentoId);
+			}
+			if(idFilePreavvisoRigetto != null) {
+				LOGGER.info(Utils.getLogMessage("Arrivato file note preavviso rigetto id: " + idFilePreavvisoRigetto));
+				accreditamentoService.saveFileNoteOsservazioni(idFilePreavvisoRigetto, accreditamentoId);
+			}
 			accreditamentoService.inviaIntegrazione(accreditamentoId);
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sendIntegrazione"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));;
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
 			return "redirect:/accreditamento/{accreditamentoId}/edit";
 		}
 	}
@@ -808,9 +824,14 @@ public class AccreditamentoController {
 					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomanda(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), filterTaken));
 				}
 			}
-			else {
+			if(currentUser.isReferee()) {
 				for (AccreditamentoStatoEnum stato : stati) {
-					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomandaForAccountId(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), currentUser.getAccount().getId()));
+					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), currentUser.getAccount().getId()));
+				}
+			}
+			if(currentUser.isProvider()) {
+				for (AccreditamentoStatoEnum stato : stati) {
+					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomandaForProviderId(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), providerService.getProviderIdByAccountId(currentUser.getAccount().getId())));
 				}
 			}
 			//mappo la giusta label da visualizzare
