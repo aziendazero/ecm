@@ -29,6 +29,9 @@ public enum FileEnum {
 	FILE_NOTE_OSSERVAZIONI_INTEGRAZIONE (23, "Note e osservazioni integrazione"),
 	FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO (24, "Note e osservazioni preavviso rigetto"),
 
+	FILE_ALLEGATO_COMUNICAZIONE (25, "Allegato Comunicazione"),
+	FILE_ALLEGATO_RISPOSTA (26, "Allegato Risposta"),
+
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 

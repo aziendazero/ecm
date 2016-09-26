@@ -104,7 +104,7 @@ public class ComunicazioneController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + NEW));
 				return NEW;
 			}else{
-				comunicazioneService.send(comunicazioneWrapper.getComunicazione());
+				comunicazioneService.send(comunicazioneWrapper.getComunicazione(), comunicazioneWrapper.getAllegatoComunicazione());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.comunicazione_inviata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
 				return "redirect:/comunicazione/dashboard";
@@ -163,7 +163,7 @@ public class ComunicazioneController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 				return SHOW;
 			}else{
-				comunicazioneService.reply(comunicazioneWrapper.getRisposta(), id);
+				comunicazioneService.reply(comunicazioneWrapper.getRisposta(), id, comunicazioneWrapper.getAllegatoRisposta());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.risposta_inviata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/" + id + "/show" ));
 				return "redirect:/comunicazione/" + id + "/show";

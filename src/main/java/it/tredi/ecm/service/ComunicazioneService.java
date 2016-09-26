@@ -7,6 +7,7 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
+import it.tredi.ecm.dao.entity.File;
 
 public interface ComunicazioneService {
 
@@ -19,10 +20,10 @@ public interface ComunicazioneService {
 	List<Comunicazione> getUltimi10MessaggiNonLetti(Long id);
 	long countAllMessaggiNonLetti(Long id);
 	Map<String, Account> getAllDestinatariDisponibili(Long id);
-	void send(Comunicazione comunicazione);
+	void send(Comunicazione comunicazione, File allegato);
 	boolean canAccountRespondToComunicazione(Account account, Comunicazione comunicazione);
 	void contrassegnaComeLetta(Long id);
-	void reply(ComunicazioneResponse risposta, Long id);
+	void reply(ComunicazioneResponse risposta, Long id, File allegato);
 	Set<Comunicazione> getAllComunicazioniRicevute(Account user);
 	Set<Comunicazione> getAllComunicazioniInviate(Account user);
 	Set<Comunicazione> getAllComunicazioniChiuse(Account user);
