@@ -26,6 +26,9 @@ public enum FileEnum {
 	FILE_DICHIARAZIONE_ESCLUSIONE (21, ""),
 	FILE_VERBALE_VALUTAZIONE_SUL_CAMPO (22, "Verbale della valutazione sul campo"),
 
+	FILE_NOTE_OSSERVAZIONI_INTEGRAZIONE (23, "Note e osservazioni integrazione"),
+	FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO (24, "Note e osservazioni preavviso rigetto"),
+
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 
