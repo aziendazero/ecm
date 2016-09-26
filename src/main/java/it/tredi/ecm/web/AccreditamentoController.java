@@ -262,6 +262,12 @@ public class AccreditamentoController {
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperEdit(accreditamento);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		selectCorrectTab(tab, accreditamentoWrapper, model);
+		if (Utils.getAuthenticatedUser().getAccount().isSegreteria()) {
+			//TODO CONTINUA
+		}
+
+
+
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoEdit"));
 		return "accreditamento/accreditamentoEdit";
 	}
