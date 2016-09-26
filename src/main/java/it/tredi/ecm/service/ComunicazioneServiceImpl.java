@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.ComunicazioneRepository;
@@ -108,7 +109,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	//salvataggio comunicazione, controllo mittente, se è provider aggiungo i segretari ai destinatari
 	//aggiungo anche la data di invio
 	@Override
-	public void send(Comunicazione comunicazione) {
+	public void send(Comunicazione comunicazione, File allegato) {
 		if(comunicazione.getMittente().isProvider()) {
 			comunicazione.setDestinatari(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 		}
@@ -120,6 +121,8 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		comunicazione.setUtentiCheDevonoLeggere(utentiCheDevonoLeggere);
 		comunicazione.setDataCreazione(LocalDateTime.now());
 		comunicazione.setDataUltimaModifica(LocalDateTime.now());
+		if (allegato != null)
+			comunicazione.setAllegatoComunicazione(allegato);
 		comunicazioneRepository.save(comunicazione);
 	}
 
@@ -141,12 +144,13 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 
 	//salvataggio risposta per la comunicazione il cui id è passato come parametro
 	@Override
-	public void reply(ComunicazioneResponse risposta, Long id) {
+	public void reply(ComunicazioneResponse risposta, Long id, File allegato) {
 		Comunicazione comunicazione = getComunicazioneById(id);
 		Set<ComunicazioneResponse> risposte = comunicazione.getRisposte();
 		risposta.setDataRisposta(LocalDateTime.now());
 		comunicazione.setDataUltimaModifica(LocalDateTime.now());
 		risposta.setComunicazione(comunicazione);
+		risposta.setAllegatoRisposta(allegato);
 		risposte.add(risposta);
 		Set<Long> utentiCheDevonoLeggere = comunicazione.getUtentiCheDevonoLeggere();
 		utentiCheDevonoLeggere.add(comunicazione.getMittente().getId());

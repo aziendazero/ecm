@@ -30,4 +30,5 @@ public class ComunicazioneWrapper {
 	private boolean canRespond;
 	private ComunicazioneResponse risposta;
 	private File allegatoComunicazione;
+	private File allegatoRisposta;
 }

@@ -84,6 +84,7 @@
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
 
 			<label class="control-label col-md-4 col-sm-4 col-xs-7" th:for="__${tipoAllegato}__">
+				<i th:if="${__${wrapper}__ == comunicazioneWrapper}" class="fa fa-paperclip"></i>
 				<span th:text="#{label.__${tipoAllegato}__}">label.tipoAllegato</span>
 			</label>
 			<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -127,14 +128,16 @@
 				case 'dichiarazioneLegale' : 				tipoAllegato = 'FILE_DICHIARAZIONE_LEGALE'; break;
 				case 'dichiarazioneEsclusione' : 			tipoAllegato = 'FILE_DICHIARAZIONE_ESCLUSIONE'; break;
 				case 'verbaleValutazioneSulCampo' : 		tipoAllegato = 'FILE_VERBALE_VALUTAZIONE_SUL_CAMPO'; break;
-				case 'noteOsservazioniIntegrazione':		tipoAllegato = 'FILE_NOTE_OSSERVAZIONI_INTEGRAZIONE'; break;
-				case 'noteOsservazioniPreavvisoRigetto':	tipoAllegato = 'FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO'; break;
+				case 'noteOsservazioniIntegrazione' :		tipoAllegato = 'FILE_NOTE_OSSERVAZIONI_INTEGRAZIONE'; break;
+				case 'noteOsservazioniPreavvisoRigetto' :	tipoAllegato = 'FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO'; break;
+				case 'allegatoComunicazione' :				tipoAllegato = 'FILE_ALLEGATO_COMUNICAZIONE'; break;
+				case 'allegatoRisposta' :					tipoAllegato = 'FILE_ALLEGATO_RISPOSTA'; break;
 
 				//File da firmare per engineering
 				case 'fileDaFirmare' :						tipoAllegato = 'FILE_DA_FIRMARE'; break;
 			}
 
-			var stato = [[(${__${wrapper}__ != accreditamentoWrapper} and ${__${wrapper}__ != comunicazioneWrapper) ? ${__${wrapper}__.statoAccreditamento?.name()}]];
+			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
 
 	 		var oMyForm = new FormData();
             oMyForm.append("multiPartFile", $(element)[0].files[0]);
@@ -186,6 +189,8 @@
 						case 'FILE_VERBALE_VALUTAZIONE_SUL_CAMPO' : 		inputName = 'verbaleValutazioneSulCampo'; break;
 						case 'FILE_NOTE_OSSERVAZIONI_INTEGRAZIONE' : 		inputName = 'noteOsservazioniIntegrazione'; break;
 						case 'FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO' : 	inputName = 'noteOsservazioniPreavvisoRigetto'; break;
+						case 'FILE_ALLEGATO_COMUNICAZIONE' :				inputName = 'allegatoComunicazione'; break;
+						case 'FILE_ALLEGATO_RISPOSTA' : 					inputName = 'allegatoRisposta'; break;
 
 						//File da firmare per engineering
 						case 'FILE_DA_FIRMARE' :							inputName = 'fileDaFirmare'; break;

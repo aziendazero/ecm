@@ -61,7 +61,7 @@
 											<div th:if="${#fields.hasErrors('comunicazioneWrapper.risposta.messaggio')}" class="alert" th:errors="${comunicazioneWrapper.risposta.messaggio}"></div>
 										</div>
 
-										<button type="button" class="btn btn-primary with-margin-top with-margin-left" onclick="alert('TODO')"><i class="fa fa-paperclip"></i> <span th:text="#{label.allega}" ></span></button>
+										<th:block th:include="fragments/allegati :: allegati(comunicazioneWrapper, false, allegatoRisposta, null, null, null, false, null, false)" ></th:block>
 									</div>
 
 									<input id="submitButtonModal" type="submit" style="display: none;" />
@@ -144,6 +144,14 @@
 									<div class="view-mail with-margin-top">
 										<pre class="comunicazione-messaggio" th:text="${comunicazioneWrapper.comunicazione.messaggio}"></pre>
 									</div>
+									<div class="allegato-comunicazione">
+										<div th:if="${comunicazioneWrapper.comunicazione.allegatoComunicazione}">
+											<strong th:text="#{label.allegato_comunicazione}">Allegato: </strong>
+											<div>
+												<div class="value"><i class="fa fa-paperclip"> </i> <a th:text="${comunicazioneWrapper.comunicazione.allegatoComunicazione.nomeFile}" th:href="@{|/file/${comunicazioneWrapper.comunicazione.allegatoComunicazione.id}|}"></a></div>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 
@@ -172,6 +180,14 @@
 									</div>
 									<div class="view-mail with-margin-top">
 										<pre class="risposta-messaggio" th:text="${risposta.messaggio}"></pre>
+									</div>
+									<div class="allegato-risposta">
+										<div th:if="${risposta.allegatoRisposta}">
+											<strong th:text="#{label.allegato_risposta}">Allegato: </strong>
+											<div>
+												<div class="value"><i class="fa fa-paperclip"> </i> <a th:text="${risposta.allegatoRisposta.nomeFile}" th:href="@{|/file/${risposta.allegatoRisposta.id}|}"></a></div>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
