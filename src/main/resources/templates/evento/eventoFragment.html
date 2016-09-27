@@ -107,12 +107,12 @@
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
-						<!-- TITOLO PROGRAMMA FORMATIVO -->
+						<!-- TITOLO -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.titolo')} ? 'bad'">
 							<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.titolo') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="procedure_formative_titolo">
-								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.titolo_programma_formativo}">Titolo del programma formativo</span>
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.titolo}">Titolo</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -299,7 +299,7 @@
 							<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.professioniEvento') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="evento_professioni">
-								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.evento_professioni}">Evento per professioni</span>
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioni_cui_evento_si_riferisce}">label.professioni_cui_evento_si_riferisce</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -419,7 +419,7 @@
 									<div class="row" style="clear: both">
 										<div class="col-md-3 col-sm-3 col-xs-11"></div>
 										<div class="col-md-6 col-sm-6 col-xs-11">
-											<table class="professioni-discipline table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline" cellspacing="0" width="100%">
+											<table class="professioni-discipline table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline-evento" cellspacing="0" width="100%">
 												<thead>
 													<tr>
 														<th th:text="#{label.professione}">Professione</th>

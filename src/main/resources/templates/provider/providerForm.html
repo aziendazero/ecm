@@ -26,7 +26,8 @@
 								<a href="#step-2" class="disabled wizard-element" isdone="0" rel="2">
 									<span class="step_no">2</span>
 									<span class="step_descr">Step 2
-										<br/><small th:text="#{label.dati_struttura}">label.dati_struttura</small>
+										<br/><small th:text="#{label.dati_struttura}">Dati della Struttura</small>
+										<br/><small th:text="#{label.richiedente}">Richiedente</small>
 									</span>
 								</a>
 							</li>
@@ -34,8 +35,8 @@
 								<a href="#step-3" class="disabled wizard-element" isdone="0" rel="3">
 									<span class="step_no">3</span>
 									<span class="step_descr">Step 3
-										<br/><small>Dati del Legale</small>
-										<br/><small>Rappresentante</small>
+										<br/><small th:text="#{label.dati_legale}">Dati del Legale</small>
+										<br/><small th:text="#{label.rappresentante}">Rappresentante</small>
 									</span>
 								</a>
 							</li>
@@ -139,7 +140,6 @@
 									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.partitaIva')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="pIva">
 											<span class="required"  th:text="#{label.partita_iva}">#{label.partita_iva}</span>
-											<span class="required">*</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
 											<input type="text" id="pIva" name="pIva" pattern='partitaIva' th:field="${providerForm.provider.partitaIva}" th:disabled="!${providerForm.provider.hasPartitaIVA}"
