@@ -268,24 +268,25 @@ public class EventoController {
 	/*
 	 * VALUTAZIONE EVENTO IN PIANO FORMATIVO (accreditamento)
 	 */
-	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
-	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/validate")
-	public String validateEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
-			Model model, RedirectAttributes redirectAttrs) {
-		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/validate"));
-		try {
-			//controllo se è possibile modificare la valutazione o meno
-			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
-			//tengo traccia di dove ritornare
-			model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/validate?tab=tab4");
-			return goToValidate(model, prepareEventoWrapperValidate(eventoService.getEvento(id), providerId, accreditamentoId, pianoFormativoId));
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/validate"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
-			return "redirect:/accreditamento/" + accreditamentoId + "/validate";
-		}
-	}
+	//TODO rimuovere se confermato che non serve più
+//	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+//	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/{id}/validate")
+//	public String validateEventoAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId, @PathVariable Long id,
+//			Model model, RedirectAttributes redirectAttrs) {
+//		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/validate"));
+//		try {
+//			//controllo se è possibile modificare la valutazione o meno
+//			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+//			//tengo traccia di dove ritornare
+//			model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/validate?tab=tab4");
+//			return goToValidate(model, prepareEventoWrapperValidate(eventoService.getEvento(id), providerId, accreditamentoId, pianoFormativoId));
+//		}catch (Exception ex){
+//			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/validate"),ex);
+//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+//			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+//			return "redirect:/accreditamento/" + accreditamentoId + "/validate";
+//		}
+//	}
 
 	/*
 	 * ENABLE FIELD EVENTO IN PIANO FORMATIVO (accreditamento)
@@ -309,50 +310,51 @@ public class EventoController {
 
 	/***	SAVE  VALUTAZIONE EVENTO
 	 * @throws Exception ***/
-	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/validate", method=RequestMethod.POST)
-	public String valutaEventoAccreditamento(@ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
-			Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId) throws Exception{
-		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/validate"));
-		try {
-			//validazione della persona
-			valutazioneValidator.validateValutazione(wrapper.getMappa(), result);
-
-			if(result.hasErrors()){
-				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/validate?tab=tab4");
-				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
-				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
-				return VALIDATE;
-			}else{
-				Accreditamento accreditamento = new Accreditamento();
-				accreditamento.setId(wrapper.getAccreditamentoId());
-				wrapper.getMappa().forEach((k, v) -> {
-					v.setIdField(k);
-					v.setAccreditamento(accreditamento);
-					v.setObjectReference(wrapper.getEvento().getId());
-				});
-
-				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
-				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa()));
-				valutazione.getValutazioni().addAll(values);
-				valutazioneService.save(valutazione);
-
-				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
-				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
-				redirectAttrs.addFlashAttribute("currentTab","tab4");
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
-				return "redirect:/accreditamento/{accreditamentoId}/validate";
-			}
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/validate"),ex);
-			model.addAttribute("accreditamentoId",wrapper.getAccreditamentoId());
-			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
-			model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/validate?tab=tab4");
-			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
-			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
-			return VALIDATE;
-		}
-	}
+	//TODO rimuovere se confermato che non serve più
+//	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/validate", method=RequestMethod.POST)
+//	public String valutaEventoAccreditamento(@ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+//			Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId, @PathVariable Long providerId, @PathVariable Long pianoFormativoId) throws Exception{
+//		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/validate"));
+//		try {
+//			//validazione della persona
+//			valutazioneValidator.validateValutazione(wrapper.getMappa(), result);
+//
+//			if(result.hasErrors()){
+//				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+//				model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/validate?tab=tab4");
+//				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+//				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+//				return VALIDATE;
+//			}else{
+//				Accreditamento accreditamento = new Accreditamento();
+//				accreditamento.setId(wrapper.getAccreditamentoId());
+//				wrapper.getMappa().forEach((k, v) -> {
+//					v.setIdField(k);
+//					v.setAccreditamento(accreditamento);
+//					v.setObjectReference(wrapper.getEvento().getId());
+//				});
+//
+//				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+//				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa()));
+//				valutazione.getValutazioni().addAll(values);
+//				valutazioneService.save(valutazione);
+//
+//				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
+//				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
+//				redirectAttrs.addFlashAttribute("currentTab","tab4");
+//				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+//				return "redirect:/accreditamento/{accreditamentoId}/validate";
+//			}
+//		}catch (Exception ex){
+//			LOGGER.error(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/validate"),ex);
+//			model.addAttribute("accreditamentoId",wrapper.getAccreditamentoId());
+//			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
+//			model.addAttribute("returnLink", "/accreditamento/" + accreditamentoId + "/validate?tab=tab4");
+//			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+//			LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+//			return VALIDATE;
+//		}
+//	}
 
 	/*
 	 * SALVATAGGIO EVENTO IN PIANO FORMATIVO (accreditamento)

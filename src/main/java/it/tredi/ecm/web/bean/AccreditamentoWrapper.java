@@ -111,7 +111,8 @@ public class AccreditamentoWrapper {
 	private Map<Long, Boolean> sediStati = new HashMap<Long, Boolean>();
 	private boolean coordinatoreComitatoScientificoStato;
 	private boolean sedeLegaleStato;
-	private Map<Long, Boolean> eventiStati = new HashMap<Long, Boolean>();
+	//TODO togliere se confermato che non serve più
+	//private Map<Long, Boolean> eventiStati = new HashMap<Long, Boolean>();
 
 	//Mappe con i FieldValutazione
 	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa;
@@ -119,7 +120,8 @@ public class AccreditamentoWrapper {
 	private Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaSedi;
 	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaCoordinatore;
 	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaSedeLegale;
-	private Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi;
+	//TODO togliere se confermato che non serve più
+	//private Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi;
 
 	//Gruppo dei referee
 	private Set<Account> refereeGroup = new HashSet<Account>();
@@ -328,10 +330,11 @@ public class AccreditamentoWrapper {
 //				mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV));
 
 			//eventi pianoFormativo N.B. stesso discorso dei componenti
-			for (Evento e : accreditamento.getPianoFormativo().getEventi()) {
-				if(mappaEventi.get(e.getId()) != null && !mappaEventi.get(e.getId()).isEmpty())
-					eventiStati.replace(e.getId(), true);
-			};
+			//TODO rimuovere se confermato che non serve più
+//			for (Evento e : accreditamento.getPianoFormativo().getEventi()) {
+//				if(mappaEventi.get(e.getId()) != null && !mappaEventi.get(e.getId()).isEmpty())
+//					eventiStati.replace(e.getId(), true);
+//			};
 
 			//ciclo la mappa degli stati dei componenti (tuttiComponentiValutati default == true)
 			componentiComitatoScientificoStati.forEach((k,v) -> {
@@ -349,19 +352,21 @@ public class AccreditamentoWrapper {
 			sediStato = (sedeLegaleStato && tutteSediValutate) ? true : false;
 
 			//ciclo la mappa degli stati degli eventi (tuttiEventiValutati default == true)
-			eventiStati.forEach((k,v) -> {
-				if(v == false)
-					tuttiEventiValutati = false;
-			});
+			//TODO rimuovere se deciso che non serve più
+//			eventiStati.forEach((k,v) -> {
+//				if(v == false)
+//					tuttiEventiValutati = false;
+//			});
 
 			//sezioni validate o meno
 			sezione1Stato = (providerStato && sediStato && legaleRappresentanteStato && datiAccreditamentoStato) ? true : false;
 			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
 			sezione3Stato = (attoCostitutivoStato && esperienzaFormazioneStato && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
-			sezione4Stato = tuttiEventiValutati ? true : false;
+			//TODO rimuovere se deciso che non serve più
+//			sezione4Stato = tuttiEventiValutati ? true : false;
 
 			//stato di valutazione completa
-			canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato && sezione4Stato);
+			canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato/* && sezione4Stato */);
 
 			canConfermaValutazione = (canValutaDomanda && canSendValutazione) ? true : false;
 		}

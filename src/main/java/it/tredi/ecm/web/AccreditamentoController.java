@@ -599,8 +599,9 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setMappaCoordinatore(mappaCoordinatore);
 		accreditamentoWrapper.setMappaComponenti(mappaComponenti);
 		accreditamentoWrapper.setComponentiComitatoScientificoStati(componentiComitatoScientificoStati);
-		accreditamentoWrapper.setMappaEventi(mappaEventi);
-		accreditamentoWrapper.setEventiStati(eventiStati);
+		//TODO togliere se confermato che non serve più
+//		accreditamentoWrapper.setMappaEventi(mappaEventi);
+//		accreditamentoWrapper.setEventiStati(eventiStati);
 
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, AccreditamentoWrapperModeEnum.VALIDATE);
 

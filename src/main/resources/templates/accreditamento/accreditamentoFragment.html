@@ -34,7 +34,7 @@
 								Allegati
 							</a>
 						</li>
-						<li role="presentation" class="presentation">
+						<li th:unless="${valutabile}" role="presentation" class="presentation">
 							<a href="#tab_content4" role="tab" id="tab4" data-toggle="tab" aria-expanded="false" th:text="#{label.piano_formativo}">
 								Piano Formativo
 							</a>
