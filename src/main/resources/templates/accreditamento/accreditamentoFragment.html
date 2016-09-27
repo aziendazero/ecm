@@ -789,7 +789,7 @@
 						</div>
 						<div th:if="${(accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione != null and !accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.new) or
 										(accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto)}" role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="tab5">
-							<!--  TAB 4 -->
+							<!--  TAB 5 -->
 							<div class="row">
 								<div class="col-xs-12">
 
@@ -1019,17 +1019,18 @@
 					});
 
 					//table responsive evento validate
-					$('.datatable-responsive-evento-validate').DataTable({
-						"bFilter" : false,
-						"bInfo" : false,
-						"bPaginate" : false,
-						"ordering" : false,
-						"autoWidth": false,
-						"columnDefs": [
-							{ "targets": 3, "width": "70px", "sClass": "center" },
-							{ "targets": 4, "width": "92px", "sClass": "center" }
-						],
-					});
+					//TODO togliere se non serve più
+// 					$('.datatable-responsive-evento-validate').DataTable({
+// 						"bFilter" : false,
+// 						"bInfo" : false,
+// 						"bPaginate" : false,
+// 						"ordering" : false,
+// 						"autoWidth": false,
+// 						"columnDefs": [
+// 							{ "targets": 3, "width": "70px", "sClass": "center" },
+// 							{ "targets": 4, "width": "92px", "sClass": "center" }
+// 						],
+// 					});
 
 					//table responsive evento enableField
 					$('.datatable-responsive-evento-enableField').DataTable({
