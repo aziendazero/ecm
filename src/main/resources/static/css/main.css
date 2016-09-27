@@ -137,6 +137,10 @@ table.datatable-responsive-discipline thead .sorting_asc:after {
 	visibility: hidden;
 }
 
+table.datatable-responsive-discipline-evento thead .sorting_asc:after {
+	visibility: hidden;
+}
+
 table.datatable-responsive-search thead .sorting_asc:after {
 	visibility: hidden;
 }

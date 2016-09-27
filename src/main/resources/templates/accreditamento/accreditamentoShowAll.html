@@ -191,25 +191,25 @@
 				</div>
 
 				<!-- riempito con ciclo di chiamate ajax per gli eventi del piano formativo -->
-				<div class="x_panel">
-              		<div class="x_title">
-						<h2 style="display: inline" th:text="#{label.eventi_piano_formativo}">label.eventi_piano_formativo</h2>
-						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventi)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventi)}">
-		                    <li><a class="link-collapse"><i class="fa iconToggle fa-chevron-down"></i></a></li>
-                  		</ul>
-						<div class="clearfix"></div>
-					</div>
+<!-- 				<div class="x_panel"> -->
+<!--               		<div class="x_title"> -->
+<!-- 						<h2 style="display: inline" th:text="#{label.eventi_piano_formativo}">label.eventi_piano_formativo</h2> -->
+<!-- 						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventi)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2> -->
+<!-- 						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventi)}"> -->
+<!-- 		                    <li><a class="link-collapse"><i class="fa iconToggle fa-chevron-down"></i></a></li> -->
+<!--                   		</ul> -->
+<!-- 						<div class="clearfix"></div> -->
+<!-- 					</div> -->
 
-					<th:block th:if="${accreditamentoWrapper.accreditamento.pianoFormativo != null and !#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo.eventi)}">
-						<th:block th:each="evento, row : ${accreditamentoWrapper.accreditamento.pianoFormativo.eventi}">
-							<h2 th:text="#{label.evento} + ': ' + ${evento.titolo}">label.componente_comitato</h2>
-							<div th:unless="${row.last}" class="divider-dashed"></div>
-							<div th:id="evento+${evento.id}+Block" class="container-collapse" role="iterEvento" th:attr="data-valore-id=${evento.id}"></div>
-						</th:block>
-					</th:block>
+<!-- 					<th:block th:if="${accreditamentoWrapper.accreditamento.pianoFormativo != null and !#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo.eventi)}"> -->
+<!-- 						<th:block th:each="evento, row : ${accreditamentoWrapper.accreditamento.pianoFormativo.eventi}"> -->
+<!-- 							<h2 th:text="#{label.evento} + ': ' + ${evento.titolo}">label.componente_comitato</h2> -->
+<!-- 							<div th:unless="${row.last}" class="divider-dashed"></div> -->
+<!-- 							<div th:id="evento+${evento.id}+Block" class="container-collapse" role="iterEvento" th:attr="data-valore-id=${evento.id}"></div> -->
+<!-- 						</th:block> -->
+<!-- 					</th:block> -->
 
-				</div>
+<!-- 				</div> -->
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
@@ -293,11 +293,11 @@
 					url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show|}]];
 					$('#allegatiBlock').load(url + " #toModal");
 
-					//ciclo sugli eventi del piano formativo grazie al campo data-valore-id precedentemente settato
-					$('div[role=iterEvento]').each(function(index) {
- 						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo?.id}/evento/|}]] + $(this).attr("data-valore-id") + "/show";
-						$(this).load(url + ' #toModal');
-					})
+// 					//ciclo sugli eventi del piano formativo grazie al campo data-valore-id precedentemente settato
+// 					$('div[role=iterEvento]').each(function(index) {
+//  						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo?.id}/evento/|}]] + $(this).attr("data-valore-id") + "/show";
+// 						$(this).load(url + ' #toModal');
+// 					})
 				}
 
 				$('#showAll-modal').one('shown.bs.modal', function (e) {
