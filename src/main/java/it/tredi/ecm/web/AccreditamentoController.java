@@ -41,9 +41,9 @@ import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
-import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
@@ -77,9 +77,9 @@ public class AccreditamentoController {
 
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
-	@Autowired private FileService fileService;
 
 	@Autowired private EcmProperties ecmProperties;
+
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -262,12 +262,6 @@ public class AccreditamentoController {
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperEdit(accreditamento);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		selectCorrectTab(tab, accreditamentoWrapper, model);
-		if (Utils.getAuthenticatedUser().getAccount().isSegreteria()) {
-			//TODO CONTINUA
-		}
-
-
-
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoEdit"));
 		return "accreditamento/accreditamentoEdit";
 	}
@@ -486,6 +480,14 @@ public class AccreditamentoController {
 		}
 
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, AccreditamentoWrapperModeEnum.EDIT);
+
+		//la segreteria ha sempre tutti gli id edit sbloccati, a meno che non sia in stato integrazione o preavviso di rigetto
+		if (Utils.getAuthenticatedUser().getAccount().isSegreteria()
+				&& !accreditamento.isIntegrazione() && !accreditamento.isPreavvisoRigetto()) {
+			accreditamentoWrapper.setCanSegreteriaEdit(true);
+		}
+		else accreditamentoWrapper.setCanSegreteriaEdit(false);
+
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapper(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;

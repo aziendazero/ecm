@@ -680,9 +680,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 */
 	public boolean canUserValutaDomandaShow(Long accreditamentoId, CurrentUser currentUser) {
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, currentUser.getAccount().getId());
-		if(valutazione != null &&
-				(valutazione.getDataValutazione() != null) &&
-				(currentUser.isSegreteria() || currentUser.isReferee()))
+		if(valutazione != null && (currentUser.isSegreteria() || currentUser.isReferee()))
 			return true;
 		else return false;
 	}

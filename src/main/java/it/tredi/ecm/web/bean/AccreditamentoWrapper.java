@@ -100,6 +100,9 @@ public class AccreditamentoWrapper {
 	private boolean canPresaVisione;
 	private boolean canEnableField;
 
+	//flag per vedere se la segreteria può editare
+	private boolean canSegreteriaEdit;
+
 	//int referee da riassegnare
 	private int refereeDaRiassegnare = 0;
 

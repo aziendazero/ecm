@@ -121,15 +121,19 @@
 					<div class="x_title x_menu">
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.codiceFiscale + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
-							<a th:if="${accreditamentoWrapper.canSendIntegrazione}"
-									class="btn btn-success pull-right"
-									th:text="#{label.invia_integrazione}"
-									data-toggle="modal" data-target=".modal-fileIntegrazione"></a>
-							<a th:if="${accreditamentoWrapper.canSend}"
-									class="btn btn-success pull-right"
-									th:text="#{label.invia_domanda}"
-									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a>
-							<button type="button" class="btn btn-primary pull-right" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></button>
+							<div class="dropdown pull-right">
+  								<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" th:if="${#authentication.principal.isSegreteria()}">
+									<span th:text="#{label.menu_azioni}"></span>
+									<span class="caret"></span>
+								</button>
+								<!-- menù raggruppato per segreteria -->
+								<ul class="dropdown-menu actions">
+									<li th:if="${accreditamentoWrapper.canSendIntegrazione}"><a th:text="#{label.invia_integrazione}" data-toggle="modal" data-target=".modal-fileIntegrazione"></a></li>
+									<li th:if="${accreditamentoWrapper.canSend}"><a th:text="#{label.invia_domanda}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a></li>
+									<li class="divider actions" th:if="${accreditamentoWrapper.canSendIntegrazione or accreditamentoWrapper.canSend}"></li>
+									<li><a th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></a></li>
+								</ul>
+							</div>
 						</div>
 						<div class="clearfix"></div>
 					</div>
