@@ -19,12 +19,12 @@ import it.tredi.ecm.utils.Utils;
 
 @Service
 public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAccreditamentoService{
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(FieldEditabileAccreditamentoServiceImpl.class);
-	
-	@Autowired private FieldEditabileAccreditamentoRepository fieldEditabileAccreditamentoRepository; 
+
+	@Autowired private FieldEditabileAccreditamentoRepository fieldEditabileAccreditamentoRepository;
 	@Autowired private AccreditamentoService accreditamentoService;
-	
+
 	@Override
 	public Set<FieldEditabileAccreditamento> getAllFieldEditabileForAccreditamento(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di IdEditabili per Domanda Accreditamento: " + accreditamentoId));
@@ -36,7 +36,7 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di IdEditabili per Domanda Accreditamento: " + accreditamentoId + " riferiti all'oggetto: " + objectReference));
 		return fieldEditabileAccreditamentoRepository.findAllByAccreditamentoIdAndObjectReference(accreditamentoId, objectReference);
 	}
-	
+
 	@Override
 	public Set<FieldEditabileAccreditamento> getFullLista(Long accreditamentoId, Long objectReference) {
 		if(objectReference == null)
@@ -44,7 +44,7 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 		else
 			return getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, objectReference);
 	}
-	
+
 	@Override
 	@Transactional
 	public void insertFieldEditabileForAccreditamento(Long accreditamentoId, Long objectReference, SubSetFieldEnum subset, Set<IdFieldEnum> toInsert) {
@@ -54,7 +54,7 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 			subSetList = Utils.getSubset(getAllFieldEditabileForAccreditamento(accreditamentoId), subset);
  		else
  			subSetList = Utils.getSubset(getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, objectReference), subset);
-		
+
 		if(toInsert != null){
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 			for(IdFieldEnum id : toInsert){
@@ -69,7 +69,7 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 			}
 		}
 	}
-	
+
 	@Override
 	@Transactional
 	public void removeFieldEditabileForAccreditamento(Long accreditamentoId, Long objectReference, SubSetFieldEnum subset) {
@@ -79,17 +79,17 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
  			toRemove = Utils.getSubset(getAllFieldEditabileForAccreditamento(accreditamentoId), subset);
  		else
  			toRemove = Utils.getSubset(getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, objectReference), subset);
- 		
+
  		fieldEditabileAccreditamentoRepository.delete(toRemove);
 	}
-	
+
 	@Override
 	@Transactional
 	public void removeAllFieldEditabileForAccreditamento(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Eliminazione di tutti gli IdEditabili per Domanda Accreditamento: " + accreditamentoId));
 		fieldEditabileAccreditamentoRepository.deleteAllByAccreditamentoId(accreditamentoId);
 	}
-	
+
 	@Override
 	@Transactional
 	public void delete(FieldEditabileAccreditamento field){
