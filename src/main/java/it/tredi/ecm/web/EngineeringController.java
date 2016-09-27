@@ -2,22 +2,29 @@ package it.tredi.ecm.web;
 
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.service.EngineeringService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
@@ -35,6 +42,8 @@ public class EngineeringController {
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
 	@Autowired private EngineeringValidator engineeringValidator;
+	
+	@Autowired private EngineeringService engineeringService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -74,7 +83,77 @@ public class EngineeringController {
 			return "redirect:/home";
 		}
 	}
+	
+	/*** MYPAY PAGA ***/
+	@RequestMapping(value = "/engineering/test/mypay/paga", method = RequestMethod.POST)
+	public String engineeringTestPagaConMypay(@ModelAttribute("engineeringWrapper") 
+			EngineeringWrapper wrapper, HttpServletRequest request, BindingResult result,
+			RedirectAttributes redirectAttrs, Model model) {
+		try {
+			
+			String rootUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+			
+			Long id = wrapper.getIdEvento();
+			String url = engineeringService.paga(id,rootUrl+ request.getContextPath() + "/engineering/test/mypay");
+			
+			if (StringUtils.hasText(url)) {
+				return "redirect:" + url;
+			}
+			
+			
+			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
+			
+			return "engineering/mypayTest";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
 
+	/*** MYPAY CHIEDI PAGATI ***/
+	@RequestMapping(value = "/engineering/test/mypay/chiedipagati", method = RequestMethod.POST)
+	public String engineeringTestChiediPagati(@RequestHeader(value = "referer", required = false) final String referer,
+			@ModelAttribute("engineeringWrapper") EngineeringWrapper wrapper, BindingResult result,
+			RedirectAttributes redirectAttrs, Model model) {
+		
+		try {
+			// questo metodo andrebbe chiamato ogni TOT (da dimensionare in base al carico previsto) via scheduler.
+			// in questo prototipo ho inserito un pulsante per invocarlo a piacere.
+			engineeringService.esitoPagamenti();
+			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
+			
+			return "engineering/mypayTest";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+		
+	}
+	
+	/*** MYPAY AZZERA PAGAMENTI ***/
+	@RequestMapping(value = "/engineering/test/mypay/azzera", method = RequestMethod.POST)
+	public String engineeringTestChiediPagati(@ModelAttribute("engineeringWrapper") EngineeringWrapper wrapper, BindingResult result,
+			RedirectAttributes redirectAttrs, Model model) {
+		// resetto gli eventi e le tabelle di log per poter ripetere i test
+		// se ho effettuato un pagamento su MyPay questo ovviamente non viene cancellato. 
+		// Posso comunque ripeterlo. MyPay lo registrerà come nuovo pagamento.
+		try {
+			engineeringService.azzeraPagamenti(providerService.getProvider().getId());
+			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
+			
+			return "engineering/mypayTest";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+		
+	}
+	
+	
+	
 	/*** SAVE ***/
 	@RequestMapping(value = "/engineering/test/firma/save", method = RequestMethod.POST)
 	public String saveEngineeringTestSave(@ModelAttribute("engineeringWrapper") EngineeringWrapper wrapper, BindingResult result,

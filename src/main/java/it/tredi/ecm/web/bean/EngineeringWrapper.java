@@ -13,6 +13,10 @@ public class EngineeringWrapper {
 	private Provider provider;
 
 	private File fileDaFirmare;
+	
+	private Long idEvento;
+	
+	private Long editId;
 
 	public EngineeringWrapper() {
 		setFileDaFirmare(new File(FileEnum.FILE_DA_FIRMARE));

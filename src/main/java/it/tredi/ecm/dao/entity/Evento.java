@@ -56,6 +56,8 @@ public class Evento extends BaseEntity{
 
 	private Boolean pagato = false;
 
+	private Boolean pagInCorso = false;
+
 	private Integer edizione = 1;
 
 	@Type(type = "serializable")
