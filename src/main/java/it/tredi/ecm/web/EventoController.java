@@ -30,6 +30,7 @@ import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -285,7 +286,7 @@ public class EventoController {
 			return "redirect:/accreditamento/" + accreditamentoId + "/validate";
 		}
 	}
-	
+
 	/*
 	 * ENABLE FIELD EVENTO IN PIANO FORMATIVO (accreditamento)
 	 */
@@ -306,7 +307,7 @@ public class EventoController {
 		}
 	}
 
-	/***	SAVE  VALUTAZIONE EVENTO 
+	/***	SAVE  VALUTAZIONE EVENTO
 	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/validate", method=RequestMethod.POST)
 	public String valutaEventoAccreditamento(@ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
@@ -372,10 +373,10 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/save"));
 		return saveEvento(wrapper, null, providerId, pianoFormativoId, result, model, redirectAttrs);
 	}
-	
+
 	/*** 	SAVE  ENABLEFIELD   ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/enableField", method = RequestMethod.POST)
-	public String enableFieldAllegatiAccreditamento(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId, 
+	public String enableFieldAllegatiAccreditamento(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId,
 												Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/" + richiestaIntegrazioneWrapper.getObjRef() + "/enableField"));
 		try{
@@ -418,6 +419,8 @@ public class EventoController {
 				return EDIT;
 			}else{
 				boolean insertFieldEditabile = (wrapper.getEvento().isNew()) ? true : false;
+				//non inserisce i field editabili se è la segreteria a fare l'inserimento in uno stato dell'accreditamento che non sia Bozza
+				insertFieldEditabile = (Utils.getAuthenticatedUser().getAccount().isSegreteria() && !accreditamentoService.getAccreditamento(wrapper.getAccreditamentoId()).isBozza()) ? false : true;
 				eventoService.save(wrapper.getEvento());
 				PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
 				pianoFormativo.addEvento(wrapper.getEvento());
@@ -608,7 +611,7 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEnableField(" + evento.getId() + "," + providerId + ") - exiting"));
 		return eventoWrapper;
 	}
-	
+
 	private String goToValidate(Model model, EventoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
 		model.addAttribute("proceduraFormativaList", wrapper.getEvento().getAccreditamento().getDatiAccreditamento().getProcedureFormative());
@@ -622,7 +625,7 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
 		return ENABLEFIELD;
 	}
-	
+
 	private void populateListFromAccreditamento(Model model, long accreditamentoId) throws Exception{
 		DatiAccreditamento datiAccreditamento = accreditamentoService.getDatiAccreditamentoForAccreditamento(accreditamentoId);
 		model.addAttribute("proceduraFormativaList", datiAccreditamento.getProcedureFormative());
@@ -668,13 +671,20 @@ public class EventoController {
 			wrapper.setPianoFormativoId(pianoFormativoId);
 		}
 
+		AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(accreditamentoId);
+
 		wrapper.setEventoFrom("accreditamento");
 		if(accreditamentoId != 0){
 			wrapper.setAccreditamentoId(accreditamentoId);
 			if(evento.isNew())
 				wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
-			else
-				wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId,evento.getId()), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
+			else {
+				//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
+				if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+					wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
+				else
+					wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId,evento.getId()), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO));
+			}
 		}
 		else{
 			wrapper.setAccreditamentoId(evento.getAccreditamento().getId());

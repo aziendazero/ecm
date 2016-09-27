@@ -64,7 +64,7 @@ public class SedeController {
 	@Autowired private SedeService sedeService;
 	@Autowired private SedeValidator sedeValidator;
 	@Autowired private ProviderService providerService;
-	
+
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamentoService;
@@ -162,14 +162,14 @@ public class SedeController {
 		}
 		return new SedeWrapper();
 	}
-	
+
 	private SedeWrapper prepareWrapperForReloadByEditId(Sede sede, Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento,
 			AccreditamentoWrapperModeEnum wrapperMode) throws Exception{
 		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
 			return prepareSedeWrapperEdit(sede,accreditamentoId, sede.getProvider().getId(), statoAccreditamento, true);
 		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
 			return prepareSedeWrapperValidate(sede, accreditamentoId, sede.getProvider().getId(), statoAccreditamento,false);
-		
+
 		return new SedeWrapper();
 	}
 
@@ -223,7 +223,7 @@ public class SedeController {
 			return "redirect:/accreditamento/" + accreditamentoId + "/validate";
 		}
 	}
-	
+
 	/*** ENABLEFIELD SEDE ***/
 	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/sede/{id}/enableField")
@@ -276,7 +276,7 @@ public class SedeController {
 				if(sedeWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || sedeWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
 					integra(sedeWrapper, false);
 				}else{
-					saveSede(sedeWrapper, providerService.getProvider(providerId));	
+					saveSede(sedeWrapper, providerService.getProvider(providerId));
 				}
 				redirectAttrs.addAttribute("accreditamentoId", sedeWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.sede_salvata", "success"));
@@ -316,7 +316,7 @@ public class SedeController {
 		return "redirect:/accreditamento/{accreditamentoId}/edit";
 	}
 
-	/***	SALVA VALUTAZIONE 	
+	/***	SALVA VALUTAZIONE
 	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/sede/validate", method = RequestMethod.POST)
 	public String valutaSede(@ModelAttribute("sedeWrapper") SedeWrapper sedeWrapper, BindingResult result,
@@ -360,7 +360,7 @@ public class SedeController {
 
 	/*** 	SAVE  ENABLEFIELD   ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/sede/enableField", method = RequestMethod.POST)
-	public String enableFieldSede(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, 
+	public String enableFieldSede(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper,
 									@PathVariable Long accreditamentoId, @PathVariable Long providerId,
 												Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "sede/enableField"));
@@ -374,7 +374,7 @@ public class SedeController {
 		}
 		return "redirect:/accreditamento/{accreditamentoId}/enableField";
 	};
-	
+
 	private String goToEdit(Model model, SedeWrapper sedeWrapper){
 		model.addAttribute("sedeWrapper", sedeWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
@@ -392,7 +392,7 @@ public class SedeController {
 		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 		return VALIDATE;
 	}
-	
+
 	private String goToEnableField(Model model, SedeWrapper sedeWrapper){
 		model.addAttribute("sedeWrapper", sedeWrapper);
 		model.addAttribute("richiestaIntegrazioneWrapper",integrazioneService.prepareRichiestaIntegrazioneWrapper(sedeWrapper.getAccreditamentoId(), SubSetFieldEnum.SEDE, sedeWrapper.getSede().getId()));
@@ -402,9 +402,9 @@ public class SedeController {
 
 	private SedeWrapper prepareSedeWrapperEdit(Sede sede, long accreditamentoId, long providerId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperEdit(" + sede.getId() + "," + accreditamentoId + "," + providerId +") - entering"));
-		
+
 		SubSetFieldEnum subset = SubSetFieldEnum.SEDE;
-		
+
 		SedeWrapper sedeWrapper = new SedeWrapper();
 		sedeWrapper.setSede(sede);
 		sedeWrapper.setAccreditamentoId(accreditamentoId);
@@ -415,18 +415,22 @@ public class SedeController {
 		if(sede.isNew()){
 			sedeWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 		}else{
-			sedeWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, sede.getId()), subset));
+			//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
+			if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+				sedeWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
+			else
+				sedeWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, sede.getId()), subset));
 			//sedeWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(accreditamentoId, sede.getId()), subset));
 		}
-		
+
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
 			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId);
 		}
-		
+
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperEdit(" + sede.getId() + "," + accreditamentoId + "," + providerId +") - exiting"));
 		return sedeWrapper;
 	}
-	
+
 	private void prepareApplyIntegrazione(SedeWrapper sedeWrapper, SubSetFieldEnum subset, boolean reloadByEditIt) throws Exception{
 		sedeWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(sedeWrapper.getAccreditamentoId(), sedeWrapper.getSede().getId()), subset));
 		integrazioneService.detach(sedeWrapper.getSede());
@@ -452,9 +456,9 @@ public class SedeController {
 
 	private SedeWrapper prepareSedeWrapperValidate(Sede sede, long accreditamentoId, long providerId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperValidate(" + sede.getId() + "," + accreditamentoId + "," + providerId +") - entering"));
-		
+
 		SubSetFieldEnum subset = SubSetFieldEnum.SEDE;
-		
+
 		SedeWrapper sedeWrapper = new SedeWrapper();
 
 		//carico la valutazione per l'utente
@@ -481,11 +485,11 @@ public class SedeController {
 		sedeWrapper.setProviderId(providerId);
 		sedeWrapper.setStatoAccreditamento(statoAccreditamento);
 		sedeWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
-		
+
 		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
 			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId);
 		}
-		
+
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperValidate(" + sede.getId() + "," + accreditamentoId + "," + providerId +") - exiting"));
 		return sedeWrapper;
 	}
@@ -502,6 +506,9 @@ public class SedeController {
 		LOGGER.info(Utils.getLogMessage("Salvataggio sede"));
 
 		boolean insertFieldEditabile = (sedeWrapper.getSede().isNew()) ? true : false;
+		//non inserisce i field editabili se è la segreteria a fare l'inserimento in uno stato dell'accreditamento che non sia Bozza
+		insertFieldEditabile = (Utils.getAuthenticatedUser().getAccount().isSegreteria() && !accreditamentoService.getAccreditamento(sedeWrapper.getAccreditamentoId()).isBozza()) ? false : true;
+
 		sedeService.save(sedeWrapper.getSede(), provider);
 
 		//inserimento nuova sede in Domanda di Accreditamento
@@ -510,7 +517,7 @@ public class SedeController {
 			fieldEditabileAccreditamentoService.insertFieldEditabileForAccreditamento(sedeWrapper.getAccreditamentoId(), sedeWrapper.getSede().getId(), SubSetFieldEnum.SEDE, IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE));
 		}
 	}
-	
+
 	private void integra(SedeWrapper wrapper, boolean eliminazione) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Integrazione sede"));
 		Accreditamento accreditamento = new Accreditamento();
@@ -518,7 +525,7 @@ public class SedeController {
 
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 		IdFieldEnum idFieldFull = IdFieldEnum.SEDE__FULL;
-		
+
 		if(!eliminazione){
 			//Creazione Sede multistanza
 			if(wrapper.getSede().isNew()){
@@ -538,7 +545,7 @@ public class SedeController {
 			LOGGER.info(Utils.getLogMessage("Salvataggio fieldIntegrazione per eliminazione sede: " + wrapper.getSede().getId()));
 			fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idFieldFull, accreditamento, wrapper.getSede().getId(), wrapper.getSede().getId(), TipoIntegrazioneEnum.ELIMINAZIONE));
 		}
-		
+
 		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);
 	}
 }

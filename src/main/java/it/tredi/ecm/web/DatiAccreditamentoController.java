@@ -71,12 +71,12 @@ public class DatiAccreditamentoController {
 	@Autowired private ProfessioneService professioneService;
 	@Autowired private FileService fileService;
 	@Autowired private ProviderService providerService;
-	
+
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
-	
+
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
@@ -97,14 +97,14 @@ public class DatiAccreditamentoController {
 		}
 		return new DatiAccreditamentoWrapper();
 	}
-	
-	private DatiAccreditamentoWrapper prepareWrapperForReloadByEditId(DatiAccreditamento datiAccreditamento, Long accreditamentoId, 
+
+	private DatiAccreditamentoWrapper prepareWrapperForReloadByEditId(DatiAccreditamento datiAccreditamento, Long accreditamentoId,
 				AccreditamentoStatoEnum statoAccreditamento, AccreditamentoWrapperModeEnum wrapperMode) throws Exception{
 		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
 			return prepareDatiAccreditamentoWrapperEdit(datiAccreditamento, statoAccreditamento, true);
 		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
 			return prepareDatiAccreditamentoWrapperValidate(datiAccreditamento, accreditamentoId, statoAccreditamento, false);
-		
+
 		return new DatiAccreditamentoWrapper();
 	}
 
@@ -193,7 +193,7 @@ public class DatiAccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}/validate";
 		}
 	};
-	
+
 	/***	ENABLEFIELD	***/
 	@PreAuthorize("@securityAccessServiceImpl.canEnableField(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/{id}/enableField")
@@ -209,7 +209,7 @@ public class DatiAccreditamentoController {
 			return "redirect:/accreditamento/{accreditamentoId}/enableField";
 		}
 	}
-	
+
 	/*** SAVE ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/save", method = RequestMethod.POST)
 	public String saveDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
@@ -244,7 +244,7 @@ public class DatiAccreditamentoController {
 			}
 			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: DatiAccreditamentoSave:__AFTER SET__"));
 			//integrazioneService.isManaged(wrapper.getDatiAccreditamento());
-			
+
 			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
 
 			if(result.hasErrors()){
@@ -270,12 +270,12 @@ public class DatiAccreditamentoController {
 			return EDIT;
 		}
 	}
-	
+
 	private void integra(DatiAccreditamentoWrapper wrapper) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Integrazione DatiAccreditamento"));
 		Accreditamento accreditamento = new Accreditamento();
 		accreditamento.setId(wrapper.getAccreditamentoId());
-		
+
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(IdFieldEnum idField : wrapper.getIdEditabili()){
 			if(idField.getGruppo().isEmpty())
@@ -290,8 +290,8 @@ public class DatiAccreditamentoController {
 		providerService.save(wrapper.getProvider());
 		datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), wrapper.getAccreditamentoId());
 	}
-	
-	/*** SAVE VALUTAZIONE 
+
+	/*** SAVE VALUTAZIONE
 	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/validate", method = RequestMethod.POST)
 	public String valutaDatiAccreditamento(@ModelAttribute("datiAccreditamentoWrapper") DatiAccreditamentoWrapper wrapper, BindingResult result,
@@ -336,7 +336,7 @@ public class DatiAccreditamentoController {
 
 	/*** 	SAVE  ENABLEFIELD   ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/dati/enableField", method = RequestMethod.POST)
-	public String enableFieldDatiAccreditamento(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId, 
+	public String enableFieldDatiAccreditamento(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId,
 												Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/dati/enableField"));
 		try{
@@ -350,7 +350,7 @@ public class DatiAccreditamentoController {
 		return "redirect:/accreditamento/{accreditamentoId}/enableField";
 	};
 
-	
+
 	private String goToEdit(Model model, DatiAccreditamentoWrapper wrapper){
 		model.addAttribute("datiAccreditamentoWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
@@ -368,7 +368,7 @@ public class DatiAccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 		return VALIDATE;
 	}
-	
+
 	private String goToEnableField(Model model, DatiAccreditamentoWrapper wrapper){
 		model.addAttribute("datiAccreditamentoWrapper", wrapper);
 		model.addAttribute("richiestaIntegrazioneWrapper", integrazioneService.prepareRichiestaIntegrazioneWrapper(wrapper.getAccreditamentoId(), SubSetFieldEnum.DATI_ACCREDITAMENTO, null));
@@ -388,11 +388,15 @@ public class DatiAccreditamentoController {
 	 */
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperEdit(DatiAccreditamento datiAccreditamento, long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperEdit(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
-		
+
 		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
-		
+
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
-		wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
+		//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
+		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+			wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
+		else
+			wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
 		wrapper.setStatoAccreditamento(statoAccreditamento);
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
 
@@ -403,11 +407,11 @@ public class DatiAccreditamentoController {
 			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
 			wrapper.setFiles(wrapper.getProvider().getFiles());
 		}
-		
+
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
-		
+
 		if(!wrapper.getDatiAccreditamento().isNew()){
 			wrapper.setFiles(wrapper.getProvider().getFiles());
 		}
@@ -415,7 +419,7 @@ public class DatiAccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperEdit(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;
 	}
-	
+
 	private void prepareApplyIntegrazione(DatiAccreditamentoWrapper wrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
 		wrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(wrapper.getAccreditamentoId()), subset));
 		wrapper.getProvider().getFiles().size();
@@ -429,7 +433,7 @@ public class DatiAccreditamentoController {
 
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperShow(DatiAccreditamento datiAccreditamento, long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperShow(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
-		
+
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
 		wrapper.setFiles(datiAccreditamento.getAccreditamento().getProvider().getFiles());
 
@@ -439,14 +443,14 @@ public class DatiAccreditamentoController {
 
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperValidate(DatiAccreditamento datiAccreditamento, long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperValidate(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
-	
+
 		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
-		
+
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
 		wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
 		wrapper.setStatoAccreditamento(statoAccreditamento);
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
-		
+
 		//carico la valutazione per l'utente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
@@ -466,13 +470,13 @@ public class DatiAccreditamentoController {
 		wrapper.setIdEditabili(idEditabili);
 		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		wrapper.setMappa(mappa);
-		
+
 		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
-		
+
 		wrapper.setFiles(wrapper.getProvider().getFiles());
-		
+
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperValidate(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;
 	};

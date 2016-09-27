@@ -78,7 +78,7 @@ public class ProviderController {
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
 	@Autowired private TokenService tokenService;
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
@@ -97,7 +97,7 @@ public class ProviderController {
 		}
 		return new ProviderWrapper();
 	}
-	
+
 	//Distinguo il prepareWrapper dalla verisione chiamata in caricamento della View da quella chiamata per il reload e merge con il form
 	//nel secondo caso non riapplico le eventuali integrazioni altrimenti mi ritroverei delle entity attached me mi danno errore.
 	//Distinguo inoltre il prepareWrapper in funzione dello stato della domanda
@@ -106,10 +106,10 @@ public class ProviderController {
 			return prepareProviderWrapperEdit(provider, statoAccreditamento, true);
 		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
 			return prepareProviderWrapperValidate(provider, accreditamentoId, statoAccreditamento, false);
-		
+
 		return new ProviderWrapper();
 	}
-	
+
 	/*** GLOBAL MODEL ATTRIBUTES***/
 
 	/***	SHOW	***/
@@ -125,7 +125,7 @@ public class ProviderController {
 			return "redirect: /home";
 		}
 	}
-	
+
 	/*** WORKFLOW ***/
 	@RequestMapping("/workflow/token/{token}/provider/{providerId}")
 	@ResponseBody
@@ -139,25 +139,25 @@ public class ProviderController {
 		}
 		//recupero la lista degli usernamebonita degli utenti del provider
 		Provider provider = providerService.getProvider(providerId);
-		
+
 		if(provider == null) {
 			String msg = "Impossibile trovare il provider passato providerId: " + providerId;
 			LOGGER.error(msg);
 			return new ResponseState(true, msg);
 		}
-		
+
 		ResponseUsername responseUsername = new ResponseUsername();
 		Set<String> usernames = new HashSet<>();
-		if(provider.getAccount() != null && provider.getAccount().getUsernameWorkflow() != null && !provider.getAccount().getUsernameWorkflow().isEmpty()) 
+		if(provider.getAccount() != null && provider.getAccount().getUsernameWorkflow() != null && !provider.getAccount().getUsernameWorkflow().isEmpty())
 			usernames.add(provider.getAccount().getUsernameWorkflow());
 		responseUsername.setUserNames(usernames);
 		ResponseState responseState = new ResponseState(false, "Elenco usernames");
 		ObjectMapper objMapper = new ObjectMapper();
 	    String responseUsernameJson = objMapper.writeValueAsString(responseUsername);
 	    responseState.setJsonObject(responseUsernameJson);
-		
+
 		return responseState;
-		
+
 /*
 		Account account = accountRepository.findOneByUsername("provider").orElse(null);
 		if(account != null) {
@@ -167,7 +167,7 @@ public class ProviderController {
 		//TODO modifica stato della domanda da parte del flusso
 		//lo facciamo cosi in modo tale da non dover disabilitare la cache di hibernate
 		//accreditamentoService.setStato(accreditamentoId, stato);
-	}	
+	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#id)")
 	@RequestMapping("/provider/{id}/show/all")
@@ -274,7 +274,7 @@ public class ProviderController {
 				if(providerWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || providerWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
 					integra(providerWrapper);
 				}else{
-					salva(providerWrapper);					
+					salva(providerWrapper);
 				}
 
 				redirectAttrs.addAttribute("accreditamentoId", providerWrapper.getAccreditamentoId());
@@ -291,7 +291,7 @@ public class ProviderController {
 		}
 	}
 
-	/***	SALVA VALUTAZIONE	
+	/***	SALVA VALUTAZIONE
 	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/validate", method = RequestMethod.POST)
 	public String valutaProvider(@ModelAttribute("providerWrapper") ProviderWrapper providerWrapper, BindingResult result,
@@ -335,7 +335,7 @@ public class ProviderController {
 
 	/***	SALVA ENABLEFIELD	***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/enableField", method = RequestMethod.POST)
-	public String enableFieldProvider(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, Model model, 
+	public String enableFieldProvider(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, Model model,
 			RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("POST: /accreditamento/" + accreditamentoId + "/provider/enableField"));
 		try{
@@ -403,9 +403,13 @@ public class ProviderController {
 	 */
 	private ProviderWrapper prepareProviderWrapperEdit(Provider provider, Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEdit("+ provider.getId() + "," + accreditamentoId +") - entering"));
-		
+
 		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
-		providerWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamenoService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.PROVIDER));
+		//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
+		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+			providerWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER));
+		else
+			providerWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamenoService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.PROVIDER));
 		providerWrapper.setStatoAccreditamento(statoAccreditamento);
 		providerWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
 
@@ -428,10 +432,10 @@ public class ProviderController {
 
 	/*
 	 * Se INTEGRAZIONE:
-	 * 
+	 *
 	 * caso 1: MODIFICA SINGOLO CAMPO
 	 * 		(+) Viene salvato un fieldIntegrazione per ogni fieldEditabile abilitato
-	 * 		(+) Ogni fieldIntegrazione contiene il nuovo valore serializzato in funzione del setField/getField di IntegrazioneServiceImpl 
+	 * 		(+) Ogni fieldIntegrazione contiene il nuovo valore serializzato in funzione del setField/getField di IntegrazioneServiceImpl
 	 */
 	@Transactional
 	private void integra(ProviderWrapper wrapper) throws Exception{
@@ -455,18 +459,18 @@ public class ProviderController {
 
 	private ProviderWrapper prepareProviderWrapperShow(Provider provider, Long accreditamentoId) {
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperShow("+ provider.getId() + "," + accreditamentoId +") - entering"));
-		
+
 		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
-		
+
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperShow("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}
 
 	private ProviderWrapper prepareProviderWrapperValidate(Provider provider, Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - entering"));
-		
+
 		SubSetFieldEnum subset = SubSetFieldEnum.PROVIDER;
-		
+
 		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
 		providerWrapper.setStatoAccreditamento(statoAccreditamento);
 		providerWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);

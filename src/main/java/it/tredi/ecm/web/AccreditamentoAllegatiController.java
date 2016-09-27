@@ -88,14 +88,14 @@ public class AccreditamentoAllegatiController {
 		}
 		return new AccreditamentoAllegatiWrapper();
 	}
-	
+
 	private AccreditamentoAllegatiWrapper  prepareWrapperForReloadByEditId(Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento,
 				AccreditamentoWrapperModeEnum wrapperMode) throws Exception{
 		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
 			return prepareAccreditamentoAllegatiWrapperEdit(accreditamentoId, statoAccreditamento, true);
 		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
 			return prepareAccreditamentoAllegatiWrapperValidate(accreditamentoId, statoAccreditamento, false);
-		
+
 		return new AccreditamentoAllegatiWrapper();
 	}
 
@@ -199,7 +199,7 @@ public class AccreditamentoAllegatiController {
 						wrapper.setDichiarazioneEsclusione(fileService.getFile(file.getId()));
 				}
 			}
-			
+
 			//Ri-effettuo il detach..non sarebbe indispensabile...ma e' una precauzione a eventuali modifiche future
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
 			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(wrapper.getAccreditamentoId());
@@ -208,7 +208,7 @@ public class AccreditamentoAllegatiController {
 
 			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: AccreditamentoAllegatiSave:__AFTER SET__"));
 			integrazioneService.isManaged(wrapper.getProvider());
-			
+
 			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles());
 
 			if(result.hasErrors()){
@@ -251,7 +251,7 @@ public class AccreditamentoAllegatiController {
 		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);
 	}
 
-	/***	 SAVE VALUTAZIONE ALLEGATI ACCREDITAMENTO	
+	/***	 SAVE VALUTAZIONE ALLEGATI ACCREDITAMENTO
 	 * @throws Exception ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/validate", method = RequestMethod.POST)
 	public String valutaAllegatiAccreditamento(@ModelAttribute("accreditamentoAllegatiWrapper") AccreditamentoAllegatiWrapper wrapper, BindingResult result,
@@ -298,7 +298,7 @@ public class AccreditamentoAllegatiController {
 
 	/*** 	SAVE  ENABLEFIELD   ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/allegati/enableField", method = RequestMethod.POST)
-	public String enableFieldAllegatiAccreditamento(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId, 
+	public String enableFieldAllegatiAccreditamento(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/allegati/enableField"));
 		try{
@@ -343,29 +343,33 @@ public class AccreditamentoAllegatiController {
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 
 		SubSetFieldEnum subset = SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO;
-		
+
 		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
 		wrapper.setProvider(accreditamento.getProvider());
 		wrapper.setModelIds(fileService.getModelFileIds());
-		wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
+		//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
+		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+			wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
+		else
+			wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
 		wrapper.setStatoAccreditamento(statoAccreditamento);
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
-		
+
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 
 		//set dei files sul wrapper, per allinearmi nel caso ci fossero dei fieldIntegrazione relativi a files
 		wrapper.setFiles(wrapper.getProvider().getFiles());
-		
+
 		LOGGER.debug(Utils.getLogMessage("__EXITING PREPAREWRAPPER__"));
 		integrazioneService.isManaged(wrapper.getProvider());
-		
+
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperEdit(" + accreditamentoId + ") - exiting"));
 		return wrapper;
 	}
-	
+
 	private void prepareApplyIntegrazione(AccreditamentoAllegatiWrapper wrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
 		wrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(wrapper.getAccreditamentoId()), subset));
 		wrapper.getProvider().getFiles().size();
@@ -379,9 +383,9 @@ public class AccreditamentoAllegatiController {
 
 	private AccreditamentoAllegatiWrapper prepareAccreditamentoAllegatiWrapperValidate(Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperValidate(" + accreditamentoId + ") - entering"));
-		
+
 		SubSetFieldEnum subset = SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO;
-		
+
 		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
 		wrapper.setStatoAccreditamento(statoAccreditamento);
@@ -409,11 +413,11 @@ public class AccreditamentoAllegatiController {
 		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		wrapper.setIdEditabili(idEditabili);
 		wrapper.setMappa(mappa);
-		
+
 		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
-		
+
 		wrapper.setFiles(wrapper.getProvider().getFiles());
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperValidate(" + accreditamentoId + ") - exiting"));
