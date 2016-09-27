@@ -54,21 +54,21 @@ public enum IdFieldEnum {
 	DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE ("datiAccreditamento.procedureFormative", 34, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "procedureFormative"),
 	DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO ("datiAccreditamento.professioniAccreditamento", 35, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "professioniAccreditamento"),
 	DATI_ACCREDITAMENTO__DISCIPLINE ("datiAccreditamento.discipline", 36, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "discipline"),
-	
+
 	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO ("datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoComplessivoValoreUno"),
 	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE ("datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoComplessivoValoreDue"),
 	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE ("datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoComplessivoValoreTre"),
 	DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO ("datiAccreditamento.datiEconomici.fatturatoComplessivo", 37, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "fatturatoComplessivo",Arrays.asList(DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO,DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE,DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE)),
-	
+
 	DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO ("estrattoBilancioComplessivo", 38, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "files.FILE_ESTRATTO_BILANCIO_COMPLESSIVO"),
 
 	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO ("datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoFormazioneValoreUno"),
 	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE ("datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoFormazioneValoreDue"),
 	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE ("datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "datiEconomici.fatturatoFormazioneValoreTre"),
 	DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE ("datiAccreditamento.datiEconomici.fatturatoFormazione", 39, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "fatturatoFormazione",Arrays.asList(DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO,DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE,DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE)),
-	
+
 	DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE ("estrattoBilancioFormazione", 40, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "files.FILE_ESTRATTO_BILANCIO_FORMAZIONE"),
-	
+
 	DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO ("datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "numeroDipendentiFormazioneTempoIndeterminato"),
 	DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO ("datiAccreditamento.numeroDipendentiFormazioneAltro", -1, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "numeroDipendentiFormazioneAltro"),
 	DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI ("datiAccreditamento.numeroDipendenti", 41, null, SubSetFieldEnum.DATI_ACCREDITAMENTO, "numeroDipendentiFormazioneTempoIndeterminato", Arrays.asList(DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO, DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO)),
@@ -163,7 +163,7 @@ public enum IdFieldEnum {
 		this.subSetField = subSetField;
 		this.nameRef = nameRef;
 	}
-	
+
 	private IdFieldEnum(String key, int idEcm, Ruolo ruolo, SubSetFieldEnum subSetField, String nameRef, List<IdFieldEnum> gruppo){
 		this.key = key;
 		this.idEcm = idEcm;
@@ -225,7 +225,7 @@ public enum IdFieldEnum {
 	public static Set<IdFieldEnum> getAllForSubset(SubSetFieldEnum subset){
 		Set<IdFieldEnum> ids = new HashSet<IdFieldEnum>();
 		for(IdFieldEnum e : IdFieldEnum.values()){
-			if(e.getSubSetField() == subset)
+			if(subset == null || e.getSubSetField() == subset)
 				ids.add(e);
 		}
 		return ids;
