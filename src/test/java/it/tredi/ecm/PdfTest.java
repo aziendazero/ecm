@@ -46,7 +46,7 @@ import it.tredi.ecm.service.bean.CurrentUser;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-//@Ignore
+@Ignore
 @ActiveProfiles("dev")
 @WithUserDetails("segreteria")
 @Rollback(false)
@@ -126,7 +126,7 @@ public class PdfTest {
 	*/
 
 	@Test
-	//@Ignore
+	@Ignore
 	public void testMessageSource() throws Exception {
 		System.out.println(messageSource.getMessage("IdFieldEnum." + IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE.name() , null, Locale.getDefault()));
 	}
