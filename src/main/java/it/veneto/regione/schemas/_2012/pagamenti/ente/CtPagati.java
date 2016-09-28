@@ -1,12 +1,14 @@
 
 package it.veneto.regione.schemas._2012.pagamenti.ente;
 
+import java.util.Calendar;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.w3._2001.xmlschema.Adapter1;
+import org.w3._2001.xmlschema.Adapter2;
 
 
 /**
@@ -37,7 +39,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  * 
  */
-@XmlRootElement(name="Pagati")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ctPagati", propOrder = {
     "versioneOggetto",
@@ -59,12 +60,14 @@ public class CtPagati {
     protected CtDominio dominio;
     @XmlElement(required = true)
     protected String identificativoMessaggioRicevuta;
-    @XmlElement(required = true)
-    protected XMLGregorianCalendar dataOraMessaggioRicevuta;
+    @XmlElement(required = true, type = String.class)
+    @XmlJavaTypeAdapter(Adapter1 .class)
+    protected Calendar dataOraMessaggioRicevuta;
     @XmlElement(required = true)
     protected String riferimentoMessaggioRichiesta;
-    @XmlElement(required = true)
-    protected XMLGregorianCalendar riferimentoDataRichiesta;
+    @XmlElement(required = true, type = String.class)
+    @XmlJavaTypeAdapter(Adapter2 .class)
+    protected Calendar riferimentoDataRichiesta;
     @XmlElement(required = true)
     protected CtIstitutoAttestante istitutoAttestante;
     @XmlElement(required = true)
@@ -151,10 +154,10 @@ public class CtPagati {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public XMLGregorianCalendar getDataOraMessaggioRicevuta() {
+    public Calendar getDataOraMessaggioRicevuta() {
         return dataOraMessaggioRicevuta;
     }
 
@@ -163,10 +166,10 @@ public class CtPagati {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public void setDataOraMessaggioRicevuta(XMLGregorianCalendar value) {
+    public void setDataOraMessaggioRicevuta(Calendar value) {
         this.dataOraMessaggioRicevuta = value;
     }
 
@@ -199,10 +202,10 @@ public class CtPagati {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public XMLGregorianCalendar getRiferimentoDataRichiesta() {
+    public Calendar getRiferimentoDataRichiesta() {
         return riferimentoDataRichiesta;
     }
 
@@ -211,10 +214,10 @@ public class CtPagati {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public void setRiferimentoDataRichiesta(XMLGregorianCalendar value) {
+    public void setRiferimentoDataRichiesta(Calendar value) {
         this.riferimentoDataRichiesta = value;
     }
 

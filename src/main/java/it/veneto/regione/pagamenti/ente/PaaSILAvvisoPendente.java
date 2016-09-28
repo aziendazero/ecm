@@ -1,6 +1,7 @@
 
 package it.veneto.regione.pagamenti.ente;
 
+import java.util.Calendar;
 import javax.activation.DataHandler;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,7 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.w3._2001.xmlschema.Adapter2;
 
 
 /**
@@ -38,9 +40,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 })
 public class PaaSILAvvisoPendente {
 
-    @XmlElement(required = true)
+    @XmlElement(required = true, type = String.class)
+    @XmlJavaTypeAdapter(Adapter2 .class)
     @XmlSchemaType(name = "date")
-    protected XMLGregorianCalendar dtCreazioneCodIuv;
+    protected Calendar dtCreazioneCodIuv;
     @XmlMimeType("application/octet-stream")
     protected DataHandler dovuti;
 
@@ -49,10 +52,10 @@ public class PaaSILAvvisoPendente {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public XMLGregorianCalendar getDtCreazioneCodIuv() {
+    public Calendar getDtCreazioneCodIuv() {
         return dtCreazioneCodIuv;
     }
 
@@ -61,10 +64,10 @@ public class PaaSILAvvisoPendente {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public void setDtCreazioneCodIuv(XMLGregorianCalendar value) {
+    public void setDtCreazioneCodIuv(Calendar value) {
         this.dtCreazioneCodIuv = value;
     }
 

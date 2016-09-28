@@ -1,12 +1,14 @@
 
 package it.veneto.regione.pagamenti.ente;
 
+import java.util.Calendar;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.w3._2001.xmlschema.Adapter1;
 
 
 /**
@@ -45,11 +47,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class PaaSILPrenotaExportFlussoIncrementaleConRicevuta {
 
     protected String password;
-    @XmlElement(required = true)
+    @XmlElement(required = true, type = String.class)
+    @XmlJavaTypeAdapter(Adapter1 .class)
     @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar dateFrom;
+    protected Calendar dateFrom;
+    @XmlElement(type = String.class)
+    @XmlJavaTypeAdapter(Adapter1 .class)
     @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar dateTo;
+    protected Calendar dateTo;
     protected String identificativoTipoDovuto;
     protected boolean ricevuta;
     protected boolean incrementale;
@@ -83,10 +88,10 @@ public class PaaSILPrenotaExportFlussoIncrementaleConRicevuta {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public XMLGregorianCalendar getDateFrom() {
+    public Calendar getDateFrom() {
         return dateFrom;
     }
 
@@ -95,10 +100,10 @@ public class PaaSILPrenotaExportFlussoIncrementaleConRicevuta {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public void setDateFrom(XMLGregorianCalendar value) {
+    public void setDateFrom(Calendar value) {
         this.dateFrom = value;
     }
 
@@ -107,10 +112,10 @@ public class PaaSILPrenotaExportFlussoIncrementaleConRicevuta {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public XMLGregorianCalendar getDateTo() {
+    public Calendar getDateTo() {
         return dateTo;
     }
 
@@ -119,10 +124,10 @@ public class PaaSILPrenotaExportFlussoIncrementaleConRicevuta {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public void setDateTo(XMLGregorianCalendar value) {
+    public void setDateTo(Calendar value) {
         this.dateTo = value;
     }
 

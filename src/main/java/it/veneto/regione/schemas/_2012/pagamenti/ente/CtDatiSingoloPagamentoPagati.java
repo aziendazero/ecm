@@ -2,11 +2,13 @@
 package it.veneto.regione.schemas._2012.pagamenti.ente;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.w3._2001.xmlschema.Adapter2;
 
 
 /**
@@ -51,8 +53,9 @@ public class CtDatiSingoloPagamentoPagati {
     @XmlElement(required = true)
     protected BigDecimal singoloImportoPagato;
     protected String esitoSingoloPagamento;
-    @XmlElement(required = true)
-    protected XMLGregorianCalendar dataEsitoSingoloPagamento;
+    @XmlElement(required = true, type = String.class)
+    @XmlJavaTypeAdapter(Adapter2 .class)
+    protected Calendar dataEsitoSingoloPagamento;
     @XmlElement(required = true)
     protected String identificativoUnivocoRiscossione;
     @XmlElement(required = true)
@@ -137,10 +140,10 @@ public class CtDatiSingoloPagamentoPagati {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public XMLGregorianCalendar getDataEsitoSingoloPagamento() {
+    public Calendar getDataEsitoSingoloPagamento() {
         return dataEsitoSingoloPagamento;
     }
 
@@ -149,10 +152,10 @@ public class CtDatiSingoloPagamentoPagati {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public void setDataEsitoSingoloPagamento(XMLGregorianCalendar value) {
+    public void setDataEsitoSingoloPagamento(Calendar value) {
         this.dataEsitoSingoloPagamento = value;
     }
 

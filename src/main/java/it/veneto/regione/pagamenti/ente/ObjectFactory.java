@@ -56,11 +56,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link PaaSILChiediPagatiConRicevuta }
+     * Create an instance of {@link PaaSILChiediStatoImportFlusso }
      * 
      */
-    public PaaSILChiediPagatiConRicevuta createPaaSILChiediPagatiConRicevuta() {
-        return new PaaSILChiediPagatiConRicevuta();
+    public PaaSILChiediStatoImportFlusso createPaaSILChiediStatoImportFlusso() {
+        return new PaaSILChiediStatoImportFlusso();
     }
 
     /**
@@ -72,75 +72,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link PaaSILChiediPagatiRisposta }
+     * Create an instance of {@link PaaSILImportaDovutoRisposta }
      * 
      */
-    public PaaSILChiediPagatiRisposta createPaaSILChiediPagatiRisposta() {
-        return new PaaSILChiediPagatiRisposta();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILPrenotaExportFlusso }
-     * 
-     */
-    public PaaSILPrenotaExportFlusso createPaaSILPrenotaExportFlusso() {
-        return new PaaSILPrenotaExportFlusso();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILInviaDovuti }
-     * 
-     */
-    public PaaSILInviaDovuti createPaaSILInviaDovuti() {
-        return new PaaSILInviaDovuti();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta }
-     * 
-     */
-    public PaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta createPaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta() {
-        return new PaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILVerificaAvvisoRisposta }
-     * 
-     */
-    public PaaSILVerificaAvvisoRisposta createPaaSILVerificaAvvisoRisposta() {
-        return new PaaSILVerificaAvvisoRisposta();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILAutorizzaImportFlusso }
-     * 
-     */
-    public PaaSILAutorizzaImportFlusso createPaaSILAutorizzaImportFlusso() {
-        return new PaaSILAutorizzaImportFlusso();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILChiediPagatiConRicevutaRisposta }
-     * 
-     */
-    public PaaSILChiediPagatiConRicevutaRisposta createPaaSILChiediPagatiConRicevutaRisposta() {
-        return new PaaSILChiediPagatiConRicevutaRisposta();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILChiediAvvisiPendentiRisposta }
-     * 
-     */
-    public PaaSILChiediAvvisiPendentiRisposta createPaaSILChiediAvvisiPendentiRisposta() {
-        return new PaaSILChiediAvvisiPendentiRisposta();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILAutorizzaImportFlussoRisposta }
-     * 
-     */
-    public PaaSILAutorizzaImportFlussoRisposta createPaaSILAutorizzaImportFlussoRisposta() {
-        return new PaaSILAutorizzaImportFlussoRisposta();
+    public PaaSILImportaDovutoRisposta createPaaSILImportaDovutoRisposta() {
+        return new PaaSILImportaDovutoRisposta();
     }
 
     /**
@@ -152,91 +88,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link PaaSILChiediAvvisiPendenti }
-     * 
-     */
-    public PaaSILChiediAvvisiPendenti createPaaSILChiediAvvisiPendenti() {
-        return new PaaSILChiediAvvisiPendenti();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILChiediStatoExportFlusso }
-     * 
-     */
-    public PaaSILChiediStatoExportFlusso createPaaSILChiediStatoExportFlusso() {
-        return new PaaSILChiediStatoExportFlusso();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILImportaDovutoRisposta }
-     * 
-     */
-    public PaaSILImportaDovutoRisposta createPaaSILImportaDovutoRisposta() {
-        return new PaaSILImportaDovutoRisposta();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILChiediPagati }
-     * 
-     */
-    public PaaSILChiediPagati createPaaSILChiediPagati() {
-        return new PaaSILChiediPagati();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILInviaDovutiRisposta }
-     * 
-     */
-    public PaaSILInviaDovutiRisposta createPaaSILInviaDovutiRisposta() {
-        return new PaaSILInviaDovutiRisposta();
-    }
-
-    /**
      * Create an instance of {@link Risposta }
      * 
      */
     public Risposta createRisposta() {
         return new Risposta();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILChiediStatoImportFlusso }
-     * 
-     */
-    public PaaSILChiediStatoImportFlusso createPaaSILChiediStatoImportFlusso() {
-        return new PaaSILChiediStatoImportFlusso();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILChiediStatoExportFlussoRisposta }
-     * 
-     */
-    public PaaSILChiediStatoExportFlussoRisposta createPaaSILChiediStatoExportFlussoRisposta() {
-        return new PaaSILChiediStatoExportFlussoRisposta();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILAvvisoPendente }
-     * 
-     */
-    public PaaSILAvvisoPendente createPaaSILAvvisoPendente() {
-        return new PaaSILAvvisoPendente();
-    }
-
-    /**
-     * Create an instance of {@link FaultBean }
-     * 
-     */
-    public FaultBean createFaultBean() {
-        return new FaultBean();
-    }
-
-    /**
-     * Create an instance of {@link PaaSILPrenotaExportFlussoIncrementaleConRicevuta }
-     * 
-     */
-    public PaaSILPrenotaExportFlussoIncrementaleConRicevuta createPaaSILPrenotaExportFlussoIncrementaleConRicevuta() {
-        return new PaaSILPrenotaExportFlussoIncrementaleConRicevuta();
     }
 
     /**
@@ -248,11 +104,155 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PaaSILAutorizzaImportFlussoRisposta }
+     * 
+     */
+    public PaaSILAutorizzaImportFlussoRisposta createPaaSILAutorizzaImportFlussoRisposta() {
+        return new PaaSILAutorizzaImportFlussoRisposta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILChiediPagatiConRicevutaRisposta }
+     * 
+     */
+    public PaaSILChiediPagatiConRicevutaRisposta createPaaSILChiediPagatiConRicevutaRisposta() {
+        return new PaaSILChiediPagatiConRicevutaRisposta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILVerificaAvvisoRisposta }
+     * 
+     */
+    public PaaSILVerificaAvvisoRisposta createPaaSILVerificaAvvisoRisposta() {
+        return new PaaSILVerificaAvvisoRisposta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILChiediStatoExportFlusso }
+     * 
+     */
+    public PaaSILChiediStatoExportFlusso createPaaSILChiediStatoExportFlusso() {
+        return new PaaSILChiediStatoExportFlusso();
+    }
+
+    /**
+     * Create an instance of {@link FaultBean }
+     * 
+     */
+    public FaultBean createFaultBean() {
+        return new FaultBean();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILAvvisoPendente }
+     * 
+     */
+    public PaaSILAvvisoPendente createPaaSILAvvisoPendente() {
+        return new PaaSILAvvisoPendente();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILChiediPagati }
+     * 
+     */
+    public PaaSILChiediPagati createPaaSILChiediPagati() {
+        return new PaaSILChiediPagati();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILPrenotaExportFlussoIncrementaleConRicevuta }
+     * 
+     */
+    public PaaSILPrenotaExportFlussoIncrementaleConRicevuta createPaaSILPrenotaExportFlussoIncrementaleConRicevuta() {
+        return new PaaSILPrenotaExportFlussoIncrementaleConRicevuta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILInviaDovuti }
+     * 
+     */
+    public PaaSILInviaDovuti createPaaSILInviaDovuti() {
+        return new PaaSILInviaDovuti();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILInviaDovutiRisposta }
+     * 
+     */
+    public PaaSILInviaDovutiRisposta createPaaSILInviaDovutiRisposta() {
+        return new PaaSILInviaDovutiRisposta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILChiediPagatiConRicevuta }
+     * 
+     */
+    public PaaSILChiediPagatiConRicevuta createPaaSILChiediPagatiConRicevuta() {
+        return new PaaSILChiediPagatiConRicevuta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILPrenotaExportFlusso }
+     * 
+     */
+    public PaaSILPrenotaExportFlusso createPaaSILPrenotaExportFlusso() {
+        return new PaaSILPrenotaExportFlusso();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILChiediAvvisiPendentiRisposta }
+     * 
+     */
+    public PaaSILChiediAvvisiPendentiRisposta createPaaSILChiediAvvisiPendentiRisposta() {
+        return new PaaSILChiediAvvisiPendentiRisposta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILAutorizzaImportFlusso }
+     * 
+     */
+    public PaaSILAutorizzaImportFlusso createPaaSILAutorizzaImportFlusso() {
+        return new PaaSILAutorizzaImportFlusso();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILChiediAvvisiPendenti }
+     * 
+     */
+    public PaaSILChiediAvvisiPendenti createPaaSILChiediAvvisiPendenti() {
+        return new PaaSILChiediAvvisiPendenti();
+    }
+
+    /**
      * Create an instance of {@link PaaSILChiediStatoImportFlussoRisposta }
      * 
      */
     public PaaSILChiediStatoImportFlussoRisposta createPaaSILChiediStatoImportFlussoRisposta() {
         return new PaaSILChiediStatoImportFlussoRisposta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILChiediStatoExportFlussoRisposta }
+     * 
+     */
+    public PaaSILChiediStatoExportFlussoRisposta createPaaSILChiediStatoExportFlussoRisposta() {
+        return new PaaSILChiediStatoExportFlussoRisposta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta }
+     * 
+     */
+    public PaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta createPaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta() {
+        return new PaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta();
+    }
+
+    /**
+     * Create an instance of {@link PaaSILChiediPagatiRisposta }
+     * 
+     */
+    public PaaSILChiediPagatiRisposta createPaaSILChiediPagatiRisposta() {
+        return new PaaSILChiediPagatiRisposta();
     }
 
     /**

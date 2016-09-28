@@ -44,62 +44,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CtDatiVersamentoPagati }
-     * 
-     */
-    public CtDatiVersamentoPagati createCtDatiVersamentoPagati() {
-        return new CtDatiVersamentoPagati();
-    }
-
-    /**
-     * Create an instance of {@link CtIstitutoAttestante }
-     * 
-     */
-    public CtIstitutoAttestante createCtIstitutoAttestante() {
-        return new CtIstitutoAttestante();
-    }
-
-    /**
-     * Create an instance of {@link CtDatiSingoloVersamentoDovuti }
-     * 
-     */
-    public CtDatiSingoloVersamentoDovuti createCtDatiSingoloVersamentoDovuti() {
-        return new CtDatiSingoloVersamentoDovuti();
-    }
-
-    /**
-     * Create an instance of {@link CtDovuti }
-     * 
-     */
-    public CtDovuti createCtDovuti() {
-        return new CtDovuti();
-    }
-
-    /**
-     * Create an instance of {@link CtIdentificativoUnivoco }
-     * 
-     */
-    public CtIdentificativoUnivoco createCtIdentificativoUnivoco() {
-        return new CtIdentificativoUnivoco();
-    }
-
-    /**
-     * Create an instance of {@link CtSoggettoPagatore }
-     * 
-     */
-    public CtSoggettoPagatore createCtSoggettoPagatore() {
-        return new CtSoggettoPagatore();
-    }
-
-    /**
-     * Create an instance of {@link CtDominio }
-     * 
-     */
-    public CtDominio createCtDominio() {
-        return new CtDominio();
-    }
-
-    /**
      * Create an instance of {@link CtIdentificativoUnivocoPersonaG }
      * 
      */
@@ -108,11 +52,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CtDatiVersamentoDovuti }
+     * Create an instance of {@link CtDatiVersamentoPagati }
      * 
      */
-    public CtDatiVersamentoDovuti createCtDatiVersamentoDovuti() {
-        return new CtDatiVersamentoDovuti();
+    public CtDatiVersamentoPagati createCtDatiVersamentoPagati() {
+        return new CtDatiVersamentoPagati();
     }
 
     /**
@@ -124,19 +68,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CtDatiSingoloPagamentoPagati }
+     * Create an instance of {@link CtDovuti }
      * 
      */
-    public CtDatiSingoloPagamentoPagati createCtDatiSingoloPagamentoPagati() {
-        return new CtDatiSingoloPagamentoPagati();
-    }
-
-    /**
-     * Create an instance of {@link CtPagati }
-     * 
-     */
-    public CtPagati createCtPagati() {
-        return new CtPagati();
+    public CtDovuti createCtDovuti() {
+        return new CtDovuti();
     }
 
     /**
@@ -148,11 +84,75 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CtPagati }
+     * 
+     */
+    public CtPagati createCtPagati() {
+        return new CtPagati();
+    }
+
+    /**
+     * Create an instance of {@link CtSoggettoPagatore }
+     * 
+     */
+    public CtSoggettoPagatore createCtSoggettoPagatore() {
+        return new CtSoggettoPagatore();
+    }
+
+    /**
+     * Create an instance of {@link CtDatiSingoloPagamentoPagati }
+     * 
+     */
+    public CtDatiSingoloPagamentoPagati createCtDatiSingoloPagamentoPagati() {
+        return new CtDatiSingoloPagamentoPagati();
+    }
+
+    /**
+     * Create an instance of {@link CtDatiSingoloVersamentoDovuti }
+     * 
+     */
+    public CtDatiSingoloVersamentoDovuti createCtDatiSingoloVersamentoDovuti() {
+        return new CtDatiSingoloVersamentoDovuti();
+    }
+
+    /**
      * Create an instance of {@link CtVersamento }
      * 
      */
     public CtVersamento createCtVersamento() {
         return new CtVersamento();
+    }
+
+    /**
+     * Create an instance of {@link CtIdentificativoUnivoco }
+     * 
+     */
+    public CtIdentificativoUnivoco createCtIdentificativoUnivoco() {
+        return new CtIdentificativoUnivoco();
+    }
+
+    /**
+     * Create an instance of {@link CtDominio }
+     * 
+     */
+    public CtDominio createCtDominio() {
+        return new CtDominio();
+    }
+
+    /**
+     * Create an instance of {@link CtDatiVersamentoDovuti }
+     * 
+     */
+    public CtDatiVersamentoDovuti createCtDatiVersamentoDovuti() {
+        return new CtDatiVersamentoDovuti();
+    }
+
+    /**
+     * Create an instance of {@link CtIstitutoAttestante }
+     * 
+     */
+    public CtIstitutoAttestante createCtIstitutoAttestante() {
+        return new CtIstitutoAttestante();
     }
 
     /**

@@ -1,12 +1,14 @@
 
 package it.veneto.regione.pagamenti.ente;
 
+import java.util.Calendar;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.w3._2001.xmlschema.Adapter1;
 
 
 /**
@@ -40,9 +42,10 @@ public class PaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta
 
     @XmlElement(required = true)
     protected String requestToken;
-    @XmlElement(required = true)
+    @XmlElement(required = true, type = String.class)
+    @XmlJavaTypeAdapter(Adapter1 .class)
     @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar dateTo;
+    protected Calendar dateTo;
 
     /**
      * Gets the value of the requestToken property.
@@ -73,10 +76,10 @@ public class PaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public XMLGregorianCalendar getDateTo() {
+    public Calendar getDateTo() {
         return dateTo;
     }
 
@@ -85,10 +88,10 @@ public class PaaSILPrenotaExportFlussoIncrementaleConRicevutaRisposta
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public void setDateTo(XMLGregorianCalendar value) {
+    public void setDateTo(Calendar value) {
         this.dateTo = value;
     }
 

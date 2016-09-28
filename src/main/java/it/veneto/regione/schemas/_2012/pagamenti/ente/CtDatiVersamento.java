@@ -2,11 +2,13 @@
 package it.veneto.regione.schemas._2012.pagamenti.ente;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.w3._2001.xmlschema.Adapter2;
 
 
 /**
@@ -50,8 +52,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 })
 public class CtDatiVersamento {
 
-    @XmlElement(required = true)
-    protected XMLGregorianCalendar dataEsecuzionePagamento;
+    @XmlElement(required = true, type = String.class)
+    @XmlJavaTypeAdapter(Adapter2 .class)
+    protected Calendar dataEsecuzionePagamento;
     protected String tipoVersamento;
     protected String identificativoUnivocoVersamento;
     @XmlElement(required = true)
@@ -71,10 +74,10 @@ public class CtDatiVersamento {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public XMLGregorianCalendar getDataEsecuzionePagamento() {
+    public Calendar getDataEsecuzionePagamento() {
         return dataEsecuzionePagamento;
     }
 
@@ -83,10 +86,10 @@ public class CtDatiVersamento {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public void setDataEsecuzionePagamento(XMLGregorianCalendar value) {
+    public void setDataEsecuzionePagamento(Calendar value) {
         this.dataEsecuzionePagamento = value;
     }
 
