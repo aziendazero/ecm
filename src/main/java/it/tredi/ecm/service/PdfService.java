@@ -1,0 +1,13 @@
+package it.tredi.ecm.service;
+
+import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
+import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
+import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
+
+public interface PdfService {
+	public File creaPdfAccreditamentoProvvisiorioIntegrazione(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception;
+	public File creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception;
+	public File creaPdfAccreditamentoProvvisiorioDiniego(PdfAccreditamentoProvvisorioRigettoInfo diniegoInfo) throws Exception;
+	public File creaPdfAccreditamentoProvvisiorioAccreditato(PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo) throws Exception;
+}

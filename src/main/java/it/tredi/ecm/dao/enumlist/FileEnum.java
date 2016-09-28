@@ -32,6 +32,11 @@ public enum FileEnum {
 	FILE_ALLEGATO_COMUNICAZIONE (25, "Allegato Comunicazione"),
 	FILE_ALLEGATO_RISPOSTA (26, "Allegato Risposta"),
 
+	FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_ACCREDITAMENTO (27, "Decreto accreditamento provvisorio"),
+	FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_DINIEGO (28, "Decreto diniego accreditamento provvisorio"),
+	FILE_ACCREDITAMENTO_PROVVISORIO_INTEGRAZIONE (29, "Integrazione accreditamento provvisorio"),
+	FILE_ACCREDITAMENTO_PROVVISORIO_PREAVVISO_RIGETTO (30, "Preavviso rigetto accreditamento provvisorio"),
+
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 

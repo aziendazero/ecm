@@ -1,0 +1,73 @@
+package it.tredi.ecm.pdf;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
+	private PdfProviderInfo providerInfo = null;
+	private LocalDate accreditamentoDataValidazione = null;
+	private LocalDate accreditamentoDataSeduta = null;
+	private List<String> listaCriticita = new ArrayList<String>();
+	private String noteSedutaDomanda = null;
+	
+	public PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(String providerDenominazione,
+		String providerIndirizzo,
+		String providerCap,
+		String providerComune,
+		String providerProvincia,
+		String providerNomeLegaleRappresentante,
+		String providerCognomeLegaleRappresentante,
+		String providerPec,
+		LocalDate accreditamentoDataValidazione,
+		LocalDate accreditamentoDataSeduta,
+		List<String> listaCriticita,
+		String noteSedutaDomanda) {
+		this.providerInfo = new PdfProviderInfo(providerDenominazione, providerIndirizzo, providerCap, providerComune, providerProvincia, providerNomeLegaleRappresentante, providerCognomeLegaleRappresentante, providerPec);
+		this.accreditamentoDataValidazione = accreditamentoDataValidazione;
+		this.accreditamentoDataSeduta = accreditamentoDataSeduta;
+		this.listaCriticita = listaCriticita;
+		this.noteSedutaDomanda = noteSedutaDomanda;
+	}
+
+	public PdfProviderInfo getProviderInfo() {
+		return providerInfo;
+	}
+
+	public void setProviderInfo(PdfProviderInfo providerInfo) {
+		this.providerInfo = providerInfo;
+	}
+
+	public LocalDate getAccreditamentoDataValidazione() {
+		return accreditamentoDataValidazione;
+	}
+
+	public void setAccreditamentoDataValidazione(
+			LocalDate accreditamentoDataValidazione) {
+		this.accreditamentoDataValidazione = accreditamentoDataValidazione;
+	}
+
+	public LocalDate getAccreditamentoDataSeduta() {
+		return accreditamentoDataSeduta;
+	}
+
+	public void setAccreditamentoDataSeduta(LocalDate accreditamentoDataSeduta) {
+		this.accreditamentoDataSeduta = accreditamentoDataSeduta;
+	}
+
+	public List<String> getListaCriticita() {
+		return listaCriticita;
+	}
+
+	public void setListaCriticita(List<String> listaCriticita) {
+		this.listaCriticita = listaCriticita;
+	}
+
+	public String getNoteSedutaDomanda() {
+		return noteSedutaDomanda;
+	}
+
+	public void setNoteSedutaDomanda(String noteSedutaDomanda) {
+		this.noteSedutaDomanda = noteSedutaDomanda;
+	}
+}
