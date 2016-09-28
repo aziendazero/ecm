@@ -35,15 +35,43 @@
 									<td th:text="${evento.proceduraFormativa.nome}"></td>
 									<td th:text="${#numbers.formatDecimal(evento.costo, 0, 'POINT', 2, 'COMMA')}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
-									<td th:unless="${evento.pagato}"><button type="button" class="btn btn-primary btn-mypay" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per il pagamento con MYPAY!')">Paga con MYPAY!</button></td>
+									<td th:unless="${evento.pagato}">
+										<button th:unless="${evento.pagInCorso}" type="button" class="btn btn-primary btn-mypay" th:onclick="'paga(' + ${evento.id} + ')'">Paga con MYPAY!</button>
+										<span th:if="${evento.pagInCorso}" class="label-pagato" th:text="#{label.pagInCorso}"></span>
+									</td>
 								</tr>
 							</tbody>
 						</table>
-
+						
+						<form id="formPaga" class="form-horizontal form-label-left" th:action="@{|/engineering/test/mypay/paga|}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+								
+								<input type="hidden" name="idEvento" id="idEvento"/>
+						</form>
+						
+						<form id="formChiediPagati" class="form-horizontal form-label-left" th:action="@{|/engineering/test/mypay/chiedipagati|}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+								<button type="submit" class="btn btn-primary btn-mypay">Verifica Pagamenti</button>
+						</form>
+						
+						<br/>
+						
+						
+						<form id="azzeraPagamenti" class="form-horizontal form-label-left" th:action="@{|/engineering/test/mypay/azzera|}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+								<button type="submit" class="btn btn-primary btn-mypay">Azzera Pagamenti</button>
+						</form>
 					</div>
 				</div>
 			</div>
 		</div>
+		<script th:inline="javascript">
+				function paga(id) {
+					$('#idEvento').val(id)
+					$('#formPaga').submit();
+				}
+		</script>
+		
 	</div>
 </body>
 </html>

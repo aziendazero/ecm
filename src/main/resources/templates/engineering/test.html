@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head lang="it">
+</head>
+<body>
+	<div>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_content">
+						<form id="formFirma" class="form-horizontal form-label-left" action="https://servizi.collaudo.regione.veneto.it/FirmaWeb/servlet/AdapterHTTP" method="post">
+
+							   <input type="hidden" name="ACTION_NAME" value="FilesToSignAction">
+							   <input type="hidden" name="MESSAGE" value="LIST">
+							   <input type="hidden" name="NEW_SESSION" value="TRUE">
+							   <input type="hidden" name="cssName" value="default">
+							   <input type="hidden" name="archivia" value="S">
+							   <input type="hidden" name="referer" value="testFirma">
+							   <input type="hidden" name="metadatiArchivia" value="<%=XMLMetadatiArchivia%>">
+							   <input type="text" name="documentsToSign " value="<%= XMLMetadati %>">
+							   <p align="center">
+							      Premere il pulsante per firmare il file <br />
+							      <input type="submit" value="Firma">
+							   </p>
+
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
