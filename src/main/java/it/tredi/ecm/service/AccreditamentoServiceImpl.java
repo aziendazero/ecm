@@ -799,7 +799,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			Seduta seduta = null;
 			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
 				//TODO nel caso vengano aggancxiati piu' flussi alla domanda occorre prendere l'ultima ValutazioneCommissionew
-				if(valCom.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE) {
+				if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
 					seduta= valCom.getSeduta();
 				}
 			}
@@ -815,7 +815,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			//Ricavo la seduta
 			Seduta seduta = null;
 			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
-				if(valCom.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
+				if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
 					seduta= valCom.getSeduta();
 				}
 			}
@@ -835,9 +835,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
 				if(valCom.getStato() == AccreditamentoStatoEnum.DINIEGO) {
 					sedutaRigetto = valCom.getSeduta();
-				} else if (valCom.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE) {
+				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
 					sedutaIntegrazione = valCom.getSeduta();
-				} else if (valCom.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
+				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
 					sedutaPreavvisoRigetto = valCom.getSeduta();
 					
 				}
@@ -858,9 +858,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
 				if(valCom.getStato() == AccreditamentoStatoEnum.ACCREDITATO) {
 					sedutaAccreditamento = valCom.getSeduta();
-				} else if (valCom.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE) {
+				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
 					sedutaIntegrazione = valCom.getSeduta();
-				} else if (valCom.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
+				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
 					sedutaPreavvisoRigetto = valCom.getSeduta();
 					
 				}
