@@ -9,6 +9,10 @@ public class PdfInfoIntegrazioneRigetto {
 	private LocalDate dataSedutaCommissione = null;
 	private boolean eseguitaDaProvider = false;
 
+	public PdfInfoIntegrazioneRigetto() {
+		
+	}
+	
 	public PdfInfoIntegrazioneRigetto(String numeroProtocollo,
 			LocalDate dataProtocollo,
 		String verbaleNumero,

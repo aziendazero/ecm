@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Seduta;
+import it.tredi.ecm.dao.entity.ValutazioneCommissione;
+
 public class PdfAccreditamentoProvvisorioAccreditatoInfo {
 	private PdfProviderInfo providerInfo = null;
 	private LocalDate accreditamentoDataValidazione = null;
@@ -11,6 +15,34 @@ public class PdfAccreditamentoProvvisorioAccreditatoInfo {
 	private PdfInfoIntegrazioneRigetto rigettoInfo = null;
 	//private List<String> listaMotivazioni = new ArrayList<String>();
 	private LocalDate dataCommissioneAccreditamento = null;
+
+	public PdfAccreditamentoProvvisorioAccreditatoInfo(Accreditamento accreditamento, Seduta sedutaAccreditamento, Seduta sedutaIntegrazione, Seduta sedutaPreavvisoRigetto) {
+		this.providerInfo = new PdfProviderInfo(accreditamento.getProvider());
+		this.accreditamentoDataValidazione = accreditamento.getDataInvio();
+		this.dataCommissioneAccreditamento = sedutaAccreditamento.getData();
+		
+		if(sedutaIntegrazione != null) {
+			integrazioneInfo = new PdfInfoIntegrazioneRigetto();
+			integrazioneInfo.setDataSedutaCommissione(sedutaIntegrazione.getData());
+			//integrazioneInfo.setVerbaleNumero(sedutaIntegrazione.get);
+			//TODO
+			//integrazioneInfo.setEseguitaDaProvider(eseguitaDaProvider);		
+			//integrazioneInfo.setDataProtocollo(dataProtocollo);
+			//integrazioneInfo.setNumeroProtocollo(numeroProtocollo);
+		}
+		
+		if(sedutaPreavvisoRigetto != null) {
+			rigettoInfo = new PdfInfoIntegrazioneRigetto();
+			rigettoInfo.setDataSedutaCommissione(sedutaPreavvisoRigetto.getData());
+			//rigettoInfo.setVerbaleNumero(sedutaPreavvisoRigetto.get);
+			//TODO
+			//rigettoInfo.setEseguitaDaProvider(eseguitaDaProvider);		
+			//rigettoInfo.setDataProtocollo(dataProtocollo);
+			//rigettoInfo.setNumeroProtocollo(numeroProtocollo);
+		}
+
+	}
+	
 	
 	public PdfAccreditamentoProvvisorioAccreditatoInfo(String providerDenominazione,
 		String providerIndirizzo,

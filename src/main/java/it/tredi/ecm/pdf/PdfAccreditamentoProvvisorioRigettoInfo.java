@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Seduta;
+import it.tredi.ecm.dao.entity.ValutazioneCommissione;
+
 public class PdfAccreditamentoProvvisorioRigettoInfo {
 	private PdfProviderInfo providerInfo = null;
 	private LocalDate accreditamentoDataValidazione = null;
@@ -11,6 +15,34 @@ public class PdfAccreditamentoProvvisorioRigettoInfo {
 	private PdfInfoIntegrazioneRigetto rigettoInfo = null;
 	//private List<String> listaMotivazioni = new ArrayList<String>();
 	private String noteSedutaDomanda = null;
+	
+	public PdfAccreditamentoProvvisorioRigettoInfo(Accreditamento accreditamento, Seduta sedutaRigetto, Seduta sedutaIntegrazione, Seduta sedutaPreavvisoRigetto, List<String> listaCriticita) {
+		this.providerInfo = new PdfProviderInfo(accreditamento.getProvider());
+		this.accreditamentoDataValidazione = accreditamento.getDataInvio();
+		
+		for(ValutazioneCommissione valutazione : sedutaRigetto.getValutazioniCommissione()) {
+			if(valutazione.getAccreditamento().getId() == accreditamento.getId()) {
+				this.noteSedutaDomanda = valutazione.getValutazioneCommissione();
+			}
+		}
+
+		integrazioneInfo = new PdfInfoIntegrazioneRigetto();
+		integrazioneInfo.setDataSedutaCommissione(sedutaIntegrazione.getData());
+		//integrazioneInfo.setVerbaleNumero(sedutaIntegrazione.get);
+		//TODO
+		//integrazioneInfo.setEseguitaDaProvider(eseguitaDaProvider);		
+		//integrazioneInfo.setDataProtocollo(dataProtocollo);
+		//integrazioneInfo.setNumeroProtocollo(numeroProtocollo);
+		
+		rigettoInfo = new PdfInfoIntegrazioneRigetto();
+		rigettoInfo.setDataSedutaCommissione(sedutaPreavvisoRigetto.getData());
+		//rigettoInfo.setVerbaleNumero(sedutaPreavvisoRigetto.get);
+		//TODO
+		//rigettoInfo.setEseguitaDaProvider(eseguitaDaProvider);		
+		//rigettoInfo.setDataProtocollo(dataProtocollo);
+		//rigettoInfo.setNumeroProtocollo(numeroProtocollo);
+
+	}
 	
 	public PdfAccreditamentoProvvisorioRigettoInfo(String providerDenominazione,
 		String providerIndirizzo,

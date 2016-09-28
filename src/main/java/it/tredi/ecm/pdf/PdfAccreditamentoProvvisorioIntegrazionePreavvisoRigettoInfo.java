@@ -3,6 +3,14 @@ package it.tredi.ecm.pdf;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.Seduta;
+import it.tredi.ecm.dao.entity.ValutazioneCommissione;
+import it.tredi.ecm.utils.Utils;
+
 
 public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 	private PdfProviderInfo providerInfo = null;
@@ -10,6 +18,20 @@ public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 	private LocalDate accreditamentoDataSeduta = null;
 	private List<String> listaCriticita = new ArrayList<String>();
 	private String noteSedutaDomanda = null;
+	
+	public PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(Accreditamento accreditamento, Seduta seduta, List<String> listaCriticita) {
+		this.providerInfo = new PdfProviderInfo(accreditamento.getProvider());
+		this.accreditamentoDataValidazione = accreditamento.getDataInvio();
+		
+		this.accreditamentoDataSeduta = seduta.getData();
+		for(ValutazioneCommissione valutazione : seduta.getValutazioniCommissione()) {
+			if(valutazione.getAccreditamento().getId() == accreditamento.getId()) {
+				//this.noteSedutaDomanda = valutazione.getOggettoDiscussione() + " - " + valutazione.getValutazioneCommissione();
+				this.noteSedutaDomanda = valutazione.getValutazioneCommissione();
+			}
+		}
+		this.listaCriticita = listaCriticita;
+	}
 	
 	public PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(String providerDenominazione,
 		String providerIndirizzo,

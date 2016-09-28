@@ -4,6 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.Ruolo;
+
 public class PdfProviderInfo {
 	private String providerDenominazione = null;
 	private String providerIndirizzo = null;
@@ -14,6 +19,25 @@ public class PdfProviderInfo {
 	private String providerCognomeLegaleRappresentante = null;
 	private String providerPec = null;
 	private String providerId = null;
+
+	public PdfProviderInfo(Provider provider) {
+			this.providerDenominazione = provider.getDenominazioneLegale();
+			this.providerId = provider.getId().toString();
+			for(Sede sede : provider.getSedi()) {
+				if(sede.isSedeLegale()) {
+					this.providerIndirizzo = sede.getIndirizzo();
+					this.providerCap= sede.getCap();
+					this.providerComune = sede.getComune();
+					this.providerProvincia = sede.getProvincia();
+				}
+			}
+			Persona legaleRappresentante = provider.getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
+			if(legaleRappresentante != null) {
+				this.providerNomeLegaleRappresentante = legaleRappresentante.getAnagrafica().getNome();
+				this.providerCognomeLegaleRappresentante = legaleRappresentante.getAnagrafica().getCognome();
+				this.providerPec = legaleRappresentante.getAnagrafica().getPec();
+			}
+		}
 	
 	public PdfProviderInfo(String providerDenominazione,
 		String providerIndirizzo,

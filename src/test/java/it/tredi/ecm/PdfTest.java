@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.transaction.Transactional;
 
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.MessageSource;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,6 +28,7 @@ import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
@@ -38,6 +41,7 @@ import it.tredi.ecm.service.PdfService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.WorkflowService;
 import it.tredi.ecm.service.bean.CurrentUser;
+//@Autowired private MessageSource messageSource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -64,6 +68,8 @@ public class PdfTest {
 	
 	@Autowired
 	private ProfileRepository profileRepository;
+
+	@Autowired private MessageSource messageSource;	
 	
 	/*
 	@Before
@@ -121,6 +127,12 @@ public class PdfTest {
 
 	@Test
 	//@Ignore
+	public void testMessageSource() throws Exception {
+		System.out.println(messageSource.getMessage("IdFieldEnum." + IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE.name() , null, Locale.getDefault()));
+	}
+	
+	@Test
+	@Ignore
 	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
 	public void creaPdf() throws Exception {
 		//String userName = "segreteria";
