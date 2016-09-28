@@ -56,7 +56,7 @@ public interface AccreditamentoService{
 	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserPresaVisione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 
-	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato);
+	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception;
 	public void approvaIntegrazione(Long accreditamentoId) throws Exception;
 
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception;
