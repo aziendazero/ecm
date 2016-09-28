@@ -810,7 +810,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			});			
 			PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
-			
+			accreditamento.setRichiestaIntegrazione(file);
 		} else if(stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
 			//Ricavo la seduta
 			Seduta seduta = null;
@@ -826,7 +826,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			});			
 			PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
-			
+			accreditamento.setRichiestaPreavvisoRigetto(file);
 		} else if(stato == AccreditamentoStatoEnum.DINIEGO) {
 			//Ricavo la seduta
 			Seduta sedutaRigetto = null;
@@ -849,7 +849,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			});			
 			PdfAccreditamentoProvvisorioRigettoInfo rigettoInfo = new PdfAccreditamentoProvvisorioRigettoInfo(accreditamento, sedutaRigetto, sedutaIntegrazione, sedutaPreavvisoRigetto, listaCriticita);
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
-			
+			accreditamento.setDecretoDiniego(file);			
 		} else if(stato == AccreditamentoStatoEnum.ACCREDITATO) {
 			//Ricavo la seduta
 			Seduta sedutaAccreditamento = null;
@@ -868,7 +868,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			//Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
 			PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo(accreditamento, sedutaAccreditamento, sedutaIntegrazione, sedutaPreavvisoRigetto);
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
-			
+			accreditamento.setDecretoAccreditamento(file);			
 		}
 
 		accreditamento.setStato(stato);
