@@ -1,9 +1,5 @@
 package it.tredi.ecm;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.Persona;
-import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
@@ -39,9 +33,6 @@ import it.tredi.ecm.service.CurrentUserDetailsService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PdfService;
 import it.tredi.ecm.service.ProviderService;
-import it.tredi.ecm.service.WorkflowService;
-import it.tredi.ecm.service.bean.CurrentUser;
-//@Autowired private MessageSource messageSource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
