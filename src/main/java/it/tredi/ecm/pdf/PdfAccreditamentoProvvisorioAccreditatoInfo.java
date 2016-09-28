@@ -24,7 +24,7 @@ public class PdfAccreditamentoProvvisorioAccreditatoInfo {
 		if(sedutaIntegrazione != null) {
 			integrazioneInfo = new PdfInfoIntegrazioneRigetto();
 			integrazioneInfo.setDataSedutaCommissione(sedutaIntegrazione.getData());
-			//integrazioneInfo.setVerbaleNumero(sedutaIntegrazione.get);
+			integrazioneInfo.setVerbaleNumero(sedutaIntegrazione.getNumeroVerbale());
 			//TODO
 			//integrazioneInfo.setEseguitaDaProvider(eseguitaDaProvider);		
 			//integrazioneInfo.setDataProtocollo(dataProtocollo);
@@ -34,7 +34,7 @@ public class PdfAccreditamentoProvvisorioAccreditatoInfo {
 		if(sedutaPreavvisoRigetto != null) {
 			rigettoInfo = new PdfInfoIntegrazioneRigetto();
 			rigettoInfo.setDataSedutaCommissione(sedutaPreavvisoRigetto.getData());
-			//rigettoInfo.setVerbaleNumero(sedutaPreavvisoRigetto.get);
+			rigettoInfo.setVerbaleNumero(sedutaPreavvisoRigetto.getNumeroVerbale());
 			//TODO
 			//rigettoInfo.setEseguitaDaProvider(eseguitaDaProvider);		
 			//rigettoInfo.setDataProtocollo(dataProtocollo);
