@@ -204,9 +204,11 @@
 					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/|}]] + 'approvaIntegrazione';
 					location.href = url;
 				}
-
+				
 				$('.ajaxCallShowAll').one("click", populateShowAll);
-				$('.ajaxCallShowAllValutazioni').one("click", populateShowAllValutazioni);
+				if([[${accreditamentoWrapper.canShowValutazioneRiepilogo == true}]]) {
+				 	$('.ajaxCallShowAllValutazioni').one("click", populateShowAllValutazioni);
+			    }
 				$('.ajaxCallShowAllPiano').one("click", populateShowAllPiano);
 
 			/*]]>*/
