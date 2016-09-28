@@ -74,6 +74,19 @@
 
 						<div class="divider-dashed" th:if="${sedutaWrapper.seduta.id != null}"></div>
 
+						<th:block th:if="${sedutaWrapper.seduta.numeroVerbale != null and !#strings.isEmpty(sedutaWrapper.seduta.numeroVerbale)}">
+							<div class="item form-group">
+								<span class="col-xs-1"></span>
+			                    <label class="control-label col-md-3 col-sm-3 col-xs-11">
+			                      	<span class="label-show" th:text="#{label.n_verbale}">N° Verbale</span>
+			                    </label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			              			<div class="value" th:text="${sedutaWrapper.seduta.numeroVerbale}"></div>
+		                    	</div>
+	                    	</div>
+	                    	<div class="divider-dashed" th:if="${sedutaWrapper.seduta.id != null}"></div>
+						</th:block>
+
 	                    <!-- DOMANDE DI ACCREDITAMENTO -->
 	                    <div class="item form-group" th:if="${sedutaWrapper.seduta.id != null}">
 	                    	<span class="col-xs-1"></span>

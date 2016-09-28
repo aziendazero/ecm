@@ -144,7 +144,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.valutazione_domande_seduta(${#temporals.format(sedutaWrapper.seduta.data, 'dd/MM/yyyy')})}">Seduta</h2>
 						<div class="pull-right buttons-header">
-							<a th:if="${sedutaWrapper.canConfirmEvaluation}" class="btn btn-success pull-right" th:text="#{label.blocca_seduta}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/lock|}"></a>
+							<a th:if="${sedutaWrapper.canConfirmEvaluation}" class="btn btn-success pull-right" th:text="#{label.chiudi_seduta}" th:href="@{|/seduta/${sedutaWrapper.seduta.id}/chiudiSeduta|}"></a>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="${sedutaWrapper.seduta.id != null} ? @{|/seduta/${sedutaWrapper.seduta.id}/show|} : @{|/seduta/list|}"></a>
 						</div>
 						<div class="clearfix"></div>
@@ -194,8 +194,8 @@
 					$("#radioContainer").empty();
 					//crea una input per ogni stato nel quale può andare la determinata domanda di accreditamento
 					for (var i in setStati) {
-						
-						if(i != 'INS_ODG'){	
+
+						if(i != 'INS_ODG'){
 							var parent = $("<div/>", {
 								class: "radio"
 							}).appendTo('#radioContainer');
@@ -215,9 +215,9 @@
 							var span = $("<span/>", {
 								text: " " + mappaLabel[setStati[i].$name]
 							}).appendTo(label);
-							
-						}	
-						
+
+						}
+
 					}
 					//prepara url action del form di valutazione
 					url = [[@{|/seduta/${sedutaWrapper.seduta.id}/valutazioneCommissione/|}]] + id + "/validate";
