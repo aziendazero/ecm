@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Seduta;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
@@ -142,8 +143,11 @@ public class SedutaServiceImpl implements SedutaService {
 		if(canBeLocked(seduta)) {
 			seduta.setLocked(true);
 			sedutaRepository.save(seduta);
+		}else throw new Exception("Seduta non bloccabile");
+		
+		for(ValutazioneCommissione val : seduta.getValutazioniCommissione()){
+			accreditamentoService.inviaValutazioneCommissione(val.getAccreditamento().getId(), Utils.getAuthenticatedUser(), val.getStato());
 		}
-		else throw new Exception("Seduta non bloccabile");
 	}
 
 	@Override

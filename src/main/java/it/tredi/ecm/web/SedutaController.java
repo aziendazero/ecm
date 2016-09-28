@@ -339,8 +339,6 @@ public class SedutaController {
 				val.setStato(sedutaWrapper.getValutazioneTarget().getStato());
 				valutazioneCommissioneRepository.save(val);
 
-				accreditamentoService.inviaValutazioneCommissione(val.getAccreditamento().getId(), Utils.getAuthenticatedUser(), val.getStato());
-
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_commissione_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/validate"));
 				return "redirect:/seduta/{sedutaId}/validate";
