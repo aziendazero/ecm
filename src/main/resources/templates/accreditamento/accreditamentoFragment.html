@@ -40,9 +40,13 @@
 							</a>
 						</li>
 						<li th:if="${(accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione != null and !accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.new) or
-										(accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto)}" class="presentation">
-							<a href="#tab_content5" role="tab" id="tab5" data-toggle="tab" aria-expanded="false" th:text="#{label.allegati_note_osservazioni}">
-								Note/Osservazioni
+										(accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto.new) or
+										(accreditamentoWrapper.accreditamento.decretoAccreditamento != null and !accreditamentoWrapper.accreditamento.decretoAccreditamento.new) or
+										(accreditamentoWrapper.accreditamento.decretoDiniego != null and !accreditamentoWrapper.accreditamento.decretoDiniego.new) or
+										(accreditamentoWrapper.accreditamento.richiestaIntegrazione != null and !accreditamentoWrapper.accreditamento.richiestaIntegrazione.new) or
+										(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.new)}" class="presentation">
+							<a href="#tab_content5" role="tab" id="tab5" data-toggle="tab" aria-expanded="false" th:text="#{label.documenti}">
+								Documenti
 							</a>
 						</li>
 					</ul>
@@ -788,14 +792,18 @@
 							<!-- /TAB 4 -->
 						</div>
 						<div th:if="${(accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione != null and !accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.new) or
-										(accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto)}" role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="tab5">
+										(accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto.new) or
+										(accreditamentoWrapper.accreditamento.decretoAccreditamento != null and !accreditamentoWrapper.accreditamento.decretoAccreditamento.new) or
+										(accreditamentoWrapper.accreditamento.decretoDiniego != null and !accreditamentoWrapper.accreditamento.decretoDiniego.new) or
+										(accreditamentoWrapper.accreditamento.richiestaIntegrazione != null and !accreditamentoWrapper.accreditamento.richiestaIntegrazione.new) or
+										(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.new)}" role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="tab5">
 							<!--  TAB 5 -->
 							<div class="row">
 								<div class="col-xs-12">
 
 									<div class="x_panel">
 										<div class="x_title">
-											<h2 th:text="#{label.allegati_note_osservazioni_integrazione_preavviso_rigetto}"></h2>
+											<h2 th:text="#{label.documenti_della_domanda}"></h2>
 											<div class="clearfix"></div>
 										</div>
 										<div class="x_content">
@@ -808,13 +816,74 @@
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione.id}|}"></a></div>
 												</div>
 											</div>
-											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione} and ${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto}"></div>
+
+											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione} and
+																				(${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto} or
+																				${accreditamentoWrapper.accreditamento.decretoAccreditamento} or
+																				${accreditamentoWrapper.accreditamento.decretoDiniego} or
+																				${accreditamentoWrapper.accreditamento.richiestaIntegrazione} or
+																				${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto})"></div>
+
 											<div th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto}">
 												<label class="control-label">
 													<span th:class="label-show" th:text="#{label.note_osservazioni_preavviso_rigetto}">note e osservazioni sul preavviso di rigetto</span>
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto.id}|}"></a></div>
+												</div>
+											</div>
+
+											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto} and
+																				(${accreditamentoWrapper.accreditamento.decretoAccreditamento} or
+																				${accreditamentoWrapper.accreditamento.decretoDiniego} or
+																				${accreditamentoWrapper.accreditamento.richiestaIntegrazione} or
+																				${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto})"></div>
+
+											<div th:if="${accreditamentoWrapper.accreditamento.decretoAccreditamento}">
+												<label class="control-label">
+													<span th:class="label-show" th:text="#{label.decreto_accreditamento}">decreto accreditamento</span>
+												</label>
+												<div>
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.decretoAccreditamento.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.decretoAccreditamento.id}|}"></a></div>
+												</div>
+											</div>
+
+											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.decretoAccreditamento} and
+																				(${accreditamentoWrapper.accreditamento.decretoDiniego} or
+																				${accreditamentoWrapper.accreditamento.richiestaIntegrazione} or
+																				${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto})"></div>
+
+											<div th:if="${accreditamentoWrapper.accreditamento.decretoDiniego}">
+												<label class="control-label">
+													<span th:class="label-show" th:text="#{label.decreto_diniego}">decreto dieniego</span>
+												</label>
+												<div>
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.decretoDiniego.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.decretoDiniego.id}|}"></a></div>
+												</div>
+											</div>
+
+											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.decretoDiniego} and
+																				(${accreditamentoWrapper.accreditamento.richiestaIntegrazione} or
+																				${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto})"></div>
+
+											<div th:if="${accreditamentoWrapper.accreditamento.richiestaIntegrazione}">
+												<label class="control-label">
+													<span th:class="label-show" th:text="#{label.richiesta_integrazione}">richiesta_integrazione</span>
+												</label>
+												<div>
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.richiestaIntegrazione.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.richiestaIntegrazione.id}|}"></a></div>
+												</div>
+											</div>
+
+											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.richiestaIntegrazione} and
+																				${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto}"></div>
+
+											<div th:if="${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto}">
+												<label class="control-label">
+													<span th:class="label-show" th:text="#{label.richiesta_preavviso_rigetto}">richiesta_preavviso_rigetto</span>
+												</label>
+												<div>
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.id}|}"></a></div>
 												</div>
 											</div>
 										</div>

@@ -35,6 +35,7 @@ public class HomeWrapper {
 	private Integer domandeProvvisoriePreavvisoRigetto;
 	private Integer domandeInScadenza;
 	private Integer domandeDaValutareAll;
+	private Integer domandeInInsODG;
 
 	//Referee
 	private Boolean isReferee;
