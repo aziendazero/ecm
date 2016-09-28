@@ -732,7 +732,7 @@ public class PdfServiceImpl implements PdfService {
             Object[] valuesDataValid = {accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 			msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2})."); 
-            Object[] valuesDataSed = {accreditatoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), accreditatoInfo.getRigettoInfo().getVerbaleNumero(), accreditatoInfo.getRigettoInfo().getNumeroProtocollo()};
+            Object[] valuesDataSed = {accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(dateTimeFormatter), accreditatoInfo.getAccreditamentoInfo().getVerbaleNumero(), accreditatoInfo.getAccreditamentoInfo().getNumeroProtocollo()};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataSed), fontCorpo));
 
 			tableNoteTrasp.addCell(cell);

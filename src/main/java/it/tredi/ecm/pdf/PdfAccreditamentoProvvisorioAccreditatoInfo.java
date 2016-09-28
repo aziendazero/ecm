@@ -13,6 +13,7 @@ public class PdfAccreditamentoProvvisorioAccreditatoInfo {
 	private LocalDate accreditamentoDataValidazione = null;
 	private PdfInfoIntegrazioneRigetto integrazioneInfo = null;
 	private PdfInfoIntegrazioneRigetto rigettoInfo = null;
+	private PdfInfoIntegrazioneRigetto accreditamentoInfo = null;
 	//private List<String> listaMotivazioni = new ArrayList<String>();
 	private LocalDate dataCommissioneAccreditamento = null;
 
@@ -21,6 +22,16 @@ public class PdfAccreditamentoProvvisorioAccreditatoInfo {
 		this.accreditamentoDataValidazione = accreditamento.getDataInvio();
 		this.dataCommissioneAccreditamento = sedutaAccreditamento.getData();
 		
+		if(sedutaAccreditamento != null) {
+			accreditamentoInfo = new PdfInfoIntegrazioneRigetto();
+			accreditamentoInfo.setDataSedutaCommissione(sedutaAccreditamento.getData());
+			accreditamentoInfo.setVerbaleNumero(sedutaAccreditamento.getNumeroVerbale());
+			//TODO
+			//integrazioneInfo.setEseguitaDaProvider(eseguitaDaProvider);		
+			//integrazioneInfo.setDataProtocollo(dataProtocollo);
+			//integrazioneInfo.setNumeroProtocollo(numeroProtocollo);
+		}
+
 		if(sedutaIntegrazione != null) {
 			integrazioneInfo = new PdfInfoIntegrazioneRigetto();
 			integrazioneInfo.setDataSedutaCommissione(sedutaIntegrazione.getData());
@@ -128,6 +139,16 @@ public class PdfAccreditamentoProvvisorioAccreditatoInfo {
 	public void setDataCommissioneAccreditamento(
 			LocalDate dataCommissioneAccreditamento) {
 		this.dataCommissioneAccreditamento = dataCommissioneAccreditamento;
+	}
+
+
+	public PdfInfoIntegrazioneRigetto getAccreditamentoInfo() {
+		return accreditamentoInfo;
+	}
+
+
+	public void setAccreditamentoInfo(PdfInfoIntegrazioneRigetto accreditamentoInfo) {
+		this.accreditamentoInfo = accreditamentoInfo;
 	}
 
 }
