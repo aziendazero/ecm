@@ -841,6 +841,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void inviaValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
 		workflowService.eseguiTaskTaskInserimentoEsitoOdgForUser(curentUser, getAccreditamento(accreditamentoId), stato);
+		Provider provider = providerService.getProvider(getProviderIdForAccreditamento(accreditamentoId));
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO)
+			provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
+		if(stato == AccreditamentoStatoEnum.DINIEGO)
+			provider.setStatus(ProviderStatoEnum.DINIEGO);
+		//TODO pagamento provider
+
 	}
 
 	@Override

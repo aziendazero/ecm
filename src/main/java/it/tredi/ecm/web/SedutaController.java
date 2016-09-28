@@ -47,7 +47,6 @@ public class SedutaController {
 	private final String VALIDATE = "seduta/sedutaValidate";
 
 	@Autowired private SedutaService sedutaService;
-	@Autowired private SedutaRepository sedutaRepository;
 	@Autowired private SedutaValidator sedutaValidator;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ValutazioneCommissioneRepository valutazioneCommissioneRepository;
@@ -115,7 +114,7 @@ public class SedutaController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				sedutaRepository.save(sedutaWrapper.getSeduta());
+				sedutaService.save(sedutaWrapper.getSeduta());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.seduta_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/list"));
 				redirectAttrs.addFlashAttribute("dataSedutaInserita", sedutaWrapper.getSeduta().getData());
@@ -176,11 +175,28 @@ public class SedutaController {
 
 	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping("/seduta/{sedutaId}/validate")
-	public String inserisciValutazioneValutazioniCommissioneSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
+	public String inserisciValutazioneValutazioniCommissioneSeduta(@RequestParam (name = "seduta.numeroVerbale", required = false) String numeroVerbale,
+			@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /seduta/" + sedutaId + "/validate"));
 		try {
 			Seduta seduta = sedutaService.getSedutaById(sedutaId);
-			return goToValidate(model, prepareWrapper(seduta));
+			if((numeroVerbale == null || numeroVerbale.isEmpty()) &&
+					(seduta.getNumeroVerbale() == null || seduta.getNumeroVerbale().isEmpty())) {
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_inserimento_numero_verbale", "error"));
+				redirectAttrs.addFlashAttribute("errorNumeroVerbale", true);
+				return "redirect:/seduta/{sedutaId}/show";
+			}
+			else {
+				if ((numeroVerbale == null || numeroVerbale.isEmpty()) &&
+					(seduta.getNumeroVerbale() != null && !seduta.getNumeroVerbale().isEmpty())) {
+					return goToValidate(model, prepareWrapper(seduta));
+				}
+				else {
+					seduta.setNumeroVerbale(numeroVerbale);
+					sedutaService.save(seduta);
+					return goToValidate(model, prepareWrapper(seduta));
+				}
+			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /seduta/" + sedutaId + "/validate"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -322,9 +338,9 @@ public class SedutaController {
 				val.setValutazioneCommissione(sedutaWrapper.getValutazioneTarget().getValutazioneCommissione());
 				val.setStato(sedutaWrapper.getValutazioneTarget().getStato());
 				valutazioneCommissioneRepository.save(val);
-				
+
 				accreditamentoService.inviaValutazioneCommissione(val.getAccreditamento().getId(), Utils.getAuthenticatedUser(), val.getStato());
-				
+
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_commissione_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/validate"));
 				return "redirect:/seduta/{sedutaId}/validate";
@@ -339,11 +355,11 @@ public class SedutaController {
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
-	@RequestMapping("/seduta/{sedutaId}/lock")
-	public String bloccaSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
+	@RequestMapping("/seduta/{sedutaId}/chiudiSeduta")
+	public String chiudiSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		try {
 			//Conferma della valutazione della seduta
-			sedutaService.lockSeduta(sedutaId);
+			sedutaService.chiudiSeduta(sedutaId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.seduta_valutata", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/show"));
 			return "redirect:/seduta/{sedutaId}/show";
@@ -401,7 +417,7 @@ public class SedutaController {
 		wrapper.setCanEdit(sedutaService.canEditSeduta(seduta));
 		wrapper.setCanValidate(sedutaService.canBeEvaluated(seduta));
 		wrapper.setCanBloccaSeduta(true);
-		
+
 		if(!seduta.isNew()){
 			Set<Accreditamento> listaAccreditamentiInSeduta = sedutaService.getAccreditamentiInSeduta(seduta.getId());
 			for(Accreditamento a : listaAccreditamentiInSeduta){
@@ -410,7 +426,7 @@ public class SedutaController {
 				}
 			}
 		}
-		
+
 		return wrapper;
 	}
 
@@ -428,7 +444,7 @@ public class SedutaController {
 		}
 		return result;
 	}
-	
+
 	@RequestMapping("/seduta/{sedutaId}/bloccaSeduta")
 	public String bloccaSeduta(@PathVariable Long sedutaId) throws Exception{
 		Set<Accreditamento> listaInOdg = sedutaService.getAccreditamentiInSeduta(sedutaId);
@@ -437,7 +453,7 @@ public class SedutaController {
 		}
 		return "redirect:/seduta/list";
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditSeduta(principal)")
 	@RequestMapping("/seduta/{sedutaId}/convocazioneCommissione")
 	public String convocazioneCommissione(@PathVariable Long sedutaId, RedirectAttributes redirectAttrs){
@@ -450,7 +466,7 @@ public class SedutaController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: redirect:/seduta/{sedutaId}/validate"));
 		}
-		
+
 		return "redirect:/seduta/{sedutaId}/show";
 	}
 

@@ -38,6 +38,12 @@ public class SedutaServiceImpl implements SedutaService {
 	@Autowired private EmailService emailService;
 	@Autowired private AccountService accountService;
 
+
+	@Override
+	public void save(Seduta seduta) {
+		sedutaRepository.save(seduta);
+	}
+
 	@Override
 	public Set<Seduta> getAllSedute() {
 		return sedutaRepository.findAll();
@@ -108,7 +114,7 @@ public class SedutaServiceImpl implements SedutaService {
 	}
 
 	@Override
-	public void moveValutazioneCommissione(ValutazioneCommissione val, Seduta from, Seduta to) {
+	public void moveValutazioneCommissione(ValutazioneCommissione val, Seduta from, Seduta to) throws Exception {
 		//rimuove stato e commento sulla valutazione
 		val.setStato(null);
 		val.setValutazioneCommissione(null);
@@ -124,20 +130,18 @@ public class SedutaServiceImpl implements SedutaService {
 		sedutaRepository.save(to);
 		valutazioneCommissioneRepository.save(val);
 
-		//TODO mandare avanti stato Bonita (val.accreditamento ritorna in INS_ODG)
+		//se la domanda era in valutazione commissione e setto lo stato in ins_odg
+		Accreditamento accreditamento = val.getAccreditamento();
+		if(accreditamento.isValutazioneCommissione())
+			workflowService.eseguiTaskInserimentoEsitoOdgForCurrentUser(accreditamento, AccreditamentoStatoEnum.INS_ODG);
 	}
 
-
-
 	@Override
-	public void lockSeduta(Long sedutaId) throws Exception {
+	public void chiudiSeduta(Long sedutaId) throws Exception {
 		Seduta seduta =  sedutaRepository.findOne(sedutaId);
 		if(canBeLocked(seduta)) {
 			seduta.setLocked(true);
 			sedutaRepository.save(seduta);
-			for (ValutazioneCommissione vc : seduta.getValutazioniCommissione()) {
-				//TODO mandare avanti stato Bonita (a seconda dello stato settato nella valutazioneCommissione)
-			}
 		}
 		else throw new Exception("Seduta non bloccabile");
 	}
@@ -147,18 +151,12 @@ public class SedutaServiceImpl implements SedutaService {
 		Map<Long, Set<AccreditamentoStatoEnum>> mappa = new HashMap<Long, Set<AccreditamentoStatoEnum>>();
 		for (ValutazioneCommissione vc : seduta.getValutazioniCommissione()) {
 			Set<AccreditamentoStatoEnum> value = new HashSet<AccreditamentoStatoEnum>();
-			
+
 			List<AccreditamentoStatoEnum> possibiliStati = workflowService.getInserimentoEsitoOdgStatiPossibiliAccreditamento(vc.getAccreditamento().getWorkflowInfoAccreditamento().getProcessInstanceId());
 			value.addAll(possibiliStati);
-			
-			//TODO bugfix al volo
+
 			value.remove(AccreditamentoStatoEnum.INS_ODG);
-			
-			if(value.contains(AccreditamentoStatoEnum.PREAVVISO_RIGETTO)){
-				value.remove(AccreditamentoStatoEnum.PREAVVISO_RIGETTO);
-				value.add(AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO);
-			}
-			
+
 			mappa.put(vc.getAccreditamento().getId(), value);
 		}
 		return mappa;
@@ -175,15 +173,11 @@ public class SedutaServiceImpl implements SedutaService {
 		seduta.setValutazioniCommissione(setValutazioni);
 		valutazioneCommissioneRepository.save(valutazioneDaInserire);
 		sedutaRepository.save(seduta);
-
-		//TODO mandare avanti stato Bonita (valutazioneDaInserire.accreditamento si sposta di stato)
 	}
 
 	@Override
 	public void removeValutazioneCommissioneFromSeduta(Long valutazioneCommissioneId) {
 		ValutazioneCommissione valutazioneDaEliminare = valutazioneCommissioneRepository.findOne(valutazioneCommissioneId);
-
-		//TODO mandare avanti stato Bonita (valutazioneDaEliminare.accreditamento si sposta di stato)
 
 		valutazioneCommissioneRepository.delete(valutazioneDaEliminare);
 	}
@@ -198,7 +192,7 @@ public class SedutaServiceImpl implements SedutaService {
 		else
 			return sedutaRepository.findFirstByDataAfterOrderByDataAsc(oggi);
 	}
-	
+
 	@Override
 	public void inviaMailACommissioneEcm() throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Inio email ai componenti della Commissione ECM"));

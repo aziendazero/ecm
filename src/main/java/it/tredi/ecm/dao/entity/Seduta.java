@@ -36,6 +36,8 @@ public class Seduta extends BaseEntity{
 	@OneToMany(mappedBy="seduta")
 	private Set<ValutazioneCommissione> valutazioniCommissione = new HashSet<ValutazioneCommissione>();
 	private boolean locked;
+	@JsonIgnore
+	private String numeroVerbale;
 
 	public Seduta(){}
 	public Seduta(LocalDate data) {
