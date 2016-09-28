@@ -85,9 +85,16 @@ public class Accreditamento extends BaseEntity{
 
 	@OneToOne
 	private File NoteOsservazioniIntegrazione;
-
 	@OneToOne
 	private File NoteOsservazioniPreavvisoRigetto;
+	@OneToOne
+	private File decretoAccreditamento;
+	@OneToOne
+	private File decretoDiniego;
+	@OneToOne
+	private File richiestaIntegrazione;
+	@OneToOne
+	private File richiestaPreavvisoRigetto;
 
 	@Embedded
 	private WorkflowInfo workflowInfoAccreditamento = null;
