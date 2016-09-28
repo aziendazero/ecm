@@ -552,12 +552,12 @@ public class PdfServiceImpl implements PdfService {
 	        
             //Integrazione
 			msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata all’aspirante Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};"); 
-            Object[] valuesIntegrazione = {diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(), diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getIntegrazioneInfo().getVerbaleNumero(), diniegoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};	        
+            Object[] valuesIntegrazione = {diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(), (diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null) ? "" : diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getIntegrazioneInfo().getVerbaleNumero(), diniegoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};	        
 	        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
 
             //Rigetto
 			msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata all’aspirante Provider {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii, a seguito a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};"); 
-            Object[] valuesRigetto = {diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};	        
+            Object[] valuesRigetto = {diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};	        
 	        addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto));
 
 	        addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente ed il contenuto di cui alle citate comunicazioni trasmesse dal Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S.;");
@@ -567,7 +567,7 @@ public class PdfServiceImpl implements PdfService {
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));	        	
 	        } else {
 				msgFormat = new MessageFormat("PRESO ATTO che alla data della seduta della Commissione Regionale ECM del {0} sono decorsi inutilmente i termini indicati nella nota prot. n. {1}. del {2} (10bis) senza che nessuna osservazione o documentazione sia pervenuta per essere sottoposta alla valutazione della Commissione Regionale ECM;"); 
-	            Object[] valuesAttoRigetto = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter)};	        
+	            Object[] valuesAttoRigetto = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter)};	        
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesAttoRigetto));	        	
 	        }
 	        
@@ -774,14 +774,14 @@ public class PdfServiceImpl implements PdfService {
             //Integrazione
             if(accreditatoInfo.getIntegrazioneInfo() != null) {
 				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1} notificata al Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii. a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};"); 
-	            Object[] valuesIntegrazione = {accreditatoInfo.getIntegrazioneInfo().getNumeroProtocollo(), accreditatoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getIntegrazioneInfo().getVerbaleNumero(), accreditatoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};	        
+				Object[] valuesIntegrazione = {accreditatoInfo.getIntegrazioneInfo().getNumeroProtocollo(), diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  accreditatoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getIntegrazioneInfo().getVerbaleNumero(), accreditatoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};	        
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
             }
 
             //Rigetto
             if(accreditatoInfo.getRigettoInfo() != null) {
 				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}. notificata al {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento standard che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii. a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};"); 
-	            Object[] valuesRigetto = {accreditatoInfo.getRigettoInfo().getNumeroProtocollo(), accreditatoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getRigettoInfo().getVerbaleNumero(), accreditatoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};	        
+	            Object[] valuesRigetto = {accreditatoInfo.getRigettoInfo().getNumeroProtocollo(), accreditatoInfo.getRigettoInfo().getDataProtocollo() == null ? "" : accreditatoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getRigettoInfo().getVerbaleNumero(), accreditatoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};	        
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto));
             }
 
