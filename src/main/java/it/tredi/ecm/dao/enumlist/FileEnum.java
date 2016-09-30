@@ -37,6 +37,10 @@ public enum FileEnum {
 	FILE_ACCREDITAMENTO_PROVVISORIO_INTEGRAZIONE (29, "Integrazione accreditamento provvisorio"),
 	FILE_ACCREDITAMENTO_PROVVISORIO_PREAVVISO_RIGETTO (30, "Preavviso rigetto accreditamento provvisorio"),
 
+	FILE_REPORT_PARTECIPANTI(31, "Report Partecipanti"),
+	FILE_REPORT_PARTECIPANTI_XML(32, "File XML generato"),
+	FILE_REPORT_PARTECIPANTI_CSV(33, "File CSV caricato"),
+
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 

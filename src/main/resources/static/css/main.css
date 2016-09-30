@@ -121,8 +121,9 @@ body.nav-md .container.body .right_col.main {
 }
 
 .allegato-btn {
-	margin-left: -9px;
+	margin-left: 0px;
 	margin-right: 5px;
+	width: 90px;
 }
 
 .allegato-label {
@@ -361,7 +362,12 @@ textarea {
 }
 
 .label-pagato {
-	color: #73879C;
+	color: #1abc9c;
+	font-weight: bold;
+}
+
+.label-non-pagato {
+	color: #d9534f;
 	font-weight: bold;
 }
 
@@ -1061,4 +1067,9 @@ tr.integrazione-eliminazione td:first-child a{
 
 .nav.navbar-nav.navbar-right > li:hover {
 	background-color: rgba(115, 135, 156, 0.1);
+}
+
+.button-container {
+	height: 90px;
+	width: 225px;
 }

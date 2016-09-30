@@ -130,6 +130,12 @@ public class Evento extends BaseEntity{
 	private Boolean pagato = false;
 	private Boolean pagInCorso = false;
 
+	@OneToOne
+	private File reportPartecipantiXML;
+
+	@OneToOne
+	private File reportPartecipantiCSV;
+
 	@Type(type = "serializable")
 	private List<Integer> idEditabili = new ArrayList<Integer>();
 

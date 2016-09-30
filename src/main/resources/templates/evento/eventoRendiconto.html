@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title x_menu">
+						<h2 th:text="#{label.evento_to_cogeaps_title}">Evento</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-success pull-right" th:text="#{label.invia_al_cogeaps}" onclick="alert('TODO')"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-6 col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.riepilogo_evento(${eventoWrapper.evento.id + '-' + eventoWrapper.evento.edizione})}">Evento</h2>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="evento/eventoFragment :: evento('show', true)"></th:block>
+
+				</div>
+			</div>
+			<div class="col-lg-6 col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.inserimento_rendicontazione}"></h2>
+						<div class="clearfix"></div>
+					</div>
+
+					<div class="x_content">
+						<form id="formRendiconto" class="form-horizontal form-label-left"
+						th:action="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/rendiconto/validate|}"
+						method="post" enctype="multipart/form-data"
+						novalidate="novalidate">
+
+							<div class="with-margin-top with-margin-bottom"></div>
+
+							<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, reportPartecipanti, null, null, null, true, 'edit', false)" ></th:block>
+
+							<div class="item form-group with-margin-top">
+								<div class="col-xs-5"></div>
+								<div class="col-xs-2 text-center">
+									<i class="fa fa-chevron-down"></i>
+								</div>
+							</div>
+
+							<div class="item form-group with-margin-top">
+								<div class="col-xs-5"></div>
+								<div class="col-xs-2">
+									<button type="submit" class="btn btn-primary single" onclick="spinCog();"><span th:text="#{label.elabora}"> </span> <i class="fa fa-cog"></i></button>
+								</div>
+							</div>
+
+							<div class="item form-group with-margin-top">
+								<div class="col-xs-5"></div>
+								<div class="col-xs-2 text-center">
+									<i class="fa fa-chevron-down"></i>
+								</div>
+							</div>
+
+							<div class="item form-group with-margin-top">
+								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
+									<span th:text="#{label.reportPartecipantiCSV}"></span>
+								</label>
+								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+									<div th:if="${eventoWrapper.evento.reportPartecipantiCSV}" class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.reportPartecipantiCSV.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.reportPartecipantiCSV.id}|}"></a></div>
+									<div th:unless="${eventoWrapper.evento.reportPartecipantiCSV}" class="value" th:text="#{label.nessun_file_caricato}"></div>
+								</div>
+							</div>
+
+							<div class="divider with-margin-top"></div>
+
+							<div class="item form-group with-margin-top">
+								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
+									<span th:text="#{label.reportPartecipantiXML}"></span>
+								</label>
+								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+									<div th:if="${eventoWrapper.evento.reportPartecipantiXML}" class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.reportPartecipantiXML.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.reportPartecipantiXML.id}|}"></a></div>
+									<div th:unless="${eventoWrapper.evento.reportPartecipantiXML}" class="value" th:text="#{label.nessun_file_generato}"></div>
+								</div>
+								<!-- pulsante per aggiungere firma -->
+								<div class="col-xs-1" th:if="${eventoWrapper.evento.reportPartecipantiXML}">
+									<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+								</div>
+							</div>
+
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+				$(document).ready(function() {
+
+					//table responsive professioni/discipline show
+					$('.datatable-responsive-discipline-evento').DataTable({
+						"bFilter" : false,
+						"bPaginate": false,
+						"bInfo" : false,
+					    "columnDefs": [
+					    	{ "targets": [ '_all' ], "orderable": false },
+					    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
+					    	{ "visible": false, "targets": 0 }
+					    ],
+					    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+					    "drawCallback": function ( settings ) {
+				        	var api = this.api();
+				            var rows = api.rows( {page:'current'} ).nodes();
+				            var last=null;
+
+				            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+				            	if ( last !== group ) {
+				                	$(rows).eq( i ).before(
+				                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
+				            	);
+				                    last = group;
+				                }
+				            });
+				        }
+
+					});
+				})
+
+				function spinCog() {
+					$(".fa-cog").addClass("fa-spin");
+				}
+			/*]]>*/
+		</script>
+	</div>
+</body>
+</html>
+
+

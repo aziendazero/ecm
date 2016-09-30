@@ -17,31 +17,59 @@
 
 						<div th:if="${#lists.isEmpty(eventoList)}" th:text="#{label.nessun_evento_list}"></div>
 
-						<table th:unless="${#lists.isEmpty(eventoList)}" class="datatable-responsive-eventi table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<table th:unless="${#lists.isEmpty(eventoList)}" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
-									<th th:text="#{label.id}">label.id</th>
 									<th th:text="#{label.titolo}">label.titolo</th>
+									<th th:text="#{label.id}">label.id</th>
 									<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
 									<th th:text="#{label.prezzo}">label.prezzo</th>
 									<th th:text="#{label.stato}">label.stato</th>
+									<th th:text="#{label.azioni}">label.azioni</th>
 								</tr>
 							</thead>
 							<tbody th:remove="all-but-first">
 								<tr th:each="evento, row : ${eventoList}">
-									<td th:text="${evento.id}"></td>
 									<td><a th:text="${evento.titolo}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/show|}"></a></td>
+									<td th:text="${evento.id} + '-' + ${evento.edizione}"></td>
 									<td th:text="${evento.proceduraFormativa.nome}"></td>
 									<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
-									<td th:unless="${evento.pagato}"><button type="button" class="btn btn-primary btn-mypay" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per il pagamento con MYPAY!')">Paga con MYPAY!</button></td>
+									<td th:unless="${evento.pagato}"><span class="label-non-pagato" th:text="#{label.non_pagato}"></span></td>
+									<td>
+										<div class="button-container single">
+											<a class="btn btn-danger btn-table double"><i class="fa fa-trash"> </i> <span th:text="#{label.elimina}"> </span></a>
+											<a class="btn btn-primary btn-table double"><i class="fa fa-pencil"> </i> <span th:text="#{label.modifica}"> </span></a>
+											<a class="btn btn-success btn-table double"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
+											<a class="btn btn-info btn-table double" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/rendiconto|}"><i class="fa fa-file-text"> </i> <span th:text="#{label.rendiconto}"> </span></a>
+										</div>
+									</td>
 								</tr>
 							</tbody>
 						</table>
-
 					</div>
 				</div>
 			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				$(document).ready(function() {
+
+					$(".datatable-responsive-eventi-provider").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [ {
+							"targets": 5,
+							"width": "1px",
+							"sClass": "center"
+						} ]
+					})
+				})
+
+			/*]]>*/
+			</script>
 		</div>
 	</div>
 </body>

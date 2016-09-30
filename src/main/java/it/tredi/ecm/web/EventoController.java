@@ -57,6 +57,7 @@ public class EventoController {
 	private final String SHOW = "evento/eventoShow";
 	private final String VALIDATE  = "evento/eventoValidate";
 	private final String ENABLEFIELD  = "evento/eventoEnableField";
+	private final String RENDICONTO = "evento/eventoRendiconto";
 
 	@Autowired private EventoService eventoService;
 	@Autowired private ProviderService providerService;
@@ -513,11 +514,34 @@ public class EventoController {
 		}
 	}
 
+	//metodo listEvento per i provider
+	@RequestMapping("/provider/evento/list")
+	public String listEventoProvider(Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/evento/list"));
+		try {
+			Account currentAccount = Utils.getAuthenticatedUser().getAccount();
+			if(!currentAccount.isProvider())
+				throw new Exception("L'utente non è un provider");
+			else {
+				Long providerId = providerService.getProviderIdByAccountId(currentAccount.getId());
+				redirectAttrs.addAttribute("providerId", providerId);
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
+				return "redirect:/provider/{providerId}/evento/list";
+			}
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/evento/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
+			return "redirect:/home";
+		}
+	}
+
+
 	//TODO domenico (check se fa la query di tutto il provider)
 	/*** LIST EVENTO ***/
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/evento/list")
-	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+	public String listEvento(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
 		try {
 			Provider provider = providerService.getProvider(providerId);
@@ -529,7 +553,7 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
-			return "redirect:/provider/show";
+			return "redirect:/home";
 		}
 	}
 
@@ -550,6 +574,47 @@ public class EventoController {
 			return "redirect:/provider/" + providerId + "/evento/list";
 		}
 	}
+
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
+	@RequestMapping("/provider/{providerId}/evento/{eventoId}/rendiconto")
+	public String rendicontoEvento(@PathVariable Long providerId,
+			@PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
+		try{
+			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto"));
+			model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
+			return "redirect:/provider/" + providerId + "/evento/list";
+		}
+	}
+
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
+		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
+		public String rendicontoEventoValidate(@PathVariable Long providerId,
+				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+				Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
+				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+				if(wrapper.getReportPartecipanti().getId() == null)
+					model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
+				else {
+					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
+//TODO				eventoService.validaRendiconto(wrapper.getReportPartecipanti());
+				}
+				return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
+				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto/validate";
+			}
+		}
 
 	private String goToShow(Model model, EventoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
@@ -573,39 +638,40 @@ public class EventoController {
 		return eventoWrapper;
 	}
 
-	private EventoWrapper prepareEventoWrapperValidate(Evento evento, long providerId, long accreditamentoId, long pianoFormativoId) {
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperValidate(" + evento.getId() + "," + providerId + ") - entering"));
-		EventoWrapper eventoWrapper = new EventoWrapper();
-		eventoWrapper.setEvento(evento);
-		eventoWrapper.setProviderId(providerId);
-		eventoWrapper.setAccreditamentoId(accreditamentoId);
-		eventoWrapper.setPianoFormativoId(pianoFormativoId);
-		eventoWrapper.setEventoFrom("accreditamento");
-
-		//carico la valutazione per l'utente
-		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
-		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
-
-		//cerco tutte le valutazioni dell'oggetto evento per ciascun valutatore dell'accreditamento
-		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
-
-		//prendo tutti gli id del subset
-		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
-
-		//per distinguere il multistanza degli eventi
-		if(valutazione != null) {
-			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), evento.getId());
-			mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndObjectId(accreditamentoId, evento.getId());
-			idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO);
-		}
-
-		eventoWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
-		eventoWrapper.setIdEditabili(idEditabili);
-		eventoWrapper.setMappa(mappa);
-
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperValidate(" + evento.getId() + "," + providerId + ") - exiting"));
-		return eventoWrapper;
-	}
+	//TODO rimuovere se non serve più
+//	private EventoWrapper prepareEventoWrapperValidate(Evento evento, long providerId, long accreditamentoId, long pianoFormativoId) {
+//		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperValidate(" + evento.getId() + "," + providerId + ") - entering"));
+//		EventoWrapper eventoWrapper = new EventoWrapper();
+//		eventoWrapper.setEvento(evento);
+//		eventoWrapper.setProviderId(providerId);
+//		eventoWrapper.setAccreditamentoId(accreditamentoId);
+//		eventoWrapper.setPianoFormativoId(pianoFormativoId);
+//		eventoWrapper.setEventoFrom("accreditamento");
+//
+//		//carico la valutazione per l'utente
+//		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+//		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+//
+//		//cerco tutte le valutazioni dell'oggetto evento per ciascun valutatore dell'accreditamento
+//		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+//
+//		//prendo tutti gli id del subset
+//		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
+//
+//		//per distinguere il multistanza degli eventi
+//		if(valutazione != null) {
+//			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), evento.getId());
+//			mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndObjectId(accreditamentoId, evento.getId());
+//			idEditabili = IdFieldEnum.getAllForSubset(SubSetFieldEnum.EVENTO_PIANO_FORMATIVO);
+//		}
+//
+//		eventoWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
+//		eventoWrapper.setIdEditabili(idEditabili);
+//		eventoWrapper.setMappa(mappa);
+//
+//		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperValidate(" + evento.getId() + "," + providerId + ") - exiting"));
+//		return eventoWrapper;
+//	}
 
 	private EventoWrapper prepareEventoWrapperEnableField(Evento evento, long providerId, long accreditamentoId, long pianoFormativoId) {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEnableField(" + evento.getId() + "," + providerId + ") - entering"));
@@ -614,18 +680,33 @@ public class EventoController {
 		return eventoWrapper;
 	}
 
-	private String goToValidate(Model model, EventoWrapper wrapper) {
-		model.addAttribute("eventoWrapper", wrapper);
-		model.addAttribute("proceduraFormativaList", wrapper.getEvento().getAccreditamento().getDatiAccreditamento().getProcedureFormative());
-		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
-		return VALIDATE;
+	private EventoWrapper prepareEventoWrapperRendiconto(Evento evento, long providerId) {
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - entering"));
+		EventoWrapper eventoWrapper = new EventoWrapper();
+		eventoWrapper.setEvento(evento);
+		eventoWrapper.setProviderId(providerId);
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - exiting"));
+		return eventoWrapper;
 	}
+
+	//TODO rimuovere se non serve più
+//	private String goToValidate(Model model, EventoWrapper wrapper) {
+//		model.addAttribute("eventoWrapper", wrapper);
+//		model.addAttribute("proceduraFormativaList", wrapper.getEvento().getAccreditamento().getDatiAccreditamento().getProcedureFormative());
+//		LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
+//		return VALIDATE;
+//	}
 
 	private String goToEnableField(Model model, EventoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
-		model.addAttribute("richiestaIntegrazioneWrapper",integrazioneService.prepareRichiestaIntegrazioneWrapper(wrapper.getAccreditamentoId(), SubSetFieldEnum.EVENTO_PIANO_FORMATIVO, wrapper.getEvento().getId()));
 		LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
 		return ENABLEFIELD;
+	}
+
+	private String goToRendiconto(Model model, EventoWrapper wrapper) {
+		model.addAttribute("eventoWrapper", wrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + RENDICONTO));
+		return RENDICONTO;
 	}
 
 	private void populateListFromAccreditamento(Model model, long accreditamentoId) throws Exception{
