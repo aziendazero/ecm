@@ -25,18 +25,18 @@
 			</label>
 			<th:block th:if="${editabile}">
 				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-					<div class="col-xs-10">
-						<input type="file" accept="application/pdf" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" th:required="${required}"
-							style="display: none;" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}"/>
-						<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}" />
-						<div th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
-						<div th:if="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
-					</div>
-					<!-- pulsante per aggiungere firma -->
-					<th:block th:if="${withFirma}">
-						<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
-					</th:block>
+					<input type="file" accept="application/pdf" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" th:required="${required}"
+						style="display: none;" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}"/>
+					<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}" />
+					<div th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
+					<div th:if="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 				</div>
+				<!-- pulsante per aggiungere firma -->
+				<th:block th:if="${withFirma}">
+					<div class="col-xs-1">
+						<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+					</div>
+				</th:block>
 			</th:block>
 			<th:block th:if="${showOnly or enableField}">
 				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
@@ -83,23 +83,23 @@
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
 
-			<label class="control-label col-md-4 col-sm-4 col-xs-7" th:for="__${tipoAllegato}__">
+			<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7" th:for="__${tipoAllegato}__">
 				<i th:if="${__${wrapper}__ == comunicazioneWrapper}" class="fa fa-paperclip"></i>
 				<span th:text="#{label.__${tipoAllegato}__}">label.tipoAllegato</span>
 			</label>
-			<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-				<div class="col-xs-10">
-					<input type="file" accept=".pdf,.pdf.p7m" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
-						style="display: none;" />
-					<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
-					<div th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
-					<div th:if="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
-				</div>
-				<!-- pulsante per aggiungere firma -->
-				<th:block th:if="${withFirma}">
-					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
-				</th:block>
+			<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+				<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
+					style="display: none;" />
+				<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
+				<div th:unless="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${tipoAllegato}__.id}|}"></a></div>
+				<div th:if="${__${wrapper}__.__${tipoAllegato}__.new}" class="allegato-label"><a th:id="__${tipoAllegato}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 			</div>
+			<!-- pulsante per aggiungere firma -->
+			<th:block th:if="${withFirma}">
+				<div class="col-xs-1">
+					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+				</div>
+			</th:block>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
 		</div>
 	</th:block>
@@ -132,6 +132,7 @@
 				case 'noteOsservazioniPreavvisoRigetto' :	tipoAllegato = 'FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO'; break;
 				case 'allegatoComunicazione' :				tipoAllegato = 'FILE_ALLEGATO_COMUNICAZIONE'; break;
 				case 'allegatoRisposta' :					tipoAllegato = 'FILE_ALLEGATO_RISPOSTA'; break;
+				case 'reportPartecipanti' :					tipoAllegato = 'FILE_REPORT_PARTECIPANTI'; break;
 
 				//File da firmare per engineering
 				case 'fileDaFirmare' :						tipoAllegato = 'FILE_DA_FIRMARE'; break;
@@ -191,6 +192,7 @@
 						case 'FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO' : 	inputName = 'noteOsservazioniPreavvisoRigetto'; break;
 						case 'FILE_ALLEGATO_COMUNICAZIONE' :				inputName = 'allegatoComunicazione'; break;
 						case 'FILE_ALLEGATO_RISPOSTA' : 					inputName = 'allegatoRisposta'; break;
+						case 'FILE_REPORT_PARTECIPANTI' :					inputName = 'reportPartecipanti'; break;
 
 						//File da firmare per engineering
 						case 'FILE_DA_FIRMARE' :							inputName = 'fileDaFirmare'; break;

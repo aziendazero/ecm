@@ -60,6 +60,12 @@ public class Evento extends BaseEntity{
 
 	private Integer edizione = 1;
 
+	@OneToOne
+	private File reportPartecipantiXML;
+
+	@OneToOne
+	private File reportPartecipantiCSV;
+
 	@Type(type = "serializable")
 	private List<Integer> idEditabili = new ArrayList<Integer>();
 
