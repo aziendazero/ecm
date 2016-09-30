@@ -49,5 +49,11 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug("Eliminazione evento:" + id);
 		eventoRepository.delete(id);
 	}
+	
+	@Override
+	public void copyEvento(Evento src, Evento dst) throws CloneNotSupportedException {
+		LOGGER.debug("Copia evento: " + src.getId() + " (" + src.getCodiceIdentificativo() + ")" );
+		dst = (Evento) src.clone();
+	}
 
 }
