@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +34,9 @@ public class Valutazione extends BaseEntity{
 	@OneToMany (cascade = CascadeType.ALL)
 	private Set<FieldValutazioneAccreditamento> valutazioni = new HashSet<FieldValutazioneAccreditamento>();
 	private String valutazioneComplessiva;
+
+	@Column(name="dataora_scadenza_possibilita_valutazione")
+	private LocalDateTime dataOraScadenzaPossibiltaValutazione = null;
 
 	//TODO mettere unic coppia id account / id accreditamento
 }

@@ -16,6 +16,7 @@ public class FieldValutazioneAccreditamento extends Field{
 	private Accreditamento accreditamento;
 	private Boolean esito;
 	private String note;
+	private boolean enabled = true;
 
 	@Override
     public boolean equals(Object o) {
