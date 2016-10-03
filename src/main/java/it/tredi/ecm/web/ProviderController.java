@@ -223,9 +223,10 @@ public class ProviderController {
 	}
 
 	/*** VALUTAZIONE ***/
-	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId,#showRiepilogo)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{id}/validate")
-	public String validateProviderFromAccreditamento(@PathVariable Long accreditamentoId, @PathVariable Long id,
+	public String validateProviderFromAccreditamento(@RequestParam(name = "showRiepilogo", required = false) Boolean showRiepilogo,
+			@PathVariable Long accreditamentoId, @PathVariable Long id,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/" + id + "/validate"));
 		try {

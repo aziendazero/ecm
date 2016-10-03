@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Profile;
 
 public interface AccountRepository extends CrudRepository<Account, Long> {
@@ -17,4 +18,6 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
 	Set<Account> findAllByProfiles(Profile profile);
 	@Query ("SELECT COUNT (a) FROM Account a WHERE a.valutazioniNonDate > 0")
 	int countAllRefereeWithValutazioniNonDate();
+	@Query ("SELECT a.domandeNonValutate FROM Account a WHERE a.id = :refereeId")
+	Set<Accreditamento> getAllDomandeNonValutateByRefereeId(@Param("refereeId") Long refereeId);
 }

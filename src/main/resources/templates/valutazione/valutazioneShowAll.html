@@ -245,7 +245,7 @@
 
 					//provider
 					if([[${accreditamentoWrapper.provider != null}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider?.id}/validate?showRiepilogo=true|}]];
 						$("#providerBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -253,7 +253,7 @@
 
 					//legale rappresentante
 					if([[${accreditamentoWrapper.legaleRappresentante != null}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante?.id}/validate?showRiepilogo=true|}]];
 						$("#legaleBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -261,7 +261,7 @@
 
 					//delegato legale rappresentante
 					if([[${accreditamentoWrapper.delegatoLegaleRappresentante != null}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante?.id}/validate?showRiepilogo=true|}]];
 						$("#delegatoBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -269,7 +269,7 @@
 
 					//sede Legale
 					if([[${accreditamentoWrapper.sedeLegale != null}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale?.id}/validate?showRiepilogo=true|}]];
 						$("#sedeLegaleBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -277,7 +277,7 @@
 
 					//ciclo sulle sedi operative grazie al campo data-valore-id precedentemente settato
 					$('div[role=iterSedeOperativa]').each(function(index) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/|}]] + $(this).attr("data-valore-id") + "/validate";
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/|}]] + $(this).attr("data-valore-id") + "/validate?showRiepilogo=true";
 						$(this).load(url + ' #toValidateModal', function() {
 							initTable($(this).find('table'));
 						});
@@ -285,7 +285,7 @@
 
 					//dati accreditamento
 					if([[${!accreditamentoWrapper.datiAccreditamento.new}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/validate?showRiepilogo=true|}]];
 						$("#datiBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -293,7 +293,7 @@
 
 					//responsabile segreteria
 					if([[${accreditamentoWrapper.responsabileSegreteria != null}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria?.id}/validate?showRiepilogo=true|}]];
 						$("#rSegreteriaBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -301,7 +301,7 @@
 
 					//responsabile amministrativo
 					if([[${accreditamentoWrapper.responsabileAmministrativo != null}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileAmministrativo?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileAmministrativo?.id}/validate?showRiepilogo=true|}]];
 						$("#rAmministrativoBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -309,7 +309,7 @@
 
 					//responsabile sistema informatico
 					if([[${accreditamentoWrapper.responsabileSistemaInformatico != null}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSistemaInformatico?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSistemaInformatico?.id}/validate?showRiepilogo=true|}]];
 						$("#rSisInformaticoBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -317,7 +317,7 @@
 
 					//responsabile qualità
 					if([[${accreditamentoWrapper.responsabileQualita != null}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileQualita?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileQualita?.id}/validate?showRiepilogo=true|}]];
 						$("#rQualitaBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -325,7 +325,7 @@
 
 					//coordinatore del comitato
 					if([[${accreditamentoWrapper.coordinatoreComitatoScientifico != null}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.coordinatoreComitatoScientifico?.id}/validate|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.coordinatoreComitatoScientifico?.id}/validate?showRiepilogo=true|}]];
 						$("#coordinatoreBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});
@@ -333,14 +333,14 @@
 
 					//ciclo sui componenti del comitato grazie al campo data-valore-id precedentemente settato
 					$('div[role=iterComponenteValutazione]').each(function(index) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]] + $(this).attr("data-valore-id") + "/validate";
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/|}]] + $(this).attr("data-valore-id") + "/validate?showRiepilogo=true";
 						$(this).load(url + ' #toValidateModal', function() {
 							initTable($(this).find('table'));
 						});
 					})
 
 					//allegati
-					url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}]];
+					url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate?showRiepilogo=true|}]];
 					$('#allegatiBlockValidate').load(url + " #toValidateModal", function(){
 						initTable($(this).find('table'));
 					});

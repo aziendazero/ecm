@@ -28,7 +28,8 @@
 									<th th:text="#{label.cognome}">Cognome</th>
 									<th th:text="#{label.username}">Username</th>
 									<th th:text="#{label.email}">Email</th>
-									<th th:text="#{label.valutazioni_non_date}">Valutazione non date (consecutivamente)</th>
+									<th th:text="#{label.numero_valutazioni_non_date}">Numero Valutazioni non date (consecutivamente)</th>
+									<th th:text="#{label.lista_valutazioni_non_date}">Lista Valutazioni non date (consecutivamente)</th>
 								</tr>
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(refereeList)}" th:remove="all-but-first">
@@ -43,6 +44,7 @@
 										<span th:case="2" class="orange number" th:text="${referee.valutazioniNonDate}"></span>
 										<span th:case="*" class="red number"  th:text="${referee.valutazioniNonDate}"></span>
 									</td>
+									<td><a class="btn btn-table btn-primary single" th:text="#{label.vedi_lista}" th:href="@{|/referee/${referee.id}/accreditamento/nonValutate/list|}"></a></td>
 								</tr>
 							</tbody>
 						</table>
@@ -62,11 +64,10 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
-						"columnDefs": [ {
-							"targets": 4,
-							"width": "130px",
-							"sClass": "center"
-						} ],
+						"columnDefs": [
+							{"targets": 4, "width": "130px", "sClass": "center"},
+							{"targets": 5, "width": "1px", "sClass": "center"}
+						],
 					});
 			    });
 

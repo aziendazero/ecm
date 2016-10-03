@@ -6,13 +6,15 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
-import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
@@ -42,11 +44,18 @@ public class Account extends BaseEntity{
 	private String codiceFiscale;
 	//in realtà servono solo per gli utenti con profilo REFEREE
 	private int valutazioniNonDate = 0;
+	@ManyToMany(cascade= CascadeType.REMOVE)
+	@JoinTable(name="account_domande_non_valutate",
+				joinColumns={@JoinColumn(name="account_id")},
+				inverseJoinColumns={@JoinColumn(name="accreditamento_id")}
+	)
+	private Set<Accreditamento> domandeNonValutate = new HashSet<Accreditamento>();
+
 	private String note;
 
 	@Column(name = "username_workflow")
 	private String usernameWorkflow;
-	
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "account_profile",
 	joinColumns = {
@@ -101,10 +110,10 @@ public class Account extends BaseEntity{
 		String n = "";
 		if(cognome != null) c = cognome;
 		if(nome != null) n = nome;
-		
+
 		return n + " " + c;
 	}
-	
+
 	public boolean isSegreteria() {
 		for (Profile p : profiles){
 			if(p.getProfileEnum().equals(ProfileEnum.SEGRETERIA)){

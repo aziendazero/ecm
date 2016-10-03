@@ -83,4 +83,5 @@ public interface AccreditamentoService{
 	boolean canUserEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception;
 
 	public void saveFileNoteOsservazioni(Long fileId, Long accreditamentoId);
+	public Set<Accreditamento> getAllDomandeNonValutateByRefereeId(Long refereeId);
 }

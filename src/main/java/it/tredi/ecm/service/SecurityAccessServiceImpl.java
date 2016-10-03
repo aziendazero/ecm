@@ -8,7 +8,7 @@ import it.tredi.ecm.service.bean.CurrentUser;
 
 @Service
 public class SecurityAccessServiceImpl implements SecurityAccessService {
-	
+
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
@@ -18,24 +18,24 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	public boolean canShowAllProvider(CurrentUser currentUser) {
 		if(currentUser == null)
 			return false;
-		
+
 		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW_ALL))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public boolean canEditAllProvider(CurrentUser currentUser) {
 		if(currentUser == null)
 			return false;
-		
+
 		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT_ALL))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public boolean canShowProvider(CurrentUser currentUser, Long providerId) {
 		if(canShowAllProvider(currentUser))
@@ -44,22 +44,22 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW)){
 			return isProviderOwner(currentUser.getAccount().getId(), providerId);
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public boolean canEditProvider(CurrentUser currentUser, Long providerId) {
 		if(canEditAllProvider(currentUser))
 			return true;
-		
+
 		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT)){
 			return isProviderOwner(currentUser.getAccount().getId(), providerId);
 		}
-		
+
 		return false;
 	}
-	
+
 	private boolean isProviderOwner(Long currentUserAccountId, Long providerId){
 		Long accountId = providerService.getAccountIdForProvider(providerId);
 		return accountId.equals(currentUserAccountId);
@@ -70,172 +70,181 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	public boolean canShowAllAccreditamento(CurrentUser currentUser) {
 		if(currentUser == null)
 			return false;
-		
+
 		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_SHOW_ALL))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public boolean canShowAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
 		if(canShowAllAccreditamento(currentUser))
 			return true;
-		
+
 		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_SHOW)){
 			return isAccreditamentoOwner(currentUser.getAccount().getId(), accreditamentoId);
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public boolean canEditAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
 		if(currentUser == null)
 			return false;
-		
+
 		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_EDIT_ALL))
 			return true;
-		
+
 		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_EDIT)){
 			return isAccreditamentoOwner(currentUser.getAccount().getId(), accreditamentoId);
 		}
-		
+
 		return false;
 	}
-	
+
 	private boolean isAccreditamentoOwner(Long currentUserAccountId, Long accreditamentoId){
 		Long providerId = accreditamentoService.getProviderIdForAccreditamento(accreditamentoId);
 		return isProviderOwner(currentUserAccountId, providerId);
 	}
-	
+
 	/**		USER	**/
 	@Override
 	public boolean canShowAllUser(CurrentUser currentUser) {
 		if(currentUser == null)
 			return false;
-		
+
 		if(currentUser.hasRole(RoleEnum.USER_SHOW_ALL))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public boolean canShowUser(CurrentUser currentUser, Long userId) {
 		if(canShowAllUser(currentUser))
 			return true;
-		
+
 		if(currentUser.hasRole(RoleEnum.USER_SHOW)){
 			return isUserOwner(currentUser.getAccount().getId(), userId);
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public boolean canEditUser(CurrentUser currentUser, Long userId) {
 		if(currentUser == null)
 			return false;
-		
+
 		if(currentUser.hasRole(RoleEnum.USER_EDIT_ALL))
 			return true;
-		
+
 		if(currentUser.hasRole(RoleEnum.USER_EDIT)){
 			return isUserOwner(currentUser.getAccount().getId(), userId);
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public boolean canCreateUser(CurrentUser currentUser) {
 		if(currentUser == null)
 			return false;
-		
+
 		if(currentUser.hasRole(RoleEnum.USER_CREATE))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	private boolean isUserOwner(Long currentUserAccountId, Long userId){
 		return userId.equals(currentUserAccountId);
 	}
-	
+
 	/*	PIANO FORMATIVO	*/
 	@Override
 	public boolean canInsertPianoFormativo(CurrentUser currentUser, Long providerId) {
 		if(!canEditProvider(currentUser, providerId))
 			return false;
-		
+
 		if(canEditAllProvider(currentUser))
 			return true;
-		
+
 		return providerService.canInsertPianoFormativo(providerId);
 	}
-	
+
 	@Override
 	public boolean canEditPianoFormativo(CurrentUser currentUser, Long providerId, Long pianoFormativoId) {
 		if(!canEditProvider(currentUser, providerId))
 			return false;
-		
+
 		if(canEditAllProvider(currentUser))
 			return true;
-		
+
 		return pianoFormativoService.isPianoModificabile(pianoFormativoId);
 	}
-	
+
 	/*	FILE */
 	@Override
 	public boolean canShowFile(CurrentUser currentUser, Long fileId){
 		//TODO
 		return true;
 	}
-	
+
 	@Override
 	public boolean canPrendiInCaricaAccreditamento(CurrentUser currentUser, Long accreditamentoId) throws Exception{
 		return accreditamentoService.canUserPrendiInCarica(accreditamentoId, currentUser);
 	}
-	
+
+	@Override
+	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId, Boolean showRiepilogo) throws Exception {
+		if (showRiepilogo != null && showRiepilogo == true) {
+			return (accreditamentoService.canUserValutaDomandaShowRiepilogo(accreditamentoId, currentUser) || accreditamentoService.canUserValutaDomandaShow(accreditamentoId, currentUser));
+		}
+		else
+			return (accreditamentoService.canUserValutaDomanda(accreditamentoId, currentUser) || accreditamentoService.canUserValutaDomandaShow(accreditamentoId, currentUser));
+	}
+
 	@Override
 	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId) throws Exception {
-		return (accreditamentoService.canUserValutaDomanda(accreditamentoId, currentUser) || accreditamentoService.canUserValutaDomandaShow(accreditamentoId, currentUser));
+		return canValidateAccreditamento(currentUser, accreditamentoId, false);
 	}
-	
+
 	@Override
 	public boolean canEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception {
 		return accreditamentoService.canUserEnableField(currentUser, accreditamentoId);
 	}
-	
+
 	@Override
 	public boolean canShowGruppo(CurrentUser currentUser, String gruppo) {
 		if(gruppo == null || gruppo.isEmpty())
 			return false;
-		
+
 		if(!currentUser.isProvider())
 			return true;
 		else
 			return false;
 	}
-	
+
 	@Override
 	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) throws Exception{
 		return accreditamentoService.canUserInviaIntegrazione(accreditamentoId, currentUser);
 	}
-	
+
 	@Override
 	public boolean canShowSeduta(CurrentUser currentUser) {
 		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm())
 			return true;
 		return false;
 	}
-	
+
 	@Override
 	public boolean canEditSeduta(CurrentUser currentUser) {
 		if(currentUser.isSegreteria())
 			return true;
 		return false;
 	}
-	
+
 }

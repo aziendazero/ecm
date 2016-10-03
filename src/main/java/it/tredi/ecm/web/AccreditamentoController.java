@@ -882,7 +882,6 @@ public class AccreditamentoController {
 	}
 
 	//	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)
-	// TODO solo segreteria
 	@RequestMapping("/accreditamento/scadenza/list")
 	public String getAllAccreditamentiInScadenza(Model model, RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/scadenza/list"));
@@ -896,6 +895,26 @@ public class AccreditamentoController {
 			return "accreditamento/accreditamentoList";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/scadenza/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
+//	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#refereeId)
+	//TODO solo segreteria e referee interessato
+	@RequestMapping("/referee/{refereeId}/accreditamento/nonValutate/list")
+	public String getAllDomandeNonValutate(@PathVariable Long refereeId, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("/referee/" + refereeId + "/accreditamento/nonValutate/list"));
+		try {
+			Set<Accreditamento> listaDomandeNonValutate = accreditamentoService.getAllDomandeNonValutateByRefereeId(refereeId);
+			model.addAttribute("accreditamentoList", listaDomandeNonValutate);
+			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
+			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
+			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
+			return "accreditamento/accreditamentoList";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /referee/" + refereeId + "/accreditamento/nonValutate/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";

@@ -31,6 +31,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 	@Autowired private ProfileRepository profileRepository;
 	@Autowired private AccountService accountService;
+	@Autowired private AccreditamentoService accreditamentoService;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -139,7 +140,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		}
 		return mappaAccreditamentoAccountValutatore;
 	}
-	
+
 	@Override
 	public void updateValutazioniNonDate(Long accreditamentoId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Aggiornamento valutazioni non date per accreditamento: " + accreditamentoId));
@@ -147,7 +148,13 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		for(Valutazione v : valutazioni){
 			if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE && v.getDataValutazione() == null){
 				Account referee = v.getAccount();
+				//aggiorna il contatore
 				referee.setValutazioniNonDate(referee.getValutazioniNonDate() + 1);
+				//aggiunge la domanda alla liste di quelle non valutate dal referee
+				Set<Accreditamento> domandeNonValutate = referee.getDomandeNonValutate();
+				domandeNonValutate.add(accreditamentoService.getAccreditamento(accreditamentoId));
+				referee.setDomandeNonValutate(domandeNonValutate);
+
 				accountService.save(referee);
 			}
 		}

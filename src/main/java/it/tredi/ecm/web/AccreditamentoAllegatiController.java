@@ -117,9 +117,10 @@ public class AccreditamentoAllegatiController {
 	}
 
 	/***	VALIDATE	***/
-	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId,#showRiepilogo)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/allegati/validate")
-	public String validateAllegati(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+	public String validateAllegati(@RequestParam(name = "showRiepilogo", required = false) Boolean showRiepilogo,
+			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/"+ accreditamentoId +"/allegati/validate"));
 		try{
 			//controllo se è possibile modificare la valutazione o meno
@@ -397,18 +398,17 @@ public class AccreditamentoAllegatiController {
 		//carico la valutazione per l'utente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		if(valutazione != null) {
+			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), subset);
+		}
 
 		//cerco tutte le valutazioni del subset allegati per ciascun valutatore dell'accreditamento
 		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+		mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, subset);
 
 		//prendo tutti gli id del subset
 		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
-
-		if(valutazione != null) {
-			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), subset);
-			mappaValutatoreValutazioni = valutazioneService.getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(accreditamentoId, subset);
-			idEditabili = IdFieldEnum.getAllForSubset(subset);
-		}
+		idEditabili = IdFieldEnum.getAllForSubset(subset);
 
 		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		wrapper.setIdEditabili(idEditabili);
