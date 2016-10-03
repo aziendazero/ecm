@@ -1,4 +1,5 @@
 package it.tredi.ecm.service;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -156,6 +157,18 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 				referee.setDomandeNonValutate(domandeNonValutate);
 
 				accountService.save(referee);
+			}
+		}
+	}
+
+	@Override
+	public void dataOraScadenzaPossibiltaValutazioneCRECM(Long accreditamentoId, LocalDateTime date) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Aggiornamento dataora massima (" + date + ") entro la quale effettuare la valutazione CRECM per accreditamento: " + accreditamentoId));
+		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoId(accreditamentoId);
+		for(Valutazione v : valutazioni){
+			if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE){
+				v.setDataOraScadenzaPossibiltaValutazione(date);
+				valutazioneRepository.save(v);
 			}
 		}
 	}

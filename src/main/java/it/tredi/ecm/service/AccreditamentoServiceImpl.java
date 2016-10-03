@@ -248,6 +248,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//setta la data
 		valutazione.setDataValutazione(LocalDate.now());
+		//disabilito tutti i filedValutazioneAccreditamento
+		for (FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
+			fva.setEnabled(false);
+		}
 
 		//inserisce il commento complessivo
 		valutazione.setValutazioneComplessiva(valutazioneComplessiva);
@@ -356,7 +360,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		approvaIntegrazione(accreditamentoId);
 
 		//setta la data
-		valutazioneSegreteria.setDataValutazione(LocalDate.now());
+		//Non dovrebbe servire perche' passando in AssegnazioneCRECM la valutazione della segreteria è già bloccata
+		//valutazioneSegreteria.setDataValutazione(LocalDate.now());
+		//Non dovrebbe servire perche' passando in AssegnazioneCRECM la valutazione della segreteria è già bloccata
+		/*
+		//disabilito tutti i filedValutazioneAccreditamento
+		for (FieldValutazioneAccreditamento fva : valutazioneSegreteria.getValutazioni()) {
+			fva.setEnabled(false);
+		}
+		*/
 
 		//inserisce il commento complessivo
 		valutazioneSegreteria.setValutazioneComplessiva(valutazioneComplessiva);
@@ -872,6 +884,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo(accreditamento, sedutaAccreditamento, sedutaIntegrazione, sedutaPreavvisoRigetto);
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
 			accreditamento.setDecretoAccreditamento(file);
+		} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
+			//Cancelliamo le Valutazioni non completate
+			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
+			for(Valutazione v : valutazioni){
+				if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE && v.getDataValutazione() == null){
+					valutazioneService.delete(v);
+				}
+			}
 		}
 
 		accreditamento.setStato(stato);
