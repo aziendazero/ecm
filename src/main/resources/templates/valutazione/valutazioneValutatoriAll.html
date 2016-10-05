@@ -11,7 +11,8 @@
 				<tr>
 					<th th:text="#{label.id}">label.id</th>
 					<th:block th:each="valutatore, row : ${__${wrapper}__.mappaValutatoreValutazioni}">
-						<th th:text="#{label.valutazione} + ' ' + ${valutatore.key.isSegreteria() ? 'Segreteria ECM - ' + valutatore.key.getFullName() : 'Referee - ' + valutatore.key.getFullName()}">Nome</th>
+						<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutatore.key.isSegreteria() ? 'Segreteria ECM - ' + valutatore.key.getFullName() : 'Referee - ' + valutatore.key.getFullName()}">Nome</th>
+						<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutatore.key.isSegreteria() ? 'Segreteria ECM' : 'Referee'}">Nome</th>
 					</th:block>
 				</tr>
 			</thead>
