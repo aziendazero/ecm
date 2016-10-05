@@ -349,6 +349,10 @@ textarea {
 	width: 100%;
 }
 
+textarea[disabled] {
+	cursor: not-allowed;
+}
+
 .note-text {
 	width: 300px;
 }

@@ -54,20 +54,20 @@
 	            </div>
 	            <div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 					<div class="radio">
-						<label th:class="${!canValutaDomanda} ? 'label-disabled'">
-							<input type="radio" class="flat" th:field="${__${wrapper}__.mappa[__${idField}__].esito}" th:value="true" th:disabled="${!canValutaDomanda}"  />
+						<label th:class="${!canValutaDomanda or !__${wrapper}__.mappa[__${idField}__].enabled} ? 'label-disabled'">
+							<input type="radio" class="flat" th:field="${__${wrapper}__.mappa[__${idField}__].esito}" th:value="true" th:disabled="${!canValutaDomanda or __${wrapper}__.mappa[__${idField}__].enabled}"  />
 							<span th:text="#{label.sì}">Sì</span>
 						</label>
 					</div>
 					<div class="radio">
-						<label th:class="${!canValutaDomanda} ? 'label-disabled'">
-							<input type="radio" class="flat" th:field="${__${wrapper}__.mappa[__${idField}__].esito}" th:value="false" th:disabled="${!canValutaDomanda}" />
+						<label th:class="${!canValutaDomanda or !__${wrapper}__.mappa[__${idField}__].enabled} ? 'label-disabled'">
+							<input type="radio" class="flat" th:field="${__${wrapper}__.mappa[__${idField}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or !__${wrapper}__.mappa[__${idField}__].enabled}" />
 							<span th:text="#{label.no}">No</span>
 						</label>
 					</div>
 				</div>
 				<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-					<textarea th:field="${__${wrapper}__.mappa[__${idField}__].note}" th:disabled="${!canValutaDomanda}" ></textarea>
+					<textarea th:field="${__${wrapper}__.mappa[__${idField}__].note}" th:disabled="${!canValutaDomanda or !__${wrapper}__.mappa[__${idField}__].enabled}" ></textarea>
 				</div>
 				<input type="hidden" th:field="${__${wrapper}__.mappa[__${idField}__].id}" />
 	        </th:block>

@@ -42,7 +42,7 @@
 							<label th:if="${canValutaDomanda}" class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
 							<button class="btn btn-primary pull-right" th:text="#{label.tutte_le_valutazioni}" data-toggle="modal" data-target=".modal-altreValutazioni"></button>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoAllegatiWrapper.accreditamentoId}/validate?tab=tab3|}"></a>
-							<button class="btn btn-primary pull-right" onclick="selezionaTuttiSi()">Tutti si</button>
+							<button class="btn btn-primary pull-right" th:if="${canValutaDomanda}" onclick="selezionaTuttiSi()">Tutti sì</button>
 						</div>
 						<div class="clearfix"></div>
 					</div>
