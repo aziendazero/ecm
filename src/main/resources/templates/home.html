@@ -103,6 +103,17 @@
 						</div>
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
+							<div class="icon"><i class="fa fa-search"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.domandeValutazioneIntegrazione}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeValutazioneIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.da_valutare_integrazione}"></p>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('accreditamento/assegnamento/list')">
 							<div class="icon"><i class="fa fa-refresh"></i></div>
 							<div class="col-xs-10">
@@ -112,14 +123,13 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
-							<div class="icon"><i class="fa fa-search"></i></div>
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/odg/list')">
+							<div class="icon"><i class="fa fa-clock-o"></i></div>
 							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeValutazioneIntegrazione}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeValutazioneIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_valutare_integrazione}"></p>
+			                	<div class="count" th:text="${homeWrapper.domandeInInsODG}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInInsODG == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.da_inserire_nel_odg}"></p>
 							</div>
 						</div>
 					</div>
@@ -133,6 +143,7 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('referee/list')">
 							<div class="icon"><i class="fa fa-eye-slash"></i></div>
@@ -140,17 +151,6 @@
 			                	<div class="count" th:text="${homeWrapper.badReferee}"></div>
 			                	<h3 class="tile-h3" th:text="#{label.referee}"></h3>
 			                	<p class="count-text" th:text="${homeWrapper.badReferee == 1} ? #{label.non_ha_valutato} :  #{label.non_hanno_valutato}"></p>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/odg/list')">
-							<div class="icon"><i class="fa fa-clock-o"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeInInsODG}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInInsODG == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_inserire_nel_odg}"></p>
 							</div>
 						</div>
 					</div>
