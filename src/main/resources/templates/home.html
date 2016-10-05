@@ -83,28 +83,28 @@
 				<!-- SEGRETERIA -->
 				<div class="row" th:if="${homeWrapper.isSegreteria}">
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list?tipo=Provvisorio&amp;filterTaken=true')">
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list?filterTaken=true')">
 							<div class="icon"><i class="fa fa-list"></i></div>
 							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeProvvisorieNotTaken}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeProvvisorieNotTaken == 1} ? #{label.domanda_provvisoria} : #{label.domande_provvisorie}"></h3>
+			                	<div class="count" th:text="${homeWrapper.domandeNotTaken}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeNotTaken == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
 			                	<p class="count-text" th:text="#{label.da_prendere_in_carica}"></p>
 							</div>
 						</div>
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list?tipo=Standard&amp;filterTaken=true')">
-							<div class="icon"><i class="fa fa-list-ul"></i></div>
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list?showCarica=true')">
+							<div class="icon"><i class="fa fa-check-square-o"></i></div>
 							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeStandardNotTaken}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeStandardNotTaken == 1} ? #{label.domanda_standard} : #{label.domande_standard}"></h3>
-			                	<p class="count-text" th:text="#{label.da_prendere_in_carica}"></p>
+			                	<div class="count" th:text="${homeWrapper.domandeDaValutareAll}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeDaValutareAll == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.da_valutare}"></p>
 							</div>
 						</div>
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('accreditamento/assegnamento/list')">
-							<div class="icon"><i class="fa fa-exchange"></i></div>
+							<div class="icon"><i class="fa fa-refresh"></i></div>
 							<div class="col-xs-10">
 			                	<div class="count" th:text="${homeWrapper.domandeAssegnamento}"></div>
 			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeAssegnamento == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
@@ -114,36 +114,15 @@
 					</div>
 
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/richiestaIntegrazione/list?tipo=Provvisorio')">
-							<div class="icon"><i class="fa fa-check-square-o"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeProvvisorieRichiestaIntegrazione}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeProvvisorieRichiestaIntegrazione == 1} ? #{label.domanda_provvisoria} : #{label.domande_provvisorie}"></h3>
-			                	<p class="count-text" th:text="#{label.in_richiesta_integrazione}"></p>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list?tipo=Provvisorio')">
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
 							<div class="icon"><i class="fa fa-search"></i></div>
 							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeProvvisorieValutazioneIntegrazione}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeProvvisorieValutazioneIntegrazione == 1} ? #{label.domanda_provvisoria} : #{label.domande_provvisorie}"></h3>
+			                	<div class="count" th:text="${homeWrapper.domandeValutazioneIntegrazione}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeValutazioneIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
 			                	<p class="count-text" th:text="#{label.da_valutare_integrazione}"></p>
 							</div>
 						</div>
 					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/preavvisoRigetto/list?tipo=Provvisorio')">
-							<div class="icon"><i class="fa fa-exclamation-circle"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeProvvisoriePreavvisoRigetto}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeProvvisoriePreavvisoRigetto == 1} ? #{label.domanda_provvisoria} : #{label.domande_provvisorie}"></h3>
-			                	<p class="count-text" th:text="#{label.in_preavviso_di_rigetto}"></p>
-							</div>
-						</div>
-					</div>
-
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('accreditamento/scadenza/list')">
 							<div class="icon"><i class="fa fa-calendar"></i></div>
@@ -164,16 +143,8 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list?showCarica=true')">
-							<div class="icon"><i class="fa fa-list"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeDaValutareAll}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeDaValutareAll == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_valutare}"></p>
-							</div>
-						</div>
-					</div>
+
+
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('accreditamento/odg/list')">
 							<div class="icon"><i class="fa fa-clock-o"></i></div>

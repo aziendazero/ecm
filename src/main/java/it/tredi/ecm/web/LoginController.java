@@ -75,12 +75,9 @@ public class LoginController {
 					break;
 				case SEGRETERIA:
 					wrapper.setIsSegreteria(true);
-					wrapper.setDomandeProvvisorieNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, AccreditamentoTipoEnum.PROVVISORIO, true));
-					wrapper.setDomandeStandardNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, AccreditamentoTipoEnum.STANDARD, true));
+					wrapper.setDomandeNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, true));
 					wrapper.setDomandeAssegnamento(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.ASSEGNAMENTO, null, null));
-					wrapper.setDomandeProvvisorieRichiestaIntegrazione(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE, AccreditamentoTipoEnum.PROVVISORIO, null));
-					wrapper.setDomandeProvvisorieValutazioneIntegrazione(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, AccreditamentoTipoEnum.PROVVISORIO, null));
-					wrapper.setDomandeProvvisoriePreavvisoRigetto(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.PREAVVISO_RIGETTO, AccreditamentoTipoEnum.PROVVISORIO, null));
+					wrapper.setDomandeValutazioneIntegrazione(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, null, null));
 					wrapper.setDomandeInScadenza(accreditamentoService.countAllAccreditamentiInScadenza());
 					wrapper.setBadReferee(accountService.countAllRefereeWithValutazioniNonDate());
 					wrapper.setDomandeDaValutareAll(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, null));

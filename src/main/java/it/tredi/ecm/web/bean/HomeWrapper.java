@@ -27,12 +27,9 @@ public class HomeWrapper {
 	//Segreteria
 	private Boolean isSegreteria;
 	private Integer badReferee;
-	private Integer domandeStandardNotTaken;
-	private Integer domandeProvvisorieNotTaken;
+	private Integer domandeNotTaken;
 	private Integer domandeAssegnamento;
-	private Integer domandeProvvisorieRichiestaIntegrazione;
-	private Integer domandeProvvisorieValutazioneIntegrazione;
-	private Integer domandeProvvisoriePreavvisoRigetto;
+	private Integer domandeValutazioneIntegrazione;
 	private Integer domandeInScadenza;
 	private Integer domandeDaValutareAll;
 	private Integer domandeInInsODG;

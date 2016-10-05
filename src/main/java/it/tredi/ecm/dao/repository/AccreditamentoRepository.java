@@ -38,7 +38,7 @@ public interface AccreditamentoRepository extends CrudRepository<Accreditamento,
 		@Query("SELECT a FROM Accreditamento a WHERE a.stato = :stato AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
 		public Set<Accreditamento> findAllByStatoNotTaken(@Param("stato") AccreditamentoStatoEnum stato);
 		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.stato = :stato AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
-		public int countAllByStatoNotTaken(AccreditamentoStatoEnum stato);
+		public int countAllByStatoNotTaken(@Param("stato") AccreditamentoStatoEnum stato);
 
 		//query e count domande accreditamento a seconda dello stato e del tipo, non prese in carica
 		@Query("SELECT a FROM Accreditamento a WHERE a.stato = :stato AND a.tipoDomanda = :tipo AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
