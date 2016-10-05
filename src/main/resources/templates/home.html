@@ -34,16 +34,6 @@
 
 				<!-- PROVIDER -->
 				<div class="row" th:if="${homeWrapper.isProvider}">
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="show('XXX')">
-						<div class="tile-stats clickable">
-							<div class="icon"><i class="fa fa-euro"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.eventiDaPagare}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiDaPagare == 1 ? #messages.msg('label.evento') : #messages.msg('label.eventi')}"></h3>
-			                	<p class="count-text" th:text="#{label.da_pagare}">Da pagare</p>
-							</div>
-						</div>
-					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/integrazione/list')">
 						<div class="tile-stats clickable">
 							<div class="icon"><i class="fa fa-edit"></i></div>
@@ -51,6 +41,26 @@
 			                	<div class="count" th:text="${homeWrapper.accreditamentiDaIntegrare}"></div>
 			                	<h3 class="tile-h3" th:text="${homeWrapper.accreditamentiDaIntegrare == 1 ? #messages.msg('label.accreditamento') : #messages.msg('label.accreditamenti')}"></h3>
 			                	<p class="count-text" th:text="#{label.da_integrare}">Da integrare</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/preavvisoRigetto/list')">
+						<div class="tile-stats clickable">
+							<div class="icon"><i class="fa fa-exclamation-circle"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.accreditamentiInPreavvisoRigetto}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.accreditamentiInPreavvisoRigetto == 1 ? #messages.msg('label.accreditamento') : #messages.msg('label.accreditamenti')}"></h3>
+			                	<p class="count-text" th:text="#{label.in_preavviso_rigetto}">In preavviso di rigetto</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="show('XXX')">
+						<div class="tile-stats clickable">
+							<div class="icon"><i class="fa fa-euro"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.eventiDaPagare}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiDaPagare == 1 ? #messages.msg('label.evento') : #messages.msg('label.eventi')}"></h3>
+			                	<p class="count-text" th:text="#{label.da_pagare}">Da pagare</p>
 							</div>
 						</div>
 					</div>

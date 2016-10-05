@@ -22,6 +22,7 @@ public class HomeWrapper {
 	private Integer eventiDaPagare;
 	private Integer messaggi;
 	private Integer accreditamentiDaIntegrare;
+	private Integer accreditamentiInPreavvisoRigetto;
 	private String nomeProvider;
 
 	//Segreteria

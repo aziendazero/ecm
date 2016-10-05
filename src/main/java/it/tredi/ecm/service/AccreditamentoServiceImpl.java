@@ -93,15 +93,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(provider.getId(), tipoDomanda);
 
-			if(accreditamentiAttivi.isEmpty()){
+			//TODO RIABILITARE ASSOLUTAMENTE
+//			if(accreditamentiAttivi.isEmpty()){
 				Accreditamento accreditamento = new Accreditamento(tipoDomanda);
 				accreditamento.setProvider(provider);
 				accreditamento.enableAllIdField();
 				save(accreditamento);
 				return accreditamento;
-			}else{
-				throw new Exception("E' già presente una domanda di accreditamento " + tipoDomanda + " per il provider " + provider.getId());
-			}
+//			}else{
+//				throw new Exception("E' già presente una domanda di accreditamento " + tipoDomanda + " per il provider " + provider.getId());
+//			}
 		}
 	}
 

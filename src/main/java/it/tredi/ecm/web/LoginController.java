@@ -71,6 +71,7 @@ public class LoginController {
 					wrapper.setEventiDaPagare(3);
 					wrapper.setMessaggi(9);
 					wrapper.setAccreditamentiDaIntegrare(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.INTEGRAZIONE, wrapper.getProviderId()));
+					wrapper.setAccreditamentiInPreavvisoRigetto(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.PREAVVISO_RIGETTO, wrapper.getProviderId()));
 					wrapper.setNomeProvider(providerService.getProvider(providerService.getProviderIdByAccountId(currentUser.getAccount().getId())).getDenominazioneLegale()); //TODO fare con query
 					break;
 				case SEGRETERIA:
