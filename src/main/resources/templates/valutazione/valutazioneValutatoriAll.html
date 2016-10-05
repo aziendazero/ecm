@@ -11,7 +11,7 @@
 				<tr>
 					<th th:text="#{label.id}">label.id</th>
 					<th:block th:each="valutatore, row : ${__${wrapper}__.mappaValutatoreValutazioni}">
-						<th th:text="#{label.valutazione} + ' ' + ${valutatore.key.isSegreteria() ? 'Segreteria ECM' : 'Referee ' + valutatore.key.nome + ' ' + valutatore.key.cognome}">Nome</th>
+						<th th:text="#{label.valutazione} + ' ' + ${valutatore.key.isSegreteria() ? 'Segreteria ECM - ' + valutatore.key.getFullName() : 'Referee - ' + valutatore.key.getFullName()}">Nome</th>
 					</th:block>
 				</tr>
 			</thead>
