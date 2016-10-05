@@ -15,7 +15,7 @@ public class EcmAppConfiguration {
 	@Value("${account.expires.days}")
 	private int accountExpiresDay = 10;
 	@Value("${file.multipart.maxFileSize}")
-	private int multipartMaxFileSize = 3;
+	private int multipartMaxFileSize = 2;
 	@Value("${seduta.validation.minutes}")
 	private int sedutaValidationMinutes = 30;
 	@Value("${application.baseurl}")
