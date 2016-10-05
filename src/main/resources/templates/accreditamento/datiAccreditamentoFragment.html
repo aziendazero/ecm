@@ -80,9 +80,9 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda or
-											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].enabled}" />
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
@@ -149,9 +149,9 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda or
-											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].enabled}" />
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
@@ -216,9 +216,9 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda or
-											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].enabled}" />
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
@@ -335,9 +335,9 @@
 			                    </th:block>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda or
-											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].enabled}" />
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
@@ -426,9 +426,9 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda or
-											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].enabled}" />
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
@@ -538,9 +538,9 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda or
-											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].enabled}" />
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
@@ -647,9 +647,9 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda or
-											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].enabled}" />
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
