@@ -141,7 +141,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 						LOGGER.warn("L'utente userName: " + userName + " esiste già su bonita anche se account.getUsernameworkflow() non è impostato. Lo aggiorno");
 					} else {
 						LOGGER.error("Impossibile creare l'utente userName: " + userName + " su bonita", e);
-						throw e;						
+						throw e;
 					}
 				} catch (Exception ex) {
 					LOGGER.error("Impossibile creare o aggiornare l'utente userName: " + userName + " su bonita", e);
@@ -244,10 +244,10 @@ public class WorkflowServiceImpl implements WorkflowService {
 		if(val != null) {
 			stati = (List<String>)val;
 		}
-		
+
 		List<AccreditamentoStatoEnum> result = new ArrayList<AccreditamentoStatoEnum>();
 		stati.forEach(s -> result.add(AccreditamentoStatoEnum.valueOf(s)));
-		
+
 		return result;
 	}
 
@@ -260,7 +260,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 	public void eseguiTaskValutazioneAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) {
 			LOGGER.error("Non è possibile eseguire il task Valutazione Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task Valutazione Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task Valutazione Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -285,7 +285,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 	public void eseguiTaskValutazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_CRECM) {
 			LOGGER.error("Non è possibile eseguire il task Valutazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task Valutazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task Valutazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -339,7 +339,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 	public void eseguiTaskInsOdgForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.INS_ODG) {
 			LOGGER.error("Non è possibile eseguire il task INS_ODG per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task INS_ODG per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task INS_ODG per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -365,17 +365,17 @@ public class WorkflowServiceImpl implements WorkflowService {
 			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
 		}
 	}
-	
+
 	public void eseguiTaskInserimentoEsitoOdgForCurrentUser(Accreditamento accreditamento, AccreditamentoStatoEnum stato) throws Exception {
 		//Ricavo l'utente corrente
 		CurrentUser user = Utils.getAuthenticatedUser();
 		eseguiTaskTaskInserimentoEsitoOdgForUser(user, accreditamento, stato);
 	}
-	
+
 	public void eseguiTaskTaskInserimentoEsitoOdgForUser(CurrentUser user, Accreditamento accreditamento, AccreditamentoStatoEnum stato) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE) {
 			LOGGER.error("Non è possibile eseguire il task Inserimento Esito ODG per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task Inserimento Esito ODG per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task Inserimento Esito ODG per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -395,11 +395,11 @@ public class WorkflowServiceImpl implements WorkflowService {
 		CurrentUser user = Utils.getAuthenticatedUser();
 		eseguiTaskAssegnazioneCrecmForUser(user, accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
 	}
-	
+
 	public void eseguiTaskAssegnazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.ASSEGNAMENTO) {
 			LOGGER.error("Non è possibile eseguire il task Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -414,17 +414,17 @@ public class WorkflowServiceImpl implements WorkflowService {
 		bonitaAPIWrapper.setTaskVariable(task.getId(), "numeroValutazioniCrecmRichieste", (Serializable)numeroValutazioniCrecmRichieste);
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
-	
+
 	public void eseguiTaskRichiestaIntegrazioneForCurrentUser(Accreditamento accreditamento, Long timerIntegrazioneRigetto) throws Exception {
 		//Ricavo l'utente corrente
 		CurrentUser user = Utils.getAuthenticatedUser();
 		eseguiTaskRichiestaIntegrazioneForUser(user, accreditamento, timerIntegrazioneRigetto);
 	}
-	
+
 	public void eseguiTaskRichiestaIntegrazioneForUser(CurrentUser user, Accreditamento accreditamento, Long timerIntegrazioneRigetto) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
 			LOGGER.error("Non è possibile eseguire il task Richiesta Integrazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task Richiesta Integrazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task Richiesta Integrazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -438,17 +438,17 @@ public class WorkflowServiceImpl implements WorkflowService {
 		bonitaAPIWrapper.setTaskVariable(task.getId(), "timerIntegrazioneRigetto", (Serializable)timerIntegrazioneRigetto);
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
-	
+
 	public void eseguiTaskIntegrazioneForCurrentUser(Accreditamento accreditamento) throws Exception {
 		//Ricavo l'utente corrente
 		CurrentUser user = Utils.getAuthenticatedUser();
 		eseguiTaskIntegrazioneForUser(user, accreditamento);
 	}
-	
+
 	public void eseguiTaskIntegrazioneForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.INTEGRAZIONE) {
 			LOGGER.error("Non è possibile eseguire il task Integrazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task Integrazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task Integrazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -461,17 +461,17 @@ public class WorkflowServiceImpl implements WorkflowService {
 		}
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
-	
-	public void eseguiTaskValutazioneSegreteriaForCurrentUser(Accreditamento accreditamento, Boolean presaVisione) throws Exception {
+
+	public void eseguiTaskValutazioneSegreteriaForCurrentUser(Accreditamento accreditamento, Boolean presaVisione, List<String> usernameWorkflowValutatoriCrecm) throws Exception {
 		//Ricavo l'utente corrente
 		CurrentUser user = Utils.getAuthenticatedUser();
-		eseguiTaskValutazioneSegreteriaForUser(user, accreditamento, presaVisione);
+		eseguiTaskValutazioneSegreteriaForUser(user, accreditamento, presaVisione, usernameWorkflowValutatoriCrecm);
 	}
-	
-	public void eseguiTaskValutazioneSegreteriaForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione) throws Exception {
+
+	public void eseguiTaskValutazioneSegreteriaForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione, List<String> usernameWorkflowValutatoriCrecm) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
 			LOGGER.error("Non è possibile eseguire il task ValutazioneSegreteria per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task ValutazioneSegreteria per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task ValutazioneSegreteria per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -482,20 +482,22 @@ public class WorkflowServiceImpl implements WorkflowService {
 			//lo prendo in carico
 			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
 		}
+		if(usernameWorkflowValutatoriCrecm != null)
+			bonitaAPIWrapper.setTaskVariable(task.getId(), "usernameListValutazioneCrecm", (Serializable)usernameWorkflowValutatoriCrecm);
 		bonitaAPIWrapper.setTaskVariable(task.getId(), "presaVisione", (Serializable)presaVisione);
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
-	
+
 	public void eseguiTaskRichiestaPreavvisoRigettoForCurrentUser(Accreditamento accreditamento, Long timerIntegrazioneRigetto) throws Exception {
 		//Ricavo l'utente corrente
 		CurrentUser user = Utils.getAuthenticatedUser();
 		eseguiTaskRichiestaPreavvisoRigettoForUser(user, accreditamento, timerIntegrazioneRigetto);
 	}
-	
+
 	public void eseguiTaskRichiestaPreavvisoRigettoForUser(CurrentUser user, Accreditamento accreditamento, Long timerIntegrazioneRigetto) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
 			LOGGER.error("Non è possibile eseguire il task Richiesta Preavviso di Rigetto per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task Richiesta Preavviso di Rigetto per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task Richiesta Preavviso di Rigetto per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -515,11 +517,11 @@ public class WorkflowServiceImpl implements WorkflowService {
 		CurrentUser user = Utils.getAuthenticatedUser();
 		eseguiTaskPreavvisoRigettoForUser(user, accreditamento);
 	}
-	
+
 	public void eseguiTaskPreavvisoRigettoForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
 			LOGGER.error("Non è possibile eseguire il task Preavviso Rigetto per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
-			throw new Exception("Non è possibile eseguire il task Preavviso Rigetto per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());			
+			throw new Exception("Non è possibile eseguire il task Preavviso Rigetto per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
@@ -532,6 +534,6 @@ public class WorkflowServiceImpl implements WorkflowService {
 		}
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
-	
+
 
 }

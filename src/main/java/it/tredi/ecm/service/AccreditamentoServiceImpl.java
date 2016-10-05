@@ -362,8 +362,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//elimino le date delle vecchie valutazioni
 		Set<Account> valutatori = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamentoId);
+		List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
 		for(Account a : valutatori) {
 			if(a.isReferee()) {
+				usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
 				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId());
 				valutazione.setDataValutazione(null);
 				valutazioneService.save(valutazione);
@@ -372,8 +374,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
-
-		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, false);
+		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, false, usernameWorkflowValutatoriCrecm);
 	}
 
 	@Override
@@ -384,7 +385,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.setDataInserimentoOdg(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
 
-		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, true);
+		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, true, null);
 	}
 
 	@Override
