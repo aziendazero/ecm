@@ -157,7 +157,7 @@
 				</div>
 
 				<!-- COMMISSIONE -->
-				<div class="row" th:if="${(homeWrapper.isCommissione == true)  and (homeWrapper.prossimaSeduta != null)}">
+				<div class="row" th:if="${(homeWrapper.isCommissione != null and homeWrapper.isCommissione == true) and (homeWrapper.prossimaSeduta != null)}">
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" th:onclick="'goTo(\'seduta/' + ${homeWrapper.prossimaSeduta.id} + '/show\')'">
 							<div class="icon"><i class="fa fa-calendar"></i></div>
