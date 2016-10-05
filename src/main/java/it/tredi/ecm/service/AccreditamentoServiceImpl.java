@@ -318,20 +318,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Riassegnamento domanda di Accreditamento " + accreditamentoId + " ad un ALTRO gruppo CRECM"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
-		//elimino le valutazioni dei referee che non hanno confermato la valutazione e aumento il loro contatore
-		Set<Account> valutatori = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamentoId);
-		for(Account a : valutatori) {
-			if(a.isReferee()) {
-				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId());
-				if(valutazione.getDataValutazione() == null) {
-					//TODO send notifica/messaggio
-					a.setValutazioniNonDate(a.getValutazioniNonDate() + 1);
-					accountRepository.save(a);
-					valutazioneService.delete(valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId()));
-				}
-			}
-		}
-
 		// crea le valutazioni per i nuovi referee
 		List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
 		for (Account a : refereeGroup) {
@@ -359,9 +345,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		approvaIntegrazione(accreditamentoId);
 
-		//setta la data
-		//Non dovrebbe servire perche' passando in AssegnazioneCRECM la valutazione della segreteria è già bloccata
-		//valutazioneSegreteria.setDataValutazione(LocalDate.now());
+		//setta la data (per la presa visione)
+		valutazioneSegreteria.setDataValutazione(LocalDate.now());
 		//Non dovrebbe servire perche' passando in AssegnazioneCRECM la valutazione della segreteria è già bloccata
 		/*
 		//disabilito tutti i filedValutazioneAccreditamento

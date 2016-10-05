@@ -157,6 +157,9 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 				referee.setDomandeNonValutate(domandeNonValutate);
 
 				accountService.save(referee);
+
+				//infine elimino la valutazione
+				valutazioneRepository.delete(v);
 			}
 		}
 	}
