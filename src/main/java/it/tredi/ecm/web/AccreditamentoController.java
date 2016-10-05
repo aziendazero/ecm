@@ -108,9 +108,9 @@ public class AccreditamentoController {
 		if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
 			valutazioneService.updateValutazioniNonDate(accreditamentoId);
 		}
-		
-		
-		
+
+
+
 		if(dataOraScadenzaPossibiltaValutazioneCRECM != null && !dataOraScadenzaPossibiltaValutazioneCRECM.isEmpty()) {
 			//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -118,8 +118,8 @@ public class AccreditamentoController {
 			LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 			valutazioneService.dataOraScadenzaPossibiltaValutazioneCRECM(accreditamentoId, ldt);
 		}
-		
-		
+
+
 
 		return new ResponseState(false, "Stato modificato");
 
@@ -824,6 +824,7 @@ public class AccreditamentoController {
 				accreditamentoService.saveFileNoteOsservazioni(idFilePreavvisoRigetto, accreditamentoId);
 			}
 			accreditamentoService.inviaIntegrazione(accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.invio_integrazione_success", "success"));
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sendIntegrazione"),ex);
