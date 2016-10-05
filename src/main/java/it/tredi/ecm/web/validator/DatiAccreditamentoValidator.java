@@ -42,15 +42,28 @@ public class DatiAccreditamentoValidator {
 			errors.rejectValue(prefix + "numeroDipendentiFormazioneTempoIndeterminato", "error.empty");
 		if(datiAccreditamento.getNumeroDipendentiFormazioneAltro() == null)
 			errors.rejectValue(prefix + "numeroDipendentiFormazioneAltro", "error.empty");
-		//controllo di tipo cronologico, non posso avere un buco di un anno nei dati inseriti
-		if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreUno() != null &&
-				datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreTre() != null &&
-				datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreDue() == null)
-			errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreDue", "error.empty");
-		if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() != null &&
-				datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreTre() != null &&
-				datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreDue() == null)
-			errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreDue", "error.empty");
+
+		//controllo di tipo cronologico, se inserisco un anno, gli altri più recenti diventano obbligatori
+		if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreTre() != null) {
+			if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreDue() == null)
+				errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreDue", "error.empty");
+			if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreUno() == null)
+				errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreUno", "error.empty");
+		}
+		if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreDue() != null) {
+			if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreUno() == null)
+				errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreUno", "error.empty");
+		}
+		if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreTre() != null) {
+			if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreDue() == null)
+				errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreDue", "error.empty");
+			if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() == null)
+				errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreUno", "error.empty");
+		}
+		if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreDue() != null) {
+			if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() == null)
+				errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreUno", "error.empty");
+		}
 	}
 
 	@SuppressWarnings("unchecked")
