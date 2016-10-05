@@ -708,7 +708,15 @@ h2 {
 	display: none;
 }
 
+.valutazione-collapse {
+	display: none;
+}
+
 .link-collapse {
+	cursor: pointer;
+}
+
+.link-collapse-valutazione {
 	cursor: pointer;
 }
 

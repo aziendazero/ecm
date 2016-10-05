@@ -13,19 +13,24 @@
 				<div class="x_panel">
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.valutazioni_complessive}">label.valutazioni_complessive</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<table id="valutazioniComplessiveBlockValidate" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-						<!-- popolata con una request ajax -->
-						<thead>
-							<tr>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
-						</tbody>
-					</table>
+					<div class="valutazione-collapse">
+						<table id="valutazioniComplessiveBlockValidate" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<!-- popolata con una request ajax -->
+							<thead>
+								<tr>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
 				</div>
 
 				<!-- riempito con chiamata ajax provider -->
@@ -33,10 +38,13 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.info_provider}">label.info_provider</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.provider != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.provider != null}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.provider != null}" id="providerBlockValidate" ></div>
+					<div th:if="${accreditamentoWrapper.provider != null}" id="providerBlockValidate" class="valutazione-collapse"></div>
 
 				</div>
 
@@ -45,10 +53,13 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.legale_rappresentante}">label.legale_rappresentante</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.legaleRappresentante != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.legaleRappresentante != null}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.legaleRappresentante != null}" id="legaleBlockValidate" ></div>
+					<div th:if="${accreditamentoWrapper.legaleRappresentante != null}" id="legaleBlockValidate" class="valutazione-collapse"></div>
 
 				</div>
 
@@ -57,10 +68,13 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.delegato_legale_rappresentante}">label.delegato_legale_rappresentante</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" id="delegatoBlockValidate" ></div>
+					<div th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" id="delegatoBlockValidate" class="valutazione-collapse"></div>
 
 				</div>
 
@@ -69,18 +83,21 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.sedi_provider}">label.sedi_provider</h2>
 						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.sedi) and accreditamentoWrapper.sedeLegale == null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi) and accreditamentoWrapper.sedeLegale == null}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
 					<th:block th:if="${accreditamentoWrapper.sedeLegale != null}">
 						<h2 th:text="#{label.sede_legale} + ': ' + ${accreditamentoWrapper.sedeLegale.indirizzo + ' (' + accreditamentoWrapper.sedeLegale.comune + ')'}">label.sede_legale + indirizzo</h2>
 						<div th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi)}" class="divider-dashed"></div>
-						<div id="sedeLegaleBlockValidate" ></div>
+						<div id="sedeLegaleBlockValidate" class="valutazione-collapse"></div>
 					</th:block>
 					<th:block th:each="sede, row : ${accreditamentoWrapper.sedi}">
 						<h2 th:text="#{label.sede_operativa} + ': ' + ${sede.indirizzo} + ' (' + ${sede.comune} + ')'">label.sede_operativa</h2>
 						<div th:unless="${row.last}" class="divider-dashed"></div>
-						<div th:id="sede+${sede.id}+BlockValidate"  role="iterSedeOperativa" th:attr="data-valore-id=${sede.id}"></div>
+						<div th:id="sede+${sede.id}+BlockValidate"  role="iterSedeOperativa" th:attr="data-valore-id=${sede.id}" class="valutazione-collapse"></div>
 					</th:block>
 
 				</div>
@@ -90,10 +107,13 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.dati_accreditamento}">label.dati_accreditamento</h2>
 						<h2 style="display: inline" th:if="${accreditamentoWrapper.datiAccreditamento.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${accreditamentoWrapper.datiAccreditamento.new}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:unless="${accreditamentoWrapper.datiAccreditamento.new}" id="datiBlockValidate" ></div>
+					<div th:unless="${accreditamentoWrapper.datiAccreditamento.new}" id="datiBlockValidate" class="valutazione-collapse"></div>
 
 				</div>
 
@@ -102,10 +122,13 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.responsabile_segreteria}">label.responsabile_segreteria</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileSegreteria != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.responsabileSegreteria != null}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.responsabileSegreteria != null}" id="rSegreteriaBlockValidate" ></div>
+					<div th:if="${accreditamentoWrapper.responsabileSegreteria != null}" id="rSegreteriaBlockValidate" class="valutazione-collapse"></div>
 
 				</div>
 				<!-- riempito con chiamata ajax responsabile amministrativo -->
@@ -113,10 +136,13 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.responsabile_amministrativo}">label.responsabile_amministrativo</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileAmministrativo != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.responsabileAmministrativo != null}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.responsabileAmministrativo != null}" id="rAmministrativoBlockValidate" ></div>
+					<div th:if="${accreditamentoWrapper.responsabileAmministrativo != null}" id="rAmministrativoBlockValidate" class="valutazione-collapse"></div>
 
 				</div>
 
@@ -125,10 +151,13 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.responsabile_sistema_informatico}">label.responsabile_sistema_informatico</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileSistemaInformatico != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.responsabileSistemaInformatico != null}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.responsabileSistemaInformatico != null}" id="rSisInformaticoBlockValidate" ></div>
+					<div th:if="${accreditamentoWrapper.responsabileSistemaInformatico != null}" id="rSisInformaticoBlockValidate" class="valutazione-collapse"></div>
 
 				</div>
 
@@ -137,10 +166,13 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.responsabile_qualita}">label.responsabile_qualita</h2>
 						<h2 style="display: inline" th:unless="${accreditamentoWrapper.responsabileQualita != null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:if="${accreditamentoWrapper.responsabileQualita != null}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:if="${accreditamentoWrapper.responsabileQualita != null}" id="rQualitaBlockValidate" ></div>
+					<div th:if="${accreditamentoWrapper.responsabileQualita != null}" id="rQualitaBlockValidate" class="valutazione-collapse"></div>
 
 				</div>
 
@@ -149,18 +181,21 @@
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.componenti_comitato_scientifico}">label.componenti_comitato_scientifico</h2>
 						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico) and accreditamentoWrapper.coordinatoreComitatoScientifico == null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico) and accreditamentoWrapper.coordinatoreComitatoScientifico == null}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
 					<th:block th:if="${accreditamentoWrapper.coordinatoreComitatoScientifico != null}">
 						<h2 th:text="#{label.coordinatore_comitato} + ': ' + ${accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.nome + ' ' + accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.cognome}">label.coordinatore_comitato</h2>
 						<div class="divider-dashed"></div>
-						<div th:id="coordinatoreBlockValidate" ></div>
+						<div th:id="coordinatoreBlockValidate" class="valutazione-collapse"></div>
 					</th:block>
 					<th:block th:each="componente, row : ${accreditamentoWrapper.componentiComitatoScientifico}">
 						<h2 th:text="#{label.componente_comitato} + ': ' + ${componente.anagrafica.nome} + ' ' + ${componente.anagrafica.cognome}">label.componente_comitato</h2>
 						<div th:unless="${row.last}" class="divider-dashed"></div>
-						<div th:id="componente+${componente.id}+BlockValidate"  role="iterComponenteValutazione" th:attr="data-valore-id=${componente.id}"></div>
+						<div th:id="componente+${componente.id}+BlockValidate"  role="iterComponenteValutazione" th:attr="data-valore-id=${componente.id}" class="valutazione-collapse"></div>
 					</th:block>
 
 				</div>
@@ -169,10 +204,13 @@
 				<div class="x_panel">
               		<div class="x_title">
 						<h2 style="display: inline" th:text="#{label.allegati}">label.allegati</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
 						<div class="clearfix"></div>
 					</div>
 
-					<div id="allegatiBlockValidate" ></div>
+					<div id="allegatiBlockValidate" class="valutazione-collapse"></div>
 
 				</div>
 
@@ -354,6 +392,25 @@
 // 						});
 // 					});
 				}
+
+					//mostra nascondi div con informazioni
+				$('.link-collapse-valutazione').on('click', function() {
+					$(this).children().toggleClass("fa-chevron-down fa-chevron-up");
+					$(this).parents(".x_title").siblings(".valutazione-collapse").slideToggle("slow");
+				});
+
+				function openAllValutazione() {
+					$('.iconToggleValutazione').addClass("fa-chevron-up").removeClass("fa-chevron-down");
+					$(".valutazione-collapse").slideDown("slow");
+					$('.toggleButtonsValutazione').toggle();
+				}
+
+				function closeAllValutazione() {
+					$('.iconToggleValutazione').addClass("fa-chevron-down").removeClass("fa-chevron-up");
+					$(".valutazione-collapse").slideUp("slow");
+					$('.toggleButtonsValutazione').toggle();
+				}
+
 
 			/*]]>*/
 			</script>
