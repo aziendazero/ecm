@@ -92,6 +92,12 @@ public class LoginController {
 					wrapper.setIsCommissione(true);
 					wrapper.setProssimaSeduta(sedutaService.getNextSeduta());
 					break;
+				case OSSERVATORE:
+					//TODO
+					break;
+				case ENGINEERING:
+					//TODO rimuovere caso
+					break;
 			}
 		}
 		return wrapper;
