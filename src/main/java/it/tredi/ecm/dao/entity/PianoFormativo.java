@@ -28,10 +28,10 @@ public class PianoFormativo extends BaseEntity{
 	private Provider provider;
 
 	@ManyToMany
-	private Set<Evento> eventi = new HashSet<Evento>();
+	private Set<EventoPianoFormativo> eventiPianoFormativo = new HashSet<EventoPianoFormativo>();
 
-	public void addEvento(Evento evento){
-		this.getEventi().add(evento);
+	public void addEvento(EventoPianoFormativo evento){
+		this.getEventiPianoFormativo().add(evento);
 		if(evento.getPianoFormativo() != null){
 			if(evento.getPianoFormativo().intValue() < this.annoPianoFormativo.intValue())
 				evento.setPianoFormativo(this.annoPianoFormativo);
@@ -40,7 +40,7 @@ public class PianoFormativo extends BaseEntity{
 	}
 	
 	public void removeEvento(long eventoId){
-		this.getEventi().removeIf(e -> e.getId() == eventoId);
+		this.getEventiPianoFormativo().removeIf(e -> e.getId() == eventoId);
 	}
 	
 	public boolean isPianoModificabile(){

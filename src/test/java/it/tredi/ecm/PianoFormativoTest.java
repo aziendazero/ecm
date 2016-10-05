@@ -36,11 +36,13 @@ import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
+import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PianoFormativoRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
+import it.tredi.ecm.service.EventoPianoFormativoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.PagamentoService;
 import it.tredi.ecm.service.PersonaService;
@@ -167,9 +169,6 @@ public class PianoFormativoTest {
 		evento3.setAccreditamento(accreditamento);
 		eventoRepository.save(evento3);
 		
-		pianoFormativo.addEvento(evento);
-		pianoFormativo.addEvento(evento2);
-		pianoFormativo.addEvento(evento3);
 		pianoFormativoRepository.save(pianoFormativo);
 		
 		PianoFormativo pianoFormativo2 = new PianoFormativo();
@@ -177,7 +176,6 @@ public class PianoFormativoTest {
 		pianoFormativo2.setProvider(provider);
 		pianoFormativoRepository.save(pianoFormativo2);
 		
-		pianoFormativo2.addEvento(evento2);
 		pianoFormativoRepository.save(pianoFormativo2);
 	}
 
@@ -188,10 +186,10 @@ public class PianoFormativoTest {
 		PianoFormativo piano1 = pianoFormativoService.getPianoFormativoAnnualeForProvider(this.providerId, new Integer(2016));
 		PianoFormativo piano2 = pianoFormativoService.getPianoFormativoAnnualeForProvider(this.providerId, new Integer(2017));
 		
-		assertEquals(3, piano1.getEventi().size());
-		assertEquals(1, piano2.getEventi().size());
+		assertEquals(3, piano1.getEventiPianoFormativo().size());
+		assertEquals(1, piano2.getEventiPianoFormativo().size());
 		
-		Set<Evento> eventi = eventoRepository.findAllByProviderIdAndPianoFormativo(this.providerId, new Integer(2017));
+		Set<Evento> eventi = eventoRepository.findAllByProviderId(this.providerId);
 		
 		assertEquals(1, eventi.size());
 	}

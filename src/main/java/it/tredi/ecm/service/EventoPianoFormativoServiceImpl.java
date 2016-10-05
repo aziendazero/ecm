@@ -8,32 +8,39 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.repository.EventoRepository;
+import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
+import it.tredi.ecm.utils.Utils;
 
 @Service
-public class EventoServiceImpl implements EventoService {
-	public static final Logger LOGGER = Logger.getLogger(Evento.class);
+public class EventoPianoFormativoServiceImpl implements EventoPianoFormativoService {
+	public static final Logger LOGGER = Logger.getLogger(EventoPianoFormativoServiceImpl.class);
 
 	@Autowired
-	private EventoRepository eventoRepository;
+	private EventoPianoFormativoRepository eventoRepository;
 
 	@Override
-	public Evento getEvento(Long id) {
+	public EventoPianoFormativo getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
 		return eventoRepository.findOne(id);
 	}
 
 	@Override
-	public Set<Evento> getAllEventiFromProvider(Long providerId) {
+	public Set<EventoPianoFormativo> getAllEventiFromProvider(Long providerId) {
 		LOGGER.debug("Recupero eventi del provider: " + providerId);
 		return eventoRepository.findAllByProviderId(providerId);
 	}
 
 	@Override
+	public Set<EventoPianoFormativo> getAllEventiFromProviderInPianoFormativo(Long providerId, Integer pianoFormativo) {
+		LOGGER.debug("Recupero eventi del provider " + providerId + " relativi al piano formativo " + pianoFormativo);
+		return eventoRepository.findAllByProviderIdAndPianoFormativo(providerId, pianoFormativo);
+	}
+
+	@Override
 	@Transactional
-	public void save(Evento evento) {
+	public void save(EventoPianoFormativo evento) {
 		LOGGER.debug("Salvataggio evento");
 		eventoRepository.save(evento);
 	}
@@ -43,6 +50,13 @@ public class EventoServiceImpl implements EventoService {
 	public void delete(Long id) {
 		LOGGER.debug("Eliminazione evento:" + id);
 		eventoRepository.delete(id);
+	}
+	
+	@Override
+	public void buildPrefix(EventoPianoFormativo evento) throws Exception{
+		LOGGER.debug(Utils.getLogMessage("Salvataggio prefix per evento: " + evento.getId()));
+		evento.buildPrefix();
+		save(evento);
 	}
 	
 

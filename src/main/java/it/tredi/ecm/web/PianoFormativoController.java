@@ -92,7 +92,7 @@ public class PianoFormativoController {
 	/*
 	 * EDIT PIANO FORMATIVO
 	 * */
-	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#providerId, #pianoFormativoId)")
+	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal, #pianoFormativoId)")
 	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/edit")
 	public String editPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/edit"));

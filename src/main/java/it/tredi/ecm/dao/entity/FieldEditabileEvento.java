@@ -14,13 +14,13 @@ import lombok.Setter;
 @Setter
 public class FieldEditabileEvento extends Field {
 	@ManyToOne
-	private Evento evento;
+	private EventoPianoFormativo evento;
 	public FieldEditabileEvento() {}
-	public FieldEditabileEvento(IdFieldEnum idField, Evento evento) {
+	public FieldEditabileEvento(IdFieldEnum idField, EventoPianoFormativo evento) {
 		super.setIdField(idField);
 		setEvento(evento);
 	}
-	public FieldEditabileEvento(IdFieldEnum idField, Evento evento, Long objectReference) {
+	public FieldEditabileEvento(IdFieldEnum idField, EventoPianoFormativo evento, Long objectReference) {
 		super.setIdField(idField);
 		setEvento(evento);
 		super.setObjectReference(objectReference);

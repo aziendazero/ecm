@@ -10,7 +10,7 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
@@ -331,7 +331,7 @@ public class AccreditamentoWrapper {
 
 			//eventi pianoFormativo N.B. stesso discorso dei componenti
 			//TODO rimuovere se confermato che non serve più
-//			for (Evento e : accreditamento.getPianoFormativo().getEventi()) {
+//			for (EventoPianoFormativo e : accreditamento.getPianoFormativo().getEventi()) {
 //				if(mappaEventi.get(e.getId()) != null && !mappaEventi.get(e.getId()).isEmpty())
 //					eventiStati.replace(e.getId(), true);
 //			};
@@ -480,7 +480,7 @@ public class AccreditamentoWrapper {
 
 	//ci sono eventi inseriti nel piano formativo
 	private boolean isPianoFormativoCompleto(){
-		return ((accreditamento.getPianoFormativo() != null) && !accreditamento.getPianoFormativo().getEventi().isEmpty());
+		return ((accreditamento.getPianoFormativo() != null) && !accreditamento.getPianoFormativo().getEventiPianoFormativo().isEmpty());
 	}
 
 	public boolean isCanInsertEventoInPianoFormativo(){

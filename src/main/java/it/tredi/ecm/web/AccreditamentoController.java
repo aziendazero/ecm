@@ -30,7 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
@@ -605,7 +605,7 @@ public class AccreditamentoController {
 		mappaCoordinatore = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), coordinatoreId);
 
 		//aggiungo gli eventi
-		for(Evento e : accreditamentoWrapper.getAccreditamento().getPianoFormativo().getEventi()) {
+		for(EventoPianoFormativo e : accreditamentoWrapper.getAccreditamento().getPianoFormativo().getEventiPianoFormativo()) {
 			mappaEventi.put(e.getId(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), e.getId()));
 			eventiStati.put(e.getId(), false);
 		}

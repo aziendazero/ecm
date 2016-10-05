@@ -23,6 +23,8 @@ import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Where;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -62,6 +64,10 @@ public class Provider extends BaseEntity{
 	private String partitaIva;
 	private String codiceFiscale;
 	private String emailStruttura;
+	
+	public Long getCodiceIdentificativoUnivoco(){
+		return this.getId();
+	}
 
 	private boolean hasPartitaIVA = false;
 

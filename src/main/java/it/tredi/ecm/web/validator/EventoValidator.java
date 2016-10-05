@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
-import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.utils.Utils;
 
 @Component
@@ -20,8 +20,8 @@ public class EventoValidator {
 	}
 	
 	private void validateBase(Object target, Errors errors, String prefix){
-		LOGGER.info(Utils.getLogMessage("Validazione Evento Base"));
-		Evento evento = (Evento) target;
+		LOGGER.info(Utils.getLogMessage("Validazione EventoPianoFormativo Base"));
+		EventoPianoFormativo evento = (EventoPianoFormativo) target;
 		if(evento.getProceduraFormativa() == null)
 			errors.rejectValue(prefix + "proceduraFormativa", "error.empty");
 		if(evento.getTitolo() == null || evento.getTitolo().isEmpty())
@@ -37,8 +37,8 @@ public class EventoValidator {
 	}
 	
 	private void validateFull(Object target, Errors errors, String prefix){
-		LOGGER.info(Utils.getLogMessage("Validazione Evento Full"));
-		Evento evento = (Evento) target;
+		LOGGER.info(Utils.getLogMessage("Validazione EventoPianoFormativo Full"));
+		EventoPianoFormativo evento = (EventoPianoFormativo) target;
 		//TODO validateFull in caso di inserimento di un evento non nel piano formativo
 		if(evento.getProceduraFormativa() == null)
 			errors.rejectValue(prefix + "proceduraFormativa", "error.empty");

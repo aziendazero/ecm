@@ -3,6 +3,7 @@ package it.tredi.ecm.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.enumlist.RoleEnum;
 import it.tredi.ecm.service.bean.CurrentUser;
 
@@ -176,8 +177,10 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	}
 
 	@Override
-	public boolean canEditPianoFormativo(CurrentUser currentUser, Long providerId, Long pianoFormativoId) {
-		if(!canEditProvider(currentUser, providerId))
+	public boolean canEditPianoFormativo(CurrentUser currentUser, Long pianoFormativoId) {
+		PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
+		
+		if(!canEditProvider(currentUser, pianoFormativo.getProvider().getId()))
 			return false;
 
 		if(canEditAllProvider(currentUser))

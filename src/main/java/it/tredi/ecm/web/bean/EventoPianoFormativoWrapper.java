@@ -1,14 +1,14 @@
 package it.tredi.ecm.web.bean;
 
-import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.File;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class EventoWrapper extends Wrapper {
-	private Evento evento;
+public class EventoPianoFormativoWrapper extends Wrapper {
+	private EventoPianoFormativo evento;
 	private Long providerId;
 	private Long accreditamentoId;
 	private Long pianoFormativoId;
@@ -17,6 +17,6 @@ public class EventoWrapper extends Wrapper {
 
 	private File reportPartecipanti;
 
-	public EventoWrapper(){
+	public EventoPianoFormativoWrapper(){
 	}
 }

@@ -17,5 +17,4 @@ public class RichiestaIntegrazioneWrapper {
 	private Long objRef;
 	private Set<FieldEditabileAccreditamento> fullLista = new HashSet<FieldEditabileAccreditamento>();
 	private Set<IdFieldEnum> selected = new HashSet<IdFieldEnum>();
-	
 }

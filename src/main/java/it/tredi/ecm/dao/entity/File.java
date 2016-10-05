@@ -123,4 +123,10 @@ public class File extends BaseEntity{
 		return true;
 	}
  
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		File cloned = (File) super.clone();
+		cloned.setId(null);
+		return clone();
+	}
 }
