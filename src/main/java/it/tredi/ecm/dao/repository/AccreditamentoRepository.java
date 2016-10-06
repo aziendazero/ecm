@@ -34,6 +34,12 @@ public interface AccreditamentoRepository extends CrudRepository<Accreditamento,
 		public Set<Accreditamento> findAllByStatoAndTipoDomanda(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo);
 		public int countAllByStatoAndTipoDomanda(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo);
 
+		//query e count domande inseribili in Seduta (in stato INS_ODG non già inserite in nessuna seduta non bloccata)
+		@Query("SELECT a FROM Accreditamento a WHERE a.stato = 'INS_ODG' AND a NOT IN (SELECT vc.accreditamento FROM ValutazioneCommissione vc WHERE vc.seduta.id IN (SELECT s.id FROM Seduta s WHERE s.locked = FALSE))")
+		public Set<Accreditamento> findAllAccreditamentiInseribiliInODG();
+		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.stato = 'INS_ODG' AND a NOT IN (SELECT vc.accreditamento FROM ValutazioneCommissione vc WHERE vc.seduta.id IN (SELECT s.id FROM Seduta s WHERE s.locked = FALSE))")
+		public int countAllAccreditamentiInseribiliInODG();
+
 		//query e count domande accreditamento a seconda dello stato, non prese in carica
 		@Query("SELECT a FROM Accreditamento a WHERE a.stato = :stato AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
 		public Set<Accreditamento> findAllByStatoNotTaken(@Param("stato") AccreditamentoStatoEnum stato);
@@ -85,4 +91,5 @@ public interface AccreditamentoRepository extends CrudRepository<Accreditamento,
 		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.dataScadenza BETWEEN :oggi AND :dateScadenza")
 		public int countAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
 	//
+
 }

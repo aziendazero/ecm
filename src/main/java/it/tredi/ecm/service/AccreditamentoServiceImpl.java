@@ -553,6 +553,20 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 	}
 
+	//recupera tutti gli accreditamenti in stato INS_ODG NON ancora inseriti in NESSUNA seduta NON bloccata
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiInseribiliInODG() {
+		LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento in stato INS_ODG NON inseriti in NESSUNA Seduta non bloccata/valutata"));
+		return accreditamentoRepository.findAllAccreditamentiInseribiliInODG();
+	}
+
+	//conta tutti gli accreditamenti in stato INS_ODG NON ancora inseriti in NESSUNA seduta NON bloccata
+	@Override
+	public int countAllAccreditamentiInseribiliInODG() {
+		LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento in stato INS_ODG NON inseriti in NESSUNA Seduta non bloccata/valutata"));
+		return accreditamentoRepository.countAllAccreditamentiInseribiliInODG();
+	}
+
 	//recupera tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate in valutazione ad un certo id utente
 	@Override
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id, Boolean filterDone) {

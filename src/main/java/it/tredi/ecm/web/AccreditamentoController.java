@@ -928,6 +928,32 @@ public class AccreditamentoController {
 		}
 	}
 
+	//solo segreteria
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowDaInserireInODG(principal)")
+	@RequestMapping("/accreditamento/daInserireODG/list")
+	public String getAllAccreditamentiAncoraDaInserireInODG(Model model, RedirectAttributes redirectAttrs) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/daInserireODG/list"));
+		try {
+			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiInseribiliInODG();
+			model.addAttribute("label", "label.listaDomandeDaInserireInODG");
+			model.addAttribute("accreditamentoList", listaAccreditamenti);
+			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
+			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
+			//prende la mappa<id domanda, set account di chi ha una valutazione per la domanda> per ogni elemento della lista di accreditamenti
+			Map<Long, Set<Account>> mappaCarica = new HashMap<Long, Set<Account>>();
+			mappaCarica = valutazioneService.getValutatoriForAccreditamentiList(listaAccreditamenti);
+			model.addAttribute("mappaCarica", mappaCarica);
+
+			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
+			return "accreditamento/accreditamentoList";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/daInserireODG/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
 //	@PreAuthorize("@securityAccessServiceImpl.canShowNonValutate(principal,#refereeId)
 	//TODO solo segreteria e referee interessato
 	@RequestMapping("/referee/{refereeId}/accreditamento/nonValutate/list")

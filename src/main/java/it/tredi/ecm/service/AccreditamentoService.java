@@ -66,6 +66,9 @@ public interface AccreditamentoService{
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Boolean filterTaken);
 	public int countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Boolean filterTaken);
 
+	public Set<Accreditamento> getAllAccreditamentiInseribiliInODG();
+	public int countAllAccreditamentiInseribiliInODG();
+
 	public Set<Accreditamento> getAllAccreditamentiInScadenza();
 	public int countAllAccreditamentiInScadenza();
 
