@@ -22,6 +22,7 @@ import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ValutazioneRepository;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 
 @Service
@@ -33,6 +34,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private ProfileRepository profileRepository;
 	@Autowired private AccountService accountService;
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -119,7 +121,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Override
 	public int countRefereeNotValutatoriForAccreditamentoId(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Conto i referee che non hanno valutato l'accreditamento " + accreditamentoId));
-		return valutazioneRepository.countRefereeValutatoriWithNoDataValutazioneForAccreditamentoId(accreditamentoId);
+		return ecmProperties.getNumeroReferee() - valutazioneRepository.countRefereeValutatoriWithDataValutazioneForAccreditamentoId(accreditamentoId, profileRepository.findOneByProfileEnum(ProfileEnum.REFEREE).get());
 	}
 
 	@Override
@@ -140,6 +142,17 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 				mappaAccreditamentoAccountValutatore.put(a.getId(), account);
 		}
 		return mappaAccreditamentoAccountValutatore;
+	}
+
+	@Override
+	public Map<Long, Set<Account>> getValutatoriForAccreditamentiList(Set<Accreditamento> accreditamentoSet) {
+		LOGGER.debug(Utils.getLogMessage("Carico la mappa dei valutatori degli accreditamenti"));
+		Map<Long, Set<Account>> mappaAccreditamentoIdAccountValutatori = new HashMap<Long, Set<Account>>();
+		for (Accreditamento a : accreditamentoSet) {
+			Set<Account> accounts = valutazioneRepository.getAllAccountValutatoriForAccreditamentoIdOrderByAccount(a.getId());
+			mappaAccreditamentoIdAccountValutatori.put(a.getId(), accounts);
+		}
+		return mappaAccreditamentoIdAccountValutatori;
 	}
 
 	@Override
