@@ -14,4 +14,5 @@ public class EcmProperties {
 	private boolean debugTestMode;
 	private int giorniIntegrazioneMin;
 	private int giorniIntegrazioneMax;
+	private int numeroReferee;
 }
