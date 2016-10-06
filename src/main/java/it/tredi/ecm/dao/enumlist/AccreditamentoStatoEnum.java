@@ -10,7 +10,7 @@ public enum AccreditamentoStatoEnum {
 	BOZZA (1, "Bozza", ""), //domanda non ufficiale
 	VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO (2, "Valutazione da parte della segreteria", "valutazioneAssegnamento"),//domanda inviata alla segreteria che deve valutarla e assegnare il gruppo CRECM
 	VALUTAZIONE_CRECM (3, "Valutazione CRECM", "valutazioneReferee"),//[SOLO PROVVISORIA] - domanda assegnata al gruppo CRECM, che deve valutarla
-	ASSEGNAMENTO (4, "Assegnamento nuovo gruppo CRECM", "assegnamento"),//[SOLO PROVVISORIA] - //domanda restituita alla segreteria che deve assegnare un nuovo gruppo CRECM (perchè 2/3 del primo gruppo non hanno valutato)
+	ASSEGNAMENTO (4, "Assegnamento nuovi referee", "assegnamento"),//[SOLO PROVVISORIA] - //domanda restituita alla segreteria che deve assegnare un nuovo gruppo CRECM (perchè 2/3 del primo gruppo non hanno valutato)
 	INS_ODG (5, "Inserimento nell'Ordine del giorno", "odg"),//domanda deve essere inserita in ODG per valutazione della Commissione ECM
 	VALUTAZIONE_COMMISSIONE (6, "Valutazione Commissione ECM", "valutazioneCommissione"),//domanda in discussione da parte della Commissione ECM, al termine la segreteria riporta l'esito
 	DINIEGO (7, "Respinto", "diniego"),//al secondo giro...la domanda può essere definitivamente respinta

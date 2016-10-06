@@ -28,6 +28,8 @@ public class EcmAppConfiguration {
 	private int giorniIntegrazioneMin = 5;
 	@Value("${giorni.integrazione.max}")
 	private int giorniIntegrazioneMax = 20;
+	@Value("${numero.referee}")
+	private int numeroReferee = 3;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -40,6 +42,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setDebugTestMode(debugTestMode);
 		ecmProperties.setGiorniIntegrazioneMin(giorniIntegrazioneMin);
 		ecmProperties.setGiorniIntegrazioneMax(giorniIntegrazioneMax);
+		ecmProperties.setNumeroReferee(numeroReferee);
 		return ecmProperties;
 	}
 }

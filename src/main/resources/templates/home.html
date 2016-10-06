@@ -34,16 +34,6 @@
 
 				<!-- PROVIDER -->
 				<div class="row" th:if="${homeWrapper.isProvider}">
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="show('XXX')">
-						<div class="tile-stats clickable">
-							<div class="icon"><i class="fa fa-euro"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.eventiDaPagare}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiDaPagare == 1 ? #messages.msg('label.evento') : #messages.msg('label.eventi')}"></h3>
-			                	<p class="count-text" th:text="#{label.da_pagare}">Da pagare</p>
-							</div>
-						</div>
-					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/integrazione/list')">
 						<div class="tile-stats clickable">
 							<div class="icon"><i class="fa fa-edit"></i></div>
@@ -54,16 +44,36 @@
 							</div>
 						</div>
 					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/preavvisoRigetto/list')">
+						<div class="tile-stats clickable">
+							<div class="icon"><i class="fa fa-exclamation-circle"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.accreditamentiInPreavvisoRigetto}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.accreditamentiInPreavvisoRigetto == 1 ? #messages.msg('label.accreditamento') : #messages.msg('label.accreditamenti')}"></h3>
+			                	<p class="count-text" th:text="#{label.in_preavviso_rigetto}">In preavviso di rigetto</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="show('XXX')">
+						<div class="tile-stats clickable">
+							<div class="icon"><i class="fa fa-euro"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.eventiDaPagare}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiDaPagare == 1 ? #messages.msg('label.evento') : #messages.msg('label.eventi')}"></h3>
+			                	<p class="count-text" th:text="#{label.da_pagare}">Da pagare</p>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<!-- REFEREE -->
 				<div class="row" th:if="${homeWrapper.isReferee}">
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/valutazioneReferee/list')">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/valutazioneReferee/list?filterDone=true')">
 						<div class="tile-stats clickable">
 							<div class="icon"><i class="fa fa-list-alt"></i></div>
 							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeInCarica}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInCarica == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<div class="count" th:text="${homeWrapper.domandeDaValutareNotDone}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeDaValutareNotDone == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
 			                	<p class="count-text" th:text="#{label.da_valutare}">Da valutare</p>
 							</div>
 						</div>
@@ -93,7 +103,7 @@
 						</div>
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list?showCarica=true')">
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list')">
 							<div class="icon"><i class="fa fa-check-square-o"></i></div>
 							<div class="col-xs-10">
 			                	<div class="count" th:text="${homeWrapper.domandeDaValutareAll}"></div>
@@ -102,6 +112,17 @@
 							</div>
 						</div>
 					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
+							<div class="icon"><i class="fa fa-search"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.domandeValutazioneIntegrazione}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeValutazioneIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.da_valutare_integrazione}"></p>
+							</div>
+						</div>
+					</div>
+
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('accreditamento/assegnamento/list')">
 							<div class="icon"><i class="fa fa-refresh"></i></div>
@@ -112,14 +133,13 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
-							<div class="icon"><i class="fa fa-search"></i></div>
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/daInserireODG/list')">
+							<div class="icon"><i class="fa fa-clock-o"></i></div>
 							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeValutazioneIntegrazione}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeValutazioneIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_valutare_integrazione}"></p>
+			                	<div class="count" th:text="${homeWrapper.domandeInInsODG}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInInsODG == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.da_inserire_nel_odg}"></p>
 							</div>
 						</div>
 					</div>
@@ -133,6 +153,7 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('referee/list')">
 							<div class="icon"><i class="fa fa-eye-slash"></i></div>
@@ -143,21 +164,10 @@
 							</div>
 						</div>
 					</div>
-
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/odg/list')">
-							<div class="icon"><i class="fa fa-clock-o"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeInInsODG}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInInsODG == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_inserire_nel_odg}"></p>
-							</div>
-						</div>
-					</div>
 				</div>
 
 				<!-- COMMISSIONE -->
-				<div class="row" th:if="${(homeWrapper.isCommissione == true)  and (homeWrapper.prossimaSeduta != null)}">
+				<div class="row" th:if="${(homeWrapper.isCommissione != null and homeWrapper.isCommissione == true) and (homeWrapper.prossimaSeduta != null)}">
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" th:onclick="'goTo(\'seduta/' + ${homeWrapper.prossimaSeduta.id} + '/show\')'">
 							<div class="icon"><i class="fa fa-calendar"></i></div>

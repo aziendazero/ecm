@@ -66,12 +66,15 @@ public interface AccreditamentoService{
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Boolean filterTaken);
 	public int countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Boolean filterTaken);
 
+	public Set<Accreditamento> getAllAccreditamentiInseribiliInODG();
+	public int countAllAccreditamentiInseribiliInODG();
+
 	public Set<Accreditamento> getAllAccreditamentiInScadenza();
 	public int countAllAccreditamentiInScadenza();
 
 	//Vaschetta Referee
-	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Long refereeId);
-	public int countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long refereeId);
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Long refereeId, Boolean filterDone);
+	public int countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long refereeId, Boolean filterDone);
 
 	//Vaschetta Provider
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForProviderId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipoByNome, Long providerId);

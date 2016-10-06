@@ -32,5 +32,9 @@ public interface SecurityAccessService {
 
 	public boolean canShowSeduta(CurrentUser currentUser);
 	public boolean canEditSeduta(CurrentUser currentUser);
-	boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId, Boolean showRiepilogo) throws Exception;
+	public boolean canValidateAccreditamento(CurrentUser currentUser, Long accreditamentoId, Boolean showRiepilogo) throws Exception;
+
+	public boolean canShowInScadenza(CurrentUser currentUser);
+
+	public boolean canReassignCRECM(CurrentUser currentUser, Long accreditamentoId) throws Exception;
 }

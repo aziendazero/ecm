@@ -24,30 +24,6 @@
 
 				</div>
 
-				<!-- riempito con ciclo di chiamate ajax per le sedi  -->
-				<div class="x_panel">
-              		<div class="x_title">
-						<h2 style="display: inline" th:text="#{label.sedi_provider}">label.sedi_provider</h2>
-						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.sedi) and accreditamentoWrapper.sedeLegale == null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi) and accreditamentoWrapper.sedeLegale == null}">
-		                    <li><a class="link-collapse"><i class="fa iconToggle fa-chevron-down"></i></a></li>
-                  		</ul>
-						<div class="clearfix"></div>
-					</div>
-
-					<th:block th:if="${accreditamentoWrapper.sedeLegale != null}">
-						<h2 th:text="#{label.sede_legale} + ': ' + ${accreditamentoWrapper.sedeLegale.indirizzo + ' (' + accreditamentoWrapper.sedeLegale.comune + ')'}">label.sede_legale + indirizzo</h2>
-						<div th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi)}" class="divider-dashed"></div>
-						<div th:id="sedeLegaleBlock" class="container-collapse"></div>
-					</th:block>
-					<th:block th:each="sede, row : ${accreditamentoWrapper.sedi}">
-						<h2 th:text="#{label.sede_operativa} + ': ' + ${sede.indirizzo} + ' (' + ${sede.comune} + ')'">label.sede_operativa + indirizzo</h2>
-						<div th:unless="${row.last}" class="divider-dashed"></div>
-						<div th:id="sede+${sede.id}+Block" class="container-collapse" role="iterSede" th:attr="data-valore-id=${sede.id}"></div>
-					</th:block>
-
-				</div>
-
 				<!-- riempito con chiamata ajax legale rappresentante -->
 				<div class="x_panel">
               		<div class="x_title">
@@ -75,6 +51,30 @@
 					</div>
 
 					<div th:if="${accreditamentoWrapper.delegatoLegaleRappresentante != null}" id="delegatoBlock" class="container-collapse"></div>
+
+				</div>
+
+				<!-- riempito con ciclo di chiamate ajax per le sedi  -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.sedi_provider}">label.sedi_provider</h2>
+						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.sedi) and accreditamentoWrapper.sedeLegale == null}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi) and accreditamentoWrapper.sedeLegale == null}">
+		                    <li><a class="link-collapse"><i class="fa iconToggle fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:if="${accreditamentoWrapper.sedeLegale != null}">
+						<h2 th:text="#{label.sede_legale} + ': ' + ${accreditamentoWrapper.sedeLegale.indirizzo + ' (' + accreditamentoWrapper.sedeLegale.comune + ')'}">label.sede_legale + indirizzo</h2>
+						<div th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi)}" class="divider-dashed"></div>
+						<div th:id="sedeLegaleBlock" class="container-collapse"></div>
+					</th:block>
+					<th:block th:each="sede, row : ${accreditamentoWrapper.sedi}">
+						<h2 th:text="#{label.sede_operativa} + ': ' + ${sede.indirizzo} + ' (' + ${sede.comune} + ')'">label.sede_operativa + indirizzo</h2>
+						<div th:unless="${row.last}" class="divider-dashed"></div>
+						<div th:id="sede+${sede.id}+Block" class="container-collapse" role="iterSede" th:attr="data-valore-id=${sede.id}"></div>
+					</th:block>
 
 				</div>
 

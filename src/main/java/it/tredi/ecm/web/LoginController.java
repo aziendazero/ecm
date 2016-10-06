@@ -71,6 +71,7 @@ public class LoginController {
 					wrapper.setEventiDaPagare(3);
 					wrapper.setMessaggi(9);
 					wrapper.setAccreditamentiDaIntegrare(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.INTEGRAZIONE, wrapper.getProviderId()));
+					wrapper.setAccreditamentiInPreavvisoRigetto(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.PREAVVISO_RIGETTO, wrapper.getProviderId()));
 					wrapper.setNomeProvider(providerService.getProvider(providerService.getProviderIdByAccountId(currentUser.getAccount().getId())).getDenominazioneLegale()); //TODO fare con query
 					break;
 				case SEGRETERIA:
@@ -81,15 +82,23 @@ public class LoginController {
 					wrapper.setDomandeInScadenza(accreditamentoService.countAllAccreditamentiInScadenza());
 					wrapper.setBadReferee(accountService.countAllRefereeWithValutazioniNonDate());
 					wrapper.setDomandeDaValutareAll(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, null));
-					wrapper.setDomandeInInsODG(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.INS_ODG, null, null));
+					wrapper.setDomandeInInsODG(accreditamentoService.countAllAccreditamentiInseribiliInODG());
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);
-					wrapper.setDomandeInCarica(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId()));
+					wrapper.setDomandeDaValutareNotDone(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId(), true));
 					wrapper.setDomandeNonValutateConsecutivamente(accountService.getUserById(currentUser.getAccount().getId()).getValutazioniNonDate());
+					break;
 				case COMMISSIONE:
 					wrapper.setIsCommissione(true);
 					wrapper.setProssimaSeduta(sedutaService.getNextSeduta());
+					break;
+				case OSSERVATORE:
+					//TODO
+					break;
+				case ENGINEERING:
+					//TODO rimuovere caso
+					break;
 			}
 		}
 		return wrapper;
