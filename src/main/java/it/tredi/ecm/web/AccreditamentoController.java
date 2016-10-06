@@ -116,7 +116,7 @@ public class AccreditamentoController {
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 			Date date = df.parse(dataOraScadenzaPossibiltaValutazioneCRECM);
 			LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-			valutazioneService.dataOraScadenzaPossibiltaValutazioneCRECM(accreditamentoId, ldt);
+			valutazioneService.dataOraScadenzaPossibilitaValutazioneCRECM(accreditamentoId, ldt);
 		}
 
 
@@ -840,6 +840,7 @@ public class AccreditamentoController {
 			@RequestParam(name="tipo", required = false) String tipo,
 			@RequestParam(name="filterTaken", required = false) Boolean filterTaken,
 			@RequestParam(name="showCarica", required = false) Boolean showCarica,
+			@RequestParam(name="filterDone", required = false) Boolean filterDone,
 			RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list, tipo = " + tipo + ", filterTaken = " + filterTaken));
 		try {
@@ -853,7 +854,7 @@ public class AccreditamentoController {
 			}
 			if(currentUser.isReferee()) {
 				for (AccreditamentoStatoEnum stato : stati) {
-					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), currentUser.getAccount().getId()));
+					listaAccreditamenti.addAll(accreditamentoService.getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(stato, AccreditamentoTipoEnum.getTipoByNome(tipo), currentUser.getAccount().getId(), filterDone));
 				}
 			}
 			if(currentUser.isProvider()) {

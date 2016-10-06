@@ -68,12 +68,12 @@
 
 				<!-- REFEREE -->
 				<div class="row" th:if="${homeWrapper.isReferee}">
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/valutazioneReferee/list')">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('accreditamento/valutazioneReferee/list&filterDone=true')">
 						<div class="tile-stats clickable">
 							<div class="icon"><i class="fa fa-list-alt"></i></div>
 							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeInCarica}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInCarica == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<div class="count" th:text="${homeWrapper.domandeDaValutareNotDone}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeDaValutareNotDone == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
 			                	<p class="count-text" th:text="#{label.da_valutare}">Da valutare</p>
 							</div>
 						</div>

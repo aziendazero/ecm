@@ -52,11 +52,23 @@ public interface AccreditamentoRepository extends CrudRepository<Accreditamento,
 		@Query("SELECT COUNT(v.accreditamento) FROM Valutazione v WHERE v.account.id = :id AND v.accreditamento.stato = :stato")
 		public int countAllByStatoInValutazioneAssignedToAccountId(@Param("stato") AccreditamentoStatoEnum stato, @Param("id") Long id);
 
+		//query e count domande accreditamento a seconda dello stato assegnate al valutatore id NON ancora da lui valutate
+		@Query("SELECT v.accreditamento FROM Valutazione v WHERE v.account.id = :id AND v.accreditamento.stato = :stato AND v.dataValutazione = NULL")
+		public Set<Accreditamento> findAllByStatoInValutazioneAssignedToAccountIdNotDone(@Param("stato") AccreditamentoStatoEnum stato, @Param("id") Long id);
+		@Query("SELECT COUNT(v.accreditamento) FROM Valutazione v WHERE v.account.id = :id AND v.accreditamento.stato = :stato AND v.dataValutazione = NULL")
+		public int countAllByStatoInValutazioneAssignedToAccountIdNotDone(@Param("stato") AccreditamentoStatoEnum stato, @Param("id") Long id);
+
 		//query e count domande accreditamento a seconda dello stato e del tipo assegnate al valutatore id
 		@Query("SELECT v.accreditamento FROM Valutazione v WHERE v.account.id = :id AND v.accreditamento.stato = :stato AND v.accreditamento.tipoDomanda = :tipo")
 		public Set<Accreditamento> findAllByStatoAndTipoDomandaInValutazioneAssignedToAccountId(@Param("stato") AccreditamentoStatoEnum stato, @Param("tipo") AccreditamentoTipoEnum tipo, @Param("id") Long id);
 		@Query("SELECT COUNT (v.accreditamento) FROM Valutazione v WHERE v.account.id = :id AND v.accreditamento.stato = :stato AND v.accreditamento.tipoDomanda = :tipo")
 		public int countAllByStatoAndTipoDomandaInValutazioneAssignedToAccountId(@Param("stato") AccreditamentoStatoEnum stato, @Param("tipo") AccreditamentoTipoEnum tipo, @Param("id") Long id);
+
+		//query e count domande accreditamento a seconda dello stato e del tipo assegnate al valutatore id NON ancora da lui valutate
+		@Query("SELECT v.accreditamento FROM Valutazione v WHERE v.account.id = :id AND v.accreditamento.stato = :stato AND v.accreditamento.tipoDomanda = :tipo AND v.dataValutazione = NULL")
+		public Set<Accreditamento> findAllByStatoAndTipoDomandaInValutazioneAssignedToAccountIdNotDone(@Param("stato") AccreditamentoStatoEnum stato, @Param("tipo") AccreditamentoTipoEnum tipo, @Param("id") Long id);
+		@Query("SELECT COUNT (v.accreditamento) FROM Valutazione v WHERE v.account.id = :id AND v.accreditamento.stato = :stato AND v.accreditamento.tipoDomanda = :tipo AND v.dataValutazione = NULL")
+		public int countAllByStatoAndTipoDomandaInValutazioneAssignedToAccountIdNotDone(@Param("stato") AccreditamentoStatoEnum stato, @Param("tipo") AccreditamentoTipoEnum tipo, @Param("id") Long id);
 
 		//query e count domande accreditamento a seconda dello stato e del tipo assegnate al provider id
 		public Set<Accreditamento> findAllByStatoAndTipoDomandaAndProviderId(@Param("stato") AccreditamentoStatoEnum stato, @Param("tipo") AccreditamentoTipoEnum tipo, @Param("id") Long id);

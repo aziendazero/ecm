@@ -555,27 +555,51 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	//recupera tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate in valutazione ad un certo id utente
 	@Override
-	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
+	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id, Boolean filterDone) {
 		if (tipo != null) {
-			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
-			return accreditamentoRepository.findAllByStatoAndTipoDomandaInValutazioneAssignedToAccountId(stato, tipo, id);
+			if(filterDone != null && filterDone == true) {
+				LOGGER.debug(Utils.getLogMessage("Recupero le domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id + ", che NON ha ancora valutato"));
+				return accreditamentoRepository.findAllByStatoAndTipoDomandaInValutazioneAssignedToAccountIdNotDone(stato, tipo, id);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Recupero le domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
+				return accreditamentoRepository.findAllByStatoAndTipoDomandaInValutazioneAssignedToAccountId(stato, tipo, id);
+			}
 		}
 		else {
-			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id));
-			return accreditamentoRepository.findAllByStatoInValutazioneAssignedToAccountId(stato, id);
+			if(filterDone != null && filterDone == true) {
+				LOGGER.debug(Utils.getLogMessage("Recupero le domande di accreditamento " + stato + " assegnate all'id: " + id + ", che NON ha ancora valutato"));
+				return accreditamentoRepository.findAllByStatoInValutazioneAssignedToAccountIdNotDone(stato, id);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Recupero le domande di accreditamento " + stato + " assegnate all'id: " + id));
+				return accreditamentoRepository.findAllByStatoInValutazioneAssignedToAccountId(stato, id);
+			}
 		}
 	}
 
 	//conta tutti gli accreditamenti a seconda dello stato e del tipo che sono state assegnate in valutazione ad un certo id utente
 	@Override
-	public int countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id) {
+	public int countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Long id, Boolean filterDone) {
 		if (tipo != null) {
-			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
-			return accreditamentoRepository.countAllByStatoAndTipoDomandaInValutazioneAssignedToAccountId(stato, tipo, id);
+			if(filterDone != null && filterDone == true) {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id + ", che NON ha ancora valutato"));
+				return accreditamentoRepository.countAllByStatoAndTipoDomandaInValutazioneAssignedToAccountIdNotDone(stato, tipo, id);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " di tipo " + tipo + " assegnate all'id: " + id));
+				return accreditamentoRepository.countAllByStatoAndTipoDomandaInValutazioneAssignedToAccountId(stato, tipo, id);
+			}
 		}
 		else {
-			LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id));
-			return accreditamentoRepository.countAllByStatoInValutazioneAssignedToAccountId(stato, id);
+			if(filterDone != null && filterDone == true) {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id + ", che NON ha ancora valutato"));
+				return accreditamentoRepository.countAllByStatoInValutazioneAssignedToAccountIdNotDone(stato, id);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento " + stato + " assegnate all'id: " + id));
+				return accreditamentoRepository.countAllByStatoInValutazioneAssignedToAccountId(stato, id);
+			}
 		}
 	}
 
