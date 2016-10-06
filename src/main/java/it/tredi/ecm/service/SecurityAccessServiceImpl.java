@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.PianoFormativo;
+import it.tredi.bonita.api.model.TaskInstanceDataModel;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.enumlist.RoleEnum;
 import it.tredi.ecm.service.bean.CurrentUser;
 
@@ -13,6 +15,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	@Autowired private ProviderService providerService;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
+	@Autowired private WorkflowService workflowService;
 
 	/**		PROVIDER	**/
 	@Override
@@ -246,6 +249,23 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	@Override
 	public boolean canEditSeduta(CurrentUser currentUser) {
 		if(currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean canShowInScadenza(CurrentUser currentUser) {
+		if(currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+
+	//controlla se l'utente corrente può riassegnare i referee
+	@Override
+	public boolean canReassignCRECM(CurrentUser currentUser, Long accreditamentoId) throws Exception {
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+		if(accreditamento.isAssegnamento() && currentUser.isSegreteria() && task != null)
 			return true;
 		return false;
 	}

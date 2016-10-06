@@ -152,9 +152,9 @@ public class SedutaController {
 			return goToEdit(model, prepareWrapper(seduta));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /seduta/" + sedutaId + "/edit"),ex);
-			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
-			return SHOW;
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT:/seduta/{sedutaId}/show"));
+			return "redirect:/seduta/{sedutaId}/show";
 		}
 	}
 
@@ -167,9 +167,9 @@ public class SedutaController {
 			return goToHandle(model, prepareWrapper(seduta));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /seduta/" + sedutaId + "/handle"),ex);
-			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
-			return SHOW;
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT:/seduta/{sedutaId}/show"));
+			return "redirect:/seduta/{sedutaId}/show";
 		}
 	}
 
@@ -199,9 +199,9 @@ public class SedutaController {
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /seduta/" + sedutaId + "/validate"),ex);
-			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
-			return SHOW;
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT:/seduta/{sedutaId}/show"));
+			return "redirect:/seduta/{sedutaId}/show";
 		}
 	}
 
@@ -383,14 +383,13 @@ public class SedutaController {
 	}
 
 	private String goToHandle(Model model, SedutaWrapper sedutaWrapper) {
-		Set<Accreditamento> accreditamentiODG = accreditamentoService.getAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.INS_ODG, null, null);
-		accreditamentiODG.removeAll(sedutaService.getAccreditamentiInSeduta(sedutaWrapper.getSeduta().getId()));
+		Set<Accreditamento> accreditamentiInODG = accreditamentoService.getAllAccreditamentiInseribiliInODG();
 		//cerca le sedute disponibili per un eventuale spostamento di valutazione commissione (almeno 30 min da adesso)
 		Set<Seduta> seduteDisponibili = sedutaService.getAllSeduteAfter(LocalDate.now(), LocalTime.now().plusMinutes(ecmProperties.getSedutaValidationMinutes()));
 		//rimuove anche la seduta corrente (per evitare spostamenti da a la stessa seduta)
 		seduteDisponibili.remove(sedutaWrapper.getSeduta());
 		sedutaWrapper.setSeduteSelezionabili(seduteDisponibili);
-		sedutaWrapper.setDomandeSelezionabili(accreditamentiODG);
+		sedutaWrapper.setDomandeSelezionabili(accreditamentiInODG);
 		model.addAttribute("sedutaWrapper", sedutaWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + HANDLE));
 		return HANDLE;

@@ -708,7 +708,15 @@ h2 {
 	display: none;
 }
 
+.valutazione-collapse {
+	display: none;
+}
+
 .link-collapse {
+	cursor: pointer;
+}
+
+.link-collapse-valutazione {
 	cursor: pointer;
 }
 
@@ -1030,7 +1038,7 @@ h2 {
 }
 
 .tile-stats.clickable:hover {
-	border-color: #337ab7;
+	border-color: #73879C;
 }
 
 .yellowBGround {

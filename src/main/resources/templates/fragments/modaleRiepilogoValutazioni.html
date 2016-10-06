@@ -19,6 +19,8 @@
 						<h4 class="modal-title" id="myModalLabel"
 							th:text="#{label.riepilogo_valutazione_accreditamento(${accreditamentoWrapper.accreditamento.tipoDomanda}, ${accreditamentoWrapper.accreditamento.stato.nome})}">Riepilogo
 							di tutto l'accreditamento</h4>
+						<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtonsValutazione" th:text="#{label.apri_tutte}" onclick="openAllValutazione()"></button>
+						<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtonsValutazione" style="display: none" th:text="#{label.chiudi_tutte}" onclick="closeAllValutazione()"></button>
 					</div>
 					<div class="modal-body">
 

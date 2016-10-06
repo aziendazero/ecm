@@ -406,7 +406,7 @@
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="costi_complessivi_anno1_value">
-									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno : '--'}"></div>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
 								</div>
 								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
 		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}" />
@@ -415,13 +415,13 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 		                    		<div>
-			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno : '--'}"></span>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
 		                    		</div>
 		                    		<div>
-			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoDue} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue : '--'}"></span>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoDue} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
 		                    		</div>
 		                    		<div>
-			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre : '--'}"></span>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
 		                    		</div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
@@ -463,7 +463,7 @@
 							</th:block>
 							<th:block th:unless="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue : '--'}"></div>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"></div>
@@ -483,7 +483,7 @@
 							</th:block>
 							<th:block th:unless="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre : '--'}"></div>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></div>
@@ -518,7 +518,7 @@
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno : '--'}"></div>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
 								</div>
 								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
 		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}" />
@@ -527,13 +527,13 @@
 	 						<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 		                    		<div>
-			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoUno} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno : '--'}"></span>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoUno} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
 		                    		</div>
 		                    		<div>
-			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoDue} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue : '--'}"></span>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoDue} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
 		                    		</div>
 		                    		<div>
-			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre : '--'}"></span>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
 		                    		</div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
@@ -575,7 +575,7 @@
 							</th:block>
 							<th:block th:unless="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue : '--'}"></div>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"></div>
@@ -595,7 +595,7 @@
 							</th:block>
 							<th:block th:unless="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre != null ? datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre : '--'}"></div>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></div>

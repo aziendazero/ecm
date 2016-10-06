@@ -1,7 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,13 +20,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
-import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
@@ -268,6 +267,14 @@ public class Evento extends BaseEntity{
 
 	private boolean autorizzazionePrivacy;
 	
+	public long calcoloDurata(){
+		long durata = 0L;
+		for(DettaglioAttivitaRES a : programma){
+			durata += a.getOreAttivita();
+		}
+		return durata;
+	}
+	
 	public long calcoloCreditiFormativi(){
 		long crediti = 0L;
 		
@@ -285,14 +292,37 @@ public class Evento extends BaseEntity{
 		
 		if(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO){
 			long creditiFrontale = 0L;
-			//TODO
-			
-			
-			
+			long oreFrontale = 0L;
 			long creditiInterattiva = 0L;
+			long oreInterattiva = 0L;
+			
+			for(DettaglioAttivitaRES a : programma){
+				if(a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
+					oreFrontale ++;
+				}else{
+					oreInterattiva ++;
+				}
+			}
+
+			//metodologia frontale
+			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
+				creditiFrontale = (long) (oreFrontale * 1.0);
+				creditiFrontale = (long) (creditiFrontale + (creditiFrontale*0.20));
+			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
+				//TODO 25% decrescente
+			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){
+				creditiFrontale = (long) (oreFrontale * 1.0);
+			}else if(numeroPartecipanti >= 101 && numeroPartecipanti <= 150){
+				creditiFrontale = (long) (oreFrontale * 0.75);
+			}else if(numeroPartecipanti >= 151 && numeroPartecipanti <= 200){
+				creditiFrontale = (long) (oreFrontale * 0.5);
+			}
+			
+			//metodologia interattiva
+			creditiInterattiva = (long) (oreInterattiva * 1.5);
+			
+			crediti = creditiFrontale + creditiInterattiva;
 		}
-		
-		
 		
 		return crediti;
 	}
