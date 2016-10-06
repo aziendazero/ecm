@@ -36,7 +36,7 @@ public class Valutazione extends BaseEntity{
 	private String valutazioneComplessiva;
 
 	@Column(name="dataora_scadenza_possibilita_valutazione")
-	private LocalDateTime dataOraScadenzaPossibiltaValutazione = null;
+	private LocalDateTime dataOraScadenzaPossibilitaValutazione = null;
 
 	//TODO mettere unic coppia id account / id accreditamento
 }

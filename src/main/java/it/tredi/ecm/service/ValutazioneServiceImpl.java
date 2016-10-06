@@ -165,12 +165,12 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 	@Override
-	public void dataOraScadenzaPossibiltaValutazioneCRECM(Long accreditamentoId, LocalDateTime date) throws Exception {
+	public void dataOraScadenzaPossibilitaValutazioneCRECM(Long accreditamentoId, LocalDateTime date) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Aggiornamento dataora massima (" + date + ") entro la quale effettuare la valutazione CRECM per accreditamento: " + accreditamentoId));
 		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoId(accreditamentoId);
 		for(Valutazione v : valutazioni){
 			if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE){
-				v.setDataOraScadenzaPossibiltaValutazione(date);
+				v.setDataOraScadenzaPossibilitaValutazione(date);
 				valutazioneRepository.save(v);
 			}
 		}
