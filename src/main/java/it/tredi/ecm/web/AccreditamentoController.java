@@ -294,6 +294,7 @@ public class AccreditamentoController {
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento, valutazione, wrapper);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		model.addAttribute("refereeList", accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
+		model.addAttribute("numeroReferee", ecmProperties.getNumeroReferee());
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoValidate"));
 		return "accreditamento/accreditamentoValidate";
 	}
@@ -748,7 +749,7 @@ public class AccreditamentoController {
 	}
 
 	// riassegna la valutazioni ad un nuovo gruppo crecm, avvisa i referee precedentemente assegnati e cancella le loro valutazioni
-	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+	@PreAuthorize("@securityAccessServiceImpl.canReassignCRECM(principal,#accreditamentoId)")
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/reassignEvaluation", method = RequestMethod.POST)
 	public String riassegnaValutazioneAccreditamento(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
 			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
@@ -840,9 +841,8 @@ public class AccreditamentoController {
 			@RequestParam(name="tipo", required = false) String tipo,
 			@RequestParam(name="filterTaken", required = false) Boolean filterTaken,
 			@RequestParam(name="filterDone", required = false) Boolean filterDone,
-			@RequestParam(name="showCarica", required = false) Boolean showCarica,
-			RedirectAttributes redirectAttrs) throws Exception{
-		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list, tipo = " + tipo + ", filterTaken = " + filterTaken));
+			RedirectAttributes redirectAttrs) throws Exception {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list, tipo = " + tipo + ", filterTaken = " + filterTaken + ", filterDone = " + filterDone));
 		try {
 			Set<Accreditamento> listaAccreditamenti = new HashSet<Accreditamento>();
 			Set<AccreditamentoStatoEnum> stati = AccreditamentoStatoEnum.getAllStatoByGruppo(gruppo);
@@ -869,10 +869,12 @@ public class AccreditamentoController {
 			else
 				stringTipo = "";
 			String label = null;
-			if (gruppo.equals("valutazioneAssegnamento"))
+			if (gruppo.equals("valutazioneAssegnamento") && (filterTaken != null && filterTaken == true))
 				label = "label.listaDomandeDaPrendereInCarica" + stringTipo;
-			if (gruppo.equals("valutazione") || gruppo.equals("valutazioneReferee"))
+			if ((gruppo.equals("valutazioneAssegnamento") && (filterTaken == null || filterTaken == false)) || gruppo.equals("valutazioneReferee"))
 				label = "label.listaDomandeDaValutare" + stringTipo;
+			if (gruppo.equals("valutazione"))
+				label = "label.listaDomandeDaValutareIntegrazione" + stringTipo;
 			if (gruppo.equals("richiestaIntegrazione"))
 				label = "label.listaDomandeRichiestaIntegrazione" + stringTipo;
 			if (gruppo.equals("preavvisoRigetto"))
@@ -880,10 +882,10 @@ public class AccreditamentoController {
 			if (gruppo.equals("assegnamento"))
 				label = "label.listaDomandeDaRiassegnare" + stringTipo;
 
-			Map<Long, Account> mappaCarica = new HashMap<Long, Account>();
-			//prende la mappa<id domanda, account di chi ha preso in carica la domanda> per la lista di accreditamenti
-			if (showCarica != null && showCarica == true) {
-				mappaCarica = valutazioneService.getValutatoreSegreteriaForAccreditamentiList(listaAccreditamenti);
+			//prende la mappa<id domanda, set account di chi ha una valutazione per la domanda> per ogni elemento della lista di accreditamenti
+			if (currentUser.isSegreteria() || currentUser.isReferee()) {
+				Map<Long, Set<Account>> mappaCarica = new HashMap<Long, Set<Account>>();
+				mappaCarica = valutazioneService.getValutatoriForAccreditamentiList(listaAccreditamenti);
 				model.addAttribute("mappaCarica", mappaCarica);
 			}
 			model.addAttribute("label", label);
@@ -900,7 +902,8 @@ public class AccreditamentoController {
 		}
 	}
 
-	//	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)
+	//solo segreteria
+	@PreAuthorize("@securityAccessServiceImpl.canShowInScadenza(principal)")
 	@RequestMapping("/accreditamento/scadenza/list")
 	public String getAllAccreditamentiInScadenza(Model model, RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/scadenza/list"));
@@ -910,6 +913,11 @@ public class AccreditamentoController {
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
 			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
+			//prende la mappa<id domanda, set account di chi ha una valutazione per la domanda> per ogni elemento della lista di accreditamenti
+			Map<Long, Set<Account>> mappaCarica = new HashMap<Long, Set<Account>>();
+			mappaCarica = valutazioneService.getValutatoriForAccreditamentiList(listaAccreditamenti);
+			model.addAttribute("mappaCarica", mappaCarica);
+
 			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
 			return "accreditamento/accreditamentoList";
 		}catch (Exception ex){
@@ -920,13 +928,14 @@ public class AccreditamentoController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#refereeId)
+//	@PreAuthorize("@securityAccessServiceImpl.canShowNonValutate(principal,#refereeId)
 	//TODO solo segreteria e referee interessato
 	@RequestMapping("/referee/{refereeId}/accreditamento/nonValutate/list")
 	public String getAllDomandeNonValutate(@PathVariable Long refereeId, Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("/referee/" + refereeId + "/accreditamento/nonValutate/list"));
 		try {
 			Set<Accreditamento> listaDomandeNonValutate = accreditamentoService.getAllDomandeNonValutateByRefereeId(refereeId);
+			model.addAttribute("label", "label.listaDomandeNonValutate");
 			model.addAttribute("accreditamentoList", listaDomandeNonValutate);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
 			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
