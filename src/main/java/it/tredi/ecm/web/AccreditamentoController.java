@@ -839,8 +839,8 @@ public class AccreditamentoController {
 	public String getAllAccreditamentiForGruppo(@PathVariable("gruppo") String gruppo, Model model,
 			@RequestParam(name="tipo", required = false) String tipo,
 			@RequestParam(name="filterTaken", required = false) Boolean filterTaken,
-			@RequestParam(name="showCarica", required = false) Boolean showCarica,
 			@RequestParam(name="filterDone", required = false) Boolean filterDone,
+			@RequestParam(name="showCarica", required = false) Boolean showCarica,
 			RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list, tipo = " + tipo + ", filterTaken = " + filterTaken));
 		try {
