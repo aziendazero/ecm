@@ -511,49 +511,6 @@ public class EventoPianoFormativoController {
 		}
 	}
 
-	//metodo listEvento per i provider
-	@RequestMapping("/provider/evento/list")
-	public String listEventoProvider(Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET /provider/evento/list"));
-		try {
-			Account currentAccount = Utils.getAuthenticatedUser().getAccount();
-			if(!currentAccount.isProvider())
-				throw new Exception("L'utente non è un provider");
-			else {
-				Long providerId = providerService.getProviderIdByAccountId(currentAccount.getId());
-				redirectAttrs.addAttribute("providerId", providerId);
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
-				return "redirect:/provider/{providerId}/evento/list";
-			}
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /provider/evento/list"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
-			return "redirect:/home";
-		}
-	}
-
-
-	//TODO domenico (check se fa la query di tutto il provider)
-	/*** LIST EVENTO ***/
-	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
-	@RequestMapping("/provider/{providerId}/evento/list")
-	public String listEvento(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
-		try {
-			Provider provider = providerService.getProvider(providerId);
-			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerId));
-			model.addAttribute("titolo", provider.getDenominazioneLegale());
-			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
-			return "evento/eventoList";
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
-			return "redirect:/home";
-		}
-	}
-
 	/*
 	 * SHOW EVENTO PROVIDER
 	 */

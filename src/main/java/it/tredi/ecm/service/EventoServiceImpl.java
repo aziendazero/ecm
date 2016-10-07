@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.repository.EventoRepository;
@@ -44,7 +45,7 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug("Eliminazione evento:" + id);
 		eventoRepository.delete(id);
 	}
-	
+
 
 	@Override
 	public void validaRendiconto(File rendiconto) throws Exception {
@@ -55,6 +56,24 @@ public class EventoServiceImpl implements EventoService {
 		// finito controllo/elaborazione
 		// se File csv -> salvo File rendiconto in evento.setReportPartecipantiCSV così come è stato inviato
 		// se File xml, xml.p7m, xml.zip.p7m e ha passato la validazione/è il risultato dell'elaborazione -> salvo File risultato in evento.setReportPartecimantiXML
+	}
+
+	@Override
+	public Set<Evento> getAllEventi() {
+		LOGGER.debug("Recupero tutti gli eventi");
+		return eventoRepository.findAll();
+	}
+
+	@Override
+	public Set<Evento> getAllEventiForProviderId(Long providerId) {
+		LOGGER.debug("Recupero tutti gli eventi del provider: " + providerId);
+		return eventoRepository.findAllByProviderId(providerId);
+	}
+
+	@Override
+	public boolean canCreateEvento(Account account) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 }

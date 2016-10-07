@@ -182,7 +182,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	@Override
 	public boolean canEditPianoFormativo(CurrentUser currentUser, Long pianoFormativoId) {
 		PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
-		
+
 		if(!canEditProvider(currentUser, pianoFormativo.getProvider().getId()))
 			return false;
 
@@ -270,4 +270,24 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		return false;
 	}
 
+	@Override
+	public boolean canShowAllEventi(CurrentUser currentUser) {
+		if(currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean canShowAllEventiProvider(CurrentUser currentUser, Long providerId) {
+		if (isProviderOwner(currentUser.getAccount().getId(), providerId) || currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean canCreateEvento(CurrentUser currentUser, Long providerId) {
+		if (isProviderOwner(currentUser.getAccount().getId(), providerId) || currentUser.isSegreteria())
+			return true;
+		return false;
+	}
 }

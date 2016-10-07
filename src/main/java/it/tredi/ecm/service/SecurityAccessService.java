@@ -37,4 +37,8 @@ public interface SecurityAccessService {
 	public boolean canShowInScadenza(CurrentUser currentUser);
 
 	public boolean canReassignCRECM(CurrentUser currentUser, Long accreditamentoId) throws Exception;
+
+	public boolean canShowAllEventi(CurrentUser currentUser);
+	public boolean canShowAllEventiProvider(CurrentUser currentUser, Long providerId);
+	public boolean canCreateEvento(CurrentUser currentUser, Long providerId);
 }
