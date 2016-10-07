@@ -46,6 +46,46 @@
 					</div>
 				</div>
 			</div>
+
+			<div id="scelta-attuazione-modal" class="modal fade modal-scelta-attuazione" data-model-index="1" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel" th:text="#{label.scelta_evento_piano_formativo}">Scelta Evento del Piano Formativo da attuare</h4>
+						</div>
+						<div class="modal-body">
+
+							<div>TODO table con eventi del piano formativo e un button che mandi in /provider/${providerId}/eventoPianoFormativo/${eventoPianoFormativo.id}/fulfill </div>
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="scelta-riedizione-modal" class="modal fade modal-scelta-riedizione" data-model-index="1" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel" th:text="#{label.scelta_evento_riedizione}">Scelta Evento da rieditare</h4>
+						</div>
+						<div class="modal-body">
+
+							<div>TODO table con eventi del piano formativo e un button che mandi in /provider/${providerId}/evento/${evento.id}/republication </div>
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</th:block>
 
 		<div class="row">
@@ -64,8 +104,8 @@
 								<ul class="dropdown-menu actions">
 									<!-- <li><a th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button" class="ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni"></a></li> -->
 									<li><a th:text="#{label.creazione_evento}" data-toggle="modal" data-target=".modal-scelta-tipologia"></a></li>
-									<li><a th:text="#{label.attuazione_evento}"></a></li>
-									<li><a th:text="#{label.riedizione_evento}"></a></li>
+									<li><a th:text="#{label.attuazione_evento}" data-toggle="modal" data-target=".modal-scelta-attuazione"></a></li>
+									<li><a th:text="#{label.riedizione_evento}" data-toggle="modal" data-target=".modal-scelta-riedizione"></a></li>
 								</ul>
 							</div>
 						</div>
