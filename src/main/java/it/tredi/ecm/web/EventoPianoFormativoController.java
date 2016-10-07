@@ -48,11 +48,11 @@ import it.tredi.ecm.web.validator.ValutazioneValidator;
 @Controller
 public class EventoPianoFormativoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoPianoFormativoController.class);
-	private final String EDIT = "evento/eventoEdit";
-	private final String SHOW = "evento/eventoShow";
-	private final String VALIDATE  = "evento/eventoValidate";
-	private final String ENABLEFIELD  = "evento/eventoEnableField";
-	private final String RENDICONTO = "evento/eventoRendiconto";
+	private final String EDIT = "eventoPianoFormativo/eventoPianoFormativoEdit";
+	private final String SHOW = "eventoPianoFormativo/eventoPianoFormativoShow";
+	private final String VALIDATE  = "eventoPianoFormativo/eventoPianoFormativoValidate";
+	private final String ENABLEFIELD  = "eventoPianoFormativo/eventoPianoFormativoEnableField";
+	private final String RENDICONTO = "eventoPianoFormativo/eventoPianoFormativoRendiconto";
 
 	@Autowired private EventoPianoFormativoService eventoService;
 	@Autowired private ProviderService providerService;

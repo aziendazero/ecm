@@ -1,6 +1,5 @@
-package it.tredi.ecm.dao.entity;
+package it.tredi.ecm.dao.enumlist;
 
-import it.tredi.ecm.dao.enumlist.WorkflowTipoEnum;
 import lombok.Getter;
 
 @Getter
