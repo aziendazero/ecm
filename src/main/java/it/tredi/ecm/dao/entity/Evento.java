@@ -1,5 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -220,15 +221,15 @@ public class Evento extends BaseEntity{
 	@ElementCollection
 	private Set<VerificaApprendimentoEnum> verificaApprendiemento;
 	
-	private Long durata;//calcolo automatico
-	private Long crediti;//calcolo con algoritmo che puo essere modificato dal provider
+	private float durata;//calcolo automatico
+	private float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 	private boolean confermatiCrediti;
 	
 	@OneToOne
 	private PersonaEvento responsabileSegreteriaOrganizzativa;
 	
 	private String materialeDurevoleRilasciatoAiPratecipanti;
-	private Double quotaPartecipazione;
+	private BigDecimal quotaPartecipazione;
 	private boolean soloLinguaItaliana;
 	private String linguaStranieraUtilizzata;
 	private boolean esisteTraduzioneSimultanea;
@@ -268,34 +269,34 @@ public class Evento extends BaseEntity{
 
 	private boolean autorizzazionePrivacy;
 	
-	public long calcoloDurata(){
-		long durata = 0L;
+	public float calcoloDurata(){
+		float durata = 0.0f;
 		for(DettaglioAttivitaRES a : programma){
 			durata += a.getOreAttivita();
 		}
 		return durata;
 	}
 	
-	public long calcoloCreditiFormativi(){
-		long crediti = 0L;
+	public float calcoloCreditiFormativi(){
+		float crediti = 0.0f;
 		
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
-			crediti = (long) (0.20 * durata);
-			if(crediti > 5.0)
-				crediti = 5L;
+			crediti = (0.20f * durata);
+			if(crediti > 5.0f)
+				crediti = 5.0f;
 		}
 		
 		if(tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO){
 			crediti = 1 * durata;
-			if(crediti > 50)
-				crediti = 50L;
+			if(crediti > 50f)
+				crediti = 50f;
 		}
 		
 		if(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO){
-			long creditiFrontale = 0L;
-			long oreFrontale = 0L;
-			long creditiInterattiva = 0L;
-			long oreInterattiva = 0L;
+			float creditiFrontale = 0f;
+			float oreFrontale = 0f;
+			float creditiInterattiva = 0f;
+			float oreInterattiva = 0f;
 			
 			for(DettaglioAttivitaRES a : programma){
 				if(a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
@@ -307,20 +308,20 @@ public class Evento extends BaseEntity{
 
 			//metodologia frontale
 			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
-				creditiFrontale = (long) (oreFrontale * 1.0);
-				creditiFrontale = (long) (creditiFrontale + (creditiFrontale*0.20));
+				creditiFrontale = oreFrontale * 1.0f;
+				creditiFrontale = (creditiFrontale + (creditiFrontale*0.20f));
 			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
 				//TODO 25% decrescente
 			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){
-				creditiFrontale = (long) (oreFrontale * 1.0);
+				creditiFrontale = oreFrontale * 1.0f;
 			}else if(numeroPartecipanti >= 101 && numeroPartecipanti <= 150){
-				creditiFrontale = (long) (oreFrontale * 0.75);
+				creditiFrontale = oreFrontale * 0.75f;
 			}else if(numeroPartecipanti >= 151 && numeroPartecipanti <= 200){
-				creditiFrontale = (long) (oreFrontale * 0.5);
+				creditiFrontale = oreFrontale * 0.5f;
 			}
 			
 			//metodologia interattiva
-			creditiInterattiva = (long) (oreInterattiva * 1.5);
+			creditiInterattiva = oreInterattiva * 1.5f;
 			
 			crediti = creditiFrontale + creditiInterattiva;
 		}
