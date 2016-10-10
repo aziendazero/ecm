@@ -18,12 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PianoFormativo;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -42,7 +40,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoPianoFormativoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
-import it.tredi.ecm.web.validator.EventoValidator;
+import it.tredi.ecm.web.validator.EventoPianoFormativoValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
@@ -60,7 +58,7 @@ public class EventoPianoFormativoController {
 	@Autowired private ObiettivoService obietivoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
-	@Autowired private EventoValidator eventoValidator;
+	@Autowired private EventoPianoFormativoValidator eventoValidator;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 	@Autowired private ValutazioneService valutazioneService;
