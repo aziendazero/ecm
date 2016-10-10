@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,4 +28,5 @@ public interface ValutazioneService {
 	public Map<Long, Set<Account>> getValutatoriForAccreditamentiList(Set<Accreditamento> accreditamentoSet);
 	public void updateValutazioniNonDate(Long accreditamentoId) throws Exception;
 	public void dataOraScadenzaPossibilitaValutazioneCRECM(Long accreditamentoId, LocalDateTime date) throws Exception;
+	public LocalDateTime getScadenzaValutazioneByValutatoreId(Long id);
 }

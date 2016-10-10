@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -187,5 +188,11 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 				valutazioneRepository.save(v);
 			}
 		}
+	}
+
+	@Override
+	public LocalDateTime getScadenzaValutazioneByValutatoreId(Long id) {
+		LOGGER.debug(Utils.getLogMessage("Recupero la data di scadenza per il referee: " + id));
+		return valutazioneRepository.getScadenzaForValutatoreId(id);
 	}
 }
