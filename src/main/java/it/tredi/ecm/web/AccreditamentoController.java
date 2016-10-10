@@ -888,6 +888,10 @@ public class AccreditamentoController {
 				mappaCarica = valutazioneService.getValutatoriForAccreditamentiList(listaAccreditamenti);
 				model.addAttribute("mappaCarica", mappaCarica);
 			}
+			if (currentUser.isReferee()) {
+				LocalDateTime scadenzaValutazione = valutazioneService.getScadenzaValutazioneByValutatoreId(currentUser.getAccount().getId());
+				model.addAttribute("scadenzaValutazione", scadenzaValutazione);
+			}
 			model.addAttribute("label", label);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
