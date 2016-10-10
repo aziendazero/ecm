@@ -2,24 +2,26 @@ package it.tredi.ecm.dao.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +30,11 @@ import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
-import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
-import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
-import it.tredi.ecm.dao.enumlist.VerificaApprendimentoEnum;
+import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
 /*
@@ -59,6 +58,10 @@ import lombok.Setter;
 *  	+ (Now() <= dataFineEvento + 90)
 *
 * */
+@Entity
+@Table(name = "evento")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "eventoType")
 public class Evento extends BaseEntity{
 	private static Logger LOGGER = LoggerFactory.getLogger(Evento.class);
 	/*
@@ -184,63 +187,26 @@ public class Evento extends BaseEntity{
 	private Set<DestinatariEventoEnum> destinatariEvento = new HashSet<DestinatariEventoEnum>();
 	private ContenutiEventoEnum contenutiEvento;
 
-	private String provincia; //TODO da lista
-	private String comune; //TODO da lista
-	private String indirizzo;//campo libero
-	private String luogo;//campo libero
-
 	@Column(name = "data_inizio")//inizio evento
 	private LocalDate dataInizio;
 	@Column(name = "data_fine")//fine evento
 	private LocalDate dataFine;
 
-	//comprese tra dataInizio e dataFine
-	@ElementCollection
-	private Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
-
-	private TipologiaEventoRESEnum tipologiaEvento;
-	private boolean workshopSeminariEcm;
-	private String titoloConvegno;
-	private int numeroPartecipanti;
-
 	@OneToMany(mappedBy="eventoResponsabile")
 	private Set<PersonaEvento> responsabili = new HashSet<PersonaEvento>();
-	@OneToMany(mappedBy="eventoDocente")
-	private Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();
 
-	private String programmaAttivitaFormativaRazionale;
-	@ElementCollection
-	private List<String> risultatiAttesi = new ArrayList<String>();
-	@ElementCollection
-	@OrderBy("orario ASC")
-	private List<DettaglioAttivitaRES> programma = new ArrayList<DettaglioAttivitaRES>();
+	protected int numeroPartecipanti;
 
 	@OneToOne
 	private File brochureEvento;
 
-	@ElementCollection
-	private Set<VerificaApprendimentoEnum> verificaApprendiemento;
-
-	private float durata;//calcolo automatico
+	protected float durata;//calcolo automatico
 	private float crediti;//calcolo con algoritmo che puo essere modificato dal provider
-	private boolean confermatiCrediti;
 
 	@OneToOne
-	private PersonaEvento responsabileSegreteriaOrganizzativa;
+	private PersonaFullEvento responsabileSegreteriaOrganizzativa;
 
-	private String materialeDurevoleRilasciatoAiPratecipanti;
 	private BigDecimal quotaPartecipazione;
-	private boolean soloLinguaItaliana;
-	private String linguaStranieraUtilizzata;
-	private boolean esisteTraduzioneSimultanea;
-
-	@ElementCollection
-	private Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti;
-
-	private boolean verificaRicaduteFormative;
-	private String descrizioneVerificaRicaduteFormative;
-	@OneToOne
-	private File documentoVerificaRicaduteFormative;
 
 	private boolean eventoSponsorizzato;
 	@OneToMany(mappedBy="evento")
@@ -269,65 +235,6 @@ public class Evento extends BaseEntity{
 
 	private boolean autorizzazionePrivacy;
 
-	public float calcoloDurata(){
-		float durata = 0.0f;
-		for(DettaglioAttivitaRES a : programma){
-			durata += a.getOreAttivita();
-		}
-		return durata;
-	}
-
-	public float calcoloCreditiFormativi(){
-		float crediti = 0.0f;
-
-		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
-			crediti = (0.20f * durata);
-			if(crediti > 5.0f)
-				crediti = 5.0f;
-		}
-
-		if(tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO){
-			crediti = 1 * durata;
-			if(crediti > 50f)
-				crediti = 50f;
-		}
-
-		if(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO){
-			float creditiFrontale = 0f;
-			float oreFrontale = 0f;
-			float creditiInterattiva = 0f;
-			float oreInterattiva = 0f;
-
-			for(DettaglioAttivitaRES a : programma){
-				if(a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
-					oreFrontale ++;
-				}else{
-					oreInterattiva ++;
-				}
-			}
-
-			//metodologia frontale
-			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
-				creditiFrontale = oreFrontale * 1.0f;
-				creditiFrontale = (creditiFrontale + (creditiFrontale*0.20f));
-			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
-				//TODO 25% decrescente
-			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){
-				creditiFrontale = oreFrontale * 1.0f;
-			}else if(numeroPartecipanti >= 101 && numeroPartecipanti <= 150){
-				creditiFrontale = oreFrontale * 0.75f;
-			}else if(numeroPartecipanti >= 151 && numeroPartecipanti <= 200){
-				creditiFrontale = oreFrontale * 0.5f;
-			}
-
-			//metodologia interattiva
-			creditiInterattiva = oreInterattiva * 1.5f;
-
-			crediti = creditiFrontale + creditiInterattiva;
-		}
-
-		return crediti;
-	}
 
 
 	@Override
