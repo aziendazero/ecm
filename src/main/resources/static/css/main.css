@@ -1099,3 +1099,9 @@ tr.integrazione-eliminazione td:first-child a{
 	font-weight: inherit;
 	margin-bottom: 0px;
 }
+
+.elabora-btn {
+	min-width: 90px;
+	margin: 0 auto;
+	display: block;
+}
