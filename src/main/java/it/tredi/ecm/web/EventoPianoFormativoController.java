@@ -50,7 +50,6 @@ public class EventoPianoFormativoController {
 	private final String SHOW = "eventoPianoFormativo/eventoPianoFormativoShow";
 	private final String VALIDATE  = "eventoPianoFormativo/eventoPianoFormativoValidate";
 	private final String ENABLEFIELD  = "eventoPianoFormativo/eventoPianoFormativoEnableField";
-	private final String RENDICONTO = "eventoPianoFormativo/eventoPianoFormativoRendiconto";
 
 	@Autowired private EventoPianoFormativoService eventoService;
 	@Autowired private ProviderService providerService;
@@ -527,47 +526,6 @@ public class EventoPianoFormativoController {
 		}
 	}
 
-//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
-	@RequestMapping("/provider/{providerId}/evento/{eventoId}/rendiconto")
-	public String rendicontoEvento(@PathVariable Long providerId,
-			@PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
-		try{
-			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto"));
-			model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
-			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
-		}
-		catch (Exception ex) {
-			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
-			return "redirect:/provider/" + providerId + "/evento/list";
-		}
-	}
-
-//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
-		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
-		public String rendicontoEventoValidate(@PathVariable Long providerId,
-				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoPianoFormativoWrapper wrapper, BindingResult result,
-				Model model, RedirectAttributes redirectAttrs) {
-			try{
-				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
-				if(wrapper.getReportPartecipanti().getId() == null)
-					model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
-				else {
-					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
-//TODO				eventoService.validaRendiconto(wrapper.getReportPartecipanti());
-				}
-				return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
-			}
-			catch (Exception ex) {
-				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
-				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto/validate";
-			}
-		}
-
 	private String goToShow(Model model, EventoPianoFormativoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
 		model.addAttribute("proceduraFormativaList", wrapper.getEvento().getAccreditamento().getDatiAccreditamento().getProcedureFormative());
@@ -632,15 +590,6 @@ public class EventoPianoFormativoController {
 		return eventoWrapper;
 	}
 
-	private EventoPianoFormativoWrapper prepareEventoWrapperRendiconto(EventoPianoFormativo evento, long providerId) {
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - entering"));
-		EventoPianoFormativoWrapper eventoWrapper = new EventoPianoFormativoWrapper();
-		eventoWrapper.setEvento(evento);
-		eventoWrapper.setProviderId(providerId);
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - exiting"));
-		return eventoWrapper;
-	}
-
 	//TODO rimuovere se non serve più
 //	private String goToValidate(Model model, EventoPianoFormativoWrapper wrapper) {
 //		model.addAttribute("eventoWrapper", wrapper);
@@ -653,12 +602,6 @@ public class EventoPianoFormativoController {
 		model.addAttribute("eventoWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
 		return ENABLEFIELD;
-	}
-
-	private String goToRendiconto(Model model, EventoPianoFormativoWrapper wrapper) {
-		model.addAttribute("eventoWrapper", wrapper);
-		LOGGER.info(Utils.getLogMessage("VIEW: " + RENDICONTO));
-		return RENDICONTO;
 	}
 
 	private void populateListFromAccreditamento(Model model, long accreditamentoId) throws Exception{

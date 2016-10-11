@@ -9,9 +9,9 @@ public interface EventoPianoFormativoService {
 	public EventoPianoFormativo getEvento(Long id);
 	public Set<EventoPianoFormativo> getAllEventiFromProvider(Long providerId);
 	public Set<EventoPianoFormativo> getAllEventiFromProviderInPianoFormativo(Long providerId, Integer pianoFormativo);
-	public void save(EventoPianoFormativo evento);
+	public void save(EventoPianoFormativo evento) throws Exception;
 	public void delete(Long id);
-	
+
 	public void buildPrefix(EventoPianoFormativo evento) throws Exception;
 	public void validaRendiconto(File rendiconto) throws Exception;
 }

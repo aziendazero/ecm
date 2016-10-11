@@ -48,7 +48,7 @@ public class EventoRES extends Evento{
 	//comprese tra dataInizio e dataFine
 	@ElementCollection
 	private Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
-	
+
 	@Enumerated(EnumType.STRING)
 	private TipologiaEventoRESEnum tipologiaEvento;
 	private boolean workshopSeminariEcm;
@@ -56,7 +56,7 @@ public class EventoRES extends Evento{
 
 	@OneToMany(mappedBy="eventoDocente")
 	private Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();
-	
+
 	private String razionale;
 	@ElementCollection
 	private List<String> risultatiAttesi = new ArrayList<String>();
@@ -67,7 +67,7 @@ public class EventoRES extends Evento{
 
 	@ElementCollection
 	private Set<VerificaApprendimentoRESEnum> verificaApprendiemento;
-	
+
 	private boolean confermatiCrediti;
 
 	@ElementCollection
@@ -83,7 +83,7 @@ public class EventoRES extends Evento{
 	private String descrizioneVerificaRicaduteFormative;
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
-	
+
 	public float calcoloDurata(){
 		float durata = 0.0f;
 		for(ProgrammaGiornalieroRES progrGior : programma){

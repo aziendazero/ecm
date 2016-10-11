@@ -550,6 +550,15 @@ h2 {
 	display: block;
 }
 
+.value-edit {
+	padding-top: 8px;
+	padding-left: 10px;
+	padding-right: 10px;
+	min-height: 30px;
+	font-size: inherit;
+	display: block;
+}
+
 .label-show {
 	font-size: 17px;
 }
@@ -1084,4 +1093,9 @@ tr.integrazione-eliminazione td:first-child a{
 .button-container {
 	height: 90px;
 	width: 225px;
+}
+
+.in-dropdown {
+	font-weight: inherit;
+	margin-bottom: 0px;
 }

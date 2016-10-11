@@ -180,6 +180,8 @@ public class Evento extends BaseEntity{
 		}else if(isRiedizione()){
 			//evento inserito come riedizione di un evento
 			this.prefix = eventoPadre.getPrefix();
+		}else {
+			this.prefix = provider.getCodiceIdentificativoUnivoco() + "-" + this.id;
 		}
 	}
 

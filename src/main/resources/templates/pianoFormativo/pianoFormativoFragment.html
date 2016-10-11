@@ -21,7 +21,7 @@
 					<thead>
 						<tr>
 							<th th:text="#{label.titolo}">Titolo</th>
-							<th th:text="#{label.id}">Id</th>
+							<th th:text="#{label.codice_identificativo}">Id</th>
 							<th th:text="#{label.procedura_formativa}">Tipologia Formazione</th>
 							<th th:unless="${editabile or enableField}" th:text="${valutabile ? #messages.msg('label.stato_valutazione') : #messages.msg('label.stato_inserimento')}">label.stato_inserimento/valutazione</th>
 							<th th:if="${hasActionButtons}" th:text="#{label.azioni}">Azioni</th>
@@ -30,7 +30,7 @@
 					<tbody>
 						<tr th:each="evento, row : ${__${pianoFormativo}__.eventiPianoFormativo}">
 							<td><a th:text="${evento.titolo}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show${urlParam}|}"></a></td>
-							<td th:text="${evento.id} + '-' + ${evento.edizione}"></td>
+							<td th:text="${evento.getCodiceIdentificativo()}"></td>
 							<td th:text="${evento.proceduraFormativa.nome}"></td>
 							<th:block th:unless="${editabile or enableField}">
 								<td th:if="${(showOnly or enableField) and !evento.new}">

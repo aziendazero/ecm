@@ -6,6 +6,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
@@ -21,10 +23,11 @@ public class EventoFSC extends Evento{
 	@Embedded
 	private SedeEvento sedeEvento;
 
+	@Enumerated(EnumType.STRING)
 	private TipologiaEventoFSCEnum tipologiaEvento;
 	private Boolean sperimentazioneClinica;
 	private Boolean ottenutoComitatoEtico;
-	
+
 	private String descrizioneProgetto;
 
 	@ElementCollection
@@ -34,10 +37,10 @@ public class EventoFSC extends Evento{
 	private Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti;
 
 	private String indicatoreEfficaciaFormativa;
-	
-	
+
+
 	//TODO FASI AZIONI RUOLI
-	
+
 	//TODO campo 20
 
 	public float calcoloDurata(){
@@ -45,11 +48,11 @@ public class EventoFSC extends Evento{
 		//TODO
 		return durata;
 	}
-	
+
 	public float calcoloCreditiFormativi(){
 		float crediti = 0.0f;
 		//TODO
 		return crediti;
 	}
-	
+
 }
