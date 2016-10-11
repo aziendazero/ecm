@@ -6,19 +6,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoFAD;
+import it.tredi.ecm.dao.entity.EventoFSC;
+import it.tredi.ecm.dao.entity.EventoPianoFormativo;
+import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.EventoPianoFormativoWrapper;
+import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.SedeWrapper;
 
 @Controller
 public class EventoController {
@@ -29,6 +41,19 @@ public class EventoController {
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
+	private final String RENDICONTO = "evento/eventoRendiconto";
+
+	@ModelAttribute("eventoWrapper")
+	public EventoWrapper getEvento(@RequestParam(name = "editId", required = false) Long id,
+			@RequestParam(value="providerId",required = false) Long providerId,
+			@RequestParam(value="proceduraFormativa",required = false) ProceduraFormativa proceduraFormativa) throws Exception{
+		if(id != null){
+			return prepareEventoWrapperEdit(eventoService.getEvento(id));
+		}
+		if(providerId != null && proceduraFormativa != null)
+			return prepareEventoWrapperNew(proceduraFormativa, providerId);
+		return new EventoWrapper();
+	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventi(principal)")
 	@RequestMapping("/evento/list")
@@ -101,8 +126,8 @@ public class EventoController {
 				return "redirect:/provider/{providerId}/evento/list";
 			}
 			else {
-				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
-				return EDIT;
+				EventoWrapper wrapper = prepareEventoWrapperNew(proceduraFormativa, providerId);
+				return goToNew(model, wrapper);
 			}
 		}
 		catch (Exception ex) {
@@ -111,6 +136,118 @@ public class EventoController {
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
 			return "redirect:/home";
 		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
+	@RequestMapping(value= "/provider/{providerId}/evento/save", method = RequestMethod.POST)
+	public String saveEvento(@ModelAttribute EventoWrapper eventoWrapper, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"));
+		try {
+			//salvataggio temporaneo senza validatore (in stato di bozza)
+			eventoService.save(eventoWrapper.getEvento());
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato_in_bozza_success", "success"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+	}
+
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
+		@RequestMapping("/provider/{providerId}/evento/{eventoId}/rendiconto")
+		public String rendicontoEvento(@PathVariable Long providerId,
+				@PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto"));
+				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+				return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
+				return "redirect:/provider/" + providerId + "/evento/list";
+			}
+		}
+
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
+		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
+		public String rendicontoEventoValidate(@PathVariable Long providerId,
+				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+				Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
+				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+				if(wrapper.getReportPartecipanti().getId() == null)
+					model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
+				else {
+					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
+	//TODO				eventoService.validaRendiconto(wrapper.getReportPartecipanti());
+				}
+				return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
+				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto/validate";
+			}
+		}
+
+	//metodi privati di supporto
+
+	private EventoWrapper prepareEventoWrapperNew(ProceduraFormativa proceduraFormativa, Long providerId) {
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - entering"));
+		EventoWrapper eventoWrapper = new EventoWrapper();
+		eventoWrapper.setProceduraFormativa(proceduraFormativa);
+		eventoWrapper.setProviderId(providerId);
+		Evento evento;
+		switch(proceduraFormativa){
+			case FAD: evento = new EventoFAD(); break;
+			case RES: evento = new EventoRES(); break;
+			case FSC: evento = new EventoFSC(); break;
+			default: evento = new Evento(); break;
+		}
+		evento.setProvider(providerService.getProvider(providerId));
+		evento.setProceduraFormativa(proceduraFormativa);
+		eventoWrapper.setEvento(evento);
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
+		return eventoWrapper;
+	}
+
+	private EventoWrapper prepareEventoWrapperEdit(Evento evento) {
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
+		EventoWrapper eventoWrapper = new EventoWrapper();
+		eventoWrapper.setProceduraFormativa(evento.getProceduraFormativa());
+		eventoWrapper.setProviderId(evento.getProvider().getId());
+		eventoWrapper.setEvento(evento);
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - exiting"));
+		return eventoWrapper;
+	}
+
+	private EventoWrapper prepareEventoWrapperRendiconto(Evento evento, long providerId) {
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - entering"));
+		EventoWrapper eventoWrapper = new EventoWrapper();
+		eventoWrapper.setEvento(evento);
+		eventoWrapper.setProviderId(providerId);
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - exiting"));
+		return eventoWrapper;
+	}
+
+	private String goToNew(Model model, EventoWrapper eventoWrapper) {
+		model.addAttribute("eventoWrapper", eventoWrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+		return EDIT;
+	}
+
+	private String goToRendiconto(Model model, EventoWrapper wrapper) {
+		model.addAttribute("eventoWrapper", wrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + RENDICONTO));
+		return RENDICONTO;
 	}
 
 

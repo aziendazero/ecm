@@ -37,20 +37,21 @@ public class EventoFAD extends Evento{
 
 	@ElementCollection
 	private Set<VerificaApprendimentoFAD> verificaApprendimento;
-	
+
+	//TODO sia FAD che RES
 	private boolean confermatiCrediti;
-	
-	private boolean supportoSvoltoDaEsperto = false;
+
+	private boolean supportoSvoltoDaEsperto;
 
 	private String materialeDurevoleRilasciatoAiPratecipanti;
 
 	@OneToOne
 	private File requisitiHardwareSoftware;
-	
+
 	private String userId;
 	private String password;
 	private String url;
-	
+
 	public float calcoloDurata(){
 		float durata = 0.0f;
 		//TODO

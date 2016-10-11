@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+
+		<div class="row">
+			<div class="col-xs-12">
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.creazione_nuovo_evento(${eventoWrapper.proceduraFormativa})}"></h2>
+						<div class="pull-right buttons-header">
+							<div class="dropdown pull-right">
+
+  								<a class="btn btn-primary" th:href="@{|/provider/${eventoWrapper.providerId}/evento/list|}" th:text="#{label.indietro}"></a>
+
+  								<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+									<span th:text="#{label.menu_azioni}"></span>
+									<span class="caret"></span>
+								</button>
+								<!-- menù raggruppato per segreteria -->
+								<ul class="dropdown-menu actions">
+									<li><a><label class="in-dropdown" for="submitButton" th:text="#{label.salva_modifiche}"></label></a></li>
+									<li><a th:text="#{label.conferma_evento}"></a></li>
+									<li><a th:text="#{label.elimina}"></a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:switch="${eventoWrapper.proceduraFormativa}">
+						<th:block th:case="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
+							<th:block th:include="evento/eventoFADEdit :: eventoFADEdit"></th:block>
+						</th:block>
+						<th:block th:case="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FSC}">
+							<th:block th:include="evento/eventoFSCEdit :: eventoFSCEdit"></th:block>
+						</th:block>
+						<th:block th:case="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).RES}">
+							<th:block th:include="evento/eventoRESEdit :: eventoRESEdit"></th:block>
+						</th:block>
+					</th:block>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

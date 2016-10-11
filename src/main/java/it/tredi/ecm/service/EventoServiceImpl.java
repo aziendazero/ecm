@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -36,6 +37,10 @@ public class EventoServiceImpl implements EventoService {
 	@Transactional
 	public void save(Evento evento) {
 		LOGGER.debug("Salvataggio evento");
+		if(evento.isNew()) {
+			eventoRepository.saveAndFlush(evento);
+			evento.buildPrefix();
+		}
 		eventoRepository.save(evento);
 	}
 
@@ -45,7 +50,6 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug("Eliminazione evento:" + id);
 		eventoRepository.delete(id);
 	}
-
 
 	@Override
 	public void validaRendiconto(File rendiconto) throws Exception {
@@ -59,7 +63,7 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
-	public Set<Evento> getAllEventi() {
+	public List<Evento> getAllEventi() {
 		LOGGER.debug("Recupero tutti gli eventi");
 		return eventoRepository.findAll();
 	}

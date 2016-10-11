@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.List;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
@@ -13,7 +14,7 @@ public interface EventoService {
 	public void delete(Long id);
 
 	public void validaRendiconto(File rendiconto) throws Exception;
-	public Set<Evento> getAllEventi();
+	public List<Evento> getAllEventi();
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
 	public boolean canCreateEvento(Account account);
 }

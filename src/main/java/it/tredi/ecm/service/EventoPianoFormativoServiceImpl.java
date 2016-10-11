@@ -40,8 +40,12 @@ public class EventoPianoFormativoServiceImpl implements EventoPianoFormativoServ
 
 	@Override
 	@Transactional
-	public void save(EventoPianoFormativo evento) {
+	public void save(EventoPianoFormativo evento) throws Exception {
 		LOGGER.debug("Salvataggio evento");
+		if(evento.isNew()) {
+			eventoPianoFormativoRepository.saveAndFlush(evento);
+			evento.buildPrefix();
+		}
 		eventoPianoFormativoRepository.save(evento);
 	}
 
