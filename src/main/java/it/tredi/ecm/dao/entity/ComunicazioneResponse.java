@@ -28,6 +28,7 @@ public class ComunicazioneResponse extends BaseEntity{
 	private Comunicazione comunicazione;
 	@OneToOne
 	private Account mittente;
+	@Column(columnDefinition="text")
 	private String messaggio;
 	@Column(name="data_risposta")
 	private LocalDateTime dataRisposta;

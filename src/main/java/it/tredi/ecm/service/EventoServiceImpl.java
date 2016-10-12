@@ -1,5 +1,7 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
@@ -11,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.repository.EventoRepository;
+import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Service
 public class EventoServiceImpl implements EventoService {
@@ -78,6 +82,26 @@ public class EventoServiceImpl implements EventoService {
 	public boolean canCreateEvento(Account account) {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	@Override
+	public Evento handleRipetibili(EventoWrapper eventoWrapper) {
+		Evento evento = eventoWrapper.getEvento();
+
+		//date intermedie
+		if (eventoWrapper.getDateIntermedieTemp() != null && !eventoWrapper.getDateIntermedieTemp().isEmpty()) {
+			Set<LocalDate> dateIntermedie = ((EventoRES) evento).getDateIntermedie();
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			for (String s : eventoWrapper.getDateIntermedieTemp()) {
+				if(s != null && !s.isEmpty()) {
+					LocalDate data = LocalDate.parse(s, dtf);
+					dateIntermedie.add(data);
+				}
+			}
+			((EventoRES) evento).setDateIntermedie(dateIntermedie);
+		}
+
+		return evento;
 	}
 
 }

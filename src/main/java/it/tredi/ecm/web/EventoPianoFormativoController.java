@@ -508,24 +508,6 @@ public class EventoPianoFormativoController {
 		}
 	}
 
-	/*
-	 * SHOW EVENTO PROVIDER
-	 */
-	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
-	@RequestMapping(value = "/provider/{providerId}/evento/{id}/show")
-	public String showEvento(@PathVariable Long providerId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
-		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + id + "/show"));
-		try {
-			model.addAttribute("returnLink", "/provider/"+ providerId + "/evento/list");
-			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId));
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + id + "/show"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
-			return "redirect:/provider/" + providerId + "/evento/list";
-		}
-	}
-
 	private String goToShow(Model model, EventoPianoFormativoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
 		model.addAttribute("proceduraFormativaList", wrapper.getEvento().getAccreditamento().getDatiAccreditamento().getProcedureFormative());

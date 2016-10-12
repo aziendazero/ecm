@@ -892,6 +892,12 @@ h2 {
 	cursor: pointer;
 }
 
+.input-group-addon.not-last {
+	border-radius: 0;
+	cursor: pointer;
+	border-left: 0;
+}
+
 .vaschetta-comunicazione {
 	font-size: 18px !important;
 	margin-top: 10px !important;
@@ -1104,4 +1110,18 @@ tr.integrazione-eliminazione td:first-child a{
 	min-width: 90px;
 	margin: 0 auto;
 	display: block;
+}
+
+.cursor-default {
+	cursor: default;
+}
+
+.tooltip-inner {
+	white-space: pre-wrap;
+	min-width: 300px;
+	background-color: #337ab7;
+}
+
+.tooltip-arrow {
+	border-top-color: #337ab7 !important;
 }

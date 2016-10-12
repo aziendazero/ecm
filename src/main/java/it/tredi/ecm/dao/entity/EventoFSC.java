@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.entity;
 
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
@@ -24,6 +25,7 @@ public class EventoFSC extends Evento{
 	private SedeEvento sedeEvento;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name="tipologia_evento_fsc")
 	private TipologiaEventoFSCEnum tipologiaEvento;
 	private Boolean sperimentazioneClinica;
 	private Boolean ottenutoComitatoEtico;

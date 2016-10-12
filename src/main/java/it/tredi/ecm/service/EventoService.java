@@ -6,6 +6,7 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.web.bean.EventoWrapper;
 
 public interface EventoService {
 	public Evento getEvento(Long id);
@@ -17,4 +18,5 @@ public interface EventoService {
 	public List<Evento> getAllEventi();
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
 	public boolean canCreateEvento(Account account);
+	public Evento handleRipetibili(EventoWrapper eventoWrapper);
 }

@@ -25,6 +25,7 @@ import javax.persistence.OrderBy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
@@ -50,6 +51,7 @@ public class EventoRES extends Evento{
 	private Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "tipologia_evento_res")
 	private TipologiaEventoRESEnum tipologiaEvento;
 	private boolean workshopSeminariEcm;
 	private String titoloConvegno;

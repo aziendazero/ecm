@@ -26,7 +26,6 @@
 								<ul class="dropdown-menu actions">
 									<li><a><label class="in-dropdown" for="submitButton" th:text="#{label.salva_modifiche}"></label></a></li>
 									<li><a th:text="#{label.conferma_evento}"></a></li>
-									<li><a th:text="#{label.elimina}"></a></li>
 								</ul>
 							</div>
 						</div>
@@ -48,6 +47,134 @@
 				</div>
 			</div>
 		</div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var text_max = 3000;
+			$('#counter').html(text_max + ' '+[[#{label.caratteri_rimanenti}]]);
+
+			$('#title').keyup(function() {
+			  var text_length = $('#title').val().length;
+			  var text_remaining = text_max - text_length;
+
+			  $('#counter').html(text_remaining + ' '+[[#{label.caratteri_rimanenti}]]);
+			});
+
+			function sendAjaxRequestProvincia(){
+				var provincia = $('#provincia option:selected').val();
+				var start = [[@{/comuni?provincia=}]];
+				var end = provincia;
+				var url = start + end;
+				$.get(url, function(data){
+					$("#comune").empty();
+					for(var item = 0; item < data.length; item++){
+						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
+						$("#comune").append(option);
+					}
+					$("#comune").prop("disabled", false);
+					$("#comune").selectpicker('refresh');
+
+				});
+			};
+
+			$(document).ready(function() {
+				var days = getDayNamesShort();
+				var months = getMonthNames();
+
+				$('#dataInizio').daterangepicker({
+			        singleDatePicker: true,
+			        autoApply: true,
+			        autoUpdateInput: true,
+			        format: "DD/MM/YYYY",
+			        locale: {
+				        daysOfWeek: days,
+		                monthNames: months,
+			        }
+			    })
+
+			    $('#dataFine').daterangepicker({
+			        singleDatePicker: true,
+			        autoApply: true,
+			        autoUpdateInput: true,
+			        minDate: $('#dataInizio').val(),
+			        format: "DD/MM/YYYY",
+			        locale: {
+				        daysOfWeek: days,
+		                monthNames: months,
+			        }
+			    })
+
+			    $('#dataInizio').on("hide.daterangepicker", function() {
+					$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
+				});
+
+				function updateDataFine() {
+					$('#dataFine').daterangepicker({
+				        singleDatePicker: true,
+				        autoApply: true,
+				        autoUpdateInput: true,
+				        minDate: $('#dataInizio').val(),
+				        format: "DD/MM/YYYY",
+				        locale: {
+					        daysOfWeek: days,
+			                monthNames: months,
+				        }
+				    })
+				}
+
+				//setta minDate alla data di inizio evento
+				$('#dataInizio').on("apply.daterangepicker change", function() {
+					updateDataFine();
+				});
+
+			    $('#dataFine').on("hide.daterangepicker", function() {
+					$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+						$(this).remove();
+					});
+				});
+
+			    //professioni/discipline
+			    $('select').selectpicker({
+					selectAllText : 'Seleziona tutti',
+					deselectAllText : 'Deseleziona tutti',
+					countSelectedText : '{0} selezionate'
+				});
+
+				if($("#professioni")[0]) {
+					abilitaDiscipline($("#professioni")[0]);
+				}
+			});
+
+			function abilitaDiscipline(professioni) {
+				//flag per capire se c'è almeno una professione
+				var almenoUna = false;
+				$.each(professioni.options, function(index, item) {
+					//toglie la parte relativa al codice della professione
+					prof = item.text;
+					//abilita/disabilita tutte le discipline delle professioni selezionate/deselezionate
+					if (item.selected) {
+						$('optgroup[label="' + prof + '"]').prop(
+								'disabled', false);
+						almenoUna = true;
+					} else {
+						$('optgroup[label="' + prof + '"]').prop(
+								'disabled', true);
+					}
+				});
+				//decide se disabilitare/abilitare tutta la select
+				if (almenoUna) {
+					$('#discipline').prop('disabled', false);
+				} else {
+					$('#discipline').prop('disabled', true);
+				}
+				//refresh della view
+				$('#discipline').selectpicker('refresh');
+			}
+
+
+		/*]]>*/
+		</script>
 	</div>
 </body>
 </html>

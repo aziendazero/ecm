@@ -25,6 +25,7 @@ import javax.persistence.Table;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
@@ -189,8 +190,10 @@ public class Evento extends BaseEntity{
 	private Set<DestinatariEventoEnum> destinatariEvento = new HashSet<DestinatariEventoEnum>();
 	private ContenutiEventoEnum contenutiEvento;
 
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_inizio")//inizio evento
 	private LocalDate dataInizio;
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_fine")//fine evento
 	private LocalDate dataFine;
 
