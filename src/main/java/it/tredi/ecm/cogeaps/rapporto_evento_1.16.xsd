@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.16">
+  <xsd:element name="dataroot">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="evento"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="evento">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="partecipante" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="cod_evento" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="20"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="cod_edi" use="optional">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="3"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="cod_org" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="20"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="cod_accr" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:pattern value="\d{3}"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="data_ini" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:date"/>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="data_fine" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:date"/>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="crediti" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:decimal">
+            <xsd:minExclusive value="00.0"/>
+	    	<xsd:maxInclusive value="50.0"/>
+			<xsd:pattern value="[0-9]{1,2}\.[0-9]{1}"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="ore" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="3"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="tipo_form" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="1"/>
+            <xsd:enumeration value="2"/>
+            <xsd:enumeration value="3"/>
+            <xsd:enumeration value="4"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="modulo_fad" use="optional">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="1"/>
+            <xsd:enumeration value="0"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="modulo_fsc" use="optional">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="1"/>
+            <xsd:enumeration value="0"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="modulo_res" use="optional">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="1"/>
+            <xsd:enumeration value="0"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="tipo_eve" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="E"/>
+            <xsd:enumeration value="P"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="cod_obi" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="3"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="num_part" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:nonNegativeInteger">
+            <xsd:totalDigits value="6"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="cod_tipologia_form" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="1"/>
+            <xsd:enumeration value="2"/>
+            <xsd:enumeration value="3"/>
+            <xsd:enumeration value="4"/>
+            <xsd:enumeration value="5"/>
+            <xsd:enumeration value="6"/>
+            <xsd:enumeration value="7"/>
+            <xsd:enumeration value="8"/>
+            <xsd:enumeration value="9"/>
+            <xsd:enumeration value="10"/>
+            <xsd:enumeration value="11"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+    </xsd:complexType>
+    <xsd:unique name="part_unique">
+      <xsd:selector xpath="partecipante"/>
+      <xsd:field xpath="@cod_fisc"/>
+    </xsd:unique>
+  </xsd:element>
+  <xsd:element name="partecipante">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="professione" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="cod_fisc" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Za-z]{6}[0-9LMNPQRSTUVlmnpqrstuv]{2}[A-Za-z]{1}[0-9LMNPQRSTUVlmnpqrstuv]{2}[A-Za-z]{1}[0-9LMNPQRSTUVlmnpqrstuv]{3}[A-Za-z]{1}"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="nome" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+            <xsd:minLength value="1"/>
+			<xsd:pattern value="[a-zA-Z ',\-\.]+"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="cognome" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+            <xsd:minLength value="1"/>
+			<xsd:pattern value="[a-zA-Z ',\-\.]+"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="ruolo" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="P"/>
+            <xsd:enumeration value="T"/>
+            <xsd:enumeration value="D"/>
+            <xsd:enumeration value="R"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="lib_dip" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="L"/>
+            <xsd:enumeration value="D"/>
+            <xsd:enumeration value="C"/>
+            <xsd:enumeration value="P"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="part_reclutato" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="1"/>
+            <xsd:enumeration value="0"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="sponsor" use="optional">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+            <xsd:minLength value="1"/>
+			<xsd:pattern value="[0-9A-Za-z ',;\-\.\(\)]*"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="cred_acq" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:decimal">
+            <xsd:minExclusive value="00.0"/>
+	    			<xsd:maxInclusive value="50.0"/>
+						<xsd:pattern value="[0-9]{1,2}\.[0-9]{1}"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="data_acq" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:date"/>
+        </xsd:simpleType>
+      </xsd:attribute>
+    </xsd:complexType>
+    <xsd:unique name="prof_unique">
+      <xsd:selector xpath="professione"/>
+      <xsd:field xpath="@cod_prof"/>
+    </xsd:unique>
+  </xsd:element>
+  <xsd:element name="professione">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="disciplina" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="cod_prof" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="2"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+    </xsd:complexType>
+    <xsd:unique name="disc_unique">
+      <xsd:selector xpath="disciplina"/>
+      <xsd:field xpath="."/>
+    </xsd:unique>
+  </xsd:element>
+  <xsd:element name="disciplina">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:positiveInteger">
+        <xsd:totalDigits value="3"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+</xsd:schema>
