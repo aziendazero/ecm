@@ -51,7 +51,7 @@ public class File extends BaseEntity{
 	public void setId(Long id){
 		this.id = id;
 	}
-
+	
 	@JsonIgnore	public boolean isCV(){
 		return this.tipo.equals(FileEnum.FILE_CV);
 	}
@@ -125,12 +125,11 @@ public class File extends BaseEntity{
 			return true;
 		return true;
 	}
-
+ 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		File cloned = (File) super.clone();
 		cloned.setId(null);
 		return clone();
 	}
-
 }
