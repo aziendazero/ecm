@@ -50,6 +50,7 @@ public class Comunicazione extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	private ComunicazioneTipologiaEnum tipologia;
 	private String oggetto;
+	@Column(columnDefinition="text")
 	private String messaggio;
 	private boolean chiusa = false;
 	@OneToMany(mappedBy="comunicazione")

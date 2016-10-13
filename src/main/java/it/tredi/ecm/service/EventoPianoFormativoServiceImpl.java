@@ -18,47 +18,51 @@ public class EventoPianoFormativoServiceImpl implements EventoPianoFormativoServ
 	public static final Logger LOGGER = Logger.getLogger(EventoPianoFormativoServiceImpl.class);
 
 	@Autowired
-	private EventoPianoFormativoRepository eventoRepository;
+	private EventoPianoFormativoRepository eventoPianoFormativoRepository;
 
 	@Override
 	public EventoPianoFormativo getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
-		return eventoRepository.findOne(id);
+		return eventoPianoFormativoRepository.findOne(id);
 	}
 
 	@Override
 	public Set<EventoPianoFormativo> getAllEventiFromProvider(Long providerId) {
 		LOGGER.debug("Recupero eventi del provider: " + providerId);
-		return eventoRepository.findAllByProviderId(providerId);
+		return eventoPianoFormativoRepository.findAllByProviderId(providerId);
 	}
 
 	@Override
 	public Set<EventoPianoFormativo> getAllEventiFromProviderInPianoFormativo(Long providerId, Integer pianoFormativo) {
 		LOGGER.debug("Recupero eventi del provider " + providerId + " relativi al piano formativo " + pianoFormativo);
-		return eventoRepository.findAllByProviderIdAndPianoFormativo(providerId, pianoFormativo);
+		return eventoPianoFormativoRepository.findAllByProviderIdAndPianoFormativo(providerId, pianoFormativo);
 	}
 
 	@Override
 	@Transactional
-	public void save(EventoPianoFormativo evento) {
+	public void save(EventoPianoFormativo evento) throws Exception {
 		LOGGER.debug("Salvataggio evento");
-		eventoRepository.save(evento);
+		if(evento.isNew()) {
+			eventoPianoFormativoRepository.saveAndFlush(evento);
+			evento.buildPrefix();
+		}
+		eventoPianoFormativoRepository.save(evento);
 	}
 
 	@Override
 	@Transactional
 	public void delete(Long id) {
 		LOGGER.debug("Eliminazione evento:" + id);
-		eventoRepository.delete(id);
+		eventoPianoFormativoRepository.delete(id);
 	}
-	
+
 	@Override
 	public void buildPrefix(EventoPianoFormativo evento) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Salvataggio prefix per evento: " + evento.getId()));
 		evento.buildPrefix();
 		save(evento);
 	}
-	
+
 
 	@Override
 	public void validaRendiconto(File rendiconto) throws Exception {

@@ -9,8 +9,8 @@ import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.utils.Utils;
 
 @Component
-public class EventoValidator {
-	private static final Logger LOGGER = LoggerFactory.getLogger(EventoValidator.class);
+public class EventoPianoFormativoValidator {
+	private static final Logger LOGGER = LoggerFactory.getLogger(EventoPianoFormativoValidator.class);
 	
 	public void validate(Object target, Errors errors, String prefix, boolean insertPianoFormativo){
 		validateBase(target, errors, prefix);

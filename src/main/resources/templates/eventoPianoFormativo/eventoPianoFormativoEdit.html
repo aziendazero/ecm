@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{${eventoWrapper.evento.new} ? label.creazione_nuovo_evento : label.modifica_evento}">Evento</h2>
+						<div class="pull-right buttons-header">
+							<th:block th:unless="${#lists.isEmpty(eventoWrapper.idEditabili)}">
+								<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
+							</th:block>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="eventoPianoFormativo/eventoPianoFormativoFragment :: eventoPianoFormativo('edit', ${fromAccreditamento})"></th:block>
+
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				var text_max = 3000;
+				$('#counter').html(text_max + ' '+[[#{label.caratteri_rimanenti}]]);
+
+				$('#title').keyup(function() {
+				  var text_length = $('#title').val().length;
+				  var text_remaining = text_max - text_length;
+
+				  $('#counter').html(text_remaining + ' '+[[#{label.caratteri_rimanenti}]]);
+				});
+
+				//cambia la stringa per i pulsanti e il contatore
+				$(document).ready(function() {
+					$('select').selectpicker({
+						selectAllText : 'Seleziona tutti',
+						deselectAllText : 'Deseleziona tutti',
+						countSelectedText : '{0} selezionate'
+					});
+
+					if($("#professioni")[0]) {
+						abilitaDiscipline($("#professioni")[0]);
+					}
+
+					if($('#generaleProf').is(':checked')) {
+						$('button[data-id="professioni"]').prop('disabled', true);
+						$('button[data-id="discipline"]').prop('disabled', true);
+					}
+				});
+
+				function abilitaDiscipline(professioni) {
+					//flag per capire se c'è almeno una professione
+					var almenoUna = false;
+					$.each(professioni.options, function(index, item) {
+						//toglie la parte relativa al codice della professione
+						prof = item.text;
+						//abilita/disabilita tutte le discipline delle professioni selezionate/deselezionate
+						if (item.selected) {
+							$('optgroup[label="' + prof + '"]').prop(
+									'disabled', false);
+							almenoUna = true;
+						} else {
+							$('optgroup[label="' + prof + '"]').prop(
+									'disabled', true);
+						}
+					});
+					//decide se disabilitare/abilitare tutta la select
+					if (almenoUna && ($('#discipline').attr('data-editabile') === 'true')) {
+						$('#discipline').prop('disabled', false);
+					} else {
+						$('#discipline').prop('disabled', true);
+					}
+					//refresh della view
+					$('#discipline').selectpicker('refresh');
+				}
+
+				//gestione generale/settoriale delle professioni
+				$('#generaleProf').on('ifChecked', function(event){
+					$('.selectpicker.multi').selectpicker('selectAll');
+					$('button[data-id="professioni"]').prop('disabled', true);
+					$('button[data-id="discipline"]').prop('disabled', true);
+				});
+
+				$('#settorialeProf').on('ifChecked', function(event){
+					$('.selectpicker.multi').selectpicker('deselectAll');
+					$('button[data-id="professioni"]').prop('disabled', false);
+					$('button[data-id="discipline"]').prop('disabled', false);
+				});
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>
+
+

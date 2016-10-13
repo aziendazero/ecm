@@ -7,7 +7,7 @@
 <body>
 	<!-- fragment interno dell'evento, la parte di paginazione è gestita dai file eventoShow, eventoValidate e eventoEdit -->
 	<!-- parametri del fragment: string che descrive la modalità e boolean che descrive la provenienza, prende inoltre eventoWrapper dal module del chiamante -->
-	<th:block th:fragment="evento(mode, fromAccreditamento)">
+	<th:block th:fragment="eventoPianoFormativo(mode, fromAccreditamento)">
 		<th:block th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
 			showOnly=${mode == 'show'},

@@ -5,59 +5,12 @@
 <head lang="it">
 </head>
 <body>
-	<div layout:fragment="content">
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="x_panel">
-					<div class="x_title">
-						<h2 th:text="#{label.visualizza_evento(${eventoWrapper.evento.id})}">Evento</h2>
-						<div class="pull-right buttons-header">
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
-						</div>
-						<div class="clearfix"></div>
-					</div>
+	<th:block th:fragment="eventoShow">
 
-					<div id="toModal">
-						<th:block th:include="evento/eventoFragment :: evento('show', true)"></th:block>
-					</div>
-
-				</div>
-			</div>
-			<script th:inline="javascript">
-			/*<![CDATA[*/
-				$(document).ready(function() {
-
-					//table responsive professioni/discipline show
-					$('.datatable-responsive-discipline-evento').DataTable({
-						"bFilter" : false,
-						"bPaginate": false,
-						"bInfo" : false,
-					    "columnDefs": [
-					    	{ "targets": [ '_all' ], "orderable": false },
-					    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
-					    	{ "visible": false, "targets": 0 }
-					    ],
-					    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
-					    "drawCallback": function ( settings ) {
-				        	var api = this.api();
-				            var rows = api.rows( {page:'current'} ).nodes();
-				            var last=null;
-
-				            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
-				            	if ( last !== group ) {
-				                	$(rows).eq( i ).before(
-				                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
-				            	);
-				                    last = group;
-				                }
-				            });
-				        }
-
-					});
-				})
-			/*]]>*/
-			</script>
+		<div class="x_content">
+			<div class="danger">Work In Progress: qua andrà un riepilogo delle informazioni relative all'Evento</div>
 		</div>
-	</div>
+
+	</th:block>
 </body>
 </html>

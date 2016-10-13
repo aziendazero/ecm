@@ -18,12 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PianoFormativo;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -42,17 +40,16 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoPianoFormativoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
-import it.tredi.ecm.web.validator.EventoValidator;
+import it.tredi.ecm.web.validator.EventoPianoFormativoValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
 public class EventoPianoFormativoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoPianoFormativoController.class);
-	private final String EDIT = "evento/eventoEdit";
-	private final String SHOW = "evento/eventoShow";
-	private final String VALIDATE  = "evento/eventoValidate";
-	private final String ENABLEFIELD  = "evento/eventoEnableField";
-	private final String RENDICONTO = "evento/eventoRendiconto";
+	private final String EDIT = "eventoPianoFormativo/eventoPianoFormativoEdit";
+	private final String SHOW = "eventoPianoFormativo/eventoPianoFormativoShow";
+	private final String VALIDATE  = "eventoPianoFormativo/eventoPianoFormativoValidate";
+	private final String ENABLEFIELD  = "eventoPianoFormativo/eventoPianoFormativoEnableField";
 
 	@Autowired private EventoPianoFormativoService eventoService;
 	@Autowired private ProviderService providerService;
@@ -60,7 +57,7 @@ public class EventoPianoFormativoController {
 	@Autowired private ObiettivoService obietivoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
-	@Autowired private EventoValidator eventoValidator;
+	@Autowired private EventoPianoFormativoValidator eventoValidator;
 	@Autowired private ValutazioneValidator valutazioneValidator;
 	@Autowired private FieldValutazioneAccreditamentoService fieldValutazioneAccreditamentoService;
 	@Autowired private ValutazioneService valutazioneService;
@@ -511,108 +508,6 @@ public class EventoPianoFormativoController {
 		}
 	}
 
-	//metodo listEvento per i provider
-	@RequestMapping("/provider/evento/list")
-	public String listEventoProvider(Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET /provider/evento/list"));
-		try {
-			Account currentAccount = Utils.getAuthenticatedUser().getAccount();
-			if(!currentAccount.isProvider())
-				throw new Exception("L'utente non è un provider");
-			else {
-				Long providerId = providerService.getProviderIdByAccountId(currentAccount.getId());
-				redirectAttrs.addAttribute("providerId", providerId);
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
-				return "redirect:/provider/{providerId}/evento/list";
-			}
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /provider/evento/list"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
-			return "redirect:/home";
-		}
-	}
-
-
-	//TODO domenico (check se fa la query di tutto il provider)
-	/*** LIST EVENTO ***/
-	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
-	@RequestMapping("/provider/{providerId}/evento/list")
-	public String listEvento(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
-		try {
-			Provider provider = providerService.getProvider(providerId);
-			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerId));
-			model.addAttribute("titolo", provider.getDenominazioneLegale());
-			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
-			return "evento/eventoList";
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
-			return "redirect:/home";
-		}
-	}
-
-	/*
-	 * SHOW EVENTO PROVIDER
-	 */
-	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
-	@RequestMapping(value = "/provider/{providerId}/evento/{id}/show")
-	public String showEvento(@PathVariable Long providerId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
-		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + id + "/show"));
-		try {
-			model.addAttribute("returnLink", "/provider/"+ providerId + "/evento/list");
-			return goToShow(model, prepareEventoWrapperShow(eventoService.getEvento(id), providerId));
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + id + "/show"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
-			return "redirect:/provider/" + providerId + "/evento/list";
-		}
-	}
-
-//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
-	@RequestMapping("/provider/{providerId}/evento/{eventoId}/rendiconto")
-	public String rendicontoEvento(@PathVariable Long providerId,
-			@PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
-		try{
-			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto"));
-			model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
-			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
-		}
-		catch (Exception ex) {
-			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
-			return "redirect:/provider/" + providerId + "/evento/list";
-		}
-	}
-
-//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
-		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
-		public String rendicontoEventoValidate(@PathVariable Long providerId,
-				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoPianoFormativoWrapper wrapper, BindingResult result,
-				Model model, RedirectAttributes redirectAttrs) {
-			try{
-				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
-				if(wrapper.getReportPartecipanti().getId() == null)
-					model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
-				else {
-					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
-//TODO				eventoService.validaRendiconto(wrapper.getReportPartecipanti());
-				}
-				return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
-			}
-			catch (Exception ex) {
-				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
-				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto/validate";
-			}
-		}
-
 	private String goToShow(Model model, EventoPianoFormativoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
 		model.addAttribute("proceduraFormativaList", wrapper.getEvento().getAccreditamento().getDatiAccreditamento().getProcedureFormative());
@@ -677,15 +572,6 @@ public class EventoPianoFormativoController {
 		return eventoWrapper;
 	}
 
-	private EventoPianoFormativoWrapper prepareEventoWrapperRendiconto(EventoPianoFormativo evento, long providerId) {
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - entering"));
-		EventoPianoFormativoWrapper eventoWrapper = new EventoPianoFormativoWrapper();
-		eventoWrapper.setEvento(evento);
-		eventoWrapper.setProviderId(providerId);
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - exiting"));
-		return eventoWrapper;
-	}
-
 	//TODO rimuovere se non serve più
 //	private String goToValidate(Model model, EventoPianoFormativoWrapper wrapper) {
 //		model.addAttribute("eventoWrapper", wrapper);
@@ -698,12 +584,6 @@ public class EventoPianoFormativoController {
 		model.addAttribute("eventoWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
 		return ENABLEFIELD;
-	}
-
-	private String goToRendiconto(Model model, EventoPianoFormativoWrapper wrapper) {
-		model.addAttribute("eventoWrapper", wrapper);
-		LOGGER.info(Utils.getLogMessage("VIEW: " + RENDICONTO));
-		return RENDICONTO;
 	}
 
 	private void populateListFromAccreditamento(Model model, long accreditamentoId) throws Exception{

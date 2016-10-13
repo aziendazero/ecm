@@ -138,16 +138,19 @@ public class SedutaServiceImpl implements SedutaService {
 	}
 
 	@Override
+	//@Transactional //TODO ANDREABBE MESSO?
 	public void chiudiSeduta(Long sedutaId) throws Exception {
 		Seduta seduta =  sedutaRepository.findOne(sedutaId);
+		for(ValutazioneCommissione val : seduta.getValutazioniCommissione()){
+			if(val.getAccreditamento().getStato() == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE)
+				accreditamentoService.inviaValutazioneCommissione(val.getAccreditamento().getId(), Utils.getAuthenticatedUser(), val.getStato());
+		}
+
 		if(canBeLocked(seduta)) {
 			seduta.setLocked(true);
 			sedutaRepository.save(seduta);
 		}else throw new Exception("Seduta non bloccabile");
-		
-		for(ValutazioneCommissione val : seduta.getValutazioniCommissione()){
-			accreditamentoService.inviaValutazioneCommissione(val.getAccreditamento().getId(), Utils.getAuthenticatedUser(), val.getStato());
-		}
+
 	}
 
 	@Override

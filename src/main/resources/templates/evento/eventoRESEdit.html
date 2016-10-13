@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<th:block th:fragment="eventoRESEdit">
+
+		<div class="x_content">
+
+
+			<!--  TODO RIMUOVERE NUMERAZIONE HARDCODATA E METTERLA IN UN ENUM?  -->
+
+			<form id="formEventoRES" class="form-horizontal form-label-left"
+				th:action="@{|/provider/${eventoWrapper.providerId}/evento/save|}"
+				method="post" enctype="multipart/form-data"
+				novalidate="novalidate">
+
+				<!-- input hidden -->
+				<input type="hidden" name="editId" th:value="${eventoWrapper.evento.id}" />
+				<input type="hidden" name="providerId" th:value="${eventoWrapper.providerId}" />
+				<input type="hidden" name="proceduraFormativa" th:value="${eventoWrapper.proceduraFormativa}" />
+
+				<!-- DENOMINAZIONE LEGALE PROVIDER -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>1</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneProvider">
+						<span th:text="#{label.denominazione_legale_provider}">Denominazione Legale del Provider</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneProvider">
+						<div class="value-edit" th:text="${eventoWrapper.evento.provider.denominazioneLegale}"></div>
+					</div>
+				</div>
+
+				<!-- ID PROVIDER -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>2</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="idProvider">
+						<span th:text="#{label.id_provider}">Id del Provider</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="idProvider">
+						<div class="value-edit" th:text="${eventoWrapper.evento.provider.id}"></div>
+					</div>
+				</div>
+
+				<!-- TIPOLOGIA EVENTO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>3</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="proceduraFormativa">
+						<span th:text="#{label.procedura_formativa}">Id del Provider</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="proceduraFormativa">
+						<div class="value-edit" th:text="${eventoWrapper.evento.proceduraFormativa}"></div>
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- DESTINATARI EVENTO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>4</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="destinatari">
+						<span th:text="#{label.procedura_formativa}">Id del Provider</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="destinatari">
+						<div class="checkbox" th:each="destinatario, row : ${T(it.tredi.ecm.dao.enumlist.DestinatariEventoEnum).values()}">
+							<label>
+								<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.destinatariEvento}" th:value="${destinatario}" />
+								<span th:text="${destinatario.nome}"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- CONTENUTI EVENTO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>5</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="contenuti">
+						<span th:text="#{label.evento_contiene_questi_contenuti}">L'evento formativo prevedere i seguenti contenuti?</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
+						<div class="radio" th:each="contenuto, row : ${T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).values()}">
+							<label>
+								<input type="radio" class="flat" th:field="${eventoWrapper.evento.contenutiEvento}" th:value="${contenuto}" />
+								<span th:text="${contenuto.nome}"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- TITOLO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>6</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="titolo">
+						<span th:text="#{label.titolo}">Titolo</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="titolo">
+						<textarea class="required" maxlength="3000" id="title" rows="3" name="titolo"
+							style="resize: none;" th:field="${eventoWrapper.evento.titolo}">
+						</textarea>
+						<div id="counter"></div>
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- BLOCCO INFO SEDE -->
+				<div class="item form-group">
+					<label class="col-xs-12">
+						<span th:text="#{label.informazioni_sede}">Titolo</span>
+					</label>
+				</div>
+				<!-- PROVINCIA -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>7</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="provincia">
+						<span th:text="#{label.provincia}">Provincia</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<select id="provincia"
+							class="selectpicker required"
+							th:field="${eventoWrapper.evento.sedeEvento.provincia}"
+							data-width="100%" data-style="btn-primary"
+							data-actions-box="true" data-size="10"
+							data-hide-disabled="false"
+							onchange="sendAjaxRequestProvincia()"
+							title="Seleziona una provincia...">
+							<option
+								th:each="provincia : ${elencoProvince}"
+								th:value="${provincia}"
+								th:text="${provincia}">
+							</option>
+						</select>
+					</div>
+				</div>
+				<!-- COMUNE -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>8</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="comune">
+						<span th:text="#{label.comune}">Comune</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<select id="comune"
+							class="selectpicker required"
+							th:field="${eventoWrapper.evento.sedeEvento.comune}"
+							data-width="100%" data-style="btn-primary"
+							data-actions-box="true" data-size="10"
+							data-hide-disabled="false"
+							th:disabled="${eventoWrapper.evento.sedeEvento.comune == null}"
+							title="Seleziona un comune...">
+							<!-- options popolate alla selezione della provincia -->
+						</select>
+					</div>
+				</div>
+				<!-- INDIRIZZO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>9</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="indirizzo">
+						<span th:text="#{label.indirizzo}">Indirizzo</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="indirizzo">
+						<input type="text" class="form-control" th:field="${eventoWrapper.evento.sedeEvento.indirizzo}" />
+					</div>
+				</div>
+				<!-- LUOGO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>10</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="luogo">
+						<span th:text="#{label.luogo}">Luogo</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="luogo">
+						<input type="text" class="form-control" th:field="${eventoWrapper.evento.sedeEvento.luogo}" />
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- DATA INIZIO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>11</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataInizio">
+						<span th:text="#{label.data_inizio}">Data inizio</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+						<input type="text" id="dataInizio" class="form-control"
+							name="data" th:field="${eventoWrapper.evento.dataInizio}" />
+						<span class="input-group-addon" id="dataInizio" onclick="$('#dataInizio').click()">
+ 							<i class="glyphicon glyphicon-calendar"></i>
+						</span>
+					</div>
+				</div>
+
+				<!-- DATA FINE -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>12</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataFine">
+						<span th:text="#{label.data_fine}">Data fine</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+						<input type="text" id="dataFine" class="form-control"
+							name="data" th:field="${eventoWrapper.evento.dataFine}" />
+						<span class="input-group-addon" id="dataFineButton" onclick="$('#dataFine').click()">
+ 							<i class="glyphicon glyphicon-calendar"></i>
+						</span>
+					</div>
+				</div>
+
+				<!-- DATE INTERMEDIE -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>13</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dateIntermedie">
+						<span th:text="#{label.date_intermedie}">Data intermedie</span>
+						<span class="required">*</span>
+					</label>
+				</div>
+				<div class='nextDataIntermedia item form-group'>
+					<div class='col-md-4 col-sm-4 col-xs-12'></div>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+						<input type="text" class="form-control datapicker-intermedia"
+							th:field="${eventoWrapper.dateIntermedieTemp[__${#lists.size(eventoWrapper.dateIntermedieTemp)}__]}" />
+						<span class="input-group-addon not-last" onclick="$(this).prev().click()">
+ 							<i class="glyphicon glyphicon-calendar"></i>
+						</span>
+						<span class="input-group-addon" onclick="aggiungiDataIntermedia(this)">
+							<i class="fa fa-plus"></i>
+						</span>
+					</div>
+				</div>
+				<div class="date-intermedie-container"></div>
+
+				<!-- OBIETTIVO NAZIONALE -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>14</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivoNazionale">
+						<span th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+						<select id="obiettivoNazionale"
+							class="selectpicker required"
+							th:field="${eventoWrapper.evento.obiettivoNazionale}"
+							data-width="100%" data-style="btn-primary"
+							data-actions-box="true" data-size="10"
+							data-hide-disabled="false"
+							title="Seleziona un obiettivo...">
+							<optgroup class="optgroup-primary"
+								th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
+								th:label="${categoriaObiettivoNazionale.nome}"
+								th:remove="all-but-first">
+								<option
+									th:each="obiettivoNazionale, row: ${eventoWrapper.obiettiviNazionali}"
+									th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
+									th:value="${obiettivoNazionale.id}"
+									th:text="${obiettivoNazionale.nome}">
+								</option>
+							</optgroup>
+						</select>
+					</div>
+					<div class="col-xs-1">
+						<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+					</div>
+				</div>
+
+				<!-- OBIETTIVO REGIONALE -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>15</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivorRegionale">
+						<span th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Strategico Regionale</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+						<select id="obiettivoRegionale"
+							class="selectpicker required"
+							th:field="${eventoWrapper.evento.obiettivoRegionale}"
+							data-width="100%" data-style="btn-primary"
+							data-actions-box="true" data-size="10"
+							data-hide-disabled="false"
+							title="Seleziona un obiettivo...">
+							<option
+								th:each="obiettivoRegionale, row: ${eventoWrapper.obiettiviRegionali}"
+								th:value="${obiettivoRegionale.id}"
+								th:text="${obiettivoRegionale.nome}">
+							</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- PROFESSIONI/DISCIPLINE -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>16</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
+						<div class="col-xs-12 select-with-margin-container">
+							<select id="professioni" class="selectpicker required multi"
+								multiple="multiple" data-width="100%"
+								data-style="btn-primary" data-actions-box="true"
+								data-size="10" title="Seleziona una professione..."
+								onchange="abilitaDiscipline(this)"
+								data-selected-text-format="count" th:remove="all-but-first">
+								<option th:each="professione, row: ${eventoWrapper.professioneList}"
+									th:value="${professione.id}" th:text="${professione.nome}"
+									th:field="${eventoWrapper.evento.professioniSelezionate}"></option>
+							</select>
+						</div>
+						<select id="discipline" class="selectpicker required multi"
+							th:field="${eventoWrapper.evento.discipline}"
+							multiple="multiple" data-width="100%"
+							data-style="btn-success" data-actions-box="true"
+							data-size="10" data-hide-disabled="true"
+							title="Seleziona una disciplina..." disabled="disabled"
+							data-selected-text-format="count" th:remove="all-but-first">
+							<optgroup class="optgroup-success" disabled="disabled"
+								th:each="professione, row: ${eventoWrapper.professioneList}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
+								th:label="${professione.nome}" th:remove="all-but-first">
+								<option th:each="disciplina, row: ${eventoWrapper.disciplinaList}"
+									th:if="${disciplina.professione == professione}"
+									th:value="${disciplina.id}" th:text="${disciplina.nome}"></option>
+							</optgroup>
+						</select>
+					</div>
+				</div>
+
+				<input id="submitButton" type="submit" style="display: none;" />
+
+			</form>
+
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+			    var days;
+				var months;
+
+				$(document).ready(function() {
+					days = getDayNamesShort();
+					months = getMonthNames();
+
+					$('.datapicker-intermedia').daterangepicker({
+				        singleDatePicker: true,
+				        autoApply: false,
+				        autoUpdateInput: true,
+				        format: "DD/MM/YYYY",
+				        locale: {
+					        daysOfWeek: days,
+			                monthNames: months,
+				        }
+				    })
+
+				    $('.datapicker-intermedia').on("hide.daterangepicker", function() {
+						$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
+							$(this).remove();
+						});
+					});
+
+				});
+
+				var index = [[${#lists.size(eventoWrapper.dateIntermedieTemp)}]] - 1;
+
+				function aggiungiDataIntermedia(caller) {
+					console.log(caller);
+					$("<div class='nextDataIntermedia item form-group'></div>")
+						.append($("<div class='col-md-4 col-sm-4 col-xs-12'></div>"))
+						.append($(caller).parent().clone())
+						.appendTo(".date-intermedie-container");
+					$(caller).children().toggleClass('fa-plus fa-minus');
+					$(caller).attr("onclick", "removeDataIntermedia(this)");
+					$(caller).siblings(".datapicker-intermedia").attr("name", "dateIntermedieTemp["+ ++index +"]");
+					$(caller).siblings(".datapicker-intermedia").attr("id", "dateIntermedieId"+ index);
+					reinitDaterangepicker();
+				}
+
+				function removeDataIntermedia(caller) {
+					$(caller).closest(".item").remove();
+				}
+
+				function reinitDaterangepicker() {
+					$('.datapicker-intermedia').daterangepicker({
+				        singleDatePicker: true,
+				        autoApply: false,
+				        autoUpdateInput: true,
+				        format: "DD/MM/YYYY",
+				        locale: {
+					        daysOfWeek: days,
+			                monthNames: months,
+				        }
+				    })
+				}
+
+
+			/*]]>*/
+			</script>
+		</div>
+	</th:block>
+</body>
+</html>

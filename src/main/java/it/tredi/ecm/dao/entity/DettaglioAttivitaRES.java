@@ -16,8 +16,10 @@ import lombok.Setter;
 public class DettaglioAttivitaRES{
 	private LocalTime orario;
 	private String argomento;
+	
 	@ManyToOne
 	private PersonaEvento docente;
+	
 	private String risultatoAtteso;
 	private ObiettiviFormativiRESEnum obiettivoFormativo;
 	private MetodologiaDidatticaRESEnum metodologiaDidattica;

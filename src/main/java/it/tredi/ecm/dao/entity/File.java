@@ -51,11 +51,11 @@ public class File extends BaseEntity{
 		this.dataCreazione = LocalDate.now();
 		this.diskFileName = "";
 	}
-	
+
 	public void setId(Long id){
 		this.id = id;
 	}
-	
+
 	@JsonIgnore	public boolean isCV(){
 		return this.tipo.equals(FileEnum.FILE_CV);
 	}
@@ -98,6 +98,9 @@ public class File extends BaseEntity{
 	@JsonIgnore public boolean isDICHIARAZIONEESCLUSIONE() {
 		return this.tipo.equals(FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE);
 	}
+	@JsonIgnore public boolean isREPORTPARTECIPANTI() {
+		return this.tipo.equals(FileEnum.FILE_REPORT_PARTECIPANTI);
+	}
 
 	//ENGINEERING TEST FILE
 	@JsonIgnore	public boolean isFILEDAFIRMARE(){
@@ -126,11 +129,12 @@ public class File extends BaseEntity{
 			return true;
 		return true;
 	}
- 
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		File cloned = (File) super.clone();
 		cloned.setId(null);
 		return clone();
 	}
+
 }

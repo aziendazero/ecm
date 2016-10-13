@@ -26,16 +26,16 @@ import lombok.Setter;
 @Setter
 public class EventoPianoFormativo extends BaseEntity{
 	private static Logger LOGGER = LoggerFactory.getLogger(EventoPianoFormativo.class);
-	
+
 	/*
 	 * PREFIX[-edizione]
 	 * 	PREFIX=
 	 * 		*EVENTO inserito in PIANO FORMATIVO -> COD_PROVIDER-ID_EVENTO (quando lo creo nel piano formativo)
-	 * 
+	 *
 	 * 		*EVENTO inserito da nuovo in EVENTI -> COD_PROVIDER-ID_EVENTO
-	 * 		
+	 *
 	 * 		*EVENTO inserito in EVENTI a partire da evento in piano formativo -> PREFIX dell'evento di partenza
-	 * 		
+	 *
 	 * 		*EVENTO inserito come RIEDIZIONE -> PREFIX dell'evento padre
 	 * */
 	private String prefix;
@@ -45,15 +45,15 @@ public class EventoPianoFormativo extends BaseEntity{
 			return prefix + "-" + edizione;
 		else return prefix;
 	}
-	
+
 	public void buildPrefix() throws Exception{
 		if(provider == null || accreditamento == null)
 			throw new Exception("Evento non agganciato a Provider o Accreditamento");
-		
+
 		//TODO sostituire con getCodiceIdentificativoUnivoco di DB
 		this.setPrefix(provider.getCodiceIdentificativoUnivoco() + "-" + this.id);
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	private ProceduraFormativa proceduraFormativa;
 	private String titolo;
@@ -73,12 +73,12 @@ public class EventoPianoFormativo extends BaseEntity{
 
 	private String professioniEvento;
 	@ManyToMany
-	@JoinTable(name = "evento_discipline",
+	@JoinTable(name = "evento_piano_formativo_discipline",
 				joinColumns = @JoinColumn(name = "evento_id"),
 				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
-	
+
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
 		if(discipline != null){

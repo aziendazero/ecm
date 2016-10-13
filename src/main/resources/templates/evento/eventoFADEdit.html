@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<th:block th:fragment="eventoFADEdit">
+
+		<div class="x_content">
+
+			<form id="formEventoFAD" class="form-horizontal form-label-left"
+				th:action="@{|/provider/${eventoWrapper.providerId}/evento/save|}"
+				method="post" enctype="multipart/form-data"
+				novalidate="novalidate">
+			</form>
+
+		</div>
+
+	</th:block>
+</body>
+</html>

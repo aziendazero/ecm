@@ -16,11 +16,16 @@ public class Obiettivo extends BaseEntity{
 	private boolean nazionale;
 	@Enumerated(EnumType.STRING)
 	private CategoriaObiettivoNazionale categoria; 
+	private String codiceCogeaps;
 	
 	public Obiettivo(){}
 	public Obiettivo(String nome, boolean nazionale, CategoriaObiettivoNazionale categoria){
+		this(nome, nazionale, categoria, null);
+	}
+	public Obiettivo(String nome, boolean nazionale, CategoriaObiettivoNazionale categoria, String codiceCogeaps){
 		this.nome = nome;
 		this.nazionale = nazionale;
 		this.categoria = categoria;
+		this.codiceCogeaps = codiceCogeaps;
 	}
 }

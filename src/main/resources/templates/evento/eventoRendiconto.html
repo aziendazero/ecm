@@ -25,11 +25,11 @@
 			<div class="col-lg-6 col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.riepilogo_evento(${eventoWrapper.evento.id + '-' + eventoWrapper.evento.edizione})}">Evento</h2>
+						<h2 th:text="#{label.riepilogo_evento(${eventoWrapper.evento.getCodiceIdentificativo()})}">Evento</h2>
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:include="evento/eventoFragment :: evento('show', true)"></th:block>
+					<th:block th:include="evento/eventoShow :: eventoShow"></th:block>
 
 				</div>
 			</div>
@@ -46,9 +46,13 @@
 						method="post" enctype="multipart/form-data"
 						novalidate="novalidate">
 
+							<input type="hidden" name="editId" th:value="${eventoWrapper.evento.id}" />
+							<input type="hidden" th:field="${eventoWrapper.providerId}" />
+							<input type="hidden" th:field="${eventoWrapper.wrapperMode}"/>
+
 							<div class="with-margin-top with-margin-bottom"></div>
 
-							<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, reportPartecipanti, null, null, null, true, 'edit', false)" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, reportPartecipanti, null, null, null, false, 'edit', false)" ></th:block>
 
 							<div class="item form-group with-margin-top">
 								<div class="col-xs-5"></div>
@@ -59,8 +63,8 @@
 
 							<div class="item form-group with-margin-top">
 								<div class="col-xs-5"></div>
-								<div class="col-xs-2">
-									<button type="submit" class="btn btn-primary single" onclick="spinCog();"><span th:text="#{label.elabora}"> </span> <i class="fa fa-cog"></i></button>
+								<div class="col-xs-2 text-center">
+									<button type="submit" class="btn btn-primary single elabora-btn" onclick="spinCog();"><span th:text="#{label.elabora}"> </span> <i class="fa fa-cog"></i></button>
 								</div>
 							</div>
 

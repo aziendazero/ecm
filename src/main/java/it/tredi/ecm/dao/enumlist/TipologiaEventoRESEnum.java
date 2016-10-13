@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum TipologiaEventoRESEnum {
-	CONVEGNO_CONGRESSO(1,"",200,-1),
-	WORKSHOP_SEMINARIO(2,"",1,100),
-	CORSO_AGGIORNAMENTO(3,"",1,200);
+	CONVEGNO_CONGRESSO(3,"",200,-1),
+	WORKSHOP_SEMINARIO(4,"",1,100),
+	CORSO_AGGIORNAMENTO(1,"",1,200);
 	
 	private int id;
 	private String nome;

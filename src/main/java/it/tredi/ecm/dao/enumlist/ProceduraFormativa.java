@@ -7,10 +7,11 @@ public enum ProceduraFormativa {
 	FAD (1, "Formazione a distanza"),
 	FSC (2, "Formazione sul campo"),
 	RES (3, "Formazione residenziale");
-	
+
 	private int id;
 	private String nome;
-	
+
+	private ProceduraFormativa(){}
 	private ProceduraFormativa(int id, String nome){
 		this.id = id;
 		this.nome = nome;
