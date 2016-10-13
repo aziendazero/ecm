@@ -14,7 +14,7 @@ public interface EventoService {
 	public void save(Evento evento);
 	public void delete(Long id);
 
-	public void validaRendiconto(File rendiconto) throws Exception;
+	public void validaRendiconto(Long id, File rendiconto) throws Exception;
 	public List<Evento> getAllEventi();
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
 	public boolean canCreateEvento(Account account);

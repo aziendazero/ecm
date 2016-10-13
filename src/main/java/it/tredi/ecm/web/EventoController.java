@@ -3,6 +3,8 @@ package it.tredi.ecm.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +24,18 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ObiettivoService;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -41,6 +49,7 @@ public class EventoController {
 	@Autowired private ProviderService providerService;
 	@Autowired private ObiettivoService obiettivoService;
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private FileService fileService;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -60,9 +69,13 @@ public class EventoController {
 	@ModelAttribute("eventoWrapper")
 	public EventoWrapper getEvento(@RequestParam(name = "editId", required = false) Long id,
 			@RequestParam(value="providerId",required = false) Long providerId,
-			@RequestParam(value="proceduraFormativa",required = false) ProceduraFormativa proceduraFormativa) throws Exception{
+			@RequestParam(value="proceduraFormativa",required = false) ProceduraFormativa proceduraFormativa,
+			@RequestParam(value="wrapperMode",required = false) EventoWrapperModeEnum wrapperMode) throws Exception{
 		if(id != null){
-			return prepareEventoWrapperEdit(eventoService.getEvento(id));
+			if (wrapperMode == EventoWrapperModeEnum.RENDICONTO)
+				return prepareEventoWrapperRendiconto(eventoService.getEvento(id), providerId);
+			else
+				return prepareEventoWrapperEdit(eventoService.getEvento(id));
 		}
 		if(providerId != null && proceduraFormativa != null)
 			return prepareEventoWrapperNew(proceduraFormativa, providerId);
@@ -202,15 +215,32 @@ public class EventoController {
 				model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
 			else {
 				LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
-//TODO				eventoService.validaRendiconto(wrapper.getReportPartecipanti());
+					File file = wrapper.getReportPartecipanti();
+					if(file != null && !file.isNew()){
+						if(file.isREPORTPARTECIPANTI()) {
+							String fileName = wrapper.getReportPartecipanti().getNomeFile().trim().toUpperCase();
+							if (fileName.endsWith(".XML") || fileName.endsWith(".XML.P7M") || fileName.endsWith(".XML.ZIP.P7M") || fileName.endsWith(".CSV")) {
+								wrapper.setReportPartecipanti(fileService.getFile(file.getId()));
+								eventoService.validaRendiconto(eventoId, wrapper.getReportPartecipanti());
+							}
+							else {
+								model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+							}
+						}
+					}
 			}
 			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
+				if (ex instanceof EcmException) //errore gestito
+//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+				else
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				//TODO - fare la gestione con la mia eccezione
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-			return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto/validate";
+				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 		}
 	}
 
@@ -242,6 +272,7 @@ public class EventoController {
 	private EventoWrapper prepareEventoWrapperNew(ProceduraFormativa proceduraFormativa, Long providerId) throws AccreditamentoNotFoundException, Exception {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(proceduraFormativa, providerId);
+		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.EDIT);
 		Evento evento;
 		switch(proceduraFormativa){
 			case FAD: evento = new EventoFAD(); break;
@@ -260,6 +291,7 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
+		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.EDIT);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;
 	}
@@ -281,6 +313,8 @@ public class EventoController {
 		EventoWrapper eventoWrapper = new EventoWrapper();
 		eventoWrapper.setEvento(evento);
 		eventoWrapper.setProviderId(providerId);
+		eventoWrapper.setReportPartecipanti(new File(FileEnum.FILE_REPORT_PARTECIPANTI));
+		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.RENDICONTO);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - exiting"));
 		return eventoWrapper;
 	}

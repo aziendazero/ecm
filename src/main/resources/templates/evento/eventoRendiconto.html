@@ -46,9 +46,13 @@
 						method="post" enctype="multipart/form-data"
 						novalidate="novalidate">
 
+							<input type="hidden" name="editId" th:value="${eventoWrapper.evento.id}" />
+							<input type="hidden" th:field="${eventoWrapper.providerId}" />
+							<input type="hidden" th:field="${eventoWrapper.wrapperMode}"/>
+
 							<div class="with-margin-top with-margin-bottom"></div>
 
-							<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, reportPartecipanti, null, null, null, true, 'edit', false)" ></th:block>
+							<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, reportPartecipanti, null, null, null, false, 'edit', false)" ></th:block>
 
 							<div class="item form-group with-margin-top">
 								<div class="col-xs-5"></div>
