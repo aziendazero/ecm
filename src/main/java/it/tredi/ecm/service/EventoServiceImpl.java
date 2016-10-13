@@ -32,7 +32,7 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired
 	private FileService fileService;
-	
+
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -66,8 +66,8 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public void validaRendiconto(Long id, File rendiconto) throws Exception {
 		Evento evento = getEvento(id);
-		
-		String fileName = rendiconto.getNomeFile();		
+
+		String fileName = rendiconto.getNomeFile();
 		if (fileName.trim().toUpperCase().endsWith(".CSV")) { //CSV -> produzione XML
 			rendiconto.setTipo(FileEnum.FILE_REPORT_PARTECIPANTI_CSV);
 			evento.setReportPartecipantiCSV(rendiconto);
@@ -80,10 +80,10 @@ public class EventoServiceImpl implements EventoService {
 			catch (Exception e) {
 				throw new EcmException("error.csv_to_xml_report_error", e.getMessage(), e);
 			}
-			
+
 			//xsd validation
 			try {
-				XmlReportValidator.validateXml(xml_b, Helper.getSchemaEvento_1_16_XSD());	
+				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), xml_b, Helper.getSchemaEvento_1_16_XSD());	
 			}
 			catch (Exception e) {
 				throw new EcmException("error.xml_validation", e.getMessage(), e);
@@ -94,18 +94,24 @@ public class EventoServiceImpl implements EventoService {
 			rendicontoXml.setNomeFile(Helper.createReportXmlFileName());
 			rendicontoXml.setData(xml_b);
 			evento.setReportPartecipantiXML(rendicontoXml);
-			fileService.save(rendicontoXml);			
+			fileService.save(rendicontoXml);
 		}
 		else { //XML, XML.P7M, XML.ZIP.P7M
 			evento.setReportPartecipantiCSV(null);
 			rendiconto.setTipo(FileEnum.FILE_REPORT_PARTECIPANTI_XML);
 			evento.setReportPartecipantiXML(rendiconto);
-			
+
 			//evento validation (rispetto al db)
-			
+			try {
+				XmlReportValidator.validateEventoXmlWithDb(rendiconto.getNomeFile(), rendiconto.getData(), evento);
+			}
+			catch (Exception e) {
+				throw new EcmException("error.xml_evento_validation_with_db", e.getMessage(), e);
+			}			
+
 			//xsd validation
-			try {			
-				XmlReportValidator.validateXml(rendiconto.getData(), Helper.getSchemaEvento_1_16_XSD());
+			try {
+				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), rendiconto.getData(), Helper.getSchemaEvento_1_16_XSD());
 			}
 			catch (Exception e) {
 				throw new EcmException("error.xml_validation", e.getMessage(), e);
@@ -147,6 +153,17 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 			((EventoRES) evento).setDateIntermedie(dateIntermedie);
+		}
+
+		//risultati attesi
+		if (eventoWrapper.getRisultatiAttesiTemp() != null && !eventoWrapper.getRisultatiAttesiTemp().isEmpty()) {
+			List<String> risultatiAttesi = ((EventoRES) evento).getRisultatiAttesi();
+			for (String s : eventoWrapper.getRisultatiAttesiTemp()) {
+				if(s != null && !s.isEmpty()) {
+					risultatiAttesi.add(s);
+				}
+			}
+			((EventoRES) evento).setRisultatiAttesi(risultatiAttesi);
 		}
 
 		return evento;

@@ -29,6 +29,7 @@ public class EventoWrapper {
 	//parte ripetibili
 	private List<String> dateIntermedieTemp = new ArrayList<String>();
 	private List<ProgrammaGiornalieroRES> programma = new ArrayList<ProgrammaGiornalieroRES>();
+	private List<String> risultatiAttesiTemp = new ArrayList<String>();
 
 	//liste edit
 	private Set<Obiettivo> obiettiviNazionali;

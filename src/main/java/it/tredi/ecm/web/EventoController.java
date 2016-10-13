@@ -28,6 +28,7 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
+
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
@@ -37,6 +38,16 @@ import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ObiettivoService;
+
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
+import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
+import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.service.EventoService;
+
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
@@ -206,17 +217,17 @@ public class EventoController {
 	}
 
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
-	@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
-	public String rendicontoEventoValidate(@PathVariable Long providerId,
-			@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
-			Model model, RedirectAttributes redirectAttrs) {
-		try{
-			LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-			model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
-			if(wrapper.getReportPartecipanti().getId() == null)
-				model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
-			else {
-				LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
+		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
+		public String rendicontoEventoValidate(@PathVariable Long providerId,
+				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+				Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
+				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+				if(wrapper.getReportPartecipanti().getId() == null)
+					model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
+				else {
+					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
 					File file = wrapper.getReportPartecipanti();
 					if(file != null && !file.isNew()){
 						if(file.isREPORTPARTECIPANTI()) {
@@ -229,7 +240,7 @@ public class EventoController {
 								model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
 							}
 						}
-					}
+					}					
 			}
 			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
 		}
@@ -271,9 +282,11 @@ public class EventoController {
 
 	//metodi privati di supporto
 
-	private EventoWrapper prepareEventoWrapperNew(ProceduraFormativa proceduraFormativa, Long providerId) throws AccreditamentoNotFoundException, Exception {
+	private EventoWrapper prepareEventoWrapperNew(ProceduraFormativa proceduraFormativa, Long providerId) {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - entering"));
-		EventoWrapper eventoWrapper = prepareCommonEditWrapper(proceduraFormativa, providerId);
+		EventoWrapper eventoWrapper = new EventoWrapper();
+		eventoWrapper.setProceduraFormativa(proceduraFormativa);
+		eventoWrapper.setProviderId(providerId);
 		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.EDIT);
 		Evento evento;
 		switch(proceduraFormativa){
@@ -303,7 +316,7 @@ public class EventoController {
 		return eventoWrapper;
 	}
 
-	private EventoWrapper prepareEventoWrapperEdit(Evento evento) throws AccreditamentoNotFoundException, Exception {
+	private EventoWrapper prepareEventoWrapperEdit(Evento evento) throws Exception {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);

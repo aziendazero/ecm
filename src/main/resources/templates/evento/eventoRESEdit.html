@@ -490,19 +490,49 @@
 					</div>
 				</div>
 
-				<!-- PROGRAMMA ATTIVITÀ FORMATIVA -->
+				<div class="divider-dashed"></div>
+
+				<!-- BLOCCO PROGRAMMA ATTIVITÀ FORMATIVA -->
+				<div class="item form-group">
+					<label class="col-xs-12">
+						<span th:text="#{label.programma_attività_formativa}">Titolo</span>
+					</label>
+				</div>
+				<!-- RAZIONALE -->
 				<div class="item form-group">
 					<label class="control-label col-xs-1">
 						<span>21</span>
 					</label>
-					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="programmaAttivitaFormativa">
-						<span th:text="#{label.programma_attività_formativa}">Programma attività formativa</span>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+						<span th:text="#{label.razionale}">Razionale</span>
 						<span class="required">*</span>
 					</label>
-
-					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="programmaAttivitaFormativa">
-					**TODO**
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+						<input type="text" class="form-control" th:field="${eventoWrapper.evento.razionale}" />
 					</div>
+				</div>
+				<!-- RISULTATI ATTESI -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>22</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="risultatiAttesi">
+						<span th:text="#{label.risultati_attesi}">Risultati attesi</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
+						<input type="text" class="form-control" />
+						<span class="input-group-addon" onclick="aggiungiRisultatoAtteso($(this).prev().val())">
+							<i class="fa fa-plus"></i>
+						</span>
+					</div>
+				</div>
+				<div class="item form-group">
+					<div class="col-md-4 col-sm-4 col-xs-12"></div>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
+						<div class="risultati-attesi-container"></div>
+					</div>
+					<div class="col-lg-3 col-md-1 col-sm-1 col-xs-12"></div>
 				</div>
 				
 				
@@ -612,7 +642,8 @@
 				});
 
 				//indice per calcolare i nuovi name delle date intermedie
-				var index = [[${#lists.size(eventoWrapper.dateIntermedieTemp)}]] - 1;
+				var indexDateIntermedie = [[${#lists.size(eventoWrapper.dateIntermedieTemp)}]] - 1;
+				var indexRisutato = [[${#lists.size(eventoWrapper.risultatiAttesiTemp)}]] - 1;
 
 				//funzione che aggiunge una data intermedia, aumenta il name in base alle date già presenti
 				function aggiungiDataIntermedia(caller) {
@@ -621,14 +652,14 @@
 						.append($(caller).parent().clone())
 						.appendTo(".date-intermedie-container");
 					$(caller).children().toggleClass('fa-plus fa-minus');
-					$(caller).attr("onclick", "removeDataIntermedia(this)");
-					$(caller).siblings(".datapicker-intermedia").attr("name", "dateIntermedieTemp["+ ++index +"]");
-					$(caller).siblings(".datapicker-intermedia").attr("id", "dateIntermedieId"+ index);
+					$(caller).attr("onclick", "rimuoviDataIntermedia(this)");
+					$(caller).siblings(".datapicker-intermedia").attr("name", "dateIntermedieTemp["+ ++indexDateIntermedie +"]");
+					$(caller).siblings(".datapicker-intermedia").attr("id", "dateIntermedieId"+ indexDateIntermedie);
 					reinitDaterangepicker();
 				}
 
 				//rimuove una data intermedia
-				function removeDataIntermedia(caller) {
+				function rimuoviDataIntermedia(caller) {
 					$(caller).closest(".item").remove();
 				}
 
@@ -691,6 +722,28 @@
 				}
 				
 				
+
+				//funzione che aggiunge un risultato atteso alla lista dei temporanei
+				//(solo lato client, il salvataggio verrà realizzato al save dell'evento)
+				function aggiungiRisultatoAtteso(risultato) {
+					console.log(risultato)
+					if(risultato.trim()) {
+						var container = $("<div class='risultato-atteso' style='display: inline-block'></div>");
+						var spanText = $("<div class='text-risultato' style='display: inline-block'></div>").text(risultato);
+						var spanButtonRemove = $("<span onclick='rimuoviRisultatoAtteso($(this).parent())'><i class='clickable red fa fa-remove'></i></span>");
+						var inputHidden = $("<input type='hidden' name='risultatiAttesiTemp["+ ++indexRisutato +"]' />");
+						inputHidden.val(risultato);
+						container.append(spanText).append(spanButtonRemove).append(inputHidden);
+						container.appendTo(".risultati-attesi-container");
+						//TODO index + input hidden + select update
+					}
+				}
+
+				function rimuoviRisultatoAtteso(container) {
+					container.remove();
+					//TODO select update
+				}
+
 
 
 			/*]]>*/
