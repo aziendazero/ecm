@@ -504,9 +504,75 @@
 					**TODO**
 					</div>
 				</div>
-
-
-
+				
+				
+				<!-- PROGRAMMA EVENTO -->
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="programmaEvento">
+						<span th:text="#{label.programma}">Programma</span>
+						<span class="required">*</span>
+					</label>
+				</div>
+				<div class='programmaEvento item form-group'>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-group">
+						<th:block th:each="programmaGiornaliero,status : ${eventoWrapper.programma}">
+							<label>Programma del: 
+								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].giorno}" />	
+							</label>
+							<br/>
+							<label>Sede</label><br/> 
+							<label>Provincia: 
+								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].sede.provincia}" />	
+							</label><br/>
+							<label>Comune: 
+								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].sede.comune}" />	
+							</label><br/>
+							<label>Indirizzo: 
+								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].sede.indirizzo}" />	
+							</label><br/>
+							<label>Luogo: 
+								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].sede.luogo}" />	
+							</label><br/>
+							<br/>
+							<label>Deattglio Attività</label>
+							<table>
+								<tr>
+									<th>ORARIO</th>
+									<th>ARGOMENTO</th>
+									<th>RISULTATAO ATTESO</th>
+									<th>OBIETTIVO FORMATIVO</th>
+									<th>METODOLOGIA DIDATTICA</th>
+									<th>ORE ATTIVITA'</th>
+									<th></th>
+								</tr>
+								<tr th:each="attivita,status2 : ${eventoWrapper.programma[__${status.index}__].programma}">
+									<td>
+										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].orario}" />
+									</td>
+									<td>
+										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].argomento}" />	
+									</td>	
+									<td>
+										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].risultatoAtteso}" />	
+									</td>	
+									<td>
+										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].obiettivoFormativo}" />	
+									</td>
+									<td>
+										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].metodologiaDidattica}" />	
+									</td>
+									<td>
+										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].oreAttivita}" />
+									</td>
+									<td>
+										<button class="btn btn-alert">-</button>
+									</td>
+								</tr>	
+							</table>
+						</th:block>
+					</div>
+				</div>
+				<div class="date-intermedie-container"></div>
 
 				<input id="submitButton" type="submit" style="display: none;" />
 
@@ -608,6 +674,23 @@
 						break;
 					}
 				}
+				
+				
+				/*PROGRAMMA EVENTO*/
+				//funzione che aggiunge una attività al progrmma giornaliero, aumenta il name in base alle date già presenti
+				function aggiungiAttivita(caller) {
+					$("<div class='nextDataIntermedia item form-group'></div>")
+						.append($("<div class='col-md-4 col-sm-4 col-xs-12'></div>"))
+						.append($(caller).parent().clone())
+						.appendTo(".date-intermedie-container");
+					$(caller).children().toggleClass('fa-plus fa-minus');
+					$(caller).attr("onclick", "removeDataIntermedia(this)");
+					$(caller).siblings(".datapicker-intermedia").attr("name", "dateIntermedieTemp["+ ++index +"]");
+					$(caller).siblings(".datapicker-intermedia").attr("id", "dateIntermedieId"+ index);
+					reinitDaterangepicker();
+				}
+				
+				
 
 
 			/*]]>*/

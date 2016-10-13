@@ -9,6 +9,7 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.Professione;
+import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class EventoWrapper {
 
 	//parte ripetibili
 	private List<String> dateIntermedieTemp = new ArrayList<String>();
+	private List<ProgrammaGiornalieroRES> programma = new ArrayList<ProgrammaGiornalieroRES>();
 
 	//liste edit
 	private Set<Obiettivo> obiettiviNazionali;
