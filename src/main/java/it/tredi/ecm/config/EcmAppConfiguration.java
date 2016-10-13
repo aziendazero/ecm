@@ -1,5 +1,7 @@
 package it.tredi.ecm.config;
 
+import java.io.File;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +32,8 @@ public class EcmAppConfiguration {
 	private int giorniIntegrazioneMax = 20;
 	@Value("${numero.referee}")
 	private int numeroReferee = 3;
+	@Value("${fileRootPath}")
+	private String fileRootPath = System.getProperty("catalina.home") + File.separator + "ecmFiles";
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -43,6 +47,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setGiorniIntegrazioneMin(giorniIntegrazioneMin);
 		ecmProperties.setGiorniIntegrazioneMax(giorniIntegrazioneMax);
 		ecmProperties.setNumeroReferee(numeroReferee);
+		ecmProperties.setFileRootPath(fileRootPath);
 		return ecmProperties;
 	}
 }
