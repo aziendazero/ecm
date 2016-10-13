@@ -1125,3 +1125,7 @@ tr.integrazione-eliminazione td:first-child a{
 .tooltip-arrow {
 	border-top-color: #337ab7 !important;
 }
+
+.no-margin {
+	margin: 0;
+}

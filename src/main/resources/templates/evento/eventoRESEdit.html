@@ -267,9 +267,9 @@
 				<div class='nextDataIntermedia item form-group'>
 					<div class='col-md-4 col-sm-4 col-xs-12'></div>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
-						<input type="text" class="form-control"
+						<input type="text" class="form-control datapicker-intermedia"
 							th:field="${eventoWrapper.dateIntermedieTemp[__${#lists.size(eventoWrapper.dateIntermedieTemp)}__]}" />
-						<span class="input-group-addon not-last" onclick="alert('todo')">
+						<span class="input-group-addon not-last" onclick="$(this).prev().click()">
  							<i class="glyphicon glyphicon-calendar"></i>
 						</span>
 						<span class="input-group-addon" onclick="aggiungiDataIntermedia(this)">
@@ -311,7 +311,7 @@
 						</select>
 					</div>
 					<div class="col-xs-1">
-						<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+						<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
 					</div>
 				</div>
 
@@ -345,7 +345,7 @@
 				<!-- PROFESSIONI/DISCIPLINE -->
 				<div class="item form-group">
 					<label class="control-label col-xs-1">
-						<span>15</span>
+						<span>16</span>
 					</label>
 					<label class="control-label col-md-3 col-sm-3 col-xs-11">
 						<span th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
@@ -389,11 +389,14 @@
 
 			<script th:inline="javascript">
 			/*<![CDATA[*/
-				$(document).ready(function() {
-					var days = getDayNamesShort();
-					var months = getMonthNames();
+			    var days;
+				var months;
 
-					$('#dateIntermedie').daterangepicker({
+				$(document).ready(function() {
+					days = getDayNamesShort();
+					months = getMonthNames();
+
+					$('.datapicker-intermedia').daterangepicker({
 				        singleDatePicker: true,
 				        autoApply: false,
 				        autoUpdateInput: true,
@@ -404,7 +407,7 @@
 				        }
 				    })
 
-				    $('#dateIntermedie').on("hide.daterangepicker", function() {
+				    $('.datapicker-intermedia').on("hide.daterangepicker", function() {
 						$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
 							$(this).remove();
 						});
@@ -422,12 +425,29 @@
 						.appendTo(".date-intermedie-container");
 					$(caller).children().toggleClass('fa-plus fa-minus');
 					$(caller).attr("onclick", "removeDataIntermedia(this)");
-					$(caller).siblings().attr("name", "dateIntermedieTemp["+ ++index +"]");
+					$(caller).siblings(".datapicker-intermedia").attr("name", "dateIntermedieTemp["+ ++index +"]");
+					$(caller).siblings(".datapicker-intermedia").attr("id", "dateIntermedieId"+ index);
+					reinitDaterangepicker();
 				}
 
 				function removeDataIntermedia(caller) {
 					$(caller).closest(".item").remove();
 				}
+
+				function reinitDaterangepicker() {
+					$('.datapicker-intermedia').daterangepicker({
+				        singleDatePicker: true,
+				        autoApply: false,
+				        autoUpdateInput: true,
+				        format: "DD/MM/YYYY",
+				        locale: {
+					        daysOfWeek: days,
+			                monthNames: months,
+				        }
+				    })
+				}
+
+
 			/*]]>*/
 			</script>
 		</div>
