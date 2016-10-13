@@ -217,43 +217,42 @@ public class EventoController {
 	}
 
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
-		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
-		public String rendicontoEventoValidate(@PathVariable Long providerId,
-				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
-				Model model, RedirectAttributes redirectAttrs) {
-			try{
-				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
-				if(wrapper.getReportPartecipanti().getId() == null)
-					model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
-				else {
-					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
-					File file = wrapper.getReportPartecipanti();
-					if(file != null && !file.isNew()){
-						if(file.isREPORTPARTECIPANTI()) {
-							String fileName = wrapper.getReportPartecipanti().getNomeFile().trim().toUpperCase();
-							if (fileName.endsWith(".XML") || fileName.endsWith(".XML.P7M") || fileName.endsWith(".XML.ZIP.P7M") || fileName.endsWith(".CSV")) {
-								wrapper.setReportPartecipanti(fileService.getFile(file.getId()));
-								eventoService.validaRendiconto(eventoId, wrapper.getReportPartecipanti());
-							}
-							else {
-								model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
-							}
+	@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
+	public String rendicontoEventoValidate(@PathVariable Long providerId,
+			@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+			Model model, RedirectAttributes redirectAttrs) {
+		try{
+			LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
+			model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+			if(wrapper.getReportPartecipanti().getId() == null)
+				model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
+			else {
+				LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
+				File file = wrapper.getReportPartecipanti();
+				if(file != null && !file.isNew()){
+					if(file.isREPORTPARTECIPANTI()) {
+						String fileName = wrapper.getReportPartecipanti().getNomeFile().trim().toUpperCase();
+						if (fileName.endsWith(".XML") || fileName.endsWith(".XML.P7M") || fileName.endsWith(".XML.ZIP.P7M") || fileName.endsWith(".CSV")) {
+							wrapper.setReportPartecipanti(fileService.getFile(file.getId()));
+							eventoService.validaRendiconto(eventoId, wrapper.getReportPartecipanti());
 						}
-					}					
+						else {
+							model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+						}
+					}
+				}					
 			}
 			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
-				if (ex instanceof EcmException) //errore gestito
+			if (ex instanceof EcmException) //errore gestito
 //TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
-					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
-				else
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-				//TODO - fare la gestione con la mia eccezione
+				redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+			else
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
+			return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 		}
 	}
 
