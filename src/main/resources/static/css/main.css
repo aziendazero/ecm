@@ -1129,3 +1129,8 @@ tr.integrazione-eliminazione td:first-child a{
 .no-margin {
 	margin: 0;
 }
+
+.fake {
+	width: auto !important;
+	padding: 0;
+}
