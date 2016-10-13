@@ -383,6 +383,131 @@
 					</div>
 				</div>
 
+				<!-- BLOCCO TIPOLOGIA DI EVENTO -->
+				<!-- TIPOLOGIA DELL'EVENTO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>17</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia_evento_2">
+						<span th:text="#{label.tipologia_evento}">Tipologia di Evento</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<select id="tipologia_evento_2"
+							class="selectpicker required"
+							th:field="${eventoWrapper.evento.tipologiaEvento}"
+							data-width="100%" data-style="btn-primary"
+							data-actions-box="true" data-size="10"
+							data-hide-disabled="false"
+							onchange="mostraNascondiCampiTipologiaEvento(this.value)"
+							title="Seleziona una tipologia...">
+							<option
+								th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).values()}"
+								th:value="${tipologia}"
+								th:text="${tipologia.nome}">
+							</option>
+						</select>
+					</div>
+				</div>
+				<!-- WORKSHOP/SEMINARI (attivo se selezionato convegno/congresso) -->
+				<div class="item form-group convegno-congresso" style="display: none;">
+					<div class="col-xs-1"></div>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.workshop_radio_text}"></span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div class="radio">
+							<label class="label-radio-workshop label-disabled">
+								<input type="radio" disabled="disabled" class="flat radio-workshop" th:field="${eventoWrapper.evento.workshopSeminariEcm}" th:value="true" />
+								<span th:text="#{label.sì}">Sì</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label class="label-radio-workshop label-disabled">
+								<input type="radio" disabled="disabled" class="flat radio-workshop" th:field="${eventoWrapper.evento.workshopSeminariEcm}" th:value="false" />
+								<span th:text="#{label.no}">No</span>
+							</label>
+						</div>
+					</div>
+				</div>
+				<!-- TITOLO CONVEGNO (attivo se selezionato workshop/seminario) -->
+				<div class="item form-group workshop-seminario" style="display: none;">
+					<div class="col-xs-1"></div>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.titolo_convegno}"></span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<input type="text" class="form-control titolo-convegno" th:field="${eventoWrapper.evento.titoloConvegno}" />
+					</div>
+				</div>
+
+				<!-- NUMERO PARTECIPANTI -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>18</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="numeroPartecipanti">
+						<span th:text="#{label.numero_partecipanti}">Numero dei partecipanti</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="numeroPartecipanti">
+						<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.numeroPartecipanti}" />
+					</div>
+				</div>
+
+				<!-- RESPONSABILI -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>19</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="responsabili">
+						<span th:text="#{label.responsabili_scientifici}">Responsabili scientifici</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="responsabili">
+					**TODO**
+					</div>
+				</div>
+
+				<!-- DOCENTI/RELATORI/TUTOR -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>20</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="docenti-relatori-tutor">
+						<span th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="docenti-relatori-tutor">
+					**TODO**
+					</div>
+				</div>
+
+				<!-- PROGRAMMA ATTIVITÀ FORMATIVA -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>21</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="programmaAttivitaFormativa">
+						<span th:text="#{label.programma_attività_formativa}">Programma attività formativa</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="programmaAttivitaFormativa">
+					**TODO**
+					</div>
+				</div>
+
+
+
+
 				<input id="submitButton" type="submit" style="display: none;" />
 
 			</form>
@@ -396,6 +521,7 @@
 					days = getDayNamesShort();
 					months = getMonthNames();
 
+					//init daterangepicker al document ready per tutte le date intermedie
 					$('.datapicker-intermedia').daterangepicker({
 				        singleDatePicker: true,
 				        autoApply: false,
@@ -407,18 +533,23 @@
 				        }
 				    })
 
+				    //medoto per rimozione classe errore
 				    $('.datapicker-intermedia').on("hide.daterangepicker", function() {
 						$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
 							$(this).remove();
 						});
 					});
 
+					//controlla al document ready se mostrare i campi particolari relativi alla tipologia dell'evento
+					mostraNascondiCampiTipologiaEvento($('.tipologia_evento_2').val());
+
 				});
 
+				//indice per calcolare i nuovi name delle date intermedie
 				var index = [[${#lists.size(eventoWrapper.dateIntermedieTemp)}]] - 1;
 
+				//funzione che aggiunge una data intermedia, aumenta il name in base alle date già presenti
 				function aggiungiDataIntermedia(caller) {
-					console.log(caller);
 					$("<div class='nextDataIntermedia item form-group'></div>")
 						.append($("<div class='col-md-4 col-sm-4 col-xs-12'></div>"))
 						.append($(caller).parent().clone())
@@ -430,10 +561,13 @@
 					reinitDaterangepicker();
 				}
 
+				//rimuove una data intermedia
 				function removeDataIntermedia(caller) {
 					$(caller).closest(".item").remove();
 				}
 
+				//reinizializza tutte le daterangepicker delle date intermedie
+				//(necessario alla creazione di una nuova data)
 				function reinitDaterangepicker() {
 					$('.datapicker-intermedia').daterangepicker({
 				        singleDatePicker: true,
@@ -445,6 +579,34 @@
 			                monthNames: months,
 				        }
 				    })
+				}
+
+				//funzione che calcola al doc ready o all'onchange della relativa select
+				//se mostrare o meno input aggiuntivi relativi alla tipologia dell'evento
+				function mostraNascondiCampiTipologiaEvento(value) {
+					switch (value) {
+					case 'CONVEGNO_CONGRESSO':
+						$(".convegno-congresso").slideDown("slow");
+						$(".radio-workshop").iCheck('enable');
+						$(".label-radio-workshop").removeClass("label-disabled");
+						$(".workshop-seminario").slideUp("slow");
+						$(".titolo-convegno").prop("disabled", true);
+						break;
+					case 'WORKSHOP_SEMINARIO':
+						$(".convegno-congresso").slideUp("slow");
+						$(".radio-workshop").iCheck('disable');
+						$(".label-radio-workshop").addClass("label-disabled");
+						$(".workshop-seminario").slideDown("slow");
+						$(".titolo-convegno").prop("disabled", false);
+						break;
+					default:
+						$(".convegno-congresso").slideUp("slow");
+						$(".workshop-seminario").slideUp("slow");
+						$(".radio-workshop").iCheck('disable');
+						$(".label-radio-workshop").addClass("label-disabled");
+						$(".titolo-convegno").prop("disabled", true);
+						break;
+					}
 				}
 
 
