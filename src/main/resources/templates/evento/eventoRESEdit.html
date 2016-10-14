@@ -543,61 +543,214 @@
 						<span class="required">*</span>
 					</label>
 				</div>
-				<div class='programmaEvento item form-group'>
+				<div class='programmaEvento item form-group' id="programma">
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-group">
-						<th:block th:each="programmaGiornaliero,status : ${eventoWrapper.programma}">
-							<label>Programma del: 
-								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].giorno}" />	
-							</label>
-							<br/>
+						<th:block th:each="programmaGiornaliero,status : ${eventoWrapper.programmaEvento}">
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span th:text="#{label.programma_del}">Programma del</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].giorno}" />		
+								</div>
+							</div>
+							
 							<label>Sede</label><br/> 
-							<label>Provincia: 
-								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].sede.provincia}" />	
-							</label><br/>
-							<label>Comune: 
-								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].sede.comune}" />	
-							</label><br/>
-							<label>Indirizzo: 
-								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].sede.indirizzo}" />	
-							</label><br/>
-							<label>Luogo: 
-								<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].sede.luogo}" />	
-							</label><br/>
-							<br/>
-							<label>Deattglio Attività</label>
-							<table>
+							
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span th:text="#{label.provincia}">Provincia</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].sede.provincia}" />	
+								</div>
+							</div>
+							
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span th:text="#{label.comune}">Comune</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].sede.comune}" />		
+								</div>
+							</div>
+							
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span th:text="#{label.indirizzo}">Indirizzo</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].sede.indirizzo}" />	
+								</div>
+							</div>
+							
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span th:text="#{label.luogo}">Luogo</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].sede.luogo}" />		
+								</div>
+							</div>
+							
+							<label>Dettaglio Attività</label>
+							
+							<div th:attr="data-programma-id=${__${status.index}__}" th:with="last=${#lists.size(eventoWrapper.programmaEvento[__${status.index}__].programma)} - 1">
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.orario}">Orario</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<input type="text" required="required" class="form-control ora"
+											th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].orario}" />	
+											<span class="input-group-addon openClock">
+     											<i class="glyphicon glyphicon-time"></i>
+  											</span>
+									</div>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.argomento}">Argomento</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].argomento}" />	
+									</div>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.risultato_atteso}">Risultato Atteso</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<select
+											class="selectpicker required selectRisultatiAttesi"
+											th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].risultatoAtteso}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un risultato atteso...">
+											<option
+												th:each="risultatoAtteso, row: ${eventoWrapper.obiettiviRegionali}"
+												th:value="${risultatoAtteso}"
+												th:text="${risultatoAtteso}">
+											</option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.obiettivo_formativo}">Obiettivo Formativo</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<select
+											class="selectpicker required selectObiettivoFormativo"
+											th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].obiettivoFormativo}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											th:attr="data-programma-id=${__${status.index}__},data-attivita-id=${__${last}__}" 
+											onchange="updateMetodologieDidattiche(this)"
+											title="Seleziona un obiettivo...">
+											<option
+												th:each="obiettivoFormativo, row: ${T(it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum).values()}"
+												th:value="${obiettivoFormativo}"
+												th:text="${obiettivoFormativo.nome}">tipologia selezionata
+											</option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.metodologia_didattica}">Metodologia Didattica</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<select
+											class="selectpicker required selectMetodologieDidattiche"
+											th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].metodologiaDidattica}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											th:attr="data-programma-id=${__${status.index}__},data-attivita-id=${__${last}__}" 
+											title="Seleziona una Metodologia Didatticha">
+											<option
+												th:each="metodologiaDidattica, row: ${T(it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum).values()}"
+												th:value="${metodologiaDidattica}"
+												th:text="${metodologiaDidattica.nome}">
+											</option>
+										</select>	
+									</div>
+								</div>		
+								
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.ore_attivita}">Ore Attività</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].oreAttivita}" />
+									</div>
+								</div>
+								
+								<div class="item form-group">
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<button type="submit" class="btn btn-primary" name="addAttivitaToProgramma" th:value="${__${status.index}__}">ADD</button>
+									</div>
+								</div>
+							</div>
+							
+							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<tr>
-									<th>ORARIO</th>
-									<th>ARGOMENTO</th>
-									<th>RISULTATAO ATTESO</th>
-									<th>OBIETTIVO FORMATIVO</th>
-									<th>METODOLOGIA DIDATTICA</th>
-									<th>ORE ATTIVITA'</th>
+									<th th:text="#{label.orario}">ORARIO</th>
+									<th th:text="#{label.argomento}">ARGOMENTO</th>
+									<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
+									<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
+									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
+									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 									<th></th>
 								</tr>
-								<tr th:each="attivita,status2 : ${eventoWrapper.programma[__${status.index}__].programma}">
+								
+								<tr th:attr="data-programma-id=${__${status.index}__},data-attivita-id=${__${status2.index}__}"  th:each="attivita,status2 : ${eventoWrapper.programmaEvento[__${status.index}__].programma}">
 									<td>
-										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].orario}" />
+										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].orario}"> </span>
 									</td>
 									<td>
-										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].argomento}" />	
-									</td>	
-									<td>
-										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].risultatoAtteso}" />	
-									</td>	
-									<td>
-										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].obiettivoFormativo}" />	
+										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].argomento}"> </span>
 									</td>
 									<td>
-										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].metodologiaDidattica}" />	
+										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].risultatoAtteso}"> </span>
 									</td>
 									<td>
-										<input type="text" th:field="${eventoWrapper.programma[__${status.index}__].programma[__${status2.index}__].oreAttivita}" />
+										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].obiettivoFormativo}"> </span>
 									</td>
 									<td>
-										<button class="btn btn-alert">-</button>
+										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].metodologiaDidattica}"> </span>
 									</td>
-								</tr>	
+									<td>
+										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].oreAttivita}"> </span>
+									</td>
+									<td>
+										<a th:href="@{|/provider/${eventoWrapper.providerId}/evento/removeAttivita/${__${status.index}__}/${__${status2.index}__}|}">
+											<span class="input-group-addon">
+												<i class="fa fa-minus"></i>
+											</span>
+										</a>
+									</td>
+								</tr>
 							</table>
 						</th:block>
 					</div>
@@ -638,7 +791,34 @@
 
 					//controlla al document ready se mostrare i campi particolari relativi alla tipologia dell'evento
 					mostraNascondiCampiTipologiaEvento($('.tipologia_evento_2').val());
+					
+					var handler = $('.ora').clockpicker({
+				    	donetext: [[#{label.applica}]],
+				    	align: 'left',
+				        autoclose: true,
+				        'default': 'now'
+				    });
 
+				    $('.openClock').click(function(e) {
+				    	e.stopPropagation();
+	                    handler.clockpicker('show');
+				    })
+				    
+				    var gotoLink = [[${eventoWrapper.gotoLink}]];
+				    if(gotoLink)
+				    	 $(document).scrollTo(gotoLink);
+				    
+				    $(".datatable-responsive-programma").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [ {
+							"targets": 5,
+							"width": "1px",
+							"sClass": "center"
+						} ]
+					})
 				});
 
 				//indice per calcolare i nuovi name delle date intermedie
@@ -705,23 +885,6 @@
 						break;
 					}
 				}
-				
-				
-				/*PROGRAMMA EVENTO*/
-				//funzione che aggiunge una attività al progrmma giornaliero, aumenta il name in base alle date già presenti
-				function aggiungiAttivita(caller) {
-					$("<div class='nextDataIntermedia item form-group'></div>")
-						.append($("<div class='col-md-4 col-sm-4 col-xs-12'></div>"))
-						.append($(caller).parent().clone())
-						.appendTo(".date-intermedie-container");
-					$(caller).children().toggleClass('fa-plus fa-minus');
-					$(caller).attr("onclick", "removeDataIntermedia(this)");
-					$(caller).siblings(".datapicker-intermedia").attr("name", "dateIntermedieTemp["+ ++index +"]");
-					$(caller).siblings(".datapicker-intermedia").attr("id", "dateIntermedieId"+ index);
-					reinitDaterangepicker();
-				}
-				
-				
 
 				//funzione che aggiunge un risultato atteso alla lista dei temporanei
 				//(solo lato client, il salvataggio verrà realizzato al save dell'evento)
@@ -743,9 +906,31 @@
 					container.remove();
 					//TODO select update
 				}
-
-
-
+				
+				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.
+				function updateMetodologieDidattiche(caller){
+					var obiettivo = $(caller).val();
+					var programmaIndex = $(caller).data("programma-id");
+					var attivitaIndex = $(caller).data("attivita-id");
+					var metodologiePicker_ref ='.selectMetodologieDidattiche[data-programma-id="' + programmaIndex + '"][data-attivita-id="' + attivitaIndex + '"]';
+					var start = [[@{/listaMetodologie?obiettivo=}]];
+					var end = obiettivo;
+					var url = start + end;
+					
+					console.log(obiettivo);
+					console.log($(metodologiePicker_ref));
+					$.get(url, function(data){
+						$(metodologiePicker_ref).empty();
+						for(var item = 0; item < data.length; item++){
+							console.log(data[item]);
+							console.log(data[item].nome);
+							var option = '<option value = "' + data[item] + '">' + data[item].nome + "</option>";
+							$(metodologiePicker_ref).append(option);
+						}
+						$(metodologiePicker_ref).selectpicker('refresh');
+					});
+				};
+				
 			/*]]>*/
 			</script>
 		</div>

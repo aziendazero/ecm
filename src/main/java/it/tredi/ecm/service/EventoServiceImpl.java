@@ -18,6 +18,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -164,6 +165,11 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 			((EventoRES) evento).setRisultatiAttesi(risultatiAttesi);
+		}
+		
+		//programma evento
+		if(eventoWrapper.getProgrammaEvento() != null){
+			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEvento());
 		}
 
 		return evento;
