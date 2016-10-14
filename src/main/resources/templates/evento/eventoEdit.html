@@ -144,6 +144,45 @@
 				if($("#professioni")[0]) {
 					abilitaDiscipline($("#professioni")[0]);
 				}
+
+				//gestione evento iCheck su radio riguardante gli sponsor
+				$(".sponsor").on("ifChecked", function() {
+					if($(this).val() == 'true')
+						mostraNascondiCampiSponsor(true);
+					else
+						mostraNascondiCampiSponsor(false);
+				});
+
+			  	//controllo su radio riguardante gli sponsor al document ready
+			    if([[${eventoWrapper.evento.eventoSponsorizzato}]]) {
+			    	mostraNascondiCampiSponsor(true);
+				}
+
+			  	//gestione evento iCheck su radio riguardante i finanziamenti
+				$(".finanziamento").on("ifChecked", function() {
+					if($(this).val() == 'true')
+						mostraNascondiCampiFinanziamento(true);
+					else
+						mostraNascondiCampiFinanziamento(false);
+				});
+
+			  	//controllo su radio riguardante i finanziamenti al document ready
+			    if([[${eventoWrapper.evento.altreFormeFinanziamento}]] != null) {
+			    	mostraNascondiCampiFinanziamenti([[${eventoWrapper.evento.altreFormeFinanziamento}]]);
+				}
+
+			  	//gestione evento iCheck su radio riguardante i partner
+				$(".partner").on("ifChecked", function() {
+					if($(this).val() == 'true')
+						mostraNascondiCampiPartner(true);
+					else
+						mostraNascondiCampiPartner(false);
+				});
+
+			  	//controllo su radio riguardante i partner al document ready
+			    if([[${eventoWrapper.evento.eventoAvvalePartner}]]) {
+			    	mostraNascondiCampiPartner(true);
+				}
 			});
 
 			function abilitaDiscipline(professioni) {
@@ -172,6 +211,42 @@
 				$('#discipline').selectpicker('refresh');
 			}
 
+			function mostraNascondiCampiSponsor(show) {
+				if(show) {
+					$(".sponsor-si").slideDown("slow");
+					//TODO
+				}
+				else {
+					$(".sponsor-si").slideUp("slow");
+					//TODO
+				}
+			}
+
+			function mostraNascondiCampiFinanziamento(show) {
+				if(show) {
+					$(".finanziamento-si").slideDown("slow");
+					$(".finanziamento-no").slideUp("slow");
+					$("#contrattiAccordiConvenzioni").prop("disabled", false);
+					$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", true);
+				}
+				else {
+					$(".finanziamento-si").slideUp("slow");
+					$(".finanziamento-no").slideDown("slow");
+					$("#contrattiAccordiConvenzioni").prop("disabled", true);
+					$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", false);
+				}
+			}
+
+			function mostraNascondiCampiPartner(show) {
+				if(show) {
+					$(".partner-si").slideDown("slow");
+					//TODO
+				}
+				else {
+					$(".partner-si").slideUp("slow");
+					//TODO
+				}
+			}
 
 		/*]]>*/
 		</script>

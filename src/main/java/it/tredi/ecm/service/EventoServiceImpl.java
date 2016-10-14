@@ -166,15 +166,35 @@ public class EventoServiceImpl implements EventoService {
 			}
 			((EventoRES) evento).setRisultatiAttesi(risultatiAttesi);
 		}
-		
+
 		//programma evento
 		if(eventoWrapper.getProgrammaEvento() != null){
 			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEvento());
 		}
 
 		//brochure
-		if (eventoWrapper.getBrochure() != null) {
+		if (eventoWrapper.getBrochure().getId() != null) {
 			evento.setBrochureEvento(eventoWrapper.getBrochure());
+		}
+
+		//Documento Verifica Ricadute Formative
+		if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
+			((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
+		}
+
+		//Autocertificazione Assenza Finanziamenti
+		if (eventoWrapper.getAutocertificazioneAssenzaFinanziamenti().getId() != null) {
+			evento.setAutocertificazioneAssenzaFinanziamenti(eventoWrapper.getAutocertificazioneAssenzaFinanziamenti());
+		}
+
+		//Contratti Accordi Convenzioni
+		if (eventoWrapper.getContrattiAccordiConvenzioni().getId() != null) {
+			evento.setContrattiAccordiConvenzioni(eventoWrapper.getContrattiAccordiConvenzioni());
+		}
+
+		//Dichiarazione Assenza Conflitto Interesse
+		if (eventoWrapper.getDichiarazioneAssenzaConflittoInteresse().getId() != null) {
+			evento.setDichiarazioneAssenzaConflittoInteresse(eventoWrapper.getDichiarazioneAssenzaConflittoInteresse());
 		}
 
 		return evento;

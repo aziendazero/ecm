@@ -1,10 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
@@ -31,37 +27,23 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
-
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
+import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
-import it.tredi.ecm.exception.EcmException;
-import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.EventoService;
-import it.tredi.ecm.service.ObiettivoService;
-
-import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
-import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
-import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
-import it.tredi.ecm.dao.enumlist.FileEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
-import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.exception.EcmException;
-import it.tredi.ecm.service.EventoService;
-
 import it.tredi.ecm.service.FileService;
+import it.tredi.ecm.service.ObiettivoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.RipetibiliWrapper;
 
 @Controller
-@SessionAttributes("eventoWrapper")
 public class EventoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoController.class);
 
@@ -86,7 +68,7 @@ public class EventoController {
 		return elencoProvince;
 	}
 
-	//@ModelAttribute("eventoWrapper")
+	@ModelAttribute("eventoWrapper")
 	public EventoWrapper getEvento(@RequestParam(name = "editId", required = false) Long id,
 			@RequestParam(value="providerId",required = false) Long providerId,
 			@RequestParam(value="proceduraFormativa",required = false) ProceduraFormativa proceduraFormativa,
@@ -301,20 +283,20 @@ public class EventoController {
 		evento.setProvider(providerService.getProvider(providerId));
 		evento.setProceduraFormativa(proceduraFormativa);
 		eventoWrapper.setEvento(evento);
-		
+
 		//Lista attività singolo programma giornaliero
 		List<DettaglioAttivitaRES> programmaGiorno1 = new ArrayList<DettaglioAttivitaRES>();
 		programmaGiorno1.add(new DettaglioAttivitaRES());
-		
+
 		ProgrammaGiornalieroRES p = new ProgrammaGiornalieroRES();
 		p.setProgramma(programmaGiorno1);
-		
+
 		//Lista programmi giornalieri dell'evento
 		List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
 		programmaEvento.add(p);
-		
+
 		eventoWrapper.setProgrammaEvento(programmaEvento);
-		
+
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
 	}
@@ -368,7 +350,7 @@ public class EventoController {
 	public List<MetodologiaDidatticaRESEnum>getElencoComuni(@RequestParam ObiettiviFormativiRESEnum obiettivo){
 		return obiettivo.getMetodologieDidattiche();
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/save", method=RequestMethod.POST, params={"addAttivitaToProgramma"})
 	public String addElement(@RequestParam("addAttivitaToProgramma") String programma,@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
@@ -381,7 +363,7 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/removeAttivita/{programmaIndex}/{attivitaIndex}", method=RequestMethod.GET)
 	public String removeAttivitaFromProgramma(@PathVariable("programmaIndex") String progIndex, @PathVariable("attivitaIndex") String attIndex,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
