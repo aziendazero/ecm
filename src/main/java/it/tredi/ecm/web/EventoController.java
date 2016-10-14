@@ -20,11 +20,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
 
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
@@ -249,7 +251,6 @@ public class EventoController {
 					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
 				else
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-				//TODO - fare la gestione con la mia eccezione
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
 				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 		}
@@ -293,6 +294,20 @@ public class EventoController {
 		evento.setProvider(providerService.getProvider(providerId));
 		evento.setProceduraFormativa(proceduraFormativa);
 		eventoWrapper.setEvento(evento);
+		
+		//Lista attività singolo programma giornaliero
+		List<DettaglioAttivitaRES> programmaGiorno1 = new ArrayList<DettaglioAttivitaRES>();
+		programmaGiorno1.add(new DettaglioAttivitaRES());
+		
+		ProgrammaGiornalieroRES p = new ProgrammaGiornalieroRES();
+		p.setProgramma(programmaGiorno1);
+		
+		//Lista programmi giornalieri dell'evento
+		List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
+		programmaEvento.add(p);
+		
+		eventoWrapper.setProgramma(programmaEvento);
+		
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
 	}

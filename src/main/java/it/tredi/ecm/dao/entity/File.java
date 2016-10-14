@@ -35,17 +35,21 @@ public class File extends BaseEntity{
 	@JsonView(JsonViewModel.Integrazione.class)
 	@Enumerated(EnumType.STRING)
 	private FileEnum tipo;
+	
+	private String diskFileName;
 
 	public File(){
 		this.tipo = null;
 		this.nomeFile = "";
 		this.dataCreazione = LocalDate.now();
+		this.diskFileName = "";
 	}
 
 	public File(FileEnum tipo){
 		this.tipo = tipo;
 		this.nomeFile = "";
 		this.dataCreazione = LocalDate.now();
+		this.diskFileName = "";
 	}
 
 	public void setId(Long id){

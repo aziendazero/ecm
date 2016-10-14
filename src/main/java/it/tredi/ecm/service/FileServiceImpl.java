@@ -15,13 +15,14 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.FileRepository;
+import it.tredi.ecm.service.bean.EcmProperties;
 
 @Service
 public class FileServiceImpl implements FileService{
 	private static Logger LOGGER = LoggerFactory.getLogger(FileServiceImpl.class);
 
-	@Autowired
-	private FileRepository fileRepository;
+	@Autowired private FileRepository fileRepository;
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public File getFile(Long id) {
@@ -52,11 +53,16 @@ public class FileServiceImpl implements FileService{
 	public void save(File file) {
 		LOGGER.debug("Saving file: " + file.getNomeFile());
 		LOGGER.debug("Saving file: " + file.getData().length + " bytes");
+		LOGGER.debug("Saving file su disco: " + file.getDiskFileName());
 		try{
 			fileRepository.save(file);
 		}catch (Exception ex){
 			LOGGER.error("Errore durante salvataggio file", ex);
 			throw ex;
 		}
+	}
+	
+	public void saveFileSuDisco(File file){
+		
 	}
 }

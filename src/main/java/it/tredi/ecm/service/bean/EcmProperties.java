@@ -15,4 +15,5 @@ public class EcmProperties {
 	private int giorniIntegrazioneMin;
 	private int giorniIntegrazioneMax;
 	private int numeroReferee;
+	private String fileRootPath;
 }

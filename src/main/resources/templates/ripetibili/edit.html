@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html layout:decorator="fragments/template"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-md-12 col-sm-12 col-xs-12">
+
+				<!-- title -->
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="home-title">Test Ripetibili</div>
+					</div>
+				</div>
+
+				<div class="divider"></div>
+
+				<div class="col-md-4 col-sm-4 col-xs-12" id="evento_professioni">
+					<form id="formEvento" class="form-horizontal form-label-left"
+						th:action="@{/ripetibili/save}" th:object="${wrapper}" method="post"
+						enctype="multipart/form-data" novalidate="novalidate">
+
+						<label>Field: </label>
+						<input type="text" th:field="${wrapper.field}" />
+						<br/>
+						
+						<label>Elements: </label>
+						<br/>
+						<th:block th:each="element, row: *{elements}">
+							<div>
+								<input type="text" th:field="*{elements[__${row.index}__]}" class="myelements"/>
+								<button class="btn btn-success pull-right" type="submit" name="addElement" value="add">ADD</button>
+								<button class="btn btn-success pull-right" type="submit" name="removeElement" th:value="${__${row.index}__}">REMOVE</button>
+							</div>
+							<br/>
+							<br/>
+						</th:block>
+						<br/>
+						<br/>
+						<button class="btn btn-success pull-right" type="submit" name="action" value="save">SAVE</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
