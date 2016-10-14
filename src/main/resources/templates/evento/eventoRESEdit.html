@@ -264,6 +264,20 @@
 						<span class="required">*</span>
 					</label>
 				</div>
+				<div class='prevDataIntermedia item form-group' th:each="data, row : ${eventoWrapper.dateIntermedieTemp}">
+					<div class='col-md-4 col-sm-4 col-xs-12'></div>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+						<input type="text" class="form-control datapicker-intermedia"
+							th:field="${eventoWrapper.dateIntermedieTemp[__${row.index}__]}" />
+						<span class="input-group-addon not-last" onclick="$(this).prev().click()">
+ 							<i class="glyphicon glyphicon-calendar"></i>
+						</span>
+						<span class="input-group-addon" onclick="rimuoviDataIntermedia(this)">
+							<i class="fa fa-minus"></i>
+						</span>
+					</div>
+				</div>
+
 				<div class='nextDataIntermedia item form-group'>
 					<div class='col-md-4 col-sm-4 col-xs-12'></div>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
@@ -530,7 +544,13 @@
 				<div class="item form-group">
 					<div class="col-md-4 col-sm-4 col-xs-12"></div>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
-						<div class="risultati-attesi-container"></div>
+						<div class="risultati-attesi-container">
+							<div class='risultato-atteso' style='display: inline-block' th:each="risultatoAtteso, row : ${eventoWrapper.risultatiAttesiTemp}">
+								<span th:text="${risultatoAtteso}"></span>
+								<span onclick='rimuoviRisultatoAtteso($(this).parent())'><i class='clickable red fa fa-remove'></i></span>
+								<input type='hidden' th:value="${risultatoAtteso}" th:name="'risultatiAttesiTemp['+__${row.index}__+']'" />
+							</div>
+						</div>
 					</div>
 					<div class="col-lg-3 col-md-1 col-sm-1 col-xs-12"></div>
 				</div>

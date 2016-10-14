@@ -77,7 +77,7 @@ public class EventoController {
 			if (wrapperMode == EventoWrapperModeEnum.RENDICONTO)
 				return prepareEventoWrapperRendiconto(eventoService.getEvento(id), providerId);
 			else
-				return prepareEventoWrapperEdit(eventoService.getEvento(id));
+				return prepareEventoWrapperEdit(eventoService.getEvento(id), false);
 		}
 		if(providerId != null && proceduraFormativa != null)
 			return prepareEventoWrapperNew(proceduraFormativa, providerId);
@@ -162,8 +162,8 @@ public class EventoController {
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
-			return "redirect:/home";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
 		}
 	}
 
@@ -184,6 +184,24 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+	}
+
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canEditEvento(principal, #providerId")
+	@RequestMapping("/provider/{providerId}/evento/{eventoId}/edit")
+	public String editEvento(@ModelAttribute EventoWrapper eventoWrapper, @PathVariable Long providerId, @PathVariable Long eventoId,
+			Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/edit"));
+		try {
+			//edit dell'evento
+			EventoWrapper wrapper = prepareEventoWrapperEdit(eventoService.getEvento(eventoId), true);
+			return goToEdit(model, wrapper);
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
 			return "redirect:/provider/{providerId}/evento/list";
 		}
 	}
@@ -301,10 +319,12 @@ public class EventoController {
 		return eventoWrapper;
 	}
 
-	private EventoWrapper prepareEventoWrapperEdit(Evento evento) throws Exception {
+	private EventoWrapper prepareEventoWrapperEdit(Evento evento, boolean reloadWrapperFromDB) throws Exception {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
+		if(reloadWrapperFromDB)
+			eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;
 	}
@@ -339,6 +359,12 @@ public class EventoController {
 		return EDIT;
 	}
 
+	private String goToEdit(Model model, EventoWrapper eventoWrapper) {
+		model.addAttribute("eventoWrapper", eventoWrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+		return EDIT;
+	}
+
 	private String goToRendiconto(Model model, EventoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + RENDICONTO));
@@ -347,7 +373,7 @@ public class EventoController {
 
 	@RequestMapping("/listaMetodologie")
 	@ResponseBody
-	public List<MetodologiaDidatticaRESEnum>getElencoComuni(@RequestParam ObiettiviFormativiRESEnum obiettivo){
+	public List<MetodologiaDidatticaRESEnum>getListaMetodologie(@RequestParam ObiettiviFormativiRESEnum obiettivo){
 		return obiettivo.getMetodologieDidattiche();
 	}
 
