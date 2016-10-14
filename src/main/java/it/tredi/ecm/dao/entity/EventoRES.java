@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
@@ -63,9 +64,9 @@ public class EventoRES extends Evento{
 	@ElementCollection
 	private List<String> risultatiAttesi = new ArrayList<String>();
 
-	@OneToMany(mappedBy="eventoRES")
+	@OneToMany(mappedBy="eventoRES", cascade = CascadeType.ALL)
 	@OrderBy("giorno ASC")
-	private Set<ProgrammaGiornalieroRES> programma = new HashSet<ProgrammaGiornalieroRES>();
+	private List<ProgrammaGiornalieroRES> programma = new ArrayList<ProgrammaGiornalieroRES>();
 
 	@ElementCollection
 	private Set<VerificaApprendimentoRESEnum> verificaApprendimento;

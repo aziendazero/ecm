@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import java.util.Locale;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
@@ -31,6 +34,8 @@ import it.tredi.ecm.dao.entity.Provider;
 
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
+import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.AccreditamentoService;
@@ -53,8 +58,10 @@ import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.RipetibiliWrapper;
 
 @Controller
+@SessionAttributes("eventoWrapper")
 public class EventoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoController.class);
 
@@ -79,7 +86,7 @@ public class EventoController {
 		return elencoProvince;
 	}
 
-	@ModelAttribute("eventoWrapper")
+	//@ModelAttribute("eventoWrapper")
 	public EventoWrapper getEvento(@RequestParam(name = "editId", required = false) Long id,
 			@RequestParam(value="providerId",required = false) Long providerId,
 			@RequestParam(value="proceduraFormativa",required = false) ProceduraFormativa proceduraFormativa,
@@ -306,7 +313,7 @@ public class EventoController {
 		List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
 		programmaEvento.add(p);
 		
-		eventoWrapper.setProgramma(programmaEvento);
+		eventoWrapper.setProgrammaEvento(programmaEvento);
 		
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
@@ -356,5 +363,37 @@ public class EventoController {
 		return RENDICONTO;
 	}
 
-
+	@RequestMapping("/listaMetodologie")
+	@ResponseBody
+	public List<MetodologiaDidatticaRESEnum>getElencoComuni(@RequestParam ObiettiviFormativiRESEnum obiettivo){
+		return obiettivo.getMetodologieDidattiche();
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/save", method=RequestMethod.POST, params={"addAttivitaToProgramma"})
+	public String addElement(@RequestParam("addAttivitaToProgramma") String programma,@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int programmaIndex = Integer.valueOf(programma).intValue();
+			eventoWrapper.getProgrammaEvento().get(programmaIndex).getProgramma().add(new DettaglioAttivitaRES());
+			eventoWrapper.setGotoLink("#programma");
+			return EDIT;
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/removeAttivita/{programmaIndex}/{attivitaIndex}", method=RequestMethod.GET)
+	public String removeAttivitaFromProgramma(@PathVariable("programmaIndex") String progIndex, @PathVariable("attivitaIndex") String attIndex,
+												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int programmaIndex = Integer.valueOf(progIndex).intValue();
+			int attivitaIndex = Integer.valueOf(attIndex).intValue();
+			eventoWrapper.getProgrammaEvento().get(programmaIndex).getProgramma().remove(attivitaIndex);
+			eventoWrapper.setGotoLink("#programma");
+			return EDIT;
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
 }

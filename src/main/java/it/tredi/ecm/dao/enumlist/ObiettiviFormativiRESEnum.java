@@ -22,4 +22,8 @@ public enum ObiettiviFormativiRESEnum {
 		this.nome = nome;
 		this.metodologieDidattiche = metodologiaDidattiche;
 	}
+	
+	public List<MetodologiaDidatticaRESEnum> getMetodologie(ObiettiviFormativiRESEnum obiettivo){
+		return obiettivo.getMetodologieDidattiche();
+	}
 }
