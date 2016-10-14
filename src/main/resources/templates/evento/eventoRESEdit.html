@@ -264,6 +264,20 @@
 						<span class="required">*</span>
 					</label>
 				</div>
+				<div class='prevDataIntermedia item form-group' th:each="data, row : ${eventoWrapper.dateIntermedieTemp}">
+					<div class='col-md-4 col-sm-4 col-xs-12'></div>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+						<input type="text" class="form-control datapicker-intermedia"
+							th:field="${eventoWrapper.dateIntermedieTemp[__${row.index}__]}" />
+						<span class="input-group-addon not-last" onclick="$(this).prev().click()">
+ 							<i class="glyphicon glyphicon-calendar"></i>
+						</span>
+						<span class="input-group-addon" onclick="rimuoviDataIntermedia(this)">
+							<i class="fa fa-minus"></i>
+						</span>
+					</div>
+				</div>
+
 				<div class='nextDataIntermedia item form-group'>
 					<div class='col-md-4 col-sm-4 col-xs-12'></div>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
@@ -573,12 +587,18 @@
 				<div class="item form-group">
 					<div class="col-md-4 col-sm-4 col-xs-12"></div>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
-						<div class="risultati-attesi-container"></div>
+						<div class="risultati-attesi-container">
+							<div class='risultato-atteso' style='display: inline-block' th:each="risultatoAtteso, row : ${eventoWrapper.risultatiAttesiTemp}">
+								<span th:text="${risultatoAtteso}"></span>
+								<span onclick='rimuoviRisultatoAtteso($(this).parent())'><i class='clickable red fa fa-remove'></i></span>
+								<input type='hidden' th:value="${risultatoAtteso}" th:name="'risultatiAttesiTemp['+__${row.index}__+']'" />
+							</div>
+						</div>
 					</div>
 					<div class="col-lg-3 col-md-1 col-sm-1 col-xs-12"></div>
 				</div>
-				
-				
+
+
 				<!-- PROGRAMMA EVENTO -->
 				<div class="item form-group">
 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="programmaEvento">
@@ -798,7 +818,6 @@
 						</th:block>
 					</div>
 				</div>
-				<div class="date-intermedie-container"></div>
 
 				<div>**TODO DOM**</div>
 
@@ -969,7 +988,7 @@
 							<span th:text="#{label.lingua_straniera_utilizzata}">Lingua straniera utilizzata</span>
 							<span class="required">*</span>
 						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<input type="text" class="form-control" th:field="${eventoWrapper.evento.linguaStranieraUtilizzata}" />
 						</div>
 					</div>
@@ -980,7 +999,7 @@
 							<span th:text="#{label.esiste_traduzione}">Esiste un sistema di traduzione simultanea</span>
 							<span class="required">*</span>
 						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="radio">
 							<label class="label-radio-traduzione label-disabled">
 								<input type="radio" class="flat traduzione" disabled="disabled" th:field="${eventoWrapper.evento.esisteTraduzioneSimultanea}" th:value="${true}" />
@@ -1019,6 +1038,8 @@
 					</div>
 				</div>
 
+				<div class="divider-dashed"></div>
+
 				<!-- VERIFICA A DISTANZA BLOCCO -->
 				<!-- RADIO VERIFICA A DISTANZA -->
 				<div class="item form-group">
@@ -1026,7 +1047,7 @@
 						<span>40</span>
 					</label>
 					<label class="control-label col-md-3 col-sm-3 col-xs-11">
-						<span th:text="#{label.verifica_distanza}"></span>
+						<span th:text="#{label.verifica_distanza_ricadute_formative}"></span>
 						<span class="required">*</span>
 					</label>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -1044,8 +1065,202 @@
 						</div>
 					</div>
 				</div>
-				<div class="no-padding verifica-distanza" style="display: none;">
+				<div class="no-padding verifica-ricadute-formative" style="display: none;">
+					<!-- DESCRIZIONE -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.descrizione_verifica_ricadute_formative}">Descrizione</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<input type="text" id="descrizione-ricaduta-formativa" disabled="disabled" class="form-control" th:field="${eventoWrapper.evento.descrizioneVerificaRicaduteFormative}" />
+						</div>
+					</div>
+					<!-- ALLEGATO VERIFICA RICADUTE FORMATIVE -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.documento_verifica_ricadute_formative}">Documento di verifica delle ricadute formative</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, documentoVerificaRicaduteFormative, null, null, null, true, null, false)" ></th:block>
+						</div>
+					</div>
+				</div>
 
+				<div class="divider-dashed"></div>
+
+				<!-- SPONSOR BLOCCO -->
+				<!-- RADIO SPONSOR -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>41</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.evento_sponsorizzato_radio}">L'Evento è sponsorizzato?</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${true}" />
+								<span th:text="#{label.sì}">Sì</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${false}" />
+								<span th:text="#{label.no}">No</span>
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="no-padding sponsor-si" style="display: none;">
+					<!-- SPONSOR INSERIMENTO -->
+					<div>**TODO RIPETIBILE SPONSOR**</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- FORME FINANZIAMENTO BLOCCO -->
+				<!-- RADIO FORME FINANZIAMENTO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>42</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.forme_finanziamento_radio}">Sono presenti forme di finanziamento?</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat finanziamento" th:field="${eventoWrapper.evento.altreFormeFinanziamento}" th:value="${true}" />
+								<span th:text="#{label.sì}">Sì</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat finanziamento" th:field="${eventoWrapper.evento.altreFormeFinanziamento}" th:value="${false}" />
+								<span th:text="#{label.no}">No</span>
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="no-padding finanziamento-si" style="display: none;">
+					<!-- ALLEGATO CONTRATTI/ACCORDI/CONVENZIONI -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.allegato_contratti_accordi_convenzioni}">Allegato Contratti Accordi Convenzioni</span>
+							<span class="required">*</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, contrattiAccordiConvenzioni, null, null, null, true, null, false)" ></th:block>
+						</div>
+					</div>
+				</div>
+				<div class="no-padding finanziamento-no" style="display: none;">
+					<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA FINANZIAMENTI -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Allegato autocertificazione assenza finanziamenti</span>
+							<span class="required">*</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block>
+						</div>
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- BLOCCO PARTNER -->
+				<!-- RADIO PARTNER -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>43</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.si_avvale_di_partner}">L’evento si avvale di partner?</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${true}" />
+								<span th:text="#{label.sì}">Sì</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${false}" />
+								<span th:text="#{label.no}">No</span>
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="no-padding partner-si" style="display: none;">
+					<div>**TODO PARTNER RIPETIBILE</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- DICHIARAZIONE CONFLITTO INTERESSI -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>44</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dichiarazioneAssenzaConflittoInteresse">
+						<span th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block>
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- PROCEDURA VERIFICA QUALITÀ -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>45</span>
+					</label>
+					<div class="control-label col-md-3 col-sm-3 col-xs-11">
+					</div>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.proceduraVerificaQualitaPercepita}" th:value="${true}" />
+								<span th:text="#{label.procedura_verifica_qualita}">E’ prevista una procedura di verifica della qualità percepita</span>
+								<span class="required">*</span>
+							</label>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- AUTORIZZAZIONE -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>46</span>
+					</label>
+					<div class="control-label col-md-3 col-sm-3 col-xs-11">
+					</div>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.autorizzazionePrivacy}" th:value="${true}" />
+								<span th:text="#{label.autorizzazione_privacy}"></span>
+								<span class="required">*</span>
+							</label>
+						</div>
+
+				</div>
 				</div>
 
 				<input id="submitButton" type="submit" style="display: none;" />
@@ -1064,7 +1279,7 @@
 					//init daterangepicker al document ready per tutte le date intermedie
 					$('.datapicker-intermedia').daterangepicker({
 				        singleDatePicker: true,
-				        autoApply: false,
+				        autoApply: true,
 				        autoUpdateInput: true,
 				        format: "DD/MM/YYYY",
 				        locale: {
@@ -1125,6 +1340,19 @@
 						"ordering" : false,
 				    });  
 
+				 	 //gestione evento iCheck su radio riguardante la lingua
+					$(".verifica-distanza").on("ifChecked", function() {
+						if($(this).val() == 'true')
+							mostraNascondiCampiRicadutaFormative(true);
+						else
+							mostraNascondiCampiRicadutaFormative(false);
+					});
+
+				  	//controllo su radio riguardante la ricaduta formativa al document ready
+				    if([[${eventoWrapper.evento.verificaRicaduteFormative}]]) {
+				    	mostraNascondiCampiRicadutaFormative(true);
+					}
+
 				});
 
 				//indice per calcolare i nuovi name delle date intermedie
@@ -1133,10 +1361,11 @@
 
 				//funzione che aggiunge una data intermedia, aumenta il name in base alle date già presenti
 				function aggiungiDataIntermedia(caller) {
-					$("<div class='nextDataIntermedia item form-group'></div>")
+					var cloned = $("<div class='nextDataIntermedia item form-group'></div>")
 						.append($("<div class='col-md-4 col-sm-4 col-xs-12'></div>"))
 						.append($(caller).parent().clone())
 						.appendTo(".date-intermedie-container");
+					cloned.children(".datapicker-intermedia").val("");
 					$(caller).children().toggleClass('fa-plus fa-minus');
 					$(caller).attr("onclick", "rimuoviDataIntermedia(this)");
 					$(caller).siblings(".datapicker-intermedia").attr("name", "dateIntermedieTemp["+ ++indexDateIntermedie +"]");
@@ -1154,7 +1383,7 @@
 				function reinitDaterangepicker() {
 					$('.datapicker-intermedia').daterangepicker({
 				        singleDatePicker: true,
-				        autoApply: false,
+				        autoApply: true,
 				        autoUpdateInput: true,
 				        format: "DD/MM/YYYY",
 				        locale: {
@@ -1279,6 +1508,19 @@
 						$(metodologiePicker_ref).selectpicker('refresh');
 					});
 				};
+
+				function mostraNascondiCampiRicadutaFormative(show) {
+					if(show) {
+						$(".verifica-ricadute-formative").slideDown("slow");
+						$("#descrizione-ricaduta-formativa").prop("disabled", false);
+						$("#documentoVerificaRicaduteFormative").prop("disabled", false);
+					}
+					else {
+						$(".verifica-ricadute-formative").slideUp("slow");
+						$("#descrizione-ricaduta-formativa").prop("disabled", true);
+						$("#documentoVerificaRicaduteFormative").prop("disabled", true);
+					}
+				}
 
 			/*]]>*/
 			</script>

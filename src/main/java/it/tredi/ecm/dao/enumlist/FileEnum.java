@@ -42,6 +42,10 @@ public enum FileEnum {
 	FILE_REPORT_PARTECIPANTI_CSV(33, "File CSV caricato"),
 
 	FILE_BROCHURE_EVENTO(34, "Brochure dell'Evento"),
+	FILE_VERIFICA_RICADUTE_FORMATIVE(35, "Verifica a distanza delle ricadute formative"),
+	FILE_CONTRATTI_ACCORDI_CONVENZIONI(36, "Allegato contratti/accordi/convenzioni"),
+	FILE_AUTOCERTIFICAZIONE_ASSENZA_FINANZIAMENTI(37, "Autocertificazione assenza finanziamenti"),
+	FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE(38, "Dichiarazione di assenza del conflitto di interesse"),
 
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");

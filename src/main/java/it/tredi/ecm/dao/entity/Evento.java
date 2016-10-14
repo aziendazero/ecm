@@ -213,7 +213,7 @@ public class Evento extends BaseEntity{
 
 	private BigDecimal quotaPartecipazione;
 
-	private boolean eventoSponsorizzato;
+	private Boolean eventoSponsorizzato;
 	@OneToMany(mappedBy="evento")
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();
 
@@ -223,22 +223,22 @@ public class Evento extends BaseEntity{
 	@OneToOne
 	private File autocertificazioneAutorizzazioneMinisteroSalute;
 
-	private boolean altreFormeFinanziamento;
+	private Boolean altreFormeFinanziamento;
 	@OneToOne
 	private File autocertificazioneAssenzaFinanziamenti;
 	@OneToOne
 	private File contrattiAccordiConvenzioni;
 
-	private boolean eventoAvvalePartner;
+	private Boolean eventoAvvalePartner;
 	@OneToMany(mappedBy="evento")
 	private Set<Partner> partners = new HashSet<Partner>();
 
 	@OneToOne
 	private File dichiarazioneAssenzaConflittoInteresse;
 
-	private boolean proceduraVerificaQualitaPercepita;
+	private Boolean proceduraVerificaQualitaPercepita;
 
-	private boolean autorizzazionePrivacy;
+	private Boolean autorizzazionePrivacy;
 
 
 

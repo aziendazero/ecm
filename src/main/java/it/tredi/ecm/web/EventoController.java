@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import java.util.Locale;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +44,12 @@ import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
+import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AnagraficaEventoService;
 import it.tredi.ecm.service.AnagraficaEventoServiceImpl;
-import it.tredi.ecm.exception.EcmException;
-import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.EventoService;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ObiettivoService;
 
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
@@ -61,7 +59,6 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.repository.AnagraficaEventoRepository;
-import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.EventoService;
 
 import it.tredi.ecm.service.FileService;
@@ -69,10 +66,8 @@ import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.RipetibiliWrapper;
 
 @Controller
-@SessionAttributes("eventoWrapper")
 public class EventoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoController.class);
 
@@ -108,7 +103,7 @@ public class EventoController {
 			if (wrapperMode == EventoWrapperModeEnum.RENDICONTO)
 				return prepareEventoWrapperRendiconto(eventoService.getEvento(id), providerId);
 			else
-				return prepareEventoWrapperEdit(eventoService.getEvento(id));
+				return prepareEventoWrapperEdit(eventoService.getEvento(id), false);
 		}
 		if(providerId != null && proceduraFormativa != null)
 			return prepareEventoWrapperNew(proceduraFormativa, providerId);
@@ -193,8 +188,8 @@ public class EventoController {
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
-			return "redirect:/home";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
 		}
 	}
 
@@ -215,6 +210,24 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+	}
+
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canEditEvento(principal, #providerId")
+	@RequestMapping("/provider/{providerId}/evento/{eventoId}/edit")
+	public String editEvento(@ModelAttribute EventoWrapper eventoWrapper, @PathVariable Long providerId, @PathVariable Long eventoId,
+			Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/edit"));
+		try {
+			//edit dell'evento
+			EventoWrapper wrapper = prepareEventoWrapperEdit(eventoService.getEvento(eventoId), true);
+			return goToEdit(model, wrapper);
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
 			return "redirect:/provider/{providerId}/evento/list";
 		}
 	}
@@ -332,10 +345,12 @@ public class EventoController {
 		return eventoWrapper;
 	}
 
-	private EventoWrapper prepareEventoWrapperEdit(Evento evento) throws Exception {
+	private EventoWrapper prepareEventoWrapperEdit(Evento evento, boolean reloadWrapperFromDB) throws Exception {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
+		if(reloadWrapperFromDB)
+			eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;
 	}
@@ -366,7 +381,12 @@ public class EventoController {
 
 	private String goToNew(Model model, EventoWrapper eventoWrapper) {
 		model.addAttribute("eventoWrapper", eventoWrapper);
-		model.addAttribute("tempPersonaEvento", new PersonaEvento());
+		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+		return EDIT;
+	}
+
+	private String goToEdit(Model model, EventoWrapper eventoWrapper) {
+		model.addAttribute("eventoWrapper", eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
@@ -379,7 +399,7 @@ public class EventoController {
 
 	@RequestMapping("/listaMetodologie")
 	@ResponseBody
-	public List<MetodologiaDidatticaRESEnum>getElencoComuni(@RequestParam ObiettiviFormativiRESEnum obiettivo){
+	public List<MetodologiaDidatticaRESEnum>getListaMetodologie(@RequestParam ObiettiviFormativiRESEnum obiettivo){
 		return obiettivo.getMetodologieDidattiche();
 	}
 	

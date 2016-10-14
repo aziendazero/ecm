@@ -43,6 +43,10 @@ public class EventoWrapper {
 	
 	//allegati
 	private File brochure;
+	private File documentoVerificaRicaduteFormative;
+	private File autocertificazioneAssenzaFinanziamenti;
+	private File contrattiAccordiConvenzioni;
+	private File dichiarazioneAssenzaConflittoInteresse;
 
 	private String gotoLink;
 	
