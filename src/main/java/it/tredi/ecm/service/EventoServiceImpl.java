@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +12,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.cogeaps.CogeapsCaricaResponse;
+import it.tredi.ecm.cogeaps.CogeapsWsRestClient;
 import it.tredi.ecm.cogeaps.Helper;
 import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
@@ -18,6 +21,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -31,7 +35,13 @@ public class EventoServiceImpl implements EventoService {
 	private EventoRepository eventoRepository;
 
 	@Autowired
+	private RendicontazioneInviataService rendicontazioneInviataService;	
+	
+	@Autowired
 	private FileService fileService;
+	
+	@Autowired
+	private CogeapsWsRestClient cogeapsWsRestClient;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -167,6 +177,41 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		return evento;
+	}
+	
+	@Override
+	public void inviaRendicontoACogeaps(Long id) throws Exception {
+		Evento evento = getEvento(id);
+		try {
+			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(evento.getReportPartecipantiXML().getNomeFile(), evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
+
+			if (cogeapsCaricaResponse.getStatus() != 0) //errore HTTP (auth...)
+				throw new Exception(cogeapsCaricaResponse.getError() + ": " + cogeapsCaricaResponse.getMessage());
+			if (cogeapsCaricaResponse.getErrCode() != 0) //errore su provider
+				throw new Exception(cogeapsCaricaResponse.getErrMsg());
+
+			//salvataggio entity rendicontazione_inviata
+			RendicontazioneInviata rendicontazioneInviata = new RendicontazioneInviata();
+			rendicontazioneInviata.setEvento(evento);
+			rendicontazioneInviata.setFileName(cogeapsCaricaResponse.getNomeFile());
+			rendicontazioneInviata.setResponse(cogeapsCaricaResponse.getResponse());
+			rendicontazioneInviata.setFileRendicontazione(evento.getReportPartecipantiXML());
+			rendicontazioneInviata.setDataInvio(LocalDateTime.now());
+			rendicontazioneInviata.setStato("PENDING");
+			rendicontazioneInviataService.save(rendicontazioneInviata);
+			
+//TODO - per ora non è gestito il flag sull'ultimo rendiconto
+			
+//TODO - riempire tutti i campi di rendicontazioneInviata (compresi gli enumeratori)			
+			
+			//TODO - mettere qua il codice di gestione del file -> creare nuova entity, salvare file e risposta
+			
+			
+		}
+		catch (Exception e) {
+			throw new EcmException("error.invio_report_cogeaps", e.getMessage(), e);
+		}
+		
 	}
 
 }

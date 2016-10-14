@@ -19,7 +19,9 @@ import it.tredi.ecm.dao.entity.EventoRES;
 public class Helper {
 	
 	public final static String XML_REPORT_ENCODING = "ISO-8859-1";
+	public final static String XSD_1_1_16_FILENAME = "rapporto_evento_1.16.xsd";
 	
+	public final static String CODICE_ENTE_ACCREDITANTE = "050";
 	public final static String []EVENTO_XML_ATTRIBUTES = {"cod_evento", "cod_edi", "cod_org", "cod_accr", "data_ini", "data_fine", "ore", "crediti", "tipo_form", "tipo_eve", "cod_obi", "num_part", "cod_tipologia_form"};
 	
 	//TODO - gestire eccezioni
@@ -28,8 +30,8 @@ public class Helper {
 		Map<String, String> dbEventoDataMap = new HashMap<String, String>();
 		dbEventoDataMap.put("cod_evento", Long.toString(evento.getId()));
 		dbEventoDataMap.put("cod_edi", Integer.toString(evento.getEdizione()));
-		dbEventoDataMap.put("cod_org", Long.toString(evento.getProvider().getCodiceIdentificativoUnivoco()));
-		dbEventoDataMap.put("cod_accr", "050");
+		dbEventoDataMap.put("cod_org", evento.getProvider().getCodiceCogeaps());
+		dbEventoDataMap.put("cod_accr", CODICE_ENTE_ACCREDITANTE);
 		dbEventoDataMap.put("data_ini", evento.getDataInizio().format(DateTimeFormatter.ISO_LOCAL_DATE));
 		dbEventoDataMap.put("data_fine", evento.getDataFine().format(DateTimeFormatter.ISO_LOCAL_DATE));
 		dbEventoDataMap.put("ore", Integer.toString((int)evento.getDurata()));
@@ -53,7 +55,7 @@ public class Helper {
 	}
 	
 	public static Schema getSchemaEvento_1_16_XSD() throws Exception {
-		InputStream is = Helper.class.getResourceAsStream("rapporto_evento_1.16.xsd");
+		InputStream is = Helper.class.getResourceAsStream(XSD_1_1_16_FILENAME);
 		Source source = new StreamSource(is);
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		Schema schema = factory.newSchema(source);
@@ -63,5 +65,5 @@ public class Helper {
 	public static String createReportXmlFileName() {
 		return "report-" + new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()) +  ".xml";
 	}
-
+	
 }

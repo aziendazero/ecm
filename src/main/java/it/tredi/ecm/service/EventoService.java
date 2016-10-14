@@ -19,4 +19,5 @@ public interface EventoService {
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
 	public boolean canCreateEvento(Account account);
 	public Evento handleRipetibili(EventoWrapper eventoWrapper);
+	public void inviaRendicontoACogeaps(Long id) throws Exception;
 }

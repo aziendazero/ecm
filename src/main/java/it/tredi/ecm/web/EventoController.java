@@ -28,7 +28,7 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
-
+import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
@@ -235,6 +235,7 @@ public class EventoController {
 						if (fileName.endsWith(".XML") || fileName.endsWith(".XML.P7M") || fileName.endsWith(".XML.ZIP.P7M") || fileName.endsWith(".CSV")) {
 							wrapper.setReportPartecipanti(fileService.getFile(file.getId()));
 							eventoService.validaRendiconto(eventoId, wrapper.getReportPartecipanti());
+							model.addAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
 						}
 						else {
 							model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
@@ -255,6 +256,31 @@ public class EventoController {
 			return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 		}
 	}
+	
+	//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
+		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/inviaACogeaps", method = RequestMethod.GET)
+		public String rendicontoEventoIviaACogeaps(@PathVariable Long providerId,
+				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+				Model model, RedirectAttributes redirectAttrs) {
+			try{
+//TODO - bisognerebbe controllare che il file sia fermato altrimenti non è possibile inviare il report al cogeaps				
+				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
+				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+				eventoService.inviaRendicontoACogeaps(eventoId);
+				model.addAttribute("message", new Message("message.completato", "message.invio_cogeaps_ok", "success"));
+				return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"),ex);
+				if (ex instanceof EcmException) //errore gestito
+	//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+				else
+					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
+				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
+			}
+		}	
 
 //	//metodo per chiamate AJAX sulle date ripetibili
 //	@RequestMapping("/add/dataIntermedia")
@@ -343,6 +369,10 @@ public class EventoController {
 		eventoWrapper.setProviderId(providerId);
 		eventoWrapper.setReportPartecipanti(new File(FileEnum.FILE_REPORT_PARTECIPANTI));
 		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.RENDICONTO);
+		RendicontazioneInviata ultimoReportInviato = (RendicontazioneInviata)(evento.getInviiRendicontazione().toArray()[evento.getInviiRendicontazione().size() - 1]);
+		
+//TODO - gestire correttamente l'ultimo report inviato		
+		eventoWrapper.setUltimoReportInviato(ultimoReportInviato);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - exiting"));
 		return eventoWrapper;
 	}
