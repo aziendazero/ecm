@@ -96,7 +96,7 @@
 													data-width="100%" data-style="btn-primary"
 													data-actions-box="true" data-size="10"
 													data-hide-disabled="false"
-													id="ambitoSelect"
+													id="ambitoSelect" onchange="abilitaTipologia()"
 													title="Seleziona un ambito...">
 													<option
 														th:each="ambito, row: ${comunicazioneWrapper.ambitoList}"
@@ -121,6 +121,7 @@
 													data-width="100%" data-style="btn-primary"
 													data-actions-box="true" data-size="10"
 													data-hide-disabled="false"
+													disabled="disabled"
 													id="tipologiaSelect"
 													title="Seleziona una tipologia...">
 													<option
@@ -160,6 +161,10 @@
 				    	placeholder: "Seleziona destinatari",
 				    	allowClear: true
 				    });
+
+					if([[${comunicazioneWrapper.comunicazione.ambito}]]) {
+						abilitaTipologia();
+					}
 				});
 
 				function removeAlerts() {
@@ -167,8 +172,6 @@
 						$(this).remove();
 					});
 				}
-
-				$("#ambitoSelect").on("change", abilitaTipologia);
 
 				function abilitaTipologia(){
 					// abilita la select della tipologia

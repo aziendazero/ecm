@@ -68,7 +68,7 @@ public class EventoRES extends Evento{
 	private Set<ProgrammaGiornalieroRES> programma = new HashSet<ProgrammaGiornalieroRES>();
 
 	@ElementCollection
-	private Set<VerificaApprendimentoRESEnum> verificaApprendiemento;
+	private Set<VerificaApprendimentoRESEnum> verificaApprendimento;
 
 	private boolean confermatiCrediti;
 
@@ -77,11 +77,11 @@ public class EventoRES extends Evento{
 
 	private String materialeDurevoleRilasciatoAiPratecipanti;
 
-	private boolean soloLinguaItaliana;
+	private Boolean soloLinguaItaliana;
 	private String linguaStranieraUtilizzata;
-	private boolean esisteTraduzioneSimultanea;
+	private Boolean esisteTraduzioneSimultanea;
 
-	private boolean verificaRicaduteFormative;
+	private Boolean verificaRicaduteFormative;
 	private String descrizioneVerificaRicaduteFormative;
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;

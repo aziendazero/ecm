@@ -183,7 +183,7 @@ public class EventoController {
 		try {
 			//salvataggio temporaneo senza validatore (in stato di bozza)
 			//gestione dei campi ripetibili
-			Evento evento = eventoService.handleRipetibili(eventoWrapper);
+			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 			eventoService.save(evento);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato_in_bozza_success", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
@@ -238,7 +238,7 @@ public class EventoController {
 								model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
 							}
 						}
-					}					
+					}
 			}
 			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
 		}
@@ -280,12 +280,9 @@ public class EventoController {
 
 	//metodi privati di supporto
 
-	private EventoWrapper prepareEventoWrapperNew(ProceduraFormativa proceduraFormativa, Long providerId) {
+	private EventoWrapper prepareEventoWrapperNew(ProceduraFormativa proceduraFormativa, Long providerId) throws AccreditamentoNotFoundException, Exception {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - entering"));
-		EventoWrapper eventoWrapper = new EventoWrapper();
-		eventoWrapper.setProceduraFormativa(proceduraFormativa);
-		eventoWrapper.setProviderId(providerId);
-		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.EDIT);
+		EventoWrapper eventoWrapper = prepareCommonEditWrapper(proceduraFormativa, providerId);
 		Evento evento;
 		switch(proceduraFormativa){
 			case FAD: evento = new EventoFAD(); break;
@@ -304,7 +301,6 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
-		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.EDIT);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;
 	}
@@ -318,6 +314,7 @@ public class EventoController {
 		DatiAccreditamento datiAccreditamento = accreditamentoService.getDatiAccreditamentoForAccreditamento(accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId());
 		eventoWrapper.setProfessioneList(datiAccreditamento.getProfessioniSelezionate());
 		eventoWrapper.setDisciplinaList(datiAccreditamento.getDiscipline());
+		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.EDIT);
 		return eventoWrapper;
 	}
 

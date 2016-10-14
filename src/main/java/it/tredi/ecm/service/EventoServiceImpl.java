@@ -83,7 +83,7 @@ public class EventoServiceImpl implements EventoService {
 
 			//xsd validation
 			try {
-				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), xml_b, Helper.getSchemaEvento_1_16_XSD());	
+				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), xml_b, Helper.getSchemaEvento_1_16_XSD());
 			}
 			catch (Exception e) {
 				throw new EcmException("error.xml_validation", e.getMessage(), e);
@@ -107,7 +107,7 @@ public class EventoServiceImpl implements EventoService {
 			}
 			catch (Exception e) {
 				throw new EcmException("error.xml_evento_validation_with_db", e.getMessage(), e);
-			}			
+			}
 
 			//xsd validation
 			try {
@@ -139,7 +139,7 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
-	public Evento handleRipetibili(EventoWrapper eventoWrapper) {
+	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
 		Evento evento = eventoWrapper.getEvento();
 
 		//date intermedie
@@ -164,6 +164,11 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 			((EventoRES) evento).setRisultatiAttesi(risultatiAttesi);
+		}
+
+		//brochure
+		if (eventoWrapper.getBrochure() != null) {
+			evento.setBrochureEvento(eventoWrapper.getBrochure());
 		}
 
 		return evento;

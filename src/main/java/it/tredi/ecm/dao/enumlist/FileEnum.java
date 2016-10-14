@@ -41,6 +41,8 @@ public enum FileEnum {
 	FILE_REPORT_PARTECIPANTI_XML(32, "File XML generato"),
 	FILE_REPORT_PARTECIPANTI_CSV(33, "File CSV caricato"),
 
+	FILE_BROCHURE_EVENTO(34, "Brochure dell'Evento"),
+
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 

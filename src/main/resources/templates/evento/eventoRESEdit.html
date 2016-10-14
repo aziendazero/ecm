@@ -325,7 +325,7 @@
 						<span class="required">*</span>
 					</label>
 
-					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 						<select id="obiettivoRegionale"
 							class="selectpicker required"
 							th:field="${eventoWrapper.evento.obiettivoRegionale}"
@@ -421,13 +421,13 @@
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 						<div class="radio">
 							<label class="label-radio-workshop label-disabled">
-								<input type="radio" disabled="disabled" class="flat radio-workshop" th:field="${eventoWrapper.evento.workshopSeminariEcm}" th:value="true" />
+								<input type="radio" disabled="disabled" class="flat radio-workshop" th:field="${eventoWrapper.evento.workshopSeminariEcm}" th:value="${true}" />
 								<span th:text="#{label.sì}">Sì</span>
 							</label>
 						</div>
 						<div class="radio">
 							<label class="label-radio-workshop label-disabled">
-								<input type="radio" disabled="disabled" class="flat radio-workshop" th:field="${eventoWrapper.evento.workshopSeminariEcm}" th:value="false" />
+								<input type="radio" disabled="disabled" class="flat radio-workshop" th:field="${eventoWrapper.evento.workshopSeminariEcm}" th:value="${false}" />
 								<span th:text="#{label.no}">No</span>
 							</label>
 						</div>
@@ -535,11 +535,253 @@
 					<div class="col-lg-3 col-md-1 col-sm-1 col-xs-12"></div>
 				</div>
 
+				<div>**TODO DOM**</div>
 
-				<div>**TODO POPUP?**</div>
+				<div class="divider-dashed"></div>
 
+				<!-- BROCHURE EVENTO -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>32</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="brochure">
+						<span th:text="#{label.brochure_evento}">Brochure dell'evento</span>
+						<span class="required hidden" id="brochure-obbligatoria">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, brochure, null, null, null, false, null, false)" ></th:block>
+					</div>
+				</div>
 
+				<!-- VERIFICA APPRENDIMENTO PARTECIPANTI -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>33</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="verificaApprendimentoPartecipanti">
+						<span th:text="#{label.verifica_apprendimento_partecipanti}">Verifica Apprendimento partecipanti</span>
+						<span class="required">*</span>
+					</label>
 
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+						<select id="verificaApprendimentoPartecipanti"
+								class="selectpicker required multi"
+								multiple="multiple" data-width="100%"
+								data-style="btn-primary"
+								data-size="10" title="Seleziona una modalità..."
+								th:field="${eventoWrapper.evento.verificaApprendimento}"
+								disabled="disabled"
+								data-selected-text-format="count">
+							<option
+								th:each="modalita, row: ${T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum).values()}"
+								th:value="${modalita}"
+								th:text="${modalita.nome}"
+								th:name="${modalita.id &lt; 5} ? 'test' : 'autocertificazione'">
+							</option>
+						</select>
+					</div>
+				</div>
+
+<!-- TODO vanno in SHOW				DURATA -->
+<!-- 				<div class="item form-group"> -->
+<!-- 					<label class="control-label col-xs-1"> -->
+<!-- 						<span>34</span> -->
+<!-- 					</label> -->
+<!-- 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="durata"> -->
+<!-- 						<span th:text="#{label.durata}">Durata</span> -->
+<!-- 					</label> -->
+<!-- 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata"> -->
+<!-- 						<div class="value-edit" th:text="${eventoWrapper.evento.durata}"></div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+
+<!-- 				TIPOLOGIA DI OBIETTIVI FORMATIVI -->
+<!-- 				<div class="item form-group"> -->
+<!-- 					<label class="control-label col-xs-1"> -->
+<!-- 						<span>34</span> -->
+<!-- 					</label> -->
+<!-- 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaObiettiviFormativi"> -->
+<!-- 						<span th:text="#{label.tipologia_obiettivi_formativi}">Tipologia di obiettivi formativi</span> -->
+<!-- 					</label> -->
+<!-- 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipologiaObiettiviFormativi"> -->
+<!-- 						<div class="value-edit" th:text="${'**TODO**'}"></div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+
+				<!-- CREDITI FORMATIVI -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>34</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="creditiFormativi">
+						<span th:text="#{label.crediti_formativi_attribuiti_evento}">Crediti attribuiti all'evento</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
+						<input type="text" class="form-control" th:field="${eventoWrapper.evento.crediti}" />
+					</div>
+					<div class="checkbox col-lg-3">
+						<label>
+							<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" />
+							<span th:text="#{label.conferma}"></span>
+						</label>
+					</div>
+				</div>
+
+				<!-- RESPONSABILE SEGRETERIA ORGANIZZATIVA -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>35</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="responsabileSegreteria">
+						<span th:text="#{label.responsabile_segreteria_organizzativa}">Responsabile segreteria organizzativa</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="responsabileSegreteria">
+						<div>**TODO PERSONA**</div>
+					</div>
+				</div>
+
+				<!-- TIPO MATERIALE -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>36</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoMateriale">
+						<span th:text="#{label.tipo_materiale_rilasciato}">Tipo materiale durevole rilasciato ai partecipanti</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="tipoMateriale">
+						<input type="text" class="form-control" th:field="${eventoWrapper.evento.materialeDurevoleRilasciatoAiPratecipanti}" />
+					</div>
+				</div>
+
+				<!-- QUOTA PARTECIPAZIONE -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>37</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="quota">
+						<span th:text="#{label.quota_partecipazione}">Quota di partecipazione</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="quota">
+						<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" />
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- BLOCCO LINGUA -->
+				<!-- RADIO LINGUA ITALIANA -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>38</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.solo_lingua_italiana}"></span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat lingua" th:field="${eventoWrapper.evento.soloLinguaItaliana}" th:value="${true}" />
+								<span th:text="#{label.sì}">Sì</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat lingua" th:field="${eventoWrapper.evento.soloLinguaItaliana}" th:value="${false}" />
+								<span th:text="#{label.no}">No</span>
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="no-padding non-solo-italiano" style="display: none;">
+					<!-- LINGUA STRANIERA -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.lingua_straniera_utilizzata}">Lingua straniera utilizzata</span>
+							<span class="required">*</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+							<input type="text" class="form-control" th:field="${eventoWrapper.evento.linguaStranieraUtilizzata}" />
+						</div>
+					</div>
+					<!-- TRADUZIONE RADIO -->
+					<div class="item form-group" >
+						<div class="col-xs-1"></div>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.esiste_traduzione}">Esiste un sistema di traduzione simultanea</span>
+							<span class="required">*</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+							<div class="radio">
+							<label class="label-radio-traduzione label-disabled">
+								<input type="radio" class="flat traduzione" disabled="disabled" th:field="${eventoWrapper.evento.esisteTraduzioneSimultanea}" th:value="${true}" />
+								<span th:text="#{label.sì}">Sì</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label class="label-radio-traduzione label-disabled">
+								<input type="radio" class="flat traduzione" disabled="disabled" th:field="${eventoWrapper.evento.esisteTraduzioneSimultanea}" th:value="${false}" />
+								<span th:text="#{label.no}">No</span>
+							</label>
+						</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="divider-dashed"></div>
+
+				<!-- VERIFICA PRESENZA PARTECIPANTI -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>39</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="verificaPresenzaPartecipanti">
+						<span th:text="#{label.verifica_presenza_partecipanti}">Verifica presenza partecipanti</span>
+						<span class="required">*</span>
+					</label>
+
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="verificaPresenzaPartecipanti">
+						<div class="checkbox" th:each="modalita, row : ${T(it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum).values()}">
+							<label>
+								<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.verificaPresenzaPartecipanti}" th:value="${modalita}" />
+								<span th:text="${modalita.nome}"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<!-- VERIFICA A DISTANZA BLOCCO -->
+				<!-- RADIO VERIFICA A DISTANZA -->
+				<div class="item form-group">
+					<label class="control-label col-xs-1">
+						<span>40</span>
+					</label>
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.verifica_distanza}"></span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat verifica-distanza" th:field="${eventoWrapper.evento.verificaRicaduteFormative}" th:value="${true}" />
+								<span th:text="#{label.sì}">Sì</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" class="flat verifica-distanza" th:field="${eventoWrapper.evento.verificaRicaduteFormative}" th:value="${false}" />
+								<span th:text="#{label.no}">No</span>
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="no-padding verifica-distanza" style="display: none;">
+
+				</div>
 
 				<input id="submitButton" type="submit" style="display: none;" />
 
@@ -575,6 +817,24 @@
 
 					//controlla al document ready se mostrare i campi particolari relativi alla tipologia dell'evento
 					mostraNascondiCampiTipologiaEvento($('.tipologia_evento_2').val());
+
+					//controlla al document ready quali valori mostrare nella select di verifica dell'apprendimento
+					if([[${eventoWrapper.evento.tipologiaEvento}]]) {
+						abilitaModalitaVerificaApprendimento([[${eventoWrapper.evento.tipologiaEvento}]]);
+					}
+
+					//gestione evento iCheck su radio riguardante la lingua
+					$(".lingua").on("ifChecked", function() {
+						if($(this).val() == 'true')
+							mostraNascondiCampiLingua(false);
+						else
+							mostraNascondiCampiLingua(true);
+					});
+
+					//controllo su radio riguardante la lingua al document ready
+					if([[${eventoWrapper.evento.soloLinguaItaliana}]] == false) {
+						mostraNascondiCampiLingua(true);
+					}
 
 				});
 
@@ -625,6 +885,8 @@
 						$(".label-radio-workshop").removeClass("label-disabled");
 						$(".workshop-seminario").slideUp("slow");
 						$(".titolo-convegno").prop("disabled", true);
+						$("#brochure-obbligatoria").removeClass("hidden");
+						abilitaModalitaVerificaApprendimento('autocertificazione')
 						break;
 					case 'WORKSHOP_SEMINARIO':
 						$(".convegno-congresso").slideUp("slow");
@@ -632,6 +894,17 @@
 						$(".label-radio-workshop").addClass("label-disabled");
 						$(".workshop-seminario").slideDown("slow");
 						$(".titolo-convegno").prop("disabled", false);
+						$("#brochure-obbligatoria").removeClass("hidden");
+						abilitaModalitaVerificaApprendimento('test');
+						break;
+					case 'CORSO_AGGIORNAMENTO':
+						$(".convegno-congresso").slideUp("slow");
+						$(".workshop-seminario").slideUp("slow");
+						$(".radio-workshop").iCheck('disable');
+						$(".label-radio-workshop").addClass("label-disabled");
+						$(".titolo-convegno").prop("disabled", true);
+						$("#brochure-obbligatoria").addClass("hidden");
+						abilitaModalitaVerificaApprendimento('test');
 						break;
 					default:
 						$(".convegno-congresso").slideUp("slow");
@@ -639,6 +912,7 @@
 						$(".radio-workshop").iCheck('disable');
 						$(".label-radio-workshop").addClass("label-disabled");
 						$(".titolo-convegno").prop("disabled", true);
+						$("#brochure-obbligatoria").addClass("hidden");
 						break;
 					}
 				}
@@ -659,12 +933,39 @@
 					}
 				}
 
+				//rimuove un risultato atteso
 				function rimuoviRisultatoAtteso(container) {
 					container.remove();
 					//TODO select update
 				}
 
+				function abilitaModalitaVerificaApprendimento(tipologia) {
+					console.log(tipologia);
+					// abilita la select della verifica apprendimento
+					$("#verificaApprendimentoPartecipanti").prop("disabled", false);
+					// cicla le modalità mostrandole in base al parametro settato in base alla tipologia dell'evento
+					$.each($("#verificaApprendimentoPartecipanti option"), function() {
+						if($(this).attr("name") == tipologia)
+							$(this).show();
+						else
+							$(this).hide();
+					});
+					$("#verificaApprendimentoPartecipanti").selectpicker('deselectAll');
+					$("#verificaApprendimentoPartecipanti").selectpicker("refresh");
+				}
 
+				function mostraNascondiCampiLingua(show) {
+					if(show) {
+						$(".non-solo-italiano").slideDown("slow");
+						$(".traduzione").iCheck("enable");
+						$(".label-radio-traduzione").removeClass("label-disabled");
+					}
+					else {
+						$(".non-solo-italiano").slideUp("slow");
+						$(".traduzione").iCheck("disable");
+						$(".label-radio-traduzione").addClass("label-disabled");
+					}
+				}
 
 			/*]]>*/
 			</script>

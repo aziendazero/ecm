@@ -83,11 +83,11 @@
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${tipoAllegato}__.nomeFile}" />
 
-			<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7" th:for="__${tipoAllegato}__">
+			<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7" th:for="__${tipoAllegato}__" th:unless="${__${wrapper}__ == eventoWrapper}">
 				<i th:if="${__${wrapper}__ == comunicazioneWrapper}" class="fa fa-paperclip"></i>
 				<span th:text="#{label.__${tipoAllegato}__}">label.tipoAllegato</span>
 			</label>
-			<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+			<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11" th:classappend="${__${wrapper}__ == eventoWrapper} ? 'no-padding'">
 				<input type="file" onchange="submitFile(this)" th:id="__${tipoAllegato}__" th:name="__${tipoAllegato}___multipart" required="required"
 					style="display: none;" />
 				<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegato('#__${tipoAllegato}__');|" />
@@ -133,6 +133,7 @@
 				case 'allegatoComunicazione' :				tipoAllegato = 'FILE_ALLEGATO_COMUNICAZIONE'; break;
 				case 'allegatoRisposta' :					tipoAllegato = 'FILE_ALLEGATO_RISPOSTA'; break;
 				case 'reportPartecipanti' :					tipoAllegato = 'FILE_REPORT_PARTECIPANTI'; break;
+				case 'brochure' :							tipoAllegato = 'FILE_BROCHURE_EVENTO'; break;
 
 				//File da firmare per engineering
 				case 'fileDaFirmare' :						tipoAllegato = 'FILE_DA_FIRMARE'; break;
@@ -193,6 +194,7 @@
 						case 'FILE_ALLEGATO_COMUNICAZIONE' :				inputName = 'allegatoComunicazione'; break;
 						case 'FILE_ALLEGATO_RISPOSTA' : 					inputName = 'allegatoRisposta'; break;
 						case 'FILE_REPORT_PARTECIPANTI' :					inputName = 'reportPartecipanti'; break;
+						case 'FILE_BROCHURE_EVENTO' :						inputName = 'brochure'; break;
 
 						//File da firmare per engineering
 						case 'FILE_DA_FIRMARE' :							inputName = 'fileDaFirmare'; break;

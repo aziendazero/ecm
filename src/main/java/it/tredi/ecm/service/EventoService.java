@@ -18,5 +18,5 @@ public interface EventoService {
 	public List<Evento> getAllEventi();
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
 	public boolean canCreateEvento(Account account);
-	public Evento handleRipetibili(EventoWrapper eventoWrapper);
+	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper);
 }

@@ -35,6 +35,9 @@ public class EventoWrapper {
 	private Set<Disciplina> disciplinaList;
 	private Set<Professione> professioneList;
 
+	//allegati
+	private File brochure;
+
 
 
 }
