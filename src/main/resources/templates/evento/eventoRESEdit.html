@@ -470,8 +470,51 @@
 						<span class="required">*</span>
 					</label>
 
-					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="responsabili">
-					**TODO**
+					<div class="col-xs-12" id="responsabili">
+					
+					<table id="responsabiliScientifici" class="datatable-responsive-responsabili table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							 <thead>
+								 <tr>
+									 <th th:text="#{label.cognome}">Cognome</th>
+									<th th:text="#{label.nome}">Nome</th>
+									<th th:text="#{label.cf}">CF</th>
+									<th th:text="#{label.qualifica}">Qualifica</th>
+									<th>
+										<a class="btn btn-primary" onclick="openLookupPersone('responsabiliScientifici','')" data-toggle="modal" data-target=".modal-lookup-persone">
+											<span>
+												<i class="fa fa-search"></i>
+											</span>
+										</a>
+										<a class="btn btn-primary" onclick="openCreatePersona()" data-toggle="modal" data-target=".modal-create-persona">
+											<span>
+												<i class="fa fa-plus"></i>
+											</span>
+										</a>
+										<a class="btn btn-primary" onclick="openAddPersona('responsabiliScientifici','')" data-toggle="modal" data-target=".modal-add-persona">
+											<span>
+												<i class="fa fa-plus"></i>
+											</span>
+										</a>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="persona, status : ${eventoWrapper.responsabiliScientifici}">
+									<td th:text="${persona.anagrafica.cognome}"></td>
+									<td th:text="${persona.anagrafica.nome}"></td>
+									<td th:text="${persona.anagrafica.codiceFiscale}"></td>
+									<td th:text="${persona.qualifica}"></td>
+									<td>
+										<a class="btn btn-primary" th:href="@{|/provider/${eventoWrapper.providerId}/evento/removeResponsabile/${__${status.index}__}|}">
+											<span>
+												<i class="fa fa-trash"></i>
+											</span>
+										</a>
+									</td>								
+								</tr>
+							</tbody>
+						</table>
+					
 					</div>
 				</div>
 
@@ -607,7 +650,7 @@
 										<span th:text="#{label.orario}">Orario</span>
 										<span class="required">*</span>
 									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
 										<input type="text" required="required" class="form-control ora"
 											th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].orario}" />	
 											<span class="input-group-addon openClock">
@@ -1073,6 +1116,14 @@
 				    var gotoLink = [[${eventoWrapper.gotoLink}]];
 				    if(gotoLink)
 				    	 $(document).scrollTo(gotoLink);
+				
+				    
+				    tables['#responsabiliScientifici'] = $('#responsabiliScientifici').DataTable({
+				    	"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+				    });  
 
 				});
 

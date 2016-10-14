@@ -1,11 +1,16 @@
 package it.tredi.ecm.web;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
@@ -29,6 +36,7 @@ import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
 
@@ -39,6 +47,8 @@ import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.AnagraficaEventoService;
+import it.tredi.ecm.service.AnagraficaEventoServiceImpl;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.EventoService;
@@ -50,6 +60,7 @@ import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.dao.repository.AnagraficaEventoRepository;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.EventoService;
 
@@ -70,7 +81,9 @@ public class EventoController {
 	@Autowired private ObiettivoService obiettivoService;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private FileService fileService;
-
+	
+	@Autowired private AnagraficaEventoService anagraficaEventoService;
+	
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
 	private final String RENDICONTO = "evento/eventoRendiconto";
@@ -353,6 +366,7 @@ public class EventoController {
 
 	private String goToNew(Model model, EventoWrapper eventoWrapper) {
 		model.addAttribute("eventoWrapper", eventoWrapper);
+		model.addAttribute("tempPersonaEvento", new PersonaEvento());
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
@@ -396,4 +410,56 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
+	
+	@RequestMapping(value="/provider/{providerId}/createAnagraficaFullEvento", method=RequestMethod.POST)
+	@ResponseBody
+	public String saveAnagraficaFullEvento(@PathVariable("providerId") Long providerId, AnagraficaEvento anagrafica){
+		//TODO
+		anagraficaEventoService.save(anagrafica);
+		return "OK";
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaTo", method=RequestMethod.POST, params={"addPersonaTo"})
+	public String addPersonaTo(@RequestParam("addPersonaTo") String lista, 
+								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			if(lista.equalsIgnoreCase("responsabiliScientifici")){
+				eventoWrapper.getResponsabiliScientifici().add((PersonaEvento) copy(eventoWrapper.getTempPersonaEvento()));
+			}else if(lista.equalsIgnoreCase("docenti")){
+//				eventoWrapper.getDocenti().add(eventoWrapper.getTempPersonaEvento());
+			}
+			model.addAttribute("tempPersonaEvento", new PersonaEvento());
+			return EDIT;
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/removeResponsabileScientifico/{responsabileIndex}", method=RequestMethod.GET)
+	public String removeResponsabileScientifico(@PathVariable("responsabileIndex") String respIndex,
+												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int responsabileIndex = Integer.valueOf(respIndex).intValue();
+			eventoWrapper.getResponsabiliScientifici().remove(responsabileIndex);
+			return EDIT;
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+	
+	public static Object copy(Object fromBean) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder out = new XMLEncoder(bos);
+        out.writeObject(fromBean);
+        out.close();
+        ByteArrayInputStream bis = new
+        ByteArrayInputStream(bos.toByteArray());
+        XMLDecoder in = new XMLDecoder(bis);
+        Object toBean = in.readObject();
+        in.close();
+        return toBean;
+    }
+	
 }
