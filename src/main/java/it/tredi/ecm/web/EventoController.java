@@ -21,6 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
+import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
+import it.tredi.ecm.dao.entity.AnagraficaFullEventoBase;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
@@ -29,6 +31,7 @@ import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.PersonaEvento;
+import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
 
@@ -41,6 +44,7 @@ import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AnagraficaEventoService;
+import it.tredi.ecm.service.AnagraficaFullEventoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ObiettivoService;
@@ -62,6 +66,7 @@ public class EventoController {
 	@Autowired private FileService fileService;
 	
 	@Autowired private AnagraficaEventoService anagraficaEventoService;
+	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
 	
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -447,6 +452,36 @@ public class EventoController {
 				p.setEventoDocente(eventoWrapper.getEvento());
 				eventoWrapper.getDocenti().add(p);
 			}
+			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
+			return EDIT + " :: " + target;
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaFullTo", method=RequestMethod.POST, params={"addPersonaFullTo"})
+	public String addPersonaFullTo(@RequestParam("addPersonaFullTo") String target, 
+								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			//TODO da fare solo se rispetta il validator
+			AnagraficaFullEventoBase anagraficaFull = eventoWrapper.getTempPersonaFullEvento().getAnagrafica();
+			//check se non esiste -> si registra l'anagrafica per il provider
+			if(anagraficaFull != null && !anagraficaFull.getCodiceFiscale().isEmpty()){
+				if(anagraficaFullEventoService.getAnagraficaFullEventoByCodiceFiscaleForProvider(anagraficaFull.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
+					AnagraficaFullEvento anagraficaFullEventoToSave = new AnagraficaFullEvento();
+					anagraficaFullEventoToSave.setAnagrafica(anagraficaFull);
+					anagraficaFullEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
+					anagraficaFullEventoService.save(anagraficaFullEventoToSave);
+				}
+			}
+			
+			PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
+			if(target.equalsIgnoreCase("responsabileSegreteria")){
+				p.setEventoResponsabileSegreteriaOrganizzativa(eventoWrapper.getEvento());
+				eventoWrapper.getEvento().setResponsabileSegreteria(p);
+			}
+			eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento());
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -458,11 +493,15 @@ public class EventoController {
 	public String removePersonaFrom(@PathVariable("removePersonaFrom") String target, @PathVariable("rowIndex") String rowIndex,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			int responsabileIndex = Integer.valueOf(rowIndex).intValue();
+			int responsabileIndex;
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
+				responsabileIndex = Integer.valueOf(rowIndex).intValue();
 				eventoWrapper.getResponsabiliScientifici().remove(responsabileIndex);
 			}else if(target.equalsIgnoreCase("docenti")){
+				responsabileIndex = Integer.valueOf(rowIndex).intValue();
 				eventoWrapper.getDocenti().remove(responsabileIndex);
+			}else if(target.equalsIgnoreCase("responsabileSegreteria")){
+				eventoWrapper.getEvento().setResponsabileSegreteria(new PersonaFullEvento());
 			}
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -471,12 +510,18 @@ public class EventoController {
 		}
 	}
 	
-	@RequestMapping(value = "/provider/{providerId}/evento/setLookupAnagraficaEvento/{angraficaEventoId}", method=RequestMethod.GET)
-	public String lookupPersona(@PathVariable("angraficaEventoId") Long angraficaEventoId,
+	@RequestMapping(value = "/provider/{providerId}/evento/setLookupAnagraficaEvento/{type}/{angraficaEventoId}", method=RequestMethod.GET)
+	public String lookupPersona(@PathVariable("type") String type,
+									@PathVariable("angraficaEventoId") Long angraficaEventoId,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			eventoWrapper.setTempPersonaEvento(new PersonaEvento(anagraficaEventoService.getAnagraficaEvento(angraficaEventoId)));
-			return EDIT + " :: #addPersonaTo";
+			if(type.equalsIgnoreCase("Full")){
+				eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento(anagraficaFullEventoService.getAnagraficaFullEvento(angraficaEventoId)));
+				return EDIT + " :: #addPersonaFullTo";
+			}else{
+				eventoWrapper.setTempPersonaEvento(new PersonaEvento(anagraficaEventoService.getAnagraficaEvento(angraficaEventoId)));
+				return EDIT + " :: #addPersonaTo";
+			}
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";

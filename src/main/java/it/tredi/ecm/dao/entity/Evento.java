@@ -211,8 +211,8 @@ public class Evento extends BaseEntity{
 	protected float durata;//calcolo automatico
 	private float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
-	@OneToOne
-	private PersonaFullEvento responsabileSegreteriaOrganizzativa;
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();
 
 	private BigDecimal quotaPartecipazione;
 

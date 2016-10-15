@@ -8,6 +8,134 @@
 	<th:block th:fragment="eventoRESEdit">
 
 		<div class="x_content">
+		
+			<!-- finestra modale di aggiunta attivitaRES a programma del Giorno -->
+			<div id="add-attivitaRES-modal" class="modal fade modal-add-attivitaRES" data-model-index="4" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel4" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
+						</div>
+						<div class="modal-body">
+							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
+									th:object="${eventoWrapper.tempAttivitaRES}" method="post" enctype="multipart/form-data"
+									novalidate="novalidate">
+									
+									<!-- ORARIO -->
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="orario">
+											<span th:text="#{label.orario}">Orario</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
+											<input type="text" required="required" class="form-control ora"
+												th:field="*{orario}" />	
+												<span class="input-group-addon openClock">
+	     											<i class="glyphicon glyphicon-time"></i>
+	  											</span>
+										</div>
+									</div>
+								
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.argomento}">Argomento</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<input type="text" th:field="*{argomento}" />	
+										</div>
+									</div>
+								
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.risultato_atteso}">Risultato Atteso</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<select
+												class="selectpicker required selectRisultatiAttesi"
+												th:field="*{risultatoAtteso}"
+												data-width="100%" data-style="btn-primary"
+												data-actions-box="true" data-size="10"
+												data-hide-disabled="false"
+												title="Seleziona un risultato atteso...">
+												<option
+													th:each="risultatoAtteso, row: ${eventoWrapper.obiettiviRegionali}"
+													th:value="${risultatoAtteso}"
+													th:text="${risultatoAtteso}">
+												</option>
+											</select>
+										</div>
+									</div>
+								
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.obiettivo_formativo}">Obiettivo Formativo</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<select
+												class="selectpicker required selectObiettivoFormativo"
+												th:field="*{obiettivoFormativo}"
+												data-width="100%" data-style="btn-primary"
+												data-actions-box="true" data-size="10"
+												data-hide-disabled="false"
+												onchange="updateMetodologieDidattiche(this)"
+												title="Seleziona un obiettivo...">
+												<option
+													th:each="obiettivoFormativo, row: ${T(it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum).values()}"
+													th:value="${obiettivoFormativo}"
+													th:text="${obiettivoFormativo.nome}">tipologia selezionata
+												</option>
+											</select>
+										</div>
+									</div>
+								
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.metodologia_didattica}">Metodologia Didattica</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<select
+												class="selectpicker required selectMetodologieDidattiche"
+												th:field="*{metodologiaDidattica}"
+												data-width="100%" data-style="btn-primary"
+												data-actions-box="true" data-size="10"
+												data-hide-disabled="false"
+												title="Seleziona una Metodologia Didatticha">
+												<option
+													th:each="metodologiaDidattica, row: ${T(it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum).values()}"
+													th:value="${metodologiaDidattica}"
+													th:text="${metodologiaDidattica.nome}">
+												</option>
+											</select>	
+										</div>
+									</div>		
+								
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.ore_attivita}">Ore Attività</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<input type="text" th:field="*{oreAttivita}" />
+										</div>
+									</div>
+								
+									<input id="targetTable" type="text" name="addPersonaTo" style="display: none;" />
+									<input id="addAttivitaToProgramma" type="text" name="addAttivitaToProgramma" style="display: none;" />
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+								<label for="targetTable" class="btn btn-success pull-right" onclick="sendAjaxAddAttivitaToProgramma()" th:text="#{label.invia}">Invia</label>
+							</div>
+						</div>
+					</div>
+				</div>
 
 
 			<!--  TODO RIMUOVERE NUMERAZIONE HARDCODATA E METTERLA IN UN ENUM?  -->
@@ -617,160 +745,10 @@
 								</div>
 							</div>
 							
-							<label>Dettaglio Attività</label>
-							
-							<div th:attr="data-programma-id=${__${status.index}__}" th:with="last=${#lists.size(eventoWrapper.programmaEvento[__${status.index}__].programma)} - 1">
-								
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-										<span th:text="#{label.orario}">Orario</span>
-										<span class="required">*</span>
-									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
-										<input type="text" required="required" class="form-control ora"
-											th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].orario}" />	
-											<span class="input-group-addon openClock">
-     											<i class="glyphicon glyphicon-time"></i>
-  											</span>
-									</div>
-								</div>
-								
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-										<span th:text="#{label.argomento}">Argomento</span>
-										<span class="required">*</span>
-									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-										<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].argomento}" />	
-									</div>
-								</div>
-								
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-										<span th:text="#{label.risultato_atteso}">Risultato Atteso</span>
-										<span class="required">*</span>
-									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-										<select
-											class="selectpicker required selectRisultatiAttesi"
-											th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].risultatoAtteso}"
-											data-width="100%" data-style="btn-primary"
-											data-actions-box="true" data-size="10"
-											data-hide-disabled="false"
-											title="Seleziona un risultato atteso...">
-											<option
-												th:each="risultatoAtteso, row: ${eventoWrapper.obiettiviRegionali}"
-												th:value="${risultatoAtteso}"
-												th:text="${risultatoAtteso}">
-											</option>
-										</select>
-									</div>
-								</div>
-								
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-										<span th:text="#{label.obiettivo_formativo}">Obiettivo Formativo</span>
-										<span class="required">*</span>
-									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-										<select
-											class="selectpicker required selectObiettivoFormativo"
-											th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].obiettivoFormativo}"
-											data-width="100%" data-style="btn-primary"
-											data-actions-box="true" data-size="10"
-											data-hide-disabled="false"
-											th:attr="data-programma-id=${__${status.index}__},data-attivita-id=${__${last}__}" 
-											onchange="updateMetodologieDidattiche(this)"
-											title="Seleziona un obiettivo...">
-											<option
-												th:each="obiettivoFormativo, row: ${T(it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum).values()}"
-												th:value="${obiettivoFormativo}"
-												th:text="${obiettivoFormativo.nome}">tipologia selezionata
-											</option>
-										</select>
-									</div>
-								</div>
-								
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-										<span th:text="#{label.metodologia_didattica}">Metodologia Didattica</span>
-										<span class="required">*</span>
-									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-										<select
-											class="selectpicker required selectMetodologieDidattiche"
-											th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].metodologiaDidattica}"
-											data-width="100%" data-style="btn-primary"
-											data-actions-box="true" data-size="10"
-											data-hide-disabled="false"
-											th:attr="data-programma-id=${__${status.index}__},data-attivita-id=${__${last}__}" 
-											title="Seleziona una Metodologia Didatticha">
-											<option
-												th:each="metodologiaDidattica, row: ${T(it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum).values()}"
-												th:value="${metodologiaDidattica}"
-												th:text="${metodologiaDidattica.nome}">
-											</option>
-										</select>	
-									</div>
-								</div>		
-								
-								
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-										<span th:text="#{label.ore_attivita}">Ore Attività</span>
-										<span class="required">*</span>
-									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-										<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${last}__].oreAttivita}" />
-									</div>
-								</div>
-								
-								<div class="item form-group">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<button type="submit" class="btn btn-primary" name="addAttivitaToProgramma" th:value="${__${status.index}__}">ADD</button>
-									</div>
-								</div>
+							<div class="col-xs-offset-1 col-xs-10">
+								<th:block th:include="evento/eventoEdit :: programmaDelGiorno(${__${status.index}__}, eventoWrapper.programmaEvento[__${status.index}__].programma)" />
 							</div>
 							
-							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-								<tr>
-									<th th:text="#{label.orario}">ORARIO</th>
-									<th th:text="#{label.argomento}">ARGOMENTO</th>
-									<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
-									<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
-									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
-									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
-									<th></th>
-								</tr>
-								
-								<tr th:attr="data-programma-id=${__${status.index}__},data-attivita-id=${__${status2.index}__}"  th:each="attivita,status2 : ${eventoWrapper.programmaEvento[__${status.index}__].programma}">
-									<td>
-										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].orario}"> </span>
-									</td>
-									<td>
-										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].argomento}"> </span>
-									</td>	
-									<td>
-										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].risultatoAtteso}"> </span>
-									</td>	
-									<td>
-										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].obiettivoFormativo}"> </span>
-									</td>
-									<td>
-										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].metodologiaDidattica}"> </span>
-									</td>
-									<td>
-										<span th:text="${eventoWrapper.programmaEvento[__${status.index}__].programma[__${status2.index}__].oreAttivita}"> </span>
-									</td>
-									<td>
-										<a th:href="@{|/provider/${eventoWrapper.providerId}/evento/removeAttivita/${__${status.index}__}/${__${status2.index}__}|}">
-											<span class="input-group-addon">
-												<i class="fa fa-minus"></i>
-											</span>
-										</a>
-									</td>
-								</tr>	
-							</table>
 						</th:block>
 					</div>
 				</div>
@@ -877,8 +855,8 @@
 						<span th:text="#{label.responsabile_segreteria_organizzativa}">Responsabile segreteria organizzativa</span>
 						<span class="required">*</span>
 					</label>
-					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="responsabileSegreteria">
-						<div>**TODO PERSONA**</div>
+					<div class="col-xs-offset-1 col-xs-10">
+						<th:block th:include="evento/eventoEdit :: responsabileSegreteria" />
 					</div>
 				</div>
 

@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PersonaEvento;
+import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
@@ -51,8 +53,9 @@ public class EventoWrapper {
 
 	private String gotoLink;
 	
-	private AnagraficaEvento tempAnagraficaEvento = new AnagraficaEvento();
 	private PersonaEvento tempPersonaEvento = new PersonaEvento();
-	private String targetTable;
+	private PersonaFullEvento tempPersonaFullEvento = new PersonaFullEvento();
+
+	private DettaglioAttivitaRES tempAttivitaRES = new DettaglioAttivitaRES();
 
 }
