@@ -9,7 +9,7 @@
 	
 	
 		<!-- finestra modale di lookup delle anagrafiche -->
-		<div id="persona-modal" class="modal fade modal-lookup-persone" data-model-index="1" role="dialog">
+		<div id="lookup-persona-modal" class="modal fade modal-lookup-persone" data-model-index="1" role="dialog">
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -39,81 +39,6 @@
 			</div>
 		</div>
 		
-		<!-- finestra modale di creazione delle anagrafiche -->
-		<div id="create-persona-modal" class="modal fade modal-create-persona" data-model-index="2" role="dialog">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
-						</button>
-						<h4 class="modal-title" id="myModalLabel2" th:text="#{label.crea_persona}">Crea persona</h4>
-					</div>
-					<div class="modal-body">
-						<form class="form-horizontal form-label-left" id="createAnagraficaEventForm"
-							method="post" enctype="multipart/form-data"
-							novalidate="novalidate">
-							
-							<!-- COGNOME -->
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cognome_persona">
-									<span th:text="#{label.cognome}">Cognome</span>
-									<span class="required">*</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<input id="cognome_persona"
-										required="required"	class="form-control col-md-7 col-xs-12"
-										type="text" name="anagrafica.cognome" />
-								</div>
-							</div>
-							
-							<!-- NOME -->
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="nome_persona">
-									<span th:text="#{label.nome}">Nome</span>
-									<span class="required">*</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<input id="nome_persona"
-										required="required"	class="form-control col-md-7 col-xs-12"
-										type="text" name="anagrafica.nome" />
-								</div>
-							</div>
-							
-							<!-- CODICE FISCALE -->
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codice_fiscale">
-									<span th:text="#{label.codice_fiscale}">Codice Fiscale</span>
-									<span class="required">*</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<input id="codice_fiscale"
-										required="required"	class="form-control col-md-7 col-xs-12"
-										type="text" name="anagrafica.codiceFiscale" />
-								</div>
-							</div>
-							
-							<!-- STRANIERO -->
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codice_fiscale">
-									<span th:text="#{label.straniero}">Straniero</span>
-									<span class="required">*</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<input id="straniero"
-										required="required"	class="form-control col-md-7 col-xs-12 flat"
-										type="checkbox" name="anagrafica.stranierio" />
-								</div>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
-						<button type="button" onclick="submitCreateAngraficaEvento()" class="btn btn-primary" th:text="#{label.salva}">Salva</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		
 		<!-- finestra modale di aggiunta delle persone -->
 		<div id="add-persona-modal" class="modal fade modal-add-persona" data-model-index="3" role="dialog">
 			<div class="modal-dialog modal-lg">
@@ -124,7 +49,7 @@
 						<h4 class="modal-title" id="myModalLabel2" th:text="#{label.inserisci_persona}">Inserisci persona</h4>
 					</div>
 					<div class="modal-body">
-						<form name="addPersonaEvento" class="form-horizontal form-label-left"
+						<form id="addPersonaTo" name="addPersonaEvento" class="form-horizontal form-label-left"
 								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}" 
 								th:object="${eventoWrapper.tempPersonaEvento}" method="post" enctype="multipart/form-data"
 								novalidate="novalidate">
@@ -177,14 +102,30 @@
 									<span class="required">*</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<input id="straniero"
-										required="required"	class="form-control col-md-7 col-xs-12 flat"
-										type="checkbox"  th:field="*{anagrafica.straniero}"  />
+									<div class="checkbox">
+										<label>
+											<input id="straniero" type="checkbox" class="" th:field="*{anagrafica.straniero}" />
+										</label>
+									</div>
 								</div>
 							</div>
 							
+							<!-- SOLO PER RESPONSABILI SEGRETERIA -->
+							<!-- QUALIFICA -->
+							<div class="item form-group" id="container-qualifica">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codice_fiscale">
+									<span th:text="#{label.qualifica}">Qualifica</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="*{qualifica}"  />
+								</div>
+							</div>
+							
+							<!-- SOLO PER DOCENTI -->
 							<!-- RUOLO -->
-							<div class="item form-group">
+							<div class="item form-group" id="container-ruolo">
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codice_fiscale">
 									<span th:text="#{label.ruolo}">Ruolo</span>
 									<span class="required">*</span>
@@ -206,27 +147,36 @@
 								</div>
 							</div>
 							
-							<!-- QUALIFICA -->
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codice_fiscale">
-									<span th:text="#{label.qualifica}">Qualifica</span>
+							<!-- SOLO PER DOCENTI -->
+							<!-- TITOLARE/SOSTITUTO -->
+							<div class="item form-group" id="container-titolare">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="titolare">
+									<span th:text="#{label.titolare} + '/' + #{label.titolare}">Titolare</span>
 									<span class="required">*</span>
 								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<input id="straniero"
-										required="required"	class="form-control col-md-7 col-xs-12"
-										type="text" th:field="*{qualifica}"  />
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
+									<div class="radio">
+										<label>
+											<input type="radio"  th:field="*{titolare}" th:value="${'titolare'}" />
+											<span th:text="#{label.titolare}"></span>
+										</label>
+										<label>
+											<input type="radio" th:field="*{titolare}" th:value="${'sostituto'}" />
+											<span th:text="#{label.sostituto}"></span>
+										</label>
+									</div>
 								</div>
 							</div>
 							
-							<input id="targetTable" type="submit" name="addPersonaTo" style="display: none;" />
-							
+							<!-- input id="targetTable" type="submit" name="addPersonaTo" style="display: none;" /-->
+							<input id="targetTable" type="text" name="addPersonaTo" style="display: none;" />
+							<input id="typePersona" type="text" name="typePersona" style="display: none;" />
 						</form>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 						<!--  button type="button" onclick="addPersona('add-persona-modal')" class="btn btn-primary" th:text="#{label.inserisci}">Inserisci</button--> 
-						<label for="targetTable" class="btn btn-success pull-right" th:text="#{label.invia}">Invia</label>
+						<label for="targetTable" class="btn btn-success pull-right" onclick="sendAjaxAddPersonaTo()" th:text="#{label.invia}">Invia</label>
 					</div>
 				</div>
 			</div>
@@ -414,8 +364,34 @@
 			    if([[${eventoWrapper.evento.eventoAvvalePartner}]]) {
 			    	mostraNascondiCampiPartner(true);
 				}
+			  	
+			  	//tabella responsabili scientifici
+			    tables['responsabiliScientifici'] =  $('#responsabiliScientifici').DataTable({
+			    	"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+					"ordering" : false,
+					"columnDefs": [{
+						"targets": 4,
+						"width": "90px",
+						"sClass": "center"
+					}]
+			    });
+			  	
+			  	//tabella docenti
+			    tables['docenti'] = $('#docenti').DataTable({
+			    	"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+					"ordering" : false,
+					"columnDefs": [{
+						"targets": 5,
+						"width": "90px",
+						"sClass": "center"
+					}]
+			    });
 			});
-
+			
 			function abilitaDiscipline(professioni) {
 				//flag per capire se c'è almeno una professione
 				var almenoUna = false;
@@ -442,24 +418,6 @@
 				$('#discipline').selectpicker('refresh');
 			}
 
-			function openLookupPersone(target,type){
-				var table = $('#tabella-modale').DataTable();
-				table.clear();
-				urlGet = [[@{/provider/}]] + [[${eventoWrapper.evento.provider.id}]] + "/anagraficaEventoList";
-				$.get( urlGet, function(data){
-					anagraficaLoaded = data;
-					for(var item = 0; item < data.length; item++){
-						var obj = data[item];
-						table.row.add([
-							obj.anagrafica.codiceFiscale,
-							obj.anagrafica.nome,
-							obj.anagrafica.cognome,
-							'<a class="btn btn-primary btn-lookup" onclick="setAnagraficaEvento('+ target + ',' + type + ',' + item + ')">'+[[#{label.seleziona}]]+'</a>'
-						]).draw(false);
-					}
-				});
-			}
-			
 			function submitCreateAngraficaEvento(){
 				var fd = new FormData(document.querySelector("#createAnagraficaEventForm"));
 				fd.append([[${_csrf.parameterName}]],[[${_csrf.token}]]);
@@ -481,68 +439,6 @@
 				});
 			}
 			
-			function openAddPersona(target,type){
-				$('#targetTable').val(target);
-				$('#typePersona').val(type);
-			}
-			
-			function addPersona(modale){
-				var targetTable = $('#targetTable').val();
-				var typePersona = $('#typePersona').val();
-				
-				var containerModale = $('#' + modale);
-				
-				var persona = new Array();
-				persona['cognome'] = containerModale.find("[name='anagrafica.cognome']").val();
-				persona['nome'] = containerModale.find("[name='anagrafica.nome']").val();
-				persona['straniero'] = containerModale.find("[name='anagrafica.straniero']").val();
-				persona['codiceFiscale'] = containerModale.find("[name='anagrafica.codiceFiscale']").val();
-				persona['ruolo'] = containerModale.find("[name='ruolo']").val();
-				persona['qualifica'] = containerModale.find("[name='qualifica']").val();
-				
-				setPersonaEvento(targetTable, typePersona, persona);
-			}
-			
-			function setPersonaEvento(target,type,persona){
-				if(type == 'full'){
-				}else{
-					var index = $('#' + target + ' tr').length;
-					var row = $("<tr/>");
-					
-					var cognomeHidden = "<input type='hidden' name='" + target + "[" + index + "].anagrafica.cognome' value='" + persona['cognome'] + "' />";
-					var nomeHidden = "<input type='hidden' name='" + target + "[" + index + "].anagrafica.nome' value='" + persona['cognomenome'] + "' />";
-					var codiceFiscaleHidden = "<input type='hidden' name='" + target + "[" + index + "].anagrafica.codiceFiscale' value='" + persona['codiceFiscale'] + "' />";
-					var stranieroHidden = "<input type='hidden' name='" + target + "[" + index + "].anagrafica.straniero' value='" + persona['straniero'] + "' />";
-					var ruoloHidden = "<input type='hidden' name='" + target + "[" + index + "].ruolo' value='" + persona['ruolo'] + "' />";
-					var qualificaHidden = "<input type='hidden' name='" + target + "[" + index + "].qualifica' value='" + persona['qualifica'] + "' />";
-					
-					var cognome = "<span>" + persona['cognome'] + "<span/>";
-					var nome = "<span>" + persona['nome'] + "<span/>";
-					var codiceFiscale = "<span>" + persona['codiceFiscale'] + "<span/>";
-					var straniero = "<span>" + persona['straniero'] + "<span/>";
-					var ruolo = "<span>" + persona['ruolo'] + "<span/>";
-					var qualifica = "<span>" + persona['qualifica'] + "<span/>";
-					
-					row.append("<td>" + persona['cognome'] + cognomeHidden + "</td>");
-					row.append("<td>" + persona['nome'] + nomeHidden + "</td>");
-					row.append("<td>" + persona['codiceFiscale'] + codiceFiscaleHidden + "</td>");
-					row.append("<td>" + persona['straniero'] + stranieroHidden + "</td>");
-					row.append("<td>" + persona['ruolo'] + ruoloHidden + "</td>");
-					row.append("<td>" + persona['qualifica']  + qualificaHidden + "</td>");
-					
-					var table = tables['#' + target];
-					table.row.add([
-						persona['cognome'] + cognomeHidden,
-						persona['nome'] + nomeHidden,
-						persona['codiceFiscale'] + codiceFiscaleHidden,
-						persona['qualifica'] + qualificaHidden,
-						persona['straniero'] + stranieroHidden
-					]).draw();
-				}
-			}
-			
-			function openCreatePersona(){
-			}
 			function mostraNascondiCampiSponsor(show) {
 				if(show) {
 					$(".sponsor-si").slideDown("slow");
@@ -579,9 +475,204 @@
 					//TODO
 				}
 			}
+			
+			/*RIPETIPBILI RESPONSABILI SCIENTIFICI*/
+/************************************************************************************************************************/
+			function reInitDataTable(target){
+				if(target == 'responsabiliScientifici'){
+			  			tables['responsabiliScientifici'].destroy();
+			  			tables['responsabiliScientifici'] = $('#responsabiliScientifici').DataTable({
+					    	"bFilter" : false,
+							"bInfo" : false,
+							"bPaginate" : false,
+							"ordering" : false,
+							"columnDefs": [{
+								"targets": 4,
+								"width": "90px",
+								"sClass": "center"
+							}]
+					    });
+			  		}
+				
+			  		if(target == 'docenti'){
+			  			tables['docenti'].destroy();
+			  			tables['docenti'] = $('#docenti').DataTable({
+					    	"bFilter" : false,
+							"bInfo" : false,
+							"bPaginate" : false,
+							"ordering" : false,
+							"columnDefs": [{
+								"targets": 5,
+								"width": "90px",
+								"sClass": "center"
+							}]
+					    });
+		  		}
+		  	}
+			
+			function openAddPersonaTo(target,type){
+				$('#targetTable').val(target);
+				$('#typePersona').val(type);
+				
+				if(target == 'responsabiliScientifici'){
+					$("#container-qualifica").show();
+					$("#container-ruolo").hide();
+					$("#container-titolare").hide();
+				}else if(target == 'docenti'){
+					$("#container-qualifica").hide();
+					$("#container-ruolo").show();
+					$("#container-titolare").show();
+				}
+			}
+
+			function closeModaleAddPersona(){
+				$("#add-persona-modal .close").click();
+			}
+			
+			function reInitModaleAddPersona(){
+				$('select').selectpicker();
+				//TODO reinit checkbox
+				/* $('input #straniero').iCheck({
+		            checkboxClass: 'icheckbox_flat-green',
+		            radioClass: 'iradio_flat-green'
+		        }); */
+			}
+			
+			function sendAjaxAddPersonaTo(){
+				var target = $('#targetTable').val();
+				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}]], $('#addPersonaTo').serialize())
+					.done(function(data) {
+					  	$('#'+target).html(data);
+					  	closeModaleAddPersona();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
+			}
+			
+			function removePersonaFrom(target,caller){
+				var rowIndex = $(caller).parent().parent().data('row-id');
+				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removePersonaFrom/|}]] + target + "/" + rowIndex;
+				
+				$("#" + target).load(url);
+				reInitDataTable(target);
+			}
+			
+			function openLookupPersona(target,type){
+				var table = $('#tabella-modale').DataTable();
+				table.clear();
+				urlGet = [[@{/provider/}]] + [[${eventoWrapper.evento.provider.id}]] + "/anagraficaEventoList";
+				$.get( urlGet, function(data){
+					anagraficaLoaded = data;
+					for(var item = 0; item < data.length; item++){
+						var obj = data[item];
+						table.row.add([
+							obj.anagrafica.codiceFiscale,
+							obj.anagrafica.nome,
+							obj.anagrafica.cognome,
+							'<a class="btn btn-primary btn-lookup" onclick="setLookupAnagraficaEvento(\''+ target + '\',\'' + type + '\',' + obj.id + ')">'+[[#{label.seleziona}]]+'</a>'
+						]).draw(false);
+					}
+				});
+			}
+			
+			function closeModaleLookupPersona(){
+				$("#lookup-persona-modal .close").click();
+			}
+			
+			function setLookupAnagraficaEvento(target,type,anagraficaId){
+				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/setLookupAnagraficaEvento/|}]] + anagraficaId;
+				$.get(url).done(function(data) {
+					closeModaleLookupPersona();
+					$('#addPersonaTo').html(data);
+					reInitModaleAddPersona();
+					openAddPersonaTo(target,type);
+					$('#add-'+ target).click();
+				  })
+			  	.fail(function() {
+			    	alert( "error" );
+			 	 })
+			}
+			
 
 		/*]]>*/
 		</script>
 	</div>
+	
+	<th:block style="display:none">
+		<div class="col-xs-12" th:fragment="responsabiliScientifici">
+			<table id="responsabiliScientifici" class="datatable-responsive-responsabili table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+				<thead>
+					 <tr>
+						<th th:text="#{label.cognome}">Cognome</th>
+						<th th:text="#{label.nome}">Nome</th>
+						<th th:text="#{label.cf}">CF</th>
+						<th th:text="#{label.qualifica}">Qualifica</th>
+						<th style="padding-right: 8px;">
+							<a id="lookup-responsabiliScientifici" class="btn btn-primary" onclick="openLookupPersona('responsabiliScientifici','base')" data-toggle="modal" data-target=".modal-lookup-persone">
+								<span><i class="fa fa-search"></i></span>
+							</a>
+							<a id="add-responsabiliScientifici" class="btn btn-success" onclick="openAddPersonaTo('responsabiliScientifici','base')" data-toggle="modal" data-target=".modal-add-persona">
+								<span><i class="fa fa-plus"></i></span>
+							</a>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.responsabiliScientifici}">
+						<td th:text="${persona.anagrafica.cognome}"></td>
+						<td th:text="${persona.anagrafica.nome}"></td>
+						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
+						<td th:text="${persona.qualifica}"></td>
+						<td>
+							<a onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+						</td>								
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</th:block>
+	
+	<th:block style="display:none">
+		<div class="col-xs-12" th:fragment="docenti">
+			<table id="docenti" class="datatable-responsive-docenti table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+				<thead>
+					 <tr>
+						<th th:text="#{label.cognome}">Cognome</th>
+						<th th:text="#{label.nome}">Nome</th>
+						<th th:text="#{label.cf}">CF</th>
+						<th th:text="#{label.ruolo}">Ruolo</th>
+						<th th:text="#{label.titolare} + '/' + #{label.sostituto}">Titolare/Sostituto</th>
+						<th style="padding-right: 8px;">
+							<a id="lookup-docenti" class="btn btn-primary" onclick="openLookupPersona('docenti','base')" data-toggle="modal" data-target=".modal-lookup-persone">
+								<span><i class="fa fa-search"></i></span>
+							</a>
+							<a id="add-docenti" class="btn btn-success" onclick="openAddPersonaTo('docenti','base')" data-toggle="modal" data-target=".modal-add-persona">
+								<span><i class="fa fa-plus"></i></span>
+							</a>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.docenti}">
+						<td th:text="${persona.anagrafica.cognome}"></td>
+						<td th:text="${persona.anagrafica.nome}"></td>
+						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
+						<td th:text="${persona.ruolo}"></td>
+						<td th:text="${persona.titolare}"></td>
+						<td>
+							<a onclick="removePersonaFrom('docenti',this)" class="btn btn-danger" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+						</td>								
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</th:block>
+	
 </body>
 </html>

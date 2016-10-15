@@ -1,14 +1,8 @@
 package it.tredi.ecm.web;
 
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +20,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
+import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
@@ -47,27 +41,17 @@ import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AnagraficaEventoService;
-import it.tredi.ecm.service.AnagraficaEventoServiceImpl;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ObiettivoService;
 
-import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
-import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
-import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
-import it.tredi.ecm.dao.enumlist.FileEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
-import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.dao.repository.AnagraficaEventoRepository;
-import it.tredi.ecm.service.EventoService;
-
-import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 
 @Controller
+@SessionAttributes("eventoWrapper")
 public class EventoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoController.class);
 
@@ -216,7 +200,7 @@ public class EventoController {
 
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canEditEvento(principal, #providerId")
 	@RequestMapping("/provider/{providerId}/evento/{eventoId}/edit")
-	public String editEvento(@ModelAttribute EventoWrapper eventoWrapper, @PathVariable Long providerId, @PathVariable Long eventoId,
+	public String editEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
 			Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/edit"));
 		try {
@@ -440,46 +424,62 @@ public class EventoController {
 	}
 	
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaTo", method=RequestMethod.POST, params={"addPersonaTo"})
-	public String addPersonaTo(@RequestParam("addPersonaTo") String lista, 
+	public String addPersonaTo(@RequestParam("addPersonaTo") String target, 
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			if(lista.equalsIgnoreCase("responsabiliScientifici")){
-				eventoWrapper.getResponsabiliScientifici().add((PersonaEvento) copy(eventoWrapper.getTempPersonaEvento()));
-			}else if(lista.equalsIgnoreCase("docenti")){
-//				eventoWrapper.getDocenti().add(eventoWrapper.getTempPersonaEvento());
+			//TODO da fare solo se rispetta il validator
+			AnagraficaEventoBase anagraficaBase = eventoWrapper.getTempPersonaEvento().getAnagrafica();
+			//check se non esiste -> si registra l'anagrafica per il provider
+			if(anagraficaBase != null && !anagraficaBase.getCodiceFiscale().isEmpty()){
+				if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaBase.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
+					AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
+					anagraficaEventoToSave.setAnagrafica(anagraficaBase);
+					anagraficaEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
+					anagraficaEventoService.save(anagraficaEventoToSave);
+				}
 			}
-			model.addAttribute("tempPersonaEvento", new PersonaEvento());
-			return EDIT;
+			
+			PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
+			if(target.equalsIgnoreCase("responsabiliScientifici")){
+				p.setEventoResponsabile(eventoWrapper.getEvento());
+				eventoWrapper.getResponsabiliScientifici().add(p);
+			}else if(target.equalsIgnoreCase("docenti")){
+				p.setEventoDocente(eventoWrapper.getEvento());
+				eventoWrapper.getDocenti().add(p);
+			}
+			return EDIT + " :: " + target;
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
 	
-	@RequestMapping(value = "/provider/{providerId}/evento/removeResponsabileScientifico/{responsabileIndex}", method=RequestMethod.GET)
-	public String removeResponsabileScientifico(@PathVariable("responsabileIndex") String respIndex,
+	@RequestMapping(value = "/provider/{providerId}/evento/removePersonaFrom/{removePersonaFrom}/{rowIndex}", method=RequestMethod.GET)
+	public String removePersonaFrom(@PathVariable("removePersonaFrom") String target, @PathVariable("rowIndex") String rowIndex,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			int responsabileIndex = Integer.valueOf(respIndex).intValue();
-			eventoWrapper.getResponsabiliScientifici().remove(responsabileIndex);
-			return EDIT;
+			int responsabileIndex = Integer.valueOf(rowIndex).intValue();
+			if(target.equalsIgnoreCase("responsabiliScientifici")){
+				eventoWrapper.getResponsabiliScientifici().remove(responsabileIndex);
+			}else if(target.equalsIgnoreCase("docenti")){
+				eventoWrapper.getDocenti().remove(responsabileIndex);
+			}
+			return EDIT + " :: " + target;
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
 	}
 	
-	public static Object copy(Object fromBean) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLEncoder out = new XMLEncoder(bos);
-        out.writeObject(fromBean);
-        out.close();
-        ByteArrayInputStream bis = new
-        ByteArrayInputStream(bos.toByteArray());
-        XMLDecoder in = new XMLDecoder(bis);
-        Object toBean = in.readObject();
-        in.close();
-        return toBean;
-    }
-	
+	@RequestMapping(value = "/provider/{providerId}/evento/setLookupAnagraficaEvento/{angraficaEventoId}", method=RequestMethod.GET)
+	public String lookupPersona(@PathVariable("angraficaEventoId") Long angraficaEventoId,
+												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			eventoWrapper.setTempPersonaEvento(new PersonaEvento(anagraficaEventoService.getAnagraficaEvento(angraficaEventoId)));
+			return EDIT + " :: #addPersonaTo";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
 }

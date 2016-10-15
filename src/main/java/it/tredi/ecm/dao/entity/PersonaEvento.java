@@ -15,6 +15,7 @@ import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.EventoController;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,8 @@ public class PersonaEvento extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	private RuoloPersonaEventoEnum ruolo;
 	
+	private String titolare;
+	
 	@ManyToOne
 	private Evento eventoResponsabile;
 	@ManyToOne
@@ -40,7 +43,8 @@ public class PersonaEvento extends BaseEntity{
 	
 	public PersonaEvento(AnagraficaEvento anagrafica){
 		try{
-			this.anagrafica = (AnagraficaEventoBase) anagrafica.getAnagrafica().clone();
+			//this.anagrafica = (AnagraficaEventoBase) anagrafica.getAnagrafica().clone();
+			this.anagrafica = (AnagraficaEventoBase) Utils.copy(anagrafica.getAnagrafica());
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore cast AnagraficaEventoBase"), ex);
 		}

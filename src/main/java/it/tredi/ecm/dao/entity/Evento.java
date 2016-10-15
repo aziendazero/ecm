@@ -2,10 +2,13 @@ package it.tredi.ecm.dao.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.ElementCollection;
@@ -197,8 +200,8 @@ public class Evento extends BaseEntity{
 	@Column(name = "data_fine")//fine evento
 	private LocalDate dataFine;
 
-	@OneToMany(mappedBy="eventoResponsabile")
-	private Set<PersonaEvento> responsabili = new HashSet<PersonaEvento>();
+	@OneToMany(mappedBy="eventoResponsabile", cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
 
 	protected int numeroPartecipanti;
 

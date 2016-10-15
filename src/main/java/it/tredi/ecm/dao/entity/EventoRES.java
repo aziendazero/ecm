@@ -57,8 +57,8 @@ public class EventoRES extends Evento{
 	private boolean workshopSeminariEcm;
 	private String titoloConvegno;
 
-	@OneToMany(mappedBy="eventoDocente")
-	private Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();
+	@OneToMany(mappedBy="eventoDocente" , cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
 	private String razionale;
 	@ElementCollection

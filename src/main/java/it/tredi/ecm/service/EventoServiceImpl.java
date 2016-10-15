@@ -162,7 +162,13 @@ public class EventoServiceImpl implements EventoService {
 		if(eventoWrapper.getProgrammaEvento() != null){
 			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEvento());
 		}
-
+		
+		//Responsabili
+		evento.setResponsabili(eventoWrapper.getResponsabiliScientifici());
+		if(evento instanceof EventoRES){
+			((EventoRES) evento).setDocenti(eventoWrapper.getDocenti());
+		}
+		
 		//brochure
 		if (eventoWrapper.getBrochure().getId() != null) {
 			evento.setBrochureEvento(eventoWrapper.getBrochure());
@@ -208,6 +214,10 @@ public class EventoServiceImpl implements EventoService {
 		eventoWrapper.setRisultatiAttesiTemp(((EventoRES) evento).getRisultatiAttesi());
 
 		//programma evento
+		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
+		if(evento instanceof EventoRES){
+			eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
+		}
 		//TODO
 
 		//brochure

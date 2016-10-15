@@ -34,6 +34,7 @@ public class EventoWrapper {
 	private List<String> risultatiAttesiTemp = new ArrayList<String>();
 	
 	private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
+	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
 	//liste edit
 	private Set<Obiettivo> obiettiviNazionali;
@@ -50,7 +51,7 @@ public class EventoWrapper {
 
 	private String gotoLink;
 	
-	private AnagraficaEvento tempAnagarficaEvento = new AnagraficaEvento();
+	private AnagraficaEvento tempAnagraficaEvento = new AnagraficaEvento();
 	private PersonaEvento tempPersonaEvento = new PersonaEvento();
 	private String targetTable;
 

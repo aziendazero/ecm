@@ -21,6 +21,18 @@ public class AnagraficaEventoServiceImpl implements AnagraficaEventoService {
 	@Autowired private AnagraficaEventoRepository anagraficaEventoRepository;
 	
 	@Override
+	public AnagraficaEvento getAnagraficaEvento(Long anagraficaEventoId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero AnagraficheEvento : " + anagraficaEventoId));
+		return anagraficaEventoRepository.findOne(anagraficaEventoId);
+	}
+	
+	@Override
+	public AnagraficaEvento getAnagraficaEventoByCodiceFiscaleForProvider(String codiceFiscale, Long providerId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero AnagraficheEvento : " + codiceFiscale + " per provider " + providerId));
+		return anagraficaEventoRepository.findOneByAnagraficaCodiceFiscaleAndProviderId(codiceFiscale, providerId);
+	}
+	
+	@Override
 	public Set<AnagraficaEvento> getAllAnagaficheByProvider(Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero AnagraficheEvento per provider: " + providerId));
 		return anagraficaEventoRepository.findAllByProviderId(providerId);

@@ -1,5 +1,9 @@
 package it.tredi.ecm.utils;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -185,4 +189,17 @@ public class Utils {
 			default: return null;
 		}
 	}
+	
+	public static Object copy(Object fromBean) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder out = new XMLEncoder(bos);
+        out.writeObject(fromBean);
+        out.close();
+        ByteArrayInputStream bis = new
+        ByteArrayInputStream(bos.toByteArray());
+        XMLDecoder in = new XMLDecoder(bis);
+        Object toBean = in.readObject();
+        in.close();
+        return toBean;
+    }
 }
