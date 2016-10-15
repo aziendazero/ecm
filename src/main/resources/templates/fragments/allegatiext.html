@@ -1,0 +1,168 @@
+<!-- 
+	fragment degli allegati 
+	<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}', brochure, null, null, null, false, null, false)" ></th:block>
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+</head>
+<body>
+<th:block th:fragment="allegatiext(wrapper, withIdEditabili, tipoAllegato, propertyName, fieldKey, fieldRuolo, note, withFirma, mode, required)">
+
+	<!-- wrapper con idEditabili -->
+	<th:block th:if="${__withIdEditabili__}" th:with="editabile=${mode == 'edit'},
+			valutabile=${mode == 'validate'},
+			showOnly=${mode == 'show'}">
+		<th:block th:with="idEcm=${fieldRuolo == null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(fieldKey) : T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(fieldKey,fieldRuolo)},
+							idField=${fieldRuolo == null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey) : T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey,fieldRuolo)}">
+			<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')} ? 'bad'">
+
+				<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.id}" />
+				<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.nomeFile}" />
+
+			<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${fieldKey != null ? idEcm : ''}">numero indice</label>
+			<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-7'}" th:for="__${propertyName}__">
+				<span th:class="${!showOnly ? '' : 'label-show'}" th:text="#{label.__${propertyName}__}">tipo allegato</span>
+				<span th:if="${note == null and editabile and required}" class="required">*</span>
+				<span class="small" style="display: block;" th:unless="${note == null}" th:text="${note}">messaggio aggiuntivo</span>
+			</label>
+			<th:block th:if="${editabile}">
+				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+					<input type="file" accept="application/pdf" onchange="submitFileExt(this)" th:id="__${propertyName}__" th:attr="typefile=__${tipoAllegato}__, propertyName=__${propertyName}__" th:name="__${propertyName}___multipart" th:required="${required}"
+						style="display: none;" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}"/>
+					<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegatoExt('#__${propertyName}__');|" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}" />
+					<div th:unless="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div>
+					<div th:if="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
+				</div>
+				<!-- pulsante per aggiungere firma -->
+				<th:block th:if="${withFirma}">
+					<div class="col-xs-1">
+						<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+					</div>
+				</th:block>
+			</th:block>
+			<th:block th:if="${showOnly or enableField}">
+				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+					<div class="" th:unless="${__${wrapper}__.__${propertyName}__.new}"><div class="value"><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div></div>
+					<div class="" th:if="${__${wrapper}__.__${propertyName}__.new}"><div class="value danger" th:text="#{label.allegato_non_inserito}"></div></div>
+				</div>
+				<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+               		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${idField}" />
+               	</div>
+			</th:block>
+			<th:block th:if="${valutabile}">
+	        	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+	            	<div class="" th:unless="${__${wrapper}__.__${propertyName}__.new}"><div><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div></div>
+					<div class="" th:if="${__${wrapper}__.__${propertyName}__.new}"><div class="danger" th:text="#{label.allegato_non_inserito}"></div></div>
+	            </div>
+	            <div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+					<div class="radio">
+						<label th:class="${!canValutaDomanda} or ${__${wrapper}__.mappa[__${idField}__]?.enabled == false} ? 'label-disabled'">
+							<input type="radio" class="flat" th:field="${__${wrapper}__.mappa[__${idField}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or ${__${wrapper}__.mappa[__${idField}__]?.enabled == false}"  />
+							<span th:text="#{label.sì}">Sì</span>
+						</label>
+					</div>
+					<div class="radio">
+						<label th:class="${!canValutaDomanda or !__${wrapper}__.mappa[__${idField}__].enabled} ? 'label-disabled'">
+							<input type="radio" class="flat" th:field="${__${wrapper}__.mappa[__${idField}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or !__${wrapper}__.mappa[__${idField}__].enabled}" />
+							<span th:text="#{label.no}">No</span>
+						</label>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+					<textarea th:field="${__${wrapper}__.mappa[__${idField}__].note}" th:disabled="${!canValutaDomanda or !__${wrapper}__.mappa[__${idField}__].enabled}" ></textarea>
+				</div>
+				<input type="hidden" th:field="${__${wrapper}__.mappa[__${idField}__].id}" />
+	        </th:block>
+			<div th:if="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${propertyName}__}"></div>
+		</div>
+		</th:block>
+	</th:block>
+
+	<!-- wrapper senza idEditabili -->
+	<th:block th:unless="${__withIdEditabili__}">
+		<div th:id="__${propertyName}__-parent" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')} ? 'bad'">
+
+			<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.id}" />
+			<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.nomeFile}" />
+
+			<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7" th:for="__${propertyName}__" th:unless="${__${wrapper}__ == eventoWrapper}">
+				<i th:if="${__${wrapper}__ == comunicazioneWrapper}" class="fa fa-paperclip"></i>
+				<span th:text="#{label.__${propertyName}__}">label.tipoAllegato</span>
+			</label>
+			<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11" th:classappend="${__${wrapper}__ == eventoWrapper} ? 'no-padding'">
+				<input type="file" onchange="submitFileExt(this)" th:id="__${propertyName}__" th:attr="typefile=__${tipoAllegato}__, propertyName=__${propertyName}__" th:name="__${propertyName}___multipart" required="required"
+					style="display: none;" />
+				<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegatoExt('#__${propertyName}__');|" />
+				<div th:unless="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div>
+				<div th:if="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
+			</div>
+			<!-- pulsante per aggiungere firma -->
+			<th:block th:if="${withFirma}">
+				<div class="col-xs-1">
+					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+				</div>
+			</th:block>
+			<div th:if="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${propertyName}__}"></div>
+		</div>
+	</th:block>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		function setAllegatoExt(idInput) {
+			$(idInput).click();
+		}
+
+		function submitFileExt(element){
+			var tipoAllegato = $(element).attr("typefile");
+			var propertyName = $(element).attr("propertyName");
+			var fileId = $("#"+propertyName+"\\.id").attr('value');
+
+			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
+
+	 		var oMyForm = new FormData();
+            oMyForm.append("multiPartFile", $(element)[0].files[0]);
+
+            if(stato != 'INTEGRAZIONE')
+            	oMyForm.append("fileId", (!fileId) ? 0 : fileId );
+            else
+            	oMyForm.append("fileId", 0);
+            oMyForm.append("tipo",tipoAllegato);
+           	oMyForm.append([[${_csrf.parameterName}]],[[${_csrf.token}]]);
+
+            console.log('propertyName: ' + propertyName + ' - tipoAllegato: ' + tipoAllegato + ' - fileId: ' + fileId + ' - multiPartFile ' + $(element)[0].files[0].name);
+
+           	$.ajax({
+                  	url : [[@{/file/upload}]],
+                  	data : oMyForm,
+                  	type : "POST",
+                  	enctype: 'multipart/form-data',
+                  	processData: false,
+                  	contentType:false,
+                  	success : function(result) {
+                  		setFileExt(result, propertyName);
+                  	},
+                  	error : function(result){
+                  		sendNotifyStatic([[#{message.errore}]], [[#{message.errore_fileupload}]], "error");
+                  	}
+              	});
+		}
+
+		function setFileExt(response, propertyName){
+				if(response.id != null && response.id != 0) {
+					var prefixUrl = [[@{/file/}]];
+					$("#"+propertyName+"_label").text(response.nomeFile);
+					$("#"+propertyName+"_label").attr('href',prefixUrl + response.id);
+					$("#"+propertyName+"\\.id").attr('value', response.id);
+					$("#"+propertyName+"\\.nomeFile").attr('value', response.nomeFile);
+				}
+				else {
+					//$("#"+inputName+"_label").text([[#{label.nessun_file_selezionato}]]);
+					sendNotifyStatic([[#{message.errore}]], response, "error");
+				}
+		}
+		/*]]>*/
+	</script>
+</th:block>
+
+</body>
+</html>
