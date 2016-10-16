@@ -206,7 +206,7 @@ public class Evento extends BaseEntity{
 	private File brochureEvento;
 
 	protected float durata;//calcolo automatico
-	private float crediti;//calcolo con algoritmo che puo essere modificato dal provider
+	protected float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
 	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
 	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();
@@ -240,8 +240,12 @@ public class Evento extends BaseEntity{
 
 	private Boolean autorizzazionePrivacy;
 
-	public float calcoloDurata(){return 0;};
-	public float calcoloCreditiFormativi(){return 0;};
+	public float calcoloDurata(){
+		return 0;
+	};
+	public float calcoloCreditiFormativi(){
+		return 0;
+	};
 
 	@Override
     public boolean equals(Object o) {

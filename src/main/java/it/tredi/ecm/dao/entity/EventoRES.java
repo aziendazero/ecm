@@ -75,10 +75,10 @@ public class EventoRES extends Evento{
 
 	@Override
 	public float calcoloDurata(){
-		float durata = 0.0f;
+		this.durata = 0.0f;
 		for(ProgrammaGiornalieroRES progrGior : programma){
 			for(DettaglioAttivitaRES dett : progrGior.getProgramma()){
-				if(!dett.isPausa())
+				if(!dett.isPausa() && dett.getOreAttivita()!= null)
 					durata += dett.getOreAttivita();
 			}
 		}
@@ -87,7 +87,7 @@ public class EventoRES extends Evento{
 
 	@Override
 	public float calcoloCreditiFormativi(){
-		float crediti = 0.0f;
+		this.crediti = 0.0f;
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
 			crediti = (0.20f * durata);

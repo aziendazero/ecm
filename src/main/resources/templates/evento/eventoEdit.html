@@ -314,7 +314,8 @@
 								</button>
 								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
-									<li><a><label class="in-dropdown" for="submitButton" th:text="#{label.salva_modifiche}"></label></a></li>
+									<!-- <li><a><label class="in-dropdown" for="submitButton" th:text="#{label.salva_modifiche}"></label></a></li> -->
+									<li><a th:text="#{label.salva_modifiche}" onclick="submitSave()"></a></li>
 									<li><a th:text="#{label.conferma_evento}"></a></li>
 								</ul>
 							</div>
@@ -673,7 +674,7 @@
 					.done(function(data) {
 					  	$('#'+target).html(data);
 					  	closeModaleAddPersona();
-					  	updateSelect(target);
+					  	sendAjaxRequestDocentiAttivitaRES();
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
@@ -749,7 +750,24 @@
 				    	alert( "error" );
 				 	 })
 				}
-				
+			}
+			
+			function sendAjaxRequestDocentiAttivitaRES(){
+				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/listaDocentiAttivitaRES|}]];
+				$.get(url, function(data){
+					$("#addAttivitaRES-docente").empty();
+					for(var item = 0; item < data.length; item++){
+						var option = '<option value = "' + data[item].id + '">' + data[item].anagrafica.cognome + "</option>";
+						$("#addAttivitaRES-docente").append(option);
+					}
+					$("#addAttivitaRES-docente").prop("disabled", false);
+					$("#addAttivitaRES-docente").selectpicker('refresh');
+
+				});
+			};
+			
+			function submitSave(){
+				$("#submitButton").click();
 			}
 			
 
