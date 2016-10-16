@@ -20,6 +20,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.exception.EcmException;
@@ -143,40 +144,43 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
 		Evento evento = eventoWrapper.getEvento();
-
-		//date intermedie
-		Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		for (String s : eventoWrapper.getDateIntermedieTemp()) {
-			if(s != null && !s.isEmpty()) {
-				LocalDate data = LocalDate.parse(s, dtf);
-				dateIntermedie.add(data);
+		
+		if(evento instanceof EventoRES){
+			//date intermedie
+			Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			for (String s : eventoWrapper.getDateIntermedieTemp()) {
+				if(s != null && !s.isEmpty()) {
+					LocalDate data = LocalDate.parse(s, dtf);
+					dateIntermedie.add(data);
+				}
 			}
-		}
-		((EventoRES) evento).setDateIntermedie(dateIntermedie);
-
-		//risultati attesi
-		((EventoRES) evento).setRisultatiAttesi(eventoWrapper.getRisultatiAttesiTemp());
-
-		//programma evento
-		if(eventoWrapper.getProgrammaEvento() != null){
-			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEvento());
+			((EventoRES) evento).setDateIntermedie(dateIntermedie);
+			
+			//Risultati Attesi
+			((EventoRES) evento).setRisultatiAttesi(eventoWrapper.getRisultatiAttesiTemp());
+			
+			//Docenti
+			((EventoRES) evento).setDocenti(eventoWrapper.getDocenti());
+			
+			//Programma evento
+			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
+			for(ProgrammaGiornalieroRES p : ((EventoRES) evento).getProgramma()){
+				p.setEventoRES((EventoRES) evento);
+			}
+			
+			//Documento Verifica Ricadute Formative
+			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
+				((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
+			}
 		}
 		
 		//Responsabili
 		evento.setResponsabili(eventoWrapper.getResponsabiliScientifici());
-		if(evento instanceof EventoRES){
-			((EventoRES) evento).setDocenti(eventoWrapper.getDocenti());
-		}
 		
 		//brochure
 		if (eventoWrapper.getBrochure().getId() != null) {
 			evento.setBrochureEvento(eventoWrapper.getBrochure());
-		}
-
-		//Documento Verifica Ricadute Formative
-		if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
-			((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 		}
 
 		//Autocertificazione Assenza Finanziamenti
@@ -201,33 +205,36 @@ public class EventoServiceImpl implements EventoService {
 	public EventoWrapper prepareRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
 		Evento evento = eventoWrapper.getEvento();
 
-		//date intermedie
-		List<String> dateIntermedieTemp = new ArrayList<String>();
-		for (LocalDate d : ((EventoRES) evento).getDateIntermedie()) {
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			String dataToString = d.format(dtf);
-			dateIntermedieTemp.add(dataToString);
-		}
-		eventoWrapper.setDateIntermedieTemp(dateIntermedieTemp);
-
-		//risultati attesi
-		eventoWrapper.setRisultatiAttesiTemp(((EventoRES) evento).getRisultatiAttesi());
-
 		//programma evento
 		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
 		if(evento instanceof EventoRES){
+			//date intermedie
+			List<String> dateIntermedieTemp = new ArrayList<String>();
+			for (LocalDate d : ((EventoRES) evento).getDateIntermedie()) {
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				String dataToString = d.format(dtf);
+				dateIntermedieTemp.add(dataToString);
+			}
+			eventoWrapper.setDateIntermedieTemp(dateIntermedieTemp);
+			
+			//risultati attesi
+			eventoWrapper.setRisultatiAttesiTemp(((EventoRES) evento).getRisultatiAttesi());
+			
+			//Docenti
 			eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
+			
+			//Programma
+			eventoWrapper.setProgrammaEventoRES(((EventoRES) evento).getProgramma());
+			
+			//Documento Verifica Ricadute Formative
+			if (((EventoRES) evento).getDocumentoVerificaRicaduteFormative() != null) {
+				eventoWrapper.setDocumentoVerificaRicaduteFormative(((EventoRES) evento).getDocumentoVerificaRicaduteFormative());
+			}
 		}
-		//TODO
-
+		
 		//brochure
 		if (evento.getBrochureEvento() != null) {
 			eventoWrapper.setBrochure(evento.getBrochureEvento());
-		}
-
-		//Documento Verifica Ricadute Formative
-		if (((EventoRES) evento).getDocumentoVerificaRicaduteFormative() != null) {
-			eventoWrapper.setDocumentoVerificaRicaduteFormative(((EventoRES) evento).getDocumentoVerificaRicaduteFormative());
 		}
 
 		//Autocertificazione Assenza Finanziamenti

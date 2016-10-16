@@ -1,8 +1,11 @@
 package it.tredi.ecm.web;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,6 +88,11 @@ public class EventoController {
 		return elencoProvince;
 	}
 
+	@InitBinder
+    public void setAllowedFields(WebDataBinder dataBinder) {
+        dataBinder.setDisallowedFields("id");
+    }
+	
 	//@ModelAttribute("eventoWrapper")
 	public EventoWrapper getEvento(@RequestParam(name = "editId", required = false) Long id,
 			@RequestParam(value="providerId",required = false) Long providerId,
@@ -317,18 +327,21 @@ public class EventoController {
 		evento.setProceduraFormativa(proceduraFormativa);
 		eventoWrapper.setEvento(evento);
 		
-		//Lista attività singolo programma giornaliero
-		List<DettaglioAttivitaRES> programmaGiorno1 = new ArrayList<DettaglioAttivitaRES>();
-		programmaGiorno1.add(new DettaglioAttivitaRES());
-		
-		ProgrammaGiornalieroRES p = new ProgrammaGiornalieroRES();
-		p.setProgramma(programmaGiorno1);
-		
-		//Lista programmi giornalieri dell'evento
-		List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
-		programmaEvento.add(p);
-		
-		eventoWrapper.setProgrammaEvento(programmaEvento);
+		if(evento instanceof EventoRES){
+			//Lista attività singolo programma giornaliero
+			List<DettaglioAttivitaRES> programmaGiorno1 = new ArrayList<DettaglioAttivitaRES>();
+			programmaGiorno1.add(new DettaglioAttivitaRES());
+			
+			ProgrammaGiornalieroRES p = new ProgrammaGiornalieroRES();
+			p.setProgramma(programmaGiorno1);
+			//p.setEventoRES((EventoRES) evento);
+			
+			//Lista programmi giornalieri dell'evento
+			List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
+			programmaEvento.add(p);
+			
+			eventoWrapper.setProgrammaEventoRES(programmaEvento);
+		}
 		
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
@@ -392,33 +405,34 @@ public class EventoController {
 		return obiettivo.getMetodologieDidattiche();
 	}
 	
-	@RequestMapping(value = "/provider/{providerId}/evento/save", method=RequestMethod.POST, params={"addAttivitaToProgramma"})
-	public String addElement(@RequestParam("addAttivitaToProgramma") String programma,@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
-		try{
-			int programmaIndex = Integer.valueOf(programma).intValue();
-			eventoWrapper.getProgrammaEvento().get(programmaIndex).getProgramma().add(new DettaglioAttivitaRES());
-			eventoWrapper.setGotoLink("#programma");
-			return EDIT;
-		}catch (Exception ex){
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
-		}
-	}
-	
-	@RequestMapping(value = "/provider/{providerId}/evento/removeAttivita/{programmaIndex}/{attivitaIndex}", method=RequestMethod.GET)
-	public String removeAttivitaFromProgramma(@PathVariable("programmaIndex") String progIndex, @PathVariable("attivitaIndex") String attIndex,
-												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
-		try{
-			int programmaIndex = Integer.valueOf(progIndex).intValue();
-			int attivitaIndex = Integer.valueOf(attIndex).intValue();
-			eventoWrapper.getProgrammaEvento().get(programmaIndex).getProgramma().remove(attivitaIndex);
-			eventoWrapper.setGotoLink("#programma");
-			return EDIT;
-		}catch (Exception ex){
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
-		}
-	}
+//	@RequestMapping(value = "/provider/{providerId}/evento/save", method=RequestMethod.POST, params={"addAttivitaToProgramma"})
+//	public String addElement(@RequestParam("addAttivitaToProgramma") String programma,
+//								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+//		try{
+//			int programmaIndex = Integer.valueOf(programma).intValue();
+//			eventoWrapper.getProgrammaEvento().get(programmaIndex).getProgramma().add(new DettaglioAttivitaRES());
+//			eventoWrapper.setGotoLink("#programma");
+//			return EDIT;
+//		}catch (Exception ex){
+//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+//			return "redirect:/home";
+//		}
+//	}
+//	
+//	@RequestMapping(value = "/provider/{providerId}/evento/removeAttivita/{programmaIndex}/{attivitaIndex}", method=RequestMethod.GET)
+//	public String removeAttivitaFromProgramma(@PathVariable("programmaIndex") String progIndex, @PathVariable("attivitaIndex") String attIndex,
+//												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+//		try{
+//			int programmaIndex = Integer.valueOf(progIndex).intValue();
+//			int attivitaIndex = Integer.valueOf(attIndex).intValue();
+//			eventoWrapper.getProgrammaEvento().get(programmaIndex).getProgramma().remove(attivitaIndex);
+//			eventoWrapper.setGotoLink("#programma");
+//			return EDIT;
+//		}catch (Exception ex){
+//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+//			return "redirect:/home";
+//		}
+//	}
 	
 	@RequestMapping(value="/provider/{providerId}/createAnagraficaFullEvento", method=RequestMethod.POST)
 	@ResponseBody
@@ -437,6 +451,8 @@ public class EventoController {
 			//check se non esiste -> si registra l'anagrafica per il provider
 			if(anagraficaBase != null && !anagraficaBase.getCodiceFiscale().isEmpty()){
 				if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaBase.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
+					if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew())
+						anagraficaBase.setCv(fileService.getFile(eventoWrapper.getCv().getId()));
 					AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
 					anagraficaEventoToSave.setAnagrafica(anagraficaBase);
 					anagraficaEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
@@ -527,4 +543,93 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/addAttivitaTo", method=RequestMethod.POST)
+	public String addAttivitaTo(@RequestParam("target") String target, 
+								@RequestParam("addAttivitaTo") String addAttivitaTo,
+								@RequestParam(name = "pausa",required=false) Boolean pausa,
+								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
+			if(target.equalsIgnoreCase("attivitaRES")){
+				//DettaglioAttivitaRES attivitaRES = (DettaglioAttivitaRES) Utils.copy(eventoWrapper.getTempAttivitaRES());
+				DettaglioAttivitaRES attivitaRES =  SerializationUtils.clone(eventoWrapper.getTempAttivitaRES());
+				eventoWrapper.getProgrammaEventoRES().get(programmaIndex).getProgramma().add(attivitaRES);
+				if(pausa.booleanValue())
+					attivitaRES.setAsPausa();
+				eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
+			}
+			return EDIT + " :: " + target;
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/removeAttivitaFrom/{target}/{removeAttivitaFrom}/{rowIndex}", method=RequestMethod.GET)
+	public String removeAttivitaFrom(@PathVariable("target") String target,
+										@PathVariable("removeAttivitaFrom") String removeAttivitaFrom, 
+											@PathVariable("rowIndex") String rowIndex,
+												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int programmaIndex;
+			int attivitaRow;
+			if(target.equalsIgnoreCase("attivitaRES")){
+				programmaIndex = Integer.valueOf(removeAttivitaFrom).intValue();
+				attivitaRow = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getProgrammaEventoRES().get(programmaIndex).getProgramma().remove(attivitaRow);
+			}
+			return EDIT + " :: " + target;
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/addProgramma/{target}", method=RequestMethod.GET)
+	public String addProgramma(@PathVariable("target") String target,
+										@RequestParam("programmaDate") String programmaDate, 
+												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			LocalDate data = LocalDate.parse(programmaDate, dtf);
+			if(target.equalsIgnoreCase("attivitaRES")){
+				ProgrammaGiornalieroRES programma = new ProgrammaGiornalieroRES();
+				programma.setGiorno(data);
+				programma.setSede(((EventoRES)eventoWrapper.getEvento()).getSedeEvento());
+				eventoWrapper.getProgrammaEventoRES().add(programma);
+			}
+			return EDIT + " :: " + target;
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/showSection", method=RequestMethod.POST)
+	public String showSection(@RequestParam("sectionIndex") String sIndex, 
+								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int sectionIndex = Integer.valueOf(sIndex).intValue();
+			if(sectionIndex == 2){
+				//sezione programma evento
+			}else if(sectionIndex == 3){
+				//sezione finale
+				//ricalcolo durata e crediti
+				eventoWrapper.getEvento().calcoloDurata();
+				if(eventoWrapper.getEvento() instanceof EventoRES){
+					if(!((EventoRES)eventoWrapper.getEvento()).isConfermatiCrediti()){
+						eventoWrapper.getEvento().calcoloCreditiFormativi();
+					}
+				}
+			}
+			return EDIT + " :: " + "section-" + sectionIndex;
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()));
+			return "redirect:/home";
+		}
+	}
+	
 }

@@ -8,7 +8,6 @@
 	<th:block th:fragment="eventoRESEdit">
 
 		<div class="x_content">
-		
 			<!-- finestra modale di aggiunta attivitaRES a programma del Giorno -->
 			<div id="add-attivitaRES-modal" class="modal fade modal-add-attivitaRES" data-model-index="4" role="dialog">
 				<div class="modal-dialog modal-lg">
@@ -16,10 +15,12 @@
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
 							</button>
-							<h4 class="modal-title" id="myModalLabel4" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
+							<h4 id="container-titleNoPausa" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
+							<h4 id="container-titlePausa" class="modal-title" th:text="#{label.inserisci_pausa}">Inserisci pausa</h4>
 						</div>
 						<div class="modal-body">
 							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
+									th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
 									th:object="${eventoWrapper.tempAttivitaRES}" method="post" enctype="multipart/form-data"
 									novalidate="novalidate">
 									
@@ -38,7 +39,8 @@
 										</div>
 									</div>
 								
-									<div class="item form-group">
+									<!-- ARGOMENTO -->
+									<div id="container-argomento" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
 											<span th:text="#{label.argomento}">Argomento</span>
 											<span class="required">*</span>
@@ -48,29 +50,51 @@
 										</div>
 									</div>
 								
-									<div class="item form-group">
+									<!-- DOCENTE -->
+									<div id="container-docente" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.docente}">Docente</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<select
+												id="addAttivitaRES-docente"
+												class="selectpicker required selectDocente"
+												th:field="*{docente}"
+												data-width="100%" data-style="btn-primary"
+												data-actions-box="true" data-size="10"
+												data-hide-disabled="false"
+												title="Seleziona un docente...">
+												<option
+													th:each="docente, row: ${eventoWrapper.docenti}"
+													th:value="${docente.id}"
+													th:text="${docente.anagrafica.cognome}">Docente Selezionato
+												</option>
+											</select>
+										</div>
+									</div>
+								
+									<!-- RISULTATO ATTESO -->
+									<div id="container-risultatoAtteso" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
 											<span th:text="#{label.risultato_atteso}">Risultato Atteso</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
 											<select
+												id="addAttivitaRES-risultatiAttesi"
 												class="selectpicker required selectRisultatiAttesi"
 												th:field="*{risultatoAtteso}"
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
 												title="Seleziona un risultato atteso...">
-												<option
-													th:each="risultatoAtteso, row: ${eventoWrapper.obiettiviRegionali}"
-													th:value="${risultatoAtteso}"
-													th:text="${risultatoAtteso}">
-												</option>
 											</select>
 										</div>
 									</div>
 								
-									<div class="item form-group">
+									<!-- OBIETTIVO FORMATIVO -->
+									<div id="container-obiettivoFormativo" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
 											<span th:text="#{label.obiettivo_formativo}">Obiettivo Formativo</span>
 											<span class="required">*</span>
@@ -93,13 +117,15 @@
 										</div>
 									</div>
 								
-									<div class="item form-group">
+									<!-- METODOLOGIA DIDATTICA -->
+									<div id="container-metodologiaDidattica" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
 											<span th:text="#{label.metodologia_didattica}">Metodologia Didattica</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
 											<select
+												id="addAttivitaRES-metodolgieDidattiche"
 												class="selectpicker required selectMetodologieDidattiche"
 												th:field="*{metodologiaDidattica}"
 												data-width="100%" data-style="btn-primary"
@@ -115,6 +141,7 @@
 										</div>
 									</div>		
 								
+									<!-- ORE ATTIVITA -->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
 											<span th:text="#{label.ore_attivita}">Ore Attività</span>
@@ -125,8 +152,9 @@
 										</div>
 									</div>
 								
-									<input id="targetTable" type="text" name="addPersonaTo" style="display: none;" />
-									<input id="addAttivitaToProgramma" type="text" name="addAttivitaToProgramma" style="display: none;" />
+									<input id="targetTableAttivitaRES" type="text" name="target" style="display: none;" />
+									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
+									<input id="pausa" type="text" name="pausa" style="display: none;" />
 								</form>
 							</div>
 							<div class="modal-footer">
@@ -150,6 +178,35 @@
 				<input type="hidden" name="providerId" th:value="${eventoWrapper.providerId}" />
 				<input type="hidden" name="proceduraFormativa" th:value="${eventoWrapper.proceduraFormativa}" />
 
+				<div id="tabs" class="" role="tabpanel" data-example-id="togglable-tabs">
+					<ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+						<li role="presentation" class="active presentation">
+							<a href="#tab_content1" role="tab" id="tab1" data-toggle="tab" aria-expanded="true" th:text="#{label.sezione1}">
+								Sezione1
+							</a>
+						</li>
+						<li role="presentation" class="presentation">
+							<a href="#tab_content2" role="tab" id="tab2" data-toggle="tab" aria-expanded="false" th:text="#{label.sezione2}">
+								Sezione2
+							</a>
+						</li>
+						<li role="presentation" class="presentation">
+							<a href="#tab_content3" role="tab" id="tab3" data-toggle="tab" aria-expanded="false" th:text="#{label.sezione3}">
+								Sezione3
+							</a>
+						</li>
+					</ul>
+					<div id="myTabContent" class="tab-content">
+						<div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="active-tab1">
+						</div>
+						<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="tab2">
+						</div>
+						<div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="tab3">
+						</div>
+					</div>
+				</div>
+
+			<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
 				<!-- DENOMINAZIONE LEGALE PROVIDER -->
 				<div class="item form-group">
 					<label class="control-label col-xs-1">
@@ -682,80 +739,18 @@
 					<div class="col-lg-3 col-md-1 col-sm-1 col-xs-12"></div>
 				</div>
 
-
-				<!-- PROGRAMMA EVENTO -->
-				<div class="item form-group">
-					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="programmaEvento">
-						<span th:text="#{label.programma}">Programma</span>
-						<span class="required">*</span>
-					</label>
-				</div>
-				<div class='programmaEvento item form-group' id="programma">
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-group">
-						<th:block th:each="programmaGiornaliero,status : ${eventoWrapper.programmaEvento}">
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11">
-									<span th:text="#{label.programma_del}">Programma del</span>
-									<span class="required">*</span>
-							</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].giorno}" />		
-								</div>
-							</div>
-							
-							<label>Sede</label><br/> 
-							
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11">
-									<span th:text="#{label.provincia}">Provincia</span>
-									<span class="required">*</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].sede.provincia}" />	
-								</div>
-							</div>
-							
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11">
-									<span th:text="#{label.comune}">Comune</span>
-									<span class="required">*</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].sede.comune}" />		
-								</div>
-							</div>
-							
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11">
-									<span th:text="#{label.indirizzo}">Indirizzo</span>
-									<span class="required">*</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].sede.indirizzo}" />	
-								</div>
-							</div>
-							
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11">
-									<span th:text="#{label.luogo}">Luogo</span>
-									<span class="required">*</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-									<input type="text" th:field="${eventoWrapper.programmaEvento[__${status.index}__].sede.luogo}" />		
-								</div>
-							</div>
-							
-							<div class="col-xs-offset-1 col-xs-10">
-								<th:block th:include="evento/eventoEdit :: programmaDelGiorno(${__${status.index}__}, eventoWrapper.programmaEvento[__${status.index}__].programma)" />
-							</div>
-							
-						</th:block>
-					</div>
-				</div>
-
-				<div>**TODO DOM**</div>
-
 				<div class="divider-dashed"></div>
+				<a class="btn btn-primary" th:text="#{label.avanti}" onclick="goToSection(2)"></a>
+		</div>
+		
+		<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
+				<!-- PROGRAMMA EVENTO -->
+				<a id="add-programma" class="btn btn-success" th:onclick="'addProgramma(\'attivitaRES\',\'23\/06\/1986\')'">
+					<span><i class="fa fa-minus"></i></span>
+				</a>
+				<div class='programmaEvento item form-group' id="programma">
+					<th:block th:include="evento/eventoEdit :: attivitaRES" />
+				</div>
 
 				<!-- BROCHURE EVENTO -->
 				<div class="item form-group">
@@ -770,7 +765,11 @@
 						<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, brochure, null, null, null, false, null, false)" ></th:block>
 					</div>
 				</div>
-
+				<a class="btn btn-primary" th:text="#{label.avanti}" onclick="goToSection(3)"></a>
+				<a class="btn btn-primary" th:text="#{label.indietro}" onclick="goToSection(1)"></a>
+		</div>
+		
+		<div class="col-xs-12 section-index" id="section-3" th:fragment="section-3">
 				<!-- VERIFICA APPRENDIMENTO PARTECIPANTI -->
 				<div class="item form-group">
 					<label class="control-label col-xs-1">
@@ -799,6 +798,33 @@
 						</select>
 					</div>
 				</div>
+
+				 <!-- DURATA  --> 
+ 				<div class="item form-group"> 
+ 					<label class="control-label col-xs-1"> 
+ 						<span>34</span> 
+ 					</label> 
+ 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="durata"> 
+ 						<span th:text="#{label.durata}">Durata</span> 
+ 					</label> 
+ 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata"> 
+ 						<div class="value-edit" th:text="${eventoWrapper.evento.durata}"></div> 
+ 					</div> 
+ 				</div> 
+ 				
+ 				<!-- TIPOLOGIA DI OBIETTIVI FORMATIVI -->
+ 				<div class="item form-group"> 
+ 					<label class="control-label col-xs-1"> 
+ 						<span>34</span> 
+ 					</label> 
+ 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaObiettiviFormativi"> 
+ 						<span th:text="#{label.tipologia_obiettivi_formativi}">Tipologia di obiettivi formativi</span> 
+ 					</label> 
+ 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipologiaObiettiviFormativi"> 
+ 						<div class="value-edit" th:text="${'**TODO**'}"></div> 
+ 					</div> 
+ 				</div> 
+
 
 <!-- TODO vanno in SHOW				DURATA -->
 <!-- 				<div class="item form-group"> -->
@@ -1195,7 +1221,8 @@
 						</div>
 					</div>
 				</div>
-
+				<a class="btn btn-primary" th:text="#{label.indietro}" onclick="goToSection(2)"></a>
+		</div>
 				<input id="submitButton" type="submit" style="display: none;" />
 
 			</form>
@@ -1206,6 +1233,7 @@
 				var months;
 
 				$(document).ready(function() {
+					goToSection(1);
 					days = getDayNamesShort();
 					months = getMonthNames();
 
@@ -1373,13 +1401,14 @@
 						container.append(spanText).append(spanButtonRemove).append(inputHidden);
 						container.appendTo(".risultati-attesi-container");
 						//TODO index + input hidden + select update
+						addToSelectAttivitaRES('addAttivitaRES-risultatiAttesi',risultato);
 					}
 				}
 
 				//rimuove un risultato atteso
 				function rimuoviRisultatoAtteso(container) {
 					container.remove();
-					//TODO select update
+					removeFromSelectAttivitaRES('addAttivitaRES-risultatiAttesi',$(container).find('input').val());
 				}
 
 				function abilitaModalitaVerificaApprendimento(tipologia) {
@@ -1413,9 +1442,7 @@
 				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.
 				function updateMetodologieDidattiche(caller){
 					var obiettivo = $(caller).val();
-					var programmaIndex = $(caller).data("programma-id");
-					var attivitaIndex = $(caller).data("attivita-id");
-					var metodologiePicker_ref ='.selectMetodologieDidattiche[data-programma-id="' + programmaIndex + '"][data-attivita-id="' + attivitaIndex + '"]';
+					var metodologiePicker_ref ='#addAttivitaRES-metodolgieDidattiche';
 					var start = [[@{/listaMetodologie?obiettivo=}]];
 					var end = obiettivo;
 					var url = start + end;
@@ -1445,6 +1472,89 @@
 						$("#descrizione-ricaduta-formativa").prop("disabled", true);
 						$("#documentoVerificaRicaduteFormative").prop("disabled", true);
 					}
+				}
+				
+	/********************* PROGRAMMA GIORNALIERO ****************************/
+				function openAddAttivitaTo(target,programmaIndex,pausa){
+					$('#targetTableAttivitaRES').val(target);
+					$('#addAttivitaTo').val(programmaIndex);
+					$('#pausa').val(pausa);
+					
+					if(pausa){
+						$("#container-titleNoPausa").hide();
+						$("#container-titlePausa").show();
+						$("#container-argomento").hide();
+						$("#container-docente").hide();
+						$("#container-risultatoAtteso").hide();
+						$("#container-obiettivoFormativo").hide();
+						$("#container-metodologiaDidattica").hide();
+					}else{
+						$("#container-titlePausa").hide();
+						$("#container-titleNoPausa").show();
+						$("#container-argomento").show();
+						$("#container-docente").show();
+						$("#container-risultatoAtteso").show();
+						$("#container-obiettivoFormativo").show();
+						$("#container-metodologiaDidattica").show();
+					}
+				}
+	
+				function closeModaleAddAttivitaTo(){
+					$("#add-attivitaRES-modal .close").click();
+				}
+				
+				function reInitModaleAddAttivitaTo(){
+					$('select').selectpicker();
+				}
+				
+				function sendAjaxAddAttivitaToProgramma(){
+					var target = $('#targetTableAttivitaRES').val();
+					var programmaIndex = $('#addAttivitaTo').val();
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaRES').serialize())
+						.done(function(data) {
+						  	$('#'+target).html(data);
+						  	closeModaleAddAttivitaTo();
+						  })
+					  	.fail(function() {
+					  		//TODO mostra error sui campi mancanti
+					    	alert( "error" );
+					 	 })
+				}
+				
+				function removeAttivitaFrom(target,caller){
+					var rowIndex = $(caller).parent().parent().data('row-id');
+					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
+					
+					$("#" + target).load(url);
+				}
+				
+				function addProgramma(target,programmaDate){
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addProgramma/|}]] + target + "?programmaDate=" + encodeURIComponent(programmaDate);
+					$("#" + target).load(url);
+				}
+				
+				function addToSelectAttivitaRES(target,value){
+					var option = '<option value = "' + value + '">' + value + "</option>";
+					$('#' + target).append(option);
+					$('#' + target).prop("disabled", false);
+					$('#' + target).selectpicker('refresh');
+				}
+				
+				function removeFromSelectAttivitaRES(target,value){
+					$('#' + target +" option[value='" + value + "']").remove();
+					$('#' + target).selectpicker('refresh');
+				}
+				
+				function updateSelect(target){
+					if(target == 'docenti'){
+						$('#addAttivitaRES-docente').selectpicker('refresh');
+					}
+				}
+				
+				function goToSection(sectionIndex){
+						$('.section-index').hide();
+						$('#section-' + sectionIndex).show();
 				}
 
 			/*]]>*/

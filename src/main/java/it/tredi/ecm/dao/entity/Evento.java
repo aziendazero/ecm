@@ -21,7 +21,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -34,8 +33,6 @@ import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
-import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
-import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -243,7 +240,8 @@ public class Evento extends BaseEntity{
 
 	private Boolean autorizzazionePrivacy;
 
-
+	public float calcoloDurata(){return 0;};
+	public float calcoloCreditiFormativi(){return 0;};
 
 	@Override
     public boolean equals(Object o) {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
@@ -32,11 +31,9 @@ public class EventoWrapper {
 
 	//parte ripetibili
 	private List<String> dateIntermedieTemp = new ArrayList<String>();
-	private List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
 	private List<String> risultatiAttesiTemp = new ArrayList<String>();
 	
 	private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
-	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
 	//liste edit
 	private Set<Obiettivo> obiettiviNazionali;
@@ -52,10 +49,15 @@ public class EventoWrapper {
 	private File dichiarazioneAssenzaConflittoInteresse;
 
 	private String gotoLink;
-	
+	//gestire l'aggiunta di una PersonaEvento
 	private PersonaEvento tempPersonaEvento = new PersonaEvento();
+	
+	/* RES */
+	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
+	private List<ProgrammaGiornalieroRES> programmaEventoRES = new ArrayList<ProgrammaGiornalieroRES>();
+	
 	private PersonaFullEvento tempPersonaFullEvento = new PersonaFullEvento();
-
 	private DettaglioAttivitaRES tempAttivitaRES = new DettaglioAttivitaRES();
+	private File cv;
 
 }

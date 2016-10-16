@@ -51,7 +51,7 @@
 					<div class="modal-body">
 						<form id="addPersonaTo" name="addPersonaEvento" class="form-horizontal form-label-left"
 								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}" 
-								th:object="${eventoWrapper.tempPersonaEvento}" method="post" enctype="multipart/form-data"
+								 method="post" enctype="multipart/form-data"
 								novalidate="novalidate">
 							
 							<!-- COGNOME -->
@@ -63,7 +63,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input id="cognome_persona"
 										required="required"	class="form-control col-md-7 col-xs-12"
-										type="text" th:field="*{anagrafica.cognome}" />
+										type="text" th:field="${eventoWrapper.tempPersonaEvento.anagrafica.cognome}" />
 								</div>
 							</div>
 							
@@ -76,7 +76,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input id="nome_persona"
 										required="required"	class="form-control col-md-7 col-xs-12"
-										type="text" th:field="*{anagrafica.nome}"  />
+										type="text" th:field="${eventoWrapper.tempPersonaEvento.anagrafica.nome}"  />
 								</div>
 							</div>
 							
@@ -89,7 +89,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input id="codice_fiscale"
 										required="required"	class="form-control col-md-7 col-xs-12"
-										type="text" th:field="*{anagrafica.codiceFiscale}"  />
+										type="text" th:field="${eventoWrapper.tempPersonaEvento.anagrafica.codiceFiscale}"  />
 								</div>
 							</div>
 							
@@ -102,7 +102,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="checkbox">
 										<label>
-											<input id="straniero" type="checkbox" class="" th:field="*{anagrafica.straniero}" />
+											<input id="straniero" type="checkbox" class="" th:field="${eventoWrapper.tempPersonaEvento.anagrafica.straniero}" />
 										</label>
 									</div>
 								</div>
@@ -117,7 +117,7 @@
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<input required="required"	class="form-control col-md-7 col-xs-12"
-										type="text" th:field="*{qualifica}"  />
+										type="text" th:field="${eventoWrapper.tempPersonaEvento.qualifica}"  />
 								</div>
 							</div>
 							
@@ -131,7 +131,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<select
 										class="selectpicker required selectRuolo"
-										th:field="*{ruolo}"
+										th:field="${eventoWrapper.tempPersonaEvento.ruolo}"
 										data-width="100%" data-style="btn-primary"
 										data-actions-box="true" data-size="10"
 										data-hide-disabled="false"
@@ -155,14 +155,26 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
 									<div class="radio">
 										<label>
-											<input type="radio"  th:field="*{titolare}" th:value="${'titolare'}" />
+											<input type="radio"  th:field="${eventoWrapper.tempPersonaEvento.titolare}" th:value="${'titolare'}" />
 											<span th:text="#{label.titolare}"></span>
 										</label>
 										<label>
-											<input type="radio" th:field="*{titolare}" th:value="${'sostituto'}" />
+											<input type="radio" th:field="${eventoWrapper.tempPersonaEvento.titolare}" th:value="${'sostituto'}" />
 											<span th:text="#{label.sostituto}"></span>
 										</label>
 									</div>
+								</div>
+							</div>
+							
+							<!-- CV -->
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cv">
+									<span th:text="#{label.cv}">cv</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<!--  th:block th:include="fragments/allegati :: allegati(eventoWrapper.tempPersonaEvento.anagrafica, false, cv, null, null, null, false, null, false)" ></th:block --> 
+									<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}', cv, null, null, null, false, null, false)" ></th:block>							
 								</div>
 							</div>
 							
@@ -634,10 +646,16 @@
 
 			function closeModaleAddPersona(){
 				$("#add-persona-modal .close").click();
+				$("#add-persona-modal form")[0].reset();
+				$("#cv\\.id").val('');
+				$("#cv\\.nomeFile").val('');
+				$("#cv_label").text('').attr('href','');
+				
 			}
 			
 			function closeModaleAddPersonaFull(){
 				$("#add-personaFull-modal .close").click();
+				$("#add-persona-modal form")[0].reset();
 			}
 			
 			function reInitModaleAddPersona(){
@@ -655,6 +673,7 @@
 					.done(function(data) {
 					  	$('#'+target).html(data);
 					  	closeModaleAddPersona();
+					  	updateSelect(target);
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
@@ -740,6 +759,10 @@
 	
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="responsabiliScientifici">
+			<!-- <th:block th:if="${#lists.size(eventoWrapper.responsabiliScientifici) == 0}">
+				<label class="col-xs-offset-4 col-xs-4" th:text="${#lists.size(eventoWrapper.responsabiliScientifici)}"></label>
+				<label class="col-xs-offset-4 col-xs-4" th:text="#{label.nessun_responsabile_registrato}"></label>
+			</th:block> -->
 			<table id="responsabiliScientifici" class="datatable-responsive-responsabili table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 				<thead>
 					 <tr>
@@ -747,6 +770,7 @@
 						<th th:text="#{label.nome}">Nome</th>
 						<th th:text="#{label.cf}">CF</th>
 						<th th:text="#{label.qualifica}">Qualifica</th>
+						<th th:text="#{label.cv}">CV</th>
 						<th style="padding-right: 8px;">
 							<a id="lookup-responsabiliScientifici" class="btn btn-primary" onclick="openLookupPersona('responsabiliScientifici','base')" data-toggle="modal" data-target=".modal-lookup-persona">
 								<span><i class="fa fa-search"></i></span>
@@ -763,6 +787,10 @@
 						<td th:text="${persona.anagrafica.nome}"></td>
 						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
 						<td th:text="${persona.qualifica}"></td>
+						<td>
+							<a th:if="${persona.anagrafica.cv?.id}" th:text="${persona.anagrafica?.cv.nomeFile}" th:href="@{|/file/${persona.anagrafica.cv.id}|}"></a>
+							<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
+						</td>
 						<td>
 							<a onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
@@ -784,6 +812,7 @@
 						<th th:text="#{label.cf}">CF</th>
 						<th th:text="#{label.ruolo}">Ruolo</th>
 						<th th:text="#{label.titolare} + '/' + #{label.sostituto}">Titolare/Sostituto</th>
+						<th th:text="#{label.cv}">CV</th>
 						<th style="padding-right: 8px;">
 							<a id="lookup-docenti" class="btn btn-primary" onclick="openLookupPersona('docenti','base')" data-toggle="modal" data-target=".modal-lookup-persona">
 								<span><i class="fa fa-search"></i></span>
@@ -795,12 +824,16 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.docenti}">
+					<tr th:if="${#lists.size(eventoWrapper.docenti) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.docenti}">
 						<td th:text="${persona.anagrafica.cognome}"></td>
 						<td th:text="${persona.anagrafica.nome}"></td>
 						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
 						<td th:text="${persona.ruolo}"></td>
 						<td th:text="${persona.titolare}"></td>
+						<td>
+							<a th:if="${persona.anagrafica.cv?.id}" th:text="${persona.anagrafica?.cv.nomeFile}" th:href="@{|/file/${persona.anagrafica.cv.id}|}"></a>
+							<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
+						</td>
 						<td>
 							<a onclick="removePersonaFrom('docenti',this)" class="btn btn-danger" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
@@ -847,51 +880,109 @@
 							</a>
 						</td>								
 					</tr>
-					<tr th:unless="${eventoWrapper.evento.responsabileSegreteria != null and eventoWrapper.evento.responsabileSegreteria.anagrafica != null}">
-						<td colspan="7" th:text="${'nessun responsabile'}"></td>
-					</tr>
 				</tbody>
 			</table>
 		</div>
 	</th:block>
 	
 	<th:block style="display:none">
-		<div class="col-xs-12" th:fragment="programmaDelGiorno(index,programma)">
-			<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
-				<div th:attr="data-programma-id=${index}">
-					<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-						<tr>
-							<th th:text="#{label.orario}">ORARIO</th>
-							<th th:text="#{label.argomento}">ARGOMENTO</th>
-							<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
-							<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
-							<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
-							<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
-							<th>
-								<a id="add-attivita" class="btn btn-success" th:onclick="${'openAddAttivitaTo(__${index}__)'}" data-toggle="modal" data-target=".modal-add-AttivitaRES">
-									<span><i class="fa fa-plus"></i></span>
-								</a>
-							</th>
-						</tr>
-						
-						<tr th:each="attivita , status2 : ${programma}">
-							<td th:text="${__${programma}__[__${status2.index}__].orario}"></td>
-							<td th:text="${__${programma}__[__${status2.index}__].argomento}"></td>
-							<td th:text="${__${programma}__[__${status2.index}__].risultatoAtteso}"></td>
-							<td th:text="${__${programma}__[__${status2.index}__].obiettivoFormativo}"></td>
-							<td th:text="${__${programma}__[__${status2.index}__].metodologiaDidattica}"></td>
-							<td th:text="${__${programma}__[__${status2.index}__].oreAttivita}"></td>
-							<td>
-								<a onclick="removeAttivitaFrom('responsabileSegreteria',this)" class="btn btn-danger" th:text="#{label.elimina}">
-									<span><i class="fa fa-trash"></i></span>
-								</a>
-							</td>
-						</tr>
-					</table>
+		<div class="col-xs-12" th:fragment="attivitaRES">
+			<div id="attivitaRES" class="col-xs-12" th:each="programmaGiornaliero , status : ${eventoWrapper.programmaEventoRES}">
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.programma_del}">Programma del</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+						<label class="control-label" th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].giorno}"> </label>
+					</div>
+				</div>
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.provincia}">Provincia</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+						<input type="text" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.provincia}" />	
+					</div>
+				</div>
+				
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.comune}">Comune</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+						<input type="text" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.comune}" />		
+					</div>
+				</div>
+				
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.indirizzo}">Indirizzo</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+						<input type="text" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.indirizzo}" />	
+					</div>
+				</div>
+				
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.luogo}">Luogo</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+						<input type="text" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.luogo}" />		
+					</div>
+				</div>
+			
+				<div class="col-xs-12">
+					<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
+					<div th:attr="data-programma-id=__${status.index}__">
+						<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>	
+								<tr>
+									<th th:text="#{label.orario}">ORARIO</th>
+									<th th:text="#{label.argomento}">ARGOMENTO</th>
+									<th th:text="#{label.docente}">Docente</th>
+									<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
+									<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
+									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
+									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
+									<th>
+										<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${status.index}__,false)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<span><i class="fa fa-plus"></i></span>
+										</a>
+										<a id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${status.index}__,true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<span><i class="fa fa-pause-circle-o"></i></span>
+										</a>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:attr="data-row-id=${__${status2.index}__}" th:each="attivita , status2 : ${eventoWrapper.programmaEventoRES[__${status.index}__].programma}">
+									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].orario}"></td>
+									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].argomento}"></td>
+									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].docente?.anagrafica?.cognome}"></td>
+									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].risultatoAtteso}"></td>
+									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].obiettivoFormativo?.nome}"></td>
+									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].metodologiaDidattica?.nome}"></td>
+									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].oreAttivita}"></td>
+									<td>
+										<a onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger" th:text="#{label.elimina}">
+											<span><i class="fa fa-trash"></i></span>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="divider-dashed"></div>
+					</div>
 				</div>
 			</div>
-		</th:block>
-	
+		</div>
+	</th:block>
 	
 </body>
 </html>

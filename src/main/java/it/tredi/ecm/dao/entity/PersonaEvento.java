@@ -1,5 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -22,7 +24,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class PersonaEvento extends BaseEntity{
+public class PersonaEvento extends BaseEntity implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -811983653516900898L;
+
 	private static Logger LOGGER = LoggerFactory.getLogger(PersonaEvento.class);
 	
 	@Embedded

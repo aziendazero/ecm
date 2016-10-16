@@ -1,11 +1,9 @@
 package it.tredi.ecm.dao.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -16,22 +14,10 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
-import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
-import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
@@ -64,7 +50,7 @@ public class EventoRES extends Evento{
 	@ElementCollection
 	private List<String> risultatiAttesi = new ArrayList<String>();
 
-	@OneToMany(mappedBy="eventoRES", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy="eventoRES", cascade=CascadeType.ALL, orphanRemoval=true)
 	@OrderBy("giorno ASC")
 	private List<ProgrammaGiornalieroRES> programma = new ArrayList<ProgrammaGiornalieroRES>();
 
@@ -87,17 +73,19 @@ public class EventoRES extends Evento{
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
 
+	@Override
 	public float calcoloDurata(){
 		float durata = 0.0f;
 		for(ProgrammaGiornalieroRES progrGior : programma){
 			for(DettaglioAttivitaRES dett : progrGior.getProgramma()){
-				durata += dett.getOreAttivita();
+				if(!dett.isPausa())
+					durata += dett.getOreAttivita();
 			}
 		}
 		return durata;
 	}
 
-
+	@Override
 	public float calcoloCreditiFormativi(){
 		float crediti = 0.0f;
 
