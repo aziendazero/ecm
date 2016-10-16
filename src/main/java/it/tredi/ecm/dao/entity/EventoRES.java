@@ -72,7 +72,7 @@ public class EventoRES extends Evento{
 	private String descrizioneVerificaRicaduteFormative;
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
-
+	
 	public float calcoloDurata(List<ProgrammaGiornalieroRES> programma){
 		this.durata = 0.0f;
 		for(ProgrammaGiornalieroRES progrGior : programma){
