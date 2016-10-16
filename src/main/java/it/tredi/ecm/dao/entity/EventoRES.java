@@ -73,7 +73,12 @@ public class EventoRES extends Evento{
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
 
+<<<<<<< HEAD
 	public float calcoloDurata(List<ProgrammaGiornalieroRES> programma){
+=======
+	@Override
+	public float calcoloDurata(){
+>>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 		this.durata = 0.0f;
 		for(ProgrammaGiornalieroRES progrGior : programma){
 			for(DettaglioAttivitaRES dett : progrGior.getProgramma()){
@@ -84,7 +89,12 @@ public class EventoRES extends Evento{
 		return durata;
 	}
 
+<<<<<<< HEAD
 	public float calcoloCreditiFormativi(List<ProgrammaGiornalieroRES> programma){
+=======
+	@Override
+	public float calcoloCreditiFormativi(){
+>>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 		this.crediti = 0.0f;
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
