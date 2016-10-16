@@ -73,21 +73,19 @@ public class EventoRES extends Evento{
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
 
-	@Override
-	public float calcoloDurata(){
-		float durata = 0.0f;
+	public float calcoloDurata(List<ProgrammaGiornalieroRES> programma){
+		this.durata = 0.0f;
 		for(ProgrammaGiornalieroRES progrGior : programma){
 			for(DettaglioAttivitaRES dett : progrGior.getProgramma()){
-				if(!dett.isPausa())
+				if(!dett.isPausa() && dett.getOreAttivita()!= null)
 					durata += dett.getOreAttivita();
 			}
 		}
 		return durata;
 	}
 
-	@Override
-	public float calcoloCreditiFormativi(){
-		float crediti = 0.0f;
+	public float calcoloCreditiFormativi(List<ProgrammaGiornalieroRES> programma){
+		this.crediti = 0.0f;
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
 			crediti = (0.20f * durata);

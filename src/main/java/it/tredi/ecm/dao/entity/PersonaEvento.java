@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum;
@@ -42,8 +43,10 @@ public class PersonaEvento extends BaseEntity implements Serializable{
 	private String titolare;
 	
 	@ManyToOne
+	@JsonIgnore
 	private Evento eventoResponsabile;
 	@ManyToOne
+	@JsonIgnore
 	private Evento eventoDocente;
 	
 	public PersonaEvento(){}

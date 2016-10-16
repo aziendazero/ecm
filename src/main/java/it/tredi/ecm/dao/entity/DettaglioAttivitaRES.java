@@ -46,9 +46,9 @@ public class DettaglioAttivitaRES implements Serializable{
 	}
 	
 	public boolean isPausa(){
-		if(this.argomento.equalsIgnoreCase("PAUSA") && 
+		if((this.argomento!= null && this.argomento.equalsIgnoreCase("PAUSA")) && 
 				this.docente == null && 
-				this.risultatoAtteso.isEmpty() && 
+				(this.risultatoAtteso != null && this.risultatoAtteso.isEmpty()) && 
 				this.obiettivoFormativo == null && 
 				this.metodologiaDidattica == null)
 			return true;

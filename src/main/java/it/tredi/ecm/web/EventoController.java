@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
@@ -58,6 +60,7 @@ import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import javassist.bytecode.analysis.Util;
 
 @Controller
 @SessionAttributes("eventoWrapper")
@@ -72,11 +75,16 @@ public class EventoController {
 	
 	@Autowired private AnagraficaEventoService anagraficaEventoService;
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
+	@Autowired private PersonaEventoRepository personaEventoRepo;
 	
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
 	private final String RENDICONTO = "evento/eventoRendiconto";
-
+	private final String EDITRES = "evento/eventoRESEdit";
+	private final String EDITFSC = "evento/eventoFSCEdit";
+	private final String EDITFAD = "evento/eventoFADEdit";
+	
+	
 	@ModelAttribute("elencoProvince")
 	public List<String> getElencoProvince(){
 		List<String> elencoProvince = new ArrayList<String>();
@@ -459,20 +467,22 @@ public class EventoController {
 					anagraficaEventoService.save(anagraficaEventoToSave);
 				}
 			}
-			
 			PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				p.setEventoResponsabile(eventoWrapper.getEvento());
+				//p.setEventoResponsabile(eventoWrapper.getEvento());
+				personaEventoRepo.save(p);
 				eventoWrapper.getResponsabiliScientifici().add(p);
 			}else if(target.equalsIgnoreCase("docenti")){
-				p.setEventoDocente(eventoWrapper.getEvento());
+				//p.setEventoDocente(eventoWrapper.getEvento());
+				personaEventoRepo.save(p);//TODO trovare soluzione per settare docente senza id in AddAttivitaRES
 				eventoWrapper.getDocenti().add(p);
 			}
 			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: " + target;
 		}
 	}
 	
@@ -501,7 +511,8 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: " + target;
 		}
 	}
 	
@@ -522,7 +533,8 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: " + target;
 		}
 	}
 	
@@ -540,6 +552,7 @@ public class EventoController {
 			}
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
 			return "redirect:/home";
 		}
 	}
@@ -562,8 +575,8 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.error(Utils.getLogMessage(ex.getMessage()));
-			return "redirect:/home";
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: " + target;
 		}
 	}
 	
@@ -583,7 +596,8 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: " + target;
 		}
 	}
 	
@@ -603,12 +617,13 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/home";
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: " + target;
 		}
 	}
 	
-	@RequestMapping(value = "/provider/{providerId}/evento/showSection", method=RequestMethod.POST)
-	public String showSection(@RequestParam("sectionIndex") String sIndex, 
+	@RequestMapping(value = "/provider/{providerId}/evento/showSection/{sectionIndex}", method=RequestMethod.POST)
+	public String showSection(@PathVariable("sectionIndex") String sIndex, 
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			int sectionIndex = Integer.valueOf(sIndex).intValue();
@@ -617,19 +632,37 @@ public class EventoController {
 			}else if(sectionIndex == 3){
 				//sezione finale
 				//ricalcolo durata e crediti
-				eventoWrapper.getEvento().calcoloDurata();
 				if(eventoWrapper.getEvento() instanceof EventoRES){
+					((EventoRES)eventoWrapper.getEvento()).calcoloDurata(eventoWrapper.getProgrammaEventoRES());
 					if(!((EventoRES)eventoWrapper.getEvento()).isConfermatiCrediti()){
-						eventoWrapper.getEvento().calcoloCreditiFormativi();
+						((EventoRES)eventoWrapper.getEvento()).calcoloCreditiFormativi(eventoWrapper.getProgrammaEventoRES());
 					}
 				}
 			}
-			return EDIT + " :: " + "section-" + sectionIndex;
+			
+			if(eventoWrapper.getEvento() instanceof EventoRES){
+				return EDITRES + " :: " + "section-" + sectionIndex;
+			}else if(eventoWrapper.getEvento() instanceof EventoFSC){
+				return EDITFSC + " :: " + "section-" + sectionIndex;
+			}else{
+				return EDITFAD + " :: " + "section-" + sectionIndex;
+			}
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.error(Utils.getLogMessage(ex.getMessage()));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
 			return "redirect:/home";
 		}
+	}
+	
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
+	@RequestMapping("/provider/{providerId}/evento/listaDocentiAttivitaRES")
+	@ResponseBody
+	public List<PersonaEvento>getListaDocentiAttivitaRES(@PathVariable Long providerId, @ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		List<PersonaEvento> lista = new ArrayList<PersonaEvento>();
+		if(eventoWrapper.getEvento() instanceof EventoRES){
+			lista = eventoWrapper.getDocenti();
+		}
+		return lista;
 	}
 	
 }

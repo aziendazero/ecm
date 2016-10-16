@@ -20,6 +20,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
@@ -162,6 +163,8 @@ public class EventoServiceImpl implements EventoService {
 			
 			//Docenti
 			((EventoRES) evento).setDocenti(eventoWrapper.getDocenti());
+			for(PersonaEvento p : ((EventoRES) evento).getDocenti())
+				p.setEventoDocente(evento);
 			
 			//Programma evento
 			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());

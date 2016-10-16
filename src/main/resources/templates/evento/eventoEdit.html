@@ -48,7 +48,7 @@
 						</button>
 						<h4 class="modal-title" id="myModalLabel2" th:text="#{label.inserisci_persona}">Inserisci persona</h4>
 					</div>
-					<div class="modal-body">
+					<div class="modal-body" id="container-addPersonaTo">
 						<form id="addPersonaTo" name="addPersonaEvento" class="form-horizontal form-label-left"
 								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}" 
 								 method="post" enctype="multipart/form-data"
@@ -200,7 +200,7 @@
 						</button>
 						<h4 class="modal-title" id="myModalLabel3" th:text="#{label.inserisci_persona}">Inserisci persona</h4>
 					</div>
-					<div class="modal-body">
+					<div class="modal-body" id="container-addPersonaFullTo">
 						<form id="addPersonaFullTo" name="addPersonaFullEvento" class="form-horizontal form-label-left"
 								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaFullTo|}" 
 								th:object="${eventoWrapper.tempPersonaFullEvento}" method="post" enctype="multipart/form-data"
@@ -314,7 +314,8 @@
 								</button>
 								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
-									<li><a><label class="in-dropdown" for="submitButton" th:text="#{label.salva_modifiche}"></label></a></li>
+									<!-- <li><a><label class="in-dropdown" for="submitButton" th:text="#{label.salva_modifiche}"></label></a></li> -->
+									<li><a th:text="#{label.salva_modifiche}" onclick="submitSave()"></a></li>
 									<li><a th:text="#{label.conferma_evento}"></a></li>
 								</ul>
 							</div>
@@ -369,8 +370,37 @@
 
 				});
 			};
-
+			
 			$(document).ready(function() {
+				//tabella responsabili scientifici
+			    tables['responsabiliScientifici'] =  $('#responsabiliScientifici').DataTable({
+			    	"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+					"ordering" : false,
+					"columnDefs": [{
+						"targets": 4,
+						"width": "90px",
+						"sClass": "center"
+					}]
+			    });
+			  	
+			  	//tabella docenti
+			    tables['docenti'] = $('#docenti').DataTable({
+			    	"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+					"ordering" : false,
+					"columnDefs": [{
+						"targets": 5,
+						"width": "90px",
+						"sClass": "center"
+					}]
+			    });
+				globalInitThomCommon();
+			});
+			
+			function globalInitThomCommon(){
 				var days = getDayNamesShort();
 				var months = getMonthNames();
 
@@ -402,21 +432,7 @@
 						$(this).remove();
 					});
 				});
-
-				function updateDataFine() {
-					$('#dataFine').daterangepicker({
-				        singleDatePicker: true,
-				        autoApply: true,
-				        autoUpdateInput: true,
-				        minDate: $('#dataInizio').val(),
-				        format: "DD/MM/YYYY",
-				        locale: {
-					        daysOfWeek: days,
-			                monthNames: months,
-				        }
-				    })
-				}
-
+				
 				//setta minDate alla data di inizio evento
 				$('#dataInizio').on("apply.daterangepicker change", function() {
 					updateDataFine();
@@ -478,33 +494,21 @@
 			    if([[${eventoWrapper.evento.eventoAvvalePartner}]]) {
 			    	mostraNascondiCampiPartner(true);
 				}
-			  	
-			  	//tabella responsabili scientifici
-			    tables['responsabiliScientifici'] =  $('#responsabiliScientifici').DataTable({
-			    	"bFilter" : false,
-					"bInfo" : false,
-					"bPaginate" : false,
-					"ordering" : false,
-					"columnDefs": [{
-						"targets": 4,
-						"width": "90px",
-						"sClass": "center"
-					}]
-			    });
-			  	
-			  	//tabella docenti
-			    tables['docenti'] = $('#docenti').DataTable({
-			    	"bFilter" : false,
-					"bInfo" : false,
-					"bPaginate" : false,
-					"ordering" : false,
-					"columnDefs": [{
-						"targets": 5,
-						"width": "90px",
-						"sClass": "center"
-					}]
-			    });
-			});
+			}
+			
+			function updateDataFine() {
+				$('#dataFine').daterangepicker({
+			        singleDatePicker: true,
+			        autoApply: true,
+			        autoUpdateInput: true,
+			        minDate: $('#dataInizio').val(),
+			        format: "DD/MM/YYYY",
+			        locale: {
+				        daysOfWeek: days,
+		                monthNames: months,
+			        }
+			    })
+			}
 			
 			function abilitaDiscipline(professioni) {
 				//flag per capire se c'è almeno una professione
@@ -660,11 +664,10 @@
 			
 			function reInitModaleAddPersona(){
 				$('select').selectpicker();
-				//TODO reinit checkbox
-				/* $('input #straniero').iCheck({
+				$('input.flat').iCheck({
 		            checkboxClass: 'icheckbox_flat-green',
 		            radioClass: 'iradio_flat-green'
-		        }); */
+		        });
 			}
 			
 			function sendAjaxAddPersonaTo(){
@@ -673,7 +676,7 @@
 					.done(function(data) {
 					  	$('#'+target).html(data);
 					  	closeModaleAddPersona();
-					  	updateSelect(target);
+					  	sendAjaxRequestDocentiAttivitaRES();
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
@@ -730,7 +733,7 @@
 				if(type == 'Full'){
 					$.get(url).done(function(data) {
 						closeModaleLookupPersona();
-						$('#addPersonaFullTo').html(data);
+						$('#container-addPersonaFullTo').html(data);
 						openAddPersonaTo(target,type);
 						$('#add-'+ target).click();
 					  })
@@ -740,7 +743,7 @@
 				}else{
 					$.get(url).done(function(data) {
 						closeModaleLookupPersona();
-						$('#addPersonaTo').html(data);
+						$('#container-addPersonaTo').html(data);
 						reInitModaleAddPersona();
 						openAddPersonaTo(target,type);
 						$('#add-'+ target).click();
@@ -749,7 +752,24 @@
 				    	alert( "error" );
 				 	 })
 				}
-				
+			}
+			
+			function sendAjaxRequestDocentiAttivitaRES(){
+				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/listaDocentiAttivitaRES|}]];
+				$.get(url, function(data){
+					$("#addAttivitaRES-docente").empty();
+					for(var item = 0; item < data.length; item++){
+						var option = '<option value = "' + data[item].id + '">' + data[item].anagrafica.cognome + "</option>";
+						$("#addAttivitaRES-docente").append(option);
+					}
+					$("#addAttivitaRES-docente").prop("disabled", false);
+					$("#addAttivitaRES-docente").selectpicker('refresh');
+
+				});
+			};
+			
+			function submitSave(){
+				$("#submitButton").click();
 			}
 			
 
