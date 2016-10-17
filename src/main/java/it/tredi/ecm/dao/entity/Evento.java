@@ -2,10 +2,13 @@ package it.tredi.ecm.dao.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.ElementCollection;
@@ -18,7 +21,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -31,8 +33,6 @@ import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
-import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
-import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -197,8 +197,8 @@ public class Evento extends BaseEntity{
 	@Column(name = "data_fine")//fine evento
 	private LocalDate dataFine;
 
-	@OneToMany(mappedBy="eventoResponsabile")
-	private Set<PersonaEvento> responsabili = new HashSet<PersonaEvento>();
+	@OneToMany(mappedBy="eventoResponsabile", cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
 
 	protected int numeroPartecipanti;
 
@@ -206,14 +206,14 @@ public class Evento extends BaseEntity{
 	private File brochureEvento;
 
 	protected float durata;//calcolo automatico
-	private float crediti;//calcolo con algoritmo che puo essere modificato dal provider
+	protected float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
-	@OneToOne
-	private PersonaFullEvento responsabileSegreteriaOrganizzativa;
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();
 
 	private BigDecimal quotaPartecipazione;
 
-	private boolean eventoSponsorizzato;
+	private Boolean eventoSponsorizzato;
 	@OneToMany(mappedBy="evento")
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();
 
@@ -223,24 +223,29 @@ public class Evento extends BaseEntity{
 	@OneToOne
 	private File autocertificazioneAutorizzazioneMinisteroSalute;
 
-	private boolean altreFormeFinanziamento;
+	private Boolean altreFormeFinanziamento;
 	@OneToOne
 	private File autocertificazioneAssenzaFinanziamenti;
 	@OneToOne
 	private File contrattiAccordiConvenzioni;
 
-	private boolean eventoAvvalePartner;
+	private Boolean eventoAvvalePartner;
 	@OneToMany(mappedBy="evento")
 	private Set<Partner> partners = new HashSet<Partner>();
 
 	@OneToOne
 	private File dichiarazioneAssenzaConflittoInteresse;
 
-	private boolean proceduraVerificaQualitaPercepita;
+	private Boolean proceduraVerificaQualitaPercepita;
 
-	private boolean autorizzazionePrivacy;
+	private Boolean autorizzazionePrivacy;
 
-
+	public float calcoloDurata(){
+		return 0;
+	};
+	public float calcoloCreditiFormativi(){
+		return 0;
+	};
 
 	@Override
     public boolean equals(Object o) {

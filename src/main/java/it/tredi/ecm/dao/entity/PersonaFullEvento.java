@@ -34,7 +34,8 @@ public class PersonaFullEvento extends BaseEntity{
 	
 	public PersonaFullEvento(AnagraficaFullEvento anagrafica){
 		try{
-			this.anagrafica = (AnagraficaFullEventoBase) anagrafica.getAnagrafica().clone();
+			//this.anagrafica = (AnagraficaFullEventoBase) anagrafica.getAnagrafica().clone();
+			this.anagrafica = (AnagraficaFullEventoBase) Utils.copy(anagrafica.getAnagrafica());
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore cast AnagraficaFullEventoBase"), ex);
 		}

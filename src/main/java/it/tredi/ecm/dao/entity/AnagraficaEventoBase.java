@@ -1,5 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -11,7 +13,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Embeddable
-public class AnagraficaEventoBase{
+public class AnagraficaEventoBase implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2892548903315182156L;
 	private String cognome;
 	private String nome;
 	private String codiceFiscale;

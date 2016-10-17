@@ -3,6 +3,8 @@ package it.tredi.ecm.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,10 +24,12 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
+import it.tredi.ecm.dao.entity.PersonaEvento;
+import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
-import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Service
 public class EventoServiceImpl implements EventoService {
@@ -93,7 +97,7 @@ public class EventoServiceImpl implements EventoService {
 
 			//xsd validation
 			try {
-				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), xml_b, Helper.getSchemaEvento_1_16_XSD());	
+				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), xml_b, Helper.getSchemaEvento_1_16_XSD());
 			}
 			catch (Exception e) {
 				throw new EcmException("error.xml_validation", e.getMessage(), e);
@@ -117,7 +121,7 @@ public class EventoServiceImpl implements EventoService {
 			}
 			catch (Exception e) {
 				throw new EcmException("error.xml_evento_validation_with_db", e.getMessage(), e);
-			}			
+			}
 
 			//xsd validation
 			try {
@@ -149,12 +153,12 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
-	public Evento handleRipetibili(EventoWrapper eventoWrapper) {
+	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
 		Evento evento = eventoWrapper.getEvento();
-
-		//date intermedie
-		if (eventoWrapper.getDateIntermedieTemp() != null && !eventoWrapper.getDateIntermedieTemp().isEmpty()) {
-			Set<LocalDate> dateIntermedie = ((EventoRES) evento).getDateIntermedie();
+		
+		if(evento instanceof EventoRES){
+			//date intermedie
+			Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 			for (String s : eventoWrapper.getDateIntermedieTemp()) {
 				if(s != null && !s.isEmpty()) {
@@ -163,17 +167,48 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 			((EventoRES) evento).setDateIntermedie(dateIntermedie);
+			
+			//Risultati Attesi
+			((EventoRES) evento).setRisultatiAttesi(eventoWrapper.getRisultatiAttesiTemp());
+			
+			//Docenti
+			((EventoRES) evento).setDocenti(eventoWrapper.getDocenti());
+			for(PersonaEvento p : ((EventoRES) evento).getDocenti())
+				p.setEventoDocente(evento);
+			
+			//Programma evento
+			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
+			for(ProgrammaGiornalieroRES p : ((EventoRES) evento).getProgramma()){
+				p.setEventoRES((EventoRES) evento);
+			}
+			
+			//Documento Verifica Ricadute Formative
+			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
+				((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
+			}
+		}
+		
+		//Responsabili
+		evento.setResponsabili(eventoWrapper.getResponsabiliScientifici());
+		
+		//brochure
+		if (eventoWrapper.getBrochure().getId() != null) {
+			evento.setBrochureEvento(eventoWrapper.getBrochure());
 		}
 
-		//risultati attesi
-		if (eventoWrapper.getRisultatiAttesiTemp() != null && !eventoWrapper.getRisultatiAttesiTemp().isEmpty()) {
-			List<String> risultatiAttesi = ((EventoRES) evento).getRisultatiAttesi();
-			for (String s : eventoWrapper.getRisultatiAttesiTemp()) {
-				if(s != null && !s.isEmpty()) {
-					risultatiAttesi.add(s);
-				}
-			}
-			((EventoRES) evento).setRisultatiAttesi(risultatiAttesi);
+		//Autocertificazione Assenza Finanziamenti
+		if (eventoWrapper.getAutocertificazioneAssenzaFinanziamenti().getId() != null) {
+			evento.setAutocertificazioneAssenzaFinanziamenti(eventoWrapper.getAutocertificazioneAssenzaFinanziamenti());
+		}
+
+		//Contratti Accordi Convenzioni
+		if (eventoWrapper.getContrattiAccordiConvenzioni().getId() != null) {
+			evento.setContrattiAccordiConvenzioni(eventoWrapper.getContrattiAccordiConvenzioni());
+		}
+
+		//Dichiarazione Assenza Conflitto Interesse
+		if (eventoWrapper.getDichiarazioneAssenzaConflittoInteresse().getId() != null) {
+			evento.setDichiarazioneAssenzaConflittoInteresse(eventoWrapper.getDichiarazioneAssenzaConflittoInteresse());
 		}
 
 		return evento;
@@ -212,6 +247,60 @@ public class EventoServiceImpl implements EventoService {
 			throw new EcmException("error.invio_report_cogeaps", e.getMessage(), e);
 		}
 		
+	}
+
+	@Override
+	public EventoWrapper prepareRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
+		Evento evento = eventoWrapper.getEvento();
+
+		//programma evento
+		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
+		if(evento instanceof EventoRES){
+			//date intermedie
+			List<String> dateIntermedieTemp = new ArrayList<String>();
+			for (LocalDate d : ((EventoRES) evento).getDateIntermedie()) {
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				String dataToString = d.format(dtf);
+				dateIntermedieTemp.add(dataToString);
+			}
+			eventoWrapper.setDateIntermedieTemp(dateIntermedieTemp);
+			
+			//risultati attesi
+			eventoWrapper.setRisultatiAttesiTemp(((EventoRES) evento).getRisultatiAttesi());
+			
+			//Docenti
+			eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
+			
+			//Programma
+			eventoWrapper.setProgrammaEventoRES(((EventoRES) evento).getProgramma());
+			
+			//Documento Verifica Ricadute Formative
+			if (((EventoRES) evento).getDocumentoVerificaRicaduteFormative() != null) {
+				eventoWrapper.setDocumentoVerificaRicaduteFormative(((EventoRES) evento).getDocumentoVerificaRicaduteFormative());
+			}
+		}
+		
+		//brochure
+		if (evento.getBrochureEvento() != null) {
+			eventoWrapper.setBrochure(evento.getBrochureEvento());
+		}
+
+		//Autocertificazione Assenza Finanziamenti
+		if (evento.getAutocertificazioneAssenzaFinanziamenti() != null) {
+			eventoWrapper.setAutocertificazioneAssenzaFinanziamenti(evento.getAutocertificazioneAssenzaFinanziamenti());
+		}
+
+		//Contratti Accordi Convenzioni
+		if (evento.getContrattiAccordiConvenzioni() != null) {
+			eventoWrapper.setContrattiAccordiConvenzioni(evento.getContrattiAccordiConvenzioni());
+		}
+
+		//Dichiarazione Assenza Conflitto Interesse
+		if (evento.getDichiarazioneAssenzaConflittoInteresse() != null) {
+			eventoWrapper.setDichiarazioneAssenzaConflittoInteresse(evento.getDichiarazioneAssenzaConflittoInteresse());
+		}
+
+		return eventoWrapper;
 	}
 
 }

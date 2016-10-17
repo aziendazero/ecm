@@ -1,13 +1,12 @@
 package it.tredi.ecm.dao.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
@@ -15,22 +14,10 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
-import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
-import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
@@ -56,19 +43,19 @@ public class EventoRES extends Evento{
 	private boolean workshopSeminariEcm;
 	private String titoloConvegno;
 
-	@OneToMany(mappedBy="eventoDocente")
-	private Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();
+	@OneToMany(mappedBy="eventoDocente" , cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
 	private String razionale;
 	@ElementCollection
 	private List<String> risultatiAttesi = new ArrayList<String>();
 
-	@OneToMany(mappedBy="eventoRES")
+	@OneToMany(mappedBy="eventoRES", cascade=CascadeType.ALL, orphanRemoval=true)
 	@OrderBy("giorno ASC")
-	private Set<ProgrammaGiornalieroRES> programma = new HashSet<ProgrammaGiornalieroRES>();
+	private List<ProgrammaGiornalieroRES> programma = new ArrayList<ProgrammaGiornalieroRES>();
 
 	@ElementCollection
-	private Set<VerificaApprendimentoRESEnum> verificaApprendiemento;
+	private Set<VerificaApprendimentoRESEnum> verificaApprendimento;
 
 	private boolean confermatiCrediti;
 
@@ -77,28 +64,28 @@ public class EventoRES extends Evento{
 
 	private String materialeDurevoleRilasciatoAiPratecipanti;
 
-	private boolean soloLinguaItaliana;
+	private Boolean soloLinguaItaliana;
 	private String linguaStranieraUtilizzata;
-	private boolean esisteTraduzioneSimultanea;
+	private Boolean esisteTraduzioneSimultanea;
 
-	private boolean verificaRicaduteFormative;
+	private Boolean verificaRicaduteFormative;
 	private String descrizioneVerificaRicaduteFormative;
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
-
-	public float calcoloDurata(){
-		float durata = 0.0f;
+	
+	public float calcoloDurata(List<ProgrammaGiornalieroRES> programma){
+		this.durata = 0.0f;
 		for(ProgrammaGiornalieroRES progrGior : programma){
 			for(DettaglioAttivitaRES dett : progrGior.getProgramma()){
-				durata += dett.getOreAttivita();
+				if(!dett.isPausa() && dett.getOreAttivita()!= null)
+					durata += dett.getOreAttivita();
 			}
 		}
 		return durata;
 	}
 
-
-	public float calcoloCreditiFormativi(){
-		float crediti = 0.0f;
+	public float calcoloCreditiFormativi(List<ProgrammaGiornalieroRES> programma){
+		this.crediti = 0.0f;
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
 			crediti = (0.20f * durata);
