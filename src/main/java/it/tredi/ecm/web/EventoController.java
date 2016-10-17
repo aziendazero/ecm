@@ -460,10 +460,6 @@ public class EventoController {
 		eventoWrapper.setProviderId(providerId);
 		eventoWrapper.setReportPartecipanti(new File(FileEnum.FILE_REPORT_PARTECIPANTI));
 		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.RENDICONTO);
-		RendicontazioneInviata ultimoReportInviato = evento.getInviiRendicontazione().size() == 0? null : (RendicontazioneInviata)(evento.getInviiRendicontazione().toArray()[evento.getInviiRendicontazione().size() - 1]);
-
-//TODO - gestire correttamente l'ultimo report inviato
-		eventoWrapper.setUltimoReportInviato(ultimoReportInviato);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - exiting"));
 		return eventoWrapper;
 	}

@@ -29,7 +29,6 @@ public class EventoWrapper {
 
 	//parte rendicontazione
 	private File reportPartecipanti;
-	private RendicontazioneInviata ultimoReportInviato;
 
 	//parte ripetibili
 	private List<String> dateIntermedieTemp = new ArrayList<String>();

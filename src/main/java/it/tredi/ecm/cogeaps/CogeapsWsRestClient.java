@@ -7,6 +7,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -87,8 +88,49 @@ public class CogeapsWsRestClient {
         finally {
             httpclient.close();
         }
-		
 	}	
 
+	public CogeapsStatoElaborazioneResponse statoElaborazione(String fileName) throws Exception {
+		String complete_url = protocol + "://" + host + ":" + port +  stato_elaborazione_service + "?nomeFile" + fileName;
+		LOGGER.info("Executing cogeaps request: " + complete_url);		
+		
+        HttpHost target = new HttpHost(host, port, protocol);
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), new UsernamePasswordCredentials(username, password));
+        CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+        try {
+            // Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+            // Generate BASIC scheme object and add it to the local auth cache
+            BasicScheme basicAuth = new BasicScheme();
+            authCache.put(target, basicAuth);
+
+            // Add AuthCache to the execution context
+            HttpClientContext localContext = HttpClientContext.create();
+            localContext.setAuthCache(authCache);
+
+            HttpGet httpGet = new HttpGet(complete_url);
+                
+            //invio richiesta GET
+            CloseableHttpResponse response = httpclient.execute(target, httpGet, localContext);
+            
+            try {
+            	String response_s = EntityUtils.toString(response.getEntity());
+            	LOGGER.info("cogeaps http response code: " + response.getStatusLine());
+                LOGGER.info("cogeaps response: " + response_s);
+
+                CogeapsStatoElaborazioneResponse cogeapsStatoElaborazioneResponse = jacksonObjectMapper.readValue(response_s, CogeapsStatoElaborazioneResponse.class);
+                cogeapsStatoElaborazioneResponse.setResponse(response_s);
+                return cogeapsStatoElaborazioneResponse;
+            } 
+            finally {
+                response.close();
+            }
+        } 
+        finally {
+            httpclient.close();
+        }		
+	}
+	
 }
 
