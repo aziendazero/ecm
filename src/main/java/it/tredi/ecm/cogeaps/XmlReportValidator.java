@@ -20,13 +20,8 @@ import org.bouncycastle.cms.CMSSignedData;
 public class XmlReportValidator {
 
 	public static void validateXmlWithXsd(String fileName, byte []reportEventoXml, Schema schema) throws Exception {
-		//se P7M -> sbusto
-		if (fileName.trim().toUpperCase().endsWith(".P7M"))
-			reportEventoXml = extraxtFromP7m(reportEventoXml);
-		
-		//se ZIP -> unzip
-		if (fileName.trim().toUpperCase().endsWith(".ZIP.P7M"))
-			reportEventoXml = extractFromZip(reportEventoXml);
+		//estrazione xml
+		reportEventoXml = extractXml(fileName, reportEventoXml);
 		
 	    Validator validator = schema.newValidator();
 	    Source source = new StreamSource(new StringReader(new String(reportEventoXml, Helper.XML_REPORT_ENCODING)));
@@ -38,13 +33,8 @@ public class XmlReportValidator {
 	}
 	
 	private static void validateEventoXmlWithDb(String fileName, byte []reportEventoXml, Map<String, String> dbEventoDataMap) throws Exception {
-		//se P7M -> sbusto
-		if (fileName.trim().toUpperCase().endsWith(".P7M"))
-			reportEventoXml = extraxtFromP7m(reportEventoXml);
-		
-		//se ZIP -> unzip
-		if (fileName.trim().toUpperCase().endsWith(".ZIP.P7M"))
-			reportEventoXml = extractFromZip(reportEventoXml);
+		//estrazione xml
+		reportEventoXml = extractXml(fileName, reportEventoXml);
 
 		//ora siamo sicuri di avere un XML
 		Document xmlDoc = DocumentHelper.parseText(new String(reportEventoXml, Helper.XML_REPORT_ENCODING));
@@ -55,6 +45,18 @@ public class XmlReportValidator {
 			if (!xmlValue.equals(dbValue))
 				throw new Exception("I dati dell'evento non corrispondono a quelli memorizzati nel databse: [" + evento_field + "]: " + xmlValue + " - " + dbValue);
 		}
+	}
+	
+	private static byte []extractXml(String fileName, byte []data) throws Exception {
+		//se P7M -> sbusto
+		if (fileName.trim().toUpperCase().endsWith(".P7M"))
+			data = extraxtFromP7m(data);
+		
+		//se ZIP -> unzip
+		if (fileName.trim().toUpperCase().endsWith(".ZIP.P7M"))
+			data = extractFromZip(data);		
+		
+		return data;
 	}
 	
 	private static byte []extraxtFromP7m(byte []signed_b) throws Exception {

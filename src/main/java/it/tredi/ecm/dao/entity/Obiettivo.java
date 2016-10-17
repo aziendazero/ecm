@@ -1,5 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -16,6 +17,8 @@ public class Obiettivo extends BaseEntity{
 	private boolean nazionale;
 	@Enumerated(EnumType.STRING)
 	private CategoriaObiettivoNazionale categoria; 
+	
+	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;
 	
 	public Obiettivo(){}

@@ -101,6 +101,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			provider.setRagioneSociale(RagioneSocialeEnum.SRL);
 			provider.setNaturaOrganizzazione("Privata");
 			provider.setNoProfit(false);
+			provider.setCodiceCogeaps("ORG213");
 
 			provider.setStatus(ProviderStatoEnum.INSERITO);
 			provider.setAccount(account);
