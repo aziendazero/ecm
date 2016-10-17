@@ -181,11 +181,13 @@ public class EventoServiceImpl implements EventoService {
 			
 			//Docenti
 			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
+			List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
 			while(it.hasNext()){
 				PersonaEvento p = it.next();
 				p = personaEventoRepository.findOne(p.getId());
+				attachedList.add(p);
 			}
-			((EventoRES)evento).setDocenti(eventoWrapper.getDocenti());
+			((EventoRES)evento).setDocenti(attachedList);
 			
 			//Programma evento
 			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
@@ -205,11 +207,13 @@ public class EventoServiceImpl implements EventoService {
 		
 		//Responsabili
 		Iterator<PersonaEvento> it = eventoWrapper.getResponsabiliScientifici().iterator();
+		List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
 		while(it.hasNext()){
 			PersonaEvento p = it.next();
 			p = personaEventoRepository.findOne(p.getId());
+			attachedList.add(p);
 		}
-		evento.setResponsabili(eventoWrapper.getResponsabiliScientifici());
+		evento.setResponsabili(attachedList);
 		
 		//brochure
 		if (eventoWrapper.getBrochure().getId() != null) {
