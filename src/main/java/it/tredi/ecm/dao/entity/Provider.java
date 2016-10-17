@@ -128,6 +128,9 @@ public class Provider extends BaseEntity{
 
 	@OneToMany(mappedBy = "provider")
 	private Set<Pagamento> pagamenti = new HashSet<Pagamento>();
+	
+	@Column(name ="codice_cogeaps")
+	private String codiceCogeaps;
 
 	/** UTILS **/
 	public void addPersona(Persona persona){

@@ -12,7 +12,7 @@
 					<div class="x_title x_menu">
 						<h2 th:text="#{label.evento_to_cogeaps_title}">Evento</h2>
 						<div class="pull-right buttons-header">
-							<a class="btn btn-success pull-right" th:text="#{label.invia_al_cogeaps}" onclick="alert('TODO')"></a>
+							<a class="btn btn-success pull-right" th:text="#{label.invia_al_cogeaps}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/rendiconto/inviaACogeaps|}"></a>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
 						</div>
 						<div class="clearfix"></div>
@@ -105,6 +105,43 @@
 					</div>
 
 				</div>
+				
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.rendicontazione_inviata}"></h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<div th:if="${eventoWrapper.ultimoReportInviato}" class="value">
+							<div class="item form-group with-margin-top" th:if="${eventoWrapper.ultimoReportInviato.fileRendicontazione}">
+								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
+									<span th:text="#{label.reportPartecipantiXML}"></span>
+								</label>
+								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+									<div class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.ultimoReportInviato.fileRendicontazione.nomeFile}" th:href="@{|/file/${eventoWrapper.ultimoReportInviato.fileRendicontazione.id}|}"></a></div>
+								</div>
+							</div>
+							<div class="item form-group with-margin-top" th:if="${eventoWrapper.ultimoReportInviato.stato}">
+								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
+									<span th:text="#{label.stato}"></span>
+								</label>
+								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+									<div class="value"><span th:text="${eventoWrapper.ultimoReportInviato.stato}"/></div>
+								</div>
+							</div>
+							<div class="item form-group with-margin-top" th:if="${eventoWrapper.ultimoReportInviato.fileName}">
+								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
+									<span th:text="#{label.cogeaps_report_id}"></span>
+								</label>
+								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+									<div class="value"><span th:text="${eventoWrapper.ultimoReportInviato.fileName}"/></div>
+								</div>
+							</div>														
+						</div>
+						<div th:unless="${eventoWrapper.ultimoReportInviato}" class="value" th:text="#{label.nessuna_rendicontazione_inviata}"></div>
+					</div>
+				</div>				
+				
 			</div>
 		</div>
 		<script th:inline="javascript">

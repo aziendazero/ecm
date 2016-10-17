@@ -34,7 +34,7 @@ import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
 
 @Component
-@org.springframework.context.annotation.Profile("dev")
+@org.springframework.context.annotation.Profile({"dev","simone"})
 public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ProviderLoader.class);
 
@@ -101,6 +101,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			provider.setRagioneSociale(RagioneSocialeEnum.SRL);
 			provider.setNaturaOrganizzazione("Privata");
 			provider.setNoProfit(false);
+			provider.setCodiceCogeaps("ORG213");
 
 			provider.setStatus(ProviderStatoEnum.INSERITO);
 			provider.setAccount(account);
