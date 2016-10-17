@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +22,8 @@ import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoFAD;
+import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
@@ -177,11 +180,12 @@ public class EventoServiceImpl implements EventoService {
 			((EventoRES) evento).setRisultatiAttesi(eventoWrapper.getRisultatiAttesiTemp());
 			
 			//Docenti
-			//((EventoRES) evento).setDocenti(eventoWrapper.getDocenti());
-			((EventoRES) evento).getDocenti().clear();
-			for(PersonaEvento p : eventoWrapper.getDocenti()){
-				((EventoRES) evento).getDocenti().add(personaEventoRepository.findOne(p.getId()));
+			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
+			while(it.hasNext()){
+				PersonaEvento p = it.next();
+				p = personaEventoRepository.findOne(p.getId());
 			}
+			((EventoRES)evento).setDocenti(eventoWrapper.getDocenti());
 			
 			//Programma evento
 			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
@@ -193,14 +197,19 @@ public class EventoServiceImpl implements EventoService {
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
+		}else if(evento instanceof EventoFSC){
+			//TODO campi solo in EVENTO FSC
+		}else if(evento instanceof EventoFAD){
+			//TODO campi solo in EVENTO FAD
 		}
 		
 		//Responsabili
-		//evento.setResponsabili(eventoWrapper.getResponsabiliScientifici());
-		evento.getResponsabili().clear();
-		for(PersonaEvento p : eventoWrapper.getResponsabiliScientifici()){
-			evento.getResponsabili().add(personaEventoRepository.findOne(p.getId()));
+		Iterator<PersonaEvento> it = eventoWrapper.getResponsabiliScientifici().iterator();
+		while(it.hasNext()){
+			PersonaEvento p = it.next();
+			p = personaEventoRepository.findOne(p.getId());
 		}
+		evento.setResponsabili(eventoWrapper.getResponsabiliScientifici());
 		
 		//brochure
 		if (eventoWrapper.getBrochure().getId() != null) {
@@ -246,13 +255,11 @@ public class EventoServiceImpl implements EventoService {
 			rendicontazioneInviata.setStato("PENDING");
 			rendicontazioneInviataService.save(rendicontazioneInviata);
 			
-//TODO - per ora non è gestito il flag sull'ultimo rendiconto
-			
-//TODO - riempire tutti i campi di rendicontazioneInviata (compresi gli enumeratori)			
+			//TODO - per ora non è gestito il flag sull'ultimo rendiconto
+						
+			//TODO - riempire tutti i campi di rendicontazioneInviata (compresi gli enumeratori)			
 			
 			//TODO - mettere qua il codice di gestione del file -> creare nuova entity, salvare file e risposta
-			
-			
 		}
 		catch (Exception e) {
 			throw new EcmException("error.invio_report_cogeaps", e.getMessage(), e);
@@ -289,6 +296,10 @@ public class EventoServiceImpl implements EventoService {
 			if (((EventoRES) evento).getDocumentoVerificaRicaduteFormative() != null) {
 				eventoWrapper.setDocumentoVerificaRicaduteFormative(((EventoRES) evento).getDocumentoVerificaRicaduteFormative());
 			}
+		}else if(evento instanceof EventoFSC){
+			//TODO campi solo in EVENTO FSC
+		}else if(evento instanceof EventoFAD){
+			//TODO campi solo in EVENTO FAD
 		}
 		
 		//brochure

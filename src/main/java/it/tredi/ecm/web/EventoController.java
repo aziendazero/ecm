@@ -536,12 +536,11 @@ public class EventoController {
 			//PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
 			PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				//p.setEventoResponsabile(eventoWrapper.getEvento());
-				personaEventoRepo.save(p);
+				personaEventoRepo.save(p);//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il bindibg in in AddAttivitaRES (select si basa su id della entity)
+				//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
 				eventoWrapper.getResponsabiliScientifici().add(p);
 			}else if(target.equalsIgnoreCase("docenti")){
-				//p.setEventoDocente(eventoWrapper.getEvento());
-				personaEventoRepo.save(p);//TODO trovare soluzione per settare docente senza id in AddAttivitaRES
+				personaEventoRepo.save(p);
 				eventoWrapper.getDocenti().add(p);
 			}
 			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
@@ -572,7 +571,6 @@ public class EventoController {
 			//PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
 			PersonaFullEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaFullEvento());			
 			if(target.equalsIgnoreCase("responsabileSegreteria")){
-				//p.setEventoResponsabileSegreteriaOrganizzativa(eventoWrapper.getEvento());
 				eventoWrapper.getEvento().setResponsabileSegreteria(p);
 			}
 			eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento());
