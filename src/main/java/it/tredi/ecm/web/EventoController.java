@@ -458,6 +458,7 @@ public class EventoController {
 		EventoWrapper eventoWrapper = new EventoWrapper();
 		eventoWrapper.setEvento(evento);
 		eventoWrapper.setProviderId(providerId);
+		eventoWrapper.setProceduraFormativa(evento.getProceduraFormativa());
 		eventoWrapper.setReportPartecipanti(new File(FileEnum.FILE_REPORT_PARTECIPANTI));
 		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.RENDICONTO);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - exiting"));
