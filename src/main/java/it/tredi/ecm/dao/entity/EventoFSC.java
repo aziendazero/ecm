@@ -1,5 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -9,8 +10,10 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
 
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaGruppoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import lombok.Getter;
@@ -27,6 +30,8 @@ public class EventoFSC extends Evento{
 	@Enumerated(EnumType.STRING)
 	@Column(name="tipologia_evento_fsc")
 	private TipologiaEventoFSCEnum tipologiaEvento;
+	@Enumerated(EnumType.STRING)
+	private TipologiaGruppoFSCEnum tipologiaGruppo;
 	private Boolean sperimentazioneClinica;
 	private Boolean ottenutoComitatoEtico;
 
@@ -42,6 +47,10 @@ public class EventoFSC extends Evento{
 
 
 	//TODO FASI AZIONI RUOLI
+	private String fasiAzioniRuoliJson;
+	
+	@OneToMany(mappedBy="evento")
+	private Set<FaseAzioniRuoliEventoFSCTypeA> fasiAzioniRuoli = new HashSet<FaseAzioniRuoliEventoFSCTypeA>();
 
 	//TODO campo 20
 
