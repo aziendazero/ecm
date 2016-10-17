@@ -85,7 +85,7 @@ public class EventoTest {
 		//ev.getResponsabili().add(p);
 		try{
 			personaEventoRepo.save(p);
-		eventoService.save(ev);
+			eventoService.save(ev);
 		}catch (Exception ex){
 			ex.printStackTrace();
 		}

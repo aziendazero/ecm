@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -21,16 +22,20 @@ import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoFAD;
+import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Service
@@ -177,11 +182,14 @@ public class EventoServiceImpl implements EventoService {
 			((EventoRES) evento).setRisultatiAttesi(eventoWrapper.getRisultatiAttesiTemp());
 			
 			//Docenti
-			//((EventoRES) evento).setDocenti(eventoWrapper.getDocenti());
-			((EventoRES) evento).getDocenti().clear();
-			for(PersonaEvento p : eventoWrapper.getDocenti()){
-				((EventoRES) evento).getDocenti().add(personaEventoRepository.findOne(p.getId()));
+			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
+			List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
+			while(it.hasNext()){
+				PersonaEvento p = it.next();
+				p = personaEventoRepository.findOne(p.getId());
+				attachedList.add(p);
 			}
+			((EventoRES)evento).setDocenti(attachedList);
 			
 			//Programma evento
 			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
@@ -193,14 +201,21 @@ public class EventoServiceImpl implements EventoService {
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
+		}else if(evento instanceof EventoFSC){
+			//TODO campi solo in EVENTO FSC
+		}else if(evento instanceof EventoFAD){
+			//TODO campi solo in EVENTO FAD
 		}
 		
 		//Responsabili
-		//evento.setResponsabili(eventoWrapper.getResponsabiliScientifici());
-		evento.getResponsabili().clear();
-		for(PersonaEvento p : eventoWrapper.getResponsabiliScientifici()){
-			evento.getResponsabili().add(personaEventoRepository.findOne(p.getId()));
+		Iterator<PersonaEvento> it = eventoWrapper.getResponsabiliScientifici().iterator();
+		List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
+		while(it.hasNext()){
+			PersonaEvento p = it.next();
+			p = personaEventoRepository.findOne(p.getId());
+			attachedList.add(p);
 		}
+		evento.setResponsabili(attachedList);
 		
 		//brochure
 		if (eventoWrapper.getBrochure().getId() != null) {
@@ -229,30 +244,32 @@ public class EventoServiceImpl implements EventoService {
 	public void inviaRendicontoACogeaps(Long id) throws Exception {
 		Evento evento = getEvento(id);
 		try {
-			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(evento.getReportPartecipantiXML().getNomeFile(), evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
+			RendicontazioneInviata ultimaRendicontazioneInviata = evento.getUltimaRendicontazioneInviata();
+			if (ultimaRendicontazioneInviata != null && ultimaRendicontazioneInviata.getStato().equals(RendicontazioneInviataStatoEnum.PENDING)) //se ultima elaborazione pendente -> invio non concesso
+				throw new Exception("error.elaborazione_pendente");
+			
+			String reportFileName = evento.getReportPartecipantiXML().getNomeFile();
+			if (!reportFileName.trim().toUpperCase().endsWith(".P7M")) { //file non firmato -> invio non concesso
+				throw new Exception("error.file_non_firmato");
+			}
+			
+			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(reportFileName, evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
 
 			if (cogeapsCaricaResponse.getStatus() != 0) //errore HTTP (auth...)
 				throw new Exception(cogeapsCaricaResponse.getError() + ": " + cogeapsCaricaResponse.getMessage());
 			if (cogeapsCaricaResponse.getErrCode() != 0) //errore su provider
 				throw new Exception(cogeapsCaricaResponse.getErrMsg());
 
-			//salvataggio entity rendicontazione_inviata
+			//salvataggio entity rendicontazione_inviata (siamo sicuri che il file sia stato preso in carico dal cogeaps)
 			RendicontazioneInviata rendicontazioneInviata = new RendicontazioneInviata();
 			rendicontazioneInviata.setEvento(evento);
 			rendicontazioneInviata.setFileName(cogeapsCaricaResponse.getNomeFile());
 			rendicontazioneInviata.setResponse(cogeapsCaricaResponse.getResponse());
 			rendicontazioneInviata.setFileRendicontazione(evento.getReportPartecipantiXML());
 			rendicontazioneInviata.setDataInvio(LocalDateTime.now());
-			rendicontazioneInviata.setStato("PENDING");
+			rendicontazioneInviata.setStato(RendicontazioneInviataStatoEnum.PENDING);
+			rendicontazioneInviata.setAccountInvio(Utils.getAuthenticatedUser().getAccount());
 			rendicontazioneInviataService.save(rendicontazioneInviata);
-			
-//TODO - per ora non è gestito il flag sull'ultimo rendiconto
-			
-//TODO - riempire tutti i campi di rendicontazioneInviata (compresi gli enumeratori)			
-			
-			//TODO - mettere qua il codice di gestione del file -> creare nuova entity, salvare file e risposta
-			
-			
 		}
 		catch (Exception e) {
 			throw new EcmException("error.invio_report_cogeaps", e.getMessage(), e);
@@ -289,6 +306,10 @@ public class EventoServiceImpl implements EventoService {
 			if (((EventoRES) evento).getDocumentoVerificaRicaduteFormative() != null) {
 				eventoWrapper.setDocumentoVerificaRicaduteFormative(((EventoRES) evento).getDocumentoVerificaRicaduteFormative());
 			}
+		}else if(evento instanceof EventoFSC){
+			//TODO campi solo in EVENTO FSC
+		}else if(evento instanceof EventoFAD){
+			//TODO campi solo in EVENTO FAD
 		}
 		
 		//brochure
