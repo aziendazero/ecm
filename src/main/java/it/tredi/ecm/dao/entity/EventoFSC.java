@@ -33,7 +33,7 @@ public class EventoFSC extends Evento{
 	private String descrizioneProgetto;
 
 	@ElementCollection
-	private Set<VerificaApprendimentoFSCEnum> verificaApprendiemento;
+	private Set<VerificaApprendimentoFSCEnum> verificaApprendimento;
 
 	@ElementCollection
 	private Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti;

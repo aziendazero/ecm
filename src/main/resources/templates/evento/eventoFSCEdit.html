@@ -13,8 +13,805 @@
 				th:action="@{|/provider/${eventoWrapper.providerId}/evento/save|}"
 				method="post" enctype="multipart/form-data"
 				novalidate="novalidate">
-			</form>
 
+				<!-- input hidden -->
+				<input type="hidden" name="editId" th:value="${eventoWrapper.evento.id}" />
+				<input type="hidden" name="providerId" th:value="${eventoWrapper.providerId}" />
+				<input type="hidden" name="proceduraFormativa" th:value="${eventoWrapper.proceduraFormativa}" />
+
+				<div id="eventoTabs" class="" role="tabpanel" data-example-id="togglable-tabs">
+					<ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+						<li role="presentation" class="active presentation">
+							<a href="#tab_content1" role="tab" id="tab1" data-toggle="tab" aria-expanded="true" th:text="#{label.sezione_1}">
+								Sezione1
+							</a>
+						</li>
+						<li role="presentation" class="presentation">
+							<a href="#tab_content2" role="tab" id="tab2" data-toggle="tab" aria-expanded="false" th:text="#{label.sezione_2}">
+								Sezione2
+							</a>
+						</li>
+						<li role="presentation" class="presentation">
+							<a href="#tab_content3" role="tab" id="tab3" data-toggle="tab" aria-expanded="false" th:text="#{label.sezione_3}">
+								Sezione3
+							</a>
+						</li>
+					</ul>
+					<div id="myTabContent" class="tab-content">
+						<div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="active-tab1">
+							<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
+								<!-- DENOMINAZIONE LEGALE PROVIDER -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>1</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneProvider">
+										<span th:text="#{label.denominazione_legale_provider}">Denominazione Legale del Provider</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneProvider">
+										<div class="value-edit" th:text="${eventoWrapper.evento.provider.denominazioneLegale}"></div>
+									</div>
+								</div>
+
+								<!-- ID PROVIDER -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>2</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="idProvider">
+										<span th:text="#{label.id_provider}">Id del Provider</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="idProvider">
+										<div class="value-edit" th:text="${eventoWrapper.evento.provider.id}"></div>
+									</div>
+								</div>
+
+								<!-- TIPOLOGIA EVENTO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>3</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="proceduraFormativa">
+										<span th:text="#{label.procedura_formativa}">Id del Provider</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="proceduraFormativa">
+										<div class="value-edit" th:text="${eventoWrapper.evento.proceduraFormativa}"></div>
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- DESTINATARI EVENTO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>4</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="destinatari">
+										<span th:text="#{label.destinatari_evento}">Destinatari dell'Evento</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="destinatari">
+										<div class="checkbox" th:each="destinatario, row : ${T(it.tredi.ecm.dao.enumlist.DestinatariEventoEnum).values()}">
+											<label>
+												<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.destinatariEvento}" th:value="${destinatario}" />
+												<span th:text="${destinatario.nome}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- CONTENUTI EVENTO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>5</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="contenuti">
+										<span th:text="#{label.evento_contiene_questi_contenuti}">L'evento formativo prevedere i seguenti contenuti?</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
+										<div class="radio" th:each="contenuto, row : ${T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).values()}">
+											<label>
+												<input type="radio" class="flat" th:field="${eventoWrapper.evento.contenutiEvento}" th:value="${contenuto}" />
+												<span th:text="${contenuto.nome}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- TITOLO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>6</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="titolo">
+										<span th:text="#{label.titolo}">Titolo</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="titolo">
+										<textarea class="required" maxlength="3000" id="title" rows="3" name="titolo"
+											style="resize: none;" th:field="${eventoWrapper.evento.titolo}">
+										</textarea>
+										<div id="counter"></div>
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- BLOCCO INFO SEDE -->
+								<div class="item form-group">
+									<label class="col-xs-12">
+										<span th:text="#{label.informazioni_sede}">Titolo</span>
+									</label>
+								</div>
+								<!-- PROVINCIA -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>7</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="provincia">
+										<span th:text="#{label.provincia}">Provincia</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="provincia"
+											class="selectpicker required"
+											th:field="${eventoWrapper.evento.sedeEvento.provincia}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											onchange="sendAjaxRequestProvincia()"
+											title="Seleziona una provincia...">
+											<option
+												th:each="provincia : ${elencoProvince}"
+												th:value="${provincia}"
+												th:text="${provincia}">
+											</option>
+										</select>
+									</div>
+								</div>
+								<!-- COMUNE -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>8</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="comune">
+										<span th:text="#{label.comune}">Comune</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="comune"
+											class="selectpicker required"
+											th:field="${eventoWrapper.evento.sedeEvento.comune}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											th:disabled="${eventoWrapper.evento.sedeEvento.comune == null}"
+											title="Seleziona un comune...">
+											<option th:value="${eventoWrapper.evento.sedeEvento.comune}"
+												th:text="${eventoWrapper.evento.sedeEvento.comune}"/>
+										</select>
+									</div>
+								</div>
+								<!-- INDIRIZZO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>9</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="indirizzo">
+										<span th:text="#{label.indirizzo}">Indirizzo</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="indirizzo">
+										<input type="text" class="form-control" th:field="${eventoWrapper.evento.sedeEvento.indirizzo}" />
+									</div>
+								</div>
+								<!-- LUOGO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>10</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="luogo">
+										<span th:text="#{label.luogo}">Luogo</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="luogo">
+										<input type="text" class="form-control" th:field="${eventoWrapper.evento.sedeEvento.luogo}" />
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- DATA INIZIO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>11</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataInizio">
+										<span th:text="#{label.data_inizio}">Data inizio</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+										<input type="text" id="dataInizio" class="form-control"
+											name="data" th:field="${eventoWrapper.evento.dataInizio}" />
+										<span class="input-group-addon" id="dataInizio" onclick="$('#dataInizio').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+								</div>
+
+								<!-- DATA FINE -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>12</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataFine">
+										<span th:text="#{label.data_fine}">Data fine</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+										<input type="text" id="dataFine" class="form-control"
+											name="data" th:field="${eventoWrapper.evento.dataFine}" />
+										<span class="input-group-addon" id="dataFineButton" onclick="$('#dataFine').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+								</div>
+
+								<!-- OBIETTIVO NAZIONALE -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>13</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivoNazionale">
+										<span th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<select id="obiettivoNazionale"
+											class="selectpicker required"
+											th:field="${eventoWrapper.evento.obiettivoNazionale}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un obiettivo...">
+											<optgroup class="optgroup-primary"
+												th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
+												th:label="${categoriaObiettivoNazionale.nome}"
+												th:remove="all-but-first">
+												<option
+													th:each="obiettivoNazionale, row: ${eventoWrapper.obiettiviNazionali}"
+													th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
+													th:value="${obiettivoNazionale.id}"
+													th:text="${obiettivoNazionale.nome}">
+												</option>
+											</optgroup>
+										</select>
+									</div>
+									<div class="col-xs-1">
+										<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+									</div>
+								</div>
+
+								<!-- OBIETTIVO REGIONALE -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>14</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivorRegionale">
+										<span th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Strategico Regionale</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="obiettivoRegionale"
+											class="selectpicker required"
+											th:field="${eventoWrapper.evento.obiettivoRegionale}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un obiettivo...">
+											<option
+												th:each="obiettivoRegionale, row: ${eventoWrapper.obiettiviRegionali}"
+												th:value="${obiettivoRegionale.id}"
+												th:text="${obiettivoRegionale.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+
+								<!-- PROFESSIONI/DISCIPLINE -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>15</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
+										<div class="col-xs-12 select-with-margin-container">
+											<select id="professioni" class="selectpicker required multi"
+												multiple="multiple" data-width="100%"
+												data-style="btn-primary" data-actions-box="true"
+												data-size="10" title="Seleziona una professione..."
+												onchange="abilitaDiscipline(this)"
+												data-selected-text-format="count" th:remove="all-but-first">
+												<option th:each="professione, row: ${eventoWrapper.professioneList}"
+													th:value="${professione.id}" th:text="${professione.nome}"
+													th:field="${eventoWrapper.evento.professioniSelezionate}"></option>
+											</select>
+										</div>
+										<select id="discipline" class="selectpicker required multi"
+											th:field="${eventoWrapper.evento.discipline}"
+											multiple="multiple" data-width="100%"
+											data-style="btn-success" data-actions-box="true"
+											data-size="10" data-hide-disabled="true"
+											title="Seleziona una disciplina..." disabled="disabled"
+											data-selected-text-format="count" th:remove="all-but-first">
+											<optgroup class="optgroup-success" disabled="disabled"
+												th:each="professione, row: ${eventoWrapper.professioneList}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
+												th:label="${professione.nome}" th:remove="all-but-first">
+												<option th:each="disciplina, row: ${eventoWrapper.disciplinaList}"
+													th:if="${disciplina.professione == professione}"
+													th:value="${disciplina.id}" th:text="${disciplina.nome}"></option>
+											</optgroup>
+										</select>
+									</div>
+								</div>
+
+								<!-- BLOCCO TIPOLOGIA DI EVENTO -->
+								<!-- TIPOLOGIA DELL'EVENTO -->
+								<!-- l'ha fatto il barduz e non dovrebbe servire -->
+<!-- 								<div class="item form-group"> -->
+<!-- 									<label class="control-label col-xs-1"> -->
+<!-- 										<span>17</span> -->
+<!-- 									</label> -->
+<!-- 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia_evento_2"> -->
+<!-- 										<span th:text="#{label.tipologia_evento}">Tipologia di Evento</span> -->
+<!-- 										<span class="required">*</span> -->
+<!-- 									</label> -->
+
+<!-- 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"> -->
+<!-- 										<select id="tipologia_evento_2" -->
+<!-- 											class="selectpicker required" -->
+<!-- 											th:field="${eventoWrapper.evento.tipologiaEvento}" -->
+<!-- 											data-width="100%" data-style="btn-primary" -->
+<!-- 											data-actions-box="true" data-size="10" -->
+<!-- 											data-hide-disabled="false" -->
+<!-- 											onchange="mostraNascondiCampiTipologiaEvento(this.value)" -->
+<!-- 											title="Seleziona una tipologia..."> -->
+<!-- 											<option -->
+<!-- 												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).values()}" -->
+<!-- 												th:value="${tipologia}" -->
+<!-- 												th:text="${tipologia.nome}"> -->
+<!-- 											</option> -->
+<!-- 										</select> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+<!-- 								TIPOLOGIA DI GRUPPI (attivo se selezionato gruppi di miglioramento) -->
+<!-- 								<div class="item form-group gruppi-miglioramento" style="display: none;"> -->
+<!-- 									<div class="col-xs-1"></div> -->
+<!-- 									<label class="control-label col-md-3 col-sm-3 col-xs-11"> -->
+<!-- 										<span th:text="#{label.tipologie_di_gruppo}"></span> -->
+<!-- 										<span class="required">*</span> -->
+<!-- 									</label> -->
+<!-- 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"> -->
+<!-- 										<select id="tipologia_di_gruppo" -->
+<!-- 											class="selectpicker required" -->
+<!-- 											th:field="${eventoWrapper.evento.tipologiaGruppo}" -->
+<!-- 											data-width="100%" data-style="btn-primary" -->
+<!-- 											data-actions-box="true" data-size="10" -->
+<!-- 											data-hide-disabled="false" -->
+<!-- 											onchange="mostraNascondiCampiTipologiaEvento(this.value)" -->
+<!-- 											title="Seleziona una tipologia..."> -->
+<!-- 											<option -->
+<!-- 												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaGruppoFSCEnum).values()}" -->
+<!-- 												th:value="${tipologia}" -->
+<!-- 												th:text="${tipologia.nome}"> -->
+<!-- 											</option> -->
+<!-- 										</select> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+
+								<!-- RESPONSABILI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>16</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="responsabili">
+										<span th:text="#{label.responsabili_scientifici}">Responsabili scientifici</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-xs-offset-1 col-xs-10">
+										<th:block th:include="evento/eventoEdit :: responsabiliScientifici" />
+									</div>
+								</div>
+
+								<!-- DESCRIZIONE DEL PROGETTO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>17</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="descrizione_progetto">
+										<span th:text="#{label.descrizione_del_progetto}">Descrizione del progetto e rilevanza formativa</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="descrizione_progetto">
+										<input type="text" class="form-control" th:field="${eventoWrapper.evento.descrizioneProgetto}" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="tab2">
+							<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
+
+								<!-- FASI AZIONI RUOLI -->
+								<div class="item form-group">
+									<label class="col-xs-12">
+										<span th:text="#{label.fasi_azioni_ruoli}">Fasi/Azioni/Ruoli coninvolti</span>
+									</label>
+									<div class="danger">**TODO xD GLHF!</div>
+								</div>
+
+								<!-- BROCHURE EVENTO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>19</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="brochure">
+										<span th:text="#{label.brochure_evento}">Brochure dell'evento</span>
+										<span class="required hidden" id="brochure-obbligatoria">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, brochure, null, null, null, false, null, false)" ></th:block>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="tab3">
+							<div class="col-xs-12 section-index" id="section-3" th:fragment="section-3">
+								<!-- RUOLI COINVOLTI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>20</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
+										<span th:text="#{label.ruoli_coinvolti}">Verifica Apprendimento partecipanti</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<div class="danger">**TODO autocompilato</div>
+									</div>
+								</div>
+
+								<!-- NUMERO PARTECIPANTI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>21</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="numeroPartecipanti">
+										<span th:text="#{label.numero_partecipanti}">Numero dei partecipanti</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="numeroPartecipanti">
+										<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.numeroPartecipanti}" />
+									</div>
+								</div>
+
+								<!-- DURATA  -->
+				 				<div class="item form-group">
+				 					<label class="control-label col-xs-1">
+				 						<span>22</span>
+				 					</label>
+				 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="durata">
+				 						<span th:text="#{label.durata}">Durata</span>
+				 					</label>
+				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata">
+				 						<div class="value-edit" th:text="${eventoWrapper.evento.durata}"></div>
+				 					</div>
+				 				</div>
+
+				 				<!-- CREDITI FORMATIVI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>23</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="creditiFormativi">
+										<span th:text="#{label.crediti_formativi_attribuiti_evento}">Crediti attribuiti all'evento</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
+										<input type="text" class="form-control" th:field="${eventoWrapper.evento.crediti}" />
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- VERIFICA PRESENZA PARTECIPANTI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>24</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="verificaPresenzaPartecipanti">
+										<span th:text="#{label.verifica_presenza_partecipanti}">Verifica presenza partecipanti</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="verificaPresenzaPartecipanti">
+										<div class="checkbox" th:each="modalita, row : ${T(it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum).values()}">
+											<label>
+												<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.verificaPresenzaPartecipanti}" th:value="${modalita}" />
+												<span th:text="${modalita.nome}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- VERIFICA APPRENDIMENTO PARTECIPANTI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>25</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="verificaApprendimentoPartecipanti">
+										<span th:text="#{label.verifica_apprendimento_partecipanti}">Verifica Apprendimento partecipanti</span>
+										<span class="required">*</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<div class="checkbox" th:each="modalita, row : ${T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum).values()}">
+											<label>
+												<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.verificaApprendimento}" th:value="${modalita}" />
+												<span th:text="${modalita.nome}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- INDICATORE EFFICACIA -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>26</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="indicatore">
+										<span th:text="#{label.indicatore_efficacia}">Indicatori per misurare l’efficacia formativa del progetto</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="indicatore">
+										<input type="text" class="form-control" th:field="${eventoWrapper.evento.indicatoreEfficaciaFormativa}" />
+									</div>
+								</div>
+
+								<!-- RESPONSABILE SEGRETERIA ORGANIZZATIVA -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>27</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="responsabileSegreteria">
+										<span th:text="#{label.responsabile_segreteria_organizzativa}">Responsabile segreteria organizzativa</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-xs-offset-1 col-xs-10">
+										<th:block th:include="evento/eventoEdit :: responsabileSegreteria" />
+									</div>
+								</div>
+
+								<!-- QUOTA PARTECIPAZIONE -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>28</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="quota">
+										<span th:text="#{label.quota_partecipazione}">Quota di partecipazione</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="quota">
+										<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" />
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- SPONSOR BLOCCO -->
+								<!-- RADIO SPONSOR -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>29</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.evento_sponsorizzato_radio}">L'Evento è sponsorizzato?</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="radio">
+											<label>
+												<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${true}" />
+												<span th:text="#{label.sì}">Sì</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${false}" />
+												<span th:text="#{label.no}">No</span>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="no-padding sponsor-si" style="display: none;">
+									<!-- SPONSOR INSERIMENTO -->
+									<div>**TODO RIPETIBILE SPONSOR**</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- FORME FINANZIAMENTO BLOCCO -->
+								<!-- RADIO FORME FINANZIAMENTO -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>30</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.forme_finanziamento_radio}">Sono presenti forme di finanziamento?</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="radio">
+											<label>
+												<input type="radio" class="flat finanziamento" th:field="${eventoWrapper.evento.altreFormeFinanziamento}" th:value="${true}" />
+												<span th:text="#{label.sì}">Sì</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input type="radio" class="flat finanziamento" th:field="${eventoWrapper.evento.altreFormeFinanziamento}" th:value="${false}" />
+												<span th:text="#{label.no}">No</span>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="no-padding finanziamento-si" style="display: none;">
+									<!-- ALLEGATO CONTRATTI/ACCORDI/CONVENZIONI -->
+									<div class="item form-group">
+										<div class="col-xs-1"></div>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11">
+											<span th:text="#{label.allegato_contratti_accordi_convenzioni}">Allegato Contratti Accordi Convenzioni</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+											<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, contrattiAccordiConvenzioni, null, null, null, true, null, false)" ></th:block>
+										</div>
+									</div>
+								</div>
+								<div class="no-padding finanziamento-no" style="display: none;">
+									<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA FINANZIAMENTI -->
+									<div class="item form-group">
+										<div class="col-xs-1"></div>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11">
+											<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Allegato autocertificazione assenza finanziamenti</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+											<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block>
+										</div>
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- BLOCCO PARTNER -->
+								<!-- RADIO PARTNER -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>31</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.si_avvale_di_partner}">L’evento si avvale di partner?</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="radio">
+											<label>
+												<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${true}" />
+												<span th:text="#{label.sì}">Sì</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${false}" />
+												<span th:text="#{label.no}">No</span>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="no-padding partner-si" style="display: none;">
+									<div>**TODO PARTNER RIPETIBILE</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- DICHIARAZIONE CONFLITTO INTERESSI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>32</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dichiarazioneAssenzaConflittoInteresse">
+										<span th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block>
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- PROCEDURA VERIFICA QUALITÀ -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>33</span>
+									</label>
+									<div class="control-label col-md-3 col-sm-3 col-xs-11">
+									</div>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.proceduraVerificaQualitaPercepita}" th:value="${true}" />
+												<span th:text="#{label.procedura_verifica_qualita}">E’ prevista una procedura di verifica della qualità percepita</span>
+												<span class="required">*</span>
+											</label>
+										</div>
+
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- AUTORIZZAZIONE -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>34</span>
+									</label>
+									<div class="control-label col-md-3 col-sm-3 col-xs-11">
+									</div>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.autorizzazionePrivacy}" th:value="${true}" />
+												<span th:text="#{label.autorizzazione_privacy}"></span>
+												<span class="required">*</span>
+											</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<input id="submitButton" type="submit" style="display: none;" />
+
+			</form>
 		</div>
 
 	</th:block>
