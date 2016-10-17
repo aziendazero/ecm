@@ -110,9 +110,9 @@ public class EventoRES extends Evento{
 			for(ProgrammaGiornalieroRES progrGio : programma) {
 				for(DettaglioAttivitaRES a : progrGio.getProgramma()){
 					if(a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
-						oreFrontale ++;
+						oreFrontale += a.getOreAttivita();
 					}else{
-						oreInterattiva ++;
+						oreInterattiva += a.getOreAttivita();
 					}
 				}
 			}
