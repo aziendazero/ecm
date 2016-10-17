@@ -339,7 +339,7 @@
 														</tr>
 													</thead>
 													<tbody>
-														<tr th:if="${#lists.size(eventoWrapper.docenti) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.docenti}">
+														<tr th:if="${#lists.size(eventoWrapper.evento.docenti) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.evento.docenti}">
 															<td th:text="${persona.anagrafica.cognome}"></td>
 															<td th:text="${persona.anagrafica.nome}"></td>
 															<td th:text="${persona.anagrafica.codiceFiscale}"></td>

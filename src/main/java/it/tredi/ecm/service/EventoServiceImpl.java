@@ -44,16 +44,16 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired
 	private EventoRepository eventoRepository;
-	
+
 	@Autowired private PersonaEventoRepository personaEventoRepository;
 	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
 
 	@Autowired
-	private RendicontazioneInviataService rendicontazioneInviataService;	
-	
+	private RendicontazioneInviataService rendicontazioneInviataService;
+
 	@Autowired
 	private FileService fileService;
-	
+
 	@Autowired
 	private CogeapsWsRestClient cogeapsWsRestClient;
 
@@ -165,7 +165,7 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
 		Evento evento = eventoWrapper.getEvento();
-		
+
 		if(evento instanceof EventoRES){
 			//date intermedie
 			Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
@@ -177,10 +177,10 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 			((EventoRES) evento).setDateIntermedie(dateIntermedie);
-			
+
 			//Risultati Attesi
 			((EventoRES) evento).setRisultatiAttesi(eventoWrapper.getRisultatiAttesiTemp());
-			
+
 			//Docenti
 			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
 			List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
@@ -190,13 +190,13 @@ public class EventoServiceImpl implements EventoService {
 				attachedList.add(p);
 			}
 			((EventoRES)evento).setDocenti(attachedList);
-			
+
 			//Programma evento
 			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
 			for(ProgrammaGiornalieroRES p : ((EventoRES) evento).getProgramma()){
 				p.setEventoRES((EventoRES) evento);
 			}
-			
+
 			//Documento Verifica Ricadute Formative
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
@@ -206,7 +206,7 @@ public class EventoServiceImpl implements EventoService {
 		}else if(evento instanceof EventoFAD){
 			//TODO campi solo in EVENTO FAD
 		}
-		
+
 		//Responsabili
 		Iterator<PersonaEvento> it = eventoWrapper.getResponsabiliScientifici().iterator();
 		List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
@@ -216,7 +216,7 @@ public class EventoServiceImpl implements EventoService {
 			attachedList.add(p);
 		}
 		evento.setResponsabili(attachedList);
-		
+
 		//brochure
 		if (eventoWrapper.getBrochure().getId() != null) {
 			evento.setBrochureEvento(eventoWrapper.getBrochure());
@@ -239,7 +239,7 @@ public class EventoServiceImpl implements EventoService {
 
 		return evento;
 	}
-	
+
 	@Override
 	public void inviaRendicontoACogeaps(Long id) throws Exception {
 		Evento evento = getEvento(id);
@@ -247,12 +247,12 @@ public class EventoServiceImpl implements EventoService {
 			RendicontazioneInviata ultimaRendicontazioneInviata = evento.getUltimaRendicontazioneInviata();
 			if (ultimaRendicontazioneInviata != null && ultimaRendicontazioneInviata.getStato().equals(RendicontazioneInviataStatoEnum.PENDING)) //se ultima elaborazione pendente -> invio non concesso
 				throw new Exception("error.elaborazione_pendente");
-			
+
 			String reportFileName = evento.getReportPartecipantiXML().getNomeFile();
 			if (!reportFileName.trim().toUpperCase().endsWith(".P7M")) { //file non firmato -> invio non concesso
 				throw new Exception("error.file_non_firmato");
 			}
-			
+
 			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(reportFileName, evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
 
 			if (cogeapsCaricaResponse.getStatus() != 0) //errore HTTP (auth...)
@@ -274,15 +274,13 @@ public class EventoServiceImpl implements EventoService {
 		catch (Exception e) {
 			throw new EcmException("error.invio_report_cogeaps", e.getMessage(), e);
 		}
-		
+
 	}
 
 	@Override
 	public EventoWrapper prepareRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
 		Evento evento = eventoWrapper.getEvento();
 
-		//programma evento
-		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
 		if(evento instanceof EventoRES){
 			//date intermedie
 			List<String> dateIntermedieTemp = new ArrayList<String>();
@@ -292,16 +290,16 @@ public class EventoServiceImpl implements EventoService {
 				dateIntermedieTemp.add(dataToString);
 			}
 			eventoWrapper.setDateIntermedieTemp(dateIntermedieTemp);
-			
+
 			//risultati attesi
 			eventoWrapper.setRisultatiAttesiTemp(((EventoRES) evento).getRisultatiAttesi());
-			
+
 			//Docenti
 			eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
-			
+
 			//Programma
 			eventoWrapper.setProgrammaEventoRES(((EventoRES) evento).getProgramma());
-			
+
 			//Documento Verifica Ricadute Formative
 			if (((EventoRES) evento).getDocumentoVerificaRicaduteFormative() != null) {
 				eventoWrapper.setDocumentoVerificaRicaduteFormative(((EventoRES) evento).getDocumentoVerificaRicaduteFormative());
@@ -311,7 +309,10 @@ public class EventoServiceImpl implements EventoService {
 		}else if(evento instanceof EventoFAD){
 			//TODO campi solo in EVENTO FAD
 		}
-		
+
+		//responsabili scientifici
+		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
+
 		//brochure
 		if (evento.getBrochureEvento() != null) {
 			eventoWrapper.setBrochure(evento.getBrochureEvento());
