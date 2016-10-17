@@ -49,7 +49,6 @@
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
-												onchange="updateMetodologieDidattiche(this)"
 												title="Seleziona un obiettivo...">
 												<option
 													th:each="obiettivoFormativo, row: ${T(it.tredi.ecm.dao.enumlist.ObiettiviFormativiFSCEnum).values()}"
@@ -61,15 +60,15 @@
 									</div>
 
 
-									<!-- RISULTATO ATTESO -->
+									<!-- RISULTATI ATTESI -->
 									<div id="container-risultatoAtteso" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-											<span th:text="#{label.risultato_atteso}">Risultato Atteso</span>
+											<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
 											<input type="text" required="required" class="form-control"
-												th:field="*{risultatoAtteso}" />
+												th:field="*{risultatiAttesi}" />
 										</div>
 									</div>
 
@@ -77,13 +76,13 @@
 									<!-- METODO DI LAVORO -->
 									<div id="container-metodoLavoro" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-											<span th:text="#{label.metodo_lavoro}">Metodo Lavoro</span>
+											<span th:text="#{label.metodi_di_lavoro}">Metodo Lavoro</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<div class="checkbox" th:each="metodo, row : ${T(it.tredi.ecm.dao.enumlist.MetodoLavoroFSCEnum).values()}">
+											<div class="checkbox" th:each="metodo, row : ${T(it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum).values()}">
 												<label>
-													<input type="checkbox" class="flat" th:field="*{metodoLavoro}" />
+													<input type="checkbox" class="flat" th:field="*{metodiDiLavoro}" th:value="${metodo}" />
 													<span th:text="${metodo.nome}"></span>
 												</label>
 											</div>
@@ -97,10 +96,10 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<div class="checkbox" th:each="metodo, row : ${T(it.tredi.ecm.dao.enumlist.RuoliFSCEnum).values()}">
+											<div class="checkbox" th:each="ruolo, row : ${T(it.tredi.ecm.dao.enumlist.RuoloFSCEnum).values()}">
 												<label>
-													<input type="checkbox" class="flat" th:field="*{metodoLavoro}" />
-													<span th:text="${metodo.nome}"></span>
+													<input type="checkbox" class="flat" th:field="*{ruoli}" th:value="${ruolo}"  />
+													<span th:text="${ruolo.nome}"></span>
 												</label>
 											</div>
 										</div>
@@ -113,7 +112,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input class="form-control" type="text" th:field="*{oreAttivita}" />
+											<input class="form-control" type="text" th:field="*{tempoDedicato}" />
 										</div>
 									</div>
 
@@ -591,6 +590,9 @@
 										<span th:text="#{label.fasi_azioni_ruoli}">Fasi/Azioni/Ruoli coninvolti</span>
 									</label>
 									<div class="danger">**TODO xD GLHF!</div>
+									<div class='programmaEvento item form-group' id="programma">
+										<th:block th:include="evento/eventoEdit :: attivitaFSC" />
+									</div>
 								</div>
 
 								<!-- BROCHURE EVENTO -->

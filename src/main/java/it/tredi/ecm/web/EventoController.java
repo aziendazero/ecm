@@ -29,12 +29,14 @@ import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
 import it.tredi.ecm.dao.entity.AnagraficaFullEventoBase;
+import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
@@ -42,6 +44,7 @@ import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
+import it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
@@ -414,6 +417,15 @@ public class EventoController {
 			programmaEvento.add(p);
 
 			eventoWrapper.setProgrammaEventoRES(programmaEvento);
+		}else if(evento instanceof EventoFSC){
+			FaseAzioniRuoliEventoFSCTypeA p = new FaseAzioniRuoliEventoFSCTypeA();
+			p.setFaseDiLavoro(FaseDiLavoroFSCEnum.AMBIENTAMENTO
+					);
+			//Lista programmi giornalieri dell'evento
+			List<FaseAzioniRuoliEventoFSCTypeA> programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
+			programmaEvento.add(p);
+
+			eventoWrapper.setProgrammaEventoFSC(programmaEvento);
 		}
 
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));

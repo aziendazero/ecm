@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PersonaEvento;
@@ -60,5 +62,8 @@ public class EventoWrapper {
 	private PersonaFullEvento tempPersonaFullEvento = new PersonaFullEvento();
 	private DettaglioAttivitaRES tempAttivitaRES = new DettaglioAttivitaRES();
 	private File cv;
-
+	
+	/* FSC */
+	private AzioneRuoliEventoFSC tempAttivitaFSC = new AzioneRuoliEventoFSC();
+	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 }
