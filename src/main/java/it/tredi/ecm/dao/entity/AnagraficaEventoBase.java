@@ -21,7 +21,7 @@ public class AnagraficaEventoBase implements Serializable{
 	private String cognome;
 	private String nome;
 	private String codiceFiscale;
-	private boolean straniero = false;
+	private Boolean straniero = false;
 	@OneToOne
 	private File cv;
 	

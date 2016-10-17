@@ -47,6 +47,7 @@ import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
+import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
@@ -76,6 +77,9 @@ public class EventoController {
 	@Autowired private AnagraficaEventoService anagraficaEventoService;
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
 	@Autowired private PersonaEventoRepository personaEventoRepo;
+
+	@Autowired private PersonaEventoRepository personaEventoRepository;
+	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -210,6 +214,7 @@ public class EventoController {
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 			eventoService.save(evento);
+
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato_in_bozza_success", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
 			return "redirect:/provider/{providerId}/evento/list";
@@ -258,6 +263,25 @@ public class EventoController {
 		}
 	}
 
+	//TODO	@PreAuthorize("@securityAccessServiceImpl.canDeleteEvento(principal, #providerId")
+		@RequestMapping("/provider/{providerId}/evento/{eventoId}/delete")
+		public String deleteEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
+				Model model, RedirectAttributes redirectAttrs) {
+			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/delete"));
+			try {
+				//delete dell'evento
+				eventoService.delete(eventoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_elimitato", "success"));
+				return "redirect:/provider/{providerId}/evento/list";
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/delete"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+				return "redirect:/provider/{providerId}/evento/list";
+			}
+		}
+
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
 	@RequestMapping("/provider/{providerId}/evento/{eventoId}/rendiconto")
 	public String rendicontoEvento(@PathVariable Long providerId,
@@ -276,31 +300,31 @@ public class EventoController {
 	}
 
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
-	@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
-	public String rendicontoEventoValidate(@PathVariable Long providerId,
-			@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
-			Model model, RedirectAttributes redirectAttrs) {
-		try{
-			LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-			model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
-			if(wrapper.getReportPartecipanti().getId() == null)
-				model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
-			else {
-				LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
-				File file = wrapper.getReportPartecipanti();
-				if(file != null && !file.isNew()){
-					if(file.isREPORTPARTECIPANTI()) {
-						String fileName = wrapper.getReportPartecipanti().getNomeFile().trim().toUpperCase();
-						if (fileName.endsWith(".XML") || fileName.endsWith(".XML.P7M") || fileName.endsWith(".XML.ZIP.P7M") || fileName.endsWith(".CSV")) {
-							wrapper.setReportPartecipanti(fileService.getFile(file.getId()));
-							eventoService.validaRendiconto(eventoId, wrapper.getReportPartecipanti());
+		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
+		public String rendicontoEventoValidate(@PathVariable Long providerId,
+				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+				Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
+				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+				if(wrapper.getReportPartecipanti().getId() == null)
+					model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
+				else {
+					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
+					File file = wrapper.getReportPartecipanti();
+					if(file != null && !file.isNew()){
+						if(file.isREPORTPARTECIPANTI()) {
+							String fileName = wrapper.getReportPartecipanti().getNomeFile().trim().toUpperCase();
+							if (fileName.endsWith(".XML") || fileName.endsWith(".XML.P7M") || fileName.endsWith(".XML.ZIP.P7M") || fileName.endsWith(".CSV")) {
+								wrapper.setReportPartecipanti(fileService.getFile(file.getId()));
+								eventoService.validaRendiconto(eventoId, wrapper.getReportPartecipanti());
 							model.addAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
-						}
-						else {
-							model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+							}
+							else {
+								model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+							}
 						}
 					}
-				}
 			}
 			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
 		}
@@ -315,14 +339,14 @@ public class EventoController {
 				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 		}
 	}
-	
+
 	//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
 		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/inviaACogeaps", method = RequestMethod.GET)
 		public String rendicontoEventoIviaACogeaps(@PathVariable Long providerId,
 				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
-//TODO - bisognerebbe controllare che il file sia firmato altrimenti non è possibile inviare il report al cogeaps				
+//TODO - bisognerebbe controllare che il file sia fermato altrimenti non è possibile inviare il report al cogeaps
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
 				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				eventoService.inviaRendicontoACogeaps(eventoId);
@@ -339,7 +363,7 @@ public class EventoController {
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
 				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 			}
-		}	
+		}
 
 //	//metodo per chiamate AJAX sulle date ripetibili
 //	@RequestMapping("/add/dataIntermedia")
@@ -382,11 +406,7 @@ public class EventoController {
 
 		if(evento instanceof EventoRES){
 			//Lista attività singolo programma giornaliero
-			List<DettaglioAttivitaRES> programmaGiorno1 = new ArrayList<DettaglioAttivitaRES>();
-			programmaGiorno1.add(new DettaglioAttivitaRES());
-
 			ProgrammaGiornalieroRES p = new ProgrammaGiornalieroRES();
-			p.setProgramma(programmaGiorno1);
 			//p.setEventoRES((EventoRES) evento);
 
 			//Lista programmi giornalieri dell'evento
@@ -528,14 +548,14 @@ public class EventoController {
 					anagraficaEventoService.save(anagraficaEventoToSave);
 				}
 			}
-			PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
+			//PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
+			PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				//p.setEventoResponsabile(eventoWrapper.getEvento());
-				personaEventoRepo.save(p);
+				personaEventoRepo.save(p);//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il bindibg in in AddAttivitaRES (select si basa su id della entity)
+				//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
 				eventoWrapper.getResponsabiliScientifici().add(p);
 			}else if(target.equalsIgnoreCase("docenti")){
-				//p.setEventoDocente(eventoWrapper.getEvento());
-				personaEventoRepo.save(p);//TODO trovare soluzione per settare docente senza id in AddAttivitaRES
+				personaEventoRepo.save(p);
 				eventoWrapper.getDocenti().add(p);
 			}
 			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
@@ -563,9 +583,9 @@ public class EventoController {
 				}
 			}
 
-			PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
+			//PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
+			PersonaFullEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaFullEvento());
 			if(target.equalsIgnoreCase("responsabileSegreteria")){
-				p.setEventoResponsabileSegreteriaOrganizzativa(eventoWrapper.getEvento());
 				eventoWrapper.getEvento().setResponsabileSegreteria(p);
 			}
 			eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento());

@@ -199,7 +199,8 @@ public class Evento extends BaseEntity{
 	@Column(name = "data_fine")//fine evento
 	private LocalDate dataFine;
 
-	@OneToMany(mappedBy="eventoResponsabile", cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@JoinColumn(name="responsabile_id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
 
 	protected int numeroPartecipanti;
@@ -210,7 +211,8 @@ public class Evento extends BaseEntity{
 	protected float durata;//calcolo automatico
 	protected float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
-	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="responsabile_segreteria_id")
 	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();
 
 	private BigDecimal quotaPartecipazione;
