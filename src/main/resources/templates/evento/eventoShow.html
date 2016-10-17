@@ -5,12 +5,357 @@
 <head lang="it">
 </head>
 <body>
-	<th:block th:fragment="eventoShow">
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.visualizzazione_evento(${eventoWrapper.evento.getCodiceIdentificativo()})}"></h2>
+						<div class="pull-right buttons-header">
+							<div class="dropdown pull-right">
+  								<a class="btn btn-primary" th:href="@{|/provider/${eventoWrapper.providerId}/evento/list|}" th:text="#{label.indietro}"></a>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
 
-		<div class="x_content">
-			<div class="danger">Work In Progress: qua andrà un riepilogo delle informazioni relative all'Evento</div>
+					<th:block th:fragment="eventoShow">
+
+						<div class="x_content">
+
+							<!-- DENOMINAZIONE LEGALE -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.denominazione_legale_provider}">Denominazione Legale del Provider</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.provider.denominazioneLegale}"></div>
+								</div>
+							</div>
+
+							<!-- ID PROVIDER -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.id_provider}">Id del Provider</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.provider.id}"></div>
+								</div>
+							</div>
+
+							<!-- TIPOLOGIA EVENTO -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.procedura_formativa}">Id del Provider</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.proceduraFormativa}"></div>
+								</div>
+							</div>
+
+							<div class="divider-dashed"></div>
+
+							<!-- DESTINATARI EVENTO -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.procedura_formativa}">Id del Provider</span>
+								</label>
+
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div th:each="destinatario, row : ${eventoWrapper.evento.destinatariEvento}">
+										<div class="value" th:text="${destinatario.nome}"></div>
+									</div>
+								</div>
+							</div>
+
+							<div class="divider-dashed"></div>
+
+							<!-- CONTENUTI EVENTO -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.evento_contiene_questi_contenuti}">L'evento formativo prevedere i seguenti contenuti?</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div th:each="contenuto, row : ${eventoWrapper.evento.contenutiEvento}">
+										<div class="value" th:text="${contenuto.nome}"></div>
+									</div>
+								</div>
+							</div>
+
+							<div class="divider-dashed"></div>
+
+							<!-- TITOLO -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.titolo}">Titolo</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.titolo}"></div>
+								</div>
+							</div>
+
+							<div class="divider-dashed"></div>
+
+							<!-- PROVINCIA -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.provincia}">Provincia</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.sedeEvento.provincia}"></div>
+								</div>
+							</div>
+							<!-- COMUNE -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.comune}">Comune</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.sedeEvento.comune}"></div>
+								</div>
+							</div>
+							<!-- INDIRIZZO -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.indirizzo}">Indirizzo</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.sedeEvento.indirizzo}"></div>
+								</div>
+							</div>
+							<!-- LUOGO -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="luogo">
+									<span class="label-show" th:text="#{label.luogo}">Luogo</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="luogo">
+									<div class="value" th:text="${eventoWrapper.evento.sedeEvento.luogo}"></div>
+								</div>
+							</div>
+
+							<div class="divider-dashed"></div>
+
+							<!-- DATA INIZIO -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.data_inizio}">Data inizio</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.dataInizio}"></div>
+								</div>
+							</div>
+
+							<!-- DATA FINE -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.data_fine}">Data fine</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+									<div class="value" th:text="${eventoWrapper.evento.dataFine}"></div>
+								</div>
+							</div>
+
+							<!-- DATE INTERMEDIE -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.date_intermedie}">Data intermedie</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div th:each="data, row : ${eventoWrapper.dateIntermedieTemp}">
+										<div class="value" th:text="${data}"></div>
+									</div>
+								</div>
+							</div>
+
+							<!-- OBIETTIVO NAZIONALE -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:if="${eventoWrapper.evento.obiettivoNazionale != null}" th:text="${eventoWrapper.evento.obiettivoNazionale.nome}"></div>
+									<div class="value" th:unless="${eventoWrapper.evento.obiettivoNazionale != null}" th:text="#{label.dati_non_inseriti}"></div>
+								</div>
+							</div>
+
+							<!-- OBIETTIVO REGIONALE -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Strategico Regionale</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.obiettivoRegionale.nome}"></div>
+								</div>
+							</div>
+
+							<!-- PROFESSIONI/DISCIPLINE -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="row" style="clear:both; padding:2px;"></div>
+									<div class="row" style="clear:both">
+										<table class="professioni-discipline table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline"
+											cellspacing="0" width="100%">
+											<thead>
+												<tr>
+													<th th:text="#{label.professione}">Professione</th>
+													<th th:text="#{label.disciplina}">Disciplina</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="disciplina, row: ${eventoWrapper.evento.discipline}">
+													<td th:text="${disciplina.professione.nome}"></td>
+													<td th:text="${disciplina.nome}"></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+
+							<!-- BLOCCO TIPOLOGIA DI EVENTO -->
+							<!-- TIPOLOGIA DELL'EVENTO -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.tipologia_evento}">Tipologia di Evento</span>
+								</label>
+
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.tipologiaEvento.nome}"></div>
+								</div>
+							</div>
+							<!-- WORKSHOP/SEMINARI (attivo se selezionato convegno/congresso) -->
+							<div class="row" th:if="${eventoWrapper.evento.tipologiaEvento == 'CONVEGNO_CONGRESSO'}">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.workshop_radio_text}"></span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.workshopSeminariEcm} ? #{label.sì} : #{label.no}"></div>
+								</div>
+							</div>
+							<!-- TITOLO CONVEGNO (attivo se selezionato workshop/seminario) -->
+							<div class="row" th:if="${eventoWrapper.evento.tipologiaEvento == 'WORKSHOP_SEMINARIO'}">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.titolo_convegno}"></span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.titoloConvegno}"></div>
+								</div>
+							</div>
+
+							<!-- NUMERO PARTECIPANTI -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.numero_partecipanti}">Numero dei partecipanti</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${eventoWrapper.evento.numeroPartecipanti}"></div>
+								</div>
+							</div>
+
+							<!-- RESPONSABILI -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.responsabili_scientifici}">Responsabili scientifici</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<th:block th:include="evento/eventoEdit :: responsabiliScientifici" />
+								</div>
+								<div>**TODO</div>
+							</div>
+
+							<!-- DOCENTI/RELATORI/TUTOR -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<th:block th:include="evento/eventoEdit :: docenti" />
+								</div>
+								<div>**TODO</div>
+							</div>
+
+							<div class="divider-dashed"></div>
+
+							<!-- BLOCCO PROGRAMMA ATTIVITÀ FORMATIVA -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.programma_attività_formativa}">Titolo</span>
+								</label>
+							</div>
+							<!-- RAZIONALE -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.razionale}">Razionale</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+									<div class="value" th:text="${eventoWrapper.evento.razionale}"></div>
+								</div>
+							</div>
+							<!-- RISULTATI ATTESI -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.risultati_attesi}">Risultati attesi</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div th:each="risultato, row : ${eventoWrapper.evento.risultatiAttesi}">
+										<div class="value" th:text="${risultato}"></div>
+									</div>
+								</div>
+							</div>
+
+							<div class="divider-dashed"></div>
+
+							<!-- BROCHURE EVENTO -->
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11">
+									<span class="label-show" th:text="#{label.brochure_evento}">Brochure dell'evento</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.brochureEvento.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.brochureEvento.id}|}"></a></div>
+								</div>
+							</div>
+						</div>
+					</th:block>
+				</div>
+			</div>
 		</div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			$(document).ready(function() {
 
-	</th:block>
+				//table responsive professioni/discipline show
+				$('.datatable-responsive-discipline').DataTable({
+					"bFilter" : false,
+					"bPaginate": false,
+					"bInfo" : false,
+				    "columnDefs": [
+				    	{ "targets": [ '_all' ], "orderable": false },
+				    	{ "targets": [ 0 ], "orderData": [ 0, 1 ] },
+				    	{ "visible": false, "targets": 0 }
+				    ],
+				    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+				    "drawCallback": function ( settings ) {
+			        	var api = this.api();
+			            var rows = api.rows( {page:'current'} ).nodes();
+			            var last=null;
+
+			            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+			            	if ( last !== group ) {
+			                	$(rows).eq( i ).before(
+			                    	'<tr class="row-group"><td colspan="2">'+group+'</td></tr>'
+			            	);
+			                    last = group;
+			                }
+			            });
+			        }
+
+				});
+			})
+		/*]]>*/
+		</script>
+	</div>
 </body>
 </html>
