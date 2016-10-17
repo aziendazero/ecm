@@ -14,6 +14,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -43,7 +44,8 @@ public class EventoRES extends Evento{
 	private boolean workshopSeminariEcm;
 	private String titoloConvegno;
 
-	@OneToMany(mappedBy="eventoDocente" , cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@JoinColumn(name="docente_id")
 	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
 	private String razionale;

@@ -23,7 +23,7 @@
 									th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
 									th:object="${eventoWrapper.tempAttivitaRES}" method="post" enctype="multipart/form-data"
 									novalidate="novalidate">
-
+									
 									<!-- ORARIO -->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="orario">
@@ -32,13 +32,13 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
 											<input type="text" required="required" class="form-control ora"
-												th:field="*{orario}" />
+												th:field="*{orario}" />	
 												<span class="input-group-addon openClock">
 	     											<i class="glyphicon glyphicon-time"></i>
 	  											</span>
 										</div>
 									</div>
-
+								
 									<!-- ARGOMENTO -->
 									<div id="container-argomento" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -46,10 +46,10 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input type="text" th:field="*{argomento}" />
+											<input class="form-control" type="text" th:field="*{argomento}" />	
 										</div>
 									</div>
-
+								
 									<!-- DOCENTE -->
 									<div id="container-docente" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -73,7 +73,7 @@
 											</select>
 										</div>
 									</div>
-
+								
 									<!-- RISULTATO ATTESO -->
 									<div id="container-risultatoAtteso" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -92,7 +92,7 @@
 											</select>
 										</div>
 									</div>
-
+								
 									<!-- OBIETTIVO FORMATIVO -->
 									<div id="container-obiettivoFormativo" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -116,7 +116,7 @@
 											</select>
 										</div>
 									</div>
-
+								
 									<!-- METODOLOGIA DIDATTICA -->
 									<div id="container-metodologiaDidattica" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -137,10 +137,10 @@
 													th:value="${metodologiaDidattica}"
 													th:text="${metodologiaDidattica.nome}">
 												</option>
-											</select>
+											</select>	
 										</div>
-									</div>
-
+									</div>		
+								
 									<!-- ORE ATTIVITA -->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -148,13 +148,18 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input type="text" th:field="*{oreAttivita}" />
+											<input class="form-control" type="text" th:field="*{oreAttivita}" />
 										</div>
 									</div>
-
+								
 									<input id="targetTableAttivitaRES" type="text" name="target" style="display: none;" />
 									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
 									<input id="pausa" type="text" name="pausa" style="display: none;" />
+									
+									<input id="addAttivitaTo_provincia" type="text" style="display: none;" />
+									<input id="addAttivitaTo_comune" type="text" style="display: none;" />
+									<input id="addAttivitaTo_indirizzo" type="text" style="display: none;" />
+									<input id="addAttivitaTo_luogo" type="text" style="display: none;" />
 								</form>
 							</div>
 							<div class="modal-footer">
@@ -207,12 +212,12 @@
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneProvider">
 										<span th:text="#{label.denominazione_legale_provider}">Denominazione Legale del Provider</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneProvider">
 										<div class="value-edit" th:text="${eventoWrapper.evento.provider.denominazioneLegale}"></div>
 									</div>
 								</div>
-
+				
 								<!-- ID PROVIDER -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -221,12 +226,12 @@
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="idProvider">
 										<span th:text="#{label.id_provider}">Id del Provider</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="idProvider">
 										<div class="value-edit" th:text="${eventoWrapper.evento.provider.id}"></div>
 									</div>
 								</div>
-
+				
 								<!-- TIPOLOGIA EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -235,14 +240,14 @@
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="proceduraFormativa">
 										<span th:text="#{label.procedura_formativa}">Id del Provider</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="proceduraFormativa">
 										<div class="value-edit" th:text="${eventoWrapper.evento.proceduraFormativa}"></div>
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- DESTINATARI EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -252,7 +257,7 @@
 										<span th:text="#{label.destinatari_evento}">Destinatari dell'Evento</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="destinatari">
 										<div class="checkbox" th:each="destinatario, row : ${T(it.tredi.ecm.dao.enumlist.DestinatariEventoEnum).values()}">
 											<label>
@@ -262,9 +267,9 @@
 										</div>
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- CONTENUTI EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -274,7 +279,7 @@
 										<span th:text="#{label.evento_contiene_questi_contenuti}">L'evento formativo prevedere i seguenti contenuti?</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
 										<div class="radio" th:each="contenuto, row : ${T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).values()}">
 											<label>
@@ -284,9 +289,9 @@
 										</div>
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- TITOLO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -296,7 +301,7 @@
 										<span th:text="#{label.titolo}">Titolo</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="titolo">
 										<textarea class="required" maxlength="3000" id="title" rows="3" name="titolo"
 											style="resize: none;" th:field="${eventoWrapper.evento.titolo}">
@@ -304,9 +309,9 @@
 										<div id="counter"></div>
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- BLOCCO INFO SEDE -->
 								<div class="item form-group">
 									<label class="col-xs-12">
@@ -348,7 +353,7 @@
 										<span th:text="#{label.comune}">Comune</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<select id="comune"
 											class="selectpicker required"
@@ -371,7 +376,7 @@
 										<span th:text="#{label.indirizzo}">Indirizzo</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="indirizzo">
 										<input type="text" class="form-control" th:field="${eventoWrapper.evento.sedeEvento.indirizzo}" />
 									</div>
@@ -385,14 +390,14 @@
 										<span th:text="#{label.luogo}">Luogo</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="luogo">
 										<input type="text" class="form-control" th:field="${eventoWrapper.evento.sedeEvento.luogo}" />
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- DATA INIZIO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -402,7 +407,7 @@
 										<span th:text="#{label.data_inizio}">Data inizio</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 										<input type="text" id="dataInizio" class="form-control"
 											name="data" th:field="${eventoWrapper.evento.dataInizio}" />
@@ -411,7 +416,7 @@
 										</span>
 									</div>
 								</div>
-
+				
 								<!-- DATA FINE -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -421,7 +426,7 @@
 										<span th:text="#{label.data_fine}">Data fine</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 										<input type="text" id="dataFine" class="form-control"
 											name="data" th:field="${eventoWrapper.evento.dataFine}" />
@@ -430,7 +435,7 @@
 										</span>
 									</div>
 								</div>
-
+				
 								<!-- DATE INTERMEDIE -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -454,7 +459,7 @@
 										</span>
 									</div>
 								</div>
-
+				
 								<div class='nextDataIntermedia item form-group'>
 									<div class='col-md-4 col-sm-4 col-xs-12'></div>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
@@ -469,7 +474,7 @@
 									</div>
 								</div>
 								<div class="date-intermedie-container"></div>
-
+				
 								<!-- OBIETTIVO NAZIONALE -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -479,7 +484,7 @@
 										<span th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 										<select id="obiettivoNazionale"
 											class="selectpicker required"
@@ -505,7 +510,7 @@
 										<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
 									</div>
 								</div>
-
+				
 								<!-- OBIETTIVO REGIONALE -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -515,7 +520,7 @@
 										<span th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Strategico Regionale</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<select id="obiettivoRegionale"
 											class="selectpicker required"
@@ -532,7 +537,7 @@
 										</select>
 									</div>
 								</div>
-
+				
 								<!-- PROFESSIONI/DISCIPLINE -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -542,7 +547,7 @@
 										<span th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
 										<div class="col-xs-12 select-with-margin-container">
 											<select id="professioni" class="selectpicker required multi"
@@ -573,7 +578,7 @@
 										</select>
 									</div>
 								</div>
-
+				
 								<!-- BLOCCO TIPOLOGIA DI EVENTO -->
 								<!-- TIPOLOGIA DELL'EVENTO -->
 								<div class="item form-group">
@@ -584,7 +589,7 @@
 										<span th:text="#{label.tipologia_evento}">Tipologia di Evento</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<select id="tipologia_evento_2"
 											class="selectpicker required"
@@ -635,7 +640,7 @@
 										<input type="text" class="form-control titolo-convegno" th:field="${eventoWrapper.evento.titoloConvegno}" />
 									</div>
 								</div>
-
+				
 								<!-- NUMERO PARTECIPANTI -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -645,12 +650,12 @@
 										<span th:text="#{label.numero_partecipanti}">Numero dei partecipanti</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="numeroPartecipanti">
 										<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.numeroPartecipanti}" />
 									</div>
 								</div>
-
+				
 								<!-- RESPONSABILI -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -664,7 +669,7 @@
 										<th:block th:include="evento/eventoEdit :: responsabiliScientifici" />
 									</div>
 								</div>
-
+				
 								<!-- DOCENTI/RELATORI/TUTOR -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -674,14 +679,14 @@
 										<span th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-xs-offset-1 col-xs-10">
 										<th:block th:include="evento/eventoEdit :: docenti" />
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- BLOCCO PROGRAMMA ATTIVITÀ FORMATIVA -->
 								<div class="item form-group">
 									<label class="col-xs-12">
@@ -730,20 +735,20 @@
 									</div>
 									<div class="col-lg-3 col-md-1 col-sm-1 col-xs-12"></div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
 							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="tab2">
 							<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
 								<!-- PROGRAMMA EVENTO -->
-								<a id="add-programma" class="btn btn-success" th:onclick="'addProgramma(\'attivitaRES\',\'23\/06\/1986\')'">
+								<!-- <a id="add-programma" class="btn btn-success" th:onclick="'addProgramma(\'attivitaRES\',\'23\/06\/1986\')'">
 									<span><i class="fa fa-minus"></i></span>
-								</a>
+								</a> -->
 								<div class='programmaEvento item form-group' id="programma">
 									<th:block th:include="evento/eventoEdit :: attivitaRES" />
 								</div>
-
+				
 								<!-- BROCHURE EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -770,7 +775,7 @@
 										<span th:text="#{label.verifica_apprendimento_partecipanti}">Verifica Apprendimento partecipanti</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 										<select id="verificaApprendimentoPartecipanti"
 												class="selectpicker required multi"
@@ -789,33 +794,33 @@
 										</select>
 									</div>
 								</div>
-
-								 <!-- DURATA  -->
-				 				<div class="item form-group">
-				 					<label class="control-label col-xs-1">
-				 						<span>34</span>
-				 					</label>
-				 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="durata">
-				 						<span th:text="#{label.durata}">Durata</span>
-				 					</label>
-				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata">
-				 						<div class="value-edit" th:text="${eventoWrapper.evento.durata}"></div>
-				 					</div>
-				 				</div>
-
+				
+								 <!-- DURATA  --> 
+				 				<div class="item form-group"> 
+				 					<label class="control-label col-xs-1"> 
+				 						<span>34</span> 
+				 					</label> 
+				 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="durata"> 
+				 						<span th:text="#{label.durata}">Durata</span> 
+				 					</label> 
+				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata"> 
+				 						<div class="value-edit" th:text="${eventoWrapper.evento.durata}"></div> 
+				 					</div> 
+				 				</div> 
+				 				
 				 				<!-- TIPOLOGIA DI OBIETTIVI FORMATIVI -->
-				 				<div class="item form-group">
-				 					<label class="control-label col-xs-1">
-				 						<span>34</span>
-				 					</label>
-				 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaObiettiviFormativi">
-				 						<span th:text="#{label.tipologia_obiettivi_formativi}">Tipologia di obiettivi formativi</span>
-				 					</label>
-				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipologiaObiettiviFormativi">
-				 						<div class="value-edit" th:text="${'**TODO**'}"></div>
-				 					</div>
-				 				</div>
-
+				 				<div class="item form-group"> 
+				 					<label class="control-label col-xs-1"> 
+				 						<span>34</span> 
+				 					</label> 
+				 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaObiettiviFormativi"> 
+				 						<span th:text="#{label.tipologia_obiettivi_formativi}">Tipologia di obiettivi formativi</span> 
+				 					</label> 
+				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipologiaObiettiviFormativi"> 
+				 						<div class="value-edit" th:text="${'**TODO**'}"></div> 
+				 					</div> 
+				 				</div> 
+				
 								<!-- CREDITI FORMATIVI -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -835,7 +840,7 @@
 										</label>
 									</div>
 								</div>
-
+				
 								<!-- RESPONSABILE SEGRETERIA ORGANIZZATIVA -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -849,7 +854,7 @@
 										<th:block th:include="evento/eventoEdit :: responsabileSegreteria" />
 									</div>
 								</div>
-
+				
 								<!-- TIPO MATERIALE -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -862,7 +867,7 @@
 										<input type="text" class="form-control" th:field="${eventoWrapper.evento.materialeDurevoleRilasciatoAiPratecipanti}" />
 									</div>
 								</div>
-
+				
 								<!-- QUOTA PARTECIPAZIONE -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -876,9 +881,9 @@
 										<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" />
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- BLOCCO LINGUA -->
 								<!-- RADIO LINGUA ITALIANA -->
 								<div class="item form-group">
@@ -939,9 +944,9 @@
 										</div>
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- VERIFICA PRESENZA PARTECIPANTI -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -951,7 +956,7 @@
 										<span th:text="#{label.verifica_presenza_partecipanti}">Verifica presenza partecipanti</span>
 										<span class="required">*</span>
 									</label>
-
+				
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="verificaPresenzaPartecipanti">
 										<div class="checkbox" th:each="modalita, row : ${T(it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum).values()}">
 											<label>
@@ -961,9 +966,9 @@
 										</div>
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- VERIFICA A DISTANZA BLOCCO -->
 								<!-- RADIO VERIFICA A DISTANZA -->
 								<div class="item form-group">
@@ -1011,9 +1016,9 @@
 										</div>
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- SPONSOR BLOCCO -->
 								<!-- RADIO SPONSOR -->
 								<div class="item form-group">
@@ -1043,9 +1048,9 @@
 									<!-- SPONSOR INSERIMENTO -->
 									<div>**TODO RIPETIBILE SPONSOR**</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- FORME FINANZIAMENTO BLOCCO -->
 								<!-- RADIO FORME FINANZIAMENTO -->
 								<div class="item form-group">
@@ -1097,9 +1102,9 @@
 										</div>
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- BLOCCO PARTNER -->
 								<!-- RADIO PARTNER -->
 								<div class="item form-group">
@@ -1128,9 +1133,9 @@
 								<div class="no-padding partner-si" style="display: none;">
 									<div>**TODO PARTNER RIPETIBILE</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- DICHIARAZIONE CONFLITTO INTERESSI -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -1144,9 +1149,9 @@
 										<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block>
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- PROCEDURA VERIFICA QUALITÀ -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -1162,12 +1167,12 @@
 												<span class="required">*</span>
 											</label>
 										</div>
-
+				
 									</div>
 								</div>
-
+				
 								<div class="divider-dashed"></div>
-
+				
 								<!-- AUTORIZZAZIONE -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -1189,7 +1194,7 @@
 						</div>
 					</div>
 				</div>
-
+			
 				<input id="submitButton" type="submit" style="display: none;" />
 
 			</form>
@@ -1202,13 +1207,13 @@
 				$(document).ready(function() {
 					globalInitThom();
 				});
-
+				
 				function globalInitThom(){
 					$('input.flat').iCheck({
 			            checkboxClass: 'icheckbox_flat-green',
 			            radioClass: 'iradio_flat-green'
 			        });
-
+					
 					days = getDayNamesShort();
 					months = getMonthNames();
 
@@ -1251,7 +1256,7 @@
 					if([[${eventoWrapper.evento.soloLinguaItaliana}]] == false) {
 						mostraNascondiCampiLingua(true);
 					}
-
+					
 					var handler = $('.ora').clockpicker({
 				    	donetext: [[#{label.applica}]],
 				    	align: 'left',
@@ -1263,7 +1268,7 @@
 				    	e.stopPropagation();
 	                    handler.clockpicker('show');
 				    })
-
+				
 				 	 //gestione evento iCheck su radio riguardante la lingua
 					$(".verifica-distanza").on("ifChecked", function() {
 						if($(this).val() == 'true')
@@ -1276,13 +1281,13 @@
 				    if([[${eventoWrapper.evento.verificaRicaduteFormative}]]) {
 				    	mostraNascondiCampiRicadutaFormative(true);
 					}
-
-				    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-						tabSelected = e.target.id;
-						reloadSection(e.target.id);
-					});
 				}
-
+				
+				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			    	tabSelected = e.target.id;
+					reloadSection(tabSelected);
+				});
+					
 				//indice per calcolare i nuovi name delle date intermedie
 				var indexDateIntermedie = [[${#lists.size(eventoWrapper.dateIntermedieTemp)}]] - 1;
 				var indexRisutato = [[${#lists.size(eventoWrapper.risultatiAttesiTemp)}]] - 1;
@@ -1362,7 +1367,7 @@
 						break;
 					}
 				}
-
+				
 				//funzione che aggiunge un risultato atteso alla lista dei temporanei
 				//(solo lato client, il salvataggio verrà realizzato al save dell'evento)
 				function aggiungiRisultatoAtteso(risultato) {
@@ -1413,7 +1418,7 @@
 						$(".label-radio-traduzione").addClass("label-disabled");
 					}
 				}
-
+				
 				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.
 				function updateMetodologieDidattiche(caller){
 					var obiettivo = $(caller).val();
@@ -1421,15 +1426,15 @@
 					var start = [[@{/listaMetodologie?obiettivo=}]];
 					var end = obiettivo;
 					var url = start + end;
-
+					
 					console.log(obiettivo);
 					console.log($(metodologiePicker_ref));
 					$.get(url, function(data){
-
+						
 						$.each($(metodologiePicker_ref + " option"), function() {
 							$(this).hide();
 						});
-
+						
 						for(var item = 0; item < data.length; item++){
 							console.log(data[item]);
 							$.each($(metodologiePicker_ref + " option"), function() {
@@ -1453,13 +1458,23 @@
 						$("#documentoVerificaRicaduteFormative").prop("disabled", true);
 					}
 				}
-
+				
 	/********************* PROGRAMMA GIORNALIERO ****************************/
 				function openAddAttivitaTo(target,programmaIndex,pausa){
 					$('#targetTableAttivitaRES').val(target);
 					$('#addAttivitaTo').val(programmaIndex);
 					$('#pausa').val(pausa);
-
+					
+					var provinciaVal = $("[data-programma-provincia='" + programmaIndex + "']").val();
+					var comuneVal = $("[data-programma-comune='" + programmaIndex + "']").val();
+					var indirizzoVal = $("[data-programma-indirizzo='" + programmaIndex + "']").val();
+					var luogoVal = $("[data-programma-luogo='" + programmaIndex + "']").val();
+				
+					$('#addAttivitaTo_provincia').attr("name","programmaEventoRES[" + programmaIndex + "].sede.provincia").val(provinciaVal);
+					$('#addAttivitaTo_comune').attr("name","programmaEventoRES[" + programmaIndex + "].sede.comune").val(comuneVal);
+					$('#addAttivitaTo_indirizzo').attr("name","programmaEventoRES[" + programmaIndex + "].sede.indirizzo").val(indirizzoVal);
+					$('#addAttivitaTo_luogo').attr("name","programmaEventoRES[" + programmaIndex + "].sede.luogo").val(luogoVal);
+					
 					if(pausa){
 						$("#container-titleNoPausa").hide();
 						$("#container-titlePausa").show();
@@ -1478,15 +1493,15 @@
 						$("#container-metodologiaDidattica").show();
 					}
 				}
-
+	
 				function closeModaleAddAttivitaTo(){
 					$("#add-attivitaRES-modal .close").click();
 				}
-
+				
 				function reInitModaleAddAttivitaTo(){
 					$('select').selectpicker();
 				}
-
+				
 				function sendAjaxAddAttivitaToProgramma(){
 					var target = $('#targetTableAttivitaRES').val();
 					var programmaIndex = $('#addAttivitaTo').val();
@@ -1500,32 +1515,32 @@
 					    	alert( "error" );
 					 	 })
 				}
-
+				
 				function removeAttivitaFrom(target,caller){
 					var rowIndex = $(caller).parent().parent().data('row-id');
 					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('programma-id');
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
-
+					
 					$("#" + target).load(url);
 				}
-
+				
 				function addProgramma(target,programmaDate){
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addProgramma/|}]] + target + "?programmaDate=" + encodeURIComponent(programmaDate);
 					$("#" + target).load(url);
 				}
-
+				
 				function addToSelectAttivitaRES(target,value){
 					var option = '<option value = "' + value + '">' + value + "</option>";
 					$('#' + target).append(option);
 					$('#' + target).prop("disabled", false);
 					$('#' + target).selectpicker('refresh');
 				}
-
+				
 				function removeFromSelectAttivitaRES(target,value){
 					$('#' + target +" option[value='" + value + "']").remove();
 					$('#' + target).selectpicker('refresh');
 				}
-
+				
 				function reloadSection(selectedTab){
 					if(selectedTab == 'tab1'){
 						sendAjaxReloadSection('1');
@@ -1535,7 +1550,7 @@
 						sendAjaxReloadSection('3');
 					}
 				}
-
+				
 				function sendAjaxReloadSection(sectionIndex){
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoRES').serialize())
 					.done(function(data) {
@@ -1547,13 +1562,12 @@
 				    	alert( "error" );
 				 	 })
 				}
-
+				
 				function reInitComponents(){
 					$('select').selectpicker();
 					globalInitThom();
 					globalInitThomCommon();
 				}
-
 			/*]]>*/
 			</script>
 		</div>
