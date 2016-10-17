@@ -102,7 +102,7 @@
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="checkbox">
 										<label>
-											<input id="straniero" type="checkbox" class="" th:field="${eventoWrapper.tempPersonaEvento.anagrafica.straniero}" />
+											<input id="straniero" type="checkbox" class="flat" th:field="${eventoWrapper.tempPersonaEvento.anagrafica.straniero}" />
 										</label>
 									</div>
 								</div>
@@ -149,17 +149,17 @@
 							<!-- TITOLARE/SOSTITUTO -->
 							<div class="item form-group" id="container-titolare">
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="titolare">
-									<span th:text="#{label.titolare} + '/' + #{label.titolare}">Titolare</span>
+									<span th:text="#{label.titolare} + '/' + #{label.sostituto}">Titolare</span>
 									<span class="required">*</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
 									<div class="radio">
 										<label>
-											<input type="radio"  th:field="${eventoWrapper.tempPersonaEvento.titolare}" th:value="${'titolare'}" />
+											<input type="radio" class="flat" th:field="${eventoWrapper.tempPersonaEvento.titolare}" th:value="${'titolare'}" />
 											<span th:text="#{label.titolare}"></span>
 										</label>
 										<label>
-											<input type="radio" th:field="${eventoWrapper.tempPersonaEvento.titolare}" th:value="${'sostituto'}" />
+											<input type="radio" class="flat" th:field="${eventoWrapper.tempPersonaEvento.titolare}" th:value="${'sostituto'}" />
 											<span th:text="#{label.sostituto}"></span>
 										</label>
 									</div>
@@ -342,7 +342,6 @@
 		/*<![CDATA[*/
 		           
 		    var tables = new Array();
-		    var anagraficaLoaded;       
 		           
 			var text_max = 3000;
 			$('#counter').html(text_max + ' '+[[#{label.caratteri_rimanenti}]]);
@@ -397,7 +396,8 @@
 						"sClass": "center"
 					}]
 			    });
-				globalInitThomCommon();
+			  	
+			    globalInitThomCommon();
 			});
 			
 			function globalInitThomCommon(){
@@ -711,7 +711,6 @@
 				var startUrl = [[@{|/provider/${eventoWrapper.evento.provider.id}/|}]];
 				urlGet =  type == 'Full' ? startUrl + "anagraficaFullEventoList" : startUrl + "anagraficaEventoList";
 				$.get( urlGet, function(data){
-					anagraficaLoaded = data;
 					for(var item = 0; item < data.length; item++){
 						var obj = data[item];
 						table.row.add([
@@ -771,7 +770,6 @@
 			function submitSave(){
 				$("#submitButton").click();
 			}
-			
 
 		/*]]>*/
 		</script>
@@ -923,7 +921,7 @@
 						<span class="required">*</span>
 					</label>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-						<input type="text" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.provincia}" />	
+						<input type="text" th:attr="data-programma-provincia=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.provincia}" />	
 					</div>
 				</div>
 				
@@ -933,7 +931,7 @@
 						<span class="required">*</span>
 					</label>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-						<input type="text" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.comune}" />		
+						<input type="text" th:attr="data-programma-comune=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.comune}" />		
 					</div>
 				</div>
 				
@@ -943,7 +941,7 @@
 						<span class="required">*</span>
 					</label>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-						<input type="text" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.indirizzo}" />	
+						<input type="text" th:attr="data-programma-indirizzo=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.indirizzo}" />	
 					</div>
 				</div>
 				
@@ -953,7 +951,7 @@
 						<span class="required">*</span>
 					</label>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-						<input type="text" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.luogo}" />		
+						<input type="text" th:attr="data-programma-luogo=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.luogo}" />		
 					</div>
 				</div>
 			

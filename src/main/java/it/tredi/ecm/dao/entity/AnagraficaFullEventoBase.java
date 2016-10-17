@@ -1,5 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -11,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Embeddable
-public class AnagraficaFullEventoBase{
+public class AnagraficaFullEventoBase implements Serializable{
 	private String cognome;
 	private String nome;
 	private String codiceFiscale;

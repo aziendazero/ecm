@@ -143,7 +143,7 @@
 				case 'fileDaFirmare' :						tipoAllegato = 'FILE_DA_FIRMARE'; break;
 			}
 
-			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper.tempPersonaEvento.anagrafica } ? ${__${wrapper}__.statoAccreditamento?.name()}]];
+			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper?.tempPersonaEvento?.anagrafica and __${wrapper}__ != providerForm} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
 
 	 		var oMyForm = new FormData();
             oMyForm.append("multiPartFile", $(element)[0].files[0]);

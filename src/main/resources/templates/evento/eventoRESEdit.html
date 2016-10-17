@@ -46,7 +46,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input type="text" th:field="*{argomento}" />	
+											<input class="form-control" type="text" th:field="*{argomento}" />	
 										</div>
 									</div>
 								
@@ -148,13 +148,18 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input type="text" th:field="*{oreAttivita}" />
+											<input class="form-control" type="text" th:field="*{oreAttivita}" />
 										</div>
 									</div>
 								
 									<input id="targetTableAttivitaRES" type="text" name="target" style="display: none;" />
 									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
 									<input id="pausa" type="text" name="pausa" style="display: none;" />
+									
+									<input id="addAttivitaTo_provincia" type="text" style="display: none;" />
+									<input id="addAttivitaTo_comune" type="text" style="display: none;" />
+									<input id="addAttivitaTo_indirizzo" type="text" style="display: none;" />
+									<input id="addAttivitaTo_luogo" type="text" style="display: none;" />
 								</form>
 							</div>
 							<div class="modal-footer">
@@ -737,9 +742,9 @@
 						<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="tab2">
 							<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
 								<!-- PROGRAMMA EVENTO -->
-								<a id="add-programma" class="btn btn-success" th:onclick="'addProgramma(\'attivitaRES\',\'23\/06\/1986\')'">
+								<!-- <a id="add-programma" class="btn btn-success" th:onclick="'addProgramma(\'attivitaRES\',\'23\/06\/1986\')'">
 									<span><i class="fa fa-minus"></i></span>
-								</a>
+								</a> -->
 								<div class='programmaEvento item form-group' id="programma">
 									<th:block th:include="evento/eventoEdit :: attivitaRES" />
 								</div>
@@ -1276,13 +1281,13 @@
 				    if([[${eventoWrapper.evento.verificaRicaduteFormative}]]) {
 				    	mostraNascondiCampiRicadutaFormative(true);
 					}
-				  	
-				    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-						tabSelected = e.target.id;
-						reloadSection(e.target.id);
-					});
 				}
-
+				
+				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			    	tabSelected = e.target.id;
+					reloadSection(tabSelected);
+				});
+					
 				//indice per calcolare i nuovi name delle date intermedie
 				var indexDateIntermedie = [[${#lists.size(eventoWrapper.dateIntermedieTemp)}]] - 1;
 				var indexRisutato = [[${#lists.size(eventoWrapper.risultatiAttesiTemp)}]] - 1;
@@ -1460,6 +1465,16 @@
 					$('#addAttivitaTo').val(programmaIndex);
 					$('#pausa').val(pausa);
 					
+					var provinciaVal = $("[data-programma-provincia='" + programmaIndex + "']").val();
+					var comuneVal = $("[data-programma-comune='" + programmaIndex + "']").val();
+					var indirizzoVal = $("[data-programma-indirizzo='" + programmaIndex + "']").val();
+					var luogoVal = $("[data-programma-luogo='" + programmaIndex + "']").val();
+				
+					$('#addAttivitaTo_provincia').attr("name","programmaEventoRES[" + programmaIndex + "].sede.provincia").val(provinciaVal);
+					$('#addAttivitaTo_comune').attr("name","programmaEventoRES[" + programmaIndex + "].sede.comune").val(comuneVal);
+					$('#addAttivitaTo_indirizzo').attr("name","programmaEventoRES[" + programmaIndex + "].sede.indirizzo").val(indirizzoVal);
+					$('#addAttivitaTo_luogo').attr("name","programmaEventoRES[" + programmaIndex + "].sede.luogo").val(luogoVal);
+					
 					if(pausa){
 						$("#container-titleNoPausa").hide();
 						$("#container-titlePausa").show();
@@ -1553,7 +1568,6 @@
 					globalInitThom();
 					globalInitThomCommon();
 				}
-
 			/*]]>*/
 			</script>
 		</div>

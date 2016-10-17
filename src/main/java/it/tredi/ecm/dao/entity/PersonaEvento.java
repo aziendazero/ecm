@@ -42,13 +42,6 @@ public class PersonaEvento extends BaseEntity implements Serializable{
 	
 	private String titolare;
 	
-	@ManyToOne
-	@JsonIgnore
-	private Evento eventoResponsabile;
-	@ManyToOne
-	@JsonIgnore
-	private Evento eventoDocente;
-	
 	public PersonaEvento(){}
 	
 	public PersonaEvento(AnagraficaEvento anagrafica){
@@ -65,9 +58,6 @@ public class PersonaEvento extends BaseEntity implements Serializable{
 		PersonaEvento p = (PersonaEvento) super.clone();
 		if(p.getAnagrafica() != null)
 			p.setAnagrafica((AnagraficaEventoBase) p.getAnagrafica().clone());
-		
-		p.setEventoDocente(null);
-		p.setEventoResponsabile(null);
 		
 		p.setRuolo(RuoloPersonaEventoEnum.valueOf(p.getRuolo().name()));
 		

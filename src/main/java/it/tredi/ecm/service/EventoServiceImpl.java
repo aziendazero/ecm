@@ -24,6 +24,8 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
+import it.tredi.ecm.dao.repository.PersonaEventoRepository;
+import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
@@ -33,6 +35,9 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired
 	private EventoRepository eventoRepository;
+	
+	@Autowired private PersonaEventoRepository personaEventoRepository;
+	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
 
 	@Autowired
 	private FileService fileService;
@@ -162,9 +167,11 @@ public class EventoServiceImpl implements EventoService {
 			((EventoRES) evento).setRisultatiAttesi(eventoWrapper.getRisultatiAttesiTemp());
 			
 			//Docenti
-			((EventoRES) evento).setDocenti(eventoWrapper.getDocenti());
-			for(PersonaEvento p : ((EventoRES) evento).getDocenti())
-				p.setEventoDocente(evento);
+			//((EventoRES) evento).setDocenti(eventoWrapper.getDocenti());
+			((EventoRES) evento).getDocenti().clear();
+			for(PersonaEvento p : eventoWrapper.getDocenti()){
+				((EventoRES) evento).getDocenti().add(personaEventoRepository.findOne(p.getId()));
+			}
 			
 			//Programma evento
 			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
@@ -179,7 +186,11 @@ public class EventoServiceImpl implements EventoService {
 		}
 		
 		//Responsabili
-		evento.setResponsabili(eventoWrapper.getResponsabiliScientifici());
+		//evento.setResponsabili(eventoWrapper.getResponsabiliScientifici());
+		evento.getResponsabili().clear();
+		for(PersonaEvento p : eventoWrapper.getResponsabiliScientifici()){
+			evento.getResponsabili().add(personaEventoRepository.findOne(p.getId()));
+		}
 		
 		//brochure
 		if (eventoWrapper.getBrochure().getId() != null) {

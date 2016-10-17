@@ -47,6 +47,7 @@ import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
+import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
@@ -76,6 +77,9 @@ public class EventoController {
 	@Autowired private AnagraficaEventoService anagraficaEventoService;
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
 	@Autowired private PersonaEventoRepository personaEventoRepo;
+	
+	@Autowired private PersonaEventoRepository personaRepo;
+	@Autowired private PersonaFullEventoRepository personaFullRepo;
 	
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -209,6 +213,7 @@ public class EventoController {
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 			eventoService.save(evento);
+			
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato_in_bozza_success", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
 			return "redirect:/provider/{providerId}/evento/list";
@@ -337,11 +342,7 @@ public class EventoController {
 		
 		if(evento instanceof EventoRES){
 			//Lista attività singolo programma giornaliero
-			List<DettaglioAttivitaRES> programmaGiorno1 = new ArrayList<DettaglioAttivitaRES>();
-			programmaGiorno1.add(new DettaglioAttivitaRES());
-			
 			ProgrammaGiornalieroRES p = new ProgrammaGiornalieroRES();
-			p.setProgramma(programmaGiorno1);
 			//p.setEventoRES((EventoRES) evento);
 			
 			//Lista programmi giornalieri dell'evento
@@ -467,7 +468,8 @@ public class EventoController {
 					anagraficaEventoService.save(anagraficaEventoToSave);
 				}
 			}
-			PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
+			//PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
+			PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
 				//p.setEventoResponsabile(eventoWrapper.getEvento());
 				personaEventoRepo.save(p);
@@ -502,9 +504,10 @@ public class EventoController {
 				}
 			}
 			
-			PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
+			//PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
+			PersonaFullEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaFullEvento());			
 			if(target.equalsIgnoreCase("responsabileSegreteria")){
-				p.setEventoResponsabileSegreteriaOrganizzativa(eventoWrapper.getEvento());
+				//p.setEventoResponsabileSegreteriaOrganizzativa(eventoWrapper.getEvento());
 				eventoWrapper.getEvento().setResponsabileSegreteria(p);
 			}
 			eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento());
