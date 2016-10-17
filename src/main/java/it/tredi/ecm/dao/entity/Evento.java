@@ -142,7 +142,7 @@ public class Evento extends BaseEntity{
 	private boolean validatorCheck = false; //(durante il salvataggio check di un flag per sapere se sono stati rispettati tutti i vincoli del validator)
 
 	@OneToMany(mappedBy="evento")
-	@OrderBy("data_invio ASC")
+	@OrderBy("data_invio DESC")
 	private Set<RendicontazioneInviata> inviiRendicontazione = new HashSet<RendicontazioneInviata>();
 
 	/**	Utilizzati da Engineering **/
@@ -260,4 +260,8 @@ public class Evento extends BaseEntity{
         Evento entitapiatta = (Evento) o;
         return Objects.equals(id, entitapiatta.id);
     }
+	
+	public RendicontazioneInviata getUltimaRendicontazioneInviata() {
+		return inviiRendicontazione.size() == 0? null : inviiRendicontazione.iterator().next();
+	}
 }

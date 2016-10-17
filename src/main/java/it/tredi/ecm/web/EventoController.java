@@ -322,7 +322,7 @@ public class EventoController {
 				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
-//TODO - bisognerebbe controllare che il file sia fermato altrimenti non è possibile inviare il report al cogeaps				
+//TODO - bisognerebbe controllare che il file sia firmato altrimenti non è possibile inviare il report al cogeaps				
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
 				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				eventoService.inviaRendicontoACogeaps(eventoId);
@@ -440,10 +440,6 @@ public class EventoController {
 		eventoWrapper.setProviderId(providerId);
 		eventoWrapper.setReportPartecipanti(new File(FileEnum.FILE_REPORT_PARTECIPANTI));
 		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.RENDICONTO);
-		RendicontazioneInviata ultimoReportInviato = evento.getInviiRendicontazione().size() == 0? null : (RendicontazioneInviata)(evento.getInviiRendicontazione().toArray()[evento.getInviiRendicontazione().size() - 1]);
-		
-//TODO - gestire correttamente l'ultimo report inviato		
-		eventoWrapper.setUltimoReportInviato(ultimoReportInviato);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRendiconto(" + evento.getId() + "," + providerId + ") - exiting"));
 		return eventoWrapper;
 	}

@@ -112,33 +112,51 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<div th:if="${eventoWrapper.ultimoReportInviato}" class="value">
-							<div class="item form-group with-margin-top" th:if="${eventoWrapper.ultimoReportInviato.fileRendicontazione}">
+						<div th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata}" class="value">
+							<div class="item form-group with-margin-top" th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.dataInvio}">
 								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
-									<span th:text="#{label.reportPartecipantiXML}"></span>
+									<span th:text="#{label.data_invio}"></span>
 								</label>
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-									<div class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.ultimoReportInviato.fileRendicontazione.nomeFile}" th:href="@{|/file/${eventoWrapper.ultimoReportInviato.fileRendicontazione.id}|}"></a></div>
+									<div class="value"><span th:text="${#temporals.format(eventoWrapper.evento.ultimaRendicontazioneInviata.dataInvio, 'dd/MM/yyyy HH:mm')}" /></div>
 								</div>
-							</div>
-							<div class="item form-group with-margin-top" th:if="${eventoWrapper.ultimoReportInviato.stato}">
+							</div>						
+							<div class="item form-group with-margin-top" th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.accountInvio}">
+								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
+									<span th:text="#{label.utente}"></span>
+								</label>
+								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+									<div class="value"><span th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.accountInvio.fullName}"/></div>
+								</div>
+							</div>								
+							<div class="item form-group with-margin-top" th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato}">
 								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
 									<span th:text="#{label.stato}"></span>
 								</label>
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-									<div class="value"><span th:text="${eventoWrapper.ultimoReportInviato.stato}"/></div>
+									<div class="value"><span th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato.nome}"/>
+									<a th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum).PENDING}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/rendiconto/inviaACogeaps|}" class="link-collapse"><i class="fa table-icon fa-refresh"></i></a>									
+									</div>
 								</div>
 							</div>
-							<div class="item form-group with-margin-top" th:if="${eventoWrapper.ultimoReportInviato.fileName}">
+							<div class="item form-group with-margin-top" th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.result}">
 								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
-									<span th:text="#{label.cogeaps_report_id}"></span>
+									<span th:text="#{label.risultato}"></span>
 								</label>
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-									<div class="value"><span th:text="${eventoWrapper.ultimoReportInviato.fileName}"/></div>
+									<div class="value"><span th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.result.nome}"/></div>
 								</div>
-							</div>														
+							</div>							
+							<div class="item form-group with-margin-top" th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.fileRendicontazione}">
+								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
+									<span th:text="#{label.reportPartecipantiXML}"></span>
+								</label>
+								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+									<div class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.fileRendicontazione.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.ultimaRendicontazioneInviata.fileRendicontazione.id}|}"></a></div>
+								</div>
+							</div>															
 						</div>
-						<div th:unless="${eventoWrapper.ultimoReportInviato}" class="value" th:text="#{label.nessuna_rendicontazione_inviata}"></div>
+						<div th:unless="${eventoWrapper.evento.ultimaRendicontazioneInviata}" class="value" th:text="#{label.nessuna_rendicontazione_inviata}"></div>
 					</div>
 				</div>				
 				

@@ -4,10 +4,14 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
+import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,8 +27,12 @@ public class RendicontazioneInviata extends BaseEntity{
 	private File fileRendicontazione;
 	private String response;//json risposta COGEAPS
 	private String fileName;//cogeapsID
-	private String stato;//ENUM pending/finished
-	private String result;//ENUM ok/ko
+	
+	@Enumerated(EnumType.STRING)
+	private RendicontazioneInviataStatoEnum stato;//ENUM
+	
+	@Enumerated(EnumType.STRING)
+	private RendicontazioneInviataResultEnum result;//ENUM
 
 	@ManyToOne
 	@JoinColumn(name = "evento_id")
