@@ -299,8 +299,8 @@ public class EventoController {
 						else {
 							model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
 						}
-						}
 					}
+				}
 			}
 			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
 		}
@@ -440,7 +440,7 @@ public class EventoController {
 		eventoWrapper.setProviderId(providerId);
 		eventoWrapper.setReportPartecipanti(new File(FileEnum.FILE_REPORT_PARTECIPANTI));
 		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.RENDICONTO);
-		RendicontazioneInviata ultimoReportInviato = (RendicontazioneInviata)(evento.getInviiRendicontazione().toArray()[evento.getInviiRendicontazione().size() - 1]);
+		RendicontazioneInviata ultimoReportInviato = evento.getInviiRendicontazione().size() == 0? null : (RendicontazioneInviata)(evento.getInviiRendicontazione().toArray()[evento.getInviiRendicontazione().size() - 1]);
 		
 //TODO - gestire correttamente l'ultimo report inviato		
 		eventoWrapper.setUltimoReportInviato(ultimoReportInviato);
