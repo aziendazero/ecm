@@ -72,19 +72,20 @@ public class EventoController {
 	@Autowired private ObiettivoService obiettivoService;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private FileService fileService;
-	
+
 	@Autowired private AnagraficaEventoService anagraficaEventoService;
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
 	@Autowired private PersonaEventoRepository personaEventoRepo;
-	
+
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
+	private final String SHOW = "evento/eventoShow";
 	private final String RENDICONTO = "evento/eventoRendiconto";
 	private final String EDITRES = "evento/eventoRESEdit";
 	private final String EDITFSC = "evento/eventoFSCEdit";
 	private final String EDITFAD = "evento/eventoFADEdit";
-	
-	
+
+
 	@ModelAttribute("elencoProvince")
 	public List<String> getElencoProvince(){
 		List<String> elencoProvince = new ArrayList<String>();
@@ -100,7 +101,7 @@ public class EventoController {
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
     }
-	
+
 	//@ModelAttribute("eventoWrapper")
 	public EventoWrapper getEvento(@RequestParam(name = "editId", required = false) Long id,
 			@RequestParam(value="providerId",required = false) Long providerId,
@@ -239,6 +240,24 @@ public class EventoController {
 		}
 	}
 
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowEvento(principal, #providerId")
+	@RequestMapping("/provider/{providerId}/evento/{eventoId}/show")
+	public String showEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
+			Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/show"));
+		try {
+			//show dell'evento
+			EventoWrapper wrapper = prepareEventoWrapperShow(eventoService.getEvento(eventoId));
+			return goToShow(model, wrapper);
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/show"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+	}
+
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
 	@RequestMapping("/provider/{providerId}/evento/{eventoId}/rendiconto")
 	public String rendicontoEvento(@PathVariable Long providerId,
@@ -334,23 +353,23 @@ public class EventoController {
 		evento.setProvider(providerService.getProvider(providerId));
 		evento.setProceduraFormativa(proceduraFormativa);
 		eventoWrapper.setEvento(evento);
-		
+
 		if(evento instanceof EventoRES){
 			//Lista attività singolo programma giornaliero
 			List<DettaglioAttivitaRES> programmaGiorno1 = new ArrayList<DettaglioAttivitaRES>();
 			programmaGiorno1.add(new DettaglioAttivitaRES());
-			
+
 			ProgrammaGiornalieroRES p = new ProgrammaGiornalieroRES();
 			p.setProgramma(programmaGiorno1);
 			//p.setEventoRES((EventoRES) evento);
-			
+
 			//Lista programmi giornalieri dell'evento
 			List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
 			programmaEvento.add(p);
-			
+
 			eventoWrapper.setProgrammaEventoRES(programmaEvento);
 		}
-		
+
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
 	}
@@ -362,6 +381,16 @@ public class EventoController {
 		if(reloadWrapperFromDB)
 			eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - exiting"));
+		return eventoWrapper;
+	}
+
+	private EventoWrapper prepareEventoWrapperShow(Evento evento) throws Exception {
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperShow(" + evento.getId() + ") - entering"));
+		EventoWrapper eventoWrapper = new EventoWrapper();
+		eventoWrapper.setProceduraFormativa(evento.getProceduraFormativa());
+		eventoWrapper.setProviderId(evento.getProvider().getId());
+		eventoWrapper.setEvento(evento);
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperShow(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;
 	}
 
@@ -401,6 +430,12 @@ public class EventoController {
 		return EDIT;
 	}
 
+	private String goToShow(Model model, EventoWrapper eventoWrapper) {
+		model.addAttribute("eventoWrapper", eventoWrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+		return SHOW;
+	}
+
 	private String goToRendiconto(Model model, EventoWrapper wrapper) {
 		model.addAttribute("eventoWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + RENDICONTO));
@@ -412,7 +447,7 @@ public class EventoController {
 	public List<MetodologiaDidatticaRESEnum>getListaMetodologie(@RequestParam ObiettiviFormativiRESEnum obiettivo){
 		return obiettivo.getMetodologieDidattiche();
 	}
-	
+
 //	@RequestMapping(value = "/provider/{providerId}/evento/save", method=RequestMethod.POST, params={"addAttivitaToProgramma"})
 //	public String addElement(@RequestParam("addAttivitaToProgramma") String programma,
 //								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
@@ -426,7 +461,7 @@ public class EventoController {
 //			return "redirect:/home";
 //		}
 //	}
-//	
+//
 //	@RequestMapping(value = "/provider/{providerId}/evento/removeAttivita/{programmaIndex}/{attivitaIndex}", method=RequestMethod.GET)
 //	public String removeAttivitaFromProgramma(@PathVariable("programmaIndex") String progIndex, @PathVariable("attivitaIndex") String attIndex,
 //												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
@@ -441,7 +476,7 @@ public class EventoController {
 //			return "redirect:/home";
 //		}
 //	}
-	
+
 	@RequestMapping(value="/provider/{providerId}/createAnagraficaFullEvento", method=RequestMethod.POST)
 	@ResponseBody
 	public String saveAnagraficaFullEvento(@PathVariable("providerId") Long providerId, AnagraficaEvento anagrafica){
@@ -449,9 +484,9 @@ public class EventoController {
 		anagraficaEventoService.save(anagrafica);
 		return "OK";
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaTo", method=RequestMethod.POST, params={"addPersonaTo"})
-	public String addPersonaTo(@RequestParam("addPersonaTo") String target, 
+	public String addPersonaTo(@RequestParam("addPersonaTo") String target,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			//TODO da fare solo se rispetta il validator
@@ -485,9 +520,9 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaFullTo", method=RequestMethod.POST, params={"addPersonaFullTo"})
-	public String addPersonaFullTo(@RequestParam("addPersonaFullTo") String target, 
+	public String addPersonaFullTo(@RequestParam("addPersonaFullTo") String target,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			//TODO da fare solo se rispetta il validator
@@ -501,7 +536,7 @@ public class EventoController {
 					anagraficaFullEventoService.save(anagraficaFullEventoToSave);
 				}
 			}
-			
+
 			PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
 			if(target.equalsIgnoreCase("responsabileSegreteria")){
 				p.setEventoResponsabileSegreteriaOrganizzativa(eventoWrapper.getEvento());
@@ -515,7 +550,7 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/removePersonaFrom/{removePersonaFrom}/{rowIndex}", method=RequestMethod.GET)
 	public String removePersonaFrom(@PathVariable("removePersonaFrom") String target, @PathVariable("rowIndex") String rowIndex,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
@@ -537,7 +572,7 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/setLookupAnagraficaEvento/{type}/{angraficaEventoId}", method=RequestMethod.GET)
 	public String lookupPersona(@PathVariable("type") String type,
 									@PathVariable("angraficaEventoId") Long angraficaEventoId,
@@ -556,9 +591,9 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/addAttivitaTo", method=RequestMethod.POST)
-	public String addAttivitaTo(@RequestParam("target") String target, 
+	public String addAttivitaTo(@RequestParam("target") String target,
 								@RequestParam("addAttivitaTo") String addAttivitaTo,
 								@RequestParam(name = "pausa",required=false) Boolean pausa,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
@@ -579,10 +614,10 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/removeAttivitaFrom/{target}/{removeAttivitaFrom}/{rowIndex}", method=RequestMethod.GET)
 	public String removeAttivitaFrom(@PathVariable("target") String target,
-										@PathVariable("removeAttivitaFrom") String removeAttivitaFrom, 
+										@PathVariable("removeAttivitaFrom") String removeAttivitaFrom,
 											@PathVariable("rowIndex") String rowIndex,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
@@ -600,10 +635,10 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/addProgramma/{target}", method=RequestMethod.GET)
 	public String addProgramma(@PathVariable("target") String target,
-										@RequestParam("programmaDate") String programmaDate, 
+										@RequestParam("programmaDate") String programmaDate,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -621,9 +656,9 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/showSection/{sectionIndex}", method=RequestMethod.POST)
-	public String showSection(@PathVariable("sectionIndex") String sIndex, 
+	public String showSection(@PathVariable("sectionIndex") String sIndex,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			int sectionIndex = Integer.valueOf(sIndex).intValue();
@@ -639,7 +674,7 @@ public class EventoController {
 					}
 				}
 			}
-			
+
 			if(eventoWrapper.getEvento() instanceof EventoRES){
 				return EDITRES + " :: " + "section-" + sectionIndex;
 			}else if(eventoWrapper.getEvento() instanceof EventoFSC){
@@ -653,7 +688,7 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/evento/listaDocentiAttivitaRES")
 	@ResponseBody
@@ -664,5 +699,5 @@ public class EventoController {
 		}
 		return lista;
 	}
-	
+
 }
