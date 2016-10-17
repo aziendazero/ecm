@@ -1029,6 +1029,74 @@
 			</div>
 		</div>
 	</th:block>
+	
+	<th:block style="display:none">
+		<div class="col-xs-12" th:fragment="attivitaFSC">
+			<div id="attivitaFSC" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}">
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.fase}">Fase</span>
+						<span class="required">*</span>
+					</label>
+					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+						<label class="control-label" th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].fase.nome}"> </label>
+					</div>
+				</div>
 
+				<div class="col-xs-12">
+					<label th:text="#{label.azioni} + '/' + #{label_ruoli}">Azioni / Ruoli</label>
+					<div th:attr="data-fase-id=__${status.index}__">
+						<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.azione}">AZIONE</th>
+									<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>		
+									<th th:text="#{label.risultati_attesi}">RISULTATAO ATTESO</th>
+									<th th:text="#{label.metodo_di_lavoro}">METODO DI LAVORO</th>
+									<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
+									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
+									<th>
+										<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__,false)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
+											<span><i class="fa fa-plus"></i></span>
+										</a>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:attr="data-row-id=${__${status2.index}__}" th:each="attivita , status2 : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioni}">
+									<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioni[__${status2.index}__].azione}"></td>
+									<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioni[__${status2.index}__].obiettivoFormativo?.nome}"></td>
+									<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioni[__${status2.index}__].risultatoAtteso}"></td>
+									<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioni[__${status2.index}__].metodoLavoro?.nome}"></td>
+									<td>
+										<ul>
+											<li th:each="metodo, m : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioni[__${status2.index}__].metodoLavoro}">
+									 			<span th:text="${metodo.nome}"></span>
+									 		</li>										
+										</ul>
+									 </td>
+									<td>
+										<ul>
+											<li th:each="ruolo, r : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioni[__${status2.index}__].ruoliCoinvolti}">
+									 			<span th:text="${ruolo.nome}"></span>
+									 		</li>										
+										</ul>
+									 </td>
+									<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioni[__${status2.index}__].oreAttivita}"></td>
+									<td>
+										<a onclick="removeAttivitaFrom('attivitaFSC',this)" class="btn btn-danger" th:text="#{label.elimina}">
+											<span><i class="fa fa-trash"></i></span>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="divider-dashed"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+	
 </body>
 </html>

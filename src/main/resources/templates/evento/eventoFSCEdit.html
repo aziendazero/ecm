@@ -8,6 +8,128 @@
 	<th:block th:fragment="eventoFSCEdit">
 
 		<div class="x_content">
+		
+		<!-- finestra modale di aggiunta attivitaRES a programma del Giorno -->
+			<div id="add-attivitaFSC-modal" class="modal fade modal-add-attivitaFSC" data-model-index="4" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+							</button>
+							<h4 class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
+						</div>
+						<div class="modal-body">
+							<form id="addAttivitaFSC" name="addAttivitaFSC" class="form-horizontal form-label-left"
+									th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
+									th:object="${eventoWrapper.tempAttivitaFSC}" method="post" enctype="multipart/form-data"
+									novalidate="novalidate">
+
+									<!-- AZIONE -->
+									<div id="container-azione" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="azione">
+											<span th:text="#{label.azione}">Azione</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
+											<input type="text" required="required" class="form-control"
+												th:field="*{azione}" />
+										</div>
+									</div>
+
+									<!-- OBIETTIVO FORMATIVO -->
+									<div id="container-obiettivoFormativo" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivoFormativo">
+											<span th:text="#{label.obiettivo_formativo}">Obiettivo Formativo</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="obiettivoFormativo">
+											<select
+												class="selectpicker required selectObiettivoFormativo"
+												th:field="*{obiettivoFormativo}"
+												data-width="100%" data-style="btn-primary"
+												data-actions-box="true" data-size="10"
+												data-hide-disabled="false"
+												onchange="updateMetodologieDidattiche(this)"
+												title="Seleziona un obiettivo...">
+												<option
+													th:each="obiettivoFormativo, row: ${T(it.tredi.ecm.dao.enumlist.ObiettiviFormativiFSCEnum).values()}"
+													th:value="${obiettivoFormativo}"
+													th:text="${obiettivoFormativo.nome}">tipologia selezionata
+												</option>
+											</select>
+										</div>
+									</div>
+
+
+									<!-- RISULTATO ATTESO -->
+									<div id="container-risultatoAtteso" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.risultato_atteso}">Risultato Atteso</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
+											<input type="text" required="required" class="form-control"
+												th:field="*{risultatoAtteso}" />
+										</div>
+									</div>
+
+									
+									<!-- METODO DI LAVORO -->
+									<div id="container-metodoLavoro" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.metodo_lavoro}">Metodo Lavoro</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<div class="checkbox" th:each="metodo, row : ${T(it.tredi.ecm.dao.enumlist.MetodoLavoroFSCEnum).values()}">
+												<label>
+													<input type="checkbox" class="flat" th:field="*{metodoLavoro}" />
+													<span th:text="${metodo.nome}"></span>
+												</label>
+											</div>
+										</div>
+									</div>
+									
+									<!-- RUOLI COINVOLTI -->
+									<div id="container-ruoliCoinvolti" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
+											<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<div class="checkbox" th:each="metodo, row : ${T(it.tredi.ecm.dao.enumlist.RuoliFSCEnum).values()}">
+												<label>
+													<input type="checkbox" class="flat" th:field="*{metodoLavoro}" />
+													<span th:text="${metodo.nome}"></span>
+												</label>
+											</div>
+										</div>
+									</div>
+
+									<!-- ORE ATTIVITA -->
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.tempo_dedicato}">Tempo Dedicato</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<input class="form-control" type="text" th:field="*{oreAttivita}" />
+										</div>
+									</div>
+
+									<!-- fragment da aggiornare -->	
+									<input id="targetTableAttivitaFSC" type="text" name="target" style="display: none;" />
+									<!-- fase a cui agganciare l'attività -->
+									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+								<label for="targetTableAttivitaFSC" class="btn btn-success pull-right" onclick="sendAjaxAddAttivitaToProgramma()" th:text="#{label.invia}">Invia</label>
+							</div>
+						</div>
+					</div>
+				</div>
 
 			<form id="formEventoFSC" class="form-horizontal form-label-left"
 				th:action="@{|/provider/${eventoWrapper.providerId}/evento/save|}"
@@ -810,8 +932,103 @@
 				</div>
 
 				<input id="submitButton" type="submit" style="display: none;" />
-
 			</form>
+			
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+			 /********************* PROGRAMMA GIORNALIERO ****************************/          
+			  function openAddAttivitaTo(target,programmaIndex){
+					$('#targetTableAttivitaFSC').val(target);
+					$('#addAttivitaTo').val(programmaIndex);
+
+					if(programmaIndex){
+						$("#container-titleNoPausa").hide();
+						$("#container-titlePausa").show();
+						$("#container-argomento").hide();
+						$("#container-docente").hide();
+						$("#container-risultatoAtteso").hide();
+						$("#container-obiettivoFormativo").hide();
+						$("#container-metodologiaDidattica").hide();
+					}else{
+						$("#container-titlePausa").hide();
+						$("#container-titleNoPausa").show();
+						$("#container-argomento").show();
+						$("#container-docente").show();
+						$("#container-risultatoAtteso").show();
+						$("#container-obiettivoFormativo").show();
+						$("#container-metodologiaDidattica").show();
+					}
+				}         
+			
+				/*parametrizzabile passando solo FSC*/
+			 	function closeModaleAddAttivitaTo(){
+					$("#add-attivitaFSC-modal .close").click();
+				}
+
+				function reInitModaleAddAttivitaTo(){
+					$('select').selectpicker();
+					$('input.flat').iCheck({
+			            checkboxClass: 'icheckbox_flat-green',
+			            radioClass: 'iradio_flat-green'
+			        });
+				}
+
+				/*parametrizzabile passando solo FSC*/
+				function sendAjaxAddAttivitaToProgramma(){
+					var target = $('#targetTableAttivitaFSC').val();
+					var programmaIndex = $('#addAttivitaTo').val();
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaFSC').serialize())
+						.done(function(data) {
+						  	$('#'+target).html(data);
+						  	closeModaleAddAttivitaTo();
+						  })
+					  	.fail(function() {
+					  		//TODO mostra error sui campi mancanti
+					    	alert( "error" );
+					 	 })
+				}
+				
+				/*parametrizzabile - è identica a RES*/
+				function removeAttivitaFrom(target,caller){
+					var rowIndex = $(caller).parent().parent().data('row-id');
+					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
+
+					$("#" + target).load(url);
+				}
+			           
+				/*parametrizzabile - è  identica a RES*/
+				function reloadSection(selectedTab){
+					if(selectedTab == 'tab1'){
+						sendAjaxReloadSection('1');
+					}else if(selectedTab == 'tab2'){
+						sendAjaxReloadSection('2');
+					}else if(selectedTab == 'tab3'){
+						sendAjaxReloadSection('3');
+					}
+				}
+				
+				/*parametrizzabile passando solo FSC*/
+				function sendAjaxReloadSection(sectionIndex){
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoFSC').serialize())
+					.done(function(data) {
+					  	$('#section-' + sectionIndex).html(data);
+					  	reInitComponents();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
+				}
+
+				function reInitComponents(){
+					$('select').selectpicker();
+					globalInitThomCommon();
+				}
+			           
+			/*]]>*/
+			</script>
+			
 		</div>
 
 	</th:block>
