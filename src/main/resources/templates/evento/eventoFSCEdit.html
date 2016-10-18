@@ -589,7 +589,6 @@
 									<label class="col-xs-12">
 										<span th:text="#{label.fasi_azioni_ruoli}">Fasi/Azioni/Ruoli coninvolti</span>
 									</label>
-									<div class="danger">**TODO xD GLHF!</div>
 									<div class='programmaEvento item form-group' id="programma">
 										<th:block th:include="evento/eventoEdit :: attivitaFSC" />
 									</div>
@@ -938,6 +937,15 @@
 			
 			<script th:inline="javascript">
 			/*<![CDATA[*/
+			           $(document).ready(function() {
+						});
+			           
+			           $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+					    	tabSelected = e.target.id;
+							reloadSection(tabSelected);
+						});
+			           
+			           
 			 /********************* PROGRAMMA GIORNALIERO ****************************/          
 			  function openAddAttivitaTo(target,programmaIndex){
 					$('#targetTableAttivitaFSC').val(target);
@@ -993,7 +1001,9 @@
 				/*parametrizzabile - è identica a RES*/
 				function removeAttivitaFrom(target,caller){
 					var rowIndex = $(caller).parent().parent().data('row-id');
-					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('fase-id');
+					console.log("parent() di parent()" + removeAttivitaFrom);
+					console.log("parents()" + $(caller).parents().data('fase-id'));
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
 
 					$("#" + target).load(url);

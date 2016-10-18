@@ -1,8 +1,11 @@
 package it.tredi.ecm.dao.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
@@ -45,14 +48,10 @@ public class EventoFSC extends Evento{
 
 	private String indicatoreEfficaciaFormativa;
 
-
-	//TODO FASI AZIONI RUOLI
 	private String fasiAzioniRuoliJson;
 	
-	@OneToMany(mappedBy="evento")
-	private Set<FaseAzioniRuoliEventoFSCTypeA> fasiAzioniRuoli = new HashSet<FaseAzioniRuoliEventoFSCTypeA>();
-
-	//TODO campo 20
+	@OneToMany(mappedBy="evento", cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<FaseAzioniRuoliEventoFSCTypeA> fasiAzioniRuoli = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 
 	public float calcoloDurata(){
 		float durata = 0.0f;

@@ -936,12 +936,16 @@
 			<div id="attivitaRES" class="col-xs-12" th:each="programmaGiornaliero , status : ${eventoWrapper.programmaEventoRES}">
 				<div class="item form-group">
 					<label class="control-label col-md-3 col-sm-3 col-xs-11">
-						<span th:text="#{label.programma_del}">Programma del</span>
-						<span class="required">*</span>
+						<span th:text="#{label.programma_del}" class="text-uppercase">Programma del</span>
 					</label>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
 						<label class="control-label" th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].giorno}"> </label>
 					</div>
+				</div>
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						<span th:text="#{label.sede}" class="text-uppercase">SEDE</span>
+					</label>
 				</div>
 				<div class="item form-group">
 					<label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -989,11 +993,12 @@
 						<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
-									<th th:text="#{label.orario}">ORARIO</th>
+									<th th:text="#{label.orario_inizio}">ORARIO INIZIO</th>
+									<th th:text="#{label.orario_fine}">ORARIO FINE</th>
 									<th th:text="#{label.argomento}">ARGOMENTO</th>
 									<th th:text="#{label.docente}">Docente</th>
 									<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
-									<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
+									<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
 									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
 									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 									<th>
@@ -1008,7 +1013,8 @@
 							</thead>
 							<tbody>
 								<tr th:attr="data-row-id=${__${status2.index}__}" th:each="attivita , status2 : ${eventoWrapper.programmaEventoRES[__${status.index}__].programma}">
-									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].orario}"></td>
+									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].orarioInizio}"></td>
+									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].orarioFine}"></td>
 									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].argomento}"></td>
 									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].docente?.anagrafica?.cognome}"></td>
 									<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].risultatoAtteso}"></td>
@@ -1032,19 +1038,19 @@
 	
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaFSC">
+			
 			<div id="attivitaFSC" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}">
 				<div class="item form-group">
 					<label class="control-label col-md-3 col-sm-3 col-xs-11">
-						<span th:text="#{label.fase}">Fase</span>
-						<span class="required">*</span>
+						<span th:text="#{label.fase}" class="text-uppercase">Fase</span>
 					</label>
 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-						<label class="control-label" th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro.nome}"> </label>
+						<label class="control-label text-uppercase" th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro.nome}"> </label>
 					</div>
 				</div>
 
 				<div class="col-xs-12">
-					<label th:text="#{label.azioni} + '/' + #{label_ruoli}">Azioni / Ruoli</label>
+					<label th:text="#{label.azioni} + '/' + #{label.ruoli}">Azioni / Ruoli</label>
 					<div th:attr="data-fase-id=__${status.index}__">
 						<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
@@ -1052,7 +1058,7 @@
 									<th th:text="#{label.azione}">AZIONE</th>
 									<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>		
 									<th th:text="#{label.risultati_attesi}">RISULTATAO ATTESO</th>
-									<th th:text="#{label.metodo_di_lavoro}">METODO DI LAVORO</th>
+									<th th:text="#{label.metodi_di_lavoro}">METODO DI LAVORO</th>
 									<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
 									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 									<th>
@@ -1067,7 +1073,7 @@
 									<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].azione}"></td>
 									<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].obiettivoFormativo?.nome}"></td>
 									<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].risultatiAttesi}"></td>
-									<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].metodiDiLavoro?.nome}"></td>
+									
 									<td>
 										<ul>
 											<li th:each="metodo, m : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].metodiDiLavoro}">

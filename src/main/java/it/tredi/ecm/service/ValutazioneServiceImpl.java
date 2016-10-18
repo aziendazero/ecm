@@ -191,8 +191,21 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 	@Override
-	public LocalDateTime getScadenzaValutazioneByValutatoreId(Long id) {
-		LOGGER.debug(Utils.getLogMessage("Recupero la data di scadenza per il referee: " + id));
-		return valutazioneRepository.getScadenzaForValutatoreId(id);
+	public Set<Valutazione> getAllValutazioniForAccount(Long accountId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero tutte le valutazioni per il referee: " + accountId));
+		return valutazioneRepository.findAllByAccountId(accountId);
+	}
+	
+	@Override
+	public Map<Long,LocalDateTime> getScadenzaValutazioneByValutatoreId(Long accountId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero le date di scadenza per il referee: " + accountId));
+		
+		Map<Long, LocalDateTime> mappaScadenze = new HashMap<Long, LocalDateTime>();
+		
+		Set<Valutazione> valutazioni = getAllValutazioniForAccount(accountId);
+		for(Valutazione v :  valutazioni){
+			mappaScadenze.put(v.getAccreditamento().getId(), v.getDataOraScadenzaPossibilitaValutazione());
+		}
+		return mappaScadenze;
 	}
 }
