@@ -14,7 +14,7 @@
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
 						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">ï¿½</span>
 							</button>
 							<h4 class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 						</div>
@@ -118,7 +118,7 @@
 
 									<!-- fragment da aggiornare -->	
 									<input id="targetTableAttivitaFSC" type="text" name="target" style="display: none;" />
-									<!-- fase a cui agganciare l'attività -->
+									<!-- fase a cui agganciare l'attivitï¿½ -->
 									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
 								</form>
 							</div>
@@ -556,7 +556,7 @@
 								<!-- TIPOLOGIA DELL'EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
-										<span>13</span>
+										<span>16</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaEvento">
 										<span th:text="#{label.tipologia_evento}">Tipologia dell'evento</span>
@@ -613,7 +613,7 @@
 										<div class="radio">
 											<label class="label-radio-workshop label-disabled">
 												<input id="sperimentazioneClinicaSiId" type="radio" class="flat sperimentazioneClinica" th:field="${eventoWrapper.evento.sperimentazioneClinica}" th:value="${true}" />
-												<span th:text="#{label.sÃ¬}">Sì</span>
+												<span th:text="#{label.sÃ¬}">Sï¿½</span>
 											</label>
 										</div>
 										<div class="radio">
@@ -643,7 +643,7 @@
 								<!-- RESPONSABILI -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
-										<span>16</span>
+										<span>17</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="responsabili">
 										<span th:text="#{label.responsabili_scientifici}">Responsabili scientifici</span>
@@ -657,7 +657,7 @@
 								<!-- DESCRIZIONE DEL PROGETTO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
-										<span>17</span>
+										<span>18</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="descrizione_progetto">
 										<span th:text="#{label.descrizione_del_progetto}">Descrizione del progetto e rilevanza formativa</span>
@@ -808,7 +808,7 @@
 										<span>26</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="indicatore">
-										<span th:text="#{label.indicatore_efficacia}">Indicatori per misurare l’efficacia formativa del progetto</span>
+										<span th:text="#{label.indicatore_efficacia}">Indicatori per misurare lï¿½efficacia formativa del progetto</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="indicatore">
 										<input type="text" class="form-control" th:field="${eventoWrapper.evento.indicatoreEfficaciaFormativa}" />
@@ -852,14 +852,14 @@
 										<span>29</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
-										<span th:text="#{label.evento_sponsorizzato_radio}">L'Evento è sponsorizzato?</span>
+										<span th:text="#{label.evento_sponsorizzato_radio}">L'Evento ï¿½ sponsorizzato?</span>
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<div class="radio">
 											<label>
 												<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${true}" />
-												<span th:text="#{label.sì}">Sì</span>
+												<span th:text="#{label.sï¿½}">Sï¿½</span>
 											</label>
 										</div>
 										<div class="radio">
@@ -891,7 +891,7 @@
 										<div class="radio">
 											<label>
 												<input type="radio" class="flat finanziamento" th:field="${eventoWrapper.evento.altreFormeFinanziamento}" th:value="${true}" />
-												<span th:text="#{label.sì}">Sì</span>
+												<span th:text="#{label.sï¿½}">Sï¿½</span>
 											</label>
 										</div>
 										<div class="radio">
@@ -938,14 +938,14 @@
 										<span>31</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
-										<span th:text="#{label.si_avvale_di_partner}">L’evento si avvale di partner?</span>
+										<span th:text="#{label.si_avvale_di_partner}">Lï¿½evento si avvale di partner?</span>
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<div class="radio">
 											<label>
 												<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${true}" />
-												<span th:text="#{label.sì}">Sì</span>
+												<span th:text="#{label.sï¿½}">Sï¿½</span>
 											</label>
 										</div>
 										<div class="radio">
@@ -989,7 +989,7 @@
 										<div class="checkbox">
 											<label>
 												<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.proceduraVerificaQualitaPercepita}" th:value="${true}" />
-												<span th:text="#{label.procedura_verifica_qualita}">E’ prevista una procedura di verifica della qualità percepita</span>
+												<span th:text="#{label.procedura_verifica_qualita}">Eï¿½ prevista una procedura di verifica della qualitï¿½ percepita</span>
 												<span class="required">*</span>
 											</label>
 										</div>
@@ -1141,7 +1141,7 @@
 					 	 })
 				}
 				
-				/*parametrizzabile - è identica a RES*/
+				/*parametrizzabile - ï¿½ identica a RES*/
 				function removeAttivitaFrom(target,caller){
 					var rowIndex = $(caller).parent().parent().data('row-id');
 					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('programma-id');
@@ -1150,7 +1150,7 @@
 					$("#" + target).load(url);
 				}
 			           
-				/*parametrizzabile - è  identica a RES*/
+				/*parametrizzabile - ï¿½  identica a RES*/
 				function reloadSection(selectedTab){
 					if(selectedTab == 'tab1'){
 						sendAjaxReloadSection('1');
