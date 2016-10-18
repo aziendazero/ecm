@@ -552,10 +552,98 @@
 <!-- 									</div> -->
 <!-- 								</div> -->
 
-								<!-- RESPONSABILI -->
+								<!-- BLOCCO TIPOLOGIA DI EVENTO -->
+								<!-- TIPOLOGIA DELL'EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
 										<span>16</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaEvento">
+										<span th:text="#{label.tipologia_evento}">Tipologia dell'evento</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="tipologiaEventoId"
+											class="selectpicker required"
+											required="required"
+											th:field="${eventoWrapper.evento.tipologiaEvento}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona una tipologia FSC...">
+											<option
+												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).values()}"
+												th:value="${tipologia}"
+												th:text="${tipologia.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+								<!-- Tipologia di gruppo (attivo se selezionato tipologiaEvento=GRUPPI_DI_MIGLIORAMENTO) -->
+								<div class="item form-group tipologiaGruppo" style="display: none;">
+									<div class="col-xs-1"></div>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.eventofsc_tipologiaGruppo}"></span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="tipologiaGruppo"
+											class="selectpicker"
+											th:field="${eventoWrapper.evento.tipologiaGruppo}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona una tipologia di gruppo...">
+											<option
+												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaGruppoFSCEnum).values()}"
+												th:value="${tipologia}"
+												th:text="${tipologia.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+								<!-- Sperimentazione clinica (attivo se tipologiaEvento=ATTIVITA_DI_RICERCA) -->
+								<div class="item form-group sperimentazioneClinica" style="display: none;">
+									<div class="col-xs-1"></div>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.eventofsc_sperimentazioneClinica}"></span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="radio">
+											<label class="label-radio-workshop label-disabled">
+												<input id="sperimentazioneClinicaSiId" type="radio" class="flat sperimentazioneClinica" th:field="${eventoWrapper.evento.sperimentazioneClinica}" th:value="${true}" />
+												<span th:text="#{label.sì}">S�</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label class="label-radio-workshop label-disabled">
+												<input id="sperimentazioneClinicaNoId" type="radio" class="flat sperimentazioneClinica" th:field="${eventoWrapper.evento.sperimentazioneClinica}" th:value="${false}" />
+												<span th:text="#{label.no}">No</span>
+											</label>
+										</div>
+									</div>
+								</div>
+								<!-- Ottenuto il parere del comitato etico (attivo se sperimentazioneClinica=true) -->
+								<div class="item form-group ottenutoComitatoEtico" style="display: none;">
+									<div class="col-xs-1"></div>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.eventofsc_ottenutoComitatoEtico}"></span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="checkbox">
+										<label>
+											<input class="flat" id="abilitaSediFull" type="checkbox" th:field="${eventoWrapper.evento.ottenutoComitatoEtico}" th:value="${true}" />
+										</label>
+										</div>
+									</div>
+								</div>
+
+								<!-- RESPONSABILI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>17</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="responsabili">
 										<span th:text="#{label.responsabili_scientifici}">Responsabili scientifici</span>
@@ -569,7 +657,7 @@
 								<!-- DESCRIZIONE DEL PROGETTO -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
-										<span>17</span>
+										<span>18</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="descrizione_progetto">
 										<span th:text="#{label.descrizione_del_progetto}">Descrizione del progetto e rilevanza formativa</span>
@@ -946,6 +1034,69 @@
 						});
 			           
 			           
+				$(document).ready(function() {
+					//Aggancio eventi
+					$('#tipologiaEventoId').on('change', setEvResTipologiaGruppo);
+					$('#tipologiaEventoId').on('change', setEvResSperimentazioneClinica);
+					$('#tipologiaEventoId').on('change', setEvResOttenutoComitatoEtico);
+					//non funziona
+					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
+					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
+
+					setEvResTipologiaGruppo();
+					setEvResSperimentazioneClinica();
+					setEvResOttenutoComitatoEtico();
+				});
+
+				//Codice
+				function setEvResTipologiaGruppo() {
+					//console.log($('#tipologiaEventoId').val());
+					var val = $('#tipologiaEventoId').selectpicker('val');
+					//alert(tipEvVal)
+					if (val === 'GRUPPI_DI_MIGLIORAMENTO') {
+						//alert('mostro')
+						$(".tipologiaGruppo").slideDown("slow");
+					} else {
+						//alert('hide')
+						$(".tipologiaGruppo").slideUp("slow");
+						//resetto il valore
+						$("#tipologiaGruppo").selectpicker('deselectAll');
+						$("#tipologiaGruppo").selectpicker('refresh');
+					}
+				}
+				
+				function setEvResSperimentazioneClinica() {
+					//console.log($('#tipologiaEventoId').val());
+					var val = $('#tipologiaEventoId').selectpicker('val');
+					//alert(tipEvVal)
+					if (val === 'ATTIVITA_DI_RICERCA') {
+						//alert('mostro')
+						$(".sperimentazioneClinica").slideDown("slow");
+					} else {
+						//alert('hide')
+						$(".sperimentazioneClinica").slideUp("slow");
+						//resetto il valore
+						//$("#sperimentazioneClinica").selectpicker('deselectAll');
+						//$("#sperimentazioneClinica").selectpicker('refresh');
+					}
+				}
+				
+				function setEvResOttenutoComitatoEtico() {
+					//console.log($('#tipologiaEventoId').val());
+					var val = $('#tipologiaEventoId').selectpicker('val');
+					//alert($('#sperimentazioneClinicaSiId').is(':checked'))
+					if (val === 'ATTIVITA_DI_RICERCA' && $('#sperimentazioneClinicaSiId').is(':checked')) {
+						//alert('mostro')
+						$(".ottenutoComitatoEtico").slideDown("slow");
+					} else {
+						//alert('hide')
+						$(".ottenutoComitatoEtico").slideUp("slow");
+						//resetto il valore
+						//$("#sperimentazioneClinica").selectpicker('deselectAll');
+					}
+				}
+				
+			 
 			 /********************* PROGRAMMA GIORNALIERO ****************************/          
 			  function openAddAttivitaTo(target,programmaIndex){
 					$('#targetTableAttivitaFSC').val(target);
