@@ -5,6 +5,8 @@ import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -202,4 +204,14 @@ public class Utils {
         in.close();
         return toBean;
     }
+	
+	public static float getRoundedFloatValue(float value){
+		BigDecimal bg = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
+		return bg.floatValue();
+	}
+	
+	public static float getRoundedFloatValue(BigDecimal value){
+		BigDecimal bg = value.setScale(2, RoundingMode.HALF_UP);
+		return bg.floatValue();
+	}
 }

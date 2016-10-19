@@ -22,6 +22,7 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum;
@@ -89,12 +90,15 @@ public class EventoWrapper {
 	/* FSC */
 	private AzioneRuoliEventoFSC tempAttivitaFSC = new AzioneRuoliEventoFSC();
 
-	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_TI = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
-	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_GM = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
-	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_AR = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
-	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_ACA = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
+//	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_TI = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
+//	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_GM = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
+//	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_AR = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
+//	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_ACA = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 	
-	private Map<RuoloFSCEnum,Float> mappaRuoloOre = new HashMap<RuoloFSCEnum, Float>();
+	private Map<TipologiaEventoFSCEnum,List<FaseAzioniRuoliEventoFSCTypeA>> possibiliProgrammiFSC = new HashMap<TipologiaEventoFSCEnum, List<FaseAzioniRuoliEventoFSCTypeA>>();
+	private Map<TipologiaEventoFSCEnum,Map<RuoloFSCEnum,RiepilogoRuoliFSC>> possibiliRiepilogoRuoliFSC = new HashMap<TipologiaEventoFSCEnum, Map<RuoloFSCEnum,RiepilogoRuoliFSC>>();
+	
+//	private Map<RuoloFSCEnum,Float> mappaRuoloOre = new HashMap<RuoloFSCEnum, Float>();
 	
 	public List<ProgrammaGiornalieroRES> getProgrammaEventoRES(){
 		if(evento != null && (evento instanceof EventoRES) && ((EventoRES)evento).getTipologiaEvento() != null){
@@ -106,17 +110,7 @@ public class EventoWrapper {
 	public List<FaseAzioniRuoliEventoFSCTypeA> getProgrammaEventoFSC(){
 		if(evento != null && evento instanceof EventoFSC){
 			if(((EventoFSC)evento).getTipologiaEvento() != null){
-				switch (((EventoFSC)evento).getTipologiaEvento()){
-				case TRAINING_INDIVIDUALIZZATO:		return getProgrammaEventoFSC_TI(); 
-
-				case GRUPPI_DI_MIGLIORAMENTO: 		return getProgrammaEventoFSC_GM();
-
-				case ATTIVITA_DI_RICERCA: 			return getProgrammaEventoFSC_AR();
-
-				case AUDIT_CLINICO_ASSISTENZIALE: 	return getProgrammaEventoFSC_ACA();
-									default: 		
-													return null;
-				}
+				return possibiliProgrammiFSC.get(((EventoFSC)evento).getTipologiaEvento());
 			}
 		}
 		return null;
@@ -125,21 +119,24 @@ public class EventoWrapper {
 	public void setProgrammaEventoFSC(List<FaseAzioniRuoliEventoFSCTypeA> programmaFSC){
 		if(evento != null && evento instanceof EventoFSC){
 			if(((EventoFSC)evento).getTipologiaEvento() != null){
-				switch (((EventoFSC)evento).getTipologiaEvento()){
-				case TRAINING_INDIVIDUALIZZATO:		setProgrammaEventoFSC_TI(programmaFSC); 
-													break;
-
-				case GRUPPI_DI_MIGLIORAMENTO: 		setProgrammaEventoFSC_GM(programmaFSC);
-													break;
-
-				case ATTIVITA_DI_RICERCA: 			setProgrammaEventoFSC_AR(programmaFSC);
-													break;
-
-				case AUDIT_CLINICO_ASSISTENZIALE: 	setProgrammaEventoFSC_ACA(programmaFSC);
-													break;
-									default: 		
-													break;
-				}
+				possibiliProgrammiFSC.put(((EventoFSC)evento).getTipologiaEvento(), programmaFSC);
+			}
+		}
+	}
+	
+	public Map<RuoloFSCEnum,RiepilogoRuoliFSC> getRiepilogoRuoliFSC(){
+		if(evento != null && evento instanceof EventoFSC){
+			if(((EventoFSC)evento).getTipologiaEvento() != null){
+				return possibiliRiepilogoRuoliFSC.get(((EventoFSC)evento).getTipologiaEvento());
+			}
+		}
+		return null;
+	}
+	
+	public void setRiepilogoRuoliFSC(Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
+		if(evento != null && evento instanceof EventoFSC){
+			if(((EventoFSC)evento).getTipologiaEvento() != null){
+				possibiliRiepilogoRuoliFSC.put(((EventoFSC)evento).getTipologiaEvento(), riepilogoRuoliFSC);
 			}
 		}
 	}
@@ -149,12 +146,13 @@ public class EventoWrapper {
 			initProgrammiRES();
 		}else if(evento instanceof EventoFSC){
 			initProgrammiFSC();
+			initRiepilogoRuoliFSC();
 		}else if(evento instanceof EventoFAD){
 			initProgrammiFAD();
 		}
 		
 		for(RuoloFSCEnum r : RuoloFSCEnum.values()){
-			mappaRuoloOre.put(r, new Float(0.0));
+			//mappaRuoloOre.put(r, new Float(0.0));
 		}
 	}
 	
@@ -181,14 +179,16 @@ public class EventoWrapper {
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.LAVORO_AUTONOMO_COLLABORAZIONE_TUTOR));
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.VALUTAZIONE_FINALE));
 
-		this.setProgrammaEventoFSC_TI(programmaEvento);
+		//this.setProgrammaEventoFSC_TI(programmaEvento);
+		this.possibiliProgrammiFSC.put(TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO, programmaEvento);
 		
 		//TIPOLOGIA GRUPPI DI MIGLIORAMENTO
 		programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.CAMPO_LIBERO));
 
-		this.setProgrammaEventoFSC_GM(programmaEvento);
-
+		//this.setProgrammaEventoFSC_GM(programmaEvento);
+		this.possibiliProgrammiFSC.put(TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO, programmaEvento);
+		
 		//TIPOLOGIA ATTIVITA DI RICERCA
 		programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.ESPLICITAZIONE_IPOTESI_LAVORO));
@@ -196,8 +196,9 @@ public class EventoWrapper {
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.ANALISI_DATI));
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.PRESENTAZIONE_RISULTATI));
 
-		this.setProgrammaEventoFSC_AR(programmaEvento);
-
+		//this.setProgrammaEventoFSC_AR(programmaEvento);
+		this.possibiliProgrammiFSC.put(TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA, programmaEvento);
+		
 		//TIPOLOGIA AUDIT CLINICO E/O ASSISTENZIALE
 		programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.DEFINIZIONE_CRITERI_VALUTAZIONI_PRATICITA_CLINICA));
@@ -206,7 +207,40 @@ public class EventoWrapper {
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.VERIFICA_PRATICA_CORRENTE));
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.VALUTAZIONE_IMPATTO_CAMBIAMENTO));
 
-		this.setProgrammaEventoFSC_ACA(programmaEvento);
+		//this.setProgrammaEventoFSC_ACA(programmaEvento);
+		this.possibiliProgrammiFSC.put(TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE, programmaEvento);
+	}
+	
+	private void initRiepilogoRuoliFSC(){
+		//TIPOLOGIA TRAINING INDIVIDUALIZZATO
+		Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
+		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+		riepilogoRuoli.put(RuoloFSCEnum.TUTOR, new RiepilogoRuoliFSC(RuoloFSCEnum.TUTOR));
+		riepilogoRuoli.put(RuoloFSCEnum.ESPERTO, new RiepilogoRuoliFSC(RuoloFSCEnum.ESPERTO));
+		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE));
+		
+		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO, riepilogoRuoli);
+		
+		//TIPOLOGIA GRUPPI DI MIGLIORAMENTO
+		riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
+		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_GRUPPI, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_GRUPPI));
+		
+		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO, riepilogoRuoli);
+		
+		//TIPOLOGIA ATTIVITA DI RICERCA
+		riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
+		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_ATTIVITA_RICERCA, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_ATTIVITA_RICERCA));
+		
+		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA, riepilogoRuoli);
+		
+		//TIPOLOGIA AUDIT CLINICO E/O ASSISTENZIALE
+		riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
+		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT));
+		
+		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE, riepilogoRuoli);
 	}
 
 	public void initProgrammiFAD(){

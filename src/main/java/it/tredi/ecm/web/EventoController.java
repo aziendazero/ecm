@@ -465,7 +465,7 @@ public class EventoController {
 		eventoWrapper.setProceduraFormativa(proceduraFormativa);
 		eventoWrapper.setProviderId(providerId);
 		eventoWrapper.setObiettiviNazionali(obiettivoService.getObiettiviNazionali());
-		eventoWrapper.setObiettiviRegionali(obiettivoService.getObiettiviNazionali());
+		eventoWrapper.setObiettiviRegionali(obiettivoService.getObiettiviRegionali());
 		DatiAccreditamento datiAccreditamento = accreditamentoService.getDatiAccreditamentoForAccreditamento(accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId());
 		eventoWrapper.setProfessioneList(datiAccreditamento.getProfessioniSelezionate());
 		eventoWrapper.setDisciplinaList(datiAccreditamento.getDiscipline());

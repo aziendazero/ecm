@@ -1119,11 +1119,6 @@
 			
 			<script th:inline="javascript">
 			/*<![CDATA[*/
-			           
-	           $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-			    	tabSelected = e.target.id;
-					reloadSection(tabSelected);
-				});
 	           
 				var selectRuoliCoinvolti = new Array();
 				selectRuoliCoinvolti['TRAINING_INDIVIDUALIZZATO'] = new Array(['PARTECIPANTE','TUTOR','ESPERTO','COORDINATORE']);
@@ -1133,6 +1128,12 @@
 				
 				
 				$(document).ready(function() {
+					$('select').selectpicker({
+						selectAllText : 'Seleziona tutti',
+						deselectAllText : 'Deseleziona tutti',
+						countSelectedText : '{0} selezionate'
+					});
+					
 					//Aggancio eventi
 					$('#tipologiaEventoId').on('change', setEvResTipologiaGruppo);
 					$('#tipologiaEventoId').on('change', setEvResSperimentazioneClinica);
@@ -1141,10 +1142,25 @@
 					//non funziona
 					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
 					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
+					
+					initAll();
+				});
+				
+				function initAll(){
+					$('input.flat').iCheck({
+			            checkboxClass: 'icheckbox_flat-green',
+			            radioClass: 'iradio_flat-green'
+			        });
 
 					setEvResTipologiaGruppo();
 					setEvResSperimentazioneClinica();
 					setEvResOttenutoComitatoEtico();
+				}
+				
+				//eventLister cambio tab
+				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			    	tabSelected = e.target.id;
+					reloadSection(tabSelected);
 				});
 
 				//Codice
@@ -1245,6 +1261,7 @@
 					$('#addAttivitaTo').val(programmaIndex);
 
 					var tipologiaEvento = $('#tipologiaEventoId').val();
+					setEvFSCRuoliCoinvolti();
 					
 					switch(tipologiaEvento){
 					case 'TRAINING_INDIVIDUALIZZATO': showAzioneLabel();						
@@ -1274,15 +1291,15 @@
 				/*parametrizzabile passando solo FSC*/
 			 	function closeModaleAddAttivitaTo(){
 					$("#add-attivitaFSC-modal .close").click();
+					$("#add-attivitaFSC-modal form")[0].reset();
 				}
 
-				function reInitModaleAddAttivitaTo(){
-					$('select').selectpicker();
+				/* function reInitModaleAddAttivitaTo(){
 					$('input.flat').iCheck({
 			            checkboxClass: 'icheckbox_flat-green',
 			            radioClass: 'iradio_flat-green'
 			        });
-				}
+				} */
 
 				/*parametrizzabile passando solo FSC*/
 				function sendAjaxAddAttivitaToProgramma(){
@@ -1326,7 +1343,7 @@
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoFSC').serialize())
 					.done(function(data) {
 					  	$('#section-' + sectionIndex).html(data);
-					  	reInitComponents();
+					  	reInitComponents(sectionIndex);
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
@@ -1334,9 +1351,26 @@
 				 	 })
 				}
 
-				function reInitComponents(){
-					$('select').selectpicker();
-					globalInitThomCommon();
+				function reInitComponents(sectionIndex){
+					//init selecpicker
+					$('select').selectpicker({
+						selectAllText : 'Seleziona tutti',
+						deselectAllText : 'Deseleziona tutti',
+						countSelectedText : '{0} selezionate'
+					});
+					initAll();
+					initAllCommon();
+					switch (sectionIndex) {
+					case '1': 	reInitDataTable('responsabiliScientifici');
+								break;
+					case '2':  	//TODO
+								break;
+					case '3':	reInitDataTable('responsabileSegreteria');
+								reInitDataTable('sponsors');
+								reInitDataTable('partners');
+								break;
+					default: 	break;
+				}
 				}
 			           
 			/*]]>*/
