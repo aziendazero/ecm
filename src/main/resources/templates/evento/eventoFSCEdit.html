@@ -27,7 +27,8 @@
 									<!-- AZIONE -->
 									<div id="container-azione" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="azione">
-											<span th:text="#{label.azione}">Azione</span>
+											<span id="azioneLabel" th:text="#{label.azione}">Azione</span>
+											<span id="faseLabel" th:text="#{label.fase}">Fase</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
@@ -61,7 +62,7 @@
 
 
 									<!-- RISULTATI ATTESI -->
-									<div id="container-risultatoAtteso" class="item form-group">
+									<div id="container-risultatiAttesi" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
 											<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
 											<span class="required">*</span>
@@ -74,7 +75,7 @@
 
 									
 									<!-- METODO DI LAVORO -->
-									<div id="container-metodoLavoro" class="item form-group">
+									<div id="container-metodiDiLavoro" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
 											<span th:text="#{label.metodi_di_lavoro}">Metodo Lavoro</span>
 											<span class="required">*</span>
@@ -88,6 +89,8 @@
 											</div>
 										</div>
 									</div>
+									
+									<div class="divider-dashed"></div>
 									
 									<!-- RUOLI COINVOLTI -->
 									<div id="container-ruoliCoinvolti" class="item form-group">
@@ -105,16 +108,54 @@
 										</div>
 									</div>
 
-									<!-- ORE ATTIVITA -->
-									<div class="item form-group">
+									<!-- TEMPO DEDICATO LIBERO -->
+									<div id="container-tempoDedicato-UNO" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
 											<span th:text="#{label.tempo_dedicato}">Tempo Dedicato</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input class="form-control" type="text" th:field="*{tempoDedicato}" />
+											<input class="form-control" type="number" th:field="*{tempoDedicato}" />
 										</div>
 									</div>
+<!-- 
+									TEMPO DEDICATO NON FRAZIONABILE
+									<div id="container-tempoDedicato-UNO" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.tempo_dedicato}">Tempo Dedicato</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<input class="form-control" type="number" step="1" th:field="*{tempoDedicato}" />
+										</div>
+									</div>
+									
+									TEMPO DEDICATO MULTIPLO DI DUE
+									<div id="container-tempoDedicato-UNO" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+											<span th:text="#{label.tempo_dedicato}">Tempo Dedicato</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<input class="form-control" type="number" step="2" th:field="*{tempoDedicato}" />
+										</div>
+									</div>
+									
+									<div id="container-ruoloOre" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
+											<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+											<div class="checkbox" th:each="ruolo, row : ${T(it.tredi.ecm.dao.enumlist.RuoloFSCEnum).values()}">
+												<label>
+													<input type="checkbox" class="flat" th:field="${eventoWrapper.mappaRuoloOre[ruolo]}" th:value="${ruolo}"  />
+													<span th:text="${ruolo.nome}"></span>
+												</label>
+												<input class="form-control" type="number" step="2" th:field="${eventoWrapper.mappaRuoloOre[ruolo].tempoDedicato}" />
+											</div>
+										</div>
+									</div>  -->
 
 									<!-- fragment da aggiornare -->	
 									<input id="targetTableAttivitaFSC" type="text" name="target" style="display: none;" />
@@ -570,6 +611,7 @@
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
+											onchange="setEvFSCRuoliCoinvolti()"
 											title="Seleziona una tipologia FSC...">
 											<option
 												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).values()}"
@@ -1025,20 +1067,25 @@
 			
 			<script th:inline="javascript">
 			/*<![CDATA[*/
-			           $(document).ready(function() {
-						});
 			           
-			           $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-					    	tabSelected = e.target.id;
-							reloadSection(tabSelected);
-						});
-			           
-			           
+	           $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			    	tabSelected = e.target.id;
+					reloadSection(tabSelected);
+				});
+	           
+				var selectRuoliCoinvolti = new Array();
+				selectRuoliCoinvolti['TRAINING_INDIVIDUALIZZATO'] = new Array(['PARTECIPANTE','TUTOR','ESPERTO','COORDINATORE']);
+				selectRuoliCoinvolti['GRUPPI_DI_MIGLIORAMENTO'] = new Array(['PARTECIPANTE','COORDINATORE_GRUPPI']);
+				selectRuoliCoinvolti['ATTIVITA_DI_RICERCA'] = new Array(['PARTECIPANTE','COORDINATORE_ATTIVITA_RICERCA']);
+				selectRuoliCoinvolti['AUDIT_CLINICO_ASSISTENZIALE'] = new Array(['PARTECIPANTE','COORDINATORE_ATTIVITA_AUDIT']);
+				
+				
 				$(document).ready(function() {
 					//Aggancio eventi
 					$('#tipologiaEventoId').on('change', setEvResTipologiaGruppo);
 					$('#tipologiaEventoId').on('change', setEvResSperimentazioneClinica);
 					$('#tipologiaEventoId').on('change', setEvResOttenutoComitatoEtico);
+					
 					//non funziona
 					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
 					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
@@ -1096,30 +1143,81 @@
 					}
 				}
 				
+				function setEvFSCRuoliCoinvolti() {
+					var val = $('#tipologiaEventoId').selectpicker('val');
+					$.each($('#container-ruoliCoinvolti' + " .checkbox"), function() {
+						$(this).hide();
+					});
+
+					if(val != null && val != undefined){
+						var data = selectRuoliCoinvolti[val][0];
+						
+						for(var item = 0; item < data.length; item++){
+							$.each($('#container-ruoliCoinvolti' + " .checkbox"), function() {
+								if($(this).find("input[type='checkbox']").val() == data[item])
+									$(this).show();
+							});
+						}						
+					}
+				}
+				
+				
+				/* function updateRuoliCoinvolti(caller){
+					var tipologiaEvento = $(caller).val();
+					var selectId = '#container-ruoliCoinvolti';
+					var start = [[@{/listaRuoliCoinvolti?tipologiaEvento=}]];
+					var end = tipologiaEvento;
+					var url = start + end;
+
+					console.log(tipologiaEvento);
+					$.get(url, function(data){
+
+						$.each($(selectId + " .checkbox"), function() {
+							$(this).hide();
+						});
+
+						for(var item = 0; item < data.length; item++){
+							console.log(data[item]);
+							$.each($(selectId + " .checkbox"), function() {
+								if($(this).find("input[type='checkbox']").val() == data[item])
+									$(this).show();
+							});
+						}
+					});
+				}; */
+				
 			 
 			 /********************* PROGRAMMA GIORNALIERO ****************************/          
 			  function openAddAttivitaTo(target,programmaIndex){
 					$('#targetTableAttivitaFSC').val(target);
 					$('#addAttivitaTo').val(programmaIndex);
 
-					if(programmaIndex){
-						$("#container-titleNoPausa").hide();
-						$("#container-titlePausa").show();
-						$("#container-argomento").hide();
-						$("#container-docente").hide();
-						$("#container-risultatoAtteso").hide();
-						$("#container-obiettivoFormativo").hide();
-						$("#container-metodologiaDidattica").hide();
-					}else{
-						$("#container-titlePausa").hide();
-						$("#container-titleNoPausa").show();
-						$("#container-argomento").show();
-						$("#container-docente").show();
-						$("#container-risultatoAtteso").show();
-						$("#container-obiettivoFormativo").show();
-						$("#container-metodologiaDidattica").show();
+					var tipologiaEvento = $('#tipologiaEventoId').val();
+					
+					switch(tipologiaEvento){
+					case 'TRAINING_INDIVIDUALIZZATO': showAzioneLabel();						
+						break;
+					case 'GRUPPI_DI_MIGLIORAMENTO':	showFaseLabel();					
+						break;
+					case 'PROGETTI_DI_MIGLIORAMENTO':showAzioneLabel();
+						break;
+					case 'ATTIVITA_DI_RICERCA': showAzioneLabel();
+						break;
+					case 'AUDIT_CLINICO_ASSISTENZIALE': showAzioneLabel();
+						break;
+					default: break;
 					}
-				}         
+				}     
+				
+				function showFaseLabel(){
+					$('#azioneLabel').hide();
+					$('#faseLabel').show();
+				}
+				
+				function showAzioneLabel(){
+					$('#faseLabel').hide();
+					$('#azioneLabel').show();
+				}
 			
 				/*parametrizzabile passando solo FSC*/
 			 	function closeModaleAddAttivitaTo(){

@@ -1,13 +1,16 @@
 package it.tredi.ecm.web.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
@@ -21,6 +24,8 @@ import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -73,7 +78,9 @@ public class EventoWrapper {
 	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_GM = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_AR = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_ACA = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
-
+	
+	private Map<RuoloFSCEnum,Float> mappaRuoloOre = new HashMap<RuoloFSCEnum, Float>();
+	
 	public List<ProgrammaGiornalieroRES> getProgrammaEventoRES(){
 		if(evento != null && (evento instanceof EventoRES) && ((EventoRES)evento).getTipologiaEvento() != null){
 			return programmaEventoRES;
@@ -121,7 +128,21 @@ public class EventoWrapper {
 			}
 		}
 	}
-
+	
+	public void initProgrammi(){
+		if(evento instanceof EventoRES){
+			initProgrammiRES();
+		}else if(evento instanceof EventoFSC){
+			initProgrammiFSC();
+		}else if(evento instanceof EventoFAD){
+			initProgrammiFAD();
+		}
+		
+		for(RuoloFSCEnum r : RuoloFSCEnum.values()){
+			mappaRuoloOre.put(r, new Float(0.0));
+		}
+	}
+	
 	public void initProgrammiRES(){
 		//TODO BARDUCCI a seconda di come decidi la creazione a partire dalla data decidi se è necessario o meno un programma vuoto
 
@@ -143,6 +164,12 @@ public class EventoWrapper {
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.VALUTAZIONE_FINALE));
 
 		this.setProgrammaEventoFSC_TI(programmaEvento);
+		
+		//TIPOLOGIA GRUPPI DI MIGLIORAMENTO
+		programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
+		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.CAMPO_LIBERO));
+
+		this.setProgrammaEventoFSC_GM(programmaEvento);
 
 		//TIPOLOGIA ATTIVITA DI RICERCA
 		programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();

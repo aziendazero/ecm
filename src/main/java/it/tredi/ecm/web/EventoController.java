@@ -49,6 +49,8 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
@@ -134,8 +136,7 @@ public class EventoController {
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /evento/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
-			return "redirect:/home";
+			return "";
 		}
 	}
 
@@ -404,14 +405,7 @@ public class EventoController {
 		evento.setProceduraFormativa(proceduraFormativa);
 		eventoWrapper.setEvento(evento);
 
-		if(evento instanceof EventoRES){
-			eventoWrapper.initProgrammiRES();
-		}else if(evento instanceof EventoFSC){
-			//creo tutte le possibili tipologie di programmi vuoti
-			eventoWrapper.initProgrammiFSC();
-		}else if(evento instanceof EventoFAD){
-			eventoWrapper.initProgrammiFAD();
-		}
+		eventoWrapper.initProgrammi();
 
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
@@ -422,13 +416,7 @@ public class EventoController {
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
 		
-		if(evento instanceof EventoRES){
-			eventoWrapper.initProgrammiFSC();
-		}else if(evento instanceof EventoFSC){
-			eventoWrapper.initProgrammiFSC();
-		}else if(evento instanceof EventoFAD){
-			eventoWrapper.initProgrammiFAD();
-		}
+		eventoWrapper.initProgrammi();
 		
 		if(reloadWrapperFromDB)
 			eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
@@ -728,6 +716,12 @@ public class EventoController {
 			lista = eventoWrapper.getDocenti();
 		}
 		return lista;
+	}
+
+	@RequestMapping("/listaRuoliCoinvolti")
+	@ResponseBody
+	public List<RuoloFSCEnum>getListaRuoliCoinvolti(@RequestParam TipologiaEventoFSCEnum tipologiaEvento){
+		return tipologiaEvento.getRuoliCoinvolti();
 	}
 
 }

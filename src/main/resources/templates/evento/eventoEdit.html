@@ -1041,23 +1041,27 @@
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaFSC">
 			<div id="attivitaFSC">
-				<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}">
+				<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}"  th:with="faseCAMPOLIBERO=${(eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO) ? true : false}">
 					<div class="item form-group">
-						<label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span th:text="#{label.fase}" class="text-uppercase">Fase</span>
-						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<label class="control-label text-uppercase" th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro.nome}"> </label>
-						</div>
+						<th:block th:unless="${faseCAMPOLIBERO}">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span th:text="#{label.fase}" class="text-uppercase">Fase</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+								<label class="control-label text-uppercase" th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro.nome}"> </label>
+							</div>
+						</th:block>
 					</div>
 	
 					<div class="col-xs-12">
-						<label th:text="#{label.azioni} + '/' + #{label.ruoli}">Azioni / Ruoli</label>
+						<label th:unless="${faseCAMPOLIBERO}" th:text="#{label.azioni} + '/' + #{label.ruoli}">Azioni / Ruoli</label>
+						<label th:if="${faseCAMPOLIBERO}" th:text="#{label.fasi}">Fasi</label>
 						<div th:attr="data-fase-id=__${status.index}__">
 							<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<thead>
 									<tr>
-										<th th:text="#{label.azione}">AZIONE</th>
+										<th th:unless="${faseCAMPOLIBERO}" th:text="#{label.azione}">AZIONE</th>
+										<th th:if="${faseCAMPOLIBERO}" th:text="#{label.fase}">FASE</th>
 										<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>		
 										<th th:text="#{label.risultati_attesi}">RISULTATAO ATTESO</th>
 										<th th:text="#{label.metodi_di_lavoro}">METODO DI LAVORO</th>
