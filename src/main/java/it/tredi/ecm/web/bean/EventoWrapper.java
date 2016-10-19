@@ -1,5 +1,6 @@
 package it.tredi.ecm.web.bean;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -162,7 +163,9 @@ public class EventoWrapper {
 
 		//Lista programmi giornalieri dell'evento
 		List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
-		programmaEvento.add(new ProgrammaGiornalieroRES());
+		ProgrammaGiornalieroRES prog = new ProgrammaGiornalieroRES();
+		prog.setGiorno(LocalDate.now());
+		programmaEvento.add(prog);
 		this.setProgrammaEventoRES(programmaEvento);
 		this.getDateIntermedieMapTemp().put(1L, null);
 	}
