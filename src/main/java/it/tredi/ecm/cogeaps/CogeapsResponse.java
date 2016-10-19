@@ -17,5 +17,8 @@ public abstract class CogeapsResponse {
 	
 	//messaggio completo del risultato
 	private String response;
+	
+	//http status code
+	private int httpStatusCode;
 
 }

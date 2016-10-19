@@ -20,10 +20,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import it.tredi.ecm.dao.entity.Evento;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -79,6 +76,7 @@ public class CogeapsWsRestClient {
 
                 CogeapsCaricaResponse cogeapsCaricaResponse = jacksonObjectMapper.readValue(response_s, CogeapsCaricaResponse.class);
                 cogeapsCaricaResponse.setResponse(response_s);
+                cogeapsCaricaResponse.setHttpStatusCode(response.getStatusLine().getStatusCode());
                 return cogeapsCaricaResponse;
             } 
             finally {
@@ -91,7 +89,7 @@ public class CogeapsWsRestClient {
 	}	
 
 	public CogeapsStatoElaborazioneResponse statoElaborazione(String fileName) throws Exception {
-		String complete_url = protocol + "://" + host + ":" + port +  stato_elaborazione_service + "?nomeFile" + fileName;
+		String complete_url = protocol + "://" + host + ":" + port +  stato_elaborazione_service + "?nomeFile=" + fileName;
 		LOGGER.info("Executing cogeaps request: " + complete_url);		
 		
         HttpHost target = new HttpHost(host, port, protocol);
@@ -121,6 +119,7 @@ public class CogeapsWsRestClient {
 
                 CogeapsStatoElaborazioneResponse cogeapsStatoElaborazioneResponse = jacksonObjectMapper.readValue(response_s, CogeapsStatoElaborazioneResponse.class);
                 cogeapsStatoElaborazioneResponse.setResponse(response_s);
+                cogeapsStatoElaborazioneResponse.setHttpStatusCode(response.getStatusLine().getStatusCode());
                 return cogeapsStatoElaborazioneResponse;
             } 
             finally {

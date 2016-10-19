@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.cogeaps.CogeapsCaricaResponse;
+import it.tredi.ecm.cogeaps.CogeapsStatoElaborazioneResponse;
 import it.tredi.ecm.cogeaps.CogeapsWsRestClient;
 import it.tredi.ecm.cogeaps.Helper;
 import it.tredi.ecm.cogeaps.XmlReportBuilder;
@@ -33,6 +34,7 @@ import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
@@ -41,6 +43,7 @@ import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
@@ -62,6 +65,9 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired
 	private CogeapsWsRestClient cogeapsWsRestClient;
+	
+	@Autowired
+	private EcmProperties ecmProperties;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -259,10 +265,12 @@ public class EventoServiceImpl implements EventoService {
 
 			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(reportFileName, evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
 
-			if (cogeapsCaricaResponse.getStatus() != 0) //errore HTTP (auth...)
+			if (cogeapsCaricaResponse.getStatus() != 0) //errore HTTP (auth...) - 401
 				throw new Exception(cogeapsCaricaResponse.getError() + ": " + cogeapsCaricaResponse.getMessage());
-			if (cogeapsCaricaResponse.getErrCode() != 0) //errore su provider
+			if (cogeapsCaricaResponse.getErrCode() != 0) //errore su provider - 401,404 (provider non trovato o provider non di competenza dell'ente accreditante)
 				throw new Exception(cogeapsCaricaResponse.getErrMsg());
+			if (cogeapsCaricaResponse.getHttpStatusCode() != 200) //se non 200 (errore server imprevisto)
+				throw new Exception(cogeapsCaricaResponse.getMessage());			
 
 			//salvataggio entity rendicontazione_inviata (siamo sicuri che il file sia stato preso in carico dal cogeaps)
 			RendicontazioneInviata rendicontazioneInviata = new RendicontazioneInviata();
@@ -278,8 +286,43 @@ public class EventoServiceImpl implements EventoService {
 		catch (Exception e) {
 			throw new EcmException("error.invio_report_cogeaps", e.getMessage(), e);
 		}
-
 	}
+	
+	@Override
+	public void statoElaborazioneCogeaps(Long id) throws Exception {
+		Evento evento = getEvento(id);
+		try {
+			RendicontazioneInviata ultimaRendicontazioneInviata = evento.getUltimaRendicontazioneInviata();
+			if (ultimaRendicontazioneInviata == null || !ultimaRendicontazioneInviata.getStato().equals(RendicontazioneInviataStatoEnum.PENDING)) //se non sono presenti invii pendenti -> impossibile richiedere lo stato dell'elaborazione
+				throw new Exception("error.nessuna_elaborazione_pendente");
+
+			CogeapsStatoElaborazioneResponse cogeapsStatoElaborazioneResponse = cogeapsWsRestClient.statoElaborazione(ultimaRendicontazioneInviata.getFileName());
+
+			if (cogeapsStatoElaborazioneResponse.getStatus() != 0) //errore HTTP (auth...) 401
+				throw new Exception(cogeapsStatoElaborazioneResponse.getError() + ": " + cogeapsStatoElaborazioneResponse.getMessage());
+			if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() == 400) //400 (fileName non trovato)
+				throw new Exception(cogeapsStatoElaborazioneResponse.getErrMsg());
+			if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() != 200) //se non 200 (errore server imprevisto) 
+				throw new Exception(cogeapsStatoElaborazioneResponse.getMessage());
+			
+			//se si passa di qua significa che la richiesta HTTP ha avuto esito 200.
+			//se elaborazione completata segno eventuali errori altrimenti non faccio nulla (non si tiene traccia delle richieste la cui risposta porta ancora in uno stato pending)
+			
+			//se elaborazione completata -> update rendicontazione_inviata
+			if (cogeapsStatoElaborazioneResponse.isElaborazioneCompletata()) {
+				ultimaRendicontazioneInviata.setResponse(cogeapsStatoElaborazioneResponse.getResponse());
+				if (cogeapsStatoElaborazioneResponse.getErrCode() != 0 || cogeapsStatoElaborazioneResponse.getCodiceErroreBloccante() != 0)
+					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.ERROR);
+				else
+					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.SUCCESS);
+				ultimaRendicontazioneInviata.setStato(RendicontazioneInviataStatoEnum.COMPLETED);
+				rendicontazioneInviataService.save(ultimaRendicontazioneInviata);
+			}
+		}
+		catch (Exception e) {
+			throw new EcmException("error.stato_elaborazione_cogeaps", e.getMessage(), e);
+		}
+	}		
 
 	/*	CARICAMENTO	*/
 	@Override

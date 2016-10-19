@@ -106,6 +106,7 @@
 
 				</div>
 				
+				<!-- ultima rendicontazione inviata -->
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.rendicontazione_inviata}"></h2>
@@ -135,7 +136,7 @@
 								</label>
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 									<div class="value"><span th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato.nome}"/>
-									<a th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum).PENDING}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/rendiconto/inviaACogeaps|}" class="link-collapse"><i class="fa table-icon fa-refresh"></i></a>									
+										<a th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum).PENDING}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/rendiconto/statoElaborazioneCogeaps|}" class="link-collapse" th:title="#{label.aggiorna}"><i class="fa table-icon fa-refresh"></i></a>									
 									</div>
 								</div>
 							</div>
@@ -144,7 +145,11 @@
 									<span th:text="#{label.risultato}"></span>
 								</label>
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-									<div class="value"><span th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.result.nome}"/></div>
+									<div class="value">
+										<span th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.result.nome}"/>
+										<input type="hidden" id="statoElaborazioneJsonResponse" th:value="${eventoWrapper.evento.ultimaRendicontazioneInviata.response}"/>
+										<i th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.result == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum).ERROR}" class="fa fa-list-alt" id="statoElaborazioneErroreBloccante"></i>
+									</div>
 								</div>
 							</div>							
 							<div class="item form-group with-margin-top" th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.fileRendicontazione}">
@@ -154,10 +159,73 @@
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 									<div class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.fileRendicontazione.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.ultimaRendicontazioneInviata.fileRendicontazione.id}|}"></a></div>
 								</div>
-							</div>															
+							</div>										
 						</div>
+						<div class="item form-group with-margin-top" th:if="${#lists.size(eventoWrapper.evento.inviiRendicontazione)>1}">
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-7"></div>
+							<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+								<button class="btn btn-primary" th:text="#{label.mostra_invii_precedenti}" data-toggle="modal" data-target=".modal-rendicontazioniPrecedenti"></button>
+							</div>
+						</div>						
 						<div th:unless="${eventoWrapper.evento.ultimaRendicontazioneInviata}" class="value" th:text="#{label.nessuna_rendicontazione_inviata}"></div>
 					</div>
+					
+					<!-- modale rendicontazioni precedenti  -->
+					<div id="rendicontazioniPrecedenti-modal" class="modal fade modal-rendicontazioniPrecedenti" data-model-index="1" role="dialog">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal">
+										<span aria-hidden="true">×</span>
+									</button>
+									<h4 class="modal-title" th:text="#{label.invii_precedenti}">Invii precedenti</h4>
+								</div>
+								<div class="modal-body">
+									<div th:each="rendicontazione, row:${eventoWrapper.evento.inviiRendicontazione}">
+										<div th:if="${row.index != 0}">
+											<div class="row with-margin-top" th:if="${rendicontazione.dataInvio}">
+												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
+													<span class="label-show" th:text="#{label.data_invio}"></span>
+												</label>
+												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+													<div class="value"><span th:text="${#temporals.format(rendicontazione.dataInvio, 'dd/MM/yyyy HH:mm')}" /></div>
+												</div>
+											</div>		
+											<div class="row with-margin-top" th:if="${rendicontazione.accountInvio}">
+												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
+													<span class="label-show" th:text="#{label.utente}"></span>
+												</label>
+												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+													<div class="value"><span th:text="${rendicontazione.accountInvio.fullName}"/></div>
+												</div>
+											</div>
+											<div class="row with-margin-top" th:if="${rendicontazione.result}">
+												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
+													<span class="label-show" th:text="#{label.risultato}"></span>
+												</label>
+												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+													<div class="value">
+														<span th:text="${rendicontazione.result.nome}"/>
+														<input type="hidden" th:id="${'statoElaborazioneJsonResponse-' + row.index}" th:value="${rendicontazione.response}"/>
+														<i th:if="${rendicontazione.result == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum).ERROR}" class="fa fa-list-alt" th:id="${'statoElaborazioneErroreBloccante-' + row.index}"></i>
+													</div>
+												</div>
+											</div>							
+											<div class="row with-margin-top">
+												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
+													<span class="label-show" th:text="#{label.reportPartecipantiXML}"></span>
+												</label>
+												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${rendicontazione.fileRendicontazione.nomeFile}" th:href="@{|/file/${rendicontazione.fileRendicontazione.id}|}"></a></div>
+												</div>
+											</div>
+											<div class="divider"></div>		
+										</div>
+									</div>		
+								</div>
+							</div>
+						</div>
+					</div>					
 				</div>				
 				
 			</div>
@@ -193,6 +261,22 @@
 				        }
 
 					});
+					
+					//json cogeaps stato elaborazione response (ultimo invio)
+					if (typeof($('#statoElaborazioneJsonResponse').val()) != 'undefined') {
+					    var obj = $.parseJSON($('#statoElaborazioneJsonResponse').val());
+					    $('#statoElaborazioneErroreBloccante').prop('title', obj.messaggioErroreBloccante);						
+					}
+					
+					//json cogeaps stato elaborazione response (invii precedenti)
+					var numinviiPrecedenti = [[${#lists.size(eventoWrapper.evento.inviiRendicontazione)}]];					
+					for (var i=0; i<numinviiPrecedenti; i++) {
+						if (typeof($('#statoElaborazioneJsonResponse-' + i).val()) != 'undefined') {
+						    var obj = $.parseJSON($('#statoElaborazioneJsonResponse-' + i).val());
+						    $('#statoElaborazioneErroreBloccante-' + i).prop('title', obj.messaggioErroreBloccante);					
+						}							
+					}
+					
 				})
 
 				function spinCog() {
