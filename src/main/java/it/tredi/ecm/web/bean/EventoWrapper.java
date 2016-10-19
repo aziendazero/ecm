@@ -10,18 +10,23 @@ import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Obiettivo;
+import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,6 +56,11 @@ public class EventoWrapper {
 	private Set<Obiettivo> obiettiviRegionali;
 	private Set<Disciplina> disciplinaList;
 	private Set<Professione> professioneList;
+	private File cv;
+	private File sponsorFile;
+	private File partnerFile;
+	private File autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia;
+	private File autocertificazioneAutorizzazioneMinisteroSalute;
 
 	//allegati
 	private File brochure;
@@ -62,13 +72,18 @@ public class EventoWrapper {
 	//gestire l'aggiunta di una PersonaEvento
 	private PersonaEvento tempPersonaEvento = new PersonaEvento();
 
+	private Sponsor tempSponsorEvento = new Sponsor();
+	private Partner tempPartnerEvento = new Partner();
+
 	/* RES */
 	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 	private List<ProgrammaGiornalieroRES> programmaEventoRES = new ArrayList<ProgrammaGiornalieroRES>();
+	private List<Sponsor> sponsors = new ArrayList<Sponsor>();
+	private List<Partner> partners = new ArrayList<Partner>();
 
 	private PersonaFullEvento tempPersonaFullEvento = new PersonaFullEvento();
 	private DettaglioAttivitaRES tempAttivitaRES = new DettaglioAttivitaRES();
-	private File cv;
+
 
 	/* FSC */
 	private AzioneRuoliEventoFSC tempAttivitaFSC = new AzioneRuoliEventoFSC();
@@ -77,7 +92,9 @@ public class EventoWrapper {
 	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_GM = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_AR = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_ACA = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
-
+	
+	private Map<RuoloFSCEnum,Float> mappaRuoloOre = new HashMap<RuoloFSCEnum, Float>();
+	
 	public List<ProgrammaGiornalieroRES> getProgrammaEventoRES(){
 		if(evento != null && (evento instanceof EventoRES) && ((EventoRES)evento).getTipologiaEvento() != null){
 			return programmaEventoRES;
@@ -125,7 +142,21 @@ public class EventoWrapper {
 			}
 		}
 	}
-
+	
+	public void initProgrammi(){
+		if(evento instanceof EventoRES){
+			initProgrammiRES();
+		}else if(evento instanceof EventoFSC){
+			initProgrammiFSC();
+		}else if(evento instanceof EventoFAD){
+			initProgrammiFAD();
+		}
+		
+		for(RuoloFSCEnum r : RuoloFSCEnum.values()){
+			mappaRuoloOre.put(r, new Float(0.0));
+		}
+	}
+	
 	public void initProgrammiRES(){
 		//TODO BARDUCCI a seconda di come decidi la creazione a partire dalla data decidi se è necessario o meno un programma vuoto
 
@@ -148,6 +179,12 @@ public class EventoWrapper {
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.VALUTAZIONE_FINALE));
 
 		this.setProgrammaEventoFSC_TI(programmaEvento);
+		
+		//TIPOLOGIA GRUPPI DI MIGLIORAMENTO
+		programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
+		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.CAMPO_LIBERO));
+
+		this.setProgrammaEventoFSC_GM(programmaEvento);
 
 		//TIPOLOGIA ATTIVITA DI RICERCA
 		programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();

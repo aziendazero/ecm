@@ -38,6 +38,9 @@ public class AzioneRuoliEventoFSC extends BaseEntity {
 	
 	@ElementCollection
 	private Set<RuoloFSCEnum> ruoli = new HashSet<RuoloFSCEnum>();
+	
+//	@ElementCollection
+//	private Set<RuoloOreFSC> ruoliOre = new HashSet<RuoloOreFSC>();
 
 	private BigDecimal tempoDedicato;	
 }

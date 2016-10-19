@@ -14,7 +14,7 @@ public class Partner extends BaseEntity{
 	private String name;
 	@OneToOne
 	private File partnerFile;
-	
-	@ManyToOne
-	private Evento evento;
+
+//	@ManyToOne
+//	private Evento evento;
 }

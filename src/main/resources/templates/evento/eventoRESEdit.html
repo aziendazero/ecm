@@ -27,7 +27,7 @@
 									<!-- ORARIO INIZO-->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="orario">
-											<span th:text="#{label.orario_inizio}">Orario</span>
+											<span th:text="#{label.orario_inizio}">Orario Fine</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
@@ -42,7 +42,7 @@
 									<!-- ORARIO FINE-->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="orario">
-											<span th:text="#{label.orario_inizio}">Orario</span>
+											<span th:text="#{label.orario_fine}">Orario Fine</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
@@ -74,7 +74,7 @@
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
 											<select
 												id="addAttivitaRES-docente"
-												class="selectpicker required selectDocente"
+												class="selectpicker selectDocente"
 												th:field="*{docente}"
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
@@ -98,7 +98,7 @@
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
 											<select
 												id="addAttivitaRES-risultatiAttesi"
-												class="selectpicker required selectRisultatiAttesi"
+												class="selectpicker selectRisultatiAttesi"
 												th:field="*{risultatoAtteso}"
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
@@ -116,7 +116,7 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
 											<select
-												class="selectpicker required selectObiettivoFormativo"
+												class="selectpicker selectObiettivoFormativo"
 												th:field="*{obiettivoFormativo}"
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
@@ -141,7 +141,7 @@
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
 											<select
 												id="addAttivitaRES-metodolgieDidattiche"
-												class="selectpicker required selectMetodologieDidattiche"
+												class="selectpicker selectMetodologieDidattiche"
 												th:field="*{metodologiaDidattica}"
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
@@ -265,7 +265,7 @@
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="destinatari">
 										<div class="checkbox" th:each="destinatario, row : ${T(it.tredi.ecm.dao.enumlist.DestinatariEventoEnum).values()}">
 											<label>
-												<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.destinatariEvento}" th:value="${destinatario}" />
+												<input type="checkbox" class="flat destinatario" th:field="${eventoWrapper.evento.destinatariEvento}" th:value="${destinatario}" />
 												<span th:text="${destinatario.nome}"></span>
 											</label>
 										</div>
@@ -287,7 +287,7 @@
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
 										<div class="radio" th:each="contenuto, row : ${T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).values()}">
 											<label>
-												<input type="radio" class="flat" th:field="${eventoWrapper.evento.contenutiEvento}" th:value="${contenuto}" />
+												<input type="radio" class="flat contenuto" th:field="${eventoWrapper.evento.contenutiEvento}" th:value="${contenuto}" />
 												<span th:text="${contenuto.nome}"></span>
 											</label>
 										</div>
@@ -333,7 +333,7 @@
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<select id="provincia"
-											class="selectpicker required"
+											class="selectpicker"
 											th:field="${eventoWrapper.evento.sedeEvento.provincia}"
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
@@ -360,7 +360,7 @@
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<select id="comune"
-											class="selectpicker required"
+											class="selectpicker"
 											th:field="${eventoWrapper.evento.sedeEvento.comune}"
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
@@ -480,7 +480,7 @@
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 										<select id="obiettivoNazionale"
-											class="selectpicker required"
+											class="selectpicker"
 											th:field="${eventoWrapper.evento.obiettivoNazionale}"
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
@@ -516,7 +516,7 @@
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<select id="obiettivoRegionale"
-											class="selectpicker required"
+											class="selectpicker"
 											th:field="${eventoWrapper.evento.obiettivoRegionale}"
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
@@ -543,7 +543,7 @@
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
 										<div class="col-xs-12 select-with-margin-container">
-											<select id="professioni" class="selectpicker required multi"
+											<select id="professioni" class="selectpicker multi"
 												multiple="multiple" data-width="100%"
 												data-style="btn-primary" data-actions-box="true"
 												data-size="10" title="Seleziona una professione..."
@@ -554,7 +554,7 @@
 													th:field="${eventoWrapper.evento.professioniSelezionate}"></option>
 											</select>
 										</div>
-										<select id="discipline" class="selectpicker required multi"
+										<select id="discipline" class="selectpicker multi"
 											th:field="${eventoWrapper.evento.discipline}"
 											multiple="multiple" data-width="100%"
 											data-style="btn-success" data-actions-box="true"
@@ -578,14 +578,14 @@
 									<label class="control-label col-xs-1">
 										<span>17</span>
 									</label>
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia_evento_2">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia_evento">
 										<span th:text="#{label.tipologia_evento}">Tipologia di Evento</span>
 										<span class="required">*</span>
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<select id="tipologia_evento_2"
-											class="selectpicker required"
+										<select id="tipologia_evento"
+											class="selectpicker"
 											th:field="${eventoWrapper.evento.tipologiaEvento}"
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
@@ -770,21 +770,12 @@
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-										<select id="verificaApprendimentoPartecipanti"
-												class="selectpicker required multi"
-												multiple="multiple" data-width="100%"
-												data-style="btn-primary"
-												data-size="10" title="Seleziona una modalità..."
-												th:field="${eventoWrapper.evento.verificaApprendimento}"
-												disabled="disabled"
-												data-selected-text-format="count">
-											<option
-												th:each="modalita, row: ${T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum).values()}"
-												th:value="${modalita}"
-												th:text="${modalita.nome}"
-												th:name="${modalita.id &lt; 5} ? 'test' : 'autocertificazione'">
-											</option>
-										</select>
+										<div class="checkbox verificaApprendimentoCheck" th:each="modalita, row : ${T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum).values()}" th:classappend="${modalita.id &lt; 5 ? 'esame' : 'autocertificazione'}">
+											<label>
+												<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.verificaApprendimento}" th:value="${modalita}" />
+												<span th:text="${modalita.nome}"></span>
+											</label>
+										</div>
 									</div>
 								</div>
 
@@ -813,7 +804,7 @@
 				 						<div class="value-edit" th:text="${'**TODO**'}"></div>
 				 					</div>
 				 				</div>
-				 				
+
 				 				<!-- METODOLOGIE DIDATTICHE -->
 				 				<div class="item form-group">
 				 					<label class="control-label col-xs-1">
@@ -839,10 +830,10 @@
 									<div class="col-xs-5" id="creditiFormativi">
 										<span class="value-edit" th:text="${eventoWrapper.creditiProposti}"></span>
 										<span class="checkbox">
-											<label>
-												<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" />
-												<span th:text="#{label.conferma}"></span>
-											</label>
+										<label>
+											<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" />
+											<span th:text="#{label.conferma}"></span>
+										</label>
 										</span>
 									</div>
 								</div>
@@ -1064,12 +1055,62 @@
 										</div>
 									</div>
 								</div>
-								<div class="no-padding sponsor-si" style="display: none;">
-									<!-- SPONSOR INSERIMENTO -->
-									<div>**TODO RIPETIBILE SPONSOR**</div>
+								<div class="sponsor-si" style="display: none;">
+									<div class="no-padding item form-group">
+										<div class="col-xs-offset-1 col-xs-10">
+											<th:block th:include="evento/eventoEdit :: sponsors" />
+										</div>
+									</div>
+									<div class="no-padding infanzia-sponsor-radio item form-group" style="display: none;">
+										<div class="control-label col-xs-1"></div>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11">
+											<span th:text="#{label.evento_sponsorizzato_infanzia_radio}">L’evento è sponsorizzato da aziende che trattano alimenti per la prima infanzia?</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+											<div class="radio">
+												<label>
+													<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${true}" />
+													<span th:text="#{label.sì}">Sì</span>
+												</label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${false}" />
+													<span th:text="#{label.no}">No</span>
+												</label>
+											</div>
+										</div>
+									</div>
+									<div class="no-padding infanzia-sponsor-si" style="display: none;">
+										<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->
+										<div class="item form-group">
+											<div class="col-xs-1"></div>
+											<label class="control-label col-md-3 col-sm-3 col-xs-11">
+												<span th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block>
+											</div>
+										</div>
+									</div>
+									<div class="no-padding infanzia-sponsor-no" style="display: none;">
+										<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
+										<div class="item form-group">
+											<div class="col-xs-1"></div>
+											<label class="control-label col-md-3 col-sm-3 col-xs-11">
+												<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block>
+											</div>
+										</div>
+									</div>
 								</div>
 
-								<div class="divider-dashed"></div>
+								<div class="divider-dashed" ></div>
 
 								<!-- FORME FINANZIAMENTO BLOCCO -->
 								<!-- RADIO FORME FINANZIAMENTO -->
@@ -1150,9 +1191,12 @@
 										</div>
 									</div>
 								</div>
-								<div class="no-padding partner-si" style="display: none;">
-									<div>**TODO PARTNER RIPETIBILE</div>
+								<div class="no-padding partner-si item form-group" style="display: none;">
+									<div class="col-xs-offset-1 col-xs-10">
+										<th:block th:include="evento/eventoEdit :: partners" />
+									</div>
 								</div>
+
 
 								<div class="divider-dashed"></div>
 
@@ -1225,20 +1269,27 @@
 				var months;
 
 				$(document).ready(function() {
-					globalInitThom();
+					//init selecpicker
+				    $('select').selectpicker({
+						selectAllText : 'Seleziona tutti',
+						deselectAllText : 'Deseleziona tutti',
+						countSelectedText : '{0} selezionate'
+					});
+
+					initAll();
 				});
 
-				function globalInitThom(){
+				function initAll(){
+
 					$('input.flat').iCheck({
 			            checkboxClass: 'icheckbox_flat-green',
 			            radioClass: 'iradio_flat-green'
 			        });
 
+					//setta i nomi dei giorni e dei mesi a seconda delle label i18n anche per le date intermedie
 					days = getDayNamesShort();
 					months = getMonthNames();
 
-					//init daterangepicker al document ready per tutte le date intermedie
-					//alert('' + $('.datapicker-intermedia').size());
 					$('.datapicker-intermedia').daterangepicker({
 				        singleDatePicker: true,
 				        autoApply: true,
@@ -1258,6 +1309,7 @@
 						});
 					});
 
+
 					//da approfondire
 				    /*
 					$('#dataIntermedia').on('apply.daterangepicker', function(ev, picker) {
@@ -1269,32 +1321,20 @@
 
 				    //controlla al document ready se mostrare i campi particolari relativi alla tipologia dell'evento
 					mostraNascondiCampiTipologiaEvento($('.tipologia_evento_2').val());
+					//decide cosa mostrare a seconda dei campi già settati dal client
+					showHideCampsRES();
 
-					//controlla al document ready quali valori mostrare nella select di verifica dell'apprendimento
-					if([[${eventoWrapper.evento.tipologiaEvento}]]) {
-						abilitaModalitaVerificaApprendimento([[${eventoWrapper.evento.tipologiaEvento}]]);
-					}
+					//appende ai widget tutti i vari eventListener
+					handleListenerEventsCampsRES();
 
-					//gestione evento iCheck su radio riguardante la lingua
-					$(".lingua").on("ifChecked", function() {
-						if($(this).val() == 'true')
-							mostraNascondiCampiLingua(false);
-						else
-							mostraNascondiCampiLingua(true);
-					});
-
-					//controllo su radio riguardante la lingua al document ready
-					if([[${eventoWrapper.evento.soloLinguaItaliana}]] == false) {
-						mostraNascondiCampiLingua(true);
-					}
-
+					//init clockpicker per l'attività
 					var handler = $('.ora').clockpicker({
 				    	donetext: [[#{label.applica}]],
 				    	align: 'left',
 				        autoclose: true,
 				        'default': 'now'
 				    });
-
+				    
 					function openClock(caller){
 						$(caller).parent().click();
 					}
@@ -1305,14 +1345,11 @@
 							mostraNascondiCampiRicadutaFormative(true);
 						else
 							mostraNascondiCampiRicadutaFormative(false);
-					});
+				    });
 
-				  	//controllo su radio riguardante la ricaduta formativa al document ready
-				    if([[${eventoWrapper.evento.verificaRicaduteFormative}]]) {
-				    	mostraNascondiCampiRicadutaFormative(true);
-					}
 				}
 
+				//eventLister cambio tab
 				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 			    	tabSelected = e.target.id;
 					reloadSection(tabSelected);
@@ -1392,6 +1429,37 @@
 				    })
 				}
 
+				//implementazione della funzione che decide cosa mostrare a seconda dei campi già settati dal client specifica per RES
+				function showHideCampsRES() {
+
+					//tipologia dell'evento
+					mostraNascondiCampiTipologiaEvento($('#tipologia_evento').val());
+
+					//lingua
+					mostraNascondiCampiLingua($(".lingua:checked").val());
+
+					//ricaduta formativa
+				    mostraNascondiCampiRicadutaFormative($(".verifica-distanza:checked").val());
+
+					//tipologia evento
+// 				    mostraNascondiCampiTipologiaEvento($("#tipologia_evento").find("option:selected").val());
+				}
+
+				//funzione che setta gli event linstener ai vari input dell'evento RES
+				function handleListenerEventsCampsRES(){
+
+					//gestione evento iCheck su radio riguardante la lingua
+					$(".lingua").on("ifChecked", function() {
+						mostraNascondiCampiLingua($(this).val());
+					});
+
+					//gestione evento iCheck su radio riguardante la lingua
+					$(".verifica-distanza").on("ifChecked", function() {
+						mostraNascondiCampiRicadutaFormative($(this).val());
+					});
+
+				}
+
 				//funzione che calcola al doc ready o all'onchange della relativa select
 				//se mostrare o meno input aggiuntivi relativi alla tipologia dell'evento
 				function mostraNascondiCampiTipologiaEvento(value) {
@@ -1412,7 +1480,7 @@
 						$(".workshop-seminario").slideDown("slow");
 						$(".titolo-convegno").prop("disabled", false);
 						$("#brochure-obbligatoria").removeClass("hidden");
-						abilitaModalitaVerificaApprendimento('test');
+						abilitaModalitaVerificaApprendimento('esame');
 						break;
 					case 'CORSO_AGGIORNAMENTO':
 						$(".convegno-congresso").slideUp("slow");
@@ -1421,7 +1489,7 @@
 						$(".label-radio-workshop").addClass("label-disabled");
 						$(".titolo-convegno").prop("disabled", true);
 						$("#brochure-obbligatoria").addClass("hidden");
-						abilitaModalitaVerificaApprendimento('test');
+						abilitaModalitaVerificaApprendimento('esame');
 						break;
 					default:
 						$(".convegno-congresso").slideUp("slow");
@@ -1430,14 +1498,44 @@
 						$(".label-radio-workshop").addClass("label-disabled");
 						$(".titolo-convegno").prop("disabled", true);
 						$("#brochure-obbligatoria").addClass("hidden");
+						abilitaModalitaVerificaApprendimento('disableAll');
 						break;
+					}
+				}
+
+				//funzione che calcola al doc ready o all'onchange della relativa select
+				//se mostrare o meno input aggiuntivi relativi alla lingua dell'evento
+				function mostraNascondiCampiLingua(value) {
+					if(value == 'false') {
+						$(".non-solo-italiano").slideDown("slow");
+						$(".traduzione").iCheck("enable");
+						$(".label-radio-traduzione").removeClass("label-disabled");
+					}
+					else {
+						$(".non-solo-italiano").slideUp("slow");
+						$(".traduzione").iCheck("disable");
+						$(".label-radio-traduzione").addClass("label-disabled");
+					}
+				}
+
+				//funzione che calcola al doc ready o all'onchange della relativa select
+				//se mostrare o meno input aggiuntivi relativi alle ricadute formative
+				function mostraNascondiCampiRicadutaFormative(value) {
+					if(value == 'true') {
+						$(".verifica-ricadute-formative").slideDown("slow");
+						$("#descrizione-ricaduta-formativa").prop("disabled", false);
+						$("#documentoVerificaRicaduteFormative").prop("disabled", false);
+					}
+					else {
+						$(".verifica-ricadute-formative").slideUp("slow");
+						$("#descrizione-ricaduta-formativa").prop("disabled", true);
+						$("#documentoVerificaRicaduteFormative").prop("disabled", true);
 					}
 				}
 
 				//funzione che aggiunge un risultato atteso alla lista dei temporanei
 				//(solo lato client, il salvataggio verrà realizzato al save dell'evento)
 				function aggiungiRisultatoAtteso(risultato) {
-					console.log(risultato)
 					if(risultato.trim()) {
 						var container = $("<div class='risultato-atteso' style='display: inline-block'></div>");
 						var spanText = $("<div class='text-risultato' style='display: inline-block'></div>").text(risultato);
@@ -1458,30 +1556,26 @@
 				}
 
 				function abilitaModalitaVerificaApprendimento(tipologia) {
-					console.log(tipologia);
-					// abilita la select della verifica apprendimento
-					$("#verificaApprendimentoPartecipanti").prop("disabled", false);
-					// cicla le modalità mostrandole in base al parametro settato in base alla tipologia dell'evento
-					$.each($("#verificaApprendimentoPartecipanti option"), function() {
-						if($(this).attr("name") == tipologia)
-							$(this).show();
-						else
-							$(this).hide();
-					});
-					$("#verificaApprendimentoPartecipanti").selectpicker('deselectAll');
-					$("#verificaApprendimentoPartecipanti").selectpicker("refresh");
-				}
-
-				function mostraNascondiCampiLingua(show) {
-					if(show) {
-						$(".non-solo-italiano").slideDown("slow");
-						$(".traduzione").iCheck("enable");
-						$(".label-radio-traduzione").removeClass("label-disabled");
-					}
-					else {
-						$(".non-solo-italiano").slideUp("slow");
-						$(".traduzione").iCheck("disable");
-						$(".label-radio-traduzione").addClass("label-disabled");
+					// abilita le checkbox della verifica apprendimento
+					switch (tipologia) {
+						case "esame":
+							$(".esame").show().find("input").iCheck('enable');
+							$(".esame").children().removeClass('label-disabled');
+							$(".autocertificazione").hide().find("input").iCheck('disable');
+							$(".autocertificazione").children().addClass('label-disabled');
+							break;
+						case "autocertificazione":
+							$(".autocertificazione").show().find("input").iCheck('enable');
+							$(".autocertificazione").children().removeClass('label-disabled');
+							$(".esame").hide().find("input").iCheck('disable');
+							$(".esame").children().addClass('label-disabled');
+							break;
+						default:
+							$(".autocertificazione").show().find("input").iCheck('disable');
+							$(".esame").show().find("input").iCheck('disable');
+							$(".autocertificazione").children().addClass('label-disabled');
+							$(".esame").children().addClass('label-disabled');
+							break;
 					}
 				}
 
@@ -1511,19 +1605,6 @@
 						$(metodologiePicker_ref).selectpicker('refresh');
 					});
 				};
-
-				function mostraNascondiCampiRicadutaFormative(show) {
-					if(show) {
-						$(".verifica-ricadute-formative").slideDown("slow");
-						$("#descrizione-ricaduta-formativa").prop("disabled", false);
-						$("#documentoVerificaRicaduteFormative").prop("disabled", false);
-					}
-					else {
-						$(".verifica-ricadute-formative").slideUp("slow");
-						$("#descrizione-ricaduta-formativa").prop("disabled", true);
-						$("#documentoVerificaRicaduteFormative").prop("disabled", true);
-					}
-				}
 
 	/********************* PROGRAMMA GIORNALIERO ****************************/
 				function openAddAttivitaTo(target,programmaIndex,pausa){
@@ -1562,10 +1643,6 @@
 
 				function closeModaleAddAttivitaTo(){
 					$("#add-attivitaRES-modal .close").click();
-				}
-
-				function reInitModaleAddAttivitaTo(){
-					$('select').selectpicker();
 				}
 
 				function sendAjaxAddAttivitaToProgramma(){
@@ -1622,7 +1699,7 @@
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoRES').serialize())
 					.done(function(data) {
 					  	$('#section-' + sectionIndex).html(data);
-					  	reInitComponents();
+					  	reInitComponents(sectionIndex);
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
@@ -1630,10 +1707,27 @@
 				 	 })
 				}
 
-				function reInitComponents(){
-					$('select').selectpicker();
-					globalInitThom();
-					globalInitThomCommon();
+				function reInitComponents(sectionIndex){
+					//init selecpicker
+				    $('select').selectpicker({
+						selectAllText : 'Seleziona tutti',
+						deselectAllText : 'Deseleziona tutti',
+						countSelectedText : '{0} selezionate'
+					});
+					initAll();
+					initAllCommon();
+					switch (sectionIndex) {
+						case '1': 	reInitDataTable('docenti');
+									reInitDataTable('responsabiliScientifici');
+									break;
+						case '2':  	//TODO
+									break;
+						case '3':	reInitDataTable('responsabileSegreteria');
+									reInitDataTable('sponsors');
+									reInitDataTable('partners');
+									break;
+						default: 	break;
+					}
 				}
 			/*]]>*/
 			</script>

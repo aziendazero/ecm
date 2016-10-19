@@ -218,10 +218,11 @@ public class Evento extends BaseEntity{
 	private BigDecimal quotaPartecipazione;
 
 	private Boolean eventoSponsorizzato;
-	@OneToMany(mappedBy="evento")
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@JoinColumn(name="evento_id")
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();
 
-	private boolean eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia;
+	private Boolean eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia;
 	@OneToOne
 	private File autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia;
 	@OneToOne
@@ -234,7 +235,8 @@ public class Evento extends BaseEntity{
 	private File contrattiAccordiConvenzioni;
 
 	private Boolean eventoAvvalePartner;
-	@OneToMany(mappedBy="evento")
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@JoinColumn(name="evento_id")
 	private Set<Partner> partners = new HashSet<Partner>();
 
 	@OneToOne
@@ -262,7 +264,7 @@ public class Evento extends BaseEntity{
         Evento entitapiatta = (Evento) o;
         return Objects.equals(id, entitapiatta.id);
     }
-	
+
 	public RendicontazioneInviata getUltimaRendicontazioneInviata() {
 		return inviiRendicontazione.size() == 0? null : inviiRendicontazione.iterator().next();
 	}
