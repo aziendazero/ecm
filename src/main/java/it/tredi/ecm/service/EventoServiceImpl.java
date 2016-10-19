@@ -16,15 +16,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.cogeaps.CogeapsCaricaResponse;
+import it.tredi.ecm.cogeaps.CogeapsStatoElaborazioneResponse;
 import it.tredi.ecm.cogeaps.CogeapsWsRestClient;
 import it.tredi.ecm.cogeaps.Helper;
 import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
@@ -32,13 +36,18 @@ import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
+import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
@@ -62,6 +71,9 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired
 	private CogeapsWsRestClient cogeapsWsRestClient;
+	
+	@Autowired
+	private EcmProperties ecmProperties;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -168,6 +180,8 @@ public class EventoServiceImpl implements EventoService {
 		return true;
 	}
 
+	
+	/*	SALVATAGGIO	*/
 	@Override
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
 		Evento evento = eventoWrapper.getEvento();
@@ -197,18 +211,14 @@ public class EventoServiceImpl implements EventoService {
 			}
 			((EventoRES)evento).setDocenti(attachedList);
 
-			//Programma evento
-			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
-			for(ProgrammaGiornalieroRES p : ((EventoRES) evento).getProgramma()){
-				p.setEventoRES((EventoRES) evento);
-			}
+			retrieveProgrammaAndAddJoin(eventoWrapper);
 
 			//Documento Verifica Ricadute Formative
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
 		}else if(evento instanceof EventoFSC){
-			//TODO campi solo in EVENTO FSC
+			retrieveProgrammaAndAddJoin(eventoWrapper);
 		}else if(evento instanceof EventoFAD){
 			//TODO campi solo in EVENTO FAD
 		}
@@ -283,10 +293,12 @@ public class EventoServiceImpl implements EventoService {
 
 			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(reportFileName, evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
 
-			if (cogeapsCaricaResponse.getStatus() != 0) //errore HTTP (auth...)
+			if (cogeapsCaricaResponse.getStatus() != 0) //errore HTTP (auth...) - 401
 				throw new Exception(cogeapsCaricaResponse.getError() + ": " + cogeapsCaricaResponse.getMessage());
-			if (cogeapsCaricaResponse.getErrCode() != 0) //errore su provider
+			if (cogeapsCaricaResponse.getErrCode() != 0) //errore su provider - 401,404 (provider non trovato o provider non di competenza dell'ente accreditante)
 				throw new Exception(cogeapsCaricaResponse.getErrMsg());
+			if (cogeapsCaricaResponse.getHttpStatusCode() != 200) //se non 200 (errore server imprevisto)
+				throw new Exception(cogeapsCaricaResponse.getMessage());			
 
 			//salvataggio entity rendicontazione_inviata (siamo sicuri che il file sia stato preso in carico dal cogeaps)
 			RendicontazioneInviata rendicontazioneInviata = new RendicontazioneInviata();
@@ -302,9 +314,45 @@ public class EventoServiceImpl implements EventoService {
 		catch (Exception e) {
 			throw new EcmException("error.invio_report_cogeaps", e.getMessage(), e);
 		}
-
 	}
+	
+	@Override
+	public void statoElaborazioneCogeaps(Long id) throws Exception {
+		Evento evento = getEvento(id);
+		try {
+			RendicontazioneInviata ultimaRendicontazioneInviata = evento.getUltimaRendicontazioneInviata();
+			if (ultimaRendicontazioneInviata == null || !ultimaRendicontazioneInviata.getStato().equals(RendicontazioneInviataStatoEnum.PENDING)) //se non sono presenti invii pendenti -> impossibile richiedere lo stato dell'elaborazione
+				throw new Exception("error.nessuna_elaborazione_pendente");
 
+			CogeapsStatoElaborazioneResponse cogeapsStatoElaborazioneResponse = cogeapsWsRestClient.statoElaborazione(ultimaRendicontazioneInviata.getFileName());
+
+			if (cogeapsStatoElaborazioneResponse.getStatus() != 0) //errore HTTP (auth...) 401
+				throw new Exception(cogeapsStatoElaborazioneResponse.getError() + ": " + cogeapsStatoElaborazioneResponse.getMessage());
+			if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() == 400) //400 (fileName non trovato)
+				throw new Exception(cogeapsStatoElaborazioneResponse.getErrMsg());
+			if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() != 200) //se non 200 (errore server imprevisto) 
+				throw new Exception(cogeapsStatoElaborazioneResponse.getMessage());
+			
+			//se si passa di qua significa che la richiesta HTTP ha avuto esito 200.
+			//se elaborazione completata segno eventuali errori altrimenti non faccio nulla (non si tiene traccia delle richieste la cui risposta porta ancora in uno stato pending)
+			
+			//se elaborazione completata -> update rendicontazione_inviata
+			if (cogeapsStatoElaborazioneResponse.isElaborazioneCompletata()) {
+				ultimaRendicontazioneInviata.setResponse(cogeapsStatoElaborazioneResponse.getResponse());
+				if (cogeapsStatoElaborazioneResponse.getErrCode() != 0 || cogeapsStatoElaborazioneResponse.getCodiceErroreBloccante() != 0)
+					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.ERROR);
+				else
+					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.SUCCESS);
+				ultimaRendicontazioneInviata.setStato(RendicontazioneInviataStatoEnum.COMPLETED);
+				rendicontazioneInviataService.save(ultimaRendicontazioneInviata);
+			}
+		}
+		catch (Exception e) {
+			throw new EcmException("error.stato_elaborazione_cogeaps", e.getMessage(), e);
+		}
+	}		
+
+	/*	CARICAMENTO	*/
 	@Override
 	public EventoWrapper prepareRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
 		Evento evento = eventoWrapper.getEvento();
@@ -333,7 +381,8 @@ public class EventoServiceImpl implements EventoService {
 				eventoWrapper.setDocumentoVerificaRicaduteFormative(((EventoRES) evento).getDocumentoVerificaRicaduteFormative());
 			}
 		}else if(evento instanceof EventoFSC){
-			//TODO campi solo in EVENTO FSC
+			//Programma
+			eventoWrapper.setProgrammaEventoFSC(((EventoFSC) evento).getFasiAzioniRuoli());
 		}else if(evento instanceof EventoFAD){
 			//TODO campi solo in EVENTO FAD
 		}
@@ -372,6 +421,150 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		return eventoWrapper;
+	}
+
+	@Override
+	public float calcoloDurataEvento(EventoWrapper eventoWrapper) {
+		float durata = 0;
+		
+		if(eventoWrapper.getEvento() instanceof EventoRES){
+			durata = calcoloDurataEventoRES(((EventoRES)eventoWrapper.getEvento()).getProgramma());
+			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
+		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
+			
+		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
+			
+		}
+		
+		return durata;
+	}
+	
+	private float calcoloDurataEventoRES(List<ProgrammaGiornalieroRES> programma){
+		float durata = 0;
+		for(ProgrammaGiornalieroRES progrGior : programma){
+			for(DettaglioAttivitaRES dett : progrGior.getProgramma()){
+				if(!dett.isPausa())
+					durata += dett.getOreAttivita();
+			}
+		}
+		return durata;
+	}
+
+	private float calcoloDurataEventoFSC(){
+		float durata = 0;
+
+		return durata;
+	}
+	
+	private float calcoloDurataEventoFAD(){
+		float durata = 0;
+
+		return durata;
+	}
+
+	@Override
+	public float calcoloCreditiEvento(EventoWrapper eventoWrapper) {
+		float crediti = 0;
+		
+		if(eventoWrapper.getEvento() instanceof EventoRES){
+			EventoRES evento = ((EventoRES)eventoWrapper.getEvento());
+			if(evento.isConfermatiCrediti()){
+				crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getProgrammaEventoRES(), evento.getNumeroPartecipanti());				
+				evento.setCrediti(crediti);
+				LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
+				return crediti;
+			}else{
+				LOGGER.info(Utils.getLogMessage("Lettura crediti per evento RES"));
+				return evento.getCrediti();
+			}
+		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
+			
+		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
+			
+		}
+		
+		return crediti;
+	}
+	
+	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, List<ProgrammaGiornalieroRES> programma, int numeroPartecipanti){
+		float crediti = 0.0f;
+
+		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
+			crediti = (0.20f * durata);
+			if(crediti > 5.0f)
+				crediti = 5.0f;
+		}
+
+		if(tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO){
+			crediti = 1 * durata;
+			if(crediti > 50f)
+				crediti = 50f;
+		}
+
+		if(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO){
+			float creditiFrontale = 0f;
+			float oreFrontale = 0f;
+			float creditiInterattiva = 0f;
+			float oreInterattiva = 0f;
+
+			for(ProgrammaGiornalieroRES progrGio : programma) {
+				for(DettaglioAttivitaRES a : progrGio.getProgramma()){
+					if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
+						oreFrontale += a.getOreAttivita();
+					}else{
+						oreInterattiva += a.getOreAttivita();
+					}
+				}
+			}
+
+			//metodologia frontale
+			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
+				creditiFrontale = oreFrontale * 1.0f;
+				creditiFrontale = (creditiFrontale + (creditiFrontale*0.20f));
+			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
+				//TODO 25% decrescente
+			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){
+				creditiFrontale = oreFrontale * 1.0f;
+			}else if(numeroPartecipanti >= 101 && numeroPartecipanti <= 150){
+				creditiFrontale = oreFrontale * 0.75f;
+			}else if(numeroPartecipanti >= 151 && numeroPartecipanti <= 200){
+				creditiFrontale = oreFrontale * 0.5f;
+			}
+
+			//metodologia interattiva
+			creditiInterattiva = oreInterattiva * 1.5f;
+
+			crediti = creditiFrontale + creditiInterattiva;
+		}
+
+		return crediti;
+	}
+	
+	/*
+	 * 
+	 * prendo il programma dal wrapper e aggancio l'evento alle fasi o ai giorni
+	 * */
+	@Override
+	public void retrieveProgrammaAndAddJoin(EventoWrapper eventoWrapper) {
+		Evento evento = eventoWrapper.getEvento();
+		if(evento instanceof EventoRES){
+			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
+			if(eventoWrapper.getProgrammaEventoRES() != null){
+				for(ProgrammaGiornalieroRES p : ((EventoRES) evento).getProgramma()){
+					p.setEventoRES((EventoRES) evento);
+				}
+			}
+		}else if(evento instanceof EventoFSC){
+			((EventoFSC)evento).setFasiAzioniRuoli(eventoWrapper.getProgrammaEventoFSC());
+			if(eventoWrapper.getProgrammaEventoFSC() != null){
+				for(FaseAzioniRuoliEventoFSCTypeA fase : ((EventoFSC)evento).getFasiAzioniRuoli()){
+					fase.setEvento(((EventoFSC)evento));
+				}
+				
+			}
+		}else if(evento instanceof EventoFAD){
+			//TODO FAD
+		}
 	}
 
 }

@@ -28,12 +28,14 @@ import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
 import it.tredi.ecm.dao.entity.AnagraficaFullEventoBase;
+import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
@@ -42,10 +44,13 @@ import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
+import it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
@@ -74,9 +79,7 @@ public class EventoController {
 
 	@Autowired private AnagraficaEventoService anagraficaEventoService;
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
-
 	@Autowired private PersonaEventoRepository personaEventoRepository;
-	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -131,8 +134,7 @@ public class EventoController {
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /evento/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
-			return "redirect:/home";
+			return "";
 		}
 	}
 
@@ -305,7 +307,7 @@ public class EventoController {
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
 				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				if(wrapper.getReportPartecipanti().getId() == null)
-					model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
 				else {
 					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
 					File file = wrapper.getReportPartecipanti();
@@ -315,15 +317,15 @@ public class EventoController {
 							if (fileName.endsWith(".XML") || fileName.endsWith(".XML.P7M") || fileName.endsWith(".XML.ZIP.P7M") || fileName.endsWith(".CSV")) {
 								wrapper.setReportPartecipanti(fileService.getFile(file.getId()));
 								eventoService.validaRendiconto(eventoId, wrapper.getReportPartecipanti());
-							model.addAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
+								redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
 							}
 							else {
-								model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+								redirectAttrs.addFlashAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
 							}
 						}
 					}
 			}
-			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
+			return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
@@ -343,12 +345,11 @@ public class EventoController {
 				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
-//TODO - bisognerebbe controllare che il file sia fermato altrimenti non è possibile inviare il report al cogeaps
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
 				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				eventoService.inviaRendicontoACogeaps(eventoId);
-				model.addAttribute("message", new Message("message.completato", "message.invio_cogeaps_ok", "success"));
-				return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.invio_cogeaps_ok", "success"));
+				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 			}
 			catch (Exception ex) {
 				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"),ex);
@@ -361,6 +362,29 @@ public class EventoController {
 				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 			}
 		}
+
+		//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
+		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/statoElaborazioneCogeaps", method = RequestMethod.GET)
+		public String rendicontoEventoStatoElaborazioneCogeaps(@PathVariable Long providerId,
+				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+				Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"));
+				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+				eventoService.statoElaborazioneCogeaps(eventoId);
+				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"),ex);
+				if (ex instanceof EcmException) //errore gestito
+	//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+				else
+					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"));
+				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
+			}
+		}		
 
 //	//metodo per chiamate AJAX sulle date ripetibili
 //	@RequestMapping("/add/dataIntermedia")
@@ -401,17 +425,7 @@ public class EventoController {
 		evento.setProceduraFormativa(proceduraFormativa);
 		eventoWrapper.setEvento(evento);
 
-		if(evento instanceof EventoRES){
-			//Lista attività singolo programma giornaliero
-			ProgrammaGiornalieroRES p = new ProgrammaGiornalieroRES();
-			//p.setEventoRES((EventoRES) evento);
-
-			//Lista programmi giornalieri dell'evento
-			List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
-			programmaEvento.add(p);
-
-			eventoWrapper.setProgrammaEventoRES(programmaEvento);
-		}
+		eventoWrapper.initProgrammi();
 
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
@@ -421,6 +435,9 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
+		
+		eventoWrapper.initProgrammi();
+		
 		if(reloadWrapperFromDB)
 			eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - exiting"));
@@ -492,35 +509,6 @@ public class EventoController {
 		return obiettivo.getMetodologieDidattiche();
 	}
 
-//	@RequestMapping(value = "/provider/{providerId}/evento/save", method=RequestMethod.POST, params={"addAttivitaToProgramma"})
-//	public String addElement(@RequestParam("addAttivitaToProgramma") String programma,
-//								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
-//		try{
-//			int programmaIndex = Integer.valueOf(programma).intValue();
-//			eventoWrapper.getProgrammaEvento().get(programmaIndex).getProgramma().add(new DettaglioAttivitaRES());
-//			eventoWrapper.setGotoLink("#programma");
-//			return EDIT;
-//		}catch (Exception ex){
-//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-//			return "redirect:/home";
-//		}
-//	}
-//
-//	@RequestMapping(value = "/provider/{providerId}/evento/removeAttivita/{programmaIndex}/{attivitaIndex}", method=RequestMethod.GET)
-//	public String removeAttivitaFromProgramma(@PathVariable("programmaIndex") String progIndex, @PathVariable("attivitaIndex") String attIndex,
-//												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
-//		try{
-//			int programmaIndex = Integer.valueOf(progIndex).intValue();
-//			int attivitaIndex = Integer.valueOf(attIndex).intValue();
-//			eventoWrapper.getProgrammaEvento().get(programmaIndex).getProgramma().remove(attivitaIndex);
-//			eventoWrapper.setGotoLink("#programma");
-//			return EDIT;
-//		}catch (Exception ex){
-//			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-//			return "redirect:/home";
-//		}
-//	}
-
 	@RequestMapping(value="/provider/{providerId}/createAnagraficaFullEvento", method=RequestMethod.POST)
 	@ResponseBody
 	public String saveAnagraficaFullEvento(@PathVariable("providerId") Long providerId, AnagraficaEvento anagrafica){
@@ -549,8 +537,9 @@ public class EventoController {
 			//PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
 			PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				personaEventoRepository.save(p);//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il bindibg in in AddAttivitaRES (select si basa su id della entity)
+				//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il bindibg in in AddAttivitaRES (select si basa su id della entity)
 				//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
+				personaEventoRepository.save(p);
 				eventoWrapper.getResponsabiliScientifici().add(p);
 			}else if(target.equalsIgnoreCase("docenti")){
 				personaEventoRepository.save(p);
@@ -706,10 +695,15 @@ public class EventoController {
 			if(target.equalsIgnoreCase("attivitaRES")){
 				//DettaglioAttivitaRES attivitaRES = (DettaglioAttivitaRES) Utils.copy(eventoWrapper.getTempAttivitaRES());
 				DettaglioAttivitaRES attivitaRES =  SerializationUtils.clone(eventoWrapper.getTempAttivitaRES());
+				attivitaRES.calcolaOreAttivita();
 				eventoWrapper.getProgrammaEventoRES().get(programmaIndex).getProgramma().add(attivitaRES);
 				if(pausa.booleanValue())
 					attivitaRES.setAsPausa();
 				eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
+			}else if(target.equalsIgnoreCase("attivitaFSC")){
+				AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());
+				eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().add(azioniRuoli);
+				eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
 			}
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -731,6 +725,10 @@ public class EventoController {
 				programmaIndex = Integer.valueOf(removeAttivitaFrom).intValue();
 				attivitaRow = Integer.valueOf(rowIndex).intValue();
 				eventoWrapper.getProgrammaEventoRES().get(programmaIndex).getProgramma().remove(attivitaRow);
+			}else if(target.equalsIgnoreCase("attivitaFSC")){
+				programmaIndex = Integer.valueOf(removeAttivitaFrom).intValue();
+				attivitaRow = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().remove(attivitaRow);
 			}
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -769,14 +767,9 @@ public class EventoController {
 			if(sectionIndex == 2){
 				//sezione programma evento
 			}else if(sectionIndex == 3){
-				//sezione finale
-				//ricalcolo durata e crediti
-				if(eventoWrapper.getEvento() instanceof EventoRES){
-					((EventoRES)eventoWrapper.getEvento()).calcoloDurata(eventoWrapper.getProgrammaEventoRES());
-					if(!((EventoRES)eventoWrapper.getEvento()).isConfermatiCrediti()){
-						((EventoRES)eventoWrapper.getEvento()).calcoloCreditiFormativi(eventoWrapper.getProgrammaEventoRES());
-					}
-				}
+				//sezione finale - ricalcolo durata e crediti
+				eventoService.calcoloDurataEvento(eventoWrapper);
+				eventoService.calcoloCreditiEvento(eventoWrapper);
 			}
 
 			if(eventoWrapper.getEvento() instanceof EventoRES){
@@ -802,6 +795,12 @@ public class EventoController {
 			lista = eventoWrapper.getDocenti();
 		}
 		return lista;
+	}
+
+	@RequestMapping("/listaRuoliCoinvolti")
+	@ResponseBody
+	public List<RuoloFSCEnum>getListaRuoliCoinvolti(@RequestParam TipologiaEventoFSCEnum tipologiaEvento){
+		return tipologiaEvento.getRuoliCoinvolti();
 	}
 
 }

@@ -12,26 +12,27 @@ public enum FaseDiLavoroFSCEnum {
 	
 	//per tipologia: Gruppi di migioramento
 	//il campo e libero non un enum
+	CAMPO_LIBERO(5,""),
 	
 	//per tipologia: Progetti di miglioramento
-	ANALISI_DEL_PROBLEMA(5,"Analisi del problema"),
-	INDIVIDUAZIONE_DELLE_SOLUZIONI(6,"Individuazione delle soluzioni"),
-	CONFRONTO_E_CONDIVISIONE(7,"Confronto e condivisione con gli operatori coinvolti sulle soluzioni ipotizzate"),
-	IMPLEMENTAZIONE_CAMBIAMENTO_E_MONITORAGGIO(8,"Implementazione del cambiamento e suo monitoraggio"),
-	VALUTAZIONE_IMPATTO_CAMBIAMENTO(9,"Valutazione dell’impatto del cambiamento"),
+	ANALISI_DEL_PROBLEMA(6,"Analisi del problema"),
+	INDIVIDUAZIONE_DELLE_SOLUZIONI(7,"Individuazione delle soluzioni"),
+	CONFRONTO_E_CONDIVISIONE(8,"Confronto e condivisione con gli operatori coinvolti sulle soluzioni ipotizzate"),
+	IMPLEMENTAZIONE_CAMBIAMENTO_E_MONITORAGGIO(9,"Implementazione del cambiamento e suo monitoraggio"),
+	VALUTAZIONE_IMPATTO_CAMBIAMENTO(10,"Valutazione dell’impatto del cambiamento"),
 	
 	//per tipologia: Attivita' di ricerca
-	ESPLICITAZIONE_IPOTESI_LAVORO(10,"Esplicitazione dell’ipotesi di lavoro – indicazione della metodologia della ricerca"),
-	FASE_RACCOLTA_DATI(11,"Fase della raccolta dati"),
-	ANALISI_DATI(12,"Analisi dei dati"),
-	PRESENTAZIONE_RISULTATI(13,"Presentazione dei risultati della ricerca"),
+	ESPLICITAZIONE_IPOTESI_LAVORO(11,"Esplicitazione dell’ipotesi di lavoro – indicazione della metodologia della ricerca"),
+	FASE_RACCOLTA_DATI(12,"Fase della raccolta dati"),
+	ANALISI_DATI(13,"Analisi dei dati"),
+	PRESENTAZIONE_RISULTATI(14,"Presentazione dei risultati della ricerca"),
 	
 	//per tipologia: Audit clinico e/o assistenziale
-	DEFINIZIONE_CRITERI_VALUTAZIONI_PRATICITA_CLINICA(14,"Definizione di criteri e standard concordati e misurabili e valutazioni della pratica clinica in termini di processo"),
-	ELABORAZIONE_PROPOSTE(15,"Elaborazione di proposte di miglioramento"),
-	APPLICAZIONI_GESTIONALI_ORGANIZZATIVE(16,"Applicazioni gestionali/organizzative delle proposte di miglioramento"),
-	VERIFICA_PRATICA_CORRENTE(17,"Verifica della buona pratica corrente rispetto a standard concordati"),
-	VALUTAZIONE_IMPATTO(18,"Valutazione dell’impatto del cambiamento");
+	DEFINIZIONE_CRITERI_VALUTAZIONI_PRATICITA_CLINICA(15,"Definizione di criteri e standard concordati e misurabili e valutazioni della pratica clinica in termini di processo"),
+	ELABORAZIONE_PROPOSTE(16,"Elaborazione di proposte di miglioramento"),
+	APPLICAZIONI_GESTIONALI_ORGANIZZATIVE(17,"Applicazioni gestionali/organizzative delle proposte di miglioramento"),
+	VERIFICA_PRATICA_CORRENTE(18,"Verifica della buona pratica corrente rispetto a standard concordati"),
+	VALUTAZIONE_IMPATTO(19,"Valutazione dell’impatto del cambiamento");
 	
 	private int id;
 	private String nome;

@@ -24,16 +24,31 @@
 									th:object="${eventoWrapper.tempAttivitaRES}" method="post" enctype="multipart/form-data"
 									novalidate="novalidate">
 
-									<!-- ORARIO -->
+									<!-- ORARIO INIZO-->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="orario">
-											<span th:text="#{label.orario}">Orario</span>
+											<span th:text="#{label.orario_inizio}">Orario Fine</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
 											<input type="text" required="required" class="form-control ora"
-												th:field="*{orario}" />
-												<span class="input-group-addon openClock">
+												th:field="*{orarioInizio}" />
+												<span class="input-group-addon openClock" onclick="openClock(this)">
+	     											<i class="glyphicon glyphicon-time"></i>
+	  											</span>
+										</div>
+									</div>
+									
+									<!-- ORARIO FINE-->
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="orario">
+											<span th:text="#{label.orario_fine}">Orario Fine</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
+											<input type="text" required="required" class="form-control ora"
+												th:field="*{orarioFine}" />
+												<span class="input-group-addon openClock" onclick="openClock(this)">
 	     											<i class="glyphicon glyphicon-time"></i>
 	  											</span>
 										</div>
@@ -138,17 +153,6 @@
 													th:text="${metodologiaDidattica.nome}">
 												</option>
 											</select>
-										</div>
-									</div>
-
-									<!-- ORE ATTIVITA -->
-									<div class="item form-group">
-										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-											<span th:text="#{label.ore_attivita}">Ore Attività</span>
-											<span class="required">*</span>
-										</label>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input class="form-control" type="text" th:field="*{oreAttivita}" />
 										</div>
 									</div>
 
@@ -813,23 +817,50 @@
 				 					</div>
 				 				</div>
 
-								<!-- CREDITI FORMATIVI -->
+				 				<!-- METODOLOGIE DIDATTICHE -->
+				 				<div class="item form-group">
+				 					<label class="control-label col-xs-1">
+				 						<span>35</span>
+				 					</label>
+				 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="metodologieDidattiche">
+				 						<span th:text="#{label.metodologie_didattiche}">Metodologie Didattiche</span>
+				 					</label>
+				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="metodologieDidattiche">
+				 						<div class="value-edit" th:text="${'**TODO**'}"></div>
+				 					</div>
+				 				</div>
+
+								<!-- CREDITI FORMATIVI PROPOSTI-->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
 										<span>36</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="creditiFormativi">
-										<span th:text="#{label.crediti_formativi_attribuiti_evento}">Crediti attribuiti all'evento</span>
+										<span th:text="#{label.crediti_formativi_proposti_dal_sistema}">Crediti Fromativi proposti dal sistema</span>
 										<span class="required">*</span>
 									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
-										<input type="text" class="form-control" th:field="${eventoWrapper.evento.crediti}" />
-									</div>
-									<div class="checkbox col-lg-3">
+									<div class="col-xs-5" id="creditiFormativi">
+										<span class="value-edit" th:text="${eventoWrapper.creditiProposti}"></span>
+										<span class="checkbox">
 										<label>
 											<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" />
 											<span th:text="#{label.conferma}"></span>
 										</label>
+										</span>
+									</div>
+								</div>
+
+								<!-- CREDITI FORMATIVI INSERITI DALL'UTENTE-->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>37</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="creditiFormativi">
+										<span th:text="#{label.crediti_formativi_attribuiti_dal_utente}">Crediti attribuiti all'evento dall'utente</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
+										<input type="text" class="form-control" th:field="${eventoWrapper.evento.crediti}" />
 									</div>
 								</div>
 
@@ -1303,9 +1334,17 @@
 				        autoclose: true,
 				        'default': 'now'
 				    });
-				    $('.openClock').click(function(e) {
-				    	e.stopPropagation();
-	                    handler.clockpicker('show');
+				    
+					function openClock(caller){
+						$(caller).parent().click();
+					}
+
+				 	 //gestione evento iCheck su radio riguardante la lingua
+					$(".verifica-distanza").on("ifChecked", function() {
+						if($(this).val() == 'true')
+							mostraNascondiCampiRicadutaFormative(true);
+						else
+							mostraNascondiCampiRicadutaFormative(false);
 				    });
 
 				}

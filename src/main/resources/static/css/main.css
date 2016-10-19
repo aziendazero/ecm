@@ -59,8 +59,9 @@ body.nav-md .container.body .right_col.main {
 
 .dropdown-menu span {
 	max-width: 95%;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	/* overflow: hidden;
+	text-overflow: ellipsis; */
+	white-space:pre-line;
 	display: block;
 	margin-right: 0 !important;
 	TODO: trovare modo per togliere important
@@ -1133,4 +1134,8 @@ tr.integrazione-eliminazione td:first-child a{
 .fake {
 	width: auto !important;
 	padding: 0;
+}
+
+.dropdown-menu open {
+	max-height: 300px !important;
 }

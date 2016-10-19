@@ -889,8 +889,10 @@ public class AccreditamentoController {
 				model.addAttribute("mappaCarica", mappaCarica);
 			}
 			if (currentUser.isReferee()) {
-				LocalDateTime scadenzaValutazione = valutazioneService.getScadenzaValutazioneByValutatoreId(currentUser.getAccount().getId());
-				model.addAttribute("scadenzaValutazione", scadenzaValutazione);
+				Map<Long,LocalDateTime> mappaScadenze = new HashMap<Long, LocalDateTime>();
+				mappaScadenze = valutazioneService.getScadenzaValutazioneByValutatoreId(currentUser.getAccount().getId());
+				model.addAttribute("mappaScadenze", mappaScadenze);
+				//scadenzaValutazione
 			}
 			model.addAttribute("label", label);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);

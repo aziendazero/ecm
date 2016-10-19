@@ -28,5 +28,6 @@ public interface ValutazioneService {
 	public Map<Long, Set<Account>> getValutatoriForAccreditamentiList(Set<Accreditamento> accreditamentoSet);
 	public void updateValutazioniNonDate(Long accreditamentoId) throws Exception;
 	public void dataOraScadenzaPossibilitaValutazioneCRECM(Long accreditamentoId, LocalDateTime date) throws Exception;
-	public LocalDateTime getScadenzaValutazioneByValutatoreId(Long id);
+	public Map<Long,LocalDateTime> getScadenzaValutazioneByValutatoreId(Long id);
+	public Set<Valutazione> getAllValutazioniForAccount(Long accountId);
 }
