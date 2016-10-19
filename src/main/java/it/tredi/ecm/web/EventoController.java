@@ -311,7 +311,7 @@ public class EventoController {
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
 				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				if(wrapper.getReportPartecipanti().getId() == null)
-					model.addAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
 				else {
 					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
 					File file = wrapper.getReportPartecipanti();
@@ -321,10 +321,10 @@ public class EventoController {
 							if (fileName.endsWith(".XML") || fileName.endsWith(".XML.P7M") || fileName.endsWith(".XML.ZIP.P7M") || fileName.endsWith(".CSV")) {
 								wrapper.setReportPartecipanti(fileService.getFile(file.getId()));
 								eventoService.validaRendiconto(eventoId, wrapper.getReportPartecipanti());
-							model.addAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
+								redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
 							}
 							else {
-								model.addAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+								redirectAttrs.addFlashAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
 							}
 						}
 					}
@@ -352,7 +352,7 @@ public class EventoController {
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
 				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				eventoService.inviaRendicontoACogeaps(eventoId);
-				model.addAttribute("message", new Message("message.completato", "message.invio_cogeaps_ok", "success"));
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.invio_cogeaps_ok", "success"));
 				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 			}
 			catch (Exception ex) {
