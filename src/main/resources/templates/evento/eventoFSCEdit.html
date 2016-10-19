@@ -1128,12 +1128,13 @@
 				
 				
 				$(document).ready(function() {
-					$('select').selectpicker({
+					//init selecpicker
+				    $('select').selectpicker({
 						selectAllText : 'Seleziona tutti',
 						deselectAllText : 'Deseleziona tutti',
 						countSelectedText : '{0} selezionate'
 					});
-					
+
 					//Aggancio eventi
 					$('#tipologiaEventoId').on('change', setEvResTipologiaGruppo);
 					$('#tipologiaEventoId').on('change', setEvResSperimentazioneClinica);
