@@ -428,7 +428,7 @@ public class EventoServiceImpl implements EventoService {
 		float durata = 0;
 		
 		if(eventoWrapper.getEvento() instanceof EventoRES){
-			durata = calcoloDurataEventoRES(((EventoRES)eventoWrapper.getEvento()).getProgramma());
+			durata = calcoloDurataEventoRES(eventoWrapper.getProgrammaEventoRES());
 			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			
@@ -468,15 +468,10 @@ public class EventoServiceImpl implements EventoService {
 		
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			EventoRES evento = ((EventoRES)eventoWrapper.getEvento());
-			if(evento.isConfermatiCrediti()){
-				crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getProgrammaEventoRES(), evento.getNumeroPartecipanti());				
-				evento.setCrediti(crediti);
-				LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
-				return crediti;
-			}else{
-				LOGGER.info(Utils.getLogMessage("Lettura crediti per evento RES"));
-				return evento.getCrediti();
-			}
+			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getProgrammaEventoRES(), evento.getNumeroPartecipanti());				
+			eventoWrapper.setCreditiProposti(crediti);
+			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
+			return crediti;
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
