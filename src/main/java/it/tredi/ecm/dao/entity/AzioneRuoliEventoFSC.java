@@ -39,10 +39,5 @@ public class AzioneRuoliEventoFSC extends BaseEntity {
 	@ElementCollection
 	private Set<RuoloFSCEnum> ruoli = new HashSet<RuoloFSCEnum>();
 
-	@JsonIgnore
-	@ManyToOne
-	@JoinColumn(name = "fase_id")
-	private FaseAzioniRuoliEventoFSCTypeA fase;
-	
 	private BigDecimal tempoDedicato;	
 }

@@ -24,6 +24,5 @@ public interface ValutazioneRepository extends CrudRepository<Valutazione, Long>
 	public Account getAccountSegreteriaValutatoreForAccreditamentoId(@Param("id") Long id, @Param("profileSegreteria") Profile profileSegreteria);
 	@Query("SELECT v.account FROM Valutazione v WHERE v.accreditamento.id = :id ORDER BY v.account.id")
 	public Set<Account> getAllAccountValutatoriForAccreditamentoIdOrderByAccount(@Param("id") Long id);
-	@Query("SELECT v.dataOraScadenzaPossibilitaValutazione FROM Valutazione v WHERE v.account.id = :id")
-	public LocalDateTime getScadenzaForValutatoreId(@Param("id") Long id);
+	public Set<Valutazione> findAllByAccountId(Long accountId);
 }
