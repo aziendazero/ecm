@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -184,7 +187,7 @@ public class EventoServiceImpl implements EventoService {
 			//date intermedie
 			Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			for (String s : eventoWrapper.getDateIntermedieTemp()) {
+			for (String s : eventoWrapper.getDateIntermedieMapTemp().values()) {
 				if(s != null && !s.isEmpty()) {
 					LocalDate data = LocalDate.parse(s, dtf);
 					dateIntermedie.add(data);
@@ -331,14 +334,17 @@ public class EventoServiceImpl implements EventoService {
 
 		if(evento instanceof EventoRES){
 			//date intermedie
-			List<String> dateIntermedieTemp = new ArrayList<String>();
+			Long key = 1L;
+			Map<Long, String> dateIntermedieTemp = new LinkedHashMap<Long, String>();
 			for (LocalDate d : ((EventoRES) evento).getDateIntermedie()) {
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 				String dataToString = d.format(dtf);
-				dateIntermedieTemp.add(dataToString);
+				dateIntermedieTemp.put(key++, dataToString);
 			}
-			eventoWrapper.setDateIntermedieTemp(dateIntermedieTemp);
-
+			if(dateIntermedieTemp.size() == 0)
+				dateIntermedieTemp.put(key, "");
+				
+			eventoWrapper.setDateIntermedieMapTemp(dateIntermedieTemp);
 			//risultati attesi
 			eventoWrapper.setRisultatiAttesiTemp(((EventoRES) evento).getRisultatiAttesi());
 

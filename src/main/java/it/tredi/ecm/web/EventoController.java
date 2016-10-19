@@ -3,7 +3,12 @@ package it.tredi.ecm.web;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -734,6 +739,62 @@ public class EventoController {
 			}else{
 				return EDITFAD + " :: " + "section-" + sectionIndex;
 			}
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
+		}
+	}
+
+	@RequestMapping(value = "/provider/{providerId}/evento/addDataIntermedia/{sectionToRefresh}", method=RequestMethod.POST)
+	public String addDataIntermedia(@PathVariable("sectionToRefresh") String sectionToRefresh,
+								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			if(eventoWrapper.getEvento() instanceof EventoRES){
+				if(eventoWrapper.getDateIntermedieMapTemp() == null) {
+					Map<Long, String> val = new LinkedHashMap<Long, String>();
+					val.put(1L, null);
+					eventoWrapper.setDateIntermedieMapTemp(val);
+				} else {
+					Long max = 1L;
+					if(eventoWrapper.getDateIntermedieMapTemp().size() != 0) 
+						max = Collections.max(eventoWrapper.getDateIntermedieMapTemp().keySet()) + 1;
+					eventoWrapper.getDateIntermedieMapTemp().put(max, null);
+				}
+				return EDITRES + " :: " + sectionToRefresh;
+			} else {
+				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
+			}
+			
+			/*else if(eventoWrapper.getEvento() instanceof EventoFSC){
+				return EDITFSC + " :: " + "section-" + sectionIndex;
+			}else{
+				return EDITFAD + " :: " + "section-" + sectionIndex;
+			}*/
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/removeDataIntermedia/{key}/{sectionToRefresh}", method=RequestMethod.POST)
+	public String removeDataIntermedia(@PathVariable("key") String key, @PathVariable("sectionToRefresh") String sectionToRefresh,
+								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			Long k = Long.valueOf(key);
+			if(eventoWrapper.getEvento() instanceof EventoRES){
+				eventoWrapper.getDateIntermedieMapTemp().remove(k);
+				return EDITRES + " :: " + sectionToRefresh;
+			} else {
+				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
+			}
+			
+			/*else if(eventoWrapper.getEvento() instanceof EventoFSC){
+				return EDITFSC + " :: " + "section-" + sectionIndex;
+			}else{
+				return EDITFAD + " :: " + "section-" + sectionIndex;
+			}*/
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);

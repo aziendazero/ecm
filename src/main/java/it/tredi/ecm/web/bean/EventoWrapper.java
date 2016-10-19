@@ -1,7 +1,10 @@
 package it.tredi.ecm.web.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
@@ -34,8 +37,11 @@ public class EventoWrapper {
 	//parte rendicontazione
 	private File reportPartecipanti;
 
+	//parte ripetibili modificata ab
+	private Map<Long, String> dateIntermedieMapTemp = new LinkedHashMap<Long, String>();
+
 	//parte ripetibili
-	private List<String> dateIntermedieTemp = new ArrayList<String>();
+	//private List<String> dateIntermedieTemp = new ArrayList<String>();
 	private List<String> risultatiAttesiTemp = new ArrayList<String>();
 
 	private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
@@ -127,6 +133,7 @@ public class EventoWrapper {
 		List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
 		programmaEvento.add(new ProgrammaGiornalieroRES());
 		this.setProgrammaEventoRES(programmaEvento);
+		this.getDateIntermedieMapTemp().put(1L, null);
 	}
 
 	/*

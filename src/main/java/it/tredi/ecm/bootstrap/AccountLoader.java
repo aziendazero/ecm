@@ -20,7 +20,7 @@ import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.RoleRepository;
 
 @Component
-@org.springframework.context.annotation.Profile({"dev","demo","simone"})
+@org.springframework.context.annotation.Profile({"dev","demo","simone","abarducci"})
 public class AccountLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AccountLoader.class);

@@ -451,34 +451,22 @@
 										<span class="required">*</span>
 									</label>
 								</div>
-								<div class='prevDataIntermedia item form-group' th:each="data, row : ${eventoWrapper.dateIntermedieTemp}">
-									<div class='col-md-4 col-sm-4 col-xs-12'></div>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
-										<input type="text" class="form-control datapicker-intermedia"
-											th:field="${eventoWrapper.dateIntermedieTemp[__${row.index}__]}" />
-										<span class="input-group-addon not-last" onclick="$(this).prev().click()">
-				 							<i class="glyphicon glyphicon-calendar"></i>
-										</span>
-										<span class="input-group-addon" onclick="rimuoviDataIntermedia(this)">
-											<i class="fa fa-minus"></i>
-										</span>
+								<div class="date-intermedie-container" id="dateIntermedieId">
+									<div th:fragment="dateIntermedieId" th:class="${row.last ? 'nextDataIntermedia item form-group' : 'prevDataIntermedia item form-group'}" th:each="data, row : ${eventoWrapper.dateIntermedieMapTemp}">
+										<div class='col-md-4 col-sm-4 col-xs-12'></div>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+											<input type="hidden" th:value="${data.key}" />
+											<input id="dataIntermedia" type="text" class="form-control datapicker-intermedia"
+												th:field="${eventoWrapper.dateIntermedieMapTemp[__${data.key}__]}" />
+											<span class="input-group-addon not-last" onclick="$(this).prev().click()">
+					 							<i class="glyphicon glyphicon-calendar"></i>
+											</span>
+											<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}">
+												<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
+											</span>
+										</div>
 									</div>
 								</div>
-
-								<div class='nextDataIntermedia item form-group'>
-									<div class='col-md-4 col-sm-4 col-xs-12'></div>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
-										<input type="text" class="form-control datapicker-intermedia"
-											th:field="${eventoWrapper.dateIntermedieTemp[__${#lists.size(eventoWrapper.dateIntermedieTemp)}__]}" />
-										<span class="input-group-addon not-last" onclick="$(this).prev().click()">
-				 							<i class="glyphicon glyphicon-calendar"></i>
-										</span>
-										<span class="input-group-addon" onclick="aggiungiDataIntermedia(this)">
-											<i class="fa fa-plus"></i>
-										</span>
-									</div>
-								</div>
-								<div class="date-intermedie-container"></div>
 
 								<!-- OBIETTIVO NAZIONALE -->
 								<div class="item form-group">
@@ -1250,6 +1238,7 @@
 					months = getMonthNames();
 
 					//init daterangepicker al document ready per tutte le date intermedie
+					//alert('' + $('.datapicker-intermedia').size());
 					$('.datapicker-intermedia').daterangepicker({
 				        singleDatePicker: true,
 				        autoApply: true,
@@ -1263,12 +1252,22 @@
 
 				    //medoto per rimozione classe errore
 				    $('.datapicker-intermedia').on("hide.daterangepicker", function() {
+				    	console.log('hide');
 						$(this).closest('.bad').removeClass('bad').find('div.alert').fadeOut(150, function() {
 							$(this).remove();
 						});
 					});
 
-					//controlla al document ready se mostrare i campi particolari relativi alla tipologia dell'evento
+					//da approfondire
+				    /*
+					$('#dataIntermedia').on('apply.daterangepicker', function(ev, picker) {
+				        console.log('apply' + picker.startDate);
+				        console.log('apply' + picker.endDate);
+				    	//$(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+				    });
+					*/
+
+				    //controlla al document ready se mostrare i campi particolari relativi alla tipologia dell'evento
 					mostraNascondiCampiTipologiaEvento($('.tipologia_evento_2').val());
 
 					//controlla al document ready quali valori mostrare nella select di verifica dell'apprendimento
@@ -1320,26 +1319,62 @@
 				});
 
 				//indice per calcolare i nuovi name delle date intermedie
-				var indexDateIntermedie = [[${#lists.size(eventoWrapper.dateIntermedieTemp)}]] - 1;
 				var indexRisutato = [[${#lists.size(eventoWrapper.risultatiAttesiTemp)}]] - 1;
 
 				//funzione che aggiunge una data intermedia, aumenta il name in base alle date già presenti
-				function aggiungiDataIntermedia(caller) {
+				function aggiungiDataIntermedia(caller, target) {
+					//alert('aggiungiDataIntermedia');
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addDataIntermedia/|}]] + target, $('#formEventoRES').serialize())
+					.done(function(data) {
+						//alert(data);
+					  	$('#' + target).html(data);
+					  	reInitComponents();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
+					
+					/*
 					var cloned = $("<div class='nextDataIntermedia item form-group'></div>")
 						.append($("<div class='col-md-4 col-sm-4 col-xs-12'></div>"))
 						.append($(caller).parent().clone())
 						.appendTo(".date-intermedie-container");
+					console.log(cloned.html());
 					cloned.children(".datapicker-intermedia").val("");
 					$(caller).children().toggleClass('fa-plus fa-minus');
 					$(caller).attr("onclick", "rimuoviDataIntermedia(this)");
 					$(caller).siblings(".datapicker-intermedia").attr("name", "dateIntermedieTemp["+ ++indexDateIntermedie +"]");
 					$(caller).siblings(".datapicker-intermedia").attr("id", "dateIntermedieId"+ indexDateIntermedie);
 					reinitDaterangepicker();
+					*/
 				}
 
 				//rimuove una data intermedia
-				function rimuoviDataIntermedia(caller) {
+				function rimuoviDataIntermedia(caller, target, key) {
+					//alert('rimuoviDataIntermedia');
+					//alert('url: ' + [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeDataIntermedia/|}]] + key + '/' + target);
+					//alert('target: ' + target);
+					//alert($('#' + target).size());
+					//alert('key: ' + key);
+					//$("#" + target).load(url);
+					
+					///provider/{providerId}/evento/removeDataIntermedia/{key}/{sectionToRefresh}
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeDataIntermedia/|}]] + key + '/' + target, $('#formEventoRES').serialize())
+					.done(function(data) {
+						//alert(data);
+					  	$('#' + target).html(data);
+					  	reInitComponents();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
+					
+					/*
+					console.log($(caller).closest(".item").html());
 					$(caller).closest(".item").remove();
+					*/
 				}
 
 				//reinizializza tutte le daterangepicker delle date intermedie
@@ -1573,6 +1608,7 @@
 				}
 
 				function reloadSection(selectedTab){
+					//alert('reloadSection: ' + selectedTab);
 					if(selectedTab == 'tab1'){
 						sendAjaxReloadSection('1');
 					}else if(selectedTab == 'tab2'){
