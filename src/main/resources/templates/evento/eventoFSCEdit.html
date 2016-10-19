@@ -8,7 +8,7 @@
 	<th:block th:fragment="eventoFSCEdit">
 
 		<div class="x_content">
-		
+
 		<!-- finestra modale di aggiunta attivitaRES a programma del Giorno -->
 			<div id="add-attivitaFSC-modal" class="modal fade modal-add-attivitaFSC" data-model-index="4" role="dialog">
 				<div class="modal-dialog modal-lg">
@@ -73,7 +73,7 @@
 										</div>
 									</div>
 
-									
+
 									<!-- METODO DI LAVORO -->
 									<div id="container-metodiDiLavoro" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -89,9 +89,9 @@
 											</div>
 										</div>
 									</div>
-									
+
 									<div class="divider-dashed"></div>
-									
+
 									<!-- RUOLI COINVOLTI -->
 									<div id="container-ruoliCoinvolti" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
@@ -118,7 +118,7 @@
 											<input class="form-control" type="number" th:field="*{tempoDedicato}" />
 										</div>
 									</div>
-<!-- 
+<!--
 									TEMPO DEDICATO NON FRAZIONABILE
 									<div id="container-tempoDedicato-UNO" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -129,7 +129,7 @@
 											<input class="form-control" type="number" step="1" th:field="*{tempoDedicato}" />
 										</div>
 									</div>
-									
+
 									TEMPO DEDICATO MULTIPLO DI DUE
 									<div id="container-tempoDedicato-UNO" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -140,7 +140,7 @@
 											<input class="form-control" type="number" step="2" th:field="*{tempoDedicato}" />
 										</div>
 									</div>
-									
+
 									<div id="container-ruoloOre" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
 											<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
@@ -157,7 +157,7 @@
 										</div>
 									</div>  -->
 
-									<!-- fragment da aggiornare -->	
+									<!-- fragment da aggiornare -->
 									<input id="targetTableAttivitaFSC" type="text" name="target" style="display: none;" />
 									<!-- fase a cui agganciare l'attività -->
 									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
@@ -1116,28 +1116,35 @@
 
 				<input id="submitButton" type="submit" style="display: none;" />
 			</form>
-			
+
 			<script th:inline="javascript">
 			/*<![CDATA[*/
-			           
+
 	           $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 			    	tabSelected = e.target.id;
 					reloadSection(tabSelected);
 				});
-	           
+
 				var selectRuoliCoinvolti = new Array();
 				selectRuoliCoinvolti['TRAINING_INDIVIDUALIZZATO'] = new Array(['PARTECIPANTE','TUTOR','ESPERTO','COORDINATORE']);
 				selectRuoliCoinvolti['GRUPPI_DI_MIGLIORAMENTO'] = new Array(['PARTECIPANTE','COORDINATORE_GRUPPI']);
 				selectRuoliCoinvolti['ATTIVITA_DI_RICERCA'] = new Array(['PARTECIPANTE','COORDINATORE_ATTIVITA_RICERCA']);
 				selectRuoliCoinvolti['AUDIT_CLINICO_ASSISTENZIALE'] = new Array(['PARTECIPANTE','COORDINATORE_ATTIVITA_AUDIT']);
-				
-				
+
+
 				$(document).ready(function() {
+					//init selecpicker
+				    $('select').selectpicker({
+						selectAllText : 'Seleziona tutti',
+						deselectAllText : 'Deseleziona tutti',
+						countSelectedText : '{0} selezionate'
+					});
+
 					//Aggancio eventi
 					$('#tipologiaEventoId').on('change', setEvResTipologiaGruppo);
 					$('#tipologiaEventoId').on('change', setEvResSperimentazioneClinica);
 					$('#tipologiaEventoId').on('change', setEvResOttenutoComitatoEtico);
-					
+
 					//non funziona
 					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
 					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
@@ -1163,7 +1170,7 @@
 						$("#tipologiaGruppo").selectpicker('refresh');
 					}
 				}
-				
+
 				function setEvResSperimentazioneClinica() {
 					//console.log($('#tipologiaEventoId').val());
 					var val = $('#tipologiaEventoId').selectpicker('val');
@@ -1179,7 +1186,7 @@
 						//$("#sperimentazioneClinica").selectpicker('refresh');
 					}
 				}
-				
+
 				function setEvResOttenutoComitatoEtico() {
 					//console.log($('#tipologiaEventoId').val());
 					var val = $('#tipologiaEventoId').selectpicker('val');
@@ -1194,7 +1201,7 @@
 						//$("#sperimentazioneClinica").selectpicker('deselectAll');
 					}
 				}
-				
+
 				function setEvFSCRuoliCoinvolti() {
 					var val = $('#tipologiaEventoId').selectpicker('val');
 					$.each($('#container-ruoliCoinvolti' + " .checkbox"), function() {
@@ -1203,17 +1210,17 @@
 
 					if(val != null && val != undefined){
 						var data = selectRuoliCoinvolti[val][0];
-						
+
 						for(var item = 0; item < data.length; item++){
 							$.each($('#container-ruoliCoinvolti' + " .checkbox"), function() {
 								if($(this).find("input[type='checkbox']").val() == data[item])
 									$(this).show();
 							});
-						}						
+						}
 					}
 				}
-				
-				
+
+
 				/* function updateRuoliCoinvolti(caller){
 					var tipologiaEvento = $(caller).val();
 					var selectId = '#container-ruoliCoinvolti';
@@ -1237,19 +1244,19 @@
 						}
 					});
 				}; */
-				
-			 
-			 /********************* PROGRAMMA GIORNALIERO ****************************/          
+
+
+			 /********************* PROGRAMMA GIORNALIERO ****************************/
 			  function openAddAttivitaTo(target,programmaIndex){
 					$('#targetTableAttivitaFSC').val(target);
 					$('#addAttivitaTo').val(programmaIndex);
 
 					var tipologiaEvento = $('#tipologiaEventoId').val();
-					
+
 					switch(tipologiaEvento){
-					case 'TRAINING_INDIVIDUALIZZATO': showAzioneLabel();						
+					case 'TRAINING_INDIVIDUALIZZATO': showAzioneLabel();
 						break;
-					case 'GRUPPI_DI_MIGLIORAMENTO':	showFaseLabel();					
+					case 'GRUPPI_DI_MIGLIORAMENTO':	showFaseLabel();
 						break;
 					case 'PROGETTI_DI_MIGLIORAMENTO':showAzioneLabel();
 						break;
@@ -1259,25 +1266,24 @@
 						break;
 					default: break;
 					}
-				}     
-				
+				}
+
 				function showFaseLabel(){
 					$('#azioneLabel').hide();
 					$('#faseLabel').show();
 				}
-				
+
 				function showAzioneLabel(){
 					$('#faseLabel').hide();
 					$('#azioneLabel').show();
 				}
-			
+
 				/*parametrizzabile passando solo FSC*/
 			 	function closeModaleAddAttivitaTo(){
 					$("#add-attivitaFSC-modal .close").click();
 				}
 
 				function reInitModaleAddAttivitaTo(){
-					$('select').selectpicker();
 					$('input.flat').iCheck({
 			            checkboxClass: 'icheckbox_flat-green',
 			            radioClass: 'iradio_flat-green'
@@ -1298,7 +1304,7 @@
 					    	alert( "error" );
 					 	 })
 				}
-				
+
 				/*parametrizzabile - è identica a RES*/
 				function removeAttivitaFrom(target,caller){
 					var rowIndex = $(caller).parent().parent().data('row-id');
@@ -1309,7 +1315,7 @@
 
 					$("#" + target).load(url);
 				}
-			           
+
 				/*parametrizzabile - è  identica a RES*/
 				function reloadSection(selectedTab){
 					if(selectedTab == 'tab1'){
@@ -1320,7 +1326,7 @@
 						sendAjaxReloadSection('3');
 					}
 				}
-				
+
 				/*parametrizzabile passando solo FSC*/
 				function sendAjaxReloadSection(sectionIndex){
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoFSC').serialize())
@@ -1335,13 +1341,18 @@
 				}
 
 				function reInitComponents(){
-					$('select').selectpicker();
-					globalInitThomCommon();
+					//init selecpicker
+				    $('select').selectpicker({
+						selectAllText : 'Seleziona tutti',
+						deselectAllText : 'Deseleziona tutti',
+						countSelectedText : '{0} selezionate'
+					});
+					initAllCommon();
 				}
-			           
+
 			/*]]>*/
 			</script>
-			
+
 		</div>
 
 	</th:block>
