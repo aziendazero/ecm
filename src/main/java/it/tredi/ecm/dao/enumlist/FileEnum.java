@@ -46,6 +46,11 @@ public enum FileEnum {
 	FILE_CONTRATTI_ACCORDI_CONVENZIONI(36, "Allegato contratti/accordi/convenzioni"),
 	FILE_AUTOCERTIFICAZIONE_ASSENZA_FINANZIAMENTI(37, "Autocertificazione assenza finanziamenti"),
 	FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE(38, "Dichiarazione di assenza del conflitto di interesse"),
+	FILE_CONTRATTO_SPONSOR(39, "Contratto dello sponsor"),
+	FILE_CONTRATTO_PARTNER(40, "Contratto del partner"),
+	FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE(41, "Autocertificazione di autorizzazione del Ministero della Salute"),
+	FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA(42, "Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia"),
+
 
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");

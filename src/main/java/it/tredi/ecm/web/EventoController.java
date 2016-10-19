@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
@@ -36,11 +35,12 @@ import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.entity.RendicontazioneInviata;
+import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
@@ -56,12 +56,10 @@ import it.tredi.ecm.service.AnagraficaFullEventoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ObiettivoService;
-
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
-import javassist.bytecode.analysis.Util;
 
 @Controller
 @SessionAttributes("eventoWrapper")
@@ -76,7 +74,6 @@ public class EventoController {
 
 	@Autowired private AnagraficaEventoService anagraficaEventoService;
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
-	@Autowired private PersonaEventoRepository personaEventoRepo;
 
 	@Autowired private PersonaEventoRepository personaEventoRepository;
 	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
@@ -552,11 +549,11 @@ public class EventoController {
 			//PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
 			PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				personaEventoRepo.save(p);//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il bindibg in in AddAttivitaRES (select si basa su id della entity)
+				personaEventoRepository.save(p);//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il bindibg in in AddAttivitaRES (select si basa su id della entity)
 				//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
 				eventoWrapper.getResponsabiliScientifici().add(p);
 			}else if(target.equalsIgnoreCase("docenti")){
-				personaEventoRepo.save(p);
+				personaEventoRepository.save(p);
 				eventoWrapper.getDocenti().add(p);
 			}
 			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
@@ -598,6 +595,38 @@ public class EventoController {
 		}
 	}
 
+	@RequestMapping(value = "/provider/{providerId}/evento/addSponsorTo", method=RequestMethod.POST)
+	public String addSponsorTo(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			Sponsor s = SerializationUtils.clone(eventoWrapper.getTempSponsorEvento());
+			eventoWrapper.getSponsors().add(s);
+			eventoWrapper.setTempSponsorEvento(new Sponsor());
+			if(eventoWrapper.getSponsorFile() != null && !eventoWrapper.getSponsorFile().isNew())
+				s.setSponsorFile(fileService.getFile(eventoWrapper.getSponsorFile().getId()));
+			return EDIT + " :: sponsors";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: sponsors";
+		}
+	}
+
+	@RequestMapping(value = "/provider/{providerId}/evento/addPartnerTo", method=RequestMethod.POST)
+	public String addPartnerTo(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			Partner p = SerializationUtils.clone(eventoWrapper.getTempPartnerEvento());
+			eventoWrapper.getPartners().add(p);
+			eventoWrapper.setTempPartnerEvento(new Partner());
+			if(eventoWrapper.getPartnerFile() != null && !eventoWrapper.getPartnerFile().isNew())
+				p.setPartnerFile(fileService.getFile(eventoWrapper.getPartnerFile().getId()));
+			return EDIT + " :: partners";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: partners";
+		}
+	}
+
 	@RequestMapping(value = "/provider/{providerId}/evento/removePersonaFrom/{removePersonaFrom}/{rowIndex}", method=RequestMethod.GET)
 	public String removePersonaFrom(@PathVariable("removePersonaFrom") String target, @PathVariable("rowIndex") String rowIndex,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
@@ -617,6 +646,34 @@ public class EventoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
 			return EDIT + " :: " + target;
+		}
+	}
+
+	@RequestMapping(value = "/provider/{providerId}/evento/removeSponsor/{rowIndex}", method=RequestMethod.GET)
+	public String removeSponsorFrom(@PathVariable("rowIndex") String rowIndex,
+			@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int sponsorIndex = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getSponsors().remove(sponsorIndex);
+			return EDIT + " :: sponsors";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: sponsors";
+		}
+	}
+
+	@RequestMapping(value = "/provider/{providerId}/evento/removePartner/{rowIndex}", method=RequestMethod.GET)
+	public String removePartnerFrom(@PathVariable("rowIndex") String rowIndex,
+			@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int partnerIndex = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getPartners().remove(partnerIndex);
+			return EDIT + " :: partners";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: partners";
 		}
 	}
 

@@ -119,7 +119,7 @@
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
 										<div class="radio" th:each="contenuto, row : ${T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).values()}">
 											<label>
-												<input type="radio" class="flat" th:field="${eventoWrapper.evento.contenutiEvento}" th:value="${contenuto}" />
+												<input type="radio" class="flat contenuto" th:field="${eventoWrapper.evento.contenutiEvento}" th:value="${contenuto}" />
 												<span th:text="${contenuto.nome}"></span>
 											</label>
 										</div>
@@ -658,9 +658,59 @@
 										</div>
 									</div>
 								</div>
-								<div class="no-padding sponsor-si" style="display: none;">
-									<!-- SPONSOR INSERIMENTO -->
-									<div>**TODO RIPETIBILE SPONSOR**</div>
+								<div class="sponsor-si" style="display: none;">
+									<div class="no-padding item form-group">
+										<div class="col-xs-offset-1 col-xs-10">
+											<th:block th:include="evento/eventoEdit :: sponsors" />
+										</div>
+									</div>
+									<div class="no-padding infanzia-sponsor-radio item form-group" style="display: none;">
+										<div class="control-label col-xs-1"></div>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11">
+											<span th:text="#{label.evento_sponsorizzato_infanzia_radio}">L’evento è sponsorizzato da aziende che trattano alimenti per la prima infanzia?</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+											<div class="radio">
+												<label>
+													<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${true}" />
+													<span th:text="#{label.sì}">Sì</span>
+												</label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${false}" />
+													<span th:text="#{label.no}">No</span>
+												</label>
+											</div>
+										</div>
+									</div>
+									<div class="no-padding infanzia-sponsor-si" style="display: none;">
+										<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->
+										<div class="item form-group">
+											<div class="col-xs-1"></div>
+											<label class="control-label col-md-3 col-sm-3 col-xs-11">
+												<span th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block>
+											</div>
+										</div>
+									</div>
+									<div class="no-padding infanzia-sponsor-no" style="display: none;">
+										<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
+										<div class="item form-group">
+											<div class="col-xs-1"></div>
+											<label class="control-label col-md-3 col-sm-3 col-xs-11">
+												<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block>
+											</div>
+										</div>
+									</div>
 								</div>
 
 								<div class="divider-dashed"></div>
@@ -744,8 +794,10 @@
 										</div>
 									</div>
 								</div>
-								<div class="no-padding partner-si" style="display: none;">
-									<div>**TODO PARTNER RIPETIBILE</div>
+								<div class="no-padding partner-si item form-group" style="display: none;">
+									<div class="col-xs-offset-1 col-xs-10">
+										<th:block th:include="evento/eventoEdit :: partners" />
+									</div>
 								</div>
 
 								<div class="divider-dashed"></div>

@@ -14,7 +14,7 @@ public class Sponsor extends BaseEntity{
 	private String name;
 	@OneToOne
 	private File sponsorFile;
-	
-	@ManyToOne
-	private Evento evento;
+
+	//@ManyToOne
+	//private Evento evento;
 }

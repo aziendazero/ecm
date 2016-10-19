@@ -7,7 +7,6 @@
 <body>
 	<div layout:fragment="content">
 
-
 		<!-- finestra modale di lookup delle anagrafiche -->
 		<div id="lookup-persona-modal" class="modal fade modal-lookup-persona" data-model-index="1" role="dialog">
 			<div class="modal-dialog modal-lg">
@@ -40,7 +39,7 @@
 		</div>
 
 		<!-- finestra modale di aggiunta delle persone -->
-		<div id="add-persona-modal" class="modal fade modal-add-persona" data-model-index="3" role="dialog">
+		<div id="add-persona-modal" class="modal fade modal-add-persona" data-model-index="2" role="dialog">
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -290,7 +289,109 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
-						<label for="targetTable" class="btn btn-success pull-right" onclick="sendAjaxAddPersonaFullTo()" th:text="#{label.invia}">Invia</label>
+						<label for="targetTableFull" class="btn btn-success pull-right" onclick="sendAjaxAddPersonaFullTo()" th:text="#{label.invia}">Invia</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- finestra modale di aggiunta degli sponsor-->
+		<div id="add-sponsor-modal" class="modal fade modal-add-sponsor" data-model-index="4" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel3" th:text="#{label.inserisci_sponsor}">Inserisci sponsor</h4>
+					</div>
+					<div class="modal-body" id="container-addSponsorTo">
+						<form id="addSponsorTo" name="addSponsorEvento" class="form-horizontal form-label-left"
+								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addSponsorTo|}"
+								method="post" enctype="multipart/form-data"
+								novalidate="novalidate">
+
+							<!-- NOME SPONSOR -->
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="nome_sponsor">
+									<span th:text="#{label.nome_sponsor}">Nome dello Sponsor</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="nome_sponsor"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${eventoWrapper.tempSponsorEvento.name}" />
+								</div>
+							</div>
+
+							<!-- FILE SPONSOR -->
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cv">
+									<span th:text="#{label.contratto}">Contratto</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTO_SPONSOR}', sponsorFile, null, null, null, true, null, false)" ></th:block>
+								</div>
+							</div>
+
+<!-- 							<input id="targetTableSponsor" type="text" name="addSponsorTo" style="display: none;" /> -->
+<!-- 							<input id="typeSponsor" type="text" name="typeSponsor" style="display: none;" /> -->
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+						<label for="targetTableSponsor" class="btn btn-success pull-right" onclick="sendAjaxAddSponsorTo()" th:text="#{label.invia}">Invia</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- finestra modale di aggiunta degli partner-->
+		<div id="add-partner-modal" class="modal fade modal-add-partner" data-model-index="4" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel3" th:text="#{label.inserisci_partner}">Inserisci partner</h4>
+					</div>
+					<div class="modal-body" id="container-addPartnerTo">
+						<form id="addPartnerTo" name="addPartnerEvento" class="form-horizontal form-label-left"
+								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPartnerTo|}"
+								method="post" enctype="multipart/form-data"
+								novalidate="novalidate">
+
+							<!-- NOME PARTNER -->
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="nome_partner">
+									<span th:text="#{label.nome_partner}">Nome dello Partner</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="nome_partner"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${eventoWrapper.tempPartnerEvento.name}" />
+								</div>
+							</div>
+
+							<!-- FILE PARTNER -->
+							<div class="item form-group">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cv">
+									<span th:text="#{label.contratto}">Contratto</span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTO_PARTNER}', partnerFile, null, null, null, true, null, false)" ></th:block>
+								</div>
+							</div>
+
+<!-- 							<input id="targetTablePartner" type="text" name="addPartnerTo" style="display: none;" /> -->
+<!-- 							<input id="typePartner" type="text" name="typePartner" style="display: none;" /> -->
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+						<label for="targetTablePartner" class="btn btn-success pull-right" onclick="sendAjaxAddPartnerTo()" th:text="#{label.invia}">Invia</label>
 					</div>
 				</div>
 			</div>
@@ -341,8 +442,10 @@
 		<script th:inline="javascript">
 		/*<![CDATA[*/
 
+		    //DataTables
 		    var tables = new Array();
 
+			//Contatore caratteri titolo evento
 			var text_max = 3000;
 			$('#counter').html(text_max + ' '+[[#{label.caratteri_rimanenti}]]);
 
@@ -353,6 +456,7 @@
 			  $('#counter').html(text_remaining + ' '+[[#{label.caratteri_rimanenti}]]);
 			});
 
+			//Funzione che popola la lista dei comuni
 			function sendAjaxRequestProvincia(){
 				var provincia = $('#provincia option:selected').val();
 				var start = [[@{/comuni?provincia=}]];
@@ -371,7 +475,8 @@
 			};
 
 			$(document).ready(function() {
-				//tabella responsabili scientifici
+
+				//init datatable responsabili scientifici
 			    tables['responsabiliScientifici'] =  $('#responsabiliScientifici').DataTable({
 			    	"bFilter" : false,
 					"bInfo" : false,
@@ -384,7 +489,7 @@
 					}]
 			    });
 
-			  	//tabella docenti
+			  	//init datatable docenti
 			    tables['docenti'] = $('#docenti').DataTable({
 			    	"bFilter" : false,
 					"bInfo" : false,
@@ -397,7 +502,7 @@
 					}]
 			    });
 
-			  	//tabella responsabile segreteria
+			  	//init datatable responsabile segreteria
 			  	tables['responsabileSegreteria'] = $('#responsabileSegreteria').DataTable({
 			    	"bFilter" : false,
 					"bInfo" : false,
@@ -410,10 +515,36 @@
 					}]
 			    });
 
-			    globalInitThomCommon();
+			  	//init datatable sponsor
+			  	tables['sponsors'] = $('#sponsors').DataTable({
+			  		"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+					"ordering" : false,
+					"columnDefs": [{
+						"targets": 2,
+						"width": "1px",
+						"sClass": "center"
+					}]
+			    });
+
+			  	//init datatable partner
+			  	tables['partners'] = $('#partners').DataTable({
+			  		"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+					"ordering" : false,
+					"columnDefs": [{
+						"targets": 2,
+						"width": "1px",
+						"sClass": "center"
+					}]
+			    });
+
+			    initAllCommon();
 			});
 
-			function globalInitThomCommon(){
+			function initAllCommon(){
 				var days = getDayNamesShort();
 				var months = getMonthNames();
 
@@ -449,6 +580,7 @@
 				//setta minDate alla data di inizio evento
 				$('#dataInizio').on("apply.daterangepicker change", function() {
 					updateDataFine();
+					alert("done")
 				});
 
 			    $('#dataFine').on("hide.daterangepicker", function() {
@@ -457,58 +589,19 @@
 					});
 				});
 
-			    //professioni/discipline
-			    $('select').selectpicker({
-					selectAllText : 'Seleziona tutti',
-					deselectAllText : 'Deseleziona tutti',
-					countSelectedText : '{0} selezionate'
-				});
-
 				if($("#professioni")[0]) {
 					abilitaDiscipline($("#professioni")[0]);
 				}
 
+				//decide cosa mostrare a seconda dei campi già settati dal client
+				showHideCampsCommon();
 
-				//gestione evento iCheck su radio riguardante gli sponsor
-				$(".sponsor").on("ifChecked", function() {
-					if($(this).val() == 'true')
-						mostraNascondiCampiSponsor(true);
-					else
-						mostraNascondiCampiSponsor(false);
-				});
+				//appende ai widget tutti i vari eventListener
+				handleListenerEventsCampsCommon();
 
-			  	//controllo su radio riguardante gli sponsor al document ready
-			    if([[${eventoWrapper.evento.eventoSponsorizzato}]]) {
-			    	mostraNascondiCampiSponsor(true);
-				}
-
-			  	//gestione evento iCheck su radio riguardante i finanziamenti
-				$(".finanziamento").on("ifChecked", function() {
-					if($(this).val() == 'true')
-						mostraNascondiCampiFinanziamento(true);
-					else
-						mostraNascondiCampiFinanziamento(false);
-				});
-
-			  	//controllo su radio riguardante i finanziamenti al document ready
-			    if([[${eventoWrapper.evento.altreFormeFinanziamento}]] != null) {
-			    	mostraNascondiCampiFinanziamento([[${eventoWrapper.evento.altreFormeFinanziamento}]]);
-				}
-
-			  	//gestione evento iCheck su radio riguardante i partner
-				$(".partner").on("ifChecked", function() {
-					if($(this).val() == 'true')
-						mostraNascondiCampiPartner(true);
-					else
-						mostraNascondiCampiPartner(false);
-				});
-
-			  	//controllo su radio riguardante i partner al document ready
-			    if([[${eventoWrapper.evento.eventoAvvalePartner}]]) {
-			    	mostraNascondiCampiPartner(true);
-				}
 			}
 
+			//funzione che imposta (lato client) una data fine >= alla data di inzio
 			function updateDataFine() {
 				$('#dataFine').daterangepicker({
 			        singleDatePicker: true,
@@ -523,6 +616,7 @@
 			    })
 			}
 
+			//funzione per l'abilita / disabilita le discipline selezionabili in base alle professioni
 			function abilitaDiscipline(professioni) {
 				//flag per capire se c'è almeno una professione
 				var almenoUna = false;
@@ -549,40 +643,101 @@
 				$('#discipline').selectpicker('refresh');
 			}
 
-			function submitCreateAngraficaEvento(){
-				var fd = new FormData(document.querySelector("#createAnagraficaEventForm"));
-				fd.append([[${_csrf.parameterName}]],[[${_csrf.token}]]);
-				$.ajax({
-				  url: [[@{|/provider/${eventoWrapper.evento.provider.id}/createAnagraficaEvento|}]],
-				  type: "POST",
-				  contentType: "application/json",
-				  data: fd,
-				  processData: false,  // tell jQuery not to process the data
-				  contentType: false,   // tell jQuery not to set contentType
+			//implementazione della funzione che decide cosa mostrare a seconda dei campi già settati dal client per i campi in comune tra gli eventi
+			function showHideCampsCommon() {
 
-				  success : function(result) {
-                		//TODO prendere i dati dell'anagrafica salvata e metterli nella popup AddPersona
-					 	 setAnagraficaEventoOnModale()
-                	},
-                	error : function(result){
-                		sendNotifyStatic([[#{message.errore}]], [[#{message.errore_fileupload}]], "error");
-                	}
-				});
+				//sponsor
+				mostraNascondiCampiSponsor($(".sponsor:checked").val());
+
+				//finanziamenti
+			    mostraNascondiCampiFinanziamento($(".finanziamento:checked").val());
+
+				//partner
+			    mostraNascondiCampiPartner($(".partner:checked").val());
+
+				//radio alimenti prima infanzia
+				mostraNascondiRadioPrimaInfanzia($(".contenuto:checked").val());
+
+				//allegati alimenti prima infanzia
+				if($(".contenuto:checked").val() == "ALIMENTAZIONE_PRIMA_INFANZIA") {
+					 mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia:checked").val())
+				}
+
 			}
 
-			function mostraNascondiCampiSponsor(show) {
-				if(show) {
+			function handleListenerEventsCampsCommon(){
+
+				//gestione evento iCheck su radio riguardante gli sponsor
+				$(".sponsor").on("ifChecked", function() {
+					mostraNascondiCampiSponsor($(this).val());
+				});
+
+				//gestione evento iCheck su radio riguardante i finanziamenti
+				$(".finanziamento").on("ifChecked", function() {
+					mostraNascondiCampiFinanziamento($(this).val());
+				});
+
+				//gestione evento iCheck su radio riguardante i partner
+				$(".partner").on("ifChecked", function() {
+					mostraNascondiCampiPartner($(this).val());
+				});
+
+				$(".contenuto").on("ifChecked", function() {
+					mostraNascondiRadioPrimaInfanzia($(this).val());
+				})
+
+				//gestione evento iCheck su radio riguardante le autocertificazioni alimenti prima infanzia
+				$(".sponsor-infanzia").on("ifChecked", function() {
+					mostraNascondiAllegatiAutocertificazioniSponsor($(this).val());
+				})
+
+			}
+
+			//funzioni show/hide in base alle scelte effettuate (lato client)
+			//sponsor show/hide
+			function mostraNascondiCampiSponsor(value) {
+				if(value == "true") {
 					$(".sponsor-si").slideDown("slow");
-					//TODO
+					//TODO logica enable?
 				}
 				else {
 					$(".sponsor-si").slideUp("slow");
-					//TODO
+					//TODO logica disable?
 				}
 			}
 
-			function mostraNascondiCampiFinanziamento(show) {
-				if(show) {
+			//funzioni show/hide in base alle scelte effettuate (lato client)
+			//radio alimenti infanzia show/hide
+			function mostraNascondiRadioPrimaInfanzia(value) {
+				if(value == "ALIMENTAZIONE_PRIMA_INFANZIA") {
+					$(".infanzia-sponsor-radio").slideDown("slow");
+					mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia").val());
+					//TODO logica enable?
+				}
+				else {
+					$(".infanzia-sponsor-radio").slideUp("slow");
+					$(".infanzia-sponsor-si").slideUp("slow");
+					$(".infanzia-sponsor-no").slideUp("slow");
+					//TODO logica disable?
+				}
+			}
+
+			//funzioni show/hide in base alle scelte effettuate (lato client)
+			//autocertificazioni alimenti prima infanzia show/hide
+			function mostraNascondiAllegatiAutocertificazioniSponsor(value) {
+				if(value == "true") {
+					$(".infanzia-sponsor-si").slideDown("slow");
+					$(".infanzia-sponsor-no").slideUp("slow");
+				}
+				else {
+					$(".infanzia-sponsor-no").slideDown("slow");
+					$(".infanzia-sponsor-si").slideUp("slow");
+				}
+			}
+
+			//finanziamento show/hide
+			function mostraNascondiCampiFinanziamento(value) {
+				if(value == "true") {
 					$(".finanziamento-si").slideDown("slow");
 					$(".finanziamento-no").slideUp("slow");
 					$("#contrattiAccordiConvenzioni").prop("disabled", false);
@@ -596,19 +751,22 @@
 				}
 			}
 
-			function mostraNascondiCampiPartner(show) {
-				if(show) {
+			//partner show/hide
+			function mostraNascondiCampiPartner(value) {
+				if(value == "true") {
 					$(".partner-si").slideDown("slow");
-					//TODO
+					//TODO logica enable?
 				}
 				else {
 					$(".partner-si").slideUp("slow");
-					//TODO
+					//TODO logica disable?
 				}
 			}
 
-			/*RIPETIPBILI RESPONSABILI SCIENTIFICI*/
+			/*RIPETIBILI*/
 /************************************************************************************************************************/
+
+ 			//reinizializzazione delle datatable
 			function reInitDataTable(target){
 				if(target == 'responsabiliScientifici'){
 		  			tables['responsabiliScientifici'].destroy();
@@ -652,8 +810,37 @@
 						}]
 				    });
 			  	}
+			  	if(target == 'sponsors') {
+			  		tables['sponsors'].destroy();
+			  		tables['sponsors'] = $('#sponsors').DataTable({
+				    	"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [{
+							"targets": 2,
+							"width": "1px",
+							"sClass": "center"
+						}]
+				    });
+			  	}
+			  	if(target == 'partners') {
+			  		tables['partners'].destroy();
+			  		tables['partners'] = $('#partners').DataTable({
+				    	"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [{
+							"targets": 2,
+							"width": "1px",
+							"sClass": "center"
+						}]
+				    });
+			  	}
 		  	}
 
+			//apre la finestra di inserimento di una persona
 			function openAddPersonaTo(target,type){
 				if(type == 'Full'){
 					$('#targetTableFull').val(target);
@@ -674,28 +861,48 @@
 				}
 			}
 
+			//chiude la modale di inserimento di una persona svuotandone i contenuti
 			function closeModaleAddPersona(){
 				$("#add-persona-modal .close").click();
 				$("#add-persona-modal form")[0].reset();
 				$("#cv\\.id").val('');
 				$("#cv\\.nomeFile").val('');
 				$("#cv_label").text('').attr('href','');
-
 			}
 
+			//chiude la modale di inserimento di una personaFull svuotandone i contenuti
 			function closeModaleAddPersonaFull(){
 				$("#add-personaFull-modal .close").click();
 				$("#add-persona-modal form")[0].reset();
 			}
 
+			//chiude la modale di inserimento di uno sponsor svuotandone i contenuti
+			function closeModaleAddSponsor(){
+				$("#add-sponsor-modal .close").click();
+				$("#add-sponsor-modal form")[0].reset();
+				$("#sponsorFile\\.id").val('');
+				$("#sponsorFile\\.nomeFile").val('');
+				$("#sponsorFile_label").text('').attr('href','');
+			}
+
+			//chiude la modale di inserimento di uno partner svuotandone i contenuti
+			function closeModaleAddPartner(){
+				$("#add-partner-modal .close").click();
+				$("#add-partner-modal form")[0].reset();
+				$("#partnerFile\\.id").val('');
+				$("#partnerFile\\.nomeFile").val('');
+				$("#partnerFile_label").text('').attr('href','');
+			}
+
+			//reinit dei widget complessi nella modale add persona
 			function reInitModaleAddPersona(){
-				$('select').selectpicker();
 				$('input.flat').iCheck({
 		            checkboxClass: 'icheckbox_flat-green',
 		            radioClass: 'iradio_flat-green'
 		        });
 			}
 
+			//sumbit della modale di inserimento persona
 			function sendAjaxAddPersonaTo(){
 				var target = $('#targetTable').val();
 				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}]], $('#addPersonaTo').serialize())
@@ -711,6 +918,7 @@
 				 	 })
 			}
 
+			//sumbit della modale di inserimento personaFull
 			function sendAjaxAddPersonaFullTo(){
 				var target = $('#targetTableFull').val();
 				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaFullTo|}]], $('#addPersonaFullTo').serialize())
@@ -725,6 +933,35 @@
 				 	 })
 			}
 
+			//sumbit della modale di inserimento sponsor
+			function sendAjaxAddSponsorTo(){
+				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addSponsorTo|}]], $('#addSponsorTo').serialize())
+					.done(function(data) {
+						$('#sponsors').html(data);
+						closeModaleAddSponsor();
+						reInitDataTable('sponsors');
+					})
+					.fail(function(error) {
+						//TODO mostra error sui campi mancanti
+				    	alert(error);
+					})
+			}
+
+			//sumbit della modale di inserimento partner
+			function sendAjaxAddPartnerTo(){
+				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPartnerTo|}]], $('#addPartnerTo').serialize())
+					.done(function(data) {
+						$('#partners').html(data);
+						closeModaleAddPartner();
+						reInitDataTable('partners');
+					})
+					.fail(function(error) {
+						//TODO mostra error sui campi mancanti
+				    	alert(error);
+					})
+			}
+
+			//delete di una persona
 			function removePersonaFrom(target,caller){
 				var rowIndex = $(caller).parent().parent().data('row-id');
 				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removePersonaFrom/|}]] + target + "/" + rowIndex;
@@ -733,6 +970,25 @@
 				reInitDataTable(target);
 			}
 
+			//delete di uno sponsor
+			function removeSponsor(caller){
+				var rowIndex = $(caller).parent().parent().data('row-id');
+				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeSponsor/|}]] + rowIndex;
+
+				$('#sponsors').load(url);
+				reInitDataTable('sponsors');
+			}
+
+			//delete del partner
+			function removePartner(caller){
+				var rowIndex = $(caller).parent().parent().data('row-id');
+				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removePartner/|}]] + rowIndex;
+
+				$('#partners').load(url);
+				reInitDataTable('partners');
+			}
+
+			//modale di lookup della persona
 			function openLookupPersona(target,type){
 				var table = $('#tabella-modale').DataTable();
 				table.clear();
@@ -751,10 +1007,12 @@
 				});
 			}
 
+			//chiusura modale lookup persona
 			function closeModaleLookupPersona(){
 				$("#lookup-persona-modal .close").click();
 			}
 
+			//imposta nella modale di inserimento della persona i dati presi dal lookup
 			function setLookupAnagraficaEvento(target,type,anagraficaId){
 				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/setLookupAnagraficaEvento/|}]] + type + '/' + anagraficaId;
 				if(type == 'Full'){
@@ -781,6 +1039,7 @@
 				}
 			}
 
+			//inserisce un docente nella lista dei disponibili (per l'attività)
 			function sendAjaxRequestDocentiAttivitaRES(){
 				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/listaDocentiAttivitaRES|}]];
 				$.get(url, function(data){
@@ -803,6 +1062,7 @@
 		</script>
 	</div>
 
+	<!-- spostare in un altro FILE dei FRAGMENT table per i ripetibili -->
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="responsabiliScientifici">
 			<!-- <th:block th:if="${#lists.size(eventoWrapper.responsabiliScientifici) == 0}">
@@ -922,6 +1182,68 @@
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.cellulare}"></td>
 						<td>
 							<a onclick="removePersonaFrom('responsabileSegreteria',this)" class="btn btn-danger" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</th:block>
+
+	<th:block style="display:none">
+		<div class="col-xs-12" th:fragment="sponsors">
+			<table id="sponsors" class="datatable-responsive-sponsors table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+				<thead>
+					 <tr>
+						<th th:text="#{label.nome_sponsor}">Nome dello Sponsor</th>
+						<th th:text="#{label.contratto}">Contratto</th>
+						<th style="padding-right: 8px;">
+							<a id="add-sponsor" class="btn btn-success" data-toggle="modal" data-target=".modal-add-sponsor">
+								<span><i class="fa fa-plus"></i></span>
+							</a>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:if="${#lists.size(eventoWrapper.sponsors) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="sponsor, status : ${eventoWrapper.sponsors}">
+						<td th:text="${sponsor.name}"></td>
+						<td>
+							<a th:if="${sponsor.sponsorFile?.id}"  th:text="${sponsor.sponsorFile?.nomeFile}" th:href="@{|/file/${sponsor.sponsorFile.id}|}"></a>
+							</td>
+						<td>
+							<a onclick="removeSponsor(this)" class="btn btn-danger" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</th:block>
+
+	<th:block style="display:none">
+		<div class="col-xs-12" th:fragment="partners">
+			<table id="partners" class="datatable-responsive-partners table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+				<thead>
+					 <tr>
+						<th th:text="#{label.nome_partner}">Nome del Partner</th>
+						<th th:text="#{label.contratto}">Contratto</th>
+						<th style="padding-right: 8px;">
+							<a id="add-partner" class="btn btn-success" data-toggle="modal" data-target=".modal-add-partner">
+								<span><i class="fa fa-plus"></i></span>
+							</a>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:if="${#lists.size(eventoWrapper.partners) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="partner, status : ${eventoWrapper.partners}">
+						<td th:text="${partner.name}"></td>
+						<td>
+							<a th:if="${partner.partnerFile?.id}"  th:text="${partner.partnerFile?.nomeFile}" th:href="@{|/file/${partner.partnerFile.id}|}"></a>
+							</td>
+						<td>
+							<a onclick="removePartner(this)" class="btn btn-danger" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>

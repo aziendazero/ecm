@@ -26,14 +26,18 @@ import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.entity.RendicontazioneInviata;
+import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.RendicontazioneInviata;
+import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
+import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
+import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -47,6 +51,8 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired private PersonaEventoRepository personaEventoRepository;
 	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
+	@Autowired private SponsorRepository sponsorRepository;
+	@Autowired private PartnerRepository partnerRepository;
 
 	@Autowired
 	private RendicontazioneInviataService rendicontazioneInviataService;
@@ -208,14 +214,36 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		//Responsabili
-		Iterator<PersonaEvento> it = eventoWrapper.getResponsabiliScientifici().iterator();
-		List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
-		while(it.hasNext()){
-			PersonaEvento p = it.next();
+		Iterator<PersonaEvento> itPersona = eventoWrapper.getResponsabiliScientifici().iterator();
+		List<PersonaEvento> attachedListPersona = new ArrayList<PersonaEvento>();
+		while(itPersona.hasNext()){
+			PersonaEvento p = itPersona.next();
 			p = personaEventoRepository.findOne(p.getId());
-			attachedList.add(p);
+			attachedListPersona.add(p);
 		}
-		evento.setResponsabili(attachedList);
+		evento.setResponsabili(attachedListPersona);
+
+		//Sponsor
+		Iterator<Sponsor> itSponsor = eventoWrapper.getSponsors().iterator();
+		Set<Sponsor> attachedSetSponsor = new HashSet<Sponsor>();
+		while(itSponsor.hasNext()){
+			Sponsor s = itSponsor.next();
+			//s.setEvento(evento);
+			sponsorRepository.save(s);
+			attachedSetSponsor.add(s);
+		}
+		evento.setSponsors(attachedSetSponsor);
+
+		//Partner
+		Iterator<Partner> itPartner = eventoWrapper.getPartners().iterator();
+		Set<Partner> attachedSetPartner = new HashSet<Partner>();
+		while(itPartner.hasNext()){
+			Partner s = itPartner.next();
+			//s.setEvento(evento);
+			partnerRepository.save(s);
+			attachedSetPartner.add(s);
+		}
+		evento.setPartners(attachedSetPartner);
 
 		//brochure
 		if (eventoWrapper.getBrochure().getId() != null) {
@@ -312,6 +340,16 @@ public class EventoServiceImpl implements EventoService {
 
 		//responsabili scientifici
 		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
+
+		//sponsor
+		List<Sponsor> sponsors = new ArrayList<Sponsor>();
+		sponsors.addAll(evento.getSponsors());
+		eventoWrapper.setSponsors(sponsors);
+
+		//partner
+		List<Partner> partners = new ArrayList<Partner>();
+		partners.addAll(evento.getPartners());
+		eventoWrapper.setPartners(partners);
 
 		//brochure
 		if (evento.getBrochureEvento() != null) {
