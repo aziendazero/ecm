@@ -468,27 +468,29 @@ public class EventoServiceImpl implements EventoService {
 	private float calcoloDurataEventoFSC(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum, RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		float durata = 0;
 		
-		if(riepilogoRuoliFSC != null){
-			riepilogoRuoliFSC.forEach((k,v) ->{
-				v.clear();
-			});
-			
-			if(programma!= null){
-				for(FaseAzioniRuoliEventoFSCTypeA fase : programma){
-					for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
-						Set<RuoloFSCEnum> ruoliSelezionati = azione.getRuoli();
-						ruoliSelezionati.forEach(ruolo -> {
-							//TODO sostituire con tempo relativo a singolo ruolo
-							float tempoDedicato = (azione.getTempoDedicato() != null) ? Utils.getRoundedFloatValue(azione.getTempoDedicato()) : 0.0f;
-							riepilogoRuoliFSC.get(ruolo).addTempo(tempoDedicato);
-						});
-					}
-				}
-		
-			}
-		}
-				
-		durata = getMax(riepilogoRuoliFSC);
+//		if(riepilogoRuoliFSC != null){
+//			riepilogoRuoliFSC.forEach((k,v) ->{
+//				v.clear();
+//			});
+//			
+//			if(programma!= null){
+//				for(FaseAzioniRuoliEventoFSCTypeA fase : programma){
+//					for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
+//						Set<RuoloFSCEnum> ruoliSelezionati = azione.getRuoli();
+//						if(ruoliSelezionati != null){
+//							ruoliSelezionati.forEach(ruolo -> {
+//								//TODO sostituire con tempo relativo a singolo ruolo
+//								float tempoDedicato = (azione.getTempoDedicato() != null) ? Utils.getRoundedFloatValue(azione.getTempoDedicato()) : 0.0f;
+//								riepilogoRuoliFSC.get(ruolo).addTempo(tempoDedicato);
+//							});	
+//						}
+//					}
+//				}
+//		
+//			}
+//		}
+//				
+//		durata = getMax(riepilogoRuoliFSC);
 		
 		return durata;
 	}

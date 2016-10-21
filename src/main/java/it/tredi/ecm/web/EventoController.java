@@ -525,6 +525,7 @@ public class EventoController {
 
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaTo", method=RequestMethod.POST, params={"addPersonaTo"})
 	public String addPersonaTo(@RequestParam("addPersonaTo") String target,
+								@RequestParam("fromLookUp") String fromLookUp,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			//TODO da fare solo se rispetta il validator
@@ -532,8 +533,17 @@ public class EventoController {
 			//check se non esiste -> si registra l'anagrafica per il provider
 			if(anagraficaBase != null && !anagraficaBase.getCodiceFiscale().isEmpty()){
 				if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaBase.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
-					if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew())
-						anagraficaBase.setCv(fileService.getFile(eventoWrapper.getCv().getId()));
+					if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew()){
+						File cv = fileService.getFile(eventoWrapper.getCv().getId());
+						cv.getData();
+						if(fromLookUp != null && Boolean.valueOf(fromLookUp)){
+							File f = (File) cv.clone();
+							fileService.save(f);
+							anagraficaBase.setCv(f);
+						}else{
+							anagraficaBase.setCv(cv);							
+						}
+					}
 					AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
 					anagraficaEventoToSave.setAnagrafica(anagraficaBase);
 					anagraficaEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
@@ -543,11 +553,24 @@ public class EventoController {
 			//PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
 			PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il bindibg in in AddAttivitaRES (select si basa su id della entity)
+				//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in in AddAttivitaRES (select si basa su id della entity)
 				//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
+
+				File cv = p.getAnagrafica().getCv();
+				cv.getData();
+				File f = (File) cv.clone();
+				fileService.save(f);
+				p.getAnagrafica().setCv(f);
+				
 				personaEventoRepository.save(p);
 				eventoWrapper.getResponsabiliScientifici().add(p);
 			}else if(target.equalsIgnoreCase("docenti")){
+				File cv = p.getAnagrafica().getCv();
+				cv.getData();
+				File f = (File) cv.clone();
+				fileService.save(f);
+				p.getAnagrafica().setCv(f);
+				
 				personaEventoRepository.save(p);
 				eventoWrapper.getDocenti().add(p);
 			}
@@ -681,7 +704,9 @@ public class EventoController {
 				eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento(anagraficaFullEventoService.getAnagraficaFullEvento(angraficaEventoId)));
 				return EDIT + " :: #addPersonaFullTo";
 			}else{
-				eventoWrapper.setTempPersonaEvento(new PersonaEvento(anagraficaEventoService.getAnagraficaEvento(angraficaEventoId)));
+				PersonaEvento p = new PersonaEvento(anagraficaEventoService.getAnagraficaEvento(angraficaEventoId));
+				eventoWrapper.setTempPersonaEvento(p);
+				eventoWrapper.setCv(p.getAnagrafica().getCv());
 				return EDIT + " :: #addPersonaTo";
 			}
 		}catch (Exception ex){

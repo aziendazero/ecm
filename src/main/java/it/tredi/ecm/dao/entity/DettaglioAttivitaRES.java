@@ -42,7 +42,7 @@ public class DettaglioAttivitaRES implements Serializable{
 	private LocalTime orarioFine;
 	private String argomento;
 	
-	@ManyToOne()
+	@ManyToOne
 	private PersonaEvento docente;
 	private String risultatoAtteso;
 	private ObiettiviFormativiRESEnum obiettivoFormativo;

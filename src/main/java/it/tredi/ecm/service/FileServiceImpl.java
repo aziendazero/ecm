@@ -53,7 +53,6 @@ public class FileServiceImpl implements FileService{
 	public void save(File file) {
 		LOGGER.debug("Saving file: " + file.getNomeFile());
 		LOGGER.debug("Saving file: " + file.getData().length + " bytes");
-		LOGGER.debug("Saving file su disco: " + file.getDiskFileName());
 		try{
 			fileRepository.save(file);
 		}catch (Exception ex){

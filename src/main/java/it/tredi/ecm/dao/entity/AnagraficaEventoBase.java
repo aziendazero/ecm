@@ -2,9 +2,8 @@ package it.tredi.ecm.dao.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import lombok.Getter;
@@ -22,7 +21,7 @@ public class AnagraficaEventoBase implements Serializable{
 	private String nome;
 	private String codiceFiscale;
 	private Boolean straniero = false;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.REMOVE)
 	private File cv;
 	
 	@Override

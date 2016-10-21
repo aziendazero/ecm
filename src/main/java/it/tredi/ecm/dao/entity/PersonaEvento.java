@@ -10,6 +10,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.EventoController;
 import lombok.Getter;
@@ -47,7 +49,9 @@ public class PersonaEvento extends BaseEntity implements Serializable{
 	public PersonaEvento(AnagraficaEvento anagrafica){
 		try{
 			//this.anagrafica = (AnagraficaEventoBase) anagrafica.getAnagrafica().clone();
-			this.anagrafica = (AnagraficaEventoBase) Utils.copy(anagrafica.getAnagrafica());
+			//this.anagrafica = (AnagraficaEventoBase) Utils.copy(anagrafica.getAnagrafica());
+			anagrafica.getAnagrafica().getCv().getData();
+			this.anagrafica = (AnagraficaEventoBase) SerializationUtils.clone(anagrafica.getAnagrafica());
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore cast AnagraficaEventoBase"), ex);
 		}

@@ -1,12 +1,21 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.aspectj.weaver.NewFieldTypeMunger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,10 +32,10 @@ public class File extends BaseEntity{
 	@JsonView(JsonViewModel.Integrazione.class)
 	private String nomeFile;
 
-	@JsonView(JsonViewModel.Integrazione.class)
-	@JsonIgnore
-	private byte[] data;
-
+//	@JsonView(JsonViewModel.Integrazione.class)
+//	@JsonIgnore
+//	private byte[] data;
+	
 	@JsonView(JsonViewModel.Integrazione.class)
 	@JsonIgnore
 	@Column(name = "creato")
@@ -36,24 +45,40 @@ public class File extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	private FileEnum tipo;
 	
-	private String diskFileName;
-
 	public File(){
 		this.tipo = null;
 		this.nomeFile = "";
 		this.dataCreazione = LocalDate.now();
-		this.diskFileName = "";
 	}
 
 	public File(FileEnum tipo){
 		this.tipo = tipo;
 		this.nomeFile = "";
 		this.dataCreazione = LocalDate.now();
-		this.diskFileName = "";
 	}
 
 	public void setId(Long id){
 		this.id = id;
+	}
+	
+	@JsonView(JsonViewModel.Integrazione.class)
+	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@JoinColumn(name="file_id")
+	private List<FileData> fileData;
+	
+	public void setData(byte[] dataArray){
+		if(fileData == null || fileData.isEmpty()){
+			fileData = new ArrayList<FileData>();	
+			fileData.add(new FileData());
+		}
+		fileData.get(0).setData(dataArray);
+	}
+	
+	public byte[] getData(){
+		if(this.getFileData() != null && !fileData.isEmpty())
+			return fileData.get(0).getData();
+		return new byte[0];
 	}
 	
 	@JsonIgnore	public boolean isCV(){
@@ -133,7 +158,11 @@ public class File extends BaseEntity{
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		File cloned = (File) super.clone();
+		
 		cloned.setId(null);
-		return clone();
+		cloned.setFileData(null);
+		cloned.setData(this.getData());
+		
+		return cloned;
 	}
 }

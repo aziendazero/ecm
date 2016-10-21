@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,8 @@ public class PersonaFullEvento extends BaseEntity implements Serializable{
 	public PersonaFullEvento(AnagraficaFullEvento anagrafica){
 		try{
 			//this.anagrafica = (AnagraficaFullEventoBase) anagrafica.getAnagrafica().clone();
-			this.anagrafica = (AnagraficaFullEventoBase) Utils.copy(anagrafica.getAnagrafica());
+			//this.anagrafica = (AnagraficaFullEventoBase) Utils.copy(anagrafica.getAnagrafica());
+			this.anagrafica = (AnagraficaFullEventoBase) SerializationUtils.clone(anagrafica.getAnagrafica());
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore cast AnagraficaFullEventoBase"), ex);
 		}

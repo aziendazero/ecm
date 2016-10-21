@@ -252,7 +252,7 @@ public class Evento extends BaseEntity{
 	public float calcoloCreditiFormativi(){
 		return 0;
 	};
-
+	
 	@Override
     public boolean equals(Object o) {
         if (this == o) {

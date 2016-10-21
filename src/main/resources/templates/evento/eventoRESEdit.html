@@ -1644,6 +1644,8 @@
 				function closeModaleAddAttivitaTo(){
 					$("#add-attivitaRES-modal .close").click();
 					$("#add-attivitaRES-modal form")[0].reset();
+					$("#add-attivitaRES-modal .selectpicker").selectpicker('val','')
+					$('#add-attivitaRES-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
 				}
 
 				function sendAjaxAddAttivitaToProgramma(){
