@@ -13,8 +13,13 @@ public class EcmException extends Exception {
 	public EcmException(String messageTitle, String messageDetail, Exception originalException) {
 		super(originalException);
 		this.messageTitle = messageTitle;
-		this.messageDetail = messageDetail;
 		this.originalException = originalException;
+				
+		if(messageDetail != null){
+			this.messageDetail = messageDetail;	
+		}else{
+			this.messageDetail = "Errore";
+		}
 	}
 
 }

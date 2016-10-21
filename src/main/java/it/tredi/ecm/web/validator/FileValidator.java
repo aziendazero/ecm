@@ -22,11 +22,14 @@ public class FileValidator {
 	@Autowired private MessageSource messageSource;
 
 	public void validate(Object target, Errors errors, String prefix) {
+		//TODO
+		
 		LOGGER.info(Utils.getLogMessage("Validazione File"));
 		File file = (File)target;
 		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){
 			errors.rejectValue(prefix, "error.empty");
 		}else{
+			
 			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
 				errors.rejectValue(prefix, "error.maxFileSize", new Object[]{String.valueOf(ecmProperties.getMultipartMaxFileSize()/(1024*1024) )},"");
 			}
@@ -42,12 +45,12 @@ public class FileValidator {
 		}else{
 			//validazione file xml/csv/xml.p7m/xml.zip.p7m
 			if(file.getTipo() == FileEnum.FILE_REPORT_PARTECIPANTI) {
-				if(!(contentType.equalsIgnoreCase("application/xml") ||
-						contentType.equalsIgnoreCase("text/xml") ||
-						contentType.equalsIgnoreCase("application/pkcs7-mime") ||
-						contentType.equalsIgnoreCase("application/x-pkcs7-mime") ||
-						contentType.equalsIgnoreCase("text/csv")))
-					error = messageSource.getMessage("error.formatNonAcceptedXML", new Object[]{}, Locale.getDefault());
+//				if(!(contentType.equalsIgnoreCase("application/xml") ||
+//						contentType.equalsIgnoreCase("text/xml") ||
+//						contentType.equalsIgnoreCase("application/pkcs7-mime") ||
+//						contentType.equalsIgnoreCase("application/x-pkcs7-mime") ||
+//						contentType.equalsIgnoreCase("text/csv")))
+//					error = messageSource.getMessage("error.formatNonAcceptedXML", new Object[]{}, Locale.getDefault());
 			}
 			//validazione file pdf/pdf.p7m
 			else {
