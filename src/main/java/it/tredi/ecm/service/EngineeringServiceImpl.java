@@ -2,10 +2,12 @@ package it.tredi.ecm.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.Authenticator;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +20,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.util.JAXBSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -26,19 +30,28 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.engine.jdbc.ReaderInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.PagDovutiLog;
 import it.tredi.ecm.dao.entity.PagPagatiLog;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
+import it.tredi.ecm.dao.repository.FileRepository;
 import it.tredi.ecm.dao.repository.PagDovutiLogRepository;
 import it.tredi.ecm.dao.repository.PagPagatiLogRepository;
 import it.tredi.ecm.dao.repository.PagamentoRepository;
@@ -60,6 +73,9 @@ import it.veneto.regione.schemas._2012.pagamenti.ente.StTipoIdentificativoUnivoc
 
 @Service
 public class EngineeringServiceImpl implements EngineeringService {
+	
+	@Autowired
+	private FileRepository fileRepository;
 	
 	@Autowired
 	private PagamentoRepository pagamentoRepository;
@@ -86,9 +102,9 @@ public class EngineeringServiceImpl implements EngineeringService {
 	/** Permette tutti i tipi di pagamento. Si può modificare se necessario impedire certe forme di pagamento (vedi documentazione) */
 	public static final String TIPO_VERSAMENTO_ALL = "ALL";
 	
-	public static final String ENDPOINT_PAGAMENTI = "http://payweb.ve.eng.it/pa/services/PagamentiTelematiciDovutiPagati"; // TEST ENGINEERING
+	//public static final String ENDPOINT_PAGAMENTI = "http://payweb.ve.eng.it/pa/services/PagamentiTelematiciDovutiPagati"; // TEST ENGINEERING
 	/** L'endpoint andrebbe parametrizzato, ovviamente sarà diverso tra test e produzione  */
-	//public static final String ENDPOINT_PAGAMENTI = "https://paygov.collaudo.regione.veneto.it/pa/services/PagamentiTelematiciDovutiPagati"; // COLLAUDO REGIONE
+	public static final String ENDPOINT_PAGAMENTI = "https://paygov.collaudo.regione.veneto.it/pa/services/PagamentiTelematiciDovutiPagati"; // COLLAUDO REGIONE
 	
 	/** Da aggiornare con il dato definitivo (da concordare con Regione) */
 	public static final String DATI_SPECIFICI_RISCOSSIONE = "9/123456"; //TODO Specifico in base a cosa pago, da concordare con RVE e Mola.
@@ -426,7 +442,34 @@ public class EngineeringServiceImpl implements EngineeringService {
 		}
 	}
 	
-	public void firmaFile(Long idFile) {
+	public void saveFileFirmato(String xml) throws Exception {
+
+		xml = java.net.URLDecoder.decode(xml, "UTF-8");
+		System.out.println(xml);
+
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(new InputSource(new StringReader(xml)));
+		XPathFactory xPathfactory = XPathFactory.newInstance();
+		XPath xpath = xPathfactory.newXPath();
+		String urlSignedBytes = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/@urlSignedBytes").evaluate(doc);  
+		String name = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/@name").evaluate(doc);  
+		String idString = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/INFORMAZIONI").evaluate(doc);  
+
+		File file = fileRepository.findOne(Long.parseLong(idString));
+		
+		InputStream is = null;
+		URL url = new URL(urlSignedBytes);
+		try {
+			is = url.openStream();
+			byte[] data = IOUtils.toByteArray(is);
+			file.setNomeFile(name + ".p7m");
+			file.setData(data);
+			fileRepository.save(file);
+
+		} finally {
+			if (is != null) { is.close(); }
+		}
 		
 	}
 

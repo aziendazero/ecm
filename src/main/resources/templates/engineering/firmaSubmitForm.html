@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{engineering.test_firma}">engineering.test_firma</h2>
+						<div class="pull-right buttons-header">
+							<button class="btn btn-success pull-right" th:text="#{label.salva}" form="formFirma" type="submit"></button>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<form id="formFirma" name="" class="form-horizontal form-label-left" th:action="${firmaWebUrl}" method="post" enctype="multipart/form-data" novalidate="novalidate">
+
+							<input type="hidden" value="SCTrasparenteUrlSignAction" name="ACTION_NAME" />
+							<input type="hidden" value="LIST" name="MESSAGE" />
+							<input type="hidden" value="TRUE" name="NEW_SESSION" />
+							<input type="hidden" value="default" name="cssName" />
+							<input type="hidden" value="n" name="archivia" />
+							<input type="hidden" th:value="${referer}" name="referer" />
+							<input type="hidden" value="testFirma" name="paginaDiProvenienza" />
+							<input type="hidden" th:value="${xmlMetadataToSign}" name="metadatiArchivia" />
+							<input type="hidden" name="documentsToSign" th:value="${xmlDocumentToSign}" />
+							<input type="hidden" th:value="${informazioni}" name="informazioni" />
+
+							<input type="submit" value="Firma" name="firma"/>
+
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<th:block>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			$(document).ready(function () {
+				$('#formFirma').submit();
+			});
+		/*]]>*/
+		</script>
+		</th:block>	
+	</div>
+</body>
+</html>

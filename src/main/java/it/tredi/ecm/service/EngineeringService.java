@@ -27,4 +27,6 @@ public interface EngineeringService {
 	 */
 	public void azzeraPagamenti(Long idProvider) throws Exception;
 
+	
+	public void saveFileFirmato(String xml) throws Exception;
 }

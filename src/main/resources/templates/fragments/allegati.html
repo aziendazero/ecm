@@ -34,7 +34,7 @@
 				<!-- pulsante per aggiungere firma -->
 				<th:block th:if="${withFirma}">
 					<div class="col-xs-1">
-						<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+						<button type="button" onclick="submitFirma()" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
 					</div>
 				</th:block>
 			</th:block>
@@ -97,7 +97,7 @@
 			<!-- pulsante per aggiungere firma -->
 			<th:block th:if="${withFirma}">
 				<div class="col-xs-1">
-					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+					<button type="button" onclick="submitFirma()" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
 				</div>
 			</th:block>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
@@ -108,6 +108,11 @@
 		function setAllegato(idInput) {
 			$(idInput).click();
 		}
+	
+		function submitFirma() {
+  				var oMyForm = $('#formFirma').attr('action', [[@{|/engineering/test/firma/invio|}]]);
+  				oMyForm.submit();
+  			}
 
 		function submitFile(element){
 			var tipoAllegato = $(element).attr("id");
@@ -145,7 +150,7 @@
 				case 'fileDaFirmare' :						tipoAllegato = 'FILE_DA_FIRMARE'; break;
 			}
 
-			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper?.tempPersonaEvento?.anagrafica and __${wrapper}__ != providerForm} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
+			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper?.tempPersonaEvento?.anagrafica and __${wrapper}__ != providerForm  and __${wrapper}__ != engineeringWrapper} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
 
 	 		var oMyForm = new FormData();
             oMyForm.append("multiPartFile", $(element)[0].files[0]);

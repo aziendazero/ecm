@@ -1,5 +1,7 @@
 package it.tredi.ecm.bootstrap;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,7 +33,7 @@ import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
 
 @Component
-@org.springframework.context.annotation.Profile("demo")
+@org.springframework.context.annotation.Profile("dev")
 public class EngineeringLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 		private final static Logger LOGGER = LoggerFactory.getLogger(EngineeringLoader.class);
@@ -66,6 +68,7 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				account.setExpiresDate(null);
 				account.setLocked(false);
 				account.getProfiles().add(profile);
+				account.setDataScadenzaPassword(LocalDate.parse("2017-12-31"));
 				accountRepository.save(account);
 
 				//Provider
@@ -94,6 +97,8 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				procedure.add(ProceduraFormativa.RES);
 				procedure.add(ProceduraFormativa.FSC);
 				datiAccreditamento.setProcedureFormative(procedure);
+				datiAccreditamento.setNumeroDipendentiFormazioneAltro(4);
+				datiAccreditamento.setNumeroDipendentiFormazioneTempoIndeterminato(10);
 				datAccreditamentoService.save(datiAccreditamento, accreditamento.getId());
 				
 				//Eventi

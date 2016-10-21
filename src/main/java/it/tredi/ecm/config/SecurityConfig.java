@@ -41,6 +41,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	     	.exceptionHandling().accessDeniedPage("/403")
 	     .and()
 	     	.rememberMe();
+		
+		http.csrf()
+	      .ignoringAntMatchers("/engineering/test/firma/back");
 
 		//http.addFilterAfter(new UserChangePasswordCheckFilter(), FilterSecurityInterceptor.class);
 	}

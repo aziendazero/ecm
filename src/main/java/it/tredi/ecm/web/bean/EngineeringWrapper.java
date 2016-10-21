@@ -17,6 +17,8 @@ public class EngineeringWrapper {
 	private Long idEvento;
 	
 	private Long editId;
+	
+	private String documentsToSign;
 
 	public EngineeringWrapper() {
 		setFileDaFirmare(new File(FileEnum.FILE_DA_FIRMARE));

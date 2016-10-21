@@ -37,7 +37,7 @@
 				<!-- pulsante per aggiungere firma -->
 				<th:block th:if="${withFirma}">
 					<div class="col-xs-1">
-						<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+						<button type="button" onclick="submitFirma()" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
 					</div>
 				</th:block>
 			</th:block>
@@ -100,7 +100,7 @@
 			<!-- pulsante per aggiungere firma -->
 			<th:block th:if="${withFirma}">
 				<div class="col-xs-1">
-					<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+					<button type="button" onclick="submitFirma()" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
 				</div>
 			</th:block>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${propertyName}__}"></div>
@@ -111,6 +111,11 @@
 		function setAllegatoExt(idInput) {
 			$(idInput).click();
 		}
+	
+		function submitFirma() {
+				var oMyForm = $('#formFirma').attr('action', [[@{|/engineering/test/firma/invio|}]]);
+				oMyForm.submit();
+			}
 
 		function submitFileExt(element){
 			var tipoAllegato = $(element).attr("typefile");
