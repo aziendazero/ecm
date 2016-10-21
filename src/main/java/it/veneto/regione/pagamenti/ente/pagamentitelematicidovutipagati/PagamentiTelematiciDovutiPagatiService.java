@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "PagamentiTelematiciDovutiPagatiService", targetNamespace = "http://www.regione.veneto.it/pagamenti/ente/PagamentiTelematiciDovutiPagati", wsdlLocation = "file:/D:/workspaces/ECM/IntegrazioniECM/src/pa-per-ente.wsdl")
+@WebServiceClient(name = "PagamentiTelematiciDovutiPagatiService", targetNamespace = "http://www.regione.veneto.it/pagamenti/ente/PagamentiTelematiciDovutiPagati", wsdlLocation = "classpath:pa-per-ente.wsdl")
 public class PagamentiTelematiciDovutiPagatiService
     extends Service
 {
@@ -26,15 +26,7 @@ public class PagamentiTelematiciDovutiPagatiService
     private final static Logger logger = Logger.getLogger(it.veneto.regione.pagamenti.ente.pagamentitelematicidovutipagati.PagamentiTelematiciDovutiPagatiService.class.getName());
 
     static {
-        URL url = null;
-        try {
-            URL baseUrl;
-            baseUrl = it.veneto.regione.pagamenti.ente.pagamentitelematicidovutipagati.PagamentiTelematiciDovutiPagatiService.class.getResource(".");
-            url = new URL(baseUrl, "file:/D:/workspaces/ECM/IntegrazioniECM/src/pa-per-ente.wsdl");
-        } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'file:/D:/workspaces/ECM/IntegrazioniECM/src/pa-per-ente.wsdl', retrying as a local file");
-            logger.warning(e.getMessage());
-        }
+        URL url = it.veneto.regione.pagamenti.ente.pagamentitelematicidovutipagati.PagamentiTelematiciDovutiPagatiService.class.getResource("pa-per-ente.wsdl");
         PAGAMENTITELEMATICIDOVUTIPAGATISERVICE_WSDL_LOCATION = url;
     }
 
