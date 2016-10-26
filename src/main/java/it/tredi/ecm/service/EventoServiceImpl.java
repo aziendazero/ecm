@@ -4,12 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -27,7 +25,6 @@ import it.tredi.ecm.cogeaps.Helper;
 import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
-import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
@@ -41,7 +38,9 @@ import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
+import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
@@ -78,7 +77,7 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired
 	private CogeapsWsRestClient cogeapsWsRestClient;
-	
+
 	@Autowired
 	private EcmProperties ecmProperties;
 
@@ -187,7 +186,7 @@ public class EventoServiceImpl implements EventoService {
 		return true;
 	}
 
-	
+
 	/*	SALVATAGGIO	*/
 	@Override
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
@@ -227,7 +226,32 @@ public class EventoServiceImpl implements EventoService {
 		}else if(evento instanceof EventoFSC){
 			retrieveProgrammaAndAddJoin(eventoWrapper);
 		}else if(evento instanceof EventoFAD){
-			//TODO campi solo in EVENTO FAD
+			//Docenti
+			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
+			List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
+			while(it.hasNext()){
+				PersonaEvento p = it.next();
+				p = personaEventoRepository.findOne(p.getId());
+				attachedList.add(p);
+			}
+			((EventoFAD)evento).setDocenti(attachedList);
+
+			//Requisiti Hardware Software
+			if (eventoWrapper.getRequisitiHardwareSoftware().getId() != null) {
+				((EventoFAD) evento).setRequisitiHardwareSoftware(eventoWrapper.getRequisitiHardwareSoftware());
+			}
+
+			//Mappa verifica apprendimento
+			List<VerificaApprendimentoFAD> nuoviVAF = new ArrayList<VerificaApprendimentoFAD>();
+			for(VerificaApprendimentoFAD vaf : eventoWrapper.getMappaVerificaApprendimento().values()) {
+				//rimuove l'inner se non è stat checkata verificaApprendimentoFADEnum corrispondente
+				if(vaf.getVerificaApprendimento() == null)
+					vaf.setVerificaApprendimentoInner(null);
+				nuoviVAF.add(vaf);
+			}
+			((EventoFAD) evento).getVerificaApprendimento().clear();
+			((EventoFAD) evento).getVerificaApprendimento().addAll(nuoviVAF);
+
 		}
 
 		//Responsabili
@@ -282,6 +306,16 @@ public class EventoServiceImpl implements EventoService {
 			evento.setDichiarazioneAssenzaConflittoInteresse(eventoWrapper.getDichiarazioneAssenzaConflittoInteresse());
 		}
 
+		//Autocertificazione Assenza Aziende Alimenti Prima Infanzia
+		if (eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia().getId() != null) {
+			evento.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia());
+		}
+
+		//Autocertificazione Autorizzazione Ministero Salute
+		if (eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute().getId() != null) {
+			evento.setAutocertificazioneAutorizzazioneMinisteroSalute(eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute());
+		}
+
 		return evento;
 	}
 
@@ -305,7 +339,7 @@ public class EventoServiceImpl implements EventoService {
 			if (cogeapsCaricaResponse.getErrCode() != 0) //errore su provider - 401,404 (provider non trovato o provider non di competenza dell'ente accreditante)
 				throw new Exception(cogeapsCaricaResponse.getErrMsg());
 			if (cogeapsCaricaResponse.getHttpStatusCode() != 200) //se non 200 (errore server imprevisto)
-				throw new Exception(cogeapsCaricaResponse.getMessage());			
+				throw new Exception(cogeapsCaricaResponse.getMessage());
 
 			//salvataggio entity rendicontazione_inviata (siamo sicuri che il file sia stato preso in carico dal cogeaps)
 			RendicontazioneInviata rendicontazioneInviata = new RendicontazioneInviata();
@@ -322,7 +356,7 @@ public class EventoServiceImpl implements EventoService {
 			throw new EcmException("error.invio_report_cogeaps", e.getMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public void statoElaborazioneCogeaps(Long id) throws Exception {
 		Evento evento = getEvento(id);
@@ -337,12 +371,12 @@ public class EventoServiceImpl implements EventoService {
 				throw new Exception(cogeapsStatoElaborazioneResponse.getError() + ": " + cogeapsStatoElaborazioneResponse.getMessage());
 			if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() == 400) //400 (fileName non trovato)
 				throw new Exception(cogeapsStatoElaborazioneResponse.getErrMsg());
-			if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() != 200) //se non 200 (errore server imprevisto) 
+			if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() != 200) //se non 200 (errore server imprevisto)
 				throw new Exception(cogeapsStatoElaborazioneResponse.getMessage());
-			
+
 			//se si passa di qua significa che la richiesta HTTP ha avuto esito 200.
 			//se elaborazione completata segno eventuali errori altrimenti non faccio nulla (non si tiene traccia delle richieste la cui risposta porta ancora in uno stato pending)
-			
+
 			//se elaborazione completata -> update rendicontazione_inviata
 			if (cogeapsStatoElaborazioneResponse.isElaborazioneCompletata()) {
 				ultimaRendicontazioneInviata.setResponse(cogeapsStatoElaborazioneResponse.getResponse());
@@ -357,7 +391,7 @@ public class EventoServiceImpl implements EventoService {
 		catch (Exception e) {
 			throw new EcmException("error.stato_elaborazione_cogeaps", e.getMessage(), e);
 		}
-	}		
+	}
 
 	/*	CARICAMENTO	*/
 	@Override
@@ -375,7 +409,7 @@ public class EventoServiceImpl implements EventoService {
 			}
 			if(dateIntermedieTemp.size() == 0)
 				dateIntermedieTemp.put(key, "");
-				
+
 			eventoWrapper.setDateIntermedieMapTemp(dateIntermedieTemp);
 			//risultati attesi
 			eventoWrapper.setRisultatiAttesiTemp(((EventoRES) evento).getRisultatiAttesi());
@@ -393,8 +427,20 @@ public class EventoServiceImpl implements EventoService {
 		}else if(evento instanceof EventoFSC){
 			//Programma
 			eventoWrapper.setProgrammaEventoFSC(((EventoFSC) evento).getFasiAzioniRuoli());
+
+			//mappa ruoli ore
+			eventoWrapper.initMappaRuoloOreFSC();
 		}else if(evento instanceof EventoFAD){
-			//TODO campi solo in EVENTO FAD
+			//Docenti
+			eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
+
+			//Requisiti Hardware Software
+			if (((EventoFAD) evento).getRequisitiHardwareSoftware() != null) {
+				eventoWrapper.setRequisitiHardwareSoftware(((EventoFAD) evento).getRequisitiHardwareSoftware());
+			}
+
+			//mappa verifica apprendimento
+			eventoWrapper.initMappaVerificaApprendimentoFAD();
 		}
 
 		//responsabili scientifici
@@ -430,13 +476,23 @@ public class EventoServiceImpl implements EventoService {
 			eventoWrapper.setDichiarazioneAssenzaConflittoInteresse(evento.getDichiarazioneAssenzaConflittoInteresse());
 		}
 
+		//Autocertificazione Assenza Aziende Alimenti Prima Infanzia
+		if (evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null) {
+			eventoWrapper.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia());
+		}
+
+		//Autocertificazione Autorizzazione Ministero Salute
+		if (evento.getAutocertificazioneAutorizzazioneMinisteroSalute() != null) {
+			eventoWrapper.setAutocertificazioneAutorizzazioneMinisteroSalute(evento.getAutocertificazioneAutorizzazioneMinisteroSalute());
+		}
+
 		return eventoWrapper;
 	}
 
 	@Override
 	public float calcoloDurataEvento(EventoWrapper eventoWrapper) {
 		float durata = 0;
-		
+
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			durata = calcoloDurataEventoRES(eventoWrapper.getProgrammaEventoRES());
 			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
@@ -444,35 +500,35 @@ public class EventoServiceImpl implements EventoService {
 			durata = calcoloDurataEventoFSC(eventoWrapper.getProgrammaEventoFSC(), eventoWrapper.getRiepilogoRuoliFSC());
 			((EventoFSC)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
-			
+
 		}
-		
+
 		return durata;
 	}
-	
+
 	private float calcoloDurataEventoRES(List<ProgrammaGiornalieroRES> programma){
 		float durata = 0;
-		
+
 		if(programma != null){
 			for(ProgrammaGiornalieroRES progrGior : programma){
 				for(DettaglioAttivitaRES dett : progrGior.getProgramma()){
 					if(!dett.isPausa())
 						durata += dett.getOreAttivita();
 				}
-			}	
+			}
 		}
-		
+
 		return durata;
 	}
 
 	private float calcoloDurataEventoFSC(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum, RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		float durata = 0;
-		
+
 //		if(riepilogoRuoliFSC != null){
 //			riepilogoRuoliFSC.forEach((k,v) ->{
 //				v.clear();
 //			});
-//			
+//
 //			if(programma!= null){
 //				for(FaseAzioniRuoliEventoFSCTypeA fase : programma){
 //					for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
@@ -482,49 +538,49 @@ public class EventoServiceImpl implements EventoService {
 //								//TODO sostituire con tempo relativo a singolo ruolo
 //								float tempoDedicato = (azione.getTempoDedicato() != null) ? Utils.getRoundedFloatValue(azione.getTempoDedicato()) : 0.0f;
 //								riepilogoRuoliFSC.get(ruolo).addTempo(tempoDedicato);
-//							});	
+//							});
 //						}
 //					}
 //				}
-//		
+//
 //			}
 //		}
-//				
+//
 //		durata = getMax(riepilogoRuoliFSC);
-		
+
 		return durata;
 	}
-	
+
 	private float getMax(Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		float max = 0.0f;
-		
+
 		if(riepilogoRuoliFSC != null){
 			Iterator<Entry<RuoloFSCEnum,RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
-			
+
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(pairs.getValue().getTempoDedicato() > max)
 					max = pairs.getValue().getTempoDedicato();
 			 }
 		}
-		
+
 		return max;
 	}
-	
+
 	private float calcoloDurataEventoFAD(){
 		float durata = 0;
 
-		
+
 		return durata;
 	}
 
 	@Override
 	public float calcoloCreditiEvento(EventoWrapper eventoWrapper) {
 		float crediti = 0;
-		
+
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			EventoRES evento = ((EventoRES)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getProgrammaEventoRES(), evento.getNumeroPartecipanti());				
+			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getProgrammaEventoRES(), evento.getNumeroPartecipanti());
 			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
 			return crediti;
@@ -535,12 +591,12 @@ public class EventoServiceImpl implements EventoService {
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FSC"));
 			return crediti;
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
-			
+
 		}
-		
+
 		return crediti;
 	}
-	
+
 	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, List<ProgrammaGiornalieroRES> programma, int numeroPartecipanti){
 		float crediti = 0.0f;
 
@@ -594,29 +650,29 @@ public class EventoServiceImpl implements EventoService {
 
 		return crediti;
 	}
-	
+
 	private float calcoloCreditiFormativiEventoFSC(TipologiaEventoFSCEnum tipologiaEvento, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		float crediti = 0.0f;
-		
+
 		if(tipologiaEvento == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO){
-		
+
 		}else if(tipologiaEvento == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO){
-			
+
 		}else if(tipologiaEvento == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA){
-			
+
 		}else if(tipologiaEvento == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE){
-			
+
 		}
-		
+
 		return crediti;
 	}
-	
+
 	private float calcoloCreditiFormativiEventoFAD(){
 		return (Float) null;
 	}
-	
+
 	/*
-	 * 
+	 *
 	 * prendo il programma dal wrapper e aggancio l'evento alle fasi o ai giorni
 	 * */
 	@Override
@@ -635,7 +691,7 @@ public class EventoServiceImpl implements EventoService {
 				for(FaseAzioniRuoliEventoFSCTypeA fase : ((EventoFSC)evento).getFasiAzioniRuoli()){
 					fase.setEvento(((EventoFSC)evento));
 				}
-				
+
 			}
 		}else if(evento instanceof EventoFAD){
 			//TODO FAD

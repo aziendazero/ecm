@@ -29,7 +29,7 @@ public class EventoFAD extends Evento{
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name = "docente_id")
-	private Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();//Sono ammessi per il RuoloPersonaEventoEnum solo DOCENTE e TUTOR
+	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();//Sono ammessi per il RuoloPersonaEventoEnum solo DOCENTE e TUTOR
 
 	private String razionale;
 	@ElementCollection
@@ -39,12 +39,12 @@ public class EventoFAD extends Evento{
 	private List<DettaglioAttivitaFAD> programma = new ArrayList<DettaglioAttivitaFAD>();
 
 	@ElementCollection
-	private Set<VerificaApprendimentoFAD> verificaApprendimento;
+	private List<VerificaApprendimentoFAD> verificaApprendimento = new ArrayList<VerificaApprendimentoFAD>();
 
 	//TODO sia FAD che RES
-	private boolean confermatiCrediti;
+	private Boolean confermatiCrediti;
 
-	private boolean supportoSvoltoDaEsperto;
+	private Boolean supportoSvoltoDaEsperto;
 
 	private String materialeDurevoleRilasciatoAiPratecipanti;
 

@@ -48,6 +48,7 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum;
@@ -390,7 +391,7 @@ public class EventoController {
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"));
 				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 			}
-		}		
+		}
 
 //	//metodo per chiamate AJAX sulle date ripetibili
 //	@RequestMapping("/add/dataIntermedia")
@@ -430,8 +431,8 @@ public class EventoController {
 		evento.setProvider(providerService.getProvider(providerId));
 		evento.setProceduraFormativa(proceduraFormativa);
 		eventoWrapper.setEvento(evento);
-
 		eventoWrapper.initProgrammi();
+//		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
@@ -441,9 +442,7 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
-		
 		eventoWrapper.initProgrammi();
-		
 		if(reloadWrapperFromDB)
 			eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - exiting"));
@@ -541,7 +540,7 @@ public class EventoController {
 							fileService.save(f);
 							anagraficaBase.setCv(f);
 						}else{
-							anagraficaBase.setCv(cv);							
+							anagraficaBase.setCv(cv);
 						}
 					}
 					AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
@@ -557,20 +556,25 @@ public class EventoController {
 				//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
 
 				File cv = p.getAnagrafica().getCv();
-				cv.getData();
-				File f = (File) cv.clone();
-				fileService.save(f);
-				p.getAnagrafica().setCv(f);
-				
+				if(cv != null) {
+					cv.getData();
+					File f = (File) cv.clone();
+					fileService.save(f);
+					p.getAnagrafica().setCv(f);
+				}
+
 				personaEventoRepository.save(p);
 				eventoWrapper.getResponsabiliScientifici().add(p);
 			}else if(target.equalsIgnoreCase("docenti")){
+
 				File cv = p.getAnagrafica().getCv();
-				cv.getData();
-				File f = (File) cv.clone();
-				fileService.save(f);
-				p.getAnagrafica().setCv(f);
-				
+				if(cv != null) {
+					cv.getData();
+					File f = (File) cv.clone();
+					fileService.save(f);
+					p.getAnagrafica().setCv(f);
+				}
+
 				personaEventoRepository.save(p);
 				eventoWrapper.getDocenti().add(p);
 			}
@@ -733,6 +737,15 @@ public class EventoController {
 				eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
 			}else if(target.equalsIgnoreCase("attivitaFSC")){
 				AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());
+				//test
+				Map<RuoloFSCEnum, RuoloOreFSC> mappaRuoloOre = eventoWrapper.getMappaRuoloOre();
+				Set<RuoloOreFSC> temp = azioniRuoli.getRuoli();
+				temp.clear();
+				for(RuoloOreFSC rof : mappaRuoloOre.values()) {
+					temp.add(new RuoloOreFSC(rof.getRuolo(), rof.getTempoDedicato()));
+				}
+				azioniRuoli.setRuoli(temp);
+				//
 				eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().add(azioniRuoli);
 				eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
 			}
@@ -828,7 +841,7 @@ public class EventoController {
 					eventoWrapper.setDateIntermedieMapTemp(val);
 				} else {
 					Long max = 1L;
-					if(eventoWrapper.getDateIntermedieMapTemp().size() != 0) 
+					if(eventoWrapper.getDateIntermedieMapTemp().size() != 0)
 						max = Collections.max(eventoWrapper.getDateIntermedieMapTemp().keySet()) + 1;
 					eventoWrapper.getDateIntermedieMapTemp().put(max, null);
 				}
@@ -836,7 +849,7 @@ public class EventoController {
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
 			}
-			
+
 			/*else if(eventoWrapper.getEvento() instanceof EventoFSC){
 				return EDITFSC + " :: " + "section-" + sectionIndex;
 			}else{
@@ -848,7 +861,7 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/removeDataIntermedia/{key}/{sectionToRefresh}", method=RequestMethod.POST)
 	public String removeDataIntermedia(@PathVariable("key") String key, @PathVariable("sectionToRefresh") String sectionToRefresh,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
@@ -860,7 +873,7 @@ public class EventoController {
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
 			}
-			
+
 			/*else if(eventoWrapper.getEvento() instanceof EventoFSC){
 				return EDITFSC + " :: " + "section-" + sectionIndex;
 			}else{
