@@ -738,13 +738,13 @@ public class EventoController {
 			}else if(target.equalsIgnoreCase("attivitaFSC")){
 				AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());
 				//test
-				Map<RuoloFSCEnum, RuoloOreFSC> mappaRuoloOre = eventoWrapper.getMappaRuoloOre();
-				Set<RuoloOreFSC> temp = azioniRuoli.getRuoli();
-				temp.clear();
-				for(RuoloOreFSC rof : mappaRuoloOre.values()) {
-					temp.add(new RuoloOreFSC(rof.getRuolo(), rof.getTempoDedicato()));
-				}
-				azioniRuoli.setRuoli(temp);
+//				Map<RuoloFSCEnum, RuoloOreFSC> mappaRuoloOre = eventoWrapper.getMappaRuoloOre();
+//				Set<RuoloOreFSC> temp = azioniRuoli.getRuoli();
+//				temp.clear();
+//				for(RuoloOreFSC rof : mappaRuoloOre.values()) {
+//					temp.add(new RuoloOreFSC(rof.getRuolo(), rof.getTempoDedicato()));
+//				}
+//				azioniRuoli.setRuoli(temp);
 				//
 				eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().add(azioniRuoli);
 				eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
@@ -901,6 +901,33 @@ public class EventoController {
 	@ResponseBody
 	public List<RuoloFSCEnum>getListaRuoliCoinvolti(@RequestParam TipologiaEventoFSCEnum tipologiaEvento){
 		return tipologiaEvento.getRuoliCoinvolti();
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/addRuoloOreToTemp", method=RequestMethod.POST)
+	public String addRuoloOreToTemp(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			//validazione o forse no del ruolo ore inserito
+			eventoWrapper.getTempAttivitaFSC().getRuoli().add(new RuoloOreFSC(eventoWrapper.getTempRuoloOreFSC().getRuolo(), eventoWrapper.getTempRuoloOreFSC().getTempoDedicato()));
+			return EDITFSC + " :: ruoloOreFSC";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDITFSC + " :: ruoloOreFSC";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/removeRuoloOreToTemp/{rowIndex}", method=RequestMethod.GET)
+	public String removeRuoloOreToTemp(@PathVariable("rowIndex") String rowIndex,
+										@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int index = Integer.valueOf(rowIndex).intValue();
+			eventoWrapper.getTempAttivitaFSC().getRuoli().remove(index);
+			return EDITFSC + " :: ruoloOreFSC";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDITFSC + " :: ruoloOreFSC";
+		}
 	}
 
 }

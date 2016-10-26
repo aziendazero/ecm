@@ -1,7 +1,9 @@
 package it.tredi.ecm.dao.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -40,7 +42,8 @@ public class AzioneRuoliEventoFSC extends BaseEntity {
 //	private Set<RuoloFSCEnum> ruoli = new HashSet<RuoloFSCEnum>();
 
 	@ElementCollection
-	private Set<RuoloOreFSC> ruoli = new HashSet<RuoloOreFSC>();
+	//private Set<RuoloOreFSC> ruoli = new HashSet<RuoloOreFSC>();
+	private List<RuoloOreFSC> ruoli = new ArrayList<RuoloOreFSC>();
 
 	private BigDecimal tempoDedicato;
 }

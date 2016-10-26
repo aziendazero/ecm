@@ -90,7 +90,7 @@
 
 									<div class="divider-dashed"></div>
 
-									<div id="container-ruoliCoinvolti" class="item form-group">
+									<!-- <div id="container-ruoliCoinvolti" class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
 											<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
 											<span class="required">*</span>
@@ -115,6 +115,26 @@
 													</div>
 												</div>
 											</div>
+										</div>
+									</div> -->
+									<div id="container-ruoliCoinvolti" class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
+											<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
+										</label>
+										<a id="add-ruolo" class="btn btn-success" th:title="#{label.inserisci_attivita}" data-toggle="modal" data-target=".modal-add-ruoloOreFSC">
+											<span><i class="fa fa-plus"></i></span>
+										</a>
+										<div id="ruoloOreFSC" class="col-xs-offset-3 col-xs-9">
+											<ul th:fragment="ruoloOreFSC">
+												<li th:attr="data-row-id=${__${row.index}__}" th:each="ruoloOre, row : ${eventoWrapper.tempAttivitaFSC.ruoli}">
+													<label class="control-label" th:text="${ruoloOre.ruolo.nome} + ' (' + ${ruoloOre.tempoDedicato} + 'h)'"></label>
+													<input type="hidden" th:field="${eventoWrapper.tempAttivitaFSC.ruoli[__${row.index}__].ruolo}" />
+													<input type="hidden" th:field="${eventoWrapper.tempAttivitaFSC.ruoli[__${row.index}__].tempoDedicato}" />
+													<a onclick="removeRuoloOreFSC(this)" class="btn btn-danger">
+														<span><i class="fa fa-minus"></i></span>
+													</a>
+												</li>
+											</ul>
 										</div>
 									</div>
 
@@ -132,115 +152,65 @@
 					</div>
 				</div>
 				
-				<!-- finestra modale di aggiunta attivitaRES a programma del Giorno -->
-			<!-- <div id="add-ruoloFSC-modal" class="modal fade modal-add-ruoloFSC" data-model-index="2" role="dialog">
-				<div class="modal-dialog modal-lg">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
-							</button>
-							<h4 class="modal-title" th:text="#{label.aggiungi_ruolo}">Aggiungi Ruolo</h4>
-						</div>
-						<div class="modal-body">
-							<form id="addRuoloFSC" name="addRuoloFSC" class="form-horizontal form-label-left"
-									th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRuoloTo|}"
-									th:object="${eventoWrapper.tempRuoloOreFSC}" method="post" enctype="multipart/form-data"
-									novalidate="novalidate">
-
-									RUOLI
-									<div id="container-ruoliFSC" class="item form-group">
-										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliFSC">
-											<span th:text="#{label.ruolo}">Ruolo</span>
-										</label>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="ruolo">
-											<select
-												class="selectpicker required selectRuolo"
-												th:field="*{ruolo}"
-												data-width="100%" data-style="btn-primary"
-												data-actions-box="true" data-size="10"
-												data-hide-disabled="false"
-												title="Seleziona un ruolo...">
-												<option
-													th:each="ruolo, row: ${T(it.tredi.ecm.dao.enumlist.RuoliFSCEnum).values()}"
-													th:value="${ruolo}"
-													th:text="${ruolo.nome}">tipologia selezionata
-												</option>
-											</select>
-										</div>
-									</div>
-
-									Tipologia
-									<div id="container-risultatiAttesi" class="item form-group">
-										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-											<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
-											<span class="required">*</span>
-										</label>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
-											<input type="text" required="required" class="form-control"
-												th:field="*{risultatiAttesi}" />
-										</div>
-									</div>
-
-
-									METODO DI LAVORO
-									<div id="container-metodiDiLavoro" class="item form-group">
-										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-											<span th:text="#{label.metodi_di_lavoro}">Metodo Lavoro</span>
-											<span class="required">*</span>
-										</label>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<div class="checkbox" th:each="metodo, row : ${T(it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum).values()}">
-												<label>
-													<input type="checkbox" class="flat" th:field="*{metodiDiLavoro}" th:value="${metodo}" />
-													<span th:text="${metodo.nome}"></span>
-												</label>
-											</div>
-										</div>
-									</div>
-
-									<div class="divider-dashed"></div>
-
-									<div id="container-ruoliCoinvolti" class="item form-group">
-										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
-											<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
-											<span class="required">*</span>
-										</label>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<div th:each="ruolo, row : ${T(it.tredi.ecm.dao.enumlist.RuoloFSCEnum).values()}">
-												<div class="inner-ruoliCoinvolti">
-													<div class="checkbox">
-														<label>
-															<input type="checkbox" class="flat" th:field="${eventoWrapper.mappaRuoloOre[__${ruolo}__].ruolo}" th:value="${ruolo}"  />
-															<span th:text="${ruolo.nome}"></span>
-														</label>
-													</div>
-													<div class="with-margin-top">
-														<label class="control-label col-xs-2">
-															<span th:text="#{label.ore}">Ore</span>
-															<span class="required">*</span>
-														</label>
-														<div class="col-xs-10 z-index-top">
-															<input class="form-control" type="text" pattern="numeric" th:field="${eventoWrapper.mappaRuoloOre[__${ruolo}__].tempoDedicato}" />
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									fragment da aggiornare
-									<input id="targetTableAttivitaFSC" type="text" name="target" style="display: none;" />
-									fase a cui agganciare l'attività
-									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
-								</form>
+				<!-- finestra modale di aggiunta ruoloOreFSC a tempAttivitaFSC -->
+				<div id="add-ruoloOreFSC-modal" class="modal fade modal-add-ruoloOreFSC" data-model-index="2" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+								</button>
+								<h4 class="modal-title" th:text="#{label.aggiungi_ruolo}">Aggiungi Ruolo</h4>
 							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
-								<label for="targetTableAttivitaFSC" class="btn btn-success pull-right" onclick="sendAjaxAddAttivitaToProgramma()" th:text="#{label.invia}">Invia</label>
+							<div class="modal-body">
+								<form id="addRuoloOreFSC" name="addRuoloOreFSC" class="form-horizontal form-label-left"
+										th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRuoloOreFSCTo|}"
+										method="post" enctype="multipart/form-data"
+										novalidate="novalidate">
+	
+										<div id="container-ruoloFSC" class="item form-group">
+											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoloFSC">
+												<span th:text="#{label.ruolo}">Ruolo</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="ruolo">
+												<select
+													class="selectpicker required selectRuolo"
+													th:field="${eventoWrapper.tempRuoloOreFSC.ruolo}"
+													data-width="100%" data-style="btn-primary"
+													data-actions-box="true" data-size="10"
+													data-hide-disabled="false"
+													title="Seleziona un ruolo...">
+													<option
+														th:each="ruolo, row: ${T(it.tredi.ecm.dao.enumlist.RuoloFSCEnum).values()}"
+														th:value="${ruolo}"
+														th:text="${ruolo.nome}">tipologia selezionata
+													</option>
+												</select>
+											</div>
+										</div>
+	
+										<div id="container-tempoDedicato" class="item form-group">
+											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tempoDedicato">
+												<span th:text="#{label.tempo_dedicato}">Tempo Dedicato</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
+												<input type="text" pattern="numeric" required="required" class="form-control"
+													th:field="${eventoWrapper.tempRuoloOreFSC.tempoDedicato}" />
+											</div>
+										</div>
+										
+										<!-- fragment da aggiornare -->
+										<input id="targetTableAttivitaFSC" type="text" name="target" style="display: none;" />
+
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+									<label for="targetTableAttivitaFSC" class="btn btn-success pull-right" onclick="sendAjaxAddRuoloOreToTemp()" th:text="#{label.invia}">Invia</label>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div> -->
 
 			<form id="formEventoFSC" class="form-horizontal form-label-left"
 				th:action="@{|/provider/${eventoWrapper.providerId}/evento/save|}"
@@ -1477,6 +1447,31 @@
 								break;
 					default: 	break;
 				}
+			}
+				
+				function sendAjaxAddRuoloOreToTemp(){
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRuoloOreToTemp|}]], $('#addRuoloOreFSC').serialize())
+						.done(function(data) {
+							$('#ruoloOreFSC').html(data);
+						  	closeModaleAddRuoloOreFSCTo();
+						  })
+					  	.fail(function() {
+					  		//TODO mostra error sui campi mancanti
+					    	alert( "errorFSC" );
+					 	 })
+				}
+				
+				function closeModaleAddRuoloOreFSCTo(){
+					$("#add-ruoloOreFSC-modal .close").click();
+					$("#add-ruoloOreFSC-modal form")[0].reset();
+					$("#add-ruoloOreFSC-modal .selectpicker").selectpicker('val','')
+				}
+				
+				function removeRuoloOreFSC(caller){
+					var rowIndex = $(caller).parent().data('row-id');
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeRuoloOreToTemp/|}]] + rowIndex;
+
+					$("#ruoloOreFSC").load(url);
 				}
 
 			/*]]>*/
