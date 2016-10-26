@@ -53,7 +53,9 @@ public class EventoWrapper {
 
 	//parte ripetibili
 	//private List<String> dateIntermedieTemp = new ArrayList<String>();
-	private List<String> risultatiAttesiTemp = new ArrayList<String>();
+	//private List<String> risultatiAttesiTemp = new ArrayList<String>();
+
+	private Map<Long, String> risultatiAttesiMapTemp = new LinkedHashMap<Long, String>();
 
 	private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
 
@@ -169,6 +171,7 @@ public class EventoWrapper {
 		programmaEvento.add(prog);
 		this.setProgrammaEventoRES(programmaEvento);
 		this.getDateIntermedieMapTemp().put(1L, null);
+		this.getRisultatiAttesiMapTemp().put(1L, null);
 	}
 
 	/*
@@ -247,7 +250,7 @@ public class EventoWrapper {
 	}
 
 	public void initProgrammiFAD(){
-		//TODO FAD
+		this.getRisultatiAttesiMapTemp().put(1L, null);
 	}
 
 	public void initMappaVerificaApprendimentoFAD() {

@@ -33,7 +33,7 @@ public class EventoFAD extends Evento{
 
 	private String razionale;
 	@ElementCollection
-	private List<String> risultatiAttesi = new ArrayList<String>();
+	private Set<String> risultatiAttesi = new HashSet<String>();
 	@ElementCollection
 	@OrderBy("orario ASC")
 	private List<DettaglioAttivitaFAD> programma = new ArrayList<DettaglioAttivitaFAD>();

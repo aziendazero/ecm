@@ -451,6 +451,7 @@
 										<span class="required">*</span>
 									</label>
 								</div>
+								<div th:text="${#maps.size(eventoWrapper.dateIntermedieMapTemp)}"></div>
 								<div class="date-intermedie-container" id="dateIntermedieId">
 									<div th:fragment="dateIntermedieId" th:class="${row.last ? 'nextDataIntermedia item form-group' : 'prevDataIntermedia item form-group'}" th:each="data, row : ${eventoWrapper.dateIntermedieMapTemp}">
 										<div class='col-md-4 col-sm-4 col-xs-12'></div>
@@ -705,28 +706,22 @@
 										<span>22</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="risultatiAttesi">
-										<span th:text="#{label.risultati_attesi}">Risultati attesi</span>
+										<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
 										<span class="required">*</span>
 									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
-										<input type="text" class="form-control" />
-										<span class="input-group-addon" onclick="aggiungiRisultatoAtteso($(this).prev().val())">
-											<i class="fa fa-plus"></i>
-										</span>
-									</div>
 								</div>
-								<div class="item form-group">
-									<div class="col-md-4 col-sm-4 col-xs-12"></div>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
-										<div class="risultati-attesi-container">
-											<div class='risultato-atteso' style='display: inline-block' th:each="risultatoAtteso, row : ${eventoWrapper.risultatiAttesiTemp}">
-												<span th:text="${risultatoAtteso}"></span>
-												<span onclick='rimuoviRisultatoAtteso($(this).parent())'><i class='clickable red fa fa-remove'></i></span>
-												<input type='hidden' th:value="${risultatoAtteso}" th:name="'risultatiAttesiTemp['+__${row.index}__+']'" />
-											</div>
+								<div class="risultati-attesi-container" id="risultatiAttesiId">
+									<div th:fragment="risultatiAttesiId" th:class="${row.last ? 'nextRisultatoAtteso item form-group' : 'prevRisultatoAtteso item form-group'}" th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}">
+										<div class='col-md-4 col-sm-4 col-xs-12'></div>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
+											<input type="hidden" th:value="${risultato.key}" />
+											<input id="risultatoAtteso" type="text" class="form-control risultatoPicker"
+												th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" />
+											<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviDataIntermedia(this, ''risultatiAttesiId'', ' + risultato.key + ')'}">
+												<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
+											</span>
 										</div>
 									</div>
-									<div class="col-lg-3 col-md-1 col-sm-1 col-xs-12"></div>
 								</div>
 
 								<div class="divider-dashed"></div>
@@ -1345,9 +1340,6 @@
 					reloadSection(tabSelected);
 				});
 
-				//indice per calcolare i nuovi name delle date intermedie
-				var indexRisutato = [[${#lists.size(eventoWrapper.risultatiAttesiTemp)}]] - 1;
-
 				//funzione che aggiunge una data intermedia, aumenta il name in base alle date già presenti
 				function aggiungiDataIntermedia(caller, target) {
 					//alert('aggiungiDataIntermedia');
@@ -1523,26 +1515,32 @@
 					}
 				}
 
-				//funzione che aggiunge un risultato atteso alla lista dei temporanei
-				//(solo lato client, il salvataggio verrà realizzato al save dell'evento)
-				function aggiungiRisultatoAtteso(risultato) {
-					if(risultato.trim()) {
-						var container = $("<div class='risultato-atteso' style='display: inline-block'></div>");
-						var spanText = $("<div class='text-risultato' style='display: inline-block'></div>").text(risultato);
-						var spanButtonRemove = $("<span onclick='rimuoviRisultatoAtteso($(this).parent())'><i class='clickable red fa fa-remove'></i></span>");
-						var inputHidden = $("<input type='hidden' name='risultatiAttesiTemp["+ ++indexRisutato +"]' />");
-						inputHidden.val(risultato);
-						container.append(spanText).append(spanButtonRemove).append(inputHidden);
-						container.appendTo(".risultati-attesi-container");
-						//TODO index + input hidden + select update
-						addToSelectAttivitaRES('addAttivitaRES-risultatiAttesi',risultato);
-					}
+				//funzione che aggiunge un risultato atteso
+				function aggiungiRisultatoAtteso(caller, target) {
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRisultatoAtteso/|}]] + target, $('#formEventoRES').serialize())
+					.done(function(data) {
+						//alert(data);
+					  	$('#' + target).html(data);
+					  	reInitComponents();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
 				}
 
 				//rimuove un risultato atteso
-				function rimuoviRisultatoAtteso(container) {
-					container.remove();
-					removeFromSelectAttivitaRES('addAttivitaRES-risultatiAttesi',$(container).find('input').val());
+				function rimuoviRisultatoAtteso(caller, target, key) {
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeRisultatoAtteso/|}]] + key + '/' + target, $('#formEventoRES').serialize())
+					.done(function(data) {
+						//alert(data);
+					  	$('#' + target).html(data);
+					  	reInitComponents();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
 				}
 
 				function abilitaModalitaVerificaApprendimento(tipologia) {

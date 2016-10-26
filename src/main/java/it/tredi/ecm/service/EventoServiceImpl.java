@@ -205,7 +205,13 @@ public class EventoServiceImpl implements EventoService {
 			((EventoRES) evento).setDateIntermedie(dateIntermedie);
 
 			//Risultati Attesi
-			((EventoRES) evento).setRisultatiAttesi(eventoWrapper.getRisultatiAttesiTemp());
+			Set<String> risultatiAttesi = new HashSet<String>();
+			for (String s : eventoWrapper.getRisultatiAttesiMapTemp().values()) {
+				if(s != null && !s.isEmpty()) {
+					risultatiAttesi.add(s);
+				}
+			}
+			((EventoRES) evento).setRisultatiAttesi(risultatiAttesi);
 
 			//Docenti
 			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
@@ -235,6 +241,15 @@ public class EventoServiceImpl implements EventoService {
 				attachedList.add(p);
 			}
 			((EventoFAD)evento).setDocenti(attachedList);
+
+			//Risultati Attesi
+			Set<String> risultatiAttesi = new HashSet<String>();
+			for (String s : eventoWrapper.getRisultatiAttesiMapTemp().values()) {
+				if(s != null && !s.isEmpty()) {
+					risultatiAttesi.add(s);
+				}
+			}
+			((EventoFAD) evento).setRisultatiAttesi(risultatiAttesi);
 
 			//Requisiti Hardware Software
 			if (eventoWrapper.getRequisitiHardwareSoftware().getId() != null) {
@@ -408,11 +423,20 @@ public class EventoServiceImpl implements EventoService {
 				dateIntermedieTemp.put(key++, dataToString);
 			}
 			if(dateIntermedieTemp.size() == 0)
-				dateIntermedieTemp.put(key, "");
+				dateIntermedieTemp.put(key, null);
 
 			eventoWrapper.setDateIntermedieMapTemp(dateIntermedieTemp);
+
 			//risultati attesi
-			eventoWrapper.setRisultatiAttesiTemp(((EventoRES) evento).getRisultatiAttesi());
+			key = 1L;
+			Map<Long, String> risultatiAttesiTemp = new LinkedHashMap<Long, String>();
+			for (String s : ((EventoRES) evento).getRisultatiAttesi()) {
+				risultatiAttesiTemp.put(key++, s);
+			}
+			if(risultatiAttesiTemp.size() == 0)
+				risultatiAttesiTemp.put(key, null);
+
+			eventoWrapper.setRisultatiAttesiMapTemp(risultatiAttesiTemp);
 
 			//Docenti
 			eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
@@ -433,6 +457,17 @@ public class EventoServiceImpl implements EventoService {
 		}else if(evento instanceof EventoFAD){
 			//Docenti
 			eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
+
+			//risultati attesi
+			Long key = 1L;
+			Map<Long, String> risultatiAttesiTemp = new LinkedHashMap<Long, String>();
+			for (String s : ((EventoFAD) evento).getRisultatiAttesi()) {
+				risultatiAttesiTemp.put(key++, s);
+			}
+			if(risultatiAttesiTemp.size() == 0)
+				risultatiAttesiTemp.put(key, "");
+
+			eventoWrapper.setRisultatiAttesiMapTemp(risultatiAttesiTemp);
 
 			//Requisiti Hardware Software
 			if (((EventoFAD) evento).getRequisitiHardwareSoftware() != null) {

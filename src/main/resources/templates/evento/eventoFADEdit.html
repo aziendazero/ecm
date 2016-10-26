@@ -358,6 +358,65 @@
 										<th:block th:include="evento/eventoEdit :: docenti" />
 									</div>
 								</div>
+
+								<!-- BLOCCO PROGRAMMA ATTIVITÀ FORMATIVA -->
+								<div class="item form-group">
+									<label class="col-xs-12">
+										<span th:text="#{label.programma_attività_formativa}">Titolo</span>
+									</label>
+								</div>
+								<!-- RAZIONALE -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>16</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.razionale}">Razionale</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<input type="text" class="form-control" th:field="${eventoWrapper.evento.razionale}" />
+									</div>
+								</div>
+								<!-- RISULTATI ATTESI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>17</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="risultatiAttesi">
+										<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
+										<span class="required">*</span>
+									</label>
+								</div>
+								<div class="risultati-attesi-container" id="risultatiAttesiId">
+									<div th:fragment="risultatiAttesiId" th:class="${row.last ? 'nextRisultatoAtteso item form-group' : 'prevRisultatoAtteso item form-group'}" th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}">
+										<div class='col-md-4 col-sm-4 col-xs-12'></div>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
+											<input type="hidden" th:value="${risultato.key}" />
+											<input id="risultatoAtteso" type="text" class="form-control risultatoPicker"
+												th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" />
+											<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}">
+												<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
+											</span>
+										</div>
+									</div>
+								</div>
+
+<!-- 								<div class="item form-group"> -->
+<!-- 									<div class="col-md-4 col-sm-4 col-xs-12"></div> -->
+<!-- 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group"> -->
+<!-- 										<div class="risultati-attesi-container"> -->
+<!-- 											<div class='risultato-atteso' style='display: inline-block' th:each="risultatoAtteso, row : ${eventoWrapper.evento.risultatiAttesi}"> -->
+<!-- 												<span th:text="${risultatoAtteso}"></span> -->
+<!-- 												<span onclick='rimuoviRisultatoAtteso($(this).parent())'><i class='clickable red fa fa-remove'></i></span> -->
+<!-- 											</div> -->
+<!-- 										</div> -->
+<!-- 									</div> -->
+<!-- 									<div class="col-lg-3 col-md-1 col-sm-1 col-xs-12"></div> -->
+<!-- 								</div> -->
+
+								<div class="divider-dashed"></div>
+
 							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="tab2">
@@ -919,6 +978,34 @@
 			    	tabSelected = e.target.id;
 					reloadSection(tabSelected);
 				});
+
+				//funzione che aggiunge un risultato atteso
+				function aggiungiRisultatoAtteso(caller, target) {
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRisultatoAtteso/|}]] + target, $('#formEventoFAD').serialize())
+					.done(function(data) {
+						//alert(data);
+					  	$('#' + target).html(data);
+					  	reInitComponents();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
+				}
+
+				//rimuove un risultato atteso
+				function rimuoviRisultatoAtteso(caller, target, key) {
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeRisultatoAtteso/|}]] + key + '/' + target, $('#formEventoFAD').serialize())
+					.done(function(data) {
+						//alert(data);
+					  	$('#' + target).html(data);
+					  	reInitComponents();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
+				}
 
 				function reloadSection(selectedTab){
 					//alert('reloadSection: ' + selectedTab);

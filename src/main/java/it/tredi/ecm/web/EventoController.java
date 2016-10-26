@@ -886,6 +886,52 @@ public class EventoController {
 		}
 	}
 
+	@RequestMapping(value = "/provider/{providerId}/evento/addRisultatoAtteso/{sectionToRefresh}", method=RequestMethod.POST)
+	public String addRisultatoAtteso(@PathVariable("sectionToRefresh") String sectionToRefresh,
+			@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			if(eventoWrapper.getEvento() instanceof EventoRES || eventoWrapper.getEvento() instanceof EventoFAD){
+				if(eventoWrapper.getRisultatiAttesiMapTemp() == null) {
+					Map<Long, String> val = new LinkedHashMap<Long, String>();
+					val.put(1L, null);
+					eventoWrapper.setRisultatiAttesiMapTemp(val);
+				} else {
+					Long max = 1L;
+					if(eventoWrapper.getRisultatiAttesiMapTemp().size() != 0)
+						max = Collections.max(eventoWrapper.getRisultatiAttesiMapTemp().keySet()) + 1;
+					eventoWrapper.getRisultatiAttesiMapTemp().put(max, null);
+				}
+				String evType = eventoWrapper.getEvento() instanceof EventoRES ? EDITRES : EDITFAD;
+				return evType + " :: " + sectionToRefresh;
+			} else {
+				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES o EventoFAD.");
+			}
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
+		}
+	}
+
+	@RequestMapping(value = "/provider/{providerId}/evento/removeRisultatoAtteso/{key}/{sectionToRefresh}", method=RequestMethod.POST)
+	public String removeRisultatoAtteso(@PathVariable("key") String key, @PathVariable("sectionToRefresh") String sectionToRefresh,
+			@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			Long k = Long.valueOf(key);
+			if(eventoWrapper.getEvento() instanceof EventoRES || eventoWrapper.getEvento() instanceof EventoFAD){
+				eventoWrapper.getRisultatiAttesiMapTemp().remove(k);
+				String evType = eventoWrapper.getEvento() instanceof EventoRES ? EDITRES : EDITFAD;
+				return evType + " :: " + sectionToRefresh;
+			} else {
+				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES o EventoFAD.");
+			}
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
+		}
+	}
+
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/evento/listaDocentiAttivitaRES")
 	@ResponseBody
