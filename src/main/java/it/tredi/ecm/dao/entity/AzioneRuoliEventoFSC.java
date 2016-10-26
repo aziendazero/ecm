@@ -32,15 +32,15 @@ public class AzioneRuoliEventoFSC extends BaseEntity {
 
 	@Column(name="risultati_attesi")
 	private String risultatiAttesi;
-	
+
 	@ElementCollection
 	private Set<MetodoDiLavoroEnum> metodiDiLavoro = new HashSet<MetodoDiLavoroEnum>();
-	
-	@ElementCollection
-	private Set<RuoloFSCEnum> ruoli = new HashSet<RuoloFSCEnum>();
-	
-//	@ElementCollection
-//	private Set<RuoloOreFSC> ruoliOre = new HashSet<RuoloOreFSC>();
 
-	private BigDecimal tempoDedicato;	
+//	@ElementCollection
+//	private Set<RuoloFSCEnum> ruoli = new HashSet<RuoloFSCEnum>();
+
+	@ElementCollection
+	private Set<RuoloOreFSC> ruoli = new HashSet<RuoloOreFSC>();
+
+	private BigDecimal tempoDedicato;
 }
