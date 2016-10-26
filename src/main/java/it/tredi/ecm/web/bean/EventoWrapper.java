@@ -208,10 +208,21 @@ public class EventoWrapper {
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.ELABORAZIONE_PROPOSTE));
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.APPLICAZIONI_GESTIONALI_ORGANIZZATIVE));
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.VERIFICA_PRATICA_CORRENTE));
-		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.VALUTAZIONE_IMPATTO_CAMBIAMENTO));
+		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.VALUTAZIONE_IMPATTO));
 
 		//this.setProgrammaEventoFSC_ACA(programmaEvento);
 		this.possibiliProgrammiFSC.put(TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE, programmaEvento);
+		
+		//TIPOLOGIA PROGETTI DI MIGLIORAMENTO
+		programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
+		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.ANALISI_DEL_PROBLEMA));
+		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.INDIVIDUAZIONE_DELLE_SOLUZIONI));
+		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.CONFRONTO_E_CONDIVISIONE));
+		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.IMPLEMENTAZIONE_CAMBIAMENTO_E_MONITORAGGIO));
+		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.VALUTAZIONE_IMPATTO_CAMBIAMENTO));
+
+		//this.setProgrammaEventoFSC_ACA(programmaEvento);
+		this.possibiliProgrammiFSC.put(TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO, programmaEvento);
 	}
 
 	private void initRiepilogoRuoliFSC(){
@@ -244,6 +255,15 @@ public class EventoWrapper {
 		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT));
 
 		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE, riepilogoRuoli);
+		
+		//TIPOLOGIA PROGRAMMA DI MIGLIORAMENTO
+		riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
+		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+		riepilogoRuoli.put(RuoloFSCEnum.ESPERTO, new RiepilogoRuoliFSC(RuoloFSCEnum.ESPERTO));
+		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_GRUPPI, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_GRUPPI));
+		riepilogoRuoli.put(RuoloFSCEnum.RESPONSABILE_PROGETTO, new RiepilogoRuoliFSC(RuoloFSCEnum.RESPONSABILE_PROGETTO));
+
+		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO, riepilogoRuoli);
 	}
 
 	public void initProgrammiFAD(){

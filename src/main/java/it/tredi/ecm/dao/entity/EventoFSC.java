@@ -15,6 +15,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 
+import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaGruppoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
@@ -35,6 +36,10 @@ public class EventoFSC extends Evento{
 	private TipologiaEventoFSCEnum tipologiaEvento;
 	@Enumerated(EnumType.STRING)
 	private TipologiaGruppoFSCEnum tipologiaGruppo;
+	
+	@Enumerated(EnumType.STRING)
+	private ProgettiDiMiglioramentoFasiDaInserireFSCEnum fasiDaInserire;
+	
 	private Boolean sperimentazioneClinica;
 	private Boolean ottenutoComitatoEtico;
 
