@@ -138,7 +138,8 @@
 										<option
 											th:each="ruolo, row: ${T(it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum).values()}"
 											th:value="${ruolo}"
-											th:text="${ruolo.nome}">ruolo selezionato
+											th:text="${ruolo.nome}"
+											th:unless="${ruolo == T(it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum).RELATORE and eventoWrapper.evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
 										</option>
 									</select>
 								</div>
@@ -181,7 +182,7 @@
 							<input id="targetTable" type="text" name="addPersonaTo" style="display: none;" />
 							<input id="typePersona" type="text" name="typePersona" style="display: none;" />
 							<input id="fromLookUp" type="text" name="fromLookUp" style="display: none;" />
-							
+
 						</form>
 					</div>
 					<div class="modal-footer">
@@ -446,8 +447,8 @@
 		/*<![CDATA[*/
 
          	var days;
-			var months; 
-		           
+			var months;
+
 		    //DataTables
 		    var tables = new Array();
 
@@ -857,7 +858,7 @@
 					$('#typePersona').val(type);
 					$('#fromLookUp').val(fromLookup);
 					console.log('fromLookUp:' + fromLookup);
-					
+
 					if(target == 'responsabiliScientifici'){
 						$("#container-qualifica").show();
 						$("#container-ruolo").hide();
@@ -912,6 +913,12 @@
 		            checkboxClass: 'icheckbox_flat-green',
 		            radioClass: 'iradio_flat-green'
 		        });
+				//reinit selecpicker
+			    $('select').selectpicker({
+					selectAllText : 'Seleziona tutti',
+					deselectAllText : 'Deseleziona tutti',
+					countSelectedText : '{0} selezionate'
+				});
 			}
 
 			//sumbit della modale di inserimento persona
@@ -1291,7 +1298,7 @@
 							<input type="text" th:attr="data-programma-provincia=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.provincia}" />
 						</div>
 					</div>
-	
+
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.comune}">Comune</span>
@@ -1301,7 +1308,7 @@
 							<input type="text" th:attr="data-programma-comune=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.comune}" />
 						</div>
 					</div>
-	
+
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.indirizzo}">Indirizzo</span>
@@ -1311,7 +1318,7 @@
 							<input type="text" th:attr="data-programma-indirizzo=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.indirizzo}" />
 						</div>
 					</div>
-	
+
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.luogo}">Luogo</span>
@@ -1321,7 +1328,7 @@
 							<input type="text" th:attr="data-programma-luogo=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.luogo}" />
 						</div>
 					</div>
-	
+
 					<div class="col-xs-12">
 						<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
 						<div th:attr="data-programma-id=__${status.index}__">
@@ -1371,7 +1378,7 @@
 			</div>
 		</div>
 	</th:block>
-	
+
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaFSC">
 			<div id="attivitaFSC">
@@ -1386,7 +1393,7 @@
 							</div>
 						</th:block>
 					</div>
-	
+
 					<div class="col-xs-12">
 						<label th:unless="${faseCAMPOLIBERO}" th:text="#{label.azioni} + '/' + #{label.ruoli}">Azioni / Ruoli</label>
 						<label th:if="${faseCAMPOLIBERO}" th:text="#{label.fasi}">Fasi</label>
@@ -1396,7 +1403,7 @@
 									<tr>
 										<th th:unless="${faseCAMPOLIBERO}" th:text="#{label.azione}">AZIONE</th>
 										<th th:if="${faseCAMPOLIBERO}" th:text="#{label.fase}">FASE</th>
-										<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>		
+										<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
 										<th th:text="#{label.risultati_attesi}">RISULTATAO ATTESO</th>
 										<th th:text="#{label.metodi_di_lavoro}">METODO DI LAVORO</th>
 										<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
@@ -1413,19 +1420,19 @@
 										<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].azione}"></td>
 										<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].obiettivoFormativo?.nome}"></td>
 										<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].risultatiAttesi}"></td>
-										
+
 										<td>
 											<ul>
 												<li th:each="metodo, m : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].metodiDiLavoro}">
 										 			<span th:text="${metodo.nome}"></span>
-										 		</li>										
+										 		</li>
 											</ul>
 										 </td>
 										<td>
 											<ul>
-												<li th:each="ruolo, r : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].ruoli}">
-										 			<span th:text="${ruolo.nome}"></span>
-										 		</li>										
+												<li th:each="ruoloFSC, r : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].ruoli}">
+										 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.ruolo.nome} + ${ruoloFSC.tempoDedicato != null ? ' (' + ruoloFSC.tempoDedicato + 'h)' : ''}"></span>
+										 		</li>
 											</ul>
 										 </td>
 										<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].tempoDedicato}"></td>
@@ -1444,6 +1451,6 @@
 			</div>
 		</div>
 	</th:block>
-	
+
 </body>
 </html>
