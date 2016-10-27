@@ -514,6 +514,11 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		wrapper.setSubset(subset);
 		wrapper.setObjRef(objRef);
 		wrapper.setSelected(Utils.getSubsetOfIdFieldEnum(fullLista, subset));
+		
+		if(fullLista != null && !fullLista.isEmpty()) {
+			for(FieldEditabileAccreditamento fEdit : fullLista)
+				wrapper.getMappaNoteFieldEditabileAccreditamento().put(fEdit.getIdField(), fEdit.getNota());
+		}
 
 		return wrapper;
 	}
@@ -523,26 +528,34 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		Set<IdFieldEnum> listaDaView = wrapper.getSelected();
 		Set<IdFieldEnum> gruppo = new HashSet<IdFieldEnum>();
 		
-		
-		if(!listaDaView.isEmpty())
-			listaDaView.forEach( f -> {
-				if(!f.getGruppo().isEmpty())
-					for(IdFieldEnum field : f.getGruppo())
-						gruppo.add(field);
-			});
-		
-		listaDaView.addAll(gruppo);
+		if(listaDaView != null) {
+			if(!listaDaView.isEmpty())
+				listaDaView.forEach( f -> {
+					if(!f.getGruppo().isEmpty())
+						for(IdFieldEnum field : f.getGruppo())
+							gruppo.add(field);
+				});
+			
+			listaDaView.addAll(gruppo);
+		}
 
+		//SI carica la lista dei FieldEditabileAccreditamento da DB per l'accreditamento corrente
 		Set<FieldEditabileAccreditamento> listaFull = fieldEditabileAccreditamentoService.getFullLista(wrapper.getAccreditamentoId(), wrapper.getObjRef());
+		//Filtro la listaFull di tutti i FieldEditabileAccreditamento salvati sul DB con il SubSetFieldEnum corrente 
+		//ottenendo la lista dei FieldEditabileAccreditamento salvati su db gestiti in questo momento
 		Set<FieldEditabileAccreditamento> listaSubset = Utils.getSubset(listaFull, wrapper.getSubset());
 
+		//Cancello da db quelli che non sono stati check-ati e aggiorno la nota di quelli check-ati
 		listaSubset.forEach(f -> {
 			if(listaDaView == null || !listaDaView.contains(f.getIdField())){
 				fieldEditabileAccreditamentoService.delete(f);
+			} else {
+				f.setNota(wrapper.getMappaNoteFieldEditabileAccreditamento().get(f.getIdField()));
+				fieldEditabileAccreditamentoService.update(f);
 			}
 		});
 
-		fieldEditabileAccreditamentoService.insertFieldEditabileForAccreditamento(wrapper.getAccreditamentoId(), wrapper.getObjRef(), wrapper.getSubset(), listaDaView);
+		fieldEditabileAccreditamentoService.insertFieldEditabileForAccreditamento(wrapper.getAccreditamentoId(), wrapper.getObjRef(), wrapper.getSubset(), listaDaView, wrapper.getMappaNoteFieldEditabileAccreditamento());
 	}
 	
 	@Override

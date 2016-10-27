@@ -1,6 +1,8 @@
 package it.tredi.ecm.web.bean;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
@@ -17,4 +19,7 @@ public class RichiestaIntegrazioneWrapper {
 	private Long objRef;
 	private Set<FieldEditabileAccreditamento> fullLista = new HashSet<FieldEditabileAccreditamento>();
 	private Set<IdFieldEnum> selected = new HashSet<IdFieldEnum>();
+
+	//Mappa per gestire l'inserimento delle note relative ai FieldEditabileAccreditamento
+	private Map<IdFieldEnum, String> mappaNoteFieldEditabileAccreditamento = new HashMap<IdFieldEnum, String>();
 }

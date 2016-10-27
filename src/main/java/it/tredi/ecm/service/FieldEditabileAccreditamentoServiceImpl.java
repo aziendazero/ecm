@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -48,6 +49,12 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 	@Override
 	@Transactional
 	public void insertFieldEditabileForAccreditamento(Long accreditamentoId, Long objectReference, SubSetFieldEnum subset, Set<IdFieldEnum> toInsert) {
+		insertFieldEditabileForAccreditamento(accreditamentoId, objectReference, subset, toInsert, null);
+	}
+
+	@Override
+	@Transactional
+	public void insertFieldEditabileForAccreditamento(Long accreditamentoId, Long objectReference, SubSetFieldEnum subset, Set<IdFieldEnum> toInsert, Map<IdFieldEnum, String> mappaNoteFieldEditabileAccreditamento) {
 		LOGGER.debug(Utils.getLogMessage("Inserimento di " + toInsert + " IdEditabili per Domanda Accreditamento: " + accreditamentoId));
 		Set<FieldEditabileAccreditamento> subSetList = new HashSet<FieldEditabileAccreditamento>();
 		if(objectReference == null)
@@ -64,6 +71,10 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 					field.setIdField(id);
 					if(objectReference != null)
 						field.setObjectReference(objectReference);
+					if(mappaNoteFieldEditabileAccreditamento != null) {
+						//Il metodo map.get(key) restituisce null se la key non viene trovata
+						field.setNota(mappaNoteFieldEditabileAccreditamento.get(id));
+					}
 					fieldEditabileAccreditamentoRepository.save(field);
 				}
 			}
@@ -95,5 +106,12 @@ public class FieldEditabileAccreditamentoServiceImpl implements FieldEditabileAc
 	public void delete(FieldEditabileAccreditamento field){
 		LOGGER.debug(Utils.getLogMessage("Eliminazione di un IdEditabili"));
 		fieldEditabileAccreditamentoRepository.delete(field);
+	}
+
+	@Override
+	@Transactional
+	public void update(FieldEditabileAccreditamento field){
+		LOGGER.debug(Utils.getLogMessage("Aggiornamento di un IdEditabili"));
+		fieldEditabileAccreditamentoRepository.save(field);
 	}
 }

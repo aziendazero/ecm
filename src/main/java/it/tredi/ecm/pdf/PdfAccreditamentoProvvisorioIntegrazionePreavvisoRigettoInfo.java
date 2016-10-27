@@ -18,6 +18,7 @@ public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 	private LocalDate accreditamentoDataSeduta = null;
 	private List<String> listaCriticita = new ArrayList<String>();
 	private String noteSedutaDomanda = null;
+	private Long giorniIntegrazionePreavvisoRigetto = null;
 	
 	public PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(Accreditamento accreditamento, Seduta seduta, List<String> listaCriticita) {
 		this.providerInfo = new PdfProviderInfo(accreditamento.getProvider());
@@ -91,5 +92,13 @@ public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 
 	public void setNoteSedutaDomanda(String noteSedutaDomanda) {
 		this.noteSedutaDomanda = noteSedutaDomanda;
+	}
+
+	public Long getGiorniIntegrazionePreavvisoRigetto() {
+		return giorniIntegrazionePreavvisoRigetto;
+	}
+
+	public void setGiorniIntegrazionePreavvisoRigetto(Long giorniIntegrazionePreavvisoRigetto) {
+		this.giorniIntegrazionePreavvisoRigetto = giorniIntegrazionePreavvisoRigetto;
 	}
 }

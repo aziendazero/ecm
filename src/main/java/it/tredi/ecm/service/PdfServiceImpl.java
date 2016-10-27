@@ -39,6 +39,7 @@ public class PdfServiceImpl implements PdfService {
 	private FileService fileService;
 
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	private DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
 	//private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     //tipi font
@@ -226,17 +227,22 @@ public class PdfServiceImpl implements PdfService {
 	            document.add(list);
             }
             //Note seduta
+            /*
+            //Richiesta 
+            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - b [non inserire nota finale] (pag 4)
             Paragraph par = new Paragraph(preavvisoRigettoInfo.getNoteSedutaDomanda(), fontListItemBold);
 	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setSpacingBefore(0);
 	        par.setSpacingAfter(spacingAfter);
 	        par.setIndentationLeft(indentationLeftList);
 	        document.add(par);
+	        */
 
-            
-            addCorpoParagraph(document, true, true, "Ai sensi dell’art. 10 bis della legge 241/1990, si invita ad inserire osservazioni, eventualmente corredate da integrazioni documentali. " 
+            //Richiesta 
+            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - b [inserire numero giorni indicati in “entro 30 giorni dal ricevimento della presente nota”] (pag 4)
+            addCorpoParagraph(document, true, true, MessageFormat.format("Ai sensi dell’art. 10 bis della legge 241/1990, si invita ad inserire osservazioni, eventualmente corredate da integrazioni documentali. " 
             		+ "La documentazione, debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb" 
-            		+ ", deve essere inserita entro 10 giorni dal ricevimento della presente nota.");
+            		+ ", deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota.", preavvisoRigettoInfo.getGiorniIntegrazionePreavvisoRigetto()));
             addCorpoParagraph(document, false, true, "Si sottolinea che le modifiche, così pervenute, saranno sottoposte alla valutazione di competenza della Commissione Regionale per la Formazione Continua " 
             		+ "in Medicina ECM, previo riscontro da parte della scrivente Segreteria.");
             addCorpoParagraph(document, false, true, "Con l’occasione, la scrivente Segreteria comunica che l’aspirante provider ha la facoltà di chiedere una consulenza alla Segreteria della CRFC " 
@@ -368,17 +374,22 @@ public class PdfServiceImpl implements PdfService {
 	            document.add(list);
             }
             //Note seduta
+            /*
+            //Richiesta 
+            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [non inserire nota finale] (pag 4)
             Paragraph par = new Paragraph(integrazioneInfo.getNoteSedutaDomanda(), fontListItemBold);
 	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setSpacingBefore(0);
 	        par.setSpacingAfter(spacingAfter);
 	        par.setIndentationLeft(indentationLeftList);
 	        document.add(par);
-            
+            */
 
-            addCorpoParagraph(document, true, true, "Al fine di sanare le stesse, si richiede di produrre adeguata documentazione, suddivisa in file, "
+            //Richiesta 
+            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire numero giorni indicati in “entro 30 giorni dal ricevimento della presente nota”] (pag 4)
+            addCorpoParagraph(document, true, true, MessageFormat.format("Al fine di sanare le stesse, si richiede di produrre adeguata documentazione, suddivisa in file, "
             		+ "debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb, "
-            		+ "tale documentazione deve essere inserita entro 30 giorni dal ricevimento della presente nota.");
+            		+ "tale documentazione deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota.", integrazioneInfo.getGiorniIntegrazionePreavvisoRigetto()));
             
             
             addCorpoParagraph(document, false, true, "La documentazione oggetto di integrazione sarà verificata dalla scrivente Sezione e, nel caso di esito positivo del riscontro, sarà proposta in valutazione per l’eventuale provvedimento di accreditamento.");
@@ -732,7 +743,7 @@ public class PdfServiceImpl implements PdfService {
             Object[] valuesDataValid = {accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 			msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2})."); 
-            Object[] valuesDataSed = {accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(dateTimeFormatter), accreditatoInfo.getAccreditamentoInfo().getVerbaleNumero(), accreditatoInfo.getAccreditamentoInfo().getNumeroProtocollo()};
+            Object[] valuesDataSed = {accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(dateTimeFormatter), accreditatoInfo.getAccreditamentoInfo().getVerbaleNumero(), accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(yearFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataSed), fontCorpo));
 
 			tableNoteTrasp.addCell(cell);
