@@ -13,6 +13,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
@@ -57,7 +58,10 @@ public class EventoFSC extends Evento{
 	
 	@OneToMany(mappedBy="evento", cascade=CascadeType.ALL, orphanRemoval=true)
 	private List<FaseAzioniRuoliEventoFSCTypeA> fasiAzioniRuoli = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
-
+	
+	@ElementCollection
+	private List<RiepilogoRuoliFSC> riepilogoRuoli = new ArrayList<RiepilogoRuoliFSC>();
+	
 	public float calcoloDurata(){
 		float durata = 0.0f;
 		//TODO

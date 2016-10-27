@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
@@ -72,6 +76,7 @@ import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
 
 @Controller
 @SessionAttributes("eventoWrapper")
@@ -88,6 +93,8 @@ public class EventoController {
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
 	@Autowired private PersonaEventoRepository personaEventoRepository;
 
+	@Autowired private RuoloOreFSCValidator ruoloOreFSCValidator;
+	
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
 	private final String SHOW = "evento/eventoShow";
@@ -806,8 +813,9 @@ public class EventoController {
 	@RequestMapping(value = "/provider/{providerId}/evento/showSection/{sectionIndex}", method=RequestMethod.POST)
 	public String showSection(@PathVariable("sectionIndex") String sIndex,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		int sectionIndex = 1;
 		try{
-			int sectionIndex = Integer.valueOf(sIndex).intValue();
+			sectionIndex = Integer.valueOf(sIndex).intValue();
 			if(sectionIndex == 2){
 				//sezione programma evento
 			}else if(sectionIndex == 3){
@@ -815,18 +823,17 @@ public class EventoController {
 				eventoService.calcoloDurataEvento(eventoWrapper);
 				eventoService.calcoloCreditiEvento(eventoWrapper);
 			}
-
-			if(eventoWrapper.getEvento() instanceof EventoRES){
-				return EDITRES + " :: " + "section-" + sectionIndex;
-			}else if(eventoWrapper.getEvento() instanceof EventoFSC){
-				return EDITFSC + " :: " + "section-" + sectionIndex;
-			}else{
-				return EDITFAD + " :: " + "section-" + sectionIndex;
-			}
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
-			return "redirect:/home";
+		}
+		
+		if(eventoWrapper.getEvento() instanceof EventoRES){
+			return EDITRES + " :: " + "section-" + sectionIndex;
+		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
+			return EDITFSC + " :: " + "section-" + sectionIndex;
+		}else{
+			return EDITFAD + " :: " + "section-" + sectionIndex;
 		}
 	}
 
@@ -904,9 +911,8 @@ public class EventoController {
 	}
 	
 	@RequestMapping(value = "/provider/{providerId}/evento/addRuoloOreToTemp", method=RequestMethod.POST)
-	public String addRuoloOreToTemp(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+	public String addRuoloOreToTemp(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs){
 		try{
-			//validazione o forse no del ruolo ore inserito
 			eventoWrapper.getTempAttivitaFSC().getRuoli().add(new RuoloOreFSC(eventoWrapper.getTempRuoloOreFSC().getRuolo(), eventoWrapper.getTempRuoloOreFSC().getTempoDedicato()));
 			return EDITFSC + " :: ruoloOreFSC";
 		}catch (Exception ex){

@@ -124,8 +124,8 @@
 										<a id="add-ruolo" class="btn btn-success" th:title="#{label.inserisci_attivita}" data-toggle="modal" data-target=".modal-add-ruoloOreFSC">
 											<span><i class="fa fa-plus"></i></span>
 										</a>
-										<div id="ruoloOreFSC" class="col-xs-offset-3 col-xs-9">
-											<ul th:fragment="ruoloOreFSC">
+										<div id="container-ruoloOreFSC" class="col-xs-offset-3 col-xs-9">
+											<ul id="ruoloOreFSC" th:fragment="ruoloOreFSC">
 												<li th:attr="data-row-id=${__${row.index}__}" th:each="ruoloOre, row : ${eventoWrapper.tempAttivitaFSC.ruoli}">
 													<label class="control-label" th:text="${ruoloOre.ruolo.nome} + ' (' + ${ruoloOre.tempoDedicato} + 'h)'"></label>
 													<input type="hidden" th:field="${eventoWrapper.tempAttivitaFSC.ruoli[__${row.index}__].ruolo}" />
@@ -161,18 +161,18 @@
 								</button>
 								<h4 class="modal-title" th:text="#{label.aggiungi_ruolo}">Aggiungi Ruolo</h4>
 							</div>
-							<div class="modal-body">
+							<div class="modal-body" th:fragment="addRuoloOreFSC">
 								<form id="addRuoloOreFSC" name="addRuoloOreFSC" class="form-horizontal form-label-left"
 										th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRuoloOreFSCTo|}"
 										method="post" enctype="multipart/form-data"
 										novalidate="novalidate">
 	
-										<div id="container-ruoloFSC" class="item form-group">
+										<div id="container-ruoloFSC" class="item form-group tempRuoloOreFSC.ruolo">
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoloFSC">
 												<span th:text="#{label.ruolo}">Ruolo</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="ruolo">
-												<select
+												<select id="addRuoloOreFSC-ruolo"
 													class="selectpicker required selectRuolo"
 													th:field="${eventoWrapper.tempRuoloOreFSC.ruolo}"
 													data-width="100%" data-style="btn-primary"
@@ -182,10 +182,11 @@
 													<option
 														th:each="ruolo, row: ${T(it.tredi.ecm.dao.enumlist.RuoloFSCEnum).values()}"
 														th:value="${ruolo}"
-														th:text="${ruolo.nome}">tipologia selezionata
+														th:text="${ruolo.nome}">Ruolo selezionato
 													</option>
 												</select>
 											</div>
+											<div class="alert col-xs-12 errorMessage"></div>
 										</div>
 	
 										<div id="container-tempoDedicato" class="item form-group">
@@ -652,7 +653,7 @@
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
-											onchange="setEvFSCRuoliCoinvolti()"
+											onchange="updateRuoliCoinvolti()"
 											title="Seleziona una tipologia FSC...">
 											<option
 												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).values()}"
@@ -809,11 +810,33 @@
 										<span>20</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
-										<span th:text="#{label.ruoli_coinvolti}">Verifica Apprendimento partecipanti</span>
+										<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-										<div class="danger">**TODO autocompilato</div>
+										<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+											<thead>
+												<tr>
+													<th th:text="#{label.ruolo}">OBIETTIVO FORMATIVO</th>
+													<th th:text="#{label.codifica}">RISULTATAO ATTESO</th>
+													<th th:text="#{label.numero_partecipant}">METODO DI LAVORO</th>
+													<th th:text="#{label.impegno_complessivo_ore}">RUOLI COINVOLTI</th>
+													<th th:text="#{label.crediti}">ORE ATTIVITA'</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="riepilogo , r : ${eventoWrapper.riepilogoRuoliFSC}">
+													<td th:text="${riepilogo.value.ruolo?.nome}"></td>
+													<td th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
+													<td>
+														<input th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__].numeroPartecipanti}" />
+													</td>
+					
+													<td th:text="${riepilogo.value.tempoDedicato}"></td>
+													<td th:text="${riepilogo.value.crediti}"></td>
+												</tr>
+											</tbody>
+										</table>
 									</div>
 								</div>
 
@@ -1222,6 +1245,7 @@
 					$(".fasiDaInserire").on("ifChecked", function(){
 						reloadSection('tab2');
 					});
+					updateRuoliCoinvolti();
 				}
 				
 
@@ -1303,30 +1327,55 @@
 					}
 				}
 
+		/* 		function updateSelectRuoliOre(){
+					var val = $('#tipologiaEventoId').selectpicker('val');
+					var ruoliOrePicker_ref ='#addRuoloOreFSC-ruolo';
 
-				/* function updateRuoliCoinvolti(caller){
-					var tipologiaEvento = $(caller).val();
-					var selectId = '#container-ruoliCoinvolti';
-					var start = [[@{/listaRuoliCoinvolti?tipologiaEvento=}]];
-					var end = tipologiaEvento;
-					var url = start + end;
+					$.each($(ruoliOrePicker_ref + " option"), function() {
+						$(this).hide();
+					});
 
-					console.log(tipologiaEvento);
-					$.get(url, function(data){
-
-						$.each($(selectId + " .checkbox"), function() {
-							$(this).hide();
-						});
+					if(val != null && val != undefined){
+						var data = selectRuoliCoinvolti[val][0];
 
 						for(var item = 0; item < data.length; item++){
-							console.log(data[item]);
-							$.each($(selectId + " .checkbox"), function() {
-								if($(this).find("input[type='checkbox']").val() == data[item])
+							
+							$.each($(ruoliOrePicker_ref + " option"), function() {
+								if($(this).attr("value") == data[item])
 									$(this).show();
 							});
 						}
-					});
+						
+						$(ruoliOrePicker_ref).selectpicker('refresh');
+					}
 				}; */
+
+
+				function updateRuoliCoinvolti(){
+					var tipologiaEvento = $('#tipologiaEventoId').selectpicker('val');
+					if(tipologiaEvento != null && tipologiaEvento != undefined){
+						var selectId = '#addRuoloOreFSC-ruolo';
+						var start = [[@{/listaRuoliCoinvolti?tipologiaEvento=}]];
+						var end = tipologiaEvento;
+						var url = start + end;
+
+						$.get(url, function(data){
+
+							$.each($(selectId + " option"), function() {
+								$(this).hide();
+							});
+
+							for(var item = 0; item < data.length; item++){
+								$.each($(selectId + " option"), function() {
+									if($(this).attr("value") == data[item])
+										$(this).show();
+								});
+							}
+							
+							$(selectId).selectpicker('refresh');
+						});
+					}
+				};
 
 
 			 /********************* PROGRAMMA GIORNALIERO ****************************/
@@ -1450,15 +1499,16 @@
 			}
 				
 				function sendAjaxAddRuoloOreToTemp(){
+					var $form = $('#addRuoloOreFSC');
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRuoloOreToTemp|}]], $('#addRuoloOreFSC').serialize())
-						.done(function(data) {
-							$('#ruoloOreFSC').html(data);
-						  	closeModaleAddRuoloOreFSCTo();
-						  })
-					  	.fail(function() {
-					  		//TODO mostra error sui campi mancanti
-					    	alert( "errorFSC" );
-					 	 })
+					.done(function(data) {
+						$('#container-ruoloOreFSC').html(data);
+					  	closeModaleAddRuoloOreFSCTo();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "errorFSC" );
+				 	 })
 				}
 				
 				function closeModaleAddRuoloOreFSCTo(){
@@ -1471,7 +1521,7 @@
 					var rowIndex = $(caller).parent().data('row-id');
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeRuoloOreToTemp/|}]] + rowIndex;
 
-					$("#ruoloOreFSC").load(url);
+					$("#container-ruoloOreFSC").load(url);
 				}
 
 			/*]]>*/

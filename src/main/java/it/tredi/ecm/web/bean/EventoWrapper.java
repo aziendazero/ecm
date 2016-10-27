@@ -229,40 +229,40 @@ public class EventoWrapper {
 	private void initRiepilogoRuoliFSC(){
 		//TIPOLOGIA TRAINING INDIVIDUALIZZATO
 		Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
-		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
-		riepilogoRuoli.put(RuoloFSCEnum.TUTOR, new RiepilogoRuoliFSC(RuoloFSCEnum.TUTOR));
-		riepilogoRuoli.put(RuoloFSCEnum.ESPERTO, new RiepilogoRuoliFSC(RuoloFSCEnum.ESPERTO));
-		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE));
+//		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+//		riepilogoRuoli.put(RuoloFSCEnum.TUTOR, new RiepilogoRuoliFSC(RuoloFSCEnum.TUTOR));
+//		riepilogoRuoli.put(RuoloFSCEnum.ESPERTO, new RiepilogoRuoliFSC(RuoloFSCEnum.ESPERTO));
+//		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE));
 
 		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO, riepilogoRuoli);
 
 		//TIPOLOGIA GRUPPI DI MIGLIORAMENTO
 		riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
-		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
-		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_GRUPPI, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_GRUPPI));
+//		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+//		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_GRUPPI, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_GRUPPI));
 
 		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO, riepilogoRuoli);
 
 		//TIPOLOGIA ATTIVITA DI RICERCA
 		riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
-		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
-		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_ATTIVITA_RICERCA, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_ATTIVITA_RICERCA));
+//		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+//		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_ATTIVITA_RICERCA, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_ATTIVITA_RICERCA));
 
 		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA, riepilogoRuoli);
 
 		//TIPOLOGIA AUDIT CLINICO E/O ASSISTENZIALE
 		riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
-		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
-		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT));
+//		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+//		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT));
 
 		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE, riepilogoRuoli);
 		
 		//TIPOLOGIA PROGRAMMA DI MIGLIORAMENTO
 		riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
-		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
-		riepilogoRuoli.put(RuoloFSCEnum.ESPERTO, new RiepilogoRuoliFSC(RuoloFSCEnum.ESPERTO));
-		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_GRUPPI, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_GRUPPI));
-		riepilogoRuoli.put(RuoloFSCEnum.RESPONSABILE_PROGETTO, new RiepilogoRuoliFSC(RuoloFSCEnum.RESPONSABILE_PROGETTO));
+//		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));
+//		riepilogoRuoli.put(RuoloFSCEnum.ESPERTO, new RiepilogoRuoliFSC(RuoloFSCEnum.ESPERTO));
+//		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_GRUPPI, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_GRUPPI));
+//		riepilogoRuoli.put(RuoloFSCEnum.RESPONSABILE_PROGETTO, new RiepilogoRuoliFSC(RuoloFSCEnum.RESPONSABILE_PROGETTO));
 
 		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO, riepilogoRuoli);
 	}

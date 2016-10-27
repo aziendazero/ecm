@@ -25,6 +25,7 @@ import it.tredi.ecm.cogeaps.Helper;
 import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
@@ -37,6 +38,7 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
+import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.FileEnum;
@@ -586,7 +588,7 @@ public class EventoServiceImpl implements EventoService {
 			return crediti;
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			EventoFSC evento = ((EventoFSC)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoFSC(evento.getTipologiaEvento(), eventoWrapper.getRiepilogoRuoliFSC());
+			crediti = calcoloCreditiFormativiEventoFSC(evento.getTipologiaEvento(), eventoWrapper);
 			evento.setCrediti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FSC"));
 			return crediti;
@@ -651,9 +653,11 @@ public class EventoServiceImpl implements EventoService {
 		return crediti;
 	}
 
-	private float calcoloCreditiFormativiEventoFSC(TipologiaEventoFSCEnum tipologiaEvento, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
+	private float calcoloCreditiFormativiEventoFSC(TipologiaEventoFSCEnum tipologiaEvento, EventoWrapper wrapper){
 		float crediti = 0.0f;
 
+		prepareRiepilogoRuoli(wrapper);
+		
 		if(tipologiaEvento == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO){
 
 		}else if(tipologiaEvento == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO){
@@ -666,6 +670,23 @@ public class EventoServiceImpl implements EventoService {
 
 		return crediti;
 	}
+	
+	private void prepareRiepilogoRuoli(EventoWrapper wrapper){
+		wrapper.getRiepilogoRuoliFSC().clear();
+		
+		for(FaseAzioniRuoliEventoFSCTypeA fase : wrapper.getProgrammaEventoFSC())
+			for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli())
+				for(RuoloOreFSC ruolo : azione.getRuoli()){
+					if(wrapper.getRiepilogoRuoliFSC().containsKey(ruolo.getRuolo())){
+						RiepilogoRuoliFSC r = wrapper.getRiepilogoRuoliFSC().get(ruolo.getRuolo());
+						r.addTempo(r.getTempoDedicato());
+					}else{
+						RiepilogoRuoliFSC r = new RiepilogoRuoliFSC(ruolo.getRuolo(), ruolo.getTempoDedicato(), 0.0f);
+						wrapper.getRiepilogoRuoliFSC().put(ruolo.getRuolo(), r);
+					}
+				}
+	}
+	
 
 	private float calcoloCreditiFormativiEventoFAD(){
 		return (Float) null;
