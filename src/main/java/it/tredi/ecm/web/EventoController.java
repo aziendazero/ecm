@@ -3,9 +3,7 @@ package it.tredi.ecm.web;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +34,12 @@ import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
 import it.tredi.ecm.dao.entity.AnagraficaFullEventoBase;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
-import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
@@ -51,15 +49,15 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
-import it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaFADEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
+import it.tredi.ecm.dao.enumlist.ObiettiviFormativiFADEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
-import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
@@ -508,9 +506,15 @@ public class EventoController {
 		return RENDICONTO;
 	}
 
-	@RequestMapping("/listaMetodologie")
+	@RequestMapping("/listaMetodologieRES")
 	@ResponseBody
-	public List<MetodologiaDidatticaRESEnum>getListaMetodologie(@RequestParam ObiettiviFormativiRESEnum obiettivo){
+	public List<MetodologiaDidatticaRESEnum>getListaMetodologieRES(@RequestParam ObiettiviFormativiRESEnum obiettivo){
+		return obiettivo.getMetodologieDidattiche();
+	}
+
+	@RequestMapping("/listaMetodologieFAD")
+	@ResponseBody
+	public List<MetodologiaDidatticaFADEnum>getListaMetodologieFAD(@RequestParam ObiettiviFormativiFADEnum obiettivo){
 		return obiettivo.getMetodologieDidattiche();
 	}
 
@@ -748,6 +752,10 @@ public class EventoController {
 				//
 				eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().add(azioniRuoli);
 				eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
+			}else if(target.equalsIgnoreCase("attivitaFAD")){
+				DettaglioAttivitaFAD attivitaFAD =  SerializationUtils.clone(eventoWrapper.getTempAttivitaFAD());
+				eventoWrapper.getProgrammaEventoFAD().add(attivitaFAD);
+				eventoWrapper.setTempAttivitaFAD(new DettaglioAttivitaFAD());
 			}
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -773,6 +781,10 @@ public class EventoController {
 				programmaIndex = Integer.valueOf(removeAttivitaFrom).intValue();
 				attivitaRow = Integer.valueOf(rowIndex).intValue();
 				eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().remove(attivitaRow);
+			}else if(target.equalsIgnoreCase("attivitaFAD")){
+				programmaIndex = Integer.valueOf(removeAttivitaFrom).intValue();
+				attivitaRow = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getProgrammaEventoFAD().remove(attivitaRow);
 			}
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -933,7 +945,7 @@ public class EventoController {
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
-	@RequestMapping("/provider/{providerId}/evento/listaDocentiAttivitaRES")
+	@RequestMapping("/provider/{providerId}/evento/listaDocentiAttivita")
 	@ResponseBody
 	public List<PersonaEvento>getListaDocentiAttivitaRES(@PathVariable Long providerId, @ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		List<PersonaEvento> lista = new ArrayList<PersonaEvento>();

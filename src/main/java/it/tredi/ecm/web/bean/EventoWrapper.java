@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
@@ -89,25 +90,29 @@ public class EventoWrapper {
 	private Sponsor tempSponsorEvento = new Sponsor();
 	private Partner tempPartnerEvento = new Partner();
 
-	/* RES */
-	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
-	private List<ProgrammaGiornalieroRES> programmaEventoRES = new ArrayList<ProgrammaGiornalieroRES>();
 	private List<Sponsor> sponsors = new ArrayList<Sponsor>();
 	private List<Partner> partners = new ArrayList<Partner>();
 
 	private PersonaFullEvento tempPersonaFullEvento = new PersonaFullEvento();
+
+	/* RES */
+	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
+	private List<ProgrammaGiornalieroRES> programmaEventoRES = new ArrayList<ProgrammaGiornalieroRES>();
 	private DettaglioAttivitaRES tempAttivitaRES = new DettaglioAttivitaRES();
 
 	/* FSC */
 	private AzioneRuoliEventoFSC tempAttivitaFSC = new AzioneRuoliEventoFSC();
+	private Map<TipologiaEventoFSCEnum,List<FaseAzioniRuoliEventoFSCTypeA>> possibiliProgrammiFSC = new HashMap<TipologiaEventoFSCEnum, List<FaseAzioniRuoliEventoFSCTypeA>>();
+	private Map<TipologiaEventoFSCEnum,Map<RuoloFSCEnum,RiepilogoRuoliFSC>> possibiliRiepilogoRuoliFSC = new HashMap<TipologiaEventoFSCEnum, Map<RuoloFSCEnum,RiepilogoRuoliFSC>>();
+
+	/* FAD */
+	private DettaglioAttivitaFAD tempAttivitaFAD = new DettaglioAttivitaFAD();
+	private List<DettaglioAttivitaFAD> programmaEventoFAD = new ArrayList<DettaglioAttivitaFAD>();
 
 //	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_TI = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 //	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_GM = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 //	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_AR = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 //	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_ACA = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
-
-	private Map<TipologiaEventoFSCEnum,List<FaseAzioniRuoliEventoFSCTypeA>> possibiliProgrammiFSC = new HashMap<TipologiaEventoFSCEnum, List<FaseAzioniRuoliEventoFSCTypeA>>();
-	private Map<TipologiaEventoFSCEnum,Map<RuoloFSCEnum,RiepilogoRuoliFSC>> possibiliRiepilogoRuoliFSC = new HashMap<TipologiaEventoFSCEnum, Map<RuoloFSCEnum,RiepilogoRuoliFSC>>();
 
 	public List<ProgrammaGiornalieroRES> getProgrammaEventoRES(){
 		if(evento != null && (evento instanceof EventoRES) && ((EventoRES)evento).getTipologiaEvento() != null){
@@ -121,6 +126,13 @@ public class EventoWrapper {
 			if(((EventoFSC)evento).getTipologiaEvento() != null){
 				return possibiliProgrammiFSC.get(((EventoFSC)evento).getTipologiaEvento());
 			}
+		}
+		return null;
+	}
+
+	public List<DettaglioAttivitaFAD> getProgrammaEventoFAD(){
+		if(evento != null && (evento instanceof EventoFAD) && ((EventoFAD)evento).getTipologiaEvento() != null){
+			return programmaEventoFAD;
 		}
 		return null;
 	}

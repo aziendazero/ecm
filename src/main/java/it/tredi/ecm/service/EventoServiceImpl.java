@@ -25,6 +25,7 @@ import it.tredi.ecm.cogeaps.Helper;
 import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
@@ -267,6 +268,7 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD) evento).getVerificaApprendimento().clear();
 			((EventoFAD) evento).getVerificaApprendimento().addAll(nuoviVAF);
 
+			retrieveProgrammaAndAddJoin(eventoWrapper);
 		}
 
 		//Responsabili
@@ -476,6 +478,9 @@ public class EventoServiceImpl implements EventoService {
 
 			//mappa verifica apprendimento
 			eventoWrapper.initMappaVerificaApprendimentoFAD();
+
+			//Programma
+			eventoWrapper.setProgrammaEventoFAD(((EventoFAD) evento).getProgrammaFAD());
 		}
 
 		//responsabili scientifici
@@ -729,7 +734,7 @@ public class EventoServiceImpl implements EventoService {
 
 			}
 		}else if(evento instanceof EventoFAD){
-			//TODO FAD
+			((EventoFAD) evento).setProgrammaFAD(eventoWrapper.getProgrammaEventoFAD());
 		}
 	}
 
