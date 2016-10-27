@@ -1231,6 +1231,8 @@
 					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
 					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
 					
+					$('#addRuoloOreFSC-ruolo').prop('disabled',true);
+					
 					initAll();
 				});
 
@@ -1360,6 +1362,9 @@
 						var end = tipologiaEvento;
 						var url = start + end;
 
+						$(selectId).selectpicker('val','');
+						$(selectId).prop('disabled',false);
+						
 						$.get(url, function(data){
 
 							$.each($(selectId + " option"), function() {
@@ -1416,7 +1421,11 @@
 			 	function closeModaleAddAttivitaTo(){
 					$("#add-attivitaFSC-modal .close").click();
 					$("#add-attivitaFSC-modal form")[0].reset();
-					$("#add-attivitaFSC-modal .selectpicker").selectpicker('val','')
+					
+					$.each($("#add-attivitaFSC-modal .selectpicker"),function(){
+						$(this).selectpicker('val','');
+					}
+					
 					$('#add-attivitaFSC-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
 				}
 

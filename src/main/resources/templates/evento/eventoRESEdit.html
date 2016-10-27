@@ -1278,6 +1278,8 @@
 						countSelectedText : '{0} selezionate'
 					});
 
+				    $("#addAttivitaRES-metodolgieDidattiche").prop('disabled',true);
+					
 					initAll();
 				});
 
@@ -1338,7 +1340,6 @@
 					function openClock(caller){
 						$(caller).parent().click();
 					}
-
 				}
 
 				//eventLister cambio tab
@@ -1589,9 +1590,11 @@
 
 					console.log(obiettivo);
 					console.log($(metodologiePicker_ref));
+					
+					$(metodologiePicker_ref).prop('disabled',false);
 					$.get(url, function(data){
 
-						$(metodologiePicker_ref).selectpicker('deselectAll');
+						$(metodologiePicker_ref).selectpicker('val','');
 						$.each($(metodologiePicker_ref + " option"), function() {
 							$(this).hide();
 						});
@@ -1645,7 +1648,14 @@
 				function closeModaleAddAttivitaTo(){
 					$("#add-attivitaRES-modal .close").click();
 					$("#add-attivitaRES-modal form")[0].reset();
-					$("#add-attivitaRES-modal .selectpicker").selectpicker('val','')
+					
+					$.each($("#add-attivitaRES-modal .selectpicker"),function(){
+						$(this).selectpicker('val','');
+					})
+					
+					$("#addAttivitaRES-metodolgieDidattiche").prop('disabled',true);
+					$("#addAttivitaRES-metodolgieDidattiche").selectpicker('refresh');
+					
 					$('#add-attivitaRES-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
 				}
 

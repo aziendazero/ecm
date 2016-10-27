@@ -1087,6 +1087,9 @@
 					
 					//appende ai widget tutti i vari eventListener
 					handleListenerEventsCampsFAD();
+					
+					$('#addAttivitaFAD-metodolgieDidattiche').prop('disabled',true);
+					$('#addAttivitaFAD-metodolgieDidattiche').selectpicker('refresh');
 				}
 
 				//implementazione della funzione che decide cosa mostrare a seconda dei campi già settati dal client specifica per FAD
@@ -1171,7 +1174,11 @@
 				function closeModaleAddAttivitaTo(){
 					$("#add-attivitaFAD-modal .close").click();
 					$("#add-attivitaFAD-modal form")[0].reset();
-					$("#add-attivitaFAD-modal .selectpicker").selectpicker('val','')
+					
+					$.each($("#add-attivitaFAD-modal .selectpicker"),function(){
+						$(this).selectpicker('val','');
+					});
+					
 					$('#add-attivitaFAD-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
 				}
 
@@ -1203,7 +1210,6 @@
 				function updateObiettivoFormativo(tipologia){
 					
 					if(tipologia != null && tipologia != undefined && tipologia != ''){
-						alert('tipologia ' + tipologia)
 						var obiettivoPicker_ref = '#addAttivitaFAD-obiettiviFormativi';
 						var metodologiePicker_ref ='#addAttivitaFAD-metodolgieDidattiche';
 						//nasconde tutto e toglie i check
@@ -1236,7 +1242,6 @@
 
 				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.
 				function updateMetodologieDidattiche(caller){
-					alert('metodologiacaller ' + caller)
 					var obiettivo = $(caller).val();
 					var metodologiePicker_ref ='#addAttivitaFAD-metodolgieDidattiche';
 					var start = [[@{/listaMetodologieFAD?obiettivo=}]];
@@ -1248,6 +1253,7 @@
 					$.get(url, function(data){
 
 						$(metodologiePicker_ref).selectpicker('val','');
+						$(metodologiePicker_ref).prop('disabled',false);
 						$.each($(metodologiePicker_ref + " option"), function() {
 							$(this).hide();
 						});
