@@ -1069,6 +1069,9 @@
 						countSelectedText : '{0} selezionate'
 					});
 
+				    //onchange su tipologiaEvento
+					updateObiettivoFormativo($("#tipologia_evento").val())
+					
 					initAll();
 				});
 
@@ -1081,10 +1084,9 @@
 
 					//decide cosa mostrare a seconda dei campi già settati dal client
 					showHideCampsFAD();
-
+					
 					//appende ai widget tutti i vari eventListener
 					handleListenerEventsCampsFAD();
-
 				}
 
 				//implementazione della funzione che decide cosa mostrare a seconda dei campi già settati dal client specifica per FAD
@@ -1092,9 +1094,6 @@
 
 					//verifica apprendimento partecipanti
 					mostraNascondiRadioVerificaApprendimento($('.check-verifica:checked').serializeArray());
-
-					//onchange su tipologiaEvento
-					updateObiettivoFormativo($("#tipologia_evento").val())
 
 				}
 
@@ -1202,34 +1201,42 @@
 
 				//onchange su tipologiaEvento -> cambia la lista di obiettivi formativi che si possono selezionare.
 				function updateObiettivoFormativo(tipologia){
-					var obiettivoPicker_ref = '#addAttivitaFAD-obiettiviFormativi';
-					//nasconde tutto e toglie i check
-					$(obiettivoPicker_ref).selectpicker('deselectAll');
-					$.each($(obiettivoPicker_ref + " option"), function() {
-						$(this).hide();
-					})
-
-					if (tipologia == "APPRENDIMENTO_INDIVIDUALE_NO_ONLINE") {
+					
+					if(tipologia != null && tipologia != undefined && tipologia != ''){
+						alert('tipologia ' + tipologia)
+						var obiettivoPicker_ref = '#addAttivitaFAD-obiettiviFormativi';
+						var metodologiePicker_ref ='#addAttivitaFAD-metodolgieDidattiche';
+						//nasconde tutto e toglie i check
+						$(obiettivoPicker_ref).selectpicker('val','');
+						$(metodologiePicker_ref).selectpicker('val','');
+						
 						$.each($(obiettivoPicker_ref + " option"), function() {
-							var str = $(this).attr("value");
-							if(str.substr(str.indexOf("_") + 1) == '1') {
-								$(this).show();
-							}
-						});
+							$(this).hide();
+						})
+	
+						if (tipologia == "APPRENDIMENTO_INDIVIDUALE_NO_ONLINE") {
+							$.each($(obiettivoPicker_ref + " option"), function() {
+								var str = $(this).attr("value");
+								if(str.substr(str.indexOf("_") + 1) == '1') {
+									$(this).show();
+								}
+							});
+						}
+						else {
+							$.each($(obiettivoPicker_ref + " option"), function() {
+								var str = $(this).attr("value");
+								if(str.substr(str.indexOf("_") + 1) == '2') {
+									$(this).show();
+								}
+							});
+						}
+						$(obiettivoPicker_ref).selectpicker('refresh');
 					}
-					else {
-						$.each($(obiettivoPicker_ref + " option"), function() {
-							var str = $(this).attr("value");
-							if(str.substr(str.indexOf("_") + 1) == '2') {
-								$(this).show();
-							}
-						});
-					}
-					$(obiettivoPicker_ref).selectpicker('refresh');
 				}
 
 				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.
 				function updateMetodologieDidattiche(caller){
+					alert('metodologiacaller ' + caller)
 					var obiettivo = $(caller).val();
 					var metodologiePicker_ref ='#addAttivitaFAD-metodolgieDidattiche';
 					var start = [[@{/listaMetodologieFAD?obiettivo=}]];
@@ -1240,7 +1247,7 @@
 					console.log($(metodologiePicker_ref));
 					$.get(url, function(data){
 
-						$(metodologiePicker_ref).selectpicker('deselectAll');
+						$(metodologiePicker_ref).selectpicker('val','');
 						$.each($(metodologiePicker_ref + " option"), function() {
 							$(this).hide();
 						});

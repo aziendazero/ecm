@@ -1476,7 +1476,7 @@
 	</th:block>
 
 	<th:block style="display:none">
-		<div class="col-xs-12" th:fragment="attivitaFAD">
+		<div class="col-xs-12" th:fragment="attivitaFAD" th:if="${eventoWrapper.programmaEventoFAD != null}">
 			<div id="attivitaFAD">
 				<div class="col-xs-12">
 					<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
