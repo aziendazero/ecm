@@ -17,15 +17,15 @@ import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 
 public class Helper {
-	
+
 	public final static String XML_REPORT_ENCODING = "ISO-8859-1";
 	public final static String XSD_1_1_16_FILENAME = "rapporto_evento_1.16.xsd";
-	
+
 	public final static String CODICE_ENTE_ACCREDITANTE = "050";
 	public final static String []EVENTO_XML_ATTRIBUTES = {"cod_evento", "cod_edi", "cod_org", "cod_accr", "data_ini", "data_fine", "ore", "crediti", "tipo_form", "tipo_eve", "cod_obi", "num_part", "cod_tipologia_form"};
-	
+
 	//TODO - gestire eccezioni
-	
+
 	public static Map<String, String> createEventoDataMapFromEvento(Evento evento) {
 		Map<String, String> dbEventoDataMap = new HashMap<String, String>();
 		dbEventoDataMap.put("cod_evento", Long.toString(evento.getId()));
@@ -48,12 +48,12 @@ public class Helper {
 			cod_tipologia_form = Integer.toString(((EventoRES)evento).getTipologiaEvento().getId());
 		}
 		else if (evento instanceof EventoFAD) { //FAD
-			cod_tipologia_form = ((EventoFAD)evento).isSupportoSvoltoDaEsperto()? "11" : "10";
+			cod_tipologia_form = ((EventoFAD)evento).getSupportoSvoltoDaEsperto()? "11" : "10";
 		}
-		dbEventoDataMap.put("cod_tipologia_form", cod_tipologia_form);				
+		dbEventoDataMap.put("cod_tipologia_form", cod_tipologia_form);
 		return dbEventoDataMap;
 	}
-	
+
 	public static Schema getSchemaEvento_1_16_XSD() throws Exception {
 		InputStream is = Helper.class.getResourceAsStream(XSD_1_1_16_FILENAME);
 		Source source = new StreamSource(is);
@@ -61,9 +61,9 @@ public class Helper {
 		Schema schema = factory.newSchema(source);
 		return schema;
 	}
-	
+
 	public static String createReportXmlFileName() {
 		return "report-" + new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()) +  ".xml";
 	}
-	
+
 }

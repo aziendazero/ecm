@@ -434,11 +434,67 @@
 					</div>
 					<!-- SPONSOR INFO -->
 					<div class="item form-group" th:if="${eventoWrapper.evento.eventoSponsorizzato == true}">
-						<div class="col-xs-1"></div><div class="col-md-3 col-sm-3 col-xs-11"></div>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="danger">**TODO</div>
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.sponsors}">Sponsors</span>
+						</label>
+						<div th:if="${eventoWrapper.evento.sponsors != null and !#sets.isEmpty(eventoWrapper.evento.sponsors)}">
+							<div class="item form-group" style="clear:both; padding:2px;"></div>
+							<div class="item form-group" style="clear:both">
+								<div class="col-md-3 col-sm-3 col-xs-11"></div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<table id="sponsors" class="datatable-responsive-sponsors table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<thead>
+											 <tr>
+												<th th:text="#{label.nome_sponsor}">Nome dello sponsor</th>
+												<th th:text="#{label.contratto}">Contratto</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="sponsor, row : ${eventoWrapper.evento.sponsors}">
+												<td th:text="${sponsor.name}"></td>
+												<td><a th:href="@{|/file/${sponsor.sponsorFile.id}|}" th:text="${sponsor.sponsorFile.nomeFile}"></a></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div th:unless="${eventoWrapper.evento.sponsors != null and !#sets.isEmpty(eventoWrapper.evento.sponsors)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
+					<th:block th:if="${eventoWrapper.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALIMENTAZIONE_PRIMA_INFANZIA}">
+						<!-- RADIO SPONSOR PRIMA INFANZIA -->
+						<div class="item form-group">
+							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span class="label-show" th:text="#{label.evento_sponsorizzato_infanzia_radio}">L’evento è sponsorizzato da aziende che trattano alimenti per la prima infanzia?</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+								<div class="value" th:if="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null}" th:text="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia} ? #{label.sì} : #{label.no}"></div>
+								<div class="value danger" th:unless="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.dato_non_inserito}"></div>
+							</div>
+						</div>
+						<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->
+						<div class="item form-group" th:if="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null and eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia == true}">
+							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span class="label-show" th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+								<div class="value" th:if="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.id}|}"></a></div>
+								<div class="value danger" th:unless="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}" th:text="#{label.allegato_non_inserito}"></div>
+							</div>
+						</div>
+						<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
+						<div class="item form-group" th:if="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null and eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia == false}">
+							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span class="label-show" th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+								<div class="value" th:if="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>
+								<div class="value danger" th:unless="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.allegato_non_inserito}"></div>
+							</div>
+						</div>
+					</th:block>
 
 					<!-- FORME FINANZIAMENTO BLOCCO -->
 					<!-- RADIO FORME FINANZIAMENTO -->
@@ -483,10 +539,35 @@
 							<div class="value danger" th:unless="${eventoWrapper.evento.eventoAvvalePartner != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
-					<div class="item form-group" th:if="${eventoWrapper.evento.eventoAvvalePartner}">
-						<div class="col-xs-1"></div><div class="col-md-3 col-sm-3 col-xs-11"></div>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="danger">**TODO</div>
+					<!-- PARTNER INFO -->
+					<div class="item form-group" th:if="${eventoWrapper.evento.eventoAvvalePartner == true}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.partners}">Partners</span>
+						</label>
+						<div th:if="${eventoWrapper.evento.partners != null and !#sets.isEmpty(eventoWrapper.evento.partners)}">
+							<div class="item form-group" style="clear:both; padding:2px;"></div>
+							<div class="item form-group" style="clear:both">
+								<div class="col-md-3 col-sm-3 col-xs-11"></div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<table id="partners" class="datatable-responsive-partners table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<thead>
+											 <tr>
+												<th th:text="#{label.nome_partner}">Nome dello partner</th>
+												<th th:text="#{label.contratto}">Contratto</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="partner, row : ${eventoWrapper.evento.partners}">
+												<td th:text="${partner.name}"></td>
+												<td><a th:href="@{|/file/${partner.partnerFile.id}|}" th:text="${partner.partnerFile.nomeFile}"></a></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div th:unless="${eventoWrapper.evento.partners != null and !#sets.isEmpty(eventoWrapper.evento.partners)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 

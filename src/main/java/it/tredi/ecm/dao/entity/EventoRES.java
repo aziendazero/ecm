@@ -50,10 +50,11 @@ public class EventoRES extends Evento{
 
 	private String razionale;
 	@ElementCollection
-	private List<String> risultatiAttesi = new ArrayList<String>();
+	private Set<String> risultatiAttesi = new HashSet<String>();
 
-	@OneToMany(mappedBy="eventoRES", cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@OrderBy("giorno ASC")
+	@JoinColumn(name = "programma_res_id")
 	private List<ProgrammaGiornalieroRES> programma = new ArrayList<ProgrammaGiornalieroRES>();
 
 	@ElementCollection

@@ -18,11 +18,11 @@ import lombok.Setter;
 public class ProgrammaGiornalieroRES extends BaseEntity {
 	@ManyToOne
 	private EventoRES eventoRES;
-	
+
 	private LocalDate giorno;
 	private SedeEvento sede;
 	@ElementCollection
 	@OrderBy("orario ASC")
 	private List<DettaglioAttivitaRES> programma = new ArrayList<DettaglioAttivitaRES>();
-	
+
 }
