@@ -26,6 +26,7 @@ import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
@@ -207,7 +208,13 @@ public class EventoServiceImpl implements EventoService {
 			((EventoRES) evento).setDateIntermedie(dateIntermedie);
 
 			//Risultati Attesi
-			((EventoRES) evento).setRisultatiAttesi(eventoWrapper.getRisultatiAttesiTemp());
+			Set<String> risultatiAttesi = new HashSet<String>();
+			for (String s : eventoWrapper.getRisultatiAttesiMapTemp().values()) {
+				if(s != null && !s.isEmpty()) {
+					risultatiAttesi.add(s);
+				}
+			}
+			((EventoRES) evento).setRisultatiAttesi(risultatiAttesi);
 
 			//Docenti
 			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
@@ -238,6 +245,15 @@ public class EventoServiceImpl implements EventoService {
 			}
 			((EventoFAD)evento).setDocenti(attachedList);
 
+			//Risultati Attesi
+			Set<String> risultatiAttesi = new HashSet<String>();
+			for (String s : eventoWrapper.getRisultatiAttesiMapTemp().values()) {
+				if(s != null && !s.isEmpty()) {
+					risultatiAttesi.add(s);
+				}
+			}
+			((EventoFAD) evento).setRisultatiAttesi(risultatiAttesi);
+
 			//Requisiti Hardware Software
 			if (eventoWrapper.getRequisitiHardwareSoftware().getId() != null) {
 				((EventoFAD) evento).setRequisitiHardwareSoftware(eventoWrapper.getRequisitiHardwareSoftware());
@@ -254,6 +270,7 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD) evento).getVerificaApprendimento().clear();
 			((EventoFAD) evento).getVerificaApprendimento().addAll(nuoviVAF);
 
+			retrieveProgrammaAndAddJoin(eventoWrapper);
 		}
 
 		//Responsabili
@@ -410,11 +427,19 @@ public class EventoServiceImpl implements EventoService {
 				dateIntermedieTemp.put(key++, dataToString);
 			}
 			if(dateIntermedieTemp.size() == 0)
-				dateIntermedieTemp.put(key, "");
+				dateIntermedieTemp.put(key, null);
 
 			eventoWrapper.setDateIntermedieMapTemp(dateIntermedieTemp);
 			//risultati attesi
-			eventoWrapper.setRisultatiAttesiTemp(((EventoRES) evento).getRisultatiAttesi());
+			key = 1L;
+			Map<Long, String> risultatiAttesiTemp = new LinkedHashMap<Long, String>();
+			for (String s : ((EventoRES) evento).getRisultatiAttesi()) {
+				risultatiAttesiTemp.put(key++, s);
+			}
+			if(risultatiAttesiTemp.size() == 0)
+				risultatiAttesiTemp.put(key, null);
+
+			eventoWrapper.setRisultatiAttesiMapTemp(risultatiAttesiTemp);
 
 			//Docenti
 			eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
@@ -436,6 +461,17 @@ public class EventoServiceImpl implements EventoService {
 			//Docenti
 			eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
 
+			//risultati attesi
+			Long key = 1L;
+			Map<Long, String> risultatiAttesiTemp = new LinkedHashMap<Long, String>();
+			for (String s : ((EventoFAD) evento).getRisultatiAttesi()) {
+				risultatiAttesiTemp.put(key++, s);
+			}
+			if(risultatiAttesiTemp.size() == 0)
+				risultatiAttesiTemp.put(key, "");
+
+			eventoWrapper.setRisultatiAttesiMapTemp(risultatiAttesiTemp);
+
 			//Requisiti Hardware Software
 			if (((EventoFAD) evento).getRequisitiHardwareSoftware() != null) {
 				eventoWrapper.setRequisitiHardwareSoftware(((EventoFAD) evento).getRequisitiHardwareSoftware());
@@ -443,6 +479,9 @@ public class EventoServiceImpl implements EventoService {
 
 			//mappa verifica apprendimento
 			eventoWrapper.initMappaVerificaApprendimentoFAD();
+
+			//Programma
+			eventoWrapper.setProgrammaEventoFAD(((EventoFAD) evento).getProgrammaFAD());
 		}
 
 		//responsabili scientifici
@@ -715,7 +754,7 @@ public class EventoServiceImpl implements EventoService {
 
 			}
 		}else if(evento instanceof EventoFAD){
-			//TODO FAD
+			((EventoFAD) evento).setProgrammaFAD(eventoWrapper.getProgrammaEventoFAD());
 		}
 	}
 

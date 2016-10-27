@@ -9,6 +9,155 @@
 
 		<div class="x_content">
 
+		<!-- finestra modale di aggiunta attivitaFAD -->
+		<div id="add-attivitaFAD-modal" class="modal fade modal-add-attivitaFAD" data-model-index="4" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
+						<h4 id="container-title" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
+					</div>
+					<div class="modal-body">
+						<form id="addAttivitaFAD" name="addAttivitaFAD" class="form-horizontal form-label-left"
+								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
+								th:object="${eventoWrapper.tempAttivitaFAD}" method="post" enctype="multipart/form-data"
+								novalidate="novalidate">
+
+								<!-- ARGOMENTO -->
+								<div id="container-argomento" class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.argomento}">Argomento</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<input class="form-control" type="text" th:field="*{argomento}" />
+									</div>
+								</div>
+
+								<!-- DOCENTE -->
+								<div id="container-docente" class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.docente}">Docente</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<select
+											id="addAttivitaFAD-docente"
+											class="selectpicker selectDocente"
+											th:field="*{docente}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un docente...">
+											<option
+												th:each="docente, row: ${eventoWrapper.docenti}"
+												th:value="${docente.id}"
+												th:text="${docente.anagrafica.cognome}">Docente Selezionato
+											</option>
+										</select>
+									</div>
+								</div>
+
+								<!-- RISULTATO ATTESO -->
+								<div id="container-risultatoAtteso" class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.risultato_atteso}">Risultato Atteso</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<select
+											id="addAttivitaFAD-risultatiAttesi"
+											class="selectpicker selectRisultatiAttesi"
+											th:field="*{risultatoAtteso}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un risultato atteso...">
+											<option
+												th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
+												th:value="${risultato.value}"
+												th:unless="${risultato.value == null}"
+												th:text="${risultato.value}">Risultato
+											</option>
+										</select>
+
+									</div>
+								</div>
+
+								<!-- OBIETTIVO FORMATIVO -->
+								<div id="container-obiettivoFormativo" class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.obiettivo_formativo}">Obiettivo Formativo</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<select
+											id="addAttivitaFAD-obiettiviFormativi"
+											class="selectpicker selectObiettivoFormativo"
+											th:field="*{obiettivoFormativo}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											onchange="updateMetodologieDidattiche(this)"
+											title="Seleziona un obiettivo...">
+											<option
+												th:each="obiettivoFormativo, row: ${T(it.tredi.ecm.dao.enumlist.ObiettiviFormativiFADEnum).values()}"
+												th:value="${obiettivoFormativo}"
+												th:text="${obiettivoFormativo.nome}">tipologia selezionata
+											</option>
+										</select>
+									</div>
+								</div>
+
+								<!-- METODOLOGIA DIDATTICA -->
+								<div id="container-metodologiaDidattica" class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.metodologia_didattica}">Metodologia Didattica</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<select
+											id="addAttivitaFAD-metodolgieDidattiche"
+											class="selectpicker selectMetodologieDidattiche"
+											th:field="*{metodologiaDidattica}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona una Metodologia Didattica">
+											<option
+												th:each="metodologiaDidattica, row: ${T(it.tredi.ecm.dao.enumlist.MetodologiaDidatticaFADEnum).values()}"
+												th:value="${metodologiaDidattica}"
+												th:text="${metodologiaDidattica.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+
+								<!-- DURATA -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="durata">
+										<span th:text="#{label.durata}">Durata</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata">
+										<input type="text" pattern="numeric" class="form-control" th:field="*{oreAttivita}" />
+									</div>
+								</div>
+
+								<input id="targetTableAttivitaFAD" type="text" name="target" style="display: none;" />
+								<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
+
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+							<label for="targetTable" class="btn btn-success pull-right" onclick="sendAjaxAddAttivitaToProgramma()" th:text="#{label.invia}">Invia</label>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<form id="formEventoFAD" class="form-horizontal form-label-left"
 				th:action="@{|/provider/${eventoWrapper.providerId}/evento/save|}"
 				method="post" enctype="multipart/form-data"
@@ -319,7 +468,7 @@
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
-											onchange="mostraNascondiCampiTipologiaEvento(this.value)"
+											onchange="updateObiettivoFormativo(this.value)"
 											title="Seleziona una tipologia...">
 											<option
 												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).values()}"
@@ -358,15 +507,74 @@
 										<th:block th:include="evento/eventoEdit :: docenti" />
 									</div>
 								</div>
+
+								<!-- BLOCCO PROGRAMMA ATTIVITÀ FORMATIVA -->
+								<div class="item form-group">
+									<label class="col-xs-12">
+										<span th:text="#{label.programma_attività_formativa}">Titolo</span>
+									</label>
+								</div>
+								<!-- RAZIONALE -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>16</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
+										<span th:text="#{label.razionale}">Razionale</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<input type="text" class="form-control" th:field="${eventoWrapper.evento.razionale}" />
+									</div>
+								</div>
+								<!-- RISULTATI ATTESI -->
+								<div class="item form-group">
+									<label class="control-label col-xs-1">
+										<span>17</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="risultatiAttesi">
+										<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
+										<span class="required">*</span>
+									</label>
+								</div>
+								<div class="risultati-attesi-container" id="risultatiAttesiId">
+									<div th:fragment="risultatiAttesiId" th:class="${row.last ? 'nextRisultatoAtteso item form-group' : 'prevRisultatoAtteso item form-group'}" th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}">
+										<div class='col-md-4 col-sm-4 col-xs-12'></div>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
+											<input type="hidden" th:value="${risultato.key}" />
+											<input id="risultatoAtteso" type="text" class="form-control risultatoPicker"
+												th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" />
+											<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}">
+												<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
+											</span>
+										</div>
+									</div>
+								</div>
+
+<!-- 								<div class="item form-group"> -->
+<!-- 									<div class="col-md-4 col-sm-4 col-xs-12"></div> -->
+<!-- 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group"> -->
+<!-- 										<div class="risultati-attesi-container"> -->
+<!-- 											<div class='risultato-atteso' style='display: inline-block' th:each="risultatoAtteso, row : ${eventoWrapper.evento.risultatiAttesi}"> -->
+<!-- 												<span th:text="${risultatoAtteso}"></span> -->
+<!-- 												<span onclick='rimuoviRisultatoAtteso($(this).parent())'><i class='clickable red fa fa-remove'></i></span> -->
+<!-- 											</div> -->
+<!-- 										</div> -->
+<!-- 									</div> -->
+<!-- 									<div class="col-lg-3 col-md-1 col-sm-1 col-xs-12"></div> -->
+<!-- 								</div> -->
+
+								<div class="divider-dashed"></div>
+
 							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="tab2">
 							<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
 								<!-- PROGRAMMA EVENTO -->
 <!-- 								METTERE QUA IL PROGRAMMA -->
-<!-- 								<div class='programmaEvento item form-group' id="programma"> -->
-<!-- 									<th:block th:include="evento/eventoEdit :: attivitaFAD" /> -->
-<!-- 								</div> -->
+								<div class='programmaEvento item form-group' id="programma">
+									<th:block th:include="evento/eventoEdit :: attivitaFAD" />
+								</div>
 
 								<!-- BROCHURE EVENTO -->
 								<div class="item form-group">
@@ -885,6 +1093,9 @@
 					//verifica apprendimento partecipanti
 					mostraNascondiRadioVerificaApprendimento($('.check-verifica:checked').serializeArray());
 
+					//onchange su tipologiaEvento
+					updateObiettivoFormativo($("#tipologia_evento").val())
+
 				}
 
 				//funzione che setta gli event linstener ai vari input dell'evento FAD
@@ -919,6 +1130,163 @@
 			    	tabSelected = e.target.id;
 					reloadSection(tabSelected);
 				});
+
+				//funzione che aggiunge un risultato atteso
+				function aggiungiRisultatoAtteso(caller, target) {
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRisultatoAtteso/|}]] + target, $('#formEventoFAD').serialize())
+					.done(function(data) {
+						//alert(data);
+					  	$('#' + target).html(data);
+					  	//risale al valore della input
+					  	var value = $(caller).prev().val();
+					  	substituteAllToSelectAttivitaFAD("addAttivitaFAD-risultatiAttesi", "risultatoPicker");
+					  	reInitComponents();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
+				}
+
+				//rimuove un risultato atteso
+				function rimuoviRisultatoAtteso(caller, target, key) {
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeRisultatoAtteso/|}]] + key + '/' + target, $('#formEventoFAD').serialize())
+					.done(function(data) {
+						//alert(data);
+					  	$('#' + target).html(data);
+						var value = $(caller).prev().val();
+					  	removeFromSelectAttivitaFAD("addAttivitaFAD-risultatiAttesi", value);
+					  	reInitComponents();
+					  })
+				  	.fail(function() {
+				  		//TODO mostra error sui campi mancanti
+				    	alert( "error" );
+				 	 })
+				}
+
+				/********************* PROGRAMMA GIORNALIERO ****************************/
+				function openAddAttivitaTo(target){
+					$('#targetTableAttivitaFAD').val(target);
+				}
+
+				function closeModaleAddAttivitaTo(){
+					$("#add-attivitaFAD-modal .close").click();
+					$("#add-attivitaFAD-modal form")[0].reset();
+					$("#add-attivitaFAD-modal .selectpicker").selectpicker('val','')
+					$('#add-attivitaFAD-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
+				}
+
+				function sendAjaxAddAttivitaToProgramma(){
+					var target = $('#targetTableAttivitaFAD').val();
+					$('#addAttivitaTo').val('0'); //dummy
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaFAD').serialize())
+						.done(function(data) {
+						  	$('#'+target).html(data);
+						  	closeModaleAddAttivitaTo();
+						  })
+					  	.fail(function() {
+					  		//TODO mostra error sui campi mancanti
+					    	alert( "error" );
+					 	 })
+				}
+
+				function removeAttivitaFrom(target,caller){
+					var rowIndex = $(caller).parent().parent().data('row-id');
+					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
+
+					$("#" + target).load(url);
+				}
+
+				//********************************************************************************
+
+				//onchange su tipologiaEvento -> cambia la lista di obiettivi formativi che si possono selezionare.
+				function updateObiettivoFormativo(tipologia){
+					var obiettivoPicker_ref = '#addAttivitaFAD-obiettiviFormativi';
+					//nasconde tutto e toglie i check
+					$(obiettivoPicker_ref).selectpicker('deselectAll');
+					$.each($(obiettivoPicker_ref + " option"), function() {
+						$(this).hide();
+					})
+
+					if (tipologia == "APPRENDIMENTO_INDIVIDUALE_NO_ONLINE") {
+						$.each($(obiettivoPicker_ref + " option"), function() {
+							var str = $(this).attr("value");
+							if(str.substr(str.indexOf("_") + 1) == '1') {
+								$(this).show();
+							}
+						});
+					}
+					else {
+						$.each($(obiettivoPicker_ref + " option"), function() {
+							var str = $(this).attr("value");
+							if(str.substr(str.indexOf("_") + 1) == '2') {
+								$(this).show();
+							}
+						});
+					}
+					$(obiettivoPicker_ref).selectpicker('refresh');
+				}
+
+				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.
+				function updateMetodologieDidattiche(caller){
+					var obiettivo = $(caller).val();
+					var metodologiePicker_ref ='#addAttivitaFAD-metodolgieDidattiche';
+					var start = [[@{/listaMetodologieFAD?obiettivo=}]];
+					var end = obiettivo;
+					var url = start + end;
+
+					console.log(obiettivo);
+					console.log($(metodologiePicker_ref));
+					$.get(url, function(data){
+
+						$(metodologiePicker_ref).selectpicker('deselectAll');
+						$.each($(metodologiePicker_ref + " option"), function() {
+							$(this).hide();
+						});
+
+						for(var item = 0; item < data.length; item++){
+							console.log(data[item]);
+							$.each($(metodologiePicker_ref + " option"), function() {
+								if($(this).attr("value") == data[item])
+									$(this).show();
+							});
+						}
+						$(metodologiePicker_ref).selectpicker('refresh');
+					});
+				};
+
+				function addToSelectAttivitaFAD(target, value){
+					var option = '<option value = "' + value + '">' + value + "</option>";
+					$('#' + target).append(option);
+					$('#' + target).prop("disabled", false);
+					$('#' + target).selectpicker('refresh');
+				}
+
+				function removeFromSelectAttivitaFAD(target, value){
+					$('#' + target +" option[value='" + value + "']").remove();
+					$('#' + target).selectpicker('refresh');
+				}
+
+				function substituteAllToSelectAttivitaFAD(target, classSelector) {
+					removeAllFromSelectAttivitaFAD(target);
+					$.each($("." + classSelector), function() {
+						var value = this.value;
+						if(value != null && value != "") {
+							var option = '<option value = "' + value + '">' + value + "</option>";
+							$('#' + target).append(option);
+							$('#' + target).prop("disabled", false);
+							$('#' + target).selectpicker('refresh');
+						}
+					})
+				}
+
+				function removeAllFromSelectAttivitaFAD(target) {
+					$.each($("#" + target + " option"), function() {
+						this.remove();
+					})
+					$('#' + target).selectpicker('refresh');
+				}
 
 				function reloadSection(selectedTab){
 					//alert('reloadSection: ' + selectedTab);

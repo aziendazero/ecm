@@ -33,10 +33,10 @@ public class EventoFAD extends Evento{
 
 	private String razionale;
 	@ElementCollection
-	private List<String> risultatiAttesi = new ArrayList<String>();
+	private Set<String> risultatiAttesi = new HashSet<String>();
 	@ElementCollection
-	@OrderBy("orario ASC")
-	private List<DettaglioAttivitaFAD> programma = new ArrayList<DettaglioAttivitaFAD>();
+	@JoinColumn(name = "programma_fad_id")
+	private List<DettaglioAttivitaFAD> programmaFAD = new ArrayList<DettaglioAttivitaFAD>();
 
 	@ElementCollection
 	private List<VerificaApprendimentoFAD> verificaApprendimento = new ArrayList<VerificaApprendimentoFAD>();
