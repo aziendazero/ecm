@@ -203,7 +203,7 @@ public class Evento extends BaseEntity{
 	@JoinColumn(name="responsabile_id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
 
-	protected int numeroPartecipanti;
+	protected Integer numeroPartecipanti;
 
 	@OneToOne
 	private File brochureEvento;

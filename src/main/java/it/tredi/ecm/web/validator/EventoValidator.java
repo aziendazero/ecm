@@ -14,6 +14,7 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
@@ -56,6 +57,7 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "contenutiEvento", "error.empty");
 
 		/* TITOLO (campo obbligatorio)
+		 * campo testuale libero
 		 * almeno 1 char
 		 * */
 		if(evento.getTitolo() == null || evento.getTitolo().isEmpty())
@@ -91,7 +93,21 @@ public class EventoValidator {
 		 * */
 		if (evento.getDiscipline() == null || evento.getDiscipline().isEmpty())
 			errors.rejectValue(prefix + "discipline", "error.empty");
-
+		
+		/* RESPONSABILI SCIENTIFICI (campo obbligatorio)
+		 * ripetibile complesso di classe PersonaEvento
+		 * minimo 1 - massimo 3
+		 * devono avere tutti i campi inseriti (tranne cv? //TODO chiarire)
+		 * */
+		if (evento.getResponsabili() == null || evento.getResponsabili().isEmpty())
+			errors.rejectValue(prefix + "responsabili", "error.empty");
+		else if(evento.getResponsabili().size() > 3)
+				errors.rejectValue(prefix + "responsabili", "error.troppi_responsabili");
+		else {
+			for(PersonaEvento p : evento.getResponsabili())
+				validatePersonaEvento(p, errors, prefix + "responsabili");
+		}
+		
 	}
 
 	//validate RES
@@ -163,21 +179,76 @@ public class EventoValidator {
 
 		/* TITOLO CONVEGNO (campo obbligatorio se TIPOLOGIA EVENTO == WORKSHOP_SEMINARIO)
 		 * campo testuale libero
+		 * almeno 1 char
 		 * */
 		if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
 				&& (evento.getTitoloConvegno() == null || evento.getTitoloConvegno().isEmpty()))
 			errors.rejectValue(prefix + "titoloConvegno", "error.empty");
-
+		
+		/* NUMERO DEI PARTECIPANTI (campo obbligatorio)
+		 * campo valore numerico
+		 *  se la tipologia dell'evento è CONVEGNO_CONGRESSO -> minimo 200 partecipanti
+		 *  se la tipologia dell'evento è WORKSHOP_SEMINARIO -> massimo 100 partecipanti
+		 *  se la tipologia dell'evento è CORSO_AGGIORNAMENTO -> massimo 200 partecipanti
+		 * */
+		if(evento.getNumeroPartecipanti() == null)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.empty");
+		else if(evento.getTipologiaEvento() != null 
+				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
+				&& evento.getNumeroPartecipanti() < 200)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.pochi_partecipanti");
+		else if(evento.getTipologiaEvento() != null 
+				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
+				&& evento.getNumeroPartecipanti() > 100)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti");
+		else if(evento.getTipologiaEvento() != null 
+				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO
+				&& evento.getNumeroPartecipanti() > 200)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti");
+		
+		/* DOCENTI/RELATORI/TUTOR (campo obbligatorio)
+		 * ripetibile complesso di classe PersonaEvento
+		 * minimo 1
+		 * devono avere tutti i campi inseriti (tranne cv? //TODO chiarire)
+		 * */
+		if(evento.getDocenti() == null || evento.getDocenti().isEmpty())
+			errors.rejectValue(prefix + "docenti", "error.empty");
+		else {
+			for(PersonaEvento p : evento.getDocenti())
+				validatePersonaEvento(p, errors, prefix + "docenti");
+		}
+		
+		/* RAZIONALE (campo obbligatorio)
+		 * campo testuale libero
+		 * almeno 1 char
+		 * */
+		if(evento.getRazionale() == null || evento.getRazionale().isEmpty())
+			errors.rejectValue(prefix + "razionale", "errors.empty");
+		
+		/* RISULTATI ATTESI (campo obbligatorio)
+		 * campo testuale libero ripetibile
+		 * almeno 1 char
+		 * almeno 1 elemento
+		 * se non ci sono elementi, la input su cui inserire l'errore punterà al primo elemento della mappa
+		 * */
+		if(evento.getRisultatiAttesi() == null || evento.getRisultatiAttesi().isEmpty())
+			errors.rejectValue("risultatiAttesiMapTemp[1]", "errors.empty");
+		
 	}
 
 	//validate FSC
 	private void validateFSC(EventoFSC evento, Errors errors, String prefix) {
-
+		//TODO
 	}
 
 	//validate FAD
 	private void validateFAD(EventoFAD evento, Errors errors, String prefix) {
-
+		//TODO
+	}
+	
+	//validate PersonaEvento
+	private void validatePersonaEvento(PersonaEvento persona, Errors errors, String prefix) {
+		//TODO
 	}
 }
