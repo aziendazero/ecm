@@ -40,7 +40,7 @@
 									<th th:text="#{label.accreditamento_stato}">Stato</th>
 									<th:block th:unless="${#authentication.principal.hasProfile('REFEREE')}">
 										<th th:text="#{label.accreditamento_invio}">Data invio</th>
-										<th th:text="#{label.accreditamento_validazione}">Datavalidazione</th>
+										<th th:text="#{label.accreditamento_valutazione_segreteria}">Datavalidazione</th>
 										<th th:text="#{label.accreditamento_scadenza}">Scadenza</th>
 									</th:block>
 									<th th:if="${mappaCarica != null}" th:text="#{label.lista_valutatori}">Lista Valutatori</th>

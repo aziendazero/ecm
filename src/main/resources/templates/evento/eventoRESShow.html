@@ -378,12 +378,8 @@
 						</div>
 					</div>
 
-					<div class="item form-group">
-						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
-						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value danger">**TODO</div>
-						</div>
+					<div class='programmaEvento item form-group' id="programma">
+						<th:block th:include="evento/eventoShow :: attivitaRES" />
 					</div>
 
 					<div class="divider"></div>
@@ -424,12 +420,63 @@
 
 	 				<!-- TIPOLOGIA DI OBIETTIVI FORMATIVI -->
 	 				<div class="item form-group">
-	 					<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+	 					<div class="col-xs-1"></div>
+	 					<label class="control-label col-md-3 col-sm-3 col-xs-11">
 	 						<span class="label-show" th:text="#{label.tipologia_obiettivi_formativi}">Tipologia di obiettivi formativi</span>
 	 					</label>
-	 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-	 						<div class="danger">**TODO</div>
+	 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipologiaObiettiviFormativi">
+	 						<div class="value">
+	 							<ul>
+									<li class="listStyle-elenco" th:each="obiettivo, row : ${eventoWrapper.evento.riepilogoRES.obiettivi}">
+										<label th:text="${obiettivo.nome}"></label>
+									</li>
+	 							</ul>
+ 							</div>
 	 					</div>
+	 				</div>
+
+	 				<!-- METODOLOGIE DIDATTICHE -->
+	 				<div class="item form-group col-xs-12">
+	 					<div class="col-xs-1"></div>
+	 					<label class="control-label col-md-3 col-sm-3 col-xs-11">
+	 						<span class="label-show" th:text="#{label.metodologie_didattiche}">Metodologie Didattiche</span>
+	 					</label>
+						<div class="item form-group" style="clear:both; padding:2px;"></div>
+						<div class="item form-group col-xs-12" style="clear:both">
+							<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th th:text="#{label.metodologia_didattica}">OBIETTIVO FORMATIVO</th>
+										<th th:text="#{label.metodologia_frontale}">RISULTATAO ATTESO</th>
+										<th th:text="#{label.metodologia_interattiva}">METODO DI LAVORO</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="metodologia, row : ${eventoWrapper.evento.riepilogoRES.metodologie}">
+										<td th:text="${metodologia.key.nome}"></td>
+										<td>
+											<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).FRONTALE}"
+												th:text="${metodologia.value} + ' h'"></span>
+										</td>
+										<td>
+											<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).INTERATTIVA}"
+												th:text="${metodologia.value} + ' h'"></span>
+										</td> 
+									</tr>
+									<tr>
+										<td>
+											<strong><span class="text-uppercase" th:text="#{label.totale_ore}"></span></strong> 
+										</td>
+										<td>
+											<strong><span th:text="${eventoWrapper.evento.riepilogoRES.totaleOreFrontali} + ' h'"></span></strong> 
+										</td>
+										<td>
+											<strong><span th:text="${eventoWrapper.evento.riepilogoRES.totaleOreInterattive} + ' h'"></span></strong> 
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 	 				</div>
 
 					<!-- CREDITI FORMATIVI -->

@@ -22,11 +22,13 @@ public interface EventoService {
 	public boolean canCreateEvento(Account account);
 	public void inviaRendicontoACogeaps(Long id) throws Exception;
 	public void statoElaborazioneCogeaps(Long id) throws Exception;
-	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper);
+	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) throws Exception;
 	public EventoWrapper prepareRipetibiliAndAllegati(EventoWrapper eventoWrapper);
 	
-	public float calcoloDurataEvento(EventoWrapper eventoWrapper);
-	public float calcoloCreditiEvento(EventoWrapper eventoWrapper);
+	public void calculateAutoCompilingData(EventoWrapper eventoWrapper) throws Exception;
+//	public float calcoloDurataEvento(EventoWrapper eventoWrapper);
+//	public float calcoloCreditiEvento(EventoWrapper eventoWrapper);
+	
 	public void retrieveProgrammaAndAddJoin(EventoWrapper eventoWrapper);
 
 }

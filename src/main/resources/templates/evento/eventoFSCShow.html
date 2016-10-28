@@ -275,11 +275,14 @@
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.fasi_azioni_ruoli}"></span>
 						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value danger">**TODO</div>
+						<div class="item form-group" style="clear:both; padding:2px;"></div>
+						<div class="item form-group" style="clear:both">
+							<div class='programmaEvento item form-group' id="programma">
+								<th:block th:include="evento/eventoShow :: attivitaFSC" />
+							</div>
 						</div>
 					</div>
-
+					
 					<!-- BROCHURE EVENTO -->
 					<div class="item form-group">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -292,15 +295,38 @@
 					</div>
 
 					<!-- RUOLI COINVOLTI -->
-					<div class="item form-group">
+					<div class="item form-group col-xs-12">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.ruoli_coinvolti}"></span>
 						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value danger">**TODO</div>
+						<div class="item form-group" style="clear:both; padding:2px;"></div>
+						<div class="item form-group col-xs-12" style="clear:both">
+							<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th th:text="#{label.ruolo}">OBIETTIVO FORMATIVO</th>
+										<th th:text="#{label.codifica}">RISULTATAO ATTESO</th>
+										<th th:text="#{label.numero_partecipanti}">METODO DI LAVORO</th>
+										<th th:text="#{label.impegno_complessivo_ore}">RUOLI COINVOLTI</th>
+										<th th:text="#{label.crediti}">ORE ATTIVITA'</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="riepilogo , r : ${eventoWrapper.evento.riepilogoRuoli}">
+										<td th:text="${riepilogo.ruolo?.nome}"></td>
+										<td th:text="${riepilogo.ruolo?.ruoloBase.codifica}"></td>
+										<td>
+											<label th:text="${riepilogo.numeroPartecipanti}"></label>
+										</td>
+		
+										<td th:text="${riepilogo.tempoDedicato}"></td>
+										<td th:text="${riepilogo.crediti}"></td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 					</div>
-
+					
 					<!-- NUMERO PARTECIPANTI -->
 					<div class="item form-group">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">

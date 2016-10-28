@@ -1,0 +1,44 @@
+package it.tredi.ecm.dao.entity;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyColumn;
+
+import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
+import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Embeddable
+public class RiepilogoRES {
+
+	@ElementCollection
+	private Set<ObiettiviFormativiRESEnum> obiettivi = new HashSet<ObiettiviFormativiRESEnum>();
+	
+	@ElementCollection
+	@MapKeyColumn(name="key_metodologia")
+    @Column(name="value")
+	@CollectionTable(name="riepilogo_RES", joinColumns=@JoinColumn(name="riepilogo_res_id"))
+	private Map<MetodologiaDidatticaRESEnum, Float> metodologie = new HashMap<MetodologiaDidatticaRESEnum, Float>();
+	
+	private Float totaleOreFrontali = 0.0f;
+	private Float totaleOreInterattive = 0.0f;
+	
+	public void clear(){
+		this.obiettivi.clear();
+		this.metodologie.clear();
+		this.totaleOreFrontali = 0.0f;
+		this.totaleOreInterattive = 0.0f;
+	}
+	
+}

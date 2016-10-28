@@ -22,7 +22,7 @@ public class ProgrammaGiornalieroRES extends BaseEntity {
 	private LocalDate giorno;
 	private SedeEvento sede;
 	@ElementCollection
-	@OrderBy("orario ASC")
+	@OrderBy("orarioInizio ASC")
 	private List<DettaglioAttivitaRES> programma = new ArrayList<DettaglioAttivitaRES>();
 
 }

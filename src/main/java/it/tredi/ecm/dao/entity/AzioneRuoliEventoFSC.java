@@ -36,6 +36,7 @@ public class AzioneRuoliEventoFSC extends BaseEntity {
 	private String risultatiAttesi;
 
 	@ElementCollection
+	@Enumerated(EnumType.STRING)
 	private Set<MetodoDiLavoroEnum> metodiDiLavoro = new HashSet<MetodoDiLavoroEnum>();
 
 //	@ElementCollection

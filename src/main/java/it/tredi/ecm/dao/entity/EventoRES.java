@@ -19,7 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
-import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
@@ -75,4 +74,8 @@ public class EventoRES extends Evento{
 	private String descrizioneVerificaRicaduteFormative;
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
+	
+	@Embedded
+	private RiepilogoRES riepilogoRES = new RiepilogoRES();
+	
 }

@@ -878,8 +878,7 @@ public class EventoController {
 				//sezione programma evento
 			}else if(sectionIndex == 3){
 				//sezione finale - ricalcolo durata e crediti
-				eventoService.calcoloDurataEvento(eventoWrapper);
-				eventoService.calcoloCreditiEvento(eventoWrapper);
+				eventoService.calculateAutoCompilingData(eventoWrapper);
 			}
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -1002,7 +1001,7 @@ public class EventoController {
 	@ResponseBody
 	public List<PersonaEvento>getListaDocentiAttivitaRES(@PathVariable Long providerId, @ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		List<PersonaEvento> lista = new ArrayList<PersonaEvento>();
-		if(eventoWrapper.getEvento() instanceof EventoRES){
+		if(eventoWrapper.getEvento() instanceof EventoRES || eventoWrapper.getEvento() instanceof EventoFAD){
 			lista = eventoWrapper.getDocenti();
 		}
 		return lista;
@@ -1011,7 +1010,10 @@ public class EventoController {
 	@RequestMapping("/listaRuoliCoinvolti")
 	@ResponseBody
 	public List<RuoloFSCEnum>getListaRuoliCoinvolti(@RequestParam TipologiaEventoFSCEnum tipologiaEvento){
-		return tipologiaEvento.getRuoliCoinvolti();
+		if(tipologiaEvento != null)
+			return tipologiaEvento.getRuoliCoinvolti();
+		else
+			return null;
 	}
 
 	@RequestMapping(value = "/provider/{providerId}/evento/addRuoloOreToTemp", method=RequestMethod.POST)

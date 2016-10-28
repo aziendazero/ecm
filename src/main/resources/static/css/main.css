@@ -1215,3 +1215,11 @@ tr.bad-row a{
 }
 
 
+
+li.listStyle-elenco{
+	list-style-type: square;
+}
+
+li.listStyle-elenco > label{
+	vertical-align: top;
+}

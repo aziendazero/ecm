@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 .antMatchers("/", "/gentella/**", "/clockpicker/**", "/shared/**", "/main", "/providerRegistration", "/confirmRegistration", "/user/resetPassword", "/file/upload", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**", "/workflow/**").permitAll()
 
 		 .antMatchers("/admin/**").hasAuthority("ADMIN")
-         .anyRequest().fullyAuthenticated()
+         .anyRequest().authenticated()
          .and()
 			 .formLogin()
 			 	.loginPage("/login").failureUrl("/login?error")

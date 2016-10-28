@@ -272,45 +272,48 @@
 
 					<div class="divider-dashed"></div>
 
-<!-- 					BLOCCO PROGRAMMA ATTIVITÀ FORMATIVA -->
-<!-- 					<div class="item form-group"> -->
-<!-- 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11"> -->
-<!-- 							<span class="label-show" th:text="#{label.programma_attività_formativa}">Titolo</span> -->
-<!-- 						</label> -->
-<!-- 					</div> -->
-<!-- 					<div class="divider"></div> -->
-<!-- 					RAZIONALE -->
-<!-- 					<div class="item form-group"> -->
-<!-- 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11"> -->
-<!-- 							<span class="label-show" th:text="#{label.razionale}">Razionale</span> -->
-<!-- 						</label> -->
-<!-- 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale"> -->
-<!-- 							<div class="value" th:if="${eventoWrapper.evento.razionale != null and !#strings.isEmpty(eventoWrapper.evento.razionale)}" th:text="${eventoWrapper.evento.razionale}"></div> -->
-<!-- 							<div class="value danger" th:unless="${eventoWrapper.evento.razionale != null and !#strings.isEmpty(eventoWrapper.evento.razionale)}" th:text="#{label.dato_non_inserito}"></div> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
-<!-- 					RISULTATI ATTESI -->
-<!-- 					<div class="item form-group"> -->
-<!-- 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11"> -->
-<!-- 							<span class="label-show" th:text="#{label.risultati_attesi}">Risultati attesi</span> -->
-<!-- 						</label> -->
-<!-- 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"> -->
-<!-- 							<div th:if="${eventoWrapper.evento.risultatiAttesi != null and !#lists.isEmpty(eventoWrapper.evento.risultatiAttesi)}" th:each="risultato, row : ${eventoWrapper.evento.risultatiAttesi}"> -->
-<!-- 								<div class="value" th:text="${risultato}"></div> -->
-<!-- 							</div> -->
-<!-- 							<div class="value danger" th:unless="${eventoWrapper.evento.risultatiAttesi != null and !#lists.isEmpty(eventoWrapper.evento.risultatiAttesi)}" th:text="#{label.dato_non_inserito}"></div> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
+					<!-- BLOCCO PROGRAMMA ATTIVITÀ FORMATIVA -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.programma_attività_formativa}">Titolo</span>
+						</label>
+					</div>
+					<div class="divider"></div>
+					<!-- RAZIONALE -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.razionale}">Razionale</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+							<div class="value" th:if="${eventoWrapper.evento.razionale != null and !#strings.isEmpty(eventoWrapper.evento.razionale)}" th:text="${eventoWrapper.evento.razionale}"></div>
+							<div class="value danger" th:unless="${eventoWrapper.evento.razionale != null and !#strings.isEmpty(eventoWrapper.evento.razionale)}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					<!-- RISULTATI ATTESI -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.risultati_attesi}">Risultati attesi</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div th:if="${eventoWrapper.evento.risultatiAttesi != null and !#lists.isEmpty(eventoWrapper.evento.risultatiAttesi)}" th:each="risultato, row : ${eventoWrapper.evento.risultatiAttesi}">
+								<div class="value" th:text="${risultato}"></div>
+							</div>
+							<div class="value danger" th:unless="${eventoWrapper.evento.risultatiAttesi != null and !#lists.isEmpty(eventoWrapper.evento.risultatiAttesi)}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
 
-<!-- 					<div class="item form-group"> -->
-<!-- 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11"> -->
-<!-- 						</label> -->
-<!-- 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"> -->
-<!-- 							<div class="value danger">**TODO</div> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div>
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+						</label>
+						<div class="col-xs-12">
+							<div class='programmaEvento item form-group' id="programma">
+								<th:block th:include="evento/eventoShow :: attivitaFAD" />
+							</div>
+						</div>
+					</div>
 
-<!-- 					<div class="divider"></div> -->
+					<div class="divider"></div>
 
 					<!-- BROCHURE EVENTO -->
 					<div class="item form-group">
@@ -353,20 +356,40 @@
 	 						<span class="label-show" th:text="#{label.tipologia_obiettivi_formativi}">Tipologia di obiettivi formativi</span>
 	 					</label>
 	 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-	 						<div class="danger">**TODO</div>
+	 						<div class="value-edit">
+	 							<ul>
+									<li class="listStyle-elenco" th:each="obiettivo, row : ${eventoWrapper.evento.riepilogoFAD.obiettivi}">
+										<label th:text="${obiettivo.nome}"></label>
+									</li>
+	 							</ul>
+ 							</div>
 	 					</div>
 	 				</div>
 
 	 				<!-- METODOLOGIE DIDATTICHE -->
-	 				<div class="item form-group">
+	 				<div class="item form-group col-xs-12">
 	 					<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 	 						<span class="label-show" th:text="#{label.metodologie_didattiche}">Metodologie didattiche</span>
 	 					</label>
-	 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-	 						<div class="danger">**TODO</div>
-	 					</div>
-	 				</div>
-
+	 					<div class="item form-group" style="clear:both; padding:2px;"></div>
+						<div class="item form-group col-xs-12" style="clear:both">
+							<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
+										<th th:text="#{label.totale_ore}">TOTALE ORE</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="metodologia, row : ${eventoWrapper.evento.riepilogoFAD.metodologie}">
+										<td th:text="${metodologia.key.nome}"></td>
+										<td th:text="${metodologia.value} + ' h'"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+ 					</div>
+	 				
 	 				<!-- SUPPORTO DISCIPLINARE -->
 	 				<div class="item form-group">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">

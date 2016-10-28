@@ -28,6 +28,6 @@ public class DettaglioAttivitaFAD implements Serializable{
 	private ObiettiviFormativiFADEnum obiettivoFormativo;
 	@Enumerated(EnumType.STRING)
 	private MetodologiaDidatticaFADEnum metodologiaDidattica;
-	private Long oreAttivita;
+	private float oreAttivita;
 }
 
