@@ -9,6 +9,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -25,6 +27,7 @@ import lombok.Setter;
 @DiscriminatorValue(value = "FAD")
 public class EventoFAD extends Evento{
 
+	@Enumerated(EnumType.STRING)
 	private TipologiaEventoFADEnum tipologiaEvento;
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)

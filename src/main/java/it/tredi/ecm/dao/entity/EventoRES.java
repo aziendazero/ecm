@@ -75,4 +75,5 @@ public class EventoRES extends Evento{
 	private String descrizioneVerificaRicaduteFormative;
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
+	
 }

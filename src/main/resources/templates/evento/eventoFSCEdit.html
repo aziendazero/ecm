@@ -127,7 +127,7 @@
 										<div id="container-ruoloOreFSC" class="col-xs-offset-3 col-xs-9">
 											<ul id="ruoloOreFSC" th:fragment="ruoloOreFSC">
 												<li th:attr="data-row-id=${__${row.index}__}" th:each="ruoloOre, row : ${eventoWrapper.tempAttivitaFSC.ruoli}">
-													<label class="control-label" th:text="${ruoloOre.ruolo.nome} + ' (' + ${ruoloOre.tempoDedicato} + 'h)'"></label>
+													<label class="control-label" th:text="${ruoloOre.ruolo?.nome} + ' (' + ${ruoloOre.tempoDedicato} + 'h)'"></label>
 													<input type="hidden" th:field="${eventoWrapper.tempAttivitaFSC.ruoli[__${row.index}__].ruolo}" />
 													<input type="hidden" th:field="${eventoWrapper.tempAttivitaFSC.ruoli[__${row.index}__].tempoDedicato}" />
 													<a onclick="removeRuoloOreFSC(this)" class="btn btn-danger">
@@ -192,10 +192,9 @@
 										<div id="container-tempoDedicato" class="item form-group">
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tempoDedicato">
 												<span th:text="#{label.tempo_dedicato}">Tempo Dedicato</span>
-												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
-												<input type="text" pattern="numeric" required="required" class="form-control"
+												<input type="number" pattern="numeric" th:step="${eventoWrapper.evento.tipologiaEvento == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO ? 2 : 1}" class="form-control"
 													th:field="${eventoWrapper.tempRuoloOreFSC.tempoDedicato}" />
 											</div>
 										</div>
@@ -830,11 +829,11 @@
 													<td th:text="${riepilogo.value.ruolo?.nome}"></td>
 													<td th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
 													<td>
-														<input th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__].numeroPartecipanti}" />
+														<input th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" />
 													</td>
 					
-													<td th:text="${riepilogo.value.tempoDedicato}"></td>
-													<td th:text="${riepilogo.value.crediti}"></td>
+													<td th:text="${riepilogo.value?.tempoDedicato}"></td>
+													<td th:text="${riepilogo.value?.crediti}"></td>
 												</tr>
 											</tbody>
 										</table>
@@ -853,6 +852,9 @@
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="numeroPartecipanti">
 										<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.numeroPartecipanti}" />
+									</div>
+									<div class="col-xs-1" th:if="${eventoWrapper.evento.tipologiaEvento == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).TRAINING_INDIVIDUALIZZATO}">
+										<div th:attr="data-original-title=#{label.info_tooltip_numero_partecipanti_fsc}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
 									</div>
 								</div>
 
@@ -878,9 +880,9 @@
 										<span th:text="#{label.crediti_formativi_attribuiti_evento}">Crediti attribuiti all'evento</span>
 										<span class="required">*</span>
 									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
-										<input type="text" class="form-control" th:field="${eventoWrapper.evento.crediti}" />
-									</div>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata">
+				 						<div class="value-edit" th:text="${eventoWrapper.evento.crediti}"></div>
+				 					</div>
 								</div>
 
 								<div class="divider-dashed"></div>
@@ -1424,9 +1426,12 @@
 					
 					$.each($("#add-attivitaFSC-modal .selectpicker"),function(){
 						$(this).selectpicker('val','');
-					}
+					});
 					
 					$('#add-attivitaFSC-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
+					
+					$('#ruoloOreFSC').html("");
+					
 				}
 
 				/* function reInitModaleAddAttivitaTo(){

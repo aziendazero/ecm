@@ -956,7 +956,7 @@ public class EventoController {
 	@ResponseBody
 	public List<PersonaEvento>getListaDocentiAttivitaRES(@PathVariable Long providerId, @ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		List<PersonaEvento> lista = new ArrayList<PersonaEvento>();
-		if(eventoWrapper.getEvento() instanceof EventoRES){
+		if(eventoWrapper.getEvento() instanceof EventoRES || eventoWrapper.getEvento() instanceof EventoFAD){
 			lista = eventoWrapper.getDocenti();
 		}
 		return lista;
@@ -965,7 +965,10 @@ public class EventoController {
 	@RequestMapping("/listaRuoliCoinvolti")
 	@ResponseBody
 	public List<RuoloFSCEnum>getListaRuoliCoinvolti(@RequestParam TipologiaEventoFSCEnum tipologiaEvento){
-		return tipologiaEvento.getRuoliCoinvolti();
+		if(tipologiaEvento != null)
+			return tipologiaEvento.getRuoliCoinvolti();
+		else
+			return null;
 	}
 	
 	@RequestMapping(value = "/provider/{providerId}/evento/addRuoloOreToTemp", method=RequestMethod.POST)

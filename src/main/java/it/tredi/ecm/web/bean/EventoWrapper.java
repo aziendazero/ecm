@@ -241,7 +241,7 @@ public class EventoWrapper {
 		this.possibiliProgrammiFSC.put(TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO, programmaEvento);
 	}
 
-	private void initRiepilogoRuoliFSC(){
+	public void initRiepilogoRuoliFSC(){
 		//TIPOLOGIA TRAINING INDIVIDUALIZZATO
 		Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
 //		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));

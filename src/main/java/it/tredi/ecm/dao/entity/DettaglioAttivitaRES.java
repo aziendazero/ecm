@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
 import org.apache.tomcat.jni.Time;
@@ -45,7 +47,9 @@ public class DettaglioAttivitaRES implements Serializable{
 	@ManyToOne
 	private PersonaEvento docente;
 	private String risultatoAtteso;
+	@Enumerated(EnumType.STRING)
 	private ObiettiviFormativiRESEnum obiettivoFormativo;
+	@Enumerated(EnumType.STRING)
 	private MetodologiaDidatticaRESEnum metodologiaDidattica;
 	
 	private float oreAttivita;
