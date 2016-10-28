@@ -645,7 +645,13 @@
 				 						<span th:text="#{label.tipologia_obiettivi_formativi}">Tipologia di obiettivi formativi</span>
 				 					</label>
 				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipologiaObiettiviFormativi">
-				 						<div class="value-edit" th:text="${'**TODO**'}"></div>
+				 						<div class="value-edit">
+				 							<ul>
+												<li class="listStyle-elenco" th:each="obiettivo, row : ${eventoWrapper.evento.riepilogoFAD.obiettivi}">
+													<label th:text="${obiettivo.nome}"></label>
+												</li>
+				 							</ul>
+			 							</div>
 				 					</div>
 				 				</div>
 
@@ -657,9 +663,23 @@
 				 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="metodologieDidattiche">
 				 						<span th:text="#{label.metodologie_didattiche}">Metodologie Didattiche</span>
 				 					</label>
-				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="metodologieDidattiche">
-				 						<div class="value-edit" th:text="${'**TODO**'}"></div>
-				 					</div>
+				 					<div class="item form-group" style="clear:both; padding:2px;"></div>
+									<div class="item form-group" style="clear:both">
+										<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+											<thead>
+												<tr>
+													<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
+													<th th:text="#{label.totale_ore}">TOTALE ORE</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="metodologia, row : ${eventoWrapper.evento.riepilogoFAD.metodologie}">
+													<td th:text="${metodologia.key.nome}"></td>
+													<td th:text="${metodologia.value} + ' h'"></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
 				 				</div>
 
 								<!-- RADIO SUPPORTO DISCIPLINARE SVOLTO DA ESPERTO FAD -->
@@ -701,7 +721,7 @@
 										<span class="checkbox">
 										<label>
 											<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" />
-											<span th:text="#{label.conferma}"></span>
+											<span th:text="#{label.conferma_crediti_proposti_dal_sistema}"></span>
 										</label>
 										</span>
 									</div>

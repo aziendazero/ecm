@@ -38,6 +38,8 @@ import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
+import it.tredi.ecm.dao.entity.RiepilogoFAD;
+import it.tredi.ecm.dao.entity.RiepilogoRES;
 import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
@@ -233,6 +235,11 @@ public class EventoServiceImpl implements EventoService {
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
+			
+			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
+			if(((EventoRES) evento).isConfermatiCrediti()){
+				evento.setCrediti(eventoWrapper.getCreditiProposti());
+			}
 		}else if(evento instanceof EventoFSC){
 			retrieveProgrammaAndAddJoin(eventoWrapper);
 			
@@ -275,6 +282,11 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD) evento).getVerificaApprendimento().addAll(nuoviVAF);
 
 			retrieveProgrammaAndAddJoin(eventoWrapper);
+			
+			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
+			if(((EventoFAD) evento).getConfermatiCrediti().booleanValue()){
+				evento.setCrediti(eventoWrapper.getCreditiProposti());
+			}
 		}
 
 		//Responsabili
@@ -539,9 +551,15 @@ public class EventoServiceImpl implements EventoService {
 
 		return eventoWrapper;
 	}
-
+	
+	
 	@Override
-	public float calcoloDurataEvento(EventoWrapper eventoWrapper) {
+	public void calculateAutoCompilingData(EventoWrapper eventoWrapper) {
+		calcoloDurataEvento(eventoWrapper);
+		calcoloCreditiEvento(eventoWrapper);
+	}
+
+	private float calcoloDurataEvento(EventoWrapper eventoWrapper) {
 		float durata = 0;
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
@@ -551,7 +569,8 @@ public class EventoServiceImpl implements EventoService {
 			durata = calcoloDurataEventoFSC(eventoWrapper.getProgrammaEventoFSC(), eventoWrapper.getRiepilogoRuoliFSC());
 			((EventoFSC)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
-
+			durata = calcoloDurataEventoFAD(eventoWrapper.getProgrammaEventoFAD(), ((EventoFAD)eventoWrapper.getEvento()).getRiepilogoFAD());
+			((EventoFAD)eventoWrapper.getEvento()).setDurata(durata);
 		}
 
 		return durata;
@@ -569,6 +588,7 @@ public class EventoServiceImpl implements EventoService {
 			}
 		}
 
+		durata = Utils.getRoundedFloatValue(durata);
 		return durata;
 	}
 
@@ -578,6 +598,7 @@ public class EventoServiceImpl implements EventoService {
 		prepareRiepilogoRuoli(programma, riepilogoRuoliFSC);
 		durata = getMaxDurataPatecipanti(riepilogoRuoliFSC);
 		
+		durata = Utils.getRoundedFloatValue(durata);
 		return durata;
 	}
 
@@ -597,20 +618,40 @@ public class EventoServiceImpl implements EventoService {
 		return max;
 	}
 
-	private float calcoloDurataEventoFAD(){
+	private float calcoloDurataEventoFAD(List<DettaglioAttivitaFAD> programma, RiepilogoFAD riepilogoFAD){
 		float durata = 0;
+		riepilogoFAD.clear();
+		
+		if(programma != null){
+			for(DettaglioAttivitaFAD dett : programma){
+				durata += dett.getOreAttivita();
+				
+				//popolo la lista di obiettivi
+				if(dett.getObiettivoFormativo() != null)
+					riepilogoFAD.getObiettivi().add(dett.getObiettivoFormativo());
+				
+				//popolo la lista di metodologie con annesso calcolo di ore
+				if(dett.getMetodologiaDidattica() != null){
+					if(riepilogoFAD.getMetodologie().containsKey(dett.getMetodologiaDidattica())){
+						float ore = riepilogoFAD.getMetodologie().get(dett.getMetodologiaDidattica());
+						riepilogoFAD.getMetodologie().put(dett.getMetodologiaDidattica(), ore + dett.getOreAttivita());
+					}else{
+						riepilogoFAD.getMetodologie().put(dett.getMetodologiaDidattica(), dett.getOreAttivita());
+					}
+				}
+			}
+		}
 
-
+		durata = Utils.getRoundedFloatValue(durata);
 		return durata;
 	}
 
-	@Override
-	public float calcoloCreditiEvento(EventoWrapper eventoWrapper) {
+	private float calcoloCreditiEvento(EventoWrapper eventoWrapper) {
 		float crediti = 0;
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			EventoRES evento = ((EventoRES)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getProgrammaEventoRES(), evento.getNumeroPartecipanti());
+			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getProgrammaEventoRES(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES());
 			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
 			return crediti;
@@ -621,14 +662,49 @@ public class EventoServiceImpl implements EventoService {
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FSC"));
 			return crediti;
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
-
+			EventoFAD evento = ((EventoFAD)eventoWrapper.getEvento());
+			crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto().booleanValue());
+			eventoWrapper.setCreditiProposti(crediti);
+			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FAD"));
+			return crediti;
 		}
 
 		return crediti;
 	}
 
-	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, List<ProgrammaGiornalieroRES> programma, int numeroPartecipanti){
+	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, List<ProgrammaGiornalieroRES> programma, int numeroPartecipanti, RiepilogoRES riepilogoRES){
 		float crediti = 0.0f;
+		float oreFrontale = 0f;
+		float oreInterattiva = 0f;
+		
+		riepilogoRES.clear();
+
+		for(ProgrammaGiornalieroRES progrGio : programma) {
+			for(DettaglioAttivitaRES a : progrGio.getProgramma()){
+				if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
+					oreFrontale += a.getOreAttivita();
+				}else{
+					oreInterattiva += a.getOreAttivita();
+				}
+				
+				//popolo la lista di obiettivi formativi utilizzati
+				if(a.getObiettivoFormativo() != null)
+					riepilogoRES.getObiettivi().add(a.getObiettivoFormativo());
+				
+				//popolo la lista di metodologie con annesso calcolo di ore
+				if(a.getMetodologiaDidattica() != null){
+					if(riepilogoRES.getMetodologie().containsKey(a.getMetodologiaDidattica())){
+						float ore = riepilogoRES.getMetodologie().get(a.getMetodologiaDidattica());
+						riepilogoRES.getMetodologie().put(a.getMetodologiaDidattica(), ore + a.getOreAttivita());
+					}else{
+						riepilogoRES.getMetodologie().put(a.getMetodologiaDidattica(), a.getOreAttivita());
+					}
+				}
+			}
+		}
+		
+		riepilogoRES.setTotaleOreFrontali(oreFrontale);
+		riepilogoRES.setTotaleOreInterattive(oreInterattiva);
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
 			crediti = (0.20f * durata);
@@ -644,19 +720,7 @@ public class EventoServiceImpl implements EventoService {
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO){
 			float creditiFrontale = 0f;
-			float oreFrontale = 0f;
 			float creditiInterattiva = 0f;
-			float oreInterattiva = 0f;
-
-			for(ProgrammaGiornalieroRES progrGio : programma) {
-				for(DettaglioAttivitaRES a : progrGio.getProgramma()){
-					if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
-						oreFrontale += a.getOreAttivita();
-					}else{
-						oreInterattiva += a.getOreAttivita();
-					}
-				}
-			}
 
 			//metodologia frontale
 			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
@@ -678,6 +742,8 @@ public class EventoServiceImpl implements EventoService {
 			crediti = creditiFrontale + creditiInterattiva;
 		}
 
+		crediti = Utils.getRoundedFloatValue(crediti);
+		
 		return crediti;
 	}
 
@@ -768,8 +834,16 @@ public class EventoServiceImpl implements EventoService {
 	}
 	
 
-	private float calcoloCreditiFormativiEventoFAD(){
-		return (Float) null;
+	private float calcoloCreditiFormativiEventoFAD(float durata, boolean conTutor){
+		float crediti = 0.0f;
+		
+		if(conTutor)
+			crediti = durata * 1.5f;
+		else
+			crediti = durata * 1.0f;
+		
+		crediti = Utils.getRoundedFloatValue(crediti);
+		return crediti;
 	}
 
 	/*

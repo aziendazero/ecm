@@ -832,8 +832,7 @@ public class EventoController {
 				//sezione programma evento
 			}else if(sectionIndex == 3){
 				//sezione finale - ricalcolo durata e crediti
-				eventoService.calcoloDurataEvento(eventoWrapper);
-				eventoService.calcoloCreditiEvento(eventoWrapper);
+				eventoService.calculateAutoCompilingData(eventoWrapper);
 			}
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));

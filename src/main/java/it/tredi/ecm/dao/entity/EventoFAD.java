@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -57,17 +58,8 @@ public class EventoFAD extends Evento{
 	private String userId;
 	private String password;
 	private String url;
+	
 
-	public float calcoloDurata(){
-		float durata = 0.0f;
-		//TODO
-		return durata;
-	}
-
-
-	public float calcoloCreditiFormativi(){
-		float crediti = 0.0f;
-		//TODO
-		return crediti;
-	}
+	@Embedded
+	private RiepilogoFAD riepilogoFAD = new RiepilogoFAD();
 }

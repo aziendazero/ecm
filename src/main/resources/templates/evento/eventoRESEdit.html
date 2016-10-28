@@ -737,9 +737,6 @@
 						<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="tab2">
 							<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
 								<!-- PROGRAMMA EVENTO -->
-								<!-- <a id="add-programma" class="btn btn-success" th:onclick="'addProgramma(\'attivitaRES\',\'23\/06\/1986\')'">
-									<span><i class="fa fa-minus"></i></span>
-								</a> -->
 								<div class='programmaEvento item form-group' id="programma">
 									<th:block th:include="evento/eventoEdit :: attivitaRES" />
 								</div>
@@ -803,7 +800,13 @@
 				 						<span th:text="#{label.tipologia_obiettivi_formativi}">Tipologia di obiettivi formativi</span>
 				 					</label>
 				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipologiaObiettiviFormativi">
-				 						<div class="value-edit" th:text="${'**TODO**'}"></div>
+				 						<div class="value-edit">
+				 							<ul>
+												<li class="listStyle-elenco" th:each="obiettivo, row : ${eventoWrapper.evento.riepilogoRES.obiettivi}">
+													<label th:text="${obiettivo.nome}"></label>
+												</li>
+				 							</ul>
+			 							</div>
 				 					</div>
 				 				</div>
 
@@ -815,9 +818,42 @@
 				 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="metodologieDidattiche">
 				 						<span th:text="#{label.metodologie_didattiche}">Metodologie Didattiche</span>
 				 					</label>
-				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="metodologieDidattiche">
-				 						<div class="value-edit" th:text="${'**TODO**'}"></div>
-				 					</div>
+	 								<div class="item form-group" style="clear:both; padding:2px;"></div>
+									<div class="item form-group" style="clear:both">
+										<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+											<thead>
+												<tr>
+													<th th:text="#{label.metodologia_didattica}">OBIETTIVO FORMATIVO</th>
+													<th th:text="#{label.metodologia_frontale}">RISULTATAO ATTESO</th>
+													<th th:text="#{label.metodologia_interattiva}">METODO DI LAVORO</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="metodologia, row : ${eventoWrapper.evento.riepilogoRES.metodologie}">
+													<td th:text="${metodologia.key.nome}"></td>
+													<td>
+														<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).FRONTALE}"
+															th:text="${metodologia.value} + ' h'"></span>
+													</td>
+													<td>
+														<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).INTERATTIVA}"
+															th:text="${metodologia.value} + ' h'"></span>
+													</td> 
+												</tr>
+												<tr>
+													<td>
+														<strong><span class="text-uppercase" th:text="#{label.totale_ore}"></span></strong> 
+													</td>
+													<td>
+														<strong><span th:text="${eventoWrapper.evento.riepilogoRES.totaleOreFrontali} + ' h'"></span></strong> 
+													</td>
+													<td>
+														<strong><span th:text="${eventoWrapper.evento.riepilogoRES.totaleOreInterattive} + ' h'"></span></strong> 
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
 				 				</div>
 
 								<!-- CREDITI FORMATIVI PROPOSTI-->
@@ -834,7 +870,7 @@
 										<span class="checkbox">
 										<label>
 											<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" />
-											<span th:text="#{label.conferma}"></span>
+											<span th:text="#{label.conferma_crediti_proposti_dal_sistema}"></span>
 										</label>
 										</span>
 									</div>

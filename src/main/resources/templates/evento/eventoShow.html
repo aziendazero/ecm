@@ -73,5 +73,199 @@
 			</div>
 		</div>
 	</div>
+	
+	<th:block style="display:none">
+		<div class="col-xs-12" th:fragment="attivitaRES">
+			<div id="attivitaRES">
+				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12" th:each="programmaGiornaliero , status : ${eventoWrapper.evento.programma}">
+					<div class="item form-group">
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.programma_del}" class="text-uppercase">Programma del</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+							<label class="control-label" th:text="${programmaGiornaliero.giorno}"> </label>
+						</div>
+					</div>
+					<div class="item form-group">
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.sede}" class="text-uppercase">SEDE</span>
+						</label>
+					</div>
+					<div class="item form-group">
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.provincia}">Provincia</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+							<label class="control-label" th:text="${programmaGiornaliero.sede.provincia}" ></label>
+						</div>
+					</div>
+	
+					<div class="item form-group">
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.comune}">Comune</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+							<label class="control-label" th:text="${programmaGiornaliero.sede.comune}" ></label>
+						</div>
+					</div>
+	
+					<div class="item form-group">
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.indirizzo}">Indirizzo</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+							<label class="control-label" th:text="${programmaGiornaliero.sede.indirizzo}" ></label>
+						</div>
+					</div>
+	
+					<div class="item form-group">
+						<label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span th:text="#{label.luogo}">Luogo</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+							<label class="control-label" th:text="${programmaGiornaliero.sede.luogo}" ></label>
+						</div>
+					</div>
+	
+					<div class="col-xs-12">
+						<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
+						<div th:attr="data-programma-id=__${status.index}__">
+							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th th:text="#{label.orario_inizio}">ORARIO INIZIO</th>
+										<th th:text="#{label.orario_fine}">ORARIO FINE</th>
+										<th th:text="#{label.argomento}">ARGOMENTO</th>
+										<th th:text="#{label.docente}">Docente</th>
+										<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
+										<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
+										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
+										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:attr="data-row-id=${__${status2.index}__}" th:each="attivita , status2 : ${eventoWrapper.evento.programma[__${status.index}__].programma}">
+										<td th:text="${attivita.orarioInizio}"></td>
+										<td th:text="${attivita.orarioFine}"></td>
+										<td th:text="${attivita.argomento}"></td>
+										<td th:text="${attivita.docente?.anagrafica?.cognome}"></td>
+										<td th:text="${attivita.risultatoAtteso}"></td>
+										<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
+										<td th:text="${attivita.metodologiaDidattica?.nome}"></td>
+										<td th:text="${attivita.oreAttivita}"></td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="divider-dashed"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+	
+	<th:block style="display:none">
+		<div class="col-xs-12" th:fragment="attivitaFSC">
+			<div id="attivitaFSC">
+				<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="faseCorrente , status : ${eventoWrapper.evento.fasiAzioniRuoli}"  th:with="fase=${eventoWrapper.evento.fasiAzioniRuoli[__${status.index}__].faseDiLavoro}">
+					
+					<th:block th:if="${ (eventoWrapper.evento.tipologiaEvento != T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO) or T(it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum).faseAbilitata(eventoWrapper.evento.fasiDaInserire,fase)}">
+					
+						<div class="item form-group">
+							<th:block th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}">
+								<label class="control-label col-xs-2">
+									<span th:text="#{label.fase}" class="text-uppercase">Fase</span>
+								</label>
+								<div class="col-xs-10" >
+									<label class="control-label text-uppercase" th:text="${faseCorrente?.faseDiLavoro?.nome}"> </label>
+								</div>
+							</th:block>
+						</div>
+	
+						<div class="col-xs-12">
+							<label th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azioni} + '/' + #{label.ruoli}">Azioni / Ruoli</label>
+							<label th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fasi}">Fasi</label>
+							<div th:attr="data-fase-id=__${status.index}__">
+								<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+									<thead>
+										<tr>
+											<th th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azione}">AZIONE</th>
+											<th th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fase}">FASE</th>
+											<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
+											<th th:text="#{label.risultati_attesi}">RISULTATAO ATTESO</th>
+											<th th:text="#{label.metodi_di_lavoro}">METODO DI LAVORO</th>
+											<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
+											<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:attr="data-row-id=${__${status2.index}__}" th:each="attivita , status2 : ${eventoWrapper.evento.fasiAzioniRuoli[__${status.index}__].azioniRuoli}">
+											<td th:text="${attivita.azione}"></td>
+											<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
+											<td th:text="${attivita.risultatiAttesi}"></td>
+											<td>
+												<ul>
+													<li th:each="metodo, m : ${faseCorrente.azioniRuoli[__${status2.index}__].metodiDiLavoro}">
+											 			<span th:text="${metodo.nome}"></span>
+											 		</li>
+												</ul>
+											 </td>
+											<td>
+												<ul>
+													<li th:each="ruoloFSC, r : ${faseCorrente.azioniRuoli[__${status2.index}__].ruoli}">
+											 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.ruolo.nome} + ${ruoloFSC.tempoDedicato != null ? ' (' + ruoloFSC.tempoDedicato + 'h)' : ''}"></span>
+											 		</li>
+												</ul>
+											 </td>
+											<td th:text="${faseCorrente.azioniRuoli[__${status2.index}__].tempoDedicato}"></td>
+										</tr>
+									</tbody>
+								</table>
+								<div class="divider-dashed"></div>
+							</div>
+						</div>
+						
+					</th:block>
+					
+				</div>
+			</div>
+		</div>
+	</th:block>
+	
+	<th:block style="display:none">
+		<div class="col-xs-12" th:fragment="attivitaFAD">
+			<div id="attivitaFAD" th:if="${eventoWrapper.evento.programmaFAD != null}">
+				<div class="col-xs-12">
+					<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
+					<div data-programma-id="0">
+						<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.argomento}">ARGOMENTO</th>
+									<th th:text="#{label.docente}">Docente</th>
+									<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
+									<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
+									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
+									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:attr="data-row-id=${__${row.index}__}" th:each="attivita , row : ${eventoWrapper.evento.programmaFAD}">
+									<td th:text="${attivita.argomento}"></td>
+									<td th:text="${attivita.docente?.anagrafica?.cognome}"></td>
+									<td th:text="${attivita.risultatoAtteso}"></td>
+									<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
+									<td th:text="${attivita.metodologiaDidattica?.nome}"></td>
+									<td th:text="${attivita.oreAttivita}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="divider-dashed"></div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+	
 </body>
 </html>
