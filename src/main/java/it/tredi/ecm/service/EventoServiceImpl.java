@@ -195,9 +195,11 @@ public class EventoServiceImpl implements EventoService {
 
 	/*	SALVATAGGIO	*/
 	@Override
-	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) {
+	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) throws Exception{
 		Evento evento = eventoWrapper.getEvento();
 
+		calculateAutoCompilingData(eventoWrapper);
+		
 		if(evento instanceof EventoRES){
 			//date intermedie
 			Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
@@ -554,9 +556,10 @@ public class EventoServiceImpl implements EventoService {
 	
 	
 	@Override
-	public void calculateAutoCompilingData(EventoWrapper eventoWrapper) {
+	public void calculateAutoCompilingData(EventoWrapper eventoWrapper) throws Exception {
 		calcoloDurataEvento(eventoWrapper);
 		calcoloCreditiEvento(eventoWrapper);
+		eventoWrapper.getEvento().calcolaCosto();
 	}
 
 	private float calcoloDurataEvento(EventoWrapper eventoWrapper) {
