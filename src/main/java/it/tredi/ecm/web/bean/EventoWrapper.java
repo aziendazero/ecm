@@ -59,6 +59,7 @@ public class EventoWrapper {
 	private Map<Long, String> risultatiAttesiMapTemp = new LinkedHashMap<Long, String>();
 
 	private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
+	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
 	//liste edit
 	private Set<Obiettivo> obiettiviNazionali;
@@ -96,7 +97,6 @@ public class EventoWrapper {
 	private PersonaFullEvento tempPersonaFullEvento = new PersonaFullEvento();
 
 	/* RES */
-	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 	private List<ProgrammaGiornalieroRES> programmaEventoRES = new ArrayList<ProgrammaGiornalieroRES>();
 	private DettaglioAttivitaRES tempAttivitaRES = new DettaglioAttivitaRES();
 

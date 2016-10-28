@@ -38,6 +38,8 @@ public class EcmAppConfiguration {
 	private int giorniMinEventoProviderA = 15;
 	@Value("${giorni.min.evento.provider.B}")
 	private int giorniMinEventoProviderB = 30;
+	@Value("${numero.massimo.responsabili.evento}")
+	private int numeroMassimoResponsabiliEvento = 3;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -54,6 +56,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setFileRootPath(fileRootPath);
 		ecmProperties.setGiorniMinEventoProviderA(giorniMinEventoProviderA);
 		ecmProperties.setGiorniMinEventoProviderB(giorniMinEventoProviderB);
+		ecmProperties.setNumeroMassimoResponsabiliEvento(numeroMassimoResponsabiliEvento);
 		return ecmProperties;
 	}
 }

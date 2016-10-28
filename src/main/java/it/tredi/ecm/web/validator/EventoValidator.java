@@ -14,8 +14,13 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
+import it.tredi.ecm.dao.entity.PersonaFullEvento;
+import it.tredi.ecm.dao.entity.Sponsor;
+import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -79,35 +84,194 @@ public class EventoValidator {
 		/* OBIETTIVO FORMATIVO NAZIONALE (campo obbligatorio)
 		 * selectpicker
 		 * */
-		if (evento.getObiettivoNazionale() == null)
+		if(evento.getObiettivoNazionale() == null)
 			errors.rejectValue(prefix + "obiettivoNazionale", "error.empty");
 
 		/* OBIETTIVO FORMATIVO REGIONALE (campo obbliagatorio)
 		 * selectpicker
 		 * */
-		if (evento.getObiettivoRegionale() == null)
+		if(evento.getObiettivoRegionale() == null)
 			errors.rejectValue(prefix + "obiettivoRegionale", "error.empty");
 
 		/* PROFESSIONI/DISCIPLINE (campo obbligatorio)
 		 * selectpicker (sono le discipline selezionate a creare le relative professioni)
 		 * */
-		if (evento.getDiscipline() == null || evento.getDiscipline().isEmpty())
+		if(evento.getDiscipline() == null || evento.getDiscipline().isEmpty())
 			errors.rejectValue(prefix + "discipline", "error.empty");
-		
-		/* RESPONSABILI SCIENTIFICI (campo obbligatorio)
+
+		/* RESPONSABILI SCIENTIFICI (serie di campi obbligatori)
 		 * ripetibile complesso di classe PersonaEvento
 		 * minimo 1 - massimo 3
-		 * devono avere tutti i campi inseriti (tranne cv? //TODO chiarire)
+		 * devono avere tutti i campi inseriti
 		 * */
-		if (evento.getResponsabili() == null || evento.getResponsabili().isEmpty())
+		if(evento.getResponsabili() == null || evento.getResponsabili().isEmpty())
 			errors.rejectValue(prefix + "responsabili", "error.empty");
-		else if(evento.getResponsabili().size() > 3)
-				errors.rejectValue(prefix + "responsabili", "error.troppi_responsabili");
+		else if(evento.getResponsabili().size() > ecmProperties.getNumeroMassimoResponsabiliEvento())
+				errors.rejectValue(prefix + "responsabili", "error.troppi_responsabili3");
 		else {
-			for(PersonaEvento p : evento.getResponsabili())
-				validatePersonaEvento(p, errors, prefix + "responsabili");
+			int counter = 0;
+			boolean atLeastOneErrorPersonaEvento = false;
+			for(PersonaEvento p : evento.getResponsabili()) {
+				boolean hasError = validatePersonaEvento(p, "responsabile");
+				if(hasError) {
+					errors.rejectValue("responsabiliScientifici["+counter+"]", "error.campi_mancanti_persona");
+					atLeastOneErrorPersonaEvento = true;
+				}
+				counter++;
+			}
+			if(atLeastOneErrorPersonaEvento)
+				errors.rejectValue(prefix + "responsabili", "error.campi_mancanti_responsabili");
 		}
-		
+
+		/* RESPONSABILE SEGRETERIA ORGANIZZATIVA (campo obbligatorio)
+		 * singolo campo complesso di tipo PersonaFullEvento
+		 * deve avere tutti i campi inseriti
+		 * */
+		if(evento.getResponsabileSegreteria() == null || evento.getResponsabileSegreteria().getAnagrafica() == null)
+			errors.rejectValue(prefix + "responsabileSegreteria", "error.empty");
+		else {
+			boolean hasError = validatePersonaFullEvento(evento.getResponsabileSegreteria());
+			if(hasError)
+				errors.rejectValue(prefix + "responsabileSegreteria", "error.campi_mancanti_responsabile_segreteria");
+		}
+
+		/* RADIO EVENTO SPONSORIZZATO (campo obbligatorio)
+		 * radio
+		 * */
+		if(evento.getEventoSponsorizzato() == null)
+			errors.rejectValue(prefix + "eventoSponsorizzato", "error.empty");
+
+		/* SPONSOR (campo obbligatorio)
+		 * campo complesso ripetibile di tipo Sponsor
+		 * deve avere tutti i campi inseriti
+		 * se eventoSponsorizzato == true -> almeno 1 sponsor
+		 * */
+		if(evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true
+				&& (evento.getSponsors() == null
+				|| evento.getSponsors().isEmpty()))
+			errors.rejectValue(prefix + "sponsors", "error.empty");
+		else {
+			int counter = 0;
+			boolean atLeastOneErrorSponsor = false;
+			for(Sponsor s : evento.getSponsors()) {
+				boolean hasError = validateSponsor(s);
+				if(hasError) {
+					errors.rejectValue("sponsors["+counter+"]", "error.campi_mancanti_sponsor");
+					atLeastOneErrorSponsor = true;
+				}
+				counter++;
+			}
+			if(atLeastOneErrorSponsor)
+				errors.rejectValue(prefix + "sponsors", "error.campi_mancanti_sponsor");
+		}
+
+		/* RADIO EVENTO SPONSORIZZATO DA AZIENDE CHE TRATTANO ALIMENTI PRIMA INFANZIA
+		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA)
+		 * radio
+		 * */
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
+			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
+
+		/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
+		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
+		 * file allegato
+		 * */
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
+				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null)
+			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
+
+		/* AUTOCERTIFICAZIONE DI AUTORIZZAZIONE DEL MINISTERO
+		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == false)
+		 * file allegato
+		 * */
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null)
+			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
+
+		/* RADIO ALTRE FORME FINANZIAMENTO (campo obbligatorio)
+		 * radio
+		 * */
+		if(evento.getAltreFormeFinanziamento() == null)
+			errors.rejectValue(prefix + "altreFormeFinanziamento", "error.empty");
+
+		/* ALLEGATO CONTRATTI ACCORDI CONVENZIONI
+		 * (campo obbligatorio se altreFormeFinanziamento == true)
+		 * file allegato
+		 * */
+		if(evento.getAltreFormeFinanziamento() != null
+				&& evento.getAltreFormeFinanziamento() == true
+				&& evento.getContrattiAccordiConvenzioni() == null)
+			errors.rejectValue("contrattiAccordiConvenzioni", "error.empty");
+
+		/* AUTOCERTIFICAZIONE ASSENZA FINANZIAMENTI
+		 * (campo obbligatorio se altreFormeFinanziamento == false)
+		 * file allegato
+		 * */
+		if(evento.getAltreFormeFinanziamento() != null
+				&& evento.getAltreFormeFinanziamento() == false
+				&& evento.getAutocertificazioneAssenzaFinanziamenti() == null)
+			errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.empty");
+
+		/* RADIO EVENTO PARTNER (campo obbligatorio)
+		 * radio
+		 * */
+		if(evento.getEventoAvvalePartner() == null)
+			errors.rejectValue(prefix + "eventoAvvalePartner", "error.empty");
+
+		/* PARTNERS (campo obbligatorio se eventoAvvalePartner == true)
+		 * campo complesso di tipo Partner ripetibile
+		 * almeno 1
+		 * */
+		if(evento.getEventoAvvalePartner() != null
+				&& evento.getEventoAvvalePartner() == true
+				&& (evento.getPartners() == null
+				|| evento.getPartners().isEmpty()))
+			errors.rejectValue(prefix + "partners", "error.empty");
+		else {
+			int counter = 0;
+			boolean atLeastOneErrorPartner = false;
+			for(Partner p : evento.getPartners()) {
+				boolean hasError = validatePartner(p);
+				if(hasError) {
+					errors.rejectValue("partners["+counter+"]", "error.campi_mancanti_partner");
+					atLeastOneErrorPartner = true;
+				}
+				counter++;
+			}
+			if(atLeastOneErrorPartner)
+				errors.rejectValue(prefix + "partners", "error.campi_mancanti_partner");
+		}
+
+		/* DICHIARAZIONE ASSENZA CONFLITTO DI INTERESSE (campo obbligatorio)
+		 * file allegato
+		 * */
+		if(evento.getDichiarazioneAssenzaConflittoInteresse() == null)
+			errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.empty");
+
+		/* PROCEDURA VERIFICA QUALITÀ (campo obbligatorio)
+		 * spunta richiesta
+		 * */
+		if(evento.getProceduraVerificaQualitaPercepita() == null || evento.getProceduraVerificaQualitaPercepita() == false)
+			errors.rejectValue(prefix + "proceduraVerificaQualitaPercepita", "error.empty");
+
+		/* AUTORIZZAZIONE PRIVACY (campo obbligatorio)
+		 * spunta richiesta
+		 * */
+		if(evento.getAutorizzazionePrivacy() == null || evento.getAutorizzazionePrivacy() == false)
+			errors.rejectValue(prefix + "autorizzazionePrivacy", "error.empty");
 	}
 
 	//validate RES
@@ -169,7 +333,7 @@ public class EventoValidator {
 		if(evento.getTipologiaEvento() == null)
 			errors.rejectValue(prefix + "tipologiaEvento", "error.empty");
 
-		/*	WORKSHOP/SEMINARI (campo obbligatorio se TIPOLOGIA EVENTO == CONVEGNO_CONGRESSO)
+		/* WORKSHOP/SEMINARI (campo obbligatorio se TIPOLOGIA EVENTO == CONVEGNO_CONGRESSO)
 		 * radio
 		 * */
 		if(evento.getTipologiaEvento() != null
@@ -185,47 +349,57 @@ public class EventoValidator {
 				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
 				&& (evento.getTitoloConvegno() == null || evento.getTitoloConvegno().isEmpty()))
 			errors.rejectValue(prefix + "titoloConvegno", "error.empty");
-		
+
 		/* NUMERO DEI PARTECIPANTI (campo obbligatorio)
 		 * campo valore numerico
-		 *  se la tipologia dell'evento è CONVEGNO_CONGRESSO -> minimo 200 partecipanti
-		 *  se la tipologia dell'evento è WORKSHOP_SEMINARIO -> massimo 100 partecipanti
-		 *  se la tipologia dell'evento è CORSO_AGGIORNAMENTO -> massimo 200 partecipanti
+		 * se la tipologia dell'evento è CONVEGNO_CONGRESSO -> minimo 200 partecipanti
+		 * se la tipologia dell'evento è WORKSHOP_SEMINARIO -> massimo 100 partecipanti
+		 * se la tipologia dell'evento è CORSO_AGGIORNAMENTO -> massimo 200 partecipanti
 		 * */
 		if(evento.getNumeroPartecipanti() == null)
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.empty");
-		else if(evento.getTipologiaEvento() != null 
+		else if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
 				&& evento.getNumeroPartecipanti() < 200)
-			errors.rejectValue(prefix + "numeroPartecipanti", "error.pochi_partecipanti");
-		else if(evento.getTipologiaEvento() != null 
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.pochi_partecipanti200");
+		else if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
 				&& evento.getNumeroPartecipanti() > 100)
-			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti");
-		else if(evento.getTipologiaEvento() != null 
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti100");
+		else if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO
 				&& evento.getNumeroPartecipanti() > 200)
-			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti");
-		
-		/* DOCENTI/RELATORI/TUTOR (campo obbligatorio)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti200");
+
+		/* DOCENTI/RELATORI/TUTOR (serie di campi obbligatori)
 		 * ripetibile complesso di classe PersonaEvento
 		 * minimo 1
-		 * devono avere tutti i campi inseriti (tranne cv? //TODO chiarire)
+		 * devono avere tutti i campi inseriti
 		 * */
 		if(evento.getDocenti() == null || evento.getDocenti().isEmpty())
 			errors.rejectValue(prefix + "docenti", "error.empty");
 		else {
-			for(PersonaEvento p : evento.getDocenti())
-				validatePersonaEvento(p, errors, prefix + "docenti");
+			int counter = 0;
+			boolean atLeastOneErrorPersonaEvento = false;
+			for(PersonaEvento p : evento.getDocenti()) {
+				boolean hasError = validatePersonaEvento(p, "docente");
+				if(hasError) {
+					errors.rejectValue("docenti["+counter+"]", "error.campi_mancanti_persona");
+					atLeastOneErrorPersonaEvento = true;
+				}
+				counter++;
+			}
+			if(atLeastOneErrorPersonaEvento)
+				errors.rejectValue(prefix + "docenti", "error.campi_mancanti_docenti");
 		}
-		
+
 		/* RAZIONALE (campo obbligatorio)
 		 * campo testuale libero
 		 * almeno 1 char
 		 * */
 		if(evento.getRazionale() == null || evento.getRazionale().isEmpty())
-			errors.rejectValue(prefix + "razionale", "errors.empty");
-		
+			errors.rejectValue(prefix + "razionale", "error.empty");
+
 		/* RISULTATI ATTESI (campo obbligatorio)
 		 * campo testuale libero ripetibile
 		 * almeno 1 char
@@ -233,8 +407,99 @@ public class EventoValidator {
 		 * se non ci sono elementi, la input su cui inserire l'errore punterà al primo elemento della mappa
 		 * */
 		if(evento.getRisultatiAttesi() == null || evento.getRisultatiAttesi().isEmpty())
-			errors.rejectValue("risultatiAttesiMapTemp[1]", "errors.empty");
-		
+			errors.rejectValue("risultatiAttesiMapTemp[1]", "error.empty");
+
+		/* PROGRAMMA RES (serie di campi obbligatori)
+		 * ripetibile complesso di classe ProgrammaGiornalieroRES
+		 * stesso numero delle date (gestito lato interfaccia)
+		 * devono avere tutti i campi inseriti
+		 * */
+		//TODO aspettare barduz con la modifica alle date
+
+		/* BROCHURE EVENTO (campo obbligatorio se TIPOLOGIA EVENTO == CONVEGNO_CONGRESSO o WORKSHOP_SEMINARIO)
+		 * file allegato
+		 * */
+		if((evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
+				|| evento.getTipologiaEvento() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO)
+				&& evento.getBrochureEvento() == null)
+			errors.rejectValue("brochure", "error.empty");
+
+		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
+		 * checkbox
+		 * almeno un valore
+		 * controllo coerenza se TIPOLOGIA EVENTO == CONVEGNO_CONGRESSO -> selezionabile solo AUTOCERTIFICAZIONE
+		 * (anche se da client è tutto gestito)
+		 * */
+		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty())
+			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
+		else if ((evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
+				&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE))
+				|| evento.getVerificaApprendimento().size() > 1)
+			errors.rejectValue(prefix + "verificaApprendimento", "error.solo_autocertificazione_selezionabile");
+		else if ((evento.getTipologiaEvento() != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO)
+				&& evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE))
+			errors.rejectValue(prefix + "verificaApprendimento",  "error.autocertificazione_non_selezionabile");
+
+		/* DURATA COMPLESSIVA (autocompilato)
+		 * controllo di sicurezza, la durata totale dell'evento deve essere di più di 3 ore
+		 * dato che ogni attività deve essere di minimo 3 ore, va da se che il controllo verrà sempre superato
+		 * o segnalato nelle attività
+		 * */
+		if(evento.getDurata() < 3L)
+			errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
+
+		/* CREDITI (campo obbligatorio/autocompilato)
+		 * il campo viene autocompilato
+		 * a questo punto l'utente può scegliere di accettare il valore
+		 * o inserirne uno lui -> se NON accetta il valore il campo crediti che deve inserire è obbligatorio
+		 * campo numerico (Float)
+		 * */
+		if(evento.getCrediti() == null)
+			errors.rejectValue(prefix + "crediti", "error.empty");
+
+		/* QUOTA DI PARTECIPAZIONE (campo obbligatorio)
+		 * campo numerico (BigDecimal)
+		 * */
+		if(evento.getQuotaPartecipazione() == null)
+			errors.rejectValue(prefix + "quotaPartecipazione", "error.empty");
+
+		/* LINGUA (campo obbligatorio)
+		 * radio
+		 * */
+		if(evento.getSoloLinguaItaliana() == null)
+			errors.rejectValue(prefix + "soloLinguaItaliana", "error.empty");
+
+		/* LINGUA STRANIERA UTILIZZATA (campo obbligatorio se soloLinguaItaliana == false)
+		 * campo testuale libero
+		 * almeno 1 char
+		 * */
+		if(evento.getSoloLinguaItaliana() != null
+				&& evento.getSoloLinguaItaliana() == false
+				&& (evento.getLinguaStranieraUtilizzata() == null
+				|| evento.getLinguaStranieraUtilizzata().isEmpty()))
+			errors.rejectValue(prefix +  "linguaStranieraUtilizzata", "error.empty");
+
+		/* TRADUZIONE SIMULTANEA (campo obbligatorio se soloLinguaItaliana == false)
+		 * radio
+		 * */
+		if(evento.getSoloLinguaItaliana() != null
+				&& evento.getSoloLinguaItaliana() == false
+				&& evento.getEsisteTraduzioneSimultanea() == null)
+			errors.rejectValue(prefix +  "esisteTraduzioneSimultanea", "error.empty");
+
+		/* VERIFICA PRESENZA PARTECIPANTI (campo obbligatorio)
+		 * checkbox
+		 * almeno 1 selezionato
+		 * */
+		if(evento.getVerificaPresenzaPartecipanti() == null || evento.getVerificaPresenzaPartecipanti().isEmpty())
+			errors.rejectValue(prefix + "verificaPresenzaPartecipanti", "error.empty");
+
+		/* VERIFICA RICADUTE FORMATIVE (campo obbligatorio)
+		 * radio
+		 * */
+		if(evento.getVerificaRicaduteFormative() == null)
+			errors.rejectValue(prefix + "verificaRicaduteFormative", "error.empty");
+
 	}
 
 	//validate FSC
@@ -246,9 +511,75 @@ public class EventoValidator {
 	private void validateFAD(EventoFAD evento, Errors errors, String prefix) {
 		//TODO
 	}
-	
-	//validate PersonaEvento
-	private void validatePersonaEvento(PersonaEvento persona, Errors errors, String prefix) {
-		//TODO
+
+	//validate PersonaEvento (tipoPersona serve a distinguere il caso responsabileScientifico da Docente)
+	private boolean validatePersonaEvento(PersonaEvento persona, String tipoPersona) {
+
+		//campi comuni
+		if(persona.getAnagrafica().getCognome() == null || persona.getAnagrafica().getCognome().isEmpty())
+			return true;
+		if(persona.getAnagrafica().getNome() == null || persona.getAnagrafica().getNome().isEmpty())
+			return true;
+		if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
+			return true;
+		if(persona.getAnagrafica().getCv() == null || persona.getAnagrafica().getCv().isNew())
+			return true;
+
+		//campi particolari responsabileScientifico
+		if(tipoPersona.equals("responsabile")) {
+			if(persona.getQualifica() == null || persona.getQualifica().isEmpty())
+				return true;
+		}
+
+		//campi particolari docente
+		if(tipoPersona.equals("docente")) {
+			if(persona.getRuolo() == null)
+				return true;
+			if(persona.getTitolare() == null)
+				return true;
+		}
+
+		return false;
+	}
+
+	//validate PersonaFullEvento (responsabile segreteria)
+	private boolean validatePersonaFullEvento(PersonaFullEvento persona) {
+
+		if(persona.getAnagrafica().getCognome() == null || persona.getAnagrafica().getCognome().isEmpty())
+			return true;
+		if(persona.getAnagrafica().getNome() == null || persona.getAnagrafica().getNome().isEmpty())
+			return true;
+		if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
+			return true;
+		if(persona.getAnagrafica().getEmail() == null || persona.getAnagrafica().getEmail().isEmpty())
+			return true;
+		if(persona.getAnagrafica().getTelefono() == null || persona.getAnagrafica().getTelefono().isEmpty())
+			return true;
+		if(persona.getAnagrafica().getCellulare() == null || persona.getAnagrafica().getCellulare().isEmpty())
+			return true;
+
+		return false;
+	}
+
+	//validate Sponsor
+	private boolean validateSponsor(Sponsor sponsor) {
+
+		if(sponsor.getName() == null || sponsor.getName().isEmpty())
+			return true;
+//		if(sponsor.getSponsorFile() == null || sponsor.getSponsorFile().isNew())
+//			return true;
+
+		return false;
+	}
+
+	//validate Partner
+	private boolean validatePartner(Partner partner) {
+
+		if(partner.getName() == null || partner.getName().isEmpty())
+			return true;
+		if(partner.getPartnerFile() == null || partner.getPartnerFile().isNew())
+			return true;
+
+		return false;
 	}
 }

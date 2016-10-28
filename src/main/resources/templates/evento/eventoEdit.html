@@ -1111,7 +1111,8 @@
 				<label class="col-xs-offset-4 col-xs-4" th:text="${#lists.size(eventoWrapper.responsabiliScientifici)}"></label>
 				<label class="col-xs-offset-4 col-xs-4" th:text="#{label.nessun_responsabile_registrato}"></label>
 			</th:block> -->
-			<table id="responsabiliScientifici" class="datatable-responsive-responsabili table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+			<table id="responsabiliScientifici" class="datatable-responsive-responsabili table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabili')} ? 'bad-table'">
 				<thead>
 					 <tr>
 						<th th:text="#{label.cognome}">Cognome</th>
@@ -1130,7 +1131,9 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.responsabiliScientifici}">
+					<tr th:attr="data-row-id=${__${status.index}__}"
+						th:each="persona, status : ${eventoWrapper.responsabiliScientifici}"
+						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'responsabiliScientifici['+__${status.index}__+']')} ? 'bad-row'">
 						<td th:text="${persona.anagrafica.cognome}"></td>
 						<td th:text="${persona.anagrafica.nome}"></td>
 						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
@@ -1152,7 +1155,8 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="docenti">
-			<table id="docenti" class="datatable-responsive-docenti table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+			<table id="docenti" class="datatable-responsive-docenti table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.docenti')} ? 'bad-table'">
 				<thead>
 					 <tr>
 						<th th:text="#{label.cognome}">Cognome</th>
@@ -1172,7 +1176,10 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:if="${#lists.size(eventoWrapper.docenti) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.docenti}">
+					<tr th:if="${#lists.size(eventoWrapper.docenti) > 0}"
+						th:attr="data-row-id=${__${status.index}__}"
+						th:each="persona, status : ${eventoWrapper.docenti}"
+						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'docenti['+__${status.index}__+']')} ? 'bad-row'">
 						<td th:text="${persona.anagrafica.cognome}"></td>
 						<td th:text="${persona.anagrafica.nome}"></td>
 						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
@@ -1195,7 +1202,8 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="responsabileSegreteria">
-			<table id="responsabileSegreteria" class="datatable-responsive-responsabileSegreteria table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+			<table id="responsabileSegreteria" class="datatable-responsive-responsabileSegreteria table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabileSegreteria')} ? 'bad-table'">
 				<thead>
 					 <tr>
 						<th th:text="#{label.cognome}">Cognome</th>
@@ -1215,7 +1223,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:if="${eventoWrapper.evento.responsabileSegreteria != null and eventoWrapper.evento.responsabileSegreteria.anagrafica != null}">
+					<tr th:if="${eventoWrapper.evento.responsabileSegreteria != null and eventoWrapper.evento.responsabileSegreteria.anagrafica != null}"
+						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabileSegreteria')} ? 'bad-row'">
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.cognome}"></td>
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.nome}"></td>
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.codiceFiscale}"></td>
@@ -1235,7 +1244,8 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="sponsors">
-			<table id="sponsors" class="datatable-responsive-sponsors table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+			<table id="sponsors" class="datatable-responsive-sponsors table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')} ? 'bad-table'">
 				<thead>
 					 <tr>
 						<th th:text="#{label.nome_sponsor}">Nome dello Sponsor</th>
@@ -1248,7 +1258,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:if="${#lists.size(eventoWrapper.sponsors) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="sponsor, status : ${eventoWrapper.sponsors}">
+					<tr th:if="${#lists.size(eventoWrapper.sponsors) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="sponsor, status : ${eventoWrapper.sponsors}"
+						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'sponsors['+__${status.index}__+']')} ? 'bad-row'">
 						<td th:text="${sponsor.name}"></td>
 						<td>
 							<a th:if="${sponsor.sponsorFile?.id}"  th:text="${sponsor.sponsorFile?.nomeFile}" th:href="@{|/file/${sponsor.sponsorFile.id}|}"></a>
@@ -1266,7 +1277,8 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="partners">
-			<table id="partners" class="datatable-responsive-partners table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+			<table id="partners" class="datatable-responsive-partners table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.partners')} ? 'bad-table'">
 				<thead>
 					 <tr>
 						<th th:text="#{label.nome_partner}">Nome del Partner</th>
@@ -1279,7 +1291,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:if="${#lists.size(eventoWrapper.partners) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="partner, status : ${eventoWrapper.partners}">
+					<tr th:if="${#lists.size(eventoWrapper.partners) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="partner, status : ${eventoWrapper.partners}"
+						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'partners['+__${status.index}__+']')} ? 'bad-row'">
 						<td th:text="${partner.name}"></td>
 						<td>
 							<a th:if="${partner.partnerFile?.id}"  th:text="${partner.partnerFile?.nomeFile}" th:href="@{|/file/${partner.partnerFile.id}|}"></a>
