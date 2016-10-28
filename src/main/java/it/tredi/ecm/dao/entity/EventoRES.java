@@ -54,7 +54,7 @@ public class EventoRES extends Evento{
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@OrderBy("giorno ASC")
-	@JoinColumn(name = "programma_res_id")
+	@JoinColumn(name = "evento_res_id")
 	private List<ProgrammaGiornalieroRES> programma = new ArrayList<ProgrammaGiornalieroRES>();
 
 	@ElementCollection

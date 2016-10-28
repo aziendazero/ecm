@@ -27,6 +27,8 @@ public interface EventoService {
 	
 	public float calcoloDurataEvento(EventoWrapper eventoWrapper);
 	public float calcoloCreditiEvento(EventoWrapper eventoWrapper);
+	//TODO Questo metodo puo' diventare private
 	public void retrieveProgrammaAndAddJoin(EventoWrapper eventoWrapper);
+	public void aggiornaDati(EventoWrapper eventoWrapper);
 
 }

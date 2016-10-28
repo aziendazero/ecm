@@ -742,7 +742,11 @@ public class EventoController {
 				//DettaglioAttivitaRES attivitaRES = (DettaglioAttivitaRES) Utils.copy(eventoWrapper.getTempAttivitaRES());
 				DettaglioAttivitaRES attivitaRES =  SerializationUtils.clone(eventoWrapper.getTempAttivitaRES());
 				attivitaRES.calcolaOreAttivita();
-				eventoWrapper.getProgrammaEventoRES().get(programmaIndex).getProgramma().add(attivitaRES);
+				
+				Long programmaIndexLong = Long.valueOf(programmaIndex);
+				LOGGER.debug("EventoRES - evento/addAttivitaTo programmaIndexLong: " + programmaIndexLong);
+				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().add(attivitaRES);
+				
 				if(pausa.booleanValue())
 					attivitaRES.setAsPausa();
 				eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
@@ -783,7 +787,9 @@ public class EventoController {
 			if(target.equalsIgnoreCase("attivitaRES")){
 				programmaIndex = Integer.valueOf(removeAttivitaFrom).intValue();
 				attivitaRow = Integer.valueOf(rowIndex).intValue();
-				eventoWrapper.getProgrammaEventoRES().get(programmaIndex).getProgramma().remove(attivitaRow);
+				Long programmaIndexLong = Long.valueOf(programmaIndex);
+				LOGGER.debug("EventoRES - evento/removeAttivitaFrom programmaIndexLong: " + programmaIndexLong + "; attivitaRow: " + attivitaRow);
+				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().remove(attivitaRow);
 			}else if(target.equalsIgnoreCase("attivitaFSC")){
 				programmaIndex = Integer.valueOf(removeAttivitaFrom).intValue();
 				attivitaRow = Integer.valueOf(rowIndex).intValue();
@@ -801,6 +807,9 @@ public class EventoController {
 		}
 	}
 
+	//TODO CONTROLLARE DATEINTERMEDIEPROGRAMMA
+	//non deve mai essere creato a mano 
+	/*
 	@RequestMapping(value = "/provider/{providerId}/evento/addProgramma/{target}", method=RequestMethod.GET)
 	public String addProgramma(@PathVariable("target") String target,
 										@RequestParam("programmaDate") String programmaDate,
@@ -821,6 +830,7 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
+	*/
 
 	@RequestMapping(value = "/provider/{providerId}/evento/showSection/{sectionIndex}", method=RequestMethod.POST)
 	public String showSection(@PathVariable("sectionIndex") String sIndex,
@@ -830,6 +840,8 @@ public class EventoController {
 			sectionIndex = Integer.valueOf(sIndex).intValue();
 			if(sectionIndex == 2){
 				//sezione programma evento
+				//Eseguo questo aggiornamento perche' le date dataInizioe dataFine potrebbero essere state modificate
+				eventoService.aggiornaDati(eventoWrapper);
 			}else if(sectionIndex == 3){
 				//sezione finale - ricalcolo durata e crediti
 				eventoService.calcoloDurataEvento(eventoWrapper);
@@ -854,6 +866,7 @@ public class EventoController {
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			if(eventoWrapper.getEvento() instanceof EventoRES){
+				/*
 				if(eventoWrapper.getDateIntermedieMapTemp() == null) {
 					Map<Long, String> val = new LinkedHashMap<Long, String>();
 					val.put(1L, null);
@@ -864,6 +877,8 @@ public class EventoController {
 						max = Collections.max(eventoWrapper.getDateIntermedieMapTemp().keySet()) + 1;
 					eventoWrapper.getDateIntermedieMapTemp().put(max, null);
 				}
+				*/
+				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().addProgrammaGiornalieroIntermedio(null);
 				return EDITRES + " :: " + sectionToRefresh;
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
@@ -887,7 +902,9 @@ public class EventoController {
 		try{
 			Long k = Long.valueOf(key);
 			if(eventoWrapper.getEvento() instanceof EventoRES){
-				eventoWrapper.getDateIntermedieMapTemp().remove(k);
+				//eventoWrapper.getDateIntermedieMapTemp().remove(k);
+				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().removeProgrammaGiornalieroIntermedio(k);
+				//removeProgrammaGiornalieroIntermedio
 				return EDITRES + " :: " + sectionToRefresh;
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");

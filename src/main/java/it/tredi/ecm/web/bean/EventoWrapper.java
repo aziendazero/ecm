@@ -49,9 +49,6 @@ public class EventoWrapper {
 	//parte rendicontazione
 	private File reportPartecipanti;
 
-	//parte ripetibili modificata ab
-	private Map<Long, String> dateIntermedieMapTemp = new LinkedHashMap<Long, String>();
-
 	//parte ripetibili
 	//private List<String> dateIntermedieTemp = new ArrayList<String>();
 	//private List<String> risultatiAttesiTemp = new ArrayList<String>();
@@ -97,8 +94,12 @@ public class EventoWrapper {
 
 	/* RES */
 	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
-	private List<ProgrammaGiornalieroRES> programmaEventoRES = new ArrayList<ProgrammaGiornalieroRES>();
+	//private List<ProgrammaGiornalieroRES> programmaEventoRES = new ArrayList<ProgrammaGiornalieroRES>();
 	private DettaglioAttivitaRES tempAttivitaRES = new DettaglioAttivitaRES();
+	//parte ripetibili modificata ab
+	private EventoRESDateProgrammiGiornalieriWrapper eventoRESDateProgrammiGiornalieriWrapper = null;
+	//private Map<Long, String> dateIntermedieMapTemp = new LinkedHashMap<Long, String>();
+
 
 	/* FSC */
 	private AzioneRuoliEventoFSC tempAttivitaFSC = new AzioneRuoliEventoFSC();
@@ -115,12 +116,14 @@ public class EventoWrapper {
 //	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_AR = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 //	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_ACA = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 
+	/*
 	public List<ProgrammaGiornalieroRES> getProgrammaEventoRES(){
 		if(evento != null && (evento instanceof EventoRES) && ((EventoRES)evento).getTipologiaEvento() != null){
 			return programmaEventoRES;
 		}
 		return null;
 	}
+	*/
 
 	public List<FaseAzioniRuoliEventoFSCTypeA> getProgrammaEventoFSC(){
 		if(evento != null && evento instanceof EventoFSC){
@@ -176,14 +179,6 @@ public class EventoWrapper {
 
 	public void initProgrammiRES(){
 		//TODO BARDUCCI a seconda di come decidi la creazione a partire dalla data decidi se è necessario o meno un programma vuoto
-
-		//Lista programmi giornalieri dell'evento
-		List<ProgrammaGiornalieroRES> programmaEvento = new ArrayList<ProgrammaGiornalieroRES>();
-		ProgrammaGiornalieroRES prog = new ProgrammaGiornalieroRES();
-		prog.setGiorno(LocalDate.now());
-		programmaEvento.add(prog);
-		this.setProgrammaEventoRES(programmaEvento);
-		this.getDateIntermedieMapTemp().put(1L, null);
 		this.getRisultatiAttesiMapTemp().put(1L, null);
 	}
 
@@ -318,6 +313,11 @@ public class EventoWrapper {
 				mappaRuoloOre.put(rof.getRuolo(), rof);
 			}
 		}
+	}
+	public void setEvento(Evento evento) {
+		if(evento.getProceduraFormativa() == ProceduraFormativa.RES)
+			this.eventoRESDateProgrammiGiornalieriWrapper = new EventoRESDateProgrammiGiornalieriWrapper((EventoRES)evento);
+		this.evento = evento;
 	}
 
 }
