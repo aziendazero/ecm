@@ -115,6 +115,9 @@ public class EventoWrapper {
 //	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_AR = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 //	private List<FaseAzioniRuoliEventoFSCTypeA> programmaEventoFSC_ACA = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 
+	/* GESTIONE ERRORI VALIDAZIONE */
+	private Map<String, String> mappaErroriValidazione = new HashMap<String, String>();
+
 	public List<ProgrammaGiornalieroRES> getProgrammaEventoRES(){
 		if(evento != null && (evento instanceof EventoRES) && ((EventoRES)evento).getTipologiaEvento() != null){
 			return programmaEventoRES;
@@ -228,7 +231,7 @@ public class EventoWrapper {
 
 		//this.setProgrammaEventoFSC_ACA(programmaEvento);
 		this.possibiliProgrammiFSC.put(TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE, programmaEvento);
-		
+
 		//TIPOLOGIA PROGETTI DI MIGLIORAMENTO
 		programmaEvento = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 		programmaEvento.add(new FaseAzioniRuoliEventoFSCTypeA(FaseDiLavoroFSCEnum.ANALISI_DEL_PROBLEMA));
@@ -271,7 +274,7 @@ public class EventoWrapper {
 //		riepilogoRuoli.put(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT, new RiepilogoRuoliFSC(RuoloFSCEnum.COORDINATORE_ATTIVITA_AUDIT));
 
 		possibiliRiepilogoRuoliFSC.put(TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE, riepilogoRuoli);
-		
+
 		//TIPOLOGIA PROGRAMMA DI MIGLIORAMENTO
 		riepilogoRuoli = new HashMap<RuoloFSCEnum, RiepilogoRuoliFSC>();
 //		riepilogoRuoli.put(RuoloFSCEnum.PARTECIPANTE, new RiepilogoRuoliFSC(RuoloFSCEnum.PARTECIPANTE));

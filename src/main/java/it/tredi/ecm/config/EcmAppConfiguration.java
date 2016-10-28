@@ -34,6 +34,10 @@ public class EcmAppConfiguration {
 	private int numeroReferee = 3;
 	@Value("${fileRootPath}")
 	private String fileRootPath = System.getProperty("catalina.home") + File.separator + "ecmFiles";
+	@Value("${giorni.min.evento.provider.A}")
+	private int giorniMinEventoProviderA = 15;
+	@Value("${giorni.min.evento.provider.B}")
+	private int giorniMinEventoProviderB = 30;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -48,6 +52,8 @@ public class EcmAppConfiguration {
 		ecmProperties.setGiorniIntegrazioneMax(giorniIntegrazioneMax);
 		ecmProperties.setNumeroReferee(numeroReferee);
 		ecmProperties.setFileRootPath(fileRootPath);
+		ecmProperties.setGiorniMinEventoProviderA(giorniMinEventoProviderA);
+		ecmProperties.setGiorniMinEventoProviderB(giorniMinEventoProviderB);
 		return ecmProperties;
 	}
 }

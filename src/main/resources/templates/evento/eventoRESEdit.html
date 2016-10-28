@@ -184,7 +184,7 @@
 
 			<!--  TODO RIMUOVERE NUMERAZIONE HARDCODATA E METTERLA IN UN ENUM?  -->
 
-			<form id="formEventoRES" class="form-horizontal form-label-left"
+			<form id="formEventoRES" class="form-horizontal form-label-left form-evento"
 				th:action="@{|/provider/${eventoWrapper.providerId}/evento/save|}"
 				method="post" enctype="multipart/form-data"
 				novalidate="novalidate">
@@ -215,6 +215,10 @@
 					<div id="myTabContent" class="tab-content">
 						<div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="active-tab1">
 							<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
+
+								<!-- TODO rimuovere -->
+								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div>
+
 								<!-- DENOMINAZIONE LEGALE PROVIDER -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
@@ -260,7 +264,7 @@
 								<div class="divider-dashed"></div>
 
 								<!-- DESTINATARI EVENTO -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.destinatariEvento')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>4</span>
 									</label>
@@ -277,12 +281,13 @@
 											</label>
 										</div>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.destinatariEvento')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.destinatariEvento')}__}"></div>
 								</div>
 
 								<div class="divider-dashed"></div>
 
 								<!-- CONTENUTI EVENTO -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.contenutiEvento')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>5</span>
 									</label>
@@ -299,12 +304,13 @@
 											</label>
 										</div>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.contenutiEvento')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.contenutiEvento')}__}"></div>
 								</div>
 
 								<div class="divider-dashed"></div>
 
 								<!-- TITOLO -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.titolo')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>6</span>
 									</label>
@@ -319,6 +325,7 @@
 										</textarea>
 										<div id="counter"></div>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.titolo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.titolo')}__}"></div>
 								</div>
 
 								<div class="divider-dashed"></div>
@@ -330,7 +337,7 @@
 									</label>
 								</div>
 								<!-- PROVINCIA -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sedeEvento.provincia')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>7</span>
 									</label>
@@ -354,9 +361,10 @@
 											</option>
 										</select>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sedeEvento.provincia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.sedeEvento.provincia')}__}"></div>
 								</div>
 								<!-- COMUNE -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sedeEvento.comune')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>8</span>
 									</label>
@@ -378,9 +386,10 @@
 												th:text="${eventoWrapper.evento.sedeEvento.comune}"/>
 										</select>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sedeEvento.comune')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.sedeEvento.comune')}__}"></div>
 								</div>
 								<!-- INDIRIZZO -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sedeEvento.indirizzo')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>9</span>
 									</label>
@@ -392,9 +401,10 @@
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="indirizzo">
 										<input type="text" class="form-control" th:field="${eventoWrapper.evento.sedeEvento.indirizzo}" />
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sedeEvento.indirizzo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.sedeEvento.indirizzo')}__}"></div>
 								</div>
 								<!-- LUOGO -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sedeEvento.luogo')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>10</span>
 									</label>
@@ -406,12 +416,13 @@
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="luogo">
 										<input type="text" class="form-control" th:field="${eventoWrapper.evento.sedeEvento.luogo}" />
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sedeEvento.luogo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.sedeEvento.luogo')}__}"></div>
 								</div>
 
 								<div class="divider-dashed"></div>
 
 								<!-- DATA INIZIO -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.dataInizio')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>11</span>
 									</label>
@@ -427,10 +438,11 @@
 				 							<i class="glyphicon glyphicon-calendar"></i>
 										</span>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.dataInizio')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.dataInizio')}__}"></div>
 								</div>
 
 								<!-- DATA FINE -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.dataFine')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>12</span>
 									</label>
@@ -446,6 +458,7 @@
 				 							<i class="glyphicon glyphicon-calendar"></i>
 										</span>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.dataFine')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.dataFine')}__}"></div>
 								</div>
 
 								<!-- DATE INTERMEDIE -->
@@ -458,9 +471,11 @@
 										<span class="required">*</span>
 									</label>
 								</div>
-								<div th:text="${#maps.size(eventoWrapper.dateIntermedieMapTemp)}"></div>
 								<div class="date-intermedie-container" id="dateIntermedieId">
-									<div th:fragment="dateIntermedieId" th:class="${row.last ? 'nextDataIntermedia item form-group' : 'prevDataIntermedia item form-group'}" th:each="data, row : ${eventoWrapper.dateIntermedieMapTemp}">
+									<div th:fragment="dateIntermedieId"
+										th:class="${row.last ? 'nextDataIntermedia item form-group' : 'prevDataIntermedia item form-group'}"
+										th:each="data, row : ${eventoWrapper.dateIntermedieMapTemp}"
+										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'dateIntermedieMapTemp['+ __${data.key}__ +']')} ? 'bad'">
 										<div class='col-md-4 col-sm-4 col-xs-12'></div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 											<input type="hidden" th:value="${data.key}" />
@@ -473,11 +488,12 @@
 												<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 											</span>
 										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'dateIntermedieMapTemp['+ __${data.key}__ +']')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('dateIntermedieMapTemp['+data.key+']')}__}"></div>
 									</div>
 								</div>
 
 								<!-- OBIETTIVO NAZIONALE -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.obiettivoNazionale')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>14</span>
 									</label>
@@ -507,13 +523,14 @@
 											</optgroup>
 										</select>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.obiettivoNazionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.obiettivoNazionale')}__}"></div>
 									<div class="col-xs-1">
 										<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
 									</div>
 								</div>
 
 								<!-- OBIETTIVO REGIONALE -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.obiettivoRegionale')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>15</span>
 									</label>
@@ -537,10 +554,11 @@
 											</option>
 										</select>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.obiettivoRegionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.obiettivoRegionale')}__}"></div>
 								</div>
 
 								<!-- PROFESSIONI/DISCIPLINE -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>16</span>
 									</label>
@@ -578,11 +596,12 @@
 											</optgroup>
 										</select>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.discipline')}__}"></div>
 								</div>
 
 								<!-- BLOCCO TIPOLOGIA DI EVENTO -->
 								<!-- TIPOLOGIA DELL'EVENTO -->
-								<div class="item form-group">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEvento')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>17</span>
 									</label>
@@ -607,9 +626,10 @@
 											</option>
 										</select>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEvento')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.tipologiaEvento')}__}"></div>
 								</div>
 								<!-- WORKSHOP/SEMINARI (attivo se selezionato convegno/congresso) -->
-								<div class="item form-group convegno-congresso" style="display: none;">
+								<div class="item form-group convegno-congresso" style="display: none;" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.workshopSeminariEcm')} ? 'bad'">
 									<div class="col-xs-1"></div>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
 										<span th:text="#{label.workshop_radio_text}"></span>
@@ -629,9 +649,10 @@
 											</label>
 										</div>
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.workshopSeminariEcm')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.workshopSeminariEcm')}__}"></div>
 								</div>
 								<!-- TITOLO CONVEGNO (attivo se selezionato workshop/seminario) -->
-								<div class="item form-group workshop-seminario" style="display: none;">
+								<div class="item form-group workshop-seminario" style="display: none;" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.titoloConvegno')} ? 'bad'">
 									<div class="col-xs-1"></div>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
 										<span th:text="#{label.titolo_convegno}"></span>
@@ -640,6 +661,7 @@
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<input type="text" class="form-control titolo-convegno" th:field="${eventoWrapper.evento.titoloConvegno}" />
 									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.titoloConvegno')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.titoloConvegno')}__}"></div>
 								</div>
 
 								<!-- NUMERO PARTECIPANTI -->

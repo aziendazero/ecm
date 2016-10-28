@@ -4,12 +4,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.naming.spi.DirStateFactory.Result;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
@@ -19,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,8 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
@@ -74,6 +71,7 @@ import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.validator.EventoValidator;
 import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
 
 @Controller
@@ -92,7 +90,8 @@ public class EventoController {
 	@Autowired private PersonaEventoRepository personaEventoRepository;
 
 	@Autowired private RuoloOreFSCValidator ruoloOreFSCValidator;
-	
+	@Autowired private EventoValidator eventoValidator;
+
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
 	private final String SHOW = "evento/eventoShow";
@@ -232,6 +231,43 @@ public class EventoController {
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
+	@RequestMapping(value= "/provider/{providerId}/evento/validate", method = RequestMethod.POST)
+	public String validaEvento(@ModelAttribute EventoWrapper eventoWrapper, BindingResult result, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"));
+		try {
+			//gestione dei campi ripetibili
+			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
+
+			//validatore bozza -> flow
+			//casi in cui mi serve il wrapper:
+			//1) date intermedie RES
+			eventoValidator.validate(evento, eventoWrapper, result, "evento.");
+
+			if(result.hasErrors()){
+				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
+				//gestione adHoc degli errori per evitare di perdere i dati dopo i refresh delle tab eventi
+				eventoWrapper.setMappaErroriValidazione(prepareMappaErroriValutazione(result));
+				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+				return EDIT;
+			}else{
+				//TODO settare date varie e cambiare stato evento.
+				eventoService.save(evento);
+				LOGGER.info(Utils.getLogMessage("EUREKAAA!!!"));
+			}
+
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_validato_e_salvato_success", "success"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
 			return "redirect:/provider/{providerId}/evento/list";
@@ -474,6 +510,7 @@ public class EventoController {
 		eventoWrapper.setProfessioneList(datiAccreditamento.getProfessioniSelezionate());
 		eventoWrapper.setDisciplinaList(datiAccreditamento.getDiscipline());
 		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.EDIT);
+		eventoWrapper.setMappaErroriValidazione(new HashMap<String, String>());
 		return eventoWrapper;
 	}
 
@@ -511,6 +548,15 @@ public class EventoController {
 		model.addAttribute("eventoWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + RENDICONTO));
 		return RENDICONTO;
+	}
+
+	private Map<String, String> prepareMappaErroriValutazione(BindingResult result){
+		Map<String, String> mappa = new HashMap<String, String>();
+		List<FieldError> errori = result.getFieldErrors();
+		for (FieldError e : errori) {
+			mappa.put(e.getField(), e.getCode());
+		}
+		return mappa;
 	}
 
 	@RequestMapping("/listaMetodologieRES")
@@ -823,8 +869,8 @@ public class EventoController {
 	}
 
 	@RequestMapping(value = "/provider/{providerId}/evento/showSection/{sectionIndex}", method=RequestMethod.POST)
-	public String showSection(@PathVariable("sectionIndex") String sIndex,
-								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+	public String showSection(@PathVariable("sectionIndex") String sIndex, @ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper,
+			Model model, RedirectAttributes redirectAttrs){
 		int sectionIndex = 1;
 		try{
 			sectionIndex = Integer.valueOf(sIndex).intValue();
@@ -838,7 +884,7 @@ public class EventoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
 		}
-		
+
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			return EDITRES + " :: " + "section-" + sectionIndex;
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
@@ -969,7 +1015,7 @@ public class EventoController {
 		else
 			return null;
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/addRuoloOreToTemp", method=RequestMethod.POST)
 	public String addRuoloOreToTemp(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs){
 		try{
@@ -981,7 +1027,7 @@ public class EventoController {
 			return EDITFSC + " :: ruoloOreFSC";
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/{providerId}/evento/removeRuoloOreToTemp/{rowIndex}", method=RequestMethod.GET)
 	public String removeRuoloOreToTemp(@PathVariable("rowIndex") String rowIndex,
 										@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){

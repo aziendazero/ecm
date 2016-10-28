@@ -420,8 +420,8 @@
 								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
 									<!-- <li><a><label class="in-dropdown" for="submitButton" th:text="#{label.salva_modifiche}"></label></a></li> -->
-									<li><a th:text="#{label.salva_modifiche}" onclick="submitSave()"></a></li>
-									<li><a th:text="#{label.conferma_evento}" onclick="alert('Funzione non implementata')"></a></li>
+									<li><a th:text="#{label.salva_bozza}" onclick="submitSave()"></a></li>
+									<li><a th:text="#{label.conferma_evento}" onclick="submitValidate()"></a></li>
 								</ul>
 							</div>
 						</div>
@@ -1094,6 +1094,12 @@
 				$("#submitButton").click();
 			}
 
+			function submitValidate(){
+				//cambia l'action del form
+				$(".form-evento").attr("action", [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/validate|}]]);
+				$("#submitButton").click();
+			}
+
 		/*]]>*/
 		</script>
 	</div>
@@ -1400,9 +1406,9 @@
 		<div class="col-xs-12" th:fragment="attivitaFSC">
 			<div id="attivitaFSC">
 				<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}"  th:with="fase=${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro}">
-					
+
 					<th:block th:if="${ (eventoWrapper.evento.tipologiaEvento != T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO) or T(it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum).faseAbilitata(eventoWrapper.evento.fasiDaInserire,fase)}">
-					
+
 						<div class="item form-group">
 							<th:block th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}">
 								<label class="control-label col-xs-2">
@@ -1413,7 +1419,7 @@
 								</div>
 							</th:block>
 						</div>
-	
+
 						<div class="col-xs-12">
 							<label th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azioni} + '/' + #{label.ruoli}">Azioni / Ruoli</label>
 							<label th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fasi}">Fasi</label>
@@ -1440,7 +1446,7 @@
 											<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].azione}"></td>
 											<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].obiettivoFormativo?.nome}"></td>
 											<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].risultatiAttesi}"></td>
-	
+
 											<td>
 												<ul>
 													<li th:each="metodo, m : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].metodiDiLavoro}">
@@ -1467,9 +1473,9 @@
 								<div class="divider-dashed"></div>
 							</div>
 						</div>
-						
+
 					</th:block>
-					
+
 				</div>
 			</div>
 		</div>

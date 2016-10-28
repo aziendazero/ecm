@@ -40,7 +40,7 @@ public class EventoRES extends Evento{
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tipologia_evento_res")
 	private TipologiaEventoRESEnum tipologiaEvento;
-	private boolean workshopSeminariEcm;
+	private Boolean workshopSeminariEcm;
 	private String titoloConvegno;
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
