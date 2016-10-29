@@ -25,10 +25,13 @@ public interface EventoService {
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) throws Exception;
 	public EventoWrapper prepareRipetibiliAndAllegati(EventoWrapper eventoWrapper);
 	
+
 	public void calculateAutoCompilingData(EventoWrapper eventoWrapper) throws Exception;
 //	public float calcoloDurataEvento(EventoWrapper eventoWrapper);
 //	public float calcoloCreditiEvento(EventoWrapper eventoWrapper);
 	
+	//TODO Questo metodo puo' diventare private
 	public void retrieveProgrammaAndAddJoin(EventoWrapper eventoWrapper);
+	public void aggiornaDati(EventoWrapper eventoWrapper);
 
 }

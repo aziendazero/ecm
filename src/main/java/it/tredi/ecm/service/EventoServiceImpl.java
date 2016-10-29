@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -61,6 +62,8 @@ import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
+import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Service
@@ -201,16 +204,10 @@ public class EventoServiceImpl implements EventoService {
 		calculateAutoCompilingData(eventoWrapper);
 		
 		if(evento instanceof EventoRES){
-			//date intermedie
-			Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			for (String s : eventoWrapper.getDateIntermedieMapTemp().values()) {
-				if(s != null && !s.isEmpty()) {
-					LocalDate data = LocalDate.parse(s, dtf);
-					dateIntermedie.add(data);
-				}
-			}
-			((EventoRES) evento).setDateIntermedie(dateIntermedie);
+			EventoRES eventoRES = ((EventoRES) evento);
+			
+			//date intermedie e programma giornaliero
+			eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().updateEventoRES();
 
 			//Risultati Attesi
 			Set<String> risultatiAttesi = new HashSet<String>();
@@ -219,7 +216,7 @@ public class EventoServiceImpl implements EventoService {
 					risultatiAttesi.add(s);
 				}
 			}
-			((EventoRES) evento).setRisultatiAttesi(risultatiAttesi);
+			eventoRES.setRisultatiAttesi(risultatiAttesi);
 
 			//Docenti
 			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
@@ -229,13 +226,13 @@ public class EventoServiceImpl implements EventoService {
 				p = personaEventoRepository.findOne(p.getId());
 				attachedList.add(p);
 			}
-			((EventoRES)evento).setDocenti(attachedList);
+			eventoRES.setDocenti(attachedList);
 
-			retrieveProgrammaAndAddJoin(eventoWrapper);
+			//retrieveProgrammaAndAddJoin(eventoWrapper);
 
 			//Documento Verifica Ricadute Formative
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
-				((EventoRES) evento).setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
+				eventoRES.setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
 			
 			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
@@ -447,7 +444,6 @@ public class EventoServiceImpl implements EventoService {
 			if(dateIntermedieTemp.size() == 0)
 				dateIntermedieTemp.put(key, null);
 
-			eventoWrapper.setDateIntermedieMapTemp(dateIntermedieTemp);
 			//risultati attesi
 			key = 1L;
 			Map<Long, String> risultatiAttesiTemp = new LinkedHashMap<Long, String>();
@@ -461,9 +457,6 @@ public class EventoServiceImpl implements EventoService {
 
 			//Docenti
 			eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
-
-			//Programma
-			eventoWrapper.setProgrammaEventoRES(((EventoRES) evento).getProgramma());
 
 			//Documento Verifica Ricadute Formative
 			if (((EventoRES) evento).getDocumentoVerificaRicaduteFormative() != null) {
@@ -566,7 +559,11 @@ public class EventoServiceImpl implements EventoService {
 		float durata = 0;
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
-			durata = calcoloDurataEventoRES(eventoWrapper.getProgrammaEventoRES());
+			
+			//durata = calcoloDurataEventoRES(eventoWrapper.getProgrammaEventoRES());
+			durata = calcoloDurataEventoRES(eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values());
+			
+			
 			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			durata = calcoloDurataEventoFSC(eventoWrapper.getProgrammaEventoFSC(), eventoWrapper.getRiepilogoRuoliFSC());
@@ -579,6 +576,14 @@ public class EventoServiceImpl implements EventoService {
 		return durata;
 	}
 
+	@Override
+	public void aggiornaDati(EventoWrapper eventoWrapper) {
+		if(eventoWrapper.getEvento() instanceof EventoRES){
+			eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().aggiornaDati();
+		}
+	}
+
+	/*
 	private float calcoloDurataEventoRES(List<ProgrammaGiornalieroRES> programma){
 		float durata = 0;
 
@@ -592,6 +597,22 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		durata = Utils.getRoundedFloatValue(durata);
+		return durata;
+	}
+	 */
+	
+	private float calcoloDurataEventoRES(Collection<EventoRESProgrammaGiornalieroWrapper> programma){
+		float durata = 0;
+
+		if(programma != null){
+			for(EventoRESProgrammaGiornalieroWrapper progrGior : programma){
+				for(DettaglioAttivitaRES dett : progrGior.getProgramma().getProgramma()){
+					if(!dett.isPausa())
+						durata += dett.getOreAttivita();
+				}
+			}
+		}
+
 		return durata;
 	}
 
@@ -654,7 +675,7 @@ public class EventoServiceImpl implements EventoService {
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			EventoRES evento = ((EventoRES)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getProgrammaEventoRES(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES());
+			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES());
 			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
 			return crediti;
@@ -675,15 +696,15 @@ public class EventoServiceImpl implements EventoService {
 		return crediti;
 	}
 
-	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, List<ProgrammaGiornalieroRES> programma, int numeroPartecipanti, RiepilogoRES riepilogoRES){
+	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, int numeroPartecipanti, RiepilogoRES riepilogoRES){
 		float crediti = 0.0f;
 		float oreFrontale = 0f;
 		float oreInterattiva = 0f;
 		
 		riepilogoRES.clear();
 
-		for(ProgrammaGiornalieroRES progrGio : programma) {
-			for(DettaglioAttivitaRES a : progrGio.getProgramma()){
+		for(EventoRESProgrammaGiornalieroWrapper progrGio : programma) {
+			for(DettaglioAttivitaRES a : progrGio.getProgramma().getProgramma()){
 				if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
 					oreFrontale += a.getOreAttivita();
 				}else{
@@ -749,7 +770,7 @@ public class EventoServiceImpl implements EventoService {
 		
 		return crediti;
 	}
-
+	
 	private float calcoloCreditiFormativiEventoFSC(TipologiaEventoFSCEnum tipologiaEvento, EventoWrapper wrapper){
 		float crediti = 0.0f;
 		
@@ -857,12 +878,15 @@ public class EventoServiceImpl implements EventoService {
 	public void retrieveProgrammaAndAddJoin(EventoWrapper eventoWrapper) {
 		Evento evento = eventoWrapper.getEvento();
 		if(evento instanceof EventoRES){
+			//Spostato fatto insieme alle date intermedie
+			/*
 			((EventoRES) evento).setProgramma(eventoWrapper.getProgrammaEventoRES());
 			if(eventoWrapper.getProgrammaEventoRES() != null){
 				for(ProgrammaGiornalieroRES p : ((EventoRES) evento).getProgramma()){
 					p.setEventoRES((EventoRES) evento);
 				}
 			}
+			*/
 		}else if(evento instanceof EventoFSC){
 			((EventoFSC)evento).setFasiAzioniRuoli(eventoWrapper.getProgrammaEventoFSC());
 			if(eventoWrapper.getProgrammaEventoFSC() != null){

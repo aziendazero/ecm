@@ -1308,17 +1308,21 @@
 		</div>
 	</th:block>
 
+	<!-- VISUALIZZAZIONE programmaEventoRES -->
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaRES">
 			<div id="attivitaRES">
-				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12" th:each="programmaGiornaliero , status : ${eventoWrapper.programmaEventoRES}">
+				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12" 
+						th:each="data , status : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
+						th:if="${data.value.programma.giorno!=null}">
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.programma_del}" class="text-uppercase">Programma del</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<label class="control-label" th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].giorno}"> </label>
+							<label class="control-label" th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno}"> </label>
 						</div>
+						<input type="hidden" th:value="${data.key}" />
 					</div>
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -1331,7 +1335,7 @@
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-provincia=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.provincia}" />
+							<input type="text" th:attr="data-programma-provincia=__${status.index}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}" />
 						</div>
 					</div>
 
@@ -1341,7 +1345,7 @@
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-comune=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.comune}" />
+							<input type="text" th:attr="data-programma-comune=__${status.index}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}" />
 						</div>
 					</div>
 
@@ -1351,7 +1355,7 @@
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-indirizzo=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.indirizzo}" />
+							<input type="text" th:attr="data-programma-indirizzo=__${status.index}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.indirizzo}" />
 						</div>
 					</div>
 
@@ -1361,13 +1365,13 @@
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-luogo=__${status.index}__" class="form-control" th:field="${eventoWrapper.programmaEventoRES[__${status.index}__].sede.luogo}" />
+							<input type="text" th:attr="data-programma-luogo=__${status.index}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.luogo}" />
 						</div>
 					</div>
 
 					<div class="col-xs-12">
 						<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
-						<div th:attr="data-programma-id=__${status.index}__">
+						<div th:attr="data-programma-id=__${data.key}__">
 							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<thead>
 									<tr>
@@ -1380,25 +1384,25 @@
 										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
 										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 										<th>
-											<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${status.index}__,false)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,false)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-plus"></i></span>
 											</a>
-											<a id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${status.index}__,true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-pause-circle-o"></i></span>
 											</a>
 										</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr th:attr="data-row-id=${__${status2.index}__}" th:each="attivita , status2 : ${eventoWrapper.programmaEventoRES[__${status.index}__].programma}">
-										<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].orarioInizio}"></td>
-										<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].orarioFine}"></td>
-										<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].argomento}"></td>
-										<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].docente?.anagrafica?.cognome}"></td>
-										<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].risultatoAtteso}"></td>
-										<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].obiettivoFormativo?.nome}"></td>
-										<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].metodologiaDidattica?.nome}"></td>
-										<td th:text="${eventoWrapper.programmaEventoRES[__${status.index}__].programma[__${status2.index}__].oreAttivita}"></td>
+									<tr th:attr="data-row-id=${__${status2.index}__}" th:each="attivita , status2 : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma}">
+										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioInizio}"></td>
+										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioFine}"></td>
+										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].argomento}"></td>
+										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].docente?.anagrafica?.cognome}"></td>
+										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].risultatoAtteso}"></td>
+										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].obiettivoFormativo?.nome}"></td>
+										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].metodologiaDidattica?.nome}"></td>
+										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td>
 										<td>
 											<a onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger" th:text="#{label.elimina}">
 												<span><i class="fa fa-trash"></i></span>

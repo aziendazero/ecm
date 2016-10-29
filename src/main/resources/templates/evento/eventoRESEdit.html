@@ -473,22 +473,23 @@
 								</div>
 								<div class="date-intermedie-container" id="dateIntermedieId">
 									<div th:fragment="dateIntermedieId"
-										th:class="${row.last ? 'nextDataIntermedia item form-group' : 'prevDataIntermedia item form-group'}"
-										th:each="data, row : ${eventoWrapper.dateIntermedieMapTemp}"
-										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'dateIntermedieMapTemp['+ __${data.key}__ +']')} ? 'bad'">
+										th:class="${row.count == (row.size - 1) ? 'nextDataIntermedia item form-group' : 'prevDataIntermedia item form-group'}" 
+										th:each="data, row : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
+										th:if="${data.value.tipoData==T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).INTERMEDIA}"
+										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+ __${data.key}__ +']')} ? 'bad'">
 										<div class='col-md-4 col-sm-4 col-xs-12'></div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 											<input type="hidden" th:value="${data.key}" />
 											<input id="dataIntermedia" type="text" class="form-control datapicker-intermedia"
-												th:field="${eventoWrapper.dateIntermedieMapTemp[__${data.key}__]}" />
+												th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno}" />
 											<span class="input-group-addon not-last" onclick="$(this).prev().click()">
 					 							<i class="glyphicon glyphicon-calendar"></i>
 											</span>
-											<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}">
-												<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
+											<span class="input-group-addon" th:onclick="${row.count == (row.size - 1) ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}">
+												<i th:class="${row.count == (row.size - 1) ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 											</span>
 										</div>
-										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'dateIntermedieMapTemp['+ __${data.key}__ +']')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('dateIntermedieMapTemp['+data.key+']')}__}"></div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+ __${data.key}__ +']')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+']')}__}"></div>
 									</div>
 								</div>
 
@@ -1469,6 +1470,7 @@
 				  		//TODO mostra error sui campi mancanti
 				    	alert( "error" );
 				 	 })
+				 	 sendAjaxReloadSection('2');
 
 					/*
 					var cloned = $("<div class='nextDataIntermedia item form-group'></div>")
@@ -1505,6 +1507,8 @@
 				  		//TODO mostra error sui campi mancanti
 				    	alert( "error" );
 				 	 })
+				 	 //Aggiorno il tab 2
+				 	 sendAjaxReloadSection('2');
 
 					/*
 					console.log($(caller).closest(".item").html());
@@ -1809,11 +1813,6 @@
 					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('programma-id');
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
 
-					$("#" + target).load(url);
-				}
-
-				function addProgramma(target,programmaDate){
-					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addProgramma/|}]] + target + "?programmaDate=" + encodeURIComponent(programmaDate);
 					$("#" + target).load(url);
 				}
 

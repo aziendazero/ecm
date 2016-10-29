@@ -23,6 +23,8 @@ import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
+import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Component
@@ -311,18 +313,16 @@ public class EventoValidator {
 		if(evento.getDataInizio() != null && evento.getDataFine() != null) {
 			for (LocalDate ld : evento.getDateIntermedie()) {
 				if(ld.isAfter(evento.getDataFine()) || ld.isBefore(evento.getDataInizio())) {
-					//converto a String
-					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-					String dataToString = ld.format(dtf);
-					//ciclo la mappa alla ricerca di questa data per farmi dare la chiave nella mappa
+					//ciclo alla ricerca di questa data per farmi dare la chiave nella mappa
 					Long key = -1L;
-					for(Entry<Long, String> entry : wrapper.getDateIntermedieMapTemp().entrySet()) {
-						if(entry.getValue().equals(dataToString)) {
+					for(Entry<Long, EventoRESProgrammaGiornalieroWrapper> entry : wrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().entrySet()) {
+						if(entry.getValue().getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.INTERMEDIA
+								&& entry.getValue().getProgramma().getGiorno() != null && entry.getValue().getProgramma().getGiorno().isEqual(ld)) {
 							key = entry.getKey();
 							break;
 						}
 					}
-					errors.rejectValue("dateIntermedieMapTemp[" + key + "]", "error.data_intermedia_res_non_valida");
+					errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + key + "]", "error.data_intermedia_res_non_valida");
 				}
 			}
 		}

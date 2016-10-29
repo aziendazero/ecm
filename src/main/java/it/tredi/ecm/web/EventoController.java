@@ -788,7 +788,11 @@ public class EventoController {
 				//DettaglioAttivitaRES attivitaRES = (DettaglioAttivitaRES) Utils.copy(eventoWrapper.getTempAttivitaRES());
 				DettaglioAttivitaRES attivitaRES =  SerializationUtils.clone(eventoWrapper.getTempAttivitaRES());
 				attivitaRES.calcolaOreAttivita();
-				eventoWrapper.getProgrammaEventoRES().get(programmaIndex).getProgramma().add(attivitaRES);
+				
+				Long programmaIndexLong = Long.valueOf(programmaIndex);
+				LOGGER.debug("EventoRES - evento/addAttivitaTo programmaIndexLong: " + programmaIndexLong);
+				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().add(attivitaRES);
+				
 				if(pausa.booleanValue())
 					attivitaRES.setAsPausa();
 				eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
@@ -829,7 +833,9 @@ public class EventoController {
 			if(target.equalsIgnoreCase("attivitaRES")){
 				programmaIndex = Integer.valueOf(removeAttivitaFrom).intValue();
 				attivitaRow = Integer.valueOf(rowIndex).intValue();
-				eventoWrapper.getProgrammaEventoRES().get(programmaIndex).getProgramma().remove(attivitaRow);
+				Long programmaIndexLong = Long.valueOf(programmaIndex);
+				LOGGER.debug("EventoRES - evento/removeAttivitaFrom programmaIndexLong: " + programmaIndexLong + "; attivitaRow: " + attivitaRow);
+				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().remove(attivitaRow);
 			}else if(target.equalsIgnoreCase("attivitaFSC")){
 				programmaIndex = Integer.valueOf(removeAttivitaFrom).intValue();
 				attivitaRow = Integer.valueOf(rowIndex).intValue();
@@ -847,6 +853,9 @@ public class EventoController {
 		}
 	}
 
+	//TODO CONTROLLARE DATEINTERMEDIEPROGRAMMA
+	//non deve mai essere creato a mano 
+	/*
 	@RequestMapping(value = "/provider/{providerId}/evento/addProgramma/{target}", method=RequestMethod.GET)
 	public String addProgramma(@PathVariable("target") String target,
 										@RequestParam("programmaDate") String programmaDate,
@@ -867,6 +876,7 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
+	*/
 
 	@RequestMapping(value = "/provider/{providerId}/evento/showSection/{sectionIndex}", method=RequestMethod.POST)
 	public String showSection(@PathVariable("sectionIndex") String sIndex, @ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper,
@@ -876,6 +886,8 @@ public class EventoController {
 			sectionIndex = Integer.valueOf(sIndex).intValue();
 			if(sectionIndex == 2){
 				//sezione programma evento
+				//Eseguo questo aggiornamento perche' le date dataInizioe dataFine potrebbero essere state modificate
+				eventoService.aggiornaDati(eventoWrapper);
 			}else if(sectionIndex == 3){
 				//sezione finale - ricalcolo durata e crediti
 				eventoService.calculateAutoCompilingData(eventoWrapper);
@@ -899,26 +911,11 @@ public class EventoController {
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			if(eventoWrapper.getEvento() instanceof EventoRES){
-				if(eventoWrapper.getDateIntermedieMapTemp() == null) {
-					Map<Long, String> val = new LinkedHashMap<Long, String>();
-					val.put(1L, null);
-					eventoWrapper.setDateIntermedieMapTemp(val);
-				} else {
-					Long max = 1L;
-					if(eventoWrapper.getDateIntermedieMapTemp().size() != 0)
-						max = Collections.max(eventoWrapper.getDateIntermedieMapTemp().keySet()) + 1;
-					eventoWrapper.getDateIntermedieMapTemp().put(max, null);
-				}
+				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().addProgrammaGiornalieroIntermedio(null);
 				return EDITRES + " :: " + sectionToRefresh;
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
 			}
-
-			/*else if(eventoWrapper.getEvento() instanceof EventoFSC){
-				return EDITFSC + " :: " + "section-" + sectionIndex;
-			}else{
-				return EDITFAD + " :: " + "section-" + sectionIndex;
-			}*/
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
@@ -932,17 +929,11 @@ public class EventoController {
 		try{
 			Long k = Long.valueOf(key);
 			if(eventoWrapper.getEvento() instanceof EventoRES){
-				eventoWrapper.getDateIntermedieMapTemp().remove(k);
+				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().removeProgrammaGiornalieroIntermedio(k);
 				return EDITRES + " :: " + sectionToRefresh;
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
 			}
-
-			/*else if(eventoWrapper.getEvento() instanceof EventoFSC){
-				return EDITFSC + " :: " + "section-" + sectionIndex;
-			}else{
-				return EDITFAD + " :: " + "section-" + sectionIndex;
-			}*/
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
