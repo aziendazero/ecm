@@ -19,6 +19,7 @@ import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.RoleRepository;
 import it.tredi.ecm.service.AccountService;
+import it.tredi.ecm.service.WorkflowService;
 
 @Component
 @org.springframework.context.annotation.Profile({"dev","demo","simone","abarducci"})
@@ -31,6 +32,9 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 	private final AccountService accountService;
 	private final AccountRepository accountRepository;
 	private final ProfileRepository profileRepository;
+
+	@Autowired
+	private WorkflowService workflowService;
 
 	@Autowired
 	public AccountLoader(AccountService accountService, AccountRepository accountRepository, RoleRepository roleRepository, ProfileRepository profileRepository) {
@@ -180,7 +184,9 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			provider.setDataScadenzaPassword(LocalDate.now());
 
 			try {
-				accountService.save(provider);
+				//accountService.save(provider);
+				accountRepository.save(provider);
+				workflowService.saveOrUpdateBonitaUserByAccount(provider);				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -201,7 +207,9 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			admin.setDataScadenzaPassword(LocalDate.now());
 
 			try {
-				accountService.save(admin);
+				//accountService.save(admin);
+				accountRepository.save(admin);
+				workflowService.saveOrUpdateBonitaUserByAccount(admin);				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -221,7 +229,9 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			referee1.getProfiles().add(profile_referee);
 			referee1.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
 			try {
-				accountService.save(referee1);
+				//accountService.save(referee1);
+				accountRepository.save(referee1);
+				workflowService.saveOrUpdateBonitaUserByAccount(referee1);				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -241,7 +251,9 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			referee2.getProfiles().add(profile_referee);
 			referee2.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
 			try {
-				accountService.save(referee2);
+				//accountService.save(referee2);
+				accountRepository.save(referee2);
+				workflowService.saveOrUpdateBonitaUserByAccount(referee2);				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -261,7 +273,9 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			referee3.getProfiles().add(profile_referee);
 			referee3.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
 			try {
-				accountService.save(referee3);
+				//accountService.save(referee3);
+				accountRepository.save(referee3);
+				workflowService.saveOrUpdateBonitaUserByAccount(referee3);				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -212,8 +212,8 @@ public class Evento extends BaseEntity{
 	@OneToOne
 	private File brochureEvento;
 
-	protected float durata;//calcolo automatico
-	protected float crediti;//calcolo con algoritmo che puo essere modificato dal provider
+	protected Float durata;//calcolo automatico
+	protected Float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="responsabile_segreteria_id")
@@ -272,7 +272,7 @@ public class Evento extends BaseEntity{
 		if(dataFine != null)
 			setDataScadenzaPagamento(dataFine.plusDays(90));
 	}
-	
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
