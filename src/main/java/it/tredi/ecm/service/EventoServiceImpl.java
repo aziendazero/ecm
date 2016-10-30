@@ -242,8 +242,10 @@ public class EventoServiceImpl implements EventoService {
 		}else if(evento instanceof EventoFSC){
 			retrieveProgrammaAndAddJoin(eventoWrapper);
 			
-			((EventoFSC) evento).getRiepilogoRuoli().clear();
-			((EventoFSC) evento).getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());			
+			if(eventoWrapper.getRiepilogoRuoliFSC() != null) {
+				((EventoFSC) evento).getRiepilogoRuoli().clear();
+				((EventoFSC) evento).getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());
+			}
 		}else if(evento instanceof EventoFAD){
 			//Docenti
 			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
@@ -687,7 +689,7 @@ public class EventoServiceImpl implements EventoService {
 			return crediti;
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
 			EventoFAD evento = ((EventoFAD)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto().booleanValue());
+			crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
 			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FAD"));
 			return crediti;
@@ -858,10 +860,10 @@ public class EventoServiceImpl implements EventoService {
 	}
 	
 
-	private float calcoloCreditiFormativiEventoFAD(float durata, boolean conTutor){
+	private float calcoloCreditiFormativiEventoFAD(float durata, Boolean conTutor){
 		float crediti = 0.0f;
 		
-		if(conTutor)
+		if(conTutor != null && conTutor)
 			crediti = durata * 1.5f;
 		else
 			crediti = durata * 1.0f;

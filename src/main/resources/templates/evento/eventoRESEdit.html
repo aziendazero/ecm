@@ -430,7 +430,6 @@
 										<span th:text="#{label.data_inizio}">Data inizio</span>
 										<span class="required">*</span>
 									</label>
-
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 										<input type="text" id="dataInizio" class="form-control"
 											name="data" th:field="${eventoWrapper.evento.dataInizio}" />
@@ -450,7 +449,6 @@
 										<span th:text="#{label.data_fine}">Data fine</span>
 										<span class="required">*</span>
 									</label>
-
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 										<input type="text" id="dataFine" class="form-control"
 											name="data" th:field="${eventoWrapper.evento.dataFine}" />
@@ -502,7 +500,6 @@
 										<span th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
 										<span class="required">*</span>
 									</label>
-
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 										<select id="obiettivoNazionale"
 											class="selectpicker"
@@ -539,7 +536,6 @@
 										<span th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Strategico Regionale</span>
 										<span class="required">*</span>
 									</label>
-
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<select id="obiettivoRegionale"
 											class="selectpicker"
@@ -567,7 +563,6 @@
 										<span th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
 										<span class="required">*</span>
 									</label>
-
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
 										<div class="col-xs-12 select-with-margin-container">
 											<select id="professioni" class="selectpicker multi"
@@ -1306,7 +1301,6 @@
 									</div>
 								</div>
 
-
 								<div class="divider-dashed"></div>
 
 								<!-- DICHIARAZIONE CONFLITTO INTERESSI -->
@@ -1549,7 +1543,6 @@
 					//crediti confermati
 					abilitaDisabilitaCreditiInseritiUtente($(".crediti-conferma").iCheck('update')[0].checked);
 				}
-
 				//funzione che setta gli event linstener ai vari input dell'evento RES
 				function handleListenerEventsCampsRES(){
 

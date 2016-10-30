@@ -19,6 +19,7 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
@@ -304,6 +305,8 @@ public class EventoValidator {
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
+		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
+			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
 		else if(evento.getDataInizio() != null && (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_res_non_valida");
 
@@ -360,15 +363,15 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.empty");
 		else if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
-				&& evento.getNumeroPartecipanti() < 200)
+				&& evento.getNumeroPartecipanti() < ecmProperties.getNumeroMinimoPartecipantiConvegnoCongressoRES())
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.pochi_partecipanti200");
 		else if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
-				&& evento.getNumeroPartecipanti() > 100)
+				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiWorkshopSeminarioRES())
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti100");
 		else if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO
-				&& evento.getNumeroPartecipanti() > 200)
+				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiCorsoAggiornamentoRES())
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti200");
 
 		/* DOCENTI/RELATORI/TUTOR (serie di campi obbligatori)
@@ -445,7 +448,7 @@ public class EventoValidator {
 		 * dato che ogni attività deve essere di minimo 3 ore, va da se che il controllo verrà sempre superato
 		 * o segnalato nelle attività
 		 * */
-		if(evento.getDurata() < 3L)
+		if(evento.getDurata() < ecmProperties.getDurataMinimaEventoRES())
 			errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
 
 		/* CREDITI (campo obbligatorio/autocompilato)
@@ -504,7 +507,150 @@ public class EventoValidator {
 
 	//validate FSC
 	private void validateFSC(EventoFSC evento, Errors errors, String prefix) {
+		
+		/* SEDE (tutti campi obbligatori)
+		 * provincia da selezione, comune da selezione, almeno 1 char indirizzo, almeno 1 char luogo
+		 * */
+		if(evento.getSedeEvento() == null) {
+			errors.rejectValue(prefix + "sedeEvento.provincia", "error.empty");
+			errors.rejectValue(prefix + "sedeEvento.comune", "error.empty");
+			errors.rejectValue(prefix + "sedeEvento.indirizzo", "error.empty");
+			errors.rejectValue(prefix + "sedeEvento.luogo", "error.empty");
+		}
+		else {
+			if(evento.getSedeEvento().getProvincia() == null || evento.getSedeEvento().getProvincia().isEmpty())
+				errors.rejectValue(prefix + "sedeEvento.provincia", "error.empty");
+			if(evento.getSedeEvento().getComune() == null || evento.getSedeEvento().getComune().isEmpty())
+				errors.rejectValue(prefix + "sedeEvento.comune", "error.empty");
+			if(evento.getSedeEvento().getIndirizzo() == null || evento.getSedeEvento().getIndirizzo().isEmpty())
+				errors.rejectValue(prefix + "sedeEvento.indirizzo", "error.empty");
+			if(evento.getSedeEvento().getLuogo() == null || evento.getSedeEvento().getLuogo().isEmpty())
+				errors.rejectValue(prefix + "sedeEvento.luogo", "error.empty");
+		}
+		
+		/* DATA FINE (campo obbligatorio)
+		 * la data di fine deve può essere compresa nello stesso anno solare della data di inizio
+		 * e l'evento non può avere durata superiore a 730 giorni
+		 * */
+		if(evento.getDataFine() == null)
+			errors.rejectValue(prefix + "dataFine", "error.empty");
+		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
+			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
+		else if(evento.getDataInizio() != null && evento.getDataFine().getYear() == evento.getDataInizio().getYear()) 
+			errors.rejectValue(prefix + "dataFine", "error.data_fine_fsc_non_valida");
+		else if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFSC())))
+			errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fsc730");
+		
+		
+		/* TIPOLOGIA EVENTO (campo obbligatorio)
+		 * selectpicker (influenza altri campi, ma il controllo su questo campo è banale)
+		 * */
+		if(evento.getTipologiaEvento() == null)
+			errors.rejectValue(prefix + "tipologiaEvento", "error.empty");
+		
+		/* TIPOLOGIA GRUPPO (campo obbligatorio se tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO)
+		 * selectpicker
+		 * */
+		if(evento.getTipologiaEvento() != null
+				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
+				&& evento.getTipologiaGruppo() == null) 
+			errors.rejectValue(prefix + "tipologiaGruppo", "error.empty");
+		
+		/* SPERIMENTAZIONE CLINICA (campo obbligatorio se tipologiaEvento == ATTIVITA_DI_RICERCA)
+		 * radio
+		 * */
+		if(evento.getTipologiaEvento() != null
+				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA
+				&& evento.getSperimentazioneClinica() == null)
+			errors.rejectValue(prefix + "sperimentazioneClinica", "error.empty");
+		
+		/* OTTENUTO PARERE ETICO (campo obbligatorio se tipologiaEvento == ATTIVITA_DI_RICERCA && sperimentazioneClinica == true)
+		 * spunta richiesta
+		 * */
+		if(evento.getTipologiaEvento() != null
+				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA
+				&& evento.getSperimentazioneClinica() != null
+				&& evento.getSperimentazioneClinica() == true
+				&& (evento.getOttenutoComitatoEtico() == null
+				|| evento.getOttenutoComitatoEtico() == false))
+			errors.rejectValue(prefix + "ottenutoComitatoEtico", "error.empty");
+		
+		/* DESCRIZIONE DEL PROGETTO E RILEVANZA FORMATIVA (campo obbligatorio)
+		 * campo testuale
+		 * almeno 1 char
+		 * */
+		if(evento.getDescrizioneProgetto() == null || evento.getDescrizioneProgetto().isEmpty())
+			errors.rejectValue(prefix + "descrizioneProgetto", "error.empty");
+		
+		/* FASI/AZIONI/RUOLI FSC
+		 * 
+		 * */
 		//TODO
+		
+		/* NUMERO PARTECIPANTI (campo obbligatorio)
+		 * se tipologiaEvento == TRAINING_INDIVIDUALIZZATO massimo 5 partecipanti per tutor
+		 * se tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO massimo 25 partecipanti
+		 * se tipologiaEvento == AUDIT_CLINICO_ASSISTENZIALE massimo 25 partecipanti
+		 * */
+		if(evento.getNumeroPartecipanti() == null)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.empty");
+		//TODO trovare modo per contare partecipanti / tutor
+		else if(evento.getTipologiaEvento() != null
+				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
+				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiGruppiMiglioramentoFSC())
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti25");
+		else if(evento.getTipologiaEvento() != null
+				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE
+				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiAuditClinicoFSC())
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti25");
+		
+		/* DURATA COMPLESSIVA (autocompilato)
+		 * controlli di sicurezza: 
+		 * - la durata totale dell'evento deve essere di più di 10 ore per AUDIT_CLINICO_ASSISTENZIALE
+		 * - la durata totale dell'evento deve essere di più di 8 ore per GRUPPI_DI_MIGLIORAMENTO
+		 * - la durata totale dell'evento deve essere di più di 8 ore per PROGETTI_DI_MIGLIORAMENTO
+		 * */
+		if(evento.getTipologiaEvento() != null) {
+			if(evento.getTipologiaEvento() == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE
+				&& evento.getDurata() < ecmProperties.getDurataMinimaAuditClinicoFSC())
+			errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
+			else if(evento.getTipologiaEvento() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
+					&& evento.getDurata() < ecmProperties.getDurataMinimaGruppiMiglioramentoFSC())
+				errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
+			else if(evento.getTipologiaEvento() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+					&& evento.getDurata() < ecmProperties.getDurataMinimaProgettiMiglioramentoFSC())
+				errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
+		}
+		
+		/* VERIFICA PRESENZA PARTECIPANTI (campo obbligatorio)
+		 * checkbox
+		 * almeno 1 selezionato
+		 * */
+		if(evento.getVerificaPresenzaPartecipanti() == null || evento.getVerificaPresenzaPartecipanti().isEmpty())
+			errors.rejectValue(prefix + "verificaPresenzaPartecipanti", "error.empty");
+		
+		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
+		 * checkbox
+		 * */
+		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty())
+			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
+		
+		/* INDICATORE EFFICACIA FORMATIVA (campo obbligatorio se tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO)
+		 * campo testuale
+		 * almeno 1 char
+		 * */
+		if(evento.getTipologiaEvento() != null
+				&& evento.getTipologiaEvento() ==  TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+				&& (evento.getIndicatoreEfficaciaFormativa() == null
+				|| evento.getIndicatoreEfficaciaFormativa().isEmpty()))
+			errors.rejectValue(prefix + "indicatoreEfficaciaFormativa", "error.empty");
+		
+		/* QUOTA DI PARTECIPAZIONE (campo obbligatorio)
+		 * campo numerico (BigDecimal)
+		 * */
+		if(evento.getQuotaPartecipazione() == null)
+			errors.rejectValue(prefix + "quotaPartecipazione", "error.empty");
+		
 	}
 
 	//validate FAD
