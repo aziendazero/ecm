@@ -582,58 +582,73 @@ public class EventoController {
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaTo", method=RequestMethod.POST, params={"addPersonaTo"})
 	public String addPersonaTo(@RequestParam("addPersonaTo") String target,
 								@RequestParam("fromLookUp") String fromLookUp,
+								@RequestParam(name = "rowIndex",required=false) String rowIndex,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			//TODO da fare solo se rispetta il validator
-			AnagraficaEventoBase anagraficaBase = eventoWrapper.getTempPersonaEvento().getAnagrafica();
-			//check se non esiste -> si registra l'anagrafica per il provider
-			if(anagraficaBase != null && !anagraficaBase.getCodiceFiscale().isEmpty()){
-				if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaBase.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
-					if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew()){
-						File cv = fileService.getFile(eventoWrapper.getCv().getId());
-						cv.getData();
-						if(fromLookUp != null && Boolean.valueOf(fromLookUp)){
-							File f = (File) cv.clone();
-							fileService.save(f);
-							anagraficaBase.setCv(f);
-						}else{
-							anagraficaBase.setCv(cv);
+			if(rowIndex == null || rowIndex.isEmpty()){
+				//INSERIMENTO NUOVA PERSONA
+				
+				//TODO da fare solo se rispetta il validator
+				AnagraficaEventoBase anagraficaBase = eventoWrapper.getTempPersonaEvento().getAnagrafica();
+				//check se non esiste -> si registra l'anagrafica per il provider
+				if(anagraficaBase != null && !anagraficaBase.getCodiceFiscale().isEmpty()){
+					if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaBase.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
+						if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew()){
+							File cv = fileService.getFile(eventoWrapper.getCv().getId());
+							cv.getData();
+							if(fromLookUp != null && Boolean.valueOf(fromLookUp)){
+								File f = (File) cv.clone();
+								fileService.save(f);
+								anagraficaBase.setCv(f);
+							}else{
+								anagraficaBase.setCv(cv);
+							}
 						}
+						AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
+						anagraficaEventoToSave.setAnagrafica(anagraficaBase);
+						anagraficaEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
+						anagraficaEventoService.save(anagraficaEventoToSave);
 					}
-					AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
-					anagraficaEventoToSave.setAnagrafica(anagraficaBase);
-					anagraficaEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
-					anagraficaEventoService.save(anagraficaEventoToSave);
 				}
-			}
-			//PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
-			PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
-			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in in AddAttivitaRES (select si basa su id della entity)
-				//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
-
-				File cv = p.getAnagrafica().getCv();
-				if(cv != null) {
-					cv.getData();
-					File f = (File) cv.clone();
-					fileService.save(f);
-					p.getAnagrafica().setCv(f);
+			
+				PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
+				if(target.equalsIgnoreCase("responsabiliScientifici")){
+					//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in in AddAttivitaRES (select si basa su id della entity)
+					//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
+	
+					File cv = p.getAnagrafica().getCv();
+					if(cv != null) {
+						cv.getData();
+						File f = (File) cv.clone();
+						fileService.save(f);
+						p.getAnagrafica().setCv(f);
+					}
+	
+					personaEventoRepository.save(p);
+					eventoWrapper.getResponsabiliScientifici().add(p);
+				}else if(target.equalsIgnoreCase("docenti")){
+	
+					File cv = p.getAnagrafica().getCv();
+					if(cv != null) {
+						cv.getData();
+						File f = (File) cv.clone();
+						fileService.save(f);
+						p.getAnagrafica().setCv(f);
+					}
+	
+					personaEventoRepository.save(p);
+					eventoWrapper.getDocenti().add(p);
 				}
-
-				personaEventoRepository.save(p);
-				eventoWrapper.getResponsabiliScientifici().add(p);
-			}else if(target.equalsIgnoreCase("docenti")){
-
-				File cv = p.getAnagrafica().getCv();
-				if(cv != null) {
-					cv.getData();
-					File f = (File) cv.clone();
-					fileService.save(f);
-					p.getAnagrafica().setCv(f);
+			}else{
+				//MODIFICA
+				int index = Integer.parseInt(rowIndex);
+				if(target.equalsIgnoreCase("responsabiliScientifici")){
+					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+					eventoWrapper.getResponsabiliScientifici().set(index, eventoWrapper.getTempPersonaEvento());
+				}else if(target.equalsIgnoreCase("docenti")){
+					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+					eventoWrapper.getDocenti().set(index, eventoWrapper.getTempPersonaEvento());
 				}
-
-				personaEventoRepository.save(p);
-				eventoWrapper.getDocenti().add(p);
 			}
 			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
 			return EDIT + " :: " + target;
@@ -646,25 +661,34 @@ public class EventoController {
 
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaFullTo", method=RequestMethod.POST, params={"addPersonaFullTo"})
 	public String addPersonaFullTo(@RequestParam("addPersonaFullTo") String target,
-								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+									@RequestParam(name = "rowIndexFull",required=false) String rowIndex,
+										@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			//TODO da fare solo se rispetta il validator
-			AnagraficaFullEventoBase anagraficaFull = eventoWrapper.getTempPersonaFullEvento().getAnagrafica();
-			//check se non esiste -> si registra l'anagrafica per il provider
-			if(anagraficaFull != null && !anagraficaFull.getCodiceFiscale().isEmpty()){
-				if(anagraficaFullEventoService.getAnagraficaFullEventoByCodiceFiscaleForProvider(anagraficaFull.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
-					AnagraficaFullEvento anagraficaFullEventoToSave = new AnagraficaFullEvento();
-					anagraficaFullEventoToSave.setAnagrafica(anagraficaFull);
-					anagraficaFullEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
-					anagraficaFullEventoService.save(anagraficaFullEventoToSave);
+			if(rowIndex == null || rowIndex.isEmpty()){
+				//INSERIMENTO NUOVA PERSONA
+			
+				//TODO da fare solo se rispetta il validator
+				AnagraficaFullEventoBase anagraficaFull = eventoWrapper.getTempPersonaFullEvento().getAnagrafica();
+				//check se non esiste -> si registra l'anagrafica per il provider
+				if(anagraficaFull != null && !anagraficaFull.getCodiceFiscale().isEmpty()){
+					if(anagraficaFullEventoService.getAnagraficaFullEventoByCodiceFiscaleForProvider(anagraficaFull.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
+						AnagraficaFullEvento anagraficaFullEventoToSave = new AnagraficaFullEvento();
+						anagraficaFullEventoToSave.setAnagrafica(anagraficaFull);
+						anagraficaFullEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
+						anagraficaFullEventoService.save(anagraficaFullEventoToSave);
+					}
 				}
+	
+				//PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
+				PersonaFullEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaFullEvento());
+				if(target.equalsIgnoreCase("responsabileSegreteria")){
+					eventoWrapper.getEvento().setResponsabileSegreteria(p);
+				}
+			}else{
+				//MODIFICA
+				eventoWrapper.getEvento().setResponsabileSegreteria(eventoWrapper.getTempPersonaFullEvento());
 			}
-
-			//PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
-			PersonaFullEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaFullEvento());
-			if(target.equalsIgnoreCase("responsabileSegreteria")){
-				eventoWrapper.getEvento().setResponsabileSegreteria(p);
-			}
+			
 			eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento());
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -1039,6 +1063,35 @@ public class EventoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
 			return EDITFSC + " :: ruoloOreFSC";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/modifica/{target}/{rowIndex}", method=RequestMethod.GET)
+	public String modificaPersona(@PathVariable("target") String target,
+									@PathVariable("rowIndex") Long rowIndex,
+												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			if(target.equalsIgnoreCase("responsabiliScientifici")){
+				PersonaEvento p = eventoWrapper.getResponsabiliScientifici().get(rowIndex.intValue());
+				eventoWrapper.setTempPersonaEvento(p);
+				eventoWrapper.setCv(p.getAnagrafica().getCv());
+				return EDIT + " :: #addPersonaTo";
+			}else if(target.equalsIgnoreCase("docenti")){
+				PersonaEvento p = eventoWrapper.getDocenti().get(rowIndex.intValue());
+				eventoWrapper.setTempPersonaEvento(p);
+				eventoWrapper.setCv(p.getAnagrafica().getCv());
+				return EDIT + " :: #addPersonaTo";
+			}else if(target.equalsIgnoreCase("responsabileSegreteria")){
+				PersonaFullEvento p = eventoWrapper.getEvento().getResponsabileSegreteria();
+				eventoWrapper.setTempPersonaFullEvento(p);
+				return EDIT + " :: #addPersonaFullTo";
+			}
+			
+			return "redirect:/home";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
 		}
 	}
 

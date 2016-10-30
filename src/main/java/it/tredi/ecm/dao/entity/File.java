@@ -67,7 +67,7 @@ public class File extends BaseEntity{
 	@JoinColumn(name="file_id")
 	private List<FileData> fileData;
 	
-	public void setData(byte[] dataArray){
+	@JsonIgnore public void setData(byte[] dataArray){
 		if(fileData == null || fileData.isEmpty()){
 			fileData = new ArrayList<FileData>();	
 			fileData.add(new FileData());
@@ -75,7 +75,7 @@ public class File extends BaseEntity{
 		fileData.get(0).setData(dataArray);
 	}
 	
-	public byte[] getData(){
+	@JsonIgnore	public byte[] getData(){
 		if(this.getFileData() != null && !fileData.isEmpty())
 			return fileData.get(0).getData();
 		return new byte[0];
