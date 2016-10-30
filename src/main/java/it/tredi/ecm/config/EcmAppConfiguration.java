@@ -40,6 +40,26 @@ public class EcmAppConfiguration {
 	private int giorniMinEventoProviderB = 30;
 	@Value("${numero.massimo.responsabili.evento}")
 	private int numeroMassimoResponsabiliEvento = 3;
+	@Value("${giorni.max.evento.fsc}")
+	private int giorniMaxEventoFSC = 730;
+	@Value("${numero.minimo.partecipanti.convegno.congresso.res}")
+	private int numeroMinimoPartecipantiConvegnoCongressoRES = 200;
+	@Value("${numero.massimo.partecipanti.workshop.seminario.res}")
+	private int numeroMassimoPartecipantiWorkshopSeminarioRES = 100;
+	@Value("${numero.massimo.partecipanti.corso.aggiornamento.res}")
+	private int numeroMassimoPartecipantiCorsoAggiornamentoRES = 200;
+	@Value("${numero.massimo.partecipanti.gruppi.miglioramento.fsc}")
+	private int numeroMassimoPartecipantiGruppiMiglioramentoFSC = 25;
+	@Value("${numero.massimo.partecipanti.audit.clinico.fsc}")
+	private int numeroMassimoPartecipantiAuditClinicoFSC = 25;
+	@Value("${durata.minima.evento.res}")
+	private long durataMinimaEventoRES = 3L;
+	@Value("${durata.minima.audit.clinico.fsc}")
+	private long durataMinimaAuditClinicoFSC = 10L;
+	@Value("${durata.minima.gruppi.miglioramento.fsc}")
+	private long durataMinimaGruppiMiglioramentoFSC = 8L;
+	@Value("${durata.minima.progetti.miglioramento.fsc}")
+	private long durataMinimaProgettiMiglioramentoFSC = 8L;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -57,6 +77,16 @@ public class EcmAppConfiguration {
 		ecmProperties.setGiorniMinEventoProviderA(giorniMinEventoProviderA);
 		ecmProperties.setGiorniMinEventoProviderB(giorniMinEventoProviderB);
 		ecmProperties.setNumeroMassimoResponsabiliEvento(numeroMassimoResponsabiliEvento);
+		ecmProperties.setGiorniMaxEventoFSC(giorniMaxEventoFSC);
+		ecmProperties.setNumeroMinimoPartecipantiConvegnoCongressoRES(numeroMinimoPartecipantiConvegnoCongressoRES);
+		ecmProperties.setNumeroMassimoPartecipantiWorkshopSeminarioRES(numeroMassimoPartecipantiWorkshopSeminarioRES);
+		ecmProperties.setNumeroMassimoPartecipantiCorsoAggiornamentoRES(numeroMassimoPartecipantiCorsoAggiornamentoRES);
+		ecmProperties.setNumeroMassimoPartecipantiGruppiMiglioramentoFSC(numeroMassimoPartecipantiGruppiMiglioramentoFSC);
+		ecmProperties.setNumeroMassimoPartecipantiAuditClinicoFSC(numeroMassimoPartecipantiAuditClinicoFSC);
+		ecmProperties.setDurataMinimaEventoRES(durataMinimaEventoRES);
+		ecmProperties.setDurataMinimaAuditClinicoFSC(durataMinimaAuditClinicoFSC);
+		ecmProperties.setDurataMinimaGruppiMiglioramentoFSC(durataMinimaGruppiMiglioramentoFSC);
+		ecmProperties.setDurataMinimaProgettiMiglioramentoFSC(durataMinimaProgettiMiglioramentoFSC);
 		return ecmProperties;
 	}
 }
