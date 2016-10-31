@@ -20,6 +20,7 @@ public class EcmProperties {
 	private int giorniMinEventoProviderB;
 	private int numeroMassimoResponsabiliEvento;
 	private int giorniMaxEventoFSC;
+	private long giorniMaxEventoFAD;
 	private int numeroMinimoPartecipantiConvegnoCongressoRES;
 	private int numeroMassimoPartecipantiWorkshopSeminarioRES;
 	private int numeroMassimoPartecipantiCorsoAggiornamentoRES;
