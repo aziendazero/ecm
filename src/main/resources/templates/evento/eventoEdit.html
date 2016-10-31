@@ -747,15 +747,24 @@
 			function mostraNascondiCampiFinanziamento(value) {
 				if(value == "true") {
 					$(".finanziamento-si").slideDown("slow");
-					$(".finanziamento-no").slideUp("slow");
+					$(".finanziamento-no").slideUp("fast");
 					$("#contrattiAccordiConvenzioni").prop("disabled", false);
 					$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", true);
 				}
 				else {
-					$(".finanziamento-si").slideUp("slow");
-					$(".finanziamento-no").slideDown("slow");
-					$("#contrattiAccordiConvenzioni").prop("disabled", true);
-					$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", false);
+					if(value == "false") {
+						$(".finanziamento-si").slideUp("fast");
+						$(".finanziamento-no").slideDown("slow");
+						$("#contrattiAccordiConvenzioni").prop("disabled", true);
+						$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", false);
+					}
+					//caso non ancora selezionato nulla
+					else {
+						$(".finanziamento-si").hide();
+						$(".finanziamento-no").hide();
+						$("#contrattiAccordiConvenzioni").prop("disabled", true);
+						$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", true);
+					}
 				}
 			}
 
@@ -924,7 +933,7 @@
 					countSelectedText : '{0} selezionate'
 				});
 			}
-			
+
 			function sendAjaxModificaPersonaTo(target,type,fromLookup,rowIndex){
 				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modifica/|}]] + target + '/' + rowIndex;
 				if(type == 'Full'){
@@ -1018,7 +1027,7 @@
 				$("#" + target).load(url);
 				reInitDataTable(target);
 			}
-			
+
 			//modifica persona
 			function modificaPersonaFrom(target,caller){
 				var rowIndex = $(caller).parent().parent().data('row-id');
@@ -1363,7 +1372,7 @@
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaRES">
 			<div id="attivitaRES">
-				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12" 
+				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12"
 						th:each="data , status : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
 						th:if="${data.value.programma.giorno!=null}">
 					<div class="item form-group">
