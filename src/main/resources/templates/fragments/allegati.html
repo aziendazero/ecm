@@ -108,7 +108,7 @@
 		function setAllegato(idInput) {
 			$(idInput).click();
 		}
-	
+
 		function submitFirma() {
   				var oMyForm = $('#formFirma').attr('action', [[@{|/engineering/test/firma/invio|}]]);
   				oMyForm.submit();
@@ -146,9 +146,10 @@
 				case 'autocertificazioneAutorizzazioneMinisteroSalute' :		tipoAllegato = 'FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE'; break;
 				case 'autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia' :	tipoAllegato = 'FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA'; break;
 				case 'importEventiDaCsvFile' :									tipoAllegato = 'FILE_EVENTI_PIANO_FORMATIVO'; break;
+				case 'requisitiHardwareSoftware' :								tipoAllegato = 'FILE_REQUISITI_HARDWARE_SOFTWARE'; break;
 
 				//File da firmare per engineering
-				case 'fileDaFirmare' :						tipoAllegato = 'FILE_DA_FIRMARE'; break;
+				case 'fileDaFirmare' :											tipoAllegato = 'FILE_DA_FIRMARE'; break;
 			}
 
 			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != pianoFormativoWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper?.tempPersonaEvento?.anagrafica and __${wrapper}__ != providerForm  and __${wrapper}__ != engineeringWrapper} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
@@ -214,9 +215,10 @@
 						case 'FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE' :			inputName = 'autocertificazioneAutorizzazioneMinisteroSalute'; break;
 						case 'FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA' :	inputName = 'autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia'; break;
 						case 'FILE_EVENTI_PIANO_FORMATIVO' :										inputName = 'importEventiDaCsvFile'; break;
+						case 'FILE_REQUISITI_HARDWARE_SOFTWARE' : 									inputName = 'requisitiHardwareSoftware'; break;
 
 						//File da firmare per engineering
-						case 'FILE_DA_FIRMARE' :							inputName = 'fileDaFirmare'; break;
+						case 'FILE_DA_FIRMARE' :													inputName = 'fileDaFirmare'; break;
 					default: break;
 						}
 

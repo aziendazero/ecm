@@ -198,18 +198,22 @@ public class Evento extends BaseEntity{
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_fine")//fine evento
 	private LocalDate dataFine;
-
+	
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
+	@Column(name = "data_scadenza_pagamento")//data scadenza pagamento
+	private LocalDate dataScadenzaPagamento;
+	
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="responsabile_id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
 
-	protected int numeroPartecipanti;
+	protected Integer numeroPartecipanti;
 
 	@OneToOne
 	private File brochureEvento;
 
-	protected float durata;//calcolo automatico
-	protected float crediti;//calcolo con algoritmo che puo essere modificato dal provider
+	protected Float durata;//calcolo automatico
+	protected Float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="responsabile_segreteria_id")
@@ -246,13 +250,29 @@ public class Evento extends BaseEntity{
 
 	private Boolean autorizzazionePrivacy;
 
-	public float calcoloDurata(){
-		return 0;
-	};
-	public float calcoloCreditiFormativi(){
-		return 0;
-	};
-	
+	public void calcolaCosto() throws Exception{
+		if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
+			costo = 0.00;
+			pagato = true;
+		}else if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("B")){
+			if(getProceduraFormativa() == ProceduraFormativa.RES || getProceduraFormativa() == ProceduraFormativa.FSC){
+				costo = 258.22;
+			}else{
+				costo = 1500.00;
+			}
+			
+			//ridotto di 1/3
+			if(altreFormeFinanziamento != null && !altreFormeFinanziamento.booleanValue()){
+				costo = (costo*2)/3;
+			}
+		}else{
+			throw new Exception("provider non classificato correttamente");
+		}
+		
+		if(dataFine != null)
+			setDataScadenzaPagamento(dataFine.plusDays(90));
+	}
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {

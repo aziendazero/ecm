@@ -50,7 +50,8 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			LOGGER.info("BOOTSTRAP ECM - Inizializzazione ENGINEERING...");
 
-			Provider provider = providerRepository.findOneByPartitaIva("01234567890");
+			//Provider provider = providerRepository.findOneByPartitaIva("01234567890");
+			Provider provider = providerRepository.findOneByCodiceFiscale("ENGINEERINGSRL");
 
 			if(provider == null) {
 				//Profilo

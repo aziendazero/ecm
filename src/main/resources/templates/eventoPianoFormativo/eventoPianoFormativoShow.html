@@ -10,7 +10,11 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.visualizza_evento(${eventoWrapper.evento.id})}">Evento</h2>
+						<h2 th:text="#{label.visualizza_evento(${#numbers.formatInteger(eventoWrapper.evento.id,0)})} + ' '">Evento</h2>
+						<h2>&nbsp;</h2>
+						<th:block th:if="${eventoWrapper.evento.pianoFormativo}">
+							<h2 id="pianoFormativo" th:text="'(' + #{label.piano_formativo_anno(${#numbers.formatInteger(eventoWrapper.evento.pianoFormativo,0)})} + ')'"></h2>
+						</th:block>
 						<div class="pull-right buttons-header">
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
 						</div>

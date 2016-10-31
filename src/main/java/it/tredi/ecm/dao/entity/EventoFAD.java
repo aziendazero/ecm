@@ -8,7 +8,10 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -25,26 +28,27 @@ import lombok.Setter;
 @DiscriminatorValue(value = "FAD")
 public class EventoFAD extends Evento{
 
+	@Enumerated(EnumType.STRING)
 	private TipologiaEventoFADEnum tipologiaEvento;
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name = "docente_id")
-	private Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();//Sono ammessi per il RuoloPersonaEventoEnum solo DOCENTE e TUTOR
+	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();//Sono ammessi per il RuoloPersonaEventoEnum solo DOCENTE e TUTOR
 
 	private String razionale;
 	@ElementCollection
-	private List<String> risultatiAttesi = new ArrayList<String>();
+	private Set<String> risultatiAttesi = new HashSet<String>();
 	@ElementCollection
-	@OrderBy("orario ASC")
-	private List<DettaglioAttivitaFAD> programma = new ArrayList<DettaglioAttivitaFAD>();
+	@JoinColumn(name = "programma_fad_id")
+	private List<DettaglioAttivitaFAD> programmaFAD = new ArrayList<DettaglioAttivitaFAD>();
 
 	@ElementCollection
-	private Set<VerificaApprendimentoFAD> verificaApprendimento;
+	private List<VerificaApprendimentoFAD> verificaApprendimento = new ArrayList<VerificaApprendimentoFAD>();
 
 	//TODO sia FAD che RES
-	private boolean confermatiCrediti;
+	private Boolean confermatiCrediti;
 
-	private boolean supportoSvoltoDaEsperto;
+	private Boolean supportoSvoltoDaEsperto;
 
 	private String materialeDurevoleRilasciatoAiPratecipanti;
 
@@ -54,17 +58,8 @@ public class EventoFAD extends Evento{
 	private String userId;
 	private String password;
 	private String url;
+	
 
-	public float calcoloDurata(){
-		float durata = 0.0f;
-		//TODO
-		return durata;
-	}
-
-
-	public float calcoloCreditiFormativi(){
-		float crediti = 0.0f;
-		//TODO
-		return crediti;
-	}
+	@Embedded
+	private RiepilogoFAD riepilogoFAD = new RiepilogoFAD();
 }

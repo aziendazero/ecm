@@ -13,8 +13,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FieldEditabileAccreditamento extends Field {
+	private String nota;
 	@ManyToOne
 	private Accreditamento accreditamento;
+	
 	public FieldEditabileAccreditamento() {}
 	public FieldEditabileAccreditamento(IdFieldEnum idField, Accreditamento accreditamento) {
 		super.setIdField(idField);
@@ -25,7 +27,6 @@ public class FieldEditabileAccreditamento extends Field {
 		setAccreditamento(accreditamento);
 		super.setObjectReference(objectReference);
 	}
-	
 	
 	@Override
     public boolean equals(Object o) {

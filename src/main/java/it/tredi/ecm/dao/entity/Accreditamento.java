@@ -59,6 +59,9 @@ public class Accreditamento extends BaseEntity{
 	private LocalDate dataInizioAccreditamento;//procedimento terminato..con l'accettazione dell'accreditamento...in attesa del pagamento
 	@Column(name = "data_fine_accreditamento")//data di scadenza calcolata dall'accreditamento +4anni
 	private LocalDate dataFineAccreditamento;
+	
+	private Long giorniIntegrazione;
+	private Long giorniPreavvisoRigetto;
 
 	@JoinColumn(name = "provider_id")
 	@OneToOne(fetch = FetchType.LAZY)

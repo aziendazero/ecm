@@ -19,7 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
-import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
@@ -41,7 +40,7 @@ public class EventoRES extends Evento{
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tipologia_evento_res")
 	private TipologiaEventoRESEnum tipologiaEvento;
-	private boolean workshopSeminariEcm;
+	private Boolean workshopSeminariEcm;
 	private String titoloConvegno;
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
@@ -50,10 +49,11 @@ public class EventoRES extends Evento{
 
 	private String razionale;
 	@ElementCollection
-	private List<String> risultatiAttesi = new ArrayList<String>();
+	private Set<String> risultatiAttesi = new HashSet<String>();
 
-	@OneToMany(mappedBy="eventoRES", cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@OrderBy("giorno ASC")
+	@JoinColumn(name = "evento_res_id")
 	private List<ProgrammaGiornalieroRES> programma = new ArrayList<ProgrammaGiornalieroRES>();
 
 	@ElementCollection
@@ -74,4 +74,8 @@ public class EventoRES extends Evento{
 	private String descrizioneVerificaRicaduteFormative;
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
+	
+	@Embedded
+	private RiepilogoRES riepilogoRES = new RiepilogoRES();
+	
 }

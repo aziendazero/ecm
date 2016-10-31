@@ -18,6 +18,8 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.RoleRepository;
+import it.tredi.ecm.service.AccountService;
+import it.tredi.ecm.service.WorkflowService;
 
 @Component
 @org.springframework.context.annotation.Profile({"dev","demo","simone","abarducci"})
@@ -27,11 +29,16 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 	private final String defaultDataScadenzaPassword = "2016-12-31";
 
 	private final RoleRepository roleRepository;
+	private final AccountService accountService;
 	private final AccountRepository accountRepository;
 	private final ProfileRepository profileRepository;
 
 	@Autowired
-	public AccountLoader(AccountRepository accountRepository, RoleRepository roleRepository, ProfileRepository profileRepository) {
+	private WorkflowService workflowService;
+
+	@Autowired
+	public AccountLoader(AccountService accountService, AccountRepository accountRepository, RoleRepository roleRepository, ProfileRepository profileRepository) {
+		this.accountService= accountService;
 		this.accountRepository = accountRepository;
 		this.roleRepository = roleRepository;
 		this.profileRepository = profileRepository;
@@ -176,7 +183,14 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			provider.getProfiles().add(profile_provider);
 			provider.setDataScadenzaPassword(LocalDate.now());
 
-			accountRepository.save(provider);
+			try {
+				//accountService.save(provider);
+				accountRepository.save(provider);
+				workflowService.saveOrUpdateBonitaUserByAccount(provider);				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			Account admin = new Account();
 			admin.setUsername("segreteria");
@@ -192,7 +206,14 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			admin.getProfiles().add(profile_admin);
 			admin.setDataScadenzaPassword(LocalDate.now());
 
-			accountRepository.save(admin);
+			try {
+				//accountService.save(admin);
+				accountRepository.save(admin);
+				workflowService.saveOrUpdateBonitaUserByAccount(admin);				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			Account referee1 = new Account();
 			referee1.setUsername("referee1");
@@ -207,7 +228,14 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			referee1.setCognome("Doe");
 			referee1.getProfiles().add(profile_referee);
 			referee1.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
-			accountRepository.save(referee1);
+			try {
+				//accountService.save(referee1);
+				accountRepository.save(referee1);
+				workflowService.saveOrUpdateBonitaUserByAccount(referee1);				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			Account referee2 = new Account();
 			referee2.setUsername("referee2");
@@ -222,7 +250,14 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			referee2.setCognome("Rossi");
 			referee2.getProfiles().add(profile_referee);
 			referee2.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
-			accountRepository.save(referee2);
+			try {
+				//accountService.save(referee2);
+				accountRepository.save(referee2);
+				workflowService.saveOrUpdateBonitaUserByAccount(referee2);				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			Account referee3 = new Account();
 			referee3.setUsername("referee3");
@@ -237,7 +272,14 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			referee3.setCognome("Marroni");
 			referee3.getProfiles().add(profile_referee);
 			referee3.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
-			accountRepository.save(referee3);
+			try {
+				//accountService.save(referee3);
+				accountRepository.save(referee3);
+				workflowService.saveOrUpdateBonitaUserByAccount(referee3);				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			LOGGER.info("BOOTSTRAP ECM - ACL creata");
 		}else{

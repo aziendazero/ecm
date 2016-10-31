@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,13 +18,14 @@ import lombok.Setter;
 @Setter
 @Entity
 public class ProgrammaGiornalieroRES extends BaseEntity {
-	@ManyToOne
-	private EventoRES eventoRES;
-	
+	//@ManyToOne
+	//private EventoRES eventoRES;
+
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate giorno;
 	private SedeEvento sede;
 	@ElementCollection
-	@OrderBy("orario ASC")
+	@OrderBy("orarioInizio ASC")
 	private List<DettaglioAttivitaRES> programma = new ArrayList<DettaglioAttivitaRES>();
-	
+
 }

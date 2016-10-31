@@ -16,7 +16,7 @@ public class PdfAccreditamentoProvvisorioRigettoInfo {
 	//private List<String> listaMotivazioni = new ArrayList<String>();
 	private String noteSedutaDomanda = null;
 	
-	public PdfAccreditamentoProvvisorioRigettoInfo(Accreditamento accreditamento, Seduta sedutaRigetto, Seduta sedutaIntegrazione, Seduta sedutaPreavvisoRigetto, List<String> listaCriticita) {
+	public PdfAccreditamentoProvvisorioRigettoInfo(Accreditamento accreditamento, Seduta sedutaRigetto, Seduta sedutaIntegrazione, Seduta sedutaPreavvisoRigetto) {
 		this.providerInfo = new PdfProviderInfo(accreditamento.getProvider());
 		this.accreditamentoDataValidazione = accreditamento.getDataInvio();
 		

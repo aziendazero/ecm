@@ -15,11 +15,11 @@ public enum FaseDiLavoroFSCEnum {
 	CAMPO_LIBERO(5,""),
 	
 	//per tipologia: Progetti di miglioramento
-	ANALISI_DEL_PROBLEMA(6,"Analisi del problema"),
-	INDIVIDUAZIONE_DELLE_SOLUZIONI(7,"Individuazione delle soluzioni"),
-	CONFRONTO_E_CONDIVISIONE(8,"Confronto e condivisione con gli operatori coinvolti sulle soluzioni ipotizzate"),
-	IMPLEMENTAZIONE_CAMBIAMENTO_E_MONITORAGGIO(9,"Implementazione del cambiamento e suo monitoraggio"),
-	VALUTAZIONE_IMPATTO_CAMBIAMENTO(10,"Valutazione dell’impatto del cambiamento"),
+	ANALISI_DEL_PROBLEMA(6,"[A] - Analisi del problema"),
+	INDIVIDUAZIONE_DELLE_SOLUZIONI(7,"[B] - Individuazione delle soluzioni"),
+	CONFRONTO_E_CONDIVISIONE(8,"[C] - Confronto e condivisione con gli operatori coinvolti sulle soluzioni ipotizzate"),
+	IMPLEMENTAZIONE_CAMBIAMENTO_E_MONITORAGGIO(9,"[D] - Implementazione del cambiamento e suo monitoraggio"),
+	VALUTAZIONE_IMPATTO_CAMBIAMENTO(10,"[E] - Valutazione dell’impatto del cambiamento"),
 	
 	//per tipologia: Attivita' di ricerca
 	ESPLICITAZIONE_IPOTESI_LAVORO(11,"Esplicitazione dell’ipotesi di lavoro – indicazione della metodologia della ricerca"),

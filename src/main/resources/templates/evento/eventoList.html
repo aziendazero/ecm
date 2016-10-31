@@ -127,6 +127,7 @@
 									<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
 									<th th:text="#{label.prezzo}">label.prezzo</th>
 									<th th:text="#{label.stato}">label.stato</th>
+									<th th:text="#{label.data_scadenza_pagamento}">label.data_scadenza_pagamento</th>
 									<th th:text="#{label.azioni}">label.azioni</th>
 								</tr>
 							</thead>
@@ -138,6 +139,7 @@
 									<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
 									<td th:unless="${evento.pagato}"><span class="label-non-pagato" th:text="#{label.non_pagato}"></span></td>
+									<td th:text="${evento.dataScadenzaPagamento == null} ? '' : ${#temporals.format(evento.dataScadenzaPagamento, 'dd/MM/yyyy')}"></td>
 									<td>
 										<div class="button-container single">
 											<a class="btn btn-primary btn-table double" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}"><i class="fa fa-pencil"> </i> <span th:text="#{label.modifica}"> </span></a>
@@ -163,7 +165,7 @@
 						"bPaginate" : false,
 						"ordering" : false,
 						"columnDefs": [ {
-							"targets": 5,
+							"targets": 6,
 							"width": "1px",
 							"sClass": "center"
 						} ]

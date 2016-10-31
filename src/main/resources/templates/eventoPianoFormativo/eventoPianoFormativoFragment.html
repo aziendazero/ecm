@@ -40,9 +40,6 @@
 
 						<!-- CLASSIFICAZIONE EVENTO (inserito o meno nel piano formativo) -->
 						<div class="col-xs-12 with-margin-bottom">
-							<th:block th:if="${eventoWrapper.evento.pianoFormativo}">
-								<h2 id="pianoFormativo" th:text="#{label.inserito_piano_formativo(${#numbers.formatInteger(eventoWrapper.evento.pianoFormativo,0)})} "></h2>
-							</th:block>
 							<th:block th:unless="${eventoWrapper.evento.pianoFormativo}">
 								<h2 id="pianoFormativo" th:text="#{label.evento_non_in_piano_formativo}"></h2>
 							</th:block>
