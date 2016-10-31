@@ -82,7 +82,7 @@
 												title="Seleziona un docente...">
 												<option
 													th:each="docente, row: ${eventoWrapper.docenti}"
-													th:value="${docente.anagrafica.codiceFiscale}"
+													th:value="${docente.id}"
 													th:text="${docente.anagrafica.cognome}">Docente Selezionato
 												</option>
 											</select>
@@ -1864,7 +1864,7 @@
 
 				function removeAllFromSelectAttivitaRES(target) {
 					$.each($("#" + target + " option"), function() {
-						this.remove();
+						$(this).remove();
 					})
 					$('#' + target).selectpicker('refresh');
 				}
