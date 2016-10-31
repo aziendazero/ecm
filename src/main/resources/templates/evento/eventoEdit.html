@@ -182,7 +182,7 @@
 							<input id="targetTable" type="text" name="addPersonaTo" style="display: none;" />
 							<input id="typePersona" type="text" name="typePersona" style="display: none;" />
 							<input id="fromLookUp" type="text" name="fromLookUp" style="display: none;" />
-							<input id="rowIndex" type="text" name="rowIndex" style="display: none;" />
+							<input id="modificaElemento" type="text" name="modificaElemento" style="display: none;" />
 
 						</form>
 					</div>
@@ -290,7 +290,7 @@
 							<input id="targetTableFull" type="text" name="addPersonaFullTo" style="display: none;" />
 							<input id="typePersonaFull" type="text" name="typePersonaFull" style="display: none;" />
 							<input id="fromLookUpFull" type="text" name="fromLookUpFull" style="display: none;" />
-							<input id="rowIndexFull" type="text" name="rowIndexFull" style="display: none;" />
+							<input id="modificaElementoFull" type="text" name="modificaElementoFull" style="display: none;" />
 						</form>
 					</div>
 					<div class="modal-footer">
@@ -858,18 +858,18 @@
 		  	}
 
 			//apre la finestra di inserimento di una persona
-			function openAddPersonaTo(target,type,fromLookup,rowIndex){
+			function openAddPersonaTo(target,type,fromLookup,modificaElemento){
 				if(type == 'Full'){
 					$('#targetTableFull').val(target);
 					$('#typePersonaFull').val(type);
 					$('#fromLookUpFull').val(fromLookup);
-					$('#rowIndexFull').val(rowIndex);
+					$('#modificaElementoFull').val(modificaElemento);
 					console.log('fromLookUpFull:' + fromLookup);
 				}else{
 					$('#targetTable').val(target);
 					$('#typePersona').val(type);
 					$('#fromLookUp').val(fromLookup);
-					$('#rowIndex').val(rowIndex);
+					$('#modificaElemento').val(modificaElemento);
 					console.log('fromLookUp:' + fromLookup);
 
 					if(target == 'responsabiliScientifici'){
@@ -934,13 +934,13 @@
 				});
 			}
 
-			function sendAjaxModificaPersonaTo(target,type,fromLookup,rowIndex){
-				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modifica/|}]] + target + '/' + rowIndex;
+			function sendAjaxModificaPersonaTo(target,type,fromLookup,modificaElemento){
+				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modifica/|}]] + target + '/' + modificaElemento;
 				if(type == 'Full'){
 					$.get(url).done(function(data) {
 						$('#container-addPersonaFullTo').html(data);
 						$('#add-'+ target).click();
-						openAddPersonaTo(target,type,true,rowIndex);
+						openAddPersonaTo(target,type,true,modificaElemento);
 					  })
 				  	.fail(function() {
 				    	alert( "error" );
@@ -950,7 +950,7 @@
 						$('#container-addPersonaTo').html(data);
 						reInitModaleAddPersona();
 						$('#add-'+ target).click();
-						openAddPersonaTo(target,type,true,rowIndex);
+						openAddPersonaTo(target,type,true,modificaElemento);
 					  })
 				  	.fail(function() {
 				    	alert( "error" );
@@ -1030,15 +1030,15 @@
 
 			//modifica persona
 			function modificaPersonaFrom(target,caller){
-				var rowIndex = $(caller).parent().parent().data('row-id');
-				if(rowIndex == undefined)
-					rowIndex = 0;
+				var modificaElemento = $(caller).parent().parent().data('row-id');
+				if(modificaElemento == undefined)
+					modificaElemento = 0;
 				if(target == 'responsabiliScientifici'){
-					sendAjaxModificaPersonaTo(target,'base',false,rowIndex);
+					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
 				}else if(target == 'docenti'){
-					sendAjaxModificaPersonaTo(target,'base',false,rowIndex);
+					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
 				}else if(target == 'responsabileSegreteria'){
-					sendAjaxModificaPersonaTo(target,'Full',false,rowIndex);
+					sendAjaxModificaPersonaTo(target,'Full',false,modificaElemento);
 				}
 			}
 

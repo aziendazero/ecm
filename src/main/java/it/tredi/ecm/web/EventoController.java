@@ -582,10 +582,10 @@ public class EventoController {
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaTo", method=RequestMethod.POST, params={"addPersonaTo"})
 	public String addPersonaTo(@RequestParam("addPersonaTo") String target,
 								@RequestParam("fromLookUp") String fromLookUp,
-								@RequestParam(name = "rowIndex",required=false) String rowIndex,
+								@RequestParam(name = "modificaElemento",required=false) String modificaElemento,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			if(rowIndex == null || rowIndex.isEmpty()){
+			if(modificaElemento == null || modificaElemento.isEmpty()){
 				//INSERIMENTO NUOVA PERSONA
 				
 				//TODO da fare solo se rispetta il validator
@@ -641,7 +641,7 @@ public class EventoController {
 				}
 			}else{
 				//MODIFICA
-				int index = Integer.parseInt(rowIndex);
+				int index = Integer.parseInt(modificaElemento);
 				if(target.equalsIgnoreCase("responsabiliScientifici")){
 					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
 					eventoWrapper.getResponsabiliScientifici().set(index, eventoWrapper.getTempPersonaEvento());
@@ -661,10 +661,10 @@ public class EventoController {
 
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaFullTo", method=RequestMethod.POST, params={"addPersonaFullTo"})
 	public String addPersonaFullTo(@RequestParam("addPersonaFullTo") String target,
-									@RequestParam(name = "rowIndexFull",required=false) String rowIndex,
+									@RequestParam(name = "modificaElementoFull",required=false) String modificaElemento,
 										@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			if(rowIndex == null || rowIndex.isEmpty()){
+			if(modificaElemento == null || modificaElemento.isEmpty()){
 				//INSERIMENTO NUOVA PERSONA
 			
 				//TODO da fare solo se rispetta il validator
@@ -1057,18 +1057,18 @@ public class EventoController {
 		}
 	}
 	
-	@RequestMapping(value = "/provider/{providerId}/evento/modifica/{target}/{rowIndex}", method=RequestMethod.GET)
+	@RequestMapping(value = "/provider/{providerId}/evento/modifica/{target}/{modificaElemento}", method=RequestMethod.GET)
 	public String modificaPersona(@PathVariable("target") String target,
-									@PathVariable("rowIndex") Long rowIndex,
+									@PathVariable("modificaElemento") Long modificaElemento,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				PersonaEvento p = eventoWrapper.getResponsabiliScientifici().get(rowIndex.intValue());
+				PersonaEvento p = eventoWrapper.getResponsabiliScientifici().get(modificaElemento.intValue());
 				eventoWrapper.setTempPersonaEvento(p);
 				eventoWrapper.setCv(p.getAnagrafica().getCv());
 				return EDIT + " :: #addPersonaTo";
 			}else if(target.equalsIgnoreCase("docenti")){
-				PersonaEvento p = eventoWrapper.getDocenti().get(rowIndex.intValue());
+				PersonaEvento p = eventoWrapper.getDocenti().get(modificaElemento.intValue());
 				eventoWrapper.setTempPersonaEvento(p);
 				eventoWrapper.setCv(p.getAnagrafica().getCv());
 				return EDIT + " :: #addPersonaTo";
