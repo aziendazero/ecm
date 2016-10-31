@@ -552,7 +552,7 @@
 
 			    initAllCommon();
 			});
-			
+
 			//reinit dei widget complessi nella modale add persona
 			function reInitModaleAddAttivita(){
 				$('input.flat').iCheck({
@@ -565,7 +565,7 @@
 					deselectAllText : 'Deseleziona tutti',
 					countSelectedText : '{0} selezionate'
 				});
-				
+
 			    var handler = $('.ora').clockpicker({
 			    	donetext: [[#{label.applica}]],
 			    	align: 'left',
@@ -1410,7 +1410,7 @@
 							<span th:text="#{label.sede}" class="text-uppercase">SEDE</span>
 						</label>
 					</div>
-					<div class="item form-group">
+					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')} ? 'bad'">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.provincia}">Provincia</span>
 							<span class="required">*</span>
@@ -1418,9 +1418,10 @@
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
 							<input type="text" th:attr="data-programma-provincia=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}" />
 						</div>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.provincia')}__}"></div>
 					</div>
 
-					<div class="item form-group">
+					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.comune')} ? 'bad'">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.comune}">Comune</span>
 							<span class="required">*</span>
@@ -1428,9 +1429,9 @@
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
 							<input type="text" th:attr="data-programma-comune=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}" />
 						</div>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.comune')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.comune')}__}"></div>
 					</div>
-
-					<div class="item form-group">
+					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.indirizzo')} ? 'bad'">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.indirizzo}">Indirizzo</span>
 							<span class="required">*</span>
@@ -1438,9 +1439,9 @@
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
 							<input type="text" th:attr="data-programma-indirizzo=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.indirizzo}" />
 						</div>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.indirizzo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.indirizzo')}__}"></div>
 					</div>
-
-					<div class="item form-group">
+					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')} ? 'bad'">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.luogo}">Luogo</span>
 							<span class="required">*</span>
@@ -1448,12 +1449,19 @@
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
 							<input type="text" th:attr="data-programma-luogo=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.luogo}" />
 						</div>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.luogo')}__}"></div>
 					</div>
+
+
+					<div th:text="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')}"></div>
+					<div>QUIIIIIIIIIIIII</div>
+
 
 					<div class="col-xs-12">
 						<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
 						<div th:attr="data-programma-id=__${data.key}__">
-							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+								th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad-table'">
 								<thead>
 									<tr>
 										<th th:text="#{label.orario_inizio}">ORARIO INIZIO</th>

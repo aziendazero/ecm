@@ -219,7 +219,7 @@
 								<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
 
 									<!-- TODO rimuovere -->
-									<!--  <div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
+									 <div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div>
 
 									<!-- DENOMINAZIONE LEGALE PROVIDER -->
 									<div class="item form-group">
@@ -812,7 +812,7 @@
 												</label>
 											</div>
 										</div>
-										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')} ? 'bad'"></div>
+					 					<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.verificaApprendimento')}__}"></div>
 									</div>
 
 									 <!-- DURATA  -->
