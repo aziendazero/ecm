@@ -899,7 +899,11 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 		}else if(evento instanceof EventoFAD){
-			((EventoFAD) evento).setProgrammaFAD(eventoWrapper.getProgrammaEventoFAD());
+			if(eventoWrapper.getProgrammaEventoFAD() != null){
+				((EventoFAD) evento).setProgrammaFAD(eventoWrapper.getProgrammaEventoFAD());
+			}else{
+				((EventoFAD) evento).setProgrammaFAD(new ArrayList<DettaglioAttivitaFAD>());
+			}
 		}
 	}
 

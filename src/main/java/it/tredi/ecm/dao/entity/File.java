@@ -159,6 +159,7 @@ public class File extends BaseEntity{
 	}
  
 	@Override
+	@JsonIgnore
 	public Object clone() throws CloneNotSupportedException {
 		File cloned = (File) super.clone();
 		

@@ -82,7 +82,7 @@
 												title="Seleziona un docente...">
 												<option
 													th:each="docente, row: ${eventoWrapper.docenti}"
-													th:value="${docente.anagrafica.codiceFiscale}"
+													th:value="${docente.id}"
 													th:text="${docente.anagrafica.cognome}">Docente Selezionato
 												</option>
 											</select>
@@ -176,7 +176,7 @@
 								</form>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+								<button type="button" class="btn btn-primary" onclick="closeModaleAddPersona()" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 								<label for="targetTable" class="btn btn-success pull-right" onclick="sendAjaxAddAttivitaToProgramma()" th:text="#{label.invia}">Invia</label>
 							</div>
 						</div>
@@ -1779,6 +1779,10 @@
 				function closeModaleAddAttivitaTo(){
 					$("#add-attivitaRES-modal .close").click();
 					$("#add-attivitaRES-modal form")[0].reset();
+					
+					$('#tempAttivitaRES\\.orarioInizio').val('');
+					$('#tempAttivitaRES\\.orarioFine').val('');
+					$('#tempAttivitaRES\\.argomento').val('');
 
 					$.each($("#add-attivitaRES-modal .selectpicker"),function(){
 						$(this).selectpicker('val','');
@@ -1819,6 +1823,8 @@
 					var pausa = $(caller).parent().parent().data('is-pausa');
 					if(modificaElemento == undefined)
 						modificaElemento = 0;
+					
+					console.log('modificaAttivitaFrom:' + target + "," + programmaIndex + ',' + pausa + ',' + modificaElemento);
 
 					sendAjaxModificaAttivitaTo(target,programmaIndex,pausa,modificaElemento);
 				}
@@ -1863,7 +1869,7 @@
 
 				function removeAllFromSelectAttivitaRES(target) {
 					$.each($("#" + target + " option"), function() {
-						this.remove();
+						$(this).remove();
 					})
 					$('#' + target).selectpicker('refresh');
 				}
