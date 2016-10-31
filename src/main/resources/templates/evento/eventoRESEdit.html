@@ -171,7 +171,7 @@
 									<input id="addAttivitaTo_comune" type="text" style="display: none;" />
 									<input id="addAttivitaTo_indirizzo" type="text" style="display: none;" />
 									<input id="addAttivitaTo_luogo" type="text" style="display: none;" />
-									
+
 									<input id="modificaElementoAttivitaRES" name="modificaElemento" type="text" style="display: none;" />
 								</form>
 							</div>
@@ -812,7 +812,7 @@
 												</label>
 											</div>
 										</div>
-									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')} ? 'bad'">
+										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')} ? 'bad'"></div>
 									</div>
 
 									 <!-- DURATA  -->
@@ -1365,11 +1365,10 @@
 							</div>
 						</div>
 					</div>
-				</div>
 
-				<input id="submitButton" type="submit" style="display: none;" />
+					<input id="submitButton" type="submit" style="display: none;" />
 
-			</form>
+				</form>
 
 			<script th:inline="javascript">
 			/*<![CDATA[*/
@@ -1790,7 +1789,7 @@
 
 					$('#add-attivitaRES-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
 				}
-				
+
 				function sendAjaxAddAttivitaToProgramma(){
 					var target = $('#targetTableAttivitaRES').val();
 					var programmaIndex = $('#addAttivitaTo').val();
@@ -1812,7 +1811,7 @@
 
 					$("#" + target).load(url);
 				}
-				
+
 				//modifica Attivita
 				function modificaAttivitaFrom(target,caller){
 					var modificaElemento = $(caller).parent().parent().data('row-id');
@@ -1820,10 +1819,10 @@
 					var pausa = $(caller).parent().parent().data('is-pausa');
 					if(modificaElemento == undefined)
 						modificaElemento = 0;
-					
+
 					sendAjaxModificaAttivitaTo(target,programmaIndex,pausa,modificaElemento);
 				}
-				
+
 				function sendAjaxModificaAttivitaTo(target,programmaIndex,pausa,modificaElemento){
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
 					$.get(url).done(function(data) {
