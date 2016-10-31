@@ -18,7 +18,7 @@
 						</button>
 						<h4 id="container-title" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 					</div>
-					<div class="modal-body">
+					<div class="modal-body" id="container-attivitaFAD">
 						<form id="addAttivitaFAD" name="addAttivitaFAD" class="form-horizontal form-label-left"
 								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
 								th:object="${eventoWrapper.tempAttivitaFAD}" method="post" enctype="multipart/form-data"
@@ -147,6 +147,9 @@
 
 								<input id="targetTableAttivitaFAD" type="text" name="target" style="display: none;" />
 								<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
+									
+								<!-- rowIndex in modifica -->
+								<input id="modificaElementoAttivitaFAD" name="modificaElemento" type="text" style="display: none;" />
 
 							</form>
 						</div>
@@ -1187,8 +1190,9 @@
 				}
 
 				/********************* PROGRAMMA GIORNALIERO ****************************/
-				function openAddAttivitaTo(target){
+				function openAddAttivitaTo(target,modificaElemento){
 					$('#targetTableAttivitaFAD').val(target);
+					$('#modificaElementoAttivitaFAD').val(modificaElemento);
 				}
 
 				function closeModaleAddAttivitaTo(){
@@ -1222,6 +1226,29 @@
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
 
 					$("#" + target).load(url);
+				}
+				
+				//modifica Attivita
+				function modificaAttivitaFrom(target,caller){
+					var modificaElemento = $(caller).parent().parent().data('row-id');
+					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					if(modificaElemento == undefined)
+						modificaElemento = 0;
+					
+					sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento);
+				}
+				
+				function sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento){
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
+					$.get(url).done(function(data) {
+						$('#container-' + target).html(data);
+						reInitModaleAddAttivita();
+						$('#add-attivita').click();
+						openAddAttivitaTo(target,modificaElemento);
+					  })
+				  	.fail(function() {
+				    	alert( "error" );
+				 	 })
 				}
 
 				//********************************************************************************

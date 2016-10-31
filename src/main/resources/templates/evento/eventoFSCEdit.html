@@ -18,7 +18,7 @@
 							</button>
 							<h4 class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 						</div>
-						<div class="modal-body">
+						<div class="modal-body" id="container-attivitaFSC">
 							<form id="addAttivitaFSC" name="addAttivitaFSC" class="form-horizontal form-label-left"
 									th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
 									th:object="${eventoWrapper.tempAttivitaFSC}" method="post" enctype="multipart/form-data"
@@ -142,6 +142,9 @@
 									<input id="targetTableAttivitaFSC" type="text" name="target" style="display: none;" />
 									<!-- fase a cui agganciare l'attività -->
 									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
+									
+									<!-- rowIndex in modifica -->
+									<input id="modificaElementoAttivitaFSC" name="modificaElemento" type="text" style="display: none;" />
 								</form>
 							</div>
 							<div class="modal-footer">
@@ -1395,9 +1398,10 @@
 
 
 			 /********************* PROGRAMMA GIORNALIERO ****************************/
-			  function openAddAttivitaTo(target,programmaIndex){
+			  function openAddAttivitaTo(target,programmaIndex,modificaElemento){
 					$('#targetTableAttivitaFSC').val(target);
 					$('#addAttivitaTo').val(programmaIndex);
+					$('#modificaElementoAttivitaFSC').val(modificaElemento);
 
 					var tipologiaEvento = $('#tipologiaEventoId').val();
 					setEvFSCRuoliCoinvolti();
@@ -1474,6 +1478,30 @@
 
 					$("#" + target).load(url);
 				}
+				
+				//modifica Attivita
+				function modificaAttivitaFrom(target,caller){
+					var modificaElemento = $(caller).parent().parent().data('row-id');
+					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('fase-id');
+					if(modificaElemento == undefined)
+						modificaElemento = 0;
+					
+					sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento);
+				}
+				
+				function sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento){
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
+					$.get(url).done(function(data) {
+						$('#container-' + target).html(data);
+						reInitModaleAddAttivita();
+						$('#add-attivita').click();
+						openAddAttivitaTo(target,programmaIndex,modificaElemento);
+					  })
+				  	.fail(function() {
+				    	alert( "error" );
+				 	 })
+				}
+				
 
 				/*parametrizzabile - è  identica a RES*/
 				function reloadSection(selectedTab){

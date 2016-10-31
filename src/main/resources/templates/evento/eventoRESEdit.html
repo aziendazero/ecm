@@ -18,7 +18,7 @@
 							<h4 id="container-titleNoPausa" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 							<h4 id="container-titlePausa" class="modal-title" th:text="#{label.inserisci_pausa}">Inserisci pausa</h4>
 						</div>
-						<div class="modal-body">
+						<div class="modal-body" id="container-attivitaRES">
 							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
 									th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
 									th:object="${eventoWrapper.tempAttivitaRES}" method="post" enctype="multipart/form-data"
@@ -32,7 +32,7 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
 											<input type="text" required="required" class="form-control ora"
-												th:field="*{orarioInizio}" />
+												th:field="${eventoWrapper.tempAttivitaRES.orarioInizio}" />
 												<span class="input-group-addon openClock" onclick="openClock(this)">
 	     											<i class="glyphicon glyphicon-time"></i>
 	  											</span>
@@ -47,7 +47,7 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
 											<input type="text" required="required" class="form-control ora"
-												th:field="*{orarioFine}" />
+												th:field="${eventoWrapper.tempAttivitaRES.orarioFine}" />
 												<span class="input-group-addon openClock" onclick="openClock(this)">
 	     											<i class="glyphicon glyphicon-time"></i>
 	  											</span>
@@ -61,7 +61,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input class="form-control" type="text" th:field="*{argomento}" />
+											<input class="form-control" type="text" th:field="${eventoWrapper.tempAttivitaRES.argomento}" />
 										</div>
 									</div>
 
@@ -75,7 +75,7 @@
 											<select
 												id="addAttivitaRES-docente"
 												class="selectpicker selectDocente"
-												th:field="*{docente}"
+												th:field="${eventoWrapper.tempAttivitaRES.docente}"
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
@@ -99,7 +99,7 @@
 											<select
 												id="addAttivitaRES-risultatiAttesi"
 												class="selectpicker selectRisultatiAttesi"
-												th:field="*{risultatoAtteso}"
+												th:field="${eventoWrapper.tempAttivitaRES.risultatoAtteso}"
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
@@ -124,7 +124,7 @@
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
 											<select
 												class="selectpicker selectObiettivoFormativo"
-												th:field="*{obiettivoFormativo}"
+												th:field="${eventoWrapper.tempAttivitaRES.obiettivoFormativo}"
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
@@ -149,7 +149,7 @@
 											<select
 												id="addAttivitaRES-metodolgieDidattiche"
 												class="selectpicker selectMetodologieDidattiche"
-												th:field="*{metodologiaDidattica}"
+												th:field="${eventoWrapper.tempAttivitaRES.metodologiaDidattica}"
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
@@ -171,6 +171,8 @@
 									<input id="addAttivitaTo_comune" type="text" style="display: none;" />
 									<input id="addAttivitaTo_indirizzo" type="text" style="display: none;" />
 									<input id="addAttivitaTo_luogo" type="text" style="display: none;" />
+									
+									<input id="modificaElementoAttivitaRES" name="modificaElemento" type="text" style="display: none;" />
 								</form>
 							</div>
 							<div class="modal-footer">
@@ -1739,10 +1741,11 @@
 				};
 
 	/********************* PROGRAMMA GIORNALIERO ****************************/
-				function openAddAttivitaTo(target,programmaIndex,pausa){
+				function openAddAttivitaTo(target,programmaIndex,pausa,modificaElemento){
 					$('#targetTableAttivitaRES').val(target);
 					$('#addAttivitaTo').val(programmaIndex);
 					$('#pausa').val(pausa);
+					$('#modificaElementoAttivitaRES').val(modificaElemento);
 
 					var provinciaVal = $("[data-programma-provincia='" + programmaIndex + "']").val();
 					var comuneVal = $("[data-programma-comune='" + programmaIndex + "']").val();
@@ -1786,7 +1789,7 @@
 
 					$('#add-attivitaRES-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
 				}
-
+				
 				function sendAjaxAddAttivitaToProgramma(){
 					var target = $('#targetTableAttivitaRES').val();
 					var programmaIndex = $('#addAttivitaTo').val();
@@ -1807,6 +1810,30 @@
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
 
 					$("#" + target).load(url);
+				}
+				
+				//modifica Attivita
+				function modificaAttivitaFrom(target,caller){
+					var modificaElemento = $(caller).parent().parent().data('row-id');
+					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					var pausa = $(caller).parent().parent().data('is-pausa');
+					if(modificaElemento == undefined)
+						modificaElemento = 0;
+					
+					sendAjaxModificaAttivitaTo(target,programmaIndex,pausa,modificaElemento);
+				}
+				
+				function sendAjaxModificaAttivitaTo(target,programmaIndex,pausa,modificaElemento){
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
+					$.get(url).done(function(data) {
+						$('#container-' + target).html(data);
+						reInitModaleAddAttivita();
+						$('#add-attivita').click();
+						openAddAttivitaTo(target,programmaIndex,pausa,modificaElemento);
+					  })
+				  	.fail(function() {
+				    	alert( "error" );
+				 	 })
 				}
 
 				function addToSelectAttivitaRES(target, value){

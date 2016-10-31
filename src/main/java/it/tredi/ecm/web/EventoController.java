@@ -804,39 +804,51 @@ public class EventoController {
 	@RequestMapping(value = "/provider/{providerId}/evento/addAttivitaTo", method=RequestMethod.POST)
 	public String addAttivitaTo(@RequestParam("target") String target,
 								@RequestParam("addAttivitaTo") String addAttivitaTo,
+								@RequestParam("modificaElemento") Integer modificaElemento,
 								@RequestParam(name = "pausa",required=false) Boolean pausa,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
-			if(target.equalsIgnoreCase("attivitaRES")){
-				//DettaglioAttivitaRES attivitaRES = (DettaglioAttivitaRES) Utils.copy(eventoWrapper.getTempAttivitaRES());
-				DettaglioAttivitaRES attivitaRES =  SerializationUtils.clone(eventoWrapper.getTempAttivitaRES());
-				attivitaRES.calcolaOreAttivita();
-				
-				Long programmaIndexLong = Long.valueOf(programmaIndex);
-				LOGGER.debug("EventoRES - evento/addAttivitaTo programmaIndexLong: " + programmaIndexLong);
-				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().add(attivitaRES);
-				
-				if(pausa.booleanValue())
-					attivitaRES.setAsPausa();
-				eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
-			}else if(target.equalsIgnoreCase("attivitaFSC")){
-				AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());
-				//test
-//				Map<RuoloFSCEnum, RuoloOreFSC> mappaRuoloOre = eventoWrapper.getMappaRuoloOre();
-//				Set<RuoloOreFSC> temp = azioniRuoli.getRuoli();
-//				temp.clear();
-//				for(RuoloOreFSC rof : mappaRuoloOre.values()) {
-//					temp.add(new RuoloOreFSC(rof.getRuolo(), rof.getTempoDedicato()));
-//				}
-//				azioniRuoli.setRuoli(temp);
-				//
-				eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().add(azioniRuoli);
-				eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
-			}else if(target.equalsIgnoreCase("attivitaFAD")){
-				DettaglioAttivitaFAD attivitaFAD =  SerializationUtils.clone(eventoWrapper.getTempAttivitaFAD());
-				eventoWrapper.getProgrammaEventoFAD().add(attivitaFAD);
-				eventoWrapper.setTempAttivitaFAD(new DettaglioAttivitaFAD());
+			if(modificaElemento == null){
+				//INSERIMENTO 
+				int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
+				if(target.equalsIgnoreCase("attivitaRES")){
+					DettaglioAttivitaRES attivitaRES =  SerializationUtils.clone(eventoWrapper.getTempAttivitaRES());
+					attivitaRES.calcolaOreAttivita();
+					Long programmaIndexLong = Long.valueOf(programmaIndex);
+					LOGGER.debug("EventoRES - evento/addAttivitaTo programmaIndexLong: " + programmaIndexLong);
+					eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().add(attivitaRES);
+					
+					if(pausa.booleanValue())
+						attivitaRES.setAsPausa();
+					eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
+				}else if(target.equalsIgnoreCase("attivitaFSC")){
+					AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());
+					eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().add(azioniRuoli);
+					eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
+				}else if(target.equalsIgnoreCase("attivitaFAD")){
+					DettaglioAttivitaFAD attivitaFAD =  SerializationUtils.clone(eventoWrapper.getTempAttivitaFAD());
+					eventoWrapper.getProgrammaEventoFAD().add(attivitaFAD);
+					eventoWrapper.setTempAttivitaFAD(new DettaglioAttivitaFAD());
+				}
+			}else{
+				//MODIFICA
+				int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
+				int elementoIndex = Integer.valueOf(modificaElemento).intValue();
+				if(target.equalsIgnoreCase("attivitaRES")){
+					DettaglioAttivitaRES attivitaRES =  eventoWrapper.getTempAttivitaRES();
+					attivitaRES.calcolaOreAttivita();
+					Long programmaIndexLong = Long.valueOf(programmaIndex);
+					eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().set(elementoIndex, attivitaRES);
+					eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
+				}else if(target.equalsIgnoreCase("attivitaFSC")){
+					AzioneRuoliEventoFSC azioniRuoli = eventoWrapper.getTempAttivitaFSC();
+					eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().set(elementoIndex, azioniRuoli);
+					eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
+				}else if(target.equalsIgnoreCase("attivitaFAD")){
+					DettaglioAttivitaFAD attivitaFAD =  eventoWrapper.getTempAttivitaFAD();
+					eventoWrapper.getProgrammaEventoFAD().set(elementoIndex, attivitaFAD);
+					eventoWrapper.setTempAttivitaFAD(new DettaglioAttivitaFAD());
+				}
 			}
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -876,31 +888,6 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
-
-	//TODO CONTROLLARE DATEINTERMEDIEPROGRAMMA
-	//non deve mai essere creato a mano 
-	/*
-	@RequestMapping(value = "/provider/{providerId}/evento/addProgramma/{target}", method=RequestMethod.GET)
-	public String addProgramma(@PathVariable("target") String target,
-										@RequestParam("programmaDate") String programmaDate,
-												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
-		try{
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			LocalDate data = LocalDate.parse(programmaDate, dtf);
-			if(target.equalsIgnoreCase("attivitaRES")){
-				ProgrammaGiornalieroRES programma = new ProgrammaGiornalieroRES();
-				programma.setGiorno(data);
-				programma.setSede(((EventoRES)eventoWrapper.getEvento()).getSedeEvento());
-				eventoWrapper.getProgrammaEventoRES().add(programma);
-			}
-			return EDIT + " :: " + target;
-		}catch (Exception ex){
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
-			return EDIT + " :: " + target;
-		}
-	}
-	*/
 
 	@RequestMapping(value = "/provider/{providerId}/evento/showSection/{sectionIndex}", method=RequestMethod.POST)
 	public String showSection(@PathVariable("sectionIndex") String sIndex, @ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper,
@@ -1078,6 +1065,36 @@ public class EventoController {
 				return EDIT + " :: #addPersonaFullTo";
 			}
 			
+			return "redirect:/home";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/modificaAttivita/{target}/{addAttivitaTo}/{modificaElemento}", method=RequestMethod.GET)
+	public String modificaAttivita(@PathVariable("target") String target,
+									@PathVariable("addAttivitaTo") String addAttivitaTo,
+									@PathVariable("modificaElemento") Integer modificaElemento,
+											@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
+			int elementoIndex = Integer.valueOf(modificaElemento).intValue();
+			if(target.equalsIgnoreCase("attivitaRES")){
+				Long programmaIndexLong = Long.valueOf(programmaIndex);
+				DettaglioAttivitaRES attivita = eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().get(elementoIndex);
+				eventoWrapper.setTempAttivitaRES(attivita);
+				return EDITRES + " :: #addAttivitaRES";
+			}else if(target.equalsIgnoreCase("attivitaFSC")){
+				AzioneRuoliEventoFSC azione = eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().get(elementoIndex);
+				eventoWrapper.setTempAttivitaFSC(azione);
+				return EDITFSC + " :: #addAttivitaFSC";
+			}else if(target.equalsIgnoreCase("attivitaFAD")){
+				DettaglioAttivitaFAD attivitaFAD = eventoWrapper.getProgrammaEventoFAD().get(elementoIndex);
+				eventoWrapper.setTempAttivitaFAD(attivitaFAD);
+				return EDITFAD + " :: #addAttivitaFAD";
+			}
 			return "redirect:/home";
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
