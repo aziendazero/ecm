@@ -50,4 +50,17 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 		LOGGER.debug("Salvataggio obiettivi");
 		obiettivoRepository.save(obiettivi);
 	}
+
+	@Override
+	public Obiettivo getObiettivo(Long obiettivoId) {
+		LOGGER.info("Retrieving Obiettivo (" + obiettivoId +")");
+		return obiettivoRepository.findOne(obiettivoId);
+	}
+	
+	@Override
+	public Obiettivo findOneByCodiceCogeaps(String codiceCogeaps, boolean nazionale) {
+		LOGGER.info("Retrieving Obiettivo by CodiceCogeaps (" + codiceCogeaps +") and Nazionale (" + nazionale + ")");
+		return obiettivoRepository.findOneByCodiceCogeapsAndNazionale(codiceCogeaps, nazionale);		
+	}
+	
 }

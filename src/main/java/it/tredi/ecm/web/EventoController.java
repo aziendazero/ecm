@@ -355,7 +355,7 @@ public class EventoController {
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
 				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				if(wrapper.getReportPartecipanti().getId() == null)
-					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.warning", "message.inserire_il_rendiconto", "alert"));
 				else {
 					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
 					File file = wrapper.getReportPartecipanti();
@@ -368,7 +368,7 @@ public class EventoController {
 								redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
 							}
 							else {
-								redirectAttrs.addFlashAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+								redirectAttrs.addFlashAttribute("message", new Message("message.warning", "error.formatNonAcceptedXML", "alert"));
 							}
 						}
 					}
@@ -379,7 +379,7 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
 				if (ex instanceof EcmException) //errore gestito
 //TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
-					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
 				else
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
@@ -403,7 +403,7 @@ public class EventoController {
 				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"),ex);
 				if (ex instanceof EcmException) //errore gestito
 	//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
-					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
 				else
 					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
@@ -426,7 +426,7 @@ public class EventoController {
 				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"),ex);
 				if (ex instanceof EcmException) //errore gestito
 	//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
-					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
 				else
 					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"));
