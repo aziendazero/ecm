@@ -82,7 +82,7 @@
 												title="Seleziona un docente...">
 												<option
 													th:each="docente, row: ${eventoWrapper.docenti}"
-													th:value="${docente.id}"
+													th:value="${docente.anagrafica.codiceFiscale}"
 													th:text="${docente.anagrafica.cognome}">Docente Selezionato
 												</option>
 											</select>
@@ -219,7 +219,7 @@
 								<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
 
 									<!-- TODO rimuovere -->
-									<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div>
+									<!--  <div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
 
 									<!-- DENOMINAZIONE LEGALE PROVIDER -->
 									<div class="item form-group">
@@ -1753,10 +1753,10 @@
 					var indirizzoVal = $("[data-programma-indirizzo='" + programmaIndex + "']").val();
 					var luogoVal = $("[data-programma-luogo='" + programmaIndex + "']").val();
 
-					$('#addAttivitaTo_provincia').attr("name","programmaEventoRES[" + programmaIndex + "].sede.provincia").val(provinciaVal);
-					$('#addAttivitaTo_comune').attr("name","programmaEventoRES[" + programmaIndex + "].sede.comune").val(comuneVal);
-					$('#addAttivitaTo_indirizzo').attr("name","programmaEventoRES[" + programmaIndex + "].sede.indirizzo").val(indirizzoVal);
-					$('#addAttivitaTo_luogo').attr("name","programmaEventoRES[" + programmaIndex + "].sede.luogo").val(luogoVal);
+					$('#addAttivitaTo_provincia').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.provincia").val(provinciaVal);
+					$('#addAttivitaTo_comune').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.comune").val(comuneVal);
+					$('#addAttivitaTo_indirizzo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.indirizzo").val(indirizzoVal);
+					$('#addAttivitaTo_luogo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.luogo").val(luogoVal);
 
 					if(pausa){
 						$("#container-titleNoPausa").hide();
