@@ -328,6 +328,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			valutazioneReferee.setAccreditamento(accreditamento);
 			valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
 			valutazioneService.save(valutazioneReferee);
+			emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
 		}
 
@@ -370,6 +371,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId());
 				valutazione.setDataValutazione(null);
 				valutazioneService.save(valutazione);
+				emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			}
 		}
 
