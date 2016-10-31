@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
@@ -17,12 +18,16 @@ public class Professione extends BaseEntity{
 	private String nome;
 	private boolean sanitaria = false;
 	
+	@Column(name ="codice_cogeaps")
+	private String codiceCogeaps;	
+	
 	@OneToMany(mappedBy="professione")
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
 	
 	public Professione(){}
-	public Professione(String nome){
+	public Professione(String nome, String codiceCogeaps){
 		this.nome = nome;
+		this.codiceCogeaps = codiceCogeaps;
 	}
 	
 	/* UTILS */

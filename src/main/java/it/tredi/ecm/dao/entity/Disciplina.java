@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.entity;
 
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
@@ -14,12 +15,16 @@ import lombok.Setter;
 public class Disciplina extends BaseEntity{
 	private String nome;
 	
+	@Column(name ="codice_cogeaps")
+	private String codiceCogeaps;	
+	
 	@OneToOne
 	private Professione professione;
 	
 	public Disciplina(){}
-	public Disciplina(String nome){
+	public Disciplina(String nome, String codiceCogeaps){
 		this.nome = nome;
+		this.codiceCogeaps = codiceCogeaps;
 	}
 	
 	@Override

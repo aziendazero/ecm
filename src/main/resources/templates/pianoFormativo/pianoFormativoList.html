@@ -48,11 +48,25 @@
 											<div th:id="${'collapse'+pianoFormativo.annoPianoFormativo}" class="panel-collapse collapse"
 												role="tabpanel" th:attr="aria-labelledby=${'heading'+pianoFormativo.annoPianoFormativo}">
 												<div class="panel-body">
-
+												
 													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)} ? 'edit' : 'show', true, null)"></th:block>
-
-													<a th:if="${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}" th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
-
+													
+													<th:block th:if="${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}">
+														<a th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
+	
+														<!-- importazione eventi piano formativo -->
+														<form class="form-horizontal form-label-left" th:action="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/importaEventiDaCSV|}"
+																method="post" enctype="multipart/form-data" novalidate="novalidate">
+															<th:block th:include="fragments/allegati :: allegati(pianoFormativoWrapper, false, importEventiDaCsvFile, null, null, null, false, null, false)" ></th:block>
+															<div class="item form-group with-margin-top">
+																<div class="col-xs-5"></div>
+																<div class="col-xs-2 text-center">
+																	<button type="submit" class="btn btn-primary single elabora-btn" onclick="spinCog();"><span th:text="#{label.elabora}"> </span> <i class="fa fa-cog"></i></button>
+																</div>
+															</div>
+														</form>
+													</th:block>
+													
 												</div>
 											</div>
 										</div>
@@ -187,6 +201,10 @@
 
 					});
 
+				}
+				
+				function spinCog() {
+					$(".fa-cog").addClass("fa-spin");
 				}
 
 			/*]]>*/

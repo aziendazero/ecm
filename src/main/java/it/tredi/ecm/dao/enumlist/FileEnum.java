@@ -50,7 +50,7 @@ public enum FileEnum {
 	FILE_CONTRATTO_PARTNER(40, "Contratto del partner"),
 	FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE(41, "Autocertificazione di autorizzazione del Ministero della Salute"),
 	FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA(42, "Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia"),
-
+	FILE_EVENTI_PIANO_FORMATIVO(43, "File CSV per import eventi piano formativo"),
 
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
