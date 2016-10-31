@@ -1267,6 +1267,10 @@
 				function closeModaleAddAttivitaTo(){
 					$("#add-attivitaFAD-modal .close").click();
 					$("#add-attivitaFAD-modal form")[0].reset();
+					
+					$('#tempAttivitaFAD\\.orarioInizio').val('');
+					$('#tempAttivitaFAD\\.orarioFine').val('');
+					$('#tempAttivitaFAD\\.argomento').val('');
 
 					$.each($("#add-attivitaFAD-modal .selectpicker"),function(){
 						$(this).selectpicker('val','');

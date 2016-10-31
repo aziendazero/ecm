@@ -555,7 +555,7 @@
 			
 			//reinit dei widget complessi nella modale add persona
 			function reInitModaleAddAttivita(){
-			/* 	$('input.flat').iCheck({
+			$('input.flat').iCheck({
 		            checkboxClass: 'icheckbox_flat-green',
 		            radioClass: 'iradio_flat-green'
 		        });
@@ -571,7 +571,7 @@
 			    	align: 'left',
 			        autoclose: true,
 			        'default': 'now'
-			    }); */
+			    });
 
 			}
 
@@ -908,8 +908,12 @@
 
 			//chiude la modale di inserimento di una persona svuotandone i contenuti
 			function closeModaleAddPersona(){
+				console.log('closeModaleAddPersona')
 				$("#add-persona-modal .close").click();
 				$("#add-persona-modal form")[0].reset();
+				$("#cognome_persona").val('');
+				$("#nome_persona").val('');
+				$("#codice_fiscale").val('');
 				$("#cv\\.id").val('');
 				$("#cv\\.nomeFile").val('');
 				$("#cv_label").text('').attr('href','');
@@ -920,8 +924,15 @@
 
 			//chiude la modale di inserimento di una personaFull svuotandone i contenuti
 			function closeModaleAddPersonaFull(){
+				console.log('closeModaleAddPersonaFull')
 				$("#add-personaFull-modal .close").click();
 				$("#add-personaFull-modal form")[0].reset();
+				$("#cognome_personaFull").val('');
+				$("#nome_personaFull").val('');
+				$("#codice_fiscaleFull").val('');
+				$("#emailFull").val('');
+				$("#telefonoFull").val('');
+				$("#cellulareFull").val('');
 			}
 
 			//chiude la modale di inserimento di uno sponsor svuotandone i contenuti
