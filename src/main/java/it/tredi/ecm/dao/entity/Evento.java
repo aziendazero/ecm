@@ -198,11 +198,11 @@ public class Evento extends BaseEntity{
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_fine")//fine evento
 	private LocalDate dataFine;
-	
+
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_scadenza_pagamento")//data scadenza pagamento
 	private LocalDate dataScadenzaPagamento;
-	
+
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="responsabile_id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
@@ -222,7 +222,7 @@ public class Evento extends BaseEntity{
 	private BigDecimal quotaPartecipazione;
 
 	private Boolean eventoSponsorizzato;
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
 	@JoinColumn(name="evento_id")
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();
 
@@ -239,7 +239,7 @@ public class Evento extends BaseEntity{
 	private File contrattiAccordiConvenzioni;
 
 	private Boolean eventoAvvalePartner;
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
 	@JoinColumn(name="evento_id")
 	private Set<Partner> partners = new HashSet<Partner>();
 
@@ -260,7 +260,7 @@ public class Evento extends BaseEntity{
 			}else{
 				costo = 1500.00;
 			}
-			
+
 			//ridotto di 1/3
 			if(altreFormeFinanziamento != null && !altreFormeFinanziamento.booleanValue()){
 				costo = (costo*2)/3;
@@ -268,7 +268,7 @@ public class Evento extends BaseEntity{
 		}else{
 			throw new Exception("provider non classificato correttamente");
 		}
-		
+
 		if(dataFine != null)
 			setDataScadenzaPagamento(dataFine.plusDays(90));
 	}

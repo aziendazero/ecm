@@ -904,7 +904,7 @@ public class EventoValidator {
 			for(DettaglioAttivitaRES dar : programma.getProgramma()) {
 				boolean hasError = validateDettaglioAttivitaRES(dar, tipologiaEvento);
 				if(hasError) {
-					errors.rejectValue("programma["+counter+"]", "error.campi_mancanti_dettaglio_attivita");
+					errors.rejectValue(prefix + "programma["+counter+"]", "error.campi_mancanti_dettaglio_attivita");
 					atLeastOneErrorDettaglioAttivita = true;
 				}
 				counter++;
@@ -936,26 +936,28 @@ public class EventoValidator {
 				return true;
 			if(dettaglio.getMetodologiaDidattica() == null)
 				return true;
-		}
 
-		//controllo per eventi non di tipolgia CONVEGNO_CONGRESSO [ 1) ]
-		if(tipologiaEvento != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
-			if(dettaglio.getRisultatoAtteso() == null)
-				return true;
-		}
-		//controllo specifico per tipologia di eventi CONVEGNO_CONGRESSO [ 1) ]
-		else {
-			if(dettaglio.getRisultatoAtteso() != null)
-				return true;
-			if(dettaglio.getObiettivoFormativo() != ObiettiviFormativiRESEnum.OBV1)
-				return true;
-			//io lascerei così, la probabilita che le enum cambino e spacchino tutto è troppo alta.. se proprio richiesto abilitare il seguente
-//			if(dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._1
-//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._2
-//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._3
-//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._4
-//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._5)
-//				return true;
+			System.out.println(dettaglio.getRisultatoAtteso());
+
+			//controllo per eventi non di tipolgia CONVEGNO_CONGRESSO [ 1) ]
+			if(tipologiaEvento != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
+				if(dettaglio.getRisultatoAtteso() == null || dettaglio.getRisultatoAtteso().isEmpty())
+					return true;
+			}
+			//controllo specifico per tipologia di eventi CONVEGNO_CONGRESSO [ 1) ]
+			else {
+				if(dettaglio.getRisultatoAtteso() != null && !dettaglio.getRisultatoAtteso().isEmpty())
+					return true;
+				if(dettaglio.getObiettivoFormativo() != ObiettiviFormativiRESEnum.OBV1)
+					return true;
+				//io lascerei così, la probabilita che le enum cambino e spacchino tutto è troppo alta.. se proprio richiesto abilitare il seguente
+	//			if(dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._1
+	//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._2
+	//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._3
+	//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._4
+	//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._5)
+	//				return true;
+			}
 		}
 
 		return false;

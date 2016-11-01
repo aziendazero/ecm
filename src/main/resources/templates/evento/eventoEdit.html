@@ -1353,9 +1353,12 @@
 					<tr th:if="${#lists.size(eventoWrapper.sponsors) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="sponsor, status : ${eventoWrapper.sponsors}"
 						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'sponsors['+__${status.index}__+']')} ? 'bad-row'">
 						<td th:text="${sponsor.name}"></td>
-						<td>
-							<a th:if="${sponsor.sponsorFile?.id}"  th:text="${sponsor.sponsorFile?.nomeFile}" th:href="@{|/file/${sponsor.sponsorFile.id}|}"></a>
-							</td>
+						<td th:if="${sponsor.sponsorFile?.id}">
+							<a th:text="${sponsor.sponsorFile?.nomeFile}" th:href="@{|/file/${sponsor.sponsorFile.id}|}"></a>
+						</td>
+						<td th:unless="${sponsor.sponsorFile?.id}">
+							<span th:text="#{label.nessun_contratto}"></span>
+						</td>
 						<td>
 							<a onclick="removeSponsor(this)" class="btn btn-danger" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
@@ -1386,9 +1389,12 @@
 					<tr th:if="${#lists.size(eventoWrapper.partners) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="partner, status : ${eventoWrapper.partners}"
 						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'partners['+__${status.index}__+']')} ? 'bad-row'">
 						<td th:text="${partner.name}"></td>
-						<td>
-							<a th:if="${partner.partnerFile?.id}"  th:text="${partner.partnerFile?.nomeFile}" th:href="@{|/file/${partner.partnerFile.id}|}"></a>
-							</td>
+						<td th:if="${partner.partnerFile?.id}">
+							<a th:text="${partner.partnerFile?.nomeFile}" th:href="@{|/file/${partner.partnerFile.id}|}"></a>
+						</td>
+						<td th:unless="${partner.partnerFile?.id}">
+							<span th:text="#{label.nessun_contratto}"></span>
+						</td>
 						<td>
 							<a onclick="removePartner(this)" class="btn btn-danger" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
@@ -1462,17 +1468,13 @@
 						</div>
 						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.luogo')}__}"></div>
 					</div>
-
-
-					<div th:text="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')}"></div>
-					<div>QUIIIIIIIIIIIII</div>
-
-
-					<div class="col-xs-12">
-						<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
-						<div th:attr="data-programma-id=__${data.key}__">
+					<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad'">
+						<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.programma')}__}"></div>
+						<div class="item form-group" style="clear:both; padding:2px;"></div>
+						<div th:attr="data-programma-id=__${data.key}__" class="item form-group" style="clear:both">
 							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
-								th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad-table'">
+								th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad-table'">
 								<thead>
 									<tr>
 										<th th:text="#{label.orario_inizio}">ORARIO INIZIO</th>
@@ -1494,7 +1496,9 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr th:attr="data-row-id=${__${status2.index}__}, data-is-pausa=${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].isPausa()}" th:each="attivita , status2 : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma}">
+									<tr th:attr="data-row-id=${__${status2.index}__}, data-is-pausa=${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].isPausa()}"
+										th:each="attivita , status2 : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma}"
+										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma['+__${status2.index}__+']')} ? 'bad-row'">
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioInizio}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioFine}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].argomento}"></td>
