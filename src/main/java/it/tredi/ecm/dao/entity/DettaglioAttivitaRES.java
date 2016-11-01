@@ -52,6 +52,7 @@ public class DettaglioAttivitaRES implements Serializable{
 	@Enumerated(EnumType.STRING)
 	private MetodologiaDidatticaRESEnum metodologiaDidattica;
 	
+	private long minutiAttivita;
 	private float oreAttivita;
 	
 	public void setAsPausa(){
@@ -79,9 +80,11 @@ public class DettaglioAttivitaRES implements Serializable{
 			Duration duration = Duration.between(orarioInizio, orarioFine);
 			BigDecimal bg = new BigDecimal(duration.toMinutes() / 60.0).setScale(2, RoundingMode.HALF_UP);
 			this.oreAttivita = bg.floatValue();
+			this.minutiAttivita = duration.toMinutes();
 		}
 		else{
 			this.oreAttivita = 0;
+			this.minutiAttivita = 0;
 		}
 	}
 }

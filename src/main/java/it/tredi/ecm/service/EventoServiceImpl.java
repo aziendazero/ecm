@@ -709,7 +709,7 @@ public class EventoServiceImpl implements EventoService {
 			for(DettaglioAttivitaRES a : progrGio.getProgramma().getProgramma()){
 				if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
 					oreFrontale += a.getOreAttivita();
-				}else{
+				}else if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA){
 					oreInterattiva += a.getOreAttivita();
 				}
 				

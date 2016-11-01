@@ -123,6 +123,7 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
 											<select
+												id="addAttivitaRES-obiettiviFormativi"
 												class="selectpicker selectObiettivoFormativo"
 												th:field="${eventoWrapper.tempAttivitaRES.obiettivoFormativo}"
 												data-width="100%" data-style="btn-primary"
@@ -1773,6 +1774,24 @@
 						$("#container-risultatoAtteso").show();
 						$("#container-obiettivoFormativo").show();
 						$("#container-metodologiaDidattica").show();
+						
+						var tipologiaEvento = $('#tipologia_evento').val();
+						var selectObiettiviFormativi = '#addAttivitaRES-obiettiviFormativi';
+						
+						if(tipologiaEvento == 'CONVEGNO_CONGRESSO'){
+							$("#container-risultatoAtteso").hide();
+							$.each($(selectObiettiviFormativi + " option"), function() {
+								if($(this).attr("value") != 'OBV1')
+								$(this).hide();
+							});
+							$(selectObiettiviFormativi).selectpicker('refresh');
+						}else{
+							$.each($(selectObiettiviFormativi + " option"), function() {
+								$(this).show();
+							});
+							$(selectObiettiviFormativi).selectpicker('refresh');
+						}
+						
 					}
 				}
 
