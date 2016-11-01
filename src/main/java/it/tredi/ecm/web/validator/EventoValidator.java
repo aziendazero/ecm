@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
@@ -16,9 +17,12 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
+import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
+import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
+import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
@@ -417,7 +421,28 @@ public class EventoValidator {
 		 * stesso numero delle date (gestito lato interfaccia)
 		 * devono avere tutti i campi inseriti
 		 * */
-		//TODO aspettare barduz con la modifica alle date
+		//numero delle date totali
+		int dateIntermedie = evento.getDateIntermedie() != null ? evento.getDateIntermedie().size() : 0;
+		if(evento.getProgramma() == null || evento.getProgramma().isEmpty())
+			errors.rejectValue(prefix + "programma", "error.empty");
+		else if(evento.getProgramma().size() != dateIntermedie + 2)
+			errors.rejectValue(prefix + "programma", "error.numero_programmi_errato");
+		else {
+			boolean atLeastOneErrorProgramma = false;
+			for(ProgrammaGiornalieroRES pgr : evento.getProgramma()) {
+				//ciclo alla ricerca di questo Programma per farmi dare la chiave nella mappa
+				Long key = -1L;
+				for(Entry<Long, EventoRESProgrammaGiornalieroWrapper> entry : wrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().entrySet()) {
+					if(entry.getValue().getProgramma().equals(pgr)) {
+						key = entry.getKey();
+						break;
+					}
+				}
+				validateProgrammaRES(pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEvento());
+			}
+			if(atLeastOneErrorProgramma)
+				errors.rejectValue(prefix + "programma", "error.campi_mancanti_programma");
+		}
 
 		/* BROCHURE EVENTO (campo obbligatorio se TIPOLOGIA EVENTO == CONVEGNO_CONGRESSO o WORKSHOP_SEMINARIO)
 		 * file allegato
@@ -435,18 +460,16 @@ public class EventoValidator {
 		 * */
 		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty())
 			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
-		else if ((evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
-				&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE))
-				|| evento.getVerificaApprendimento().size() > 1)
+		else if (evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
+				&& (!evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE)
+				|| evento.getVerificaApprendimento().size() > 1))
 			errors.rejectValue(prefix + "verificaApprendimento", "error.solo_autocertificazione_selezionabile");
 		else if ((evento.getTipologiaEvento() != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO)
 				&& evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE))
 			errors.rejectValue(prefix + "verificaApprendimento",  "error.autocertificazione_non_selezionabile");
 
 		/* DURATA COMPLESSIVA (autocompilato)
-		 * controllo di sicurezza, la durata totale dell'evento deve essere di più di 3 ore
-		 * dato che ogni attività deve essere di minimo 3 ore, va da se che il controllo verrà sempre superato
-		 * o segnalato nelle attività
+		 * controllo di sicurezza, la durata totale dell'evento deve essere di minimo 3 ore
 		 * */
 		if(evento.getDurata() < ecmProperties.getDurataMinimaEventoRES())
 			errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
@@ -852,5 +875,92 @@ public class EventoValidator {
 			return true;
 
 		return false;
+	}
+
+	//validate ProgrammaRES
+	private void validateProgrammaRES(ProgrammaGiornalieroRES programma, Errors errors, String prefix, TipologiaEventoRESEnum tipologiaEvento){
+
+		//data (gratis, non è un dato che può inseririre l'utente, ma viene generata
+		//all'inserimento delle date di inzio, fine e intermedie
+
+		//sede
+		if(programma.getSede() == null)
+			errors.rejectValue(prefix + "sede", "error.sede_evento_null");
+		if(programma.getSede().getProvincia() == null || programma.getSede().getProvincia().isEmpty())
+			errors.rejectValue(prefix + "sede.provincia", "error.empty");
+		if(programma.getSede().getComune() == null || programma.getSede().getComune().isEmpty())
+			errors.rejectValue(prefix + "sede.comune", "error.empty");
+		if(programma.getSede().getLuogo() == null || programma.getSede().getLuogo().isEmpty())
+			errors.rejectValue(prefix + "sede.luogo", "error.empty");
+		if(programma.getSede().getIndirizzo() == null || programma.getSede().getIndirizzo().isEmpty())
+			errors.rejectValue(prefix + "sede.indirizzo", "error.empty");
+
+		//lista attività
+		if(programma.getProgramma() == null || programma.getProgramma().isEmpty())
+			errors.rejectValue(prefix + "programma", "error.empty");
+		else {
+			int counter = 0;
+			boolean atLeastOneErrorDettaglioAttivita = false;
+			for(DettaglioAttivitaRES dar : programma.getProgramma()) {
+				boolean hasError = validateDettaglioAttivitaRES(dar, tipologiaEvento);
+				if(hasError) {
+					errors.rejectValue(prefix + "programma["+counter+"]", "error.campi_mancanti_dettaglio_attivita");
+					atLeastOneErrorDettaglioAttivita = true;
+				}
+				counter++;
+			}
+			if(atLeastOneErrorDettaglioAttivita)
+				errors.rejectValue(prefix + "programma", "error.campi_mancanti_dettaglio_attivita");
+		}
+	}
+
+	//validate DettaglioAttivita del ProgrammaRES
+	private boolean validateDettaglioAttivitaRES(DettaglioAttivitaRES dettaglio, TipologiaEventoRESEnum tipologiaEvento){
+
+		//tutti i campi devono essere inseriti, con eccezione di:
+		// 1) se tipologiaEvento è CONVEGNI_CONGRESSI, bisogna inserire un programma semplificato
+		//con nessun risultato atteso, obiettivo formativo OBV1 e le relative metodologie
+		// 2) se il dettaglio attività è una pausa necessario solo orari
+		if(dettaglio.getOrarioInizio() == null)
+			return true;
+		if(dettaglio.getOrarioFine() == null)
+			return true;
+
+		//controlli per non pausa [ 2) ]
+		if(!dettaglio.isPausa()) {
+			if(dettaglio.getArgomento() == null || dettaglio.getArgomento().isEmpty())
+				return true;
+			if(dettaglio.getDocente() == null)
+				return true;
+			if(dettaglio.getObiettivoFormativo() == null)
+				return true;
+			if(dettaglio.getMetodologiaDidattica() == null)
+				return true;
+
+			System.out.println(dettaglio.getRisultatoAtteso());
+
+			//controllo per eventi non di tipolgia CONVEGNO_CONGRESSO [ 1) ]
+			if(tipologiaEvento != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
+				if(dettaglio.getRisultatoAtteso() == null || dettaglio.getRisultatoAtteso().isEmpty())
+					return true;
+			}
+			//controllo specifico per tipologia di eventi CONVEGNO_CONGRESSO [ 1) ]
+			else {
+				if(dettaglio.getRisultatoAtteso() != null && !dettaglio.getRisultatoAtteso().isEmpty())
+					return true;
+				if(dettaglio.getObiettivoFormativo() != ObiettiviFormativiRESEnum.OBV1)
+					return true;
+				//io lascerei così, la probabilita che le enum cambino e spacchino tutto è troppo alta.. se proprio richiesto abilitare il seguente
+	//			if(dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._1
+	//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._2
+	//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._3
+	//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._4
+	//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._5)
+	//				return true;
+			}
+		}
+
+		return false;
+
 	}
 }
