@@ -22,7 +22,7 @@ import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.WorkflowService;
 
 @Component
-@org.springframework.context.annotation.Profile({"dev","demo","simone","abarducci"})
+@org.springframework.context.annotation.Profile({"dev","demo","simone","abarducci", "tom"})
 public class AccountLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AccountLoader.class);
@@ -186,7 +186,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			try {
 				//accountService.save(provider);
 				accountRepository.save(provider);
-				workflowService.saveOrUpdateBonitaUserByAccount(provider);				
+				workflowService.saveOrUpdateBonitaUserByAccount(provider);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -209,7 +209,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			try {
 				//accountService.save(admin);
 				accountRepository.save(admin);
-				workflowService.saveOrUpdateBonitaUserByAccount(admin);				
+				workflowService.saveOrUpdateBonitaUserByAccount(admin);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -231,7 +231,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			try {
 				//accountService.save(referee1);
 				accountRepository.save(referee1);
-				workflowService.saveOrUpdateBonitaUserByAccount(referee1);				
+				workflowService.saveOrUpdateBonitaUserByAccount(referee1);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -253,7 +253,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			try {
 				//accountService.save(referee2);
 				accountRepository.save(referee2);
-				workflowService.saveOrUpdateBonitaUserByAccount(referee2);				
+				workflowService.saveOrUpdateBonitaUserByAccount(referee2);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -275,7 +275,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			try {
 				//accountService.save(referee3);
 				accountRepository.save(referee3);
-				workflowService.saveOrUpdateBonitaUserByAccount(referee3);				
+				workflowService.saveOrUpdateBonitaUserByAccount(referee3);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

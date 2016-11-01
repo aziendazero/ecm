@@ -17,7 +17,7 @@ import it.tredi.ecm.service.DisciplinaService;
 import it.tredi.ecm.service.ProfessioneService;
 
 @Component
-@org.springframework.context.annotation.Profile({"dev","demo","prod","simone","abarducci"})
+@org.springframework.context.annotation.Profile({"dev","demo","prod","simone","abarducci", "tom"})
 public class ProfessioniDisciplineLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ProfessioniDisciplineLoader.class);
 
