@@ -52,6 +52,10 @@ public class FileValidator {
 //						contentType.equalsIgnoreCase("text/csv")))
 //					error = messageSource.getMessage("error.formatNonAcceptedXML", new Object[]{}, Locale.getDefault());
 			}
+			else if(file.getTipo() == FileEnum.FILE_EVENTI_PIANO_FORMATIVO) {
+				if (!file.getNomeFile().toUpperCase().endsWith(".CSV"))
+					error = messageSource.getMessage("error.formatNonAcceptedCSV", new Object[]{}, Locale.getDefault());
+			}
 			//validazione file pdf/pdf.p7m
 			else {
 				if(!(contentType.equalsIgnoreCase("application/pdf") || contentType.equalsIgnoreCase("application/pkcs7-mime")))

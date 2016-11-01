@@ -35,21 +35,21 @@ public class ObiettiviLoader implements ApplicationListener<ContextRefreshedEven
 			boolean regionale = false;
 
 			//Obiettivi Regionali
-			obiettivi.add(new Obiettivo("Non rientra in uno degli obiettivi regionali",regionale,null));
-			obiettivi.add(new Obiettivo("Appropriatezza delle prestazioni sanitarie in conformità ai LEA",regionale,null));
-			obiettivi.add(new Obiettivo("Governo clinico, qualità e sicurezza del paziente",regionale,null));
-			obiettivi.add(new Obiettivo("Adozione di linee guida basate sull’evidenza, qualità dei sistemi e dei processi clinico assistenziali",regionale,null));
-			obiettivi.add(new Obiettivo("Umanizzazione delle cure/relazione/comunicazione",regionale,null));
-			obiettivi.add(new Obiettivo("Cure palliative e terapia del dolore",regionale,null));
-			obiettivi.add(new Obiettivo("Prevenzione e presa in carico della persona affetta da cronicità",regionale,null));
-			obiettivi.add(new Obiettivo("Integrazione professionale tra ospedale e territorio, con sviluppo e implementazione dei PDTA (prioritariamente su BPCO, scompenso cardiaco, fibrillazione atriale, diabete, sclerosi multipla)",regionale,null));
-			obiettivi.add(new Obiettivo("Malattia di Alzheimer e altri tipi di declino cognitivo e demenze",regionale,null));
-			obiettivi.add(new Obiettivo("Promozione corretti stili di vita",regionale,null));
-			obiettivi.add(new Obiettivo("Promozione dell’appropriatezza prescrittiva dei farmaci",regionale,null));
-			obiettivi.add(new Obiettivo("Interventi socio-sanitari (famiglia, infanzia, adolescenza, giovani, anziani, disabilità, dipendenze, salute mentale)",regionale,null));
-			obiettivi.add(new Obiettivo("Cultura del lavoro in team multiprofessionale e adozioni di modelli di lavoro in rete",regionale,null));
-			obiettivi.add(new Obiettivo("Sicurezza degli operatori nell'ambiente di lavoro (T.U. 81/2008)",regionale,null));
-			obiettivi.add(new Obiettivo("Valorizzazione delle risorse umane",regionale,null));
+			obiettivi.add(new Obiettivo("Non rientra in uno degli obiettivi regionali",regionale,null,"1"));
+			obiettivi.add(new Obiettivo("Appropriatezza delle prestazioni sanitarie in conformità ai LEA",regionale,null,"2"));
+			obiettivi.add(new Obiettivo("Governo clinico, qualità e sicurezza del paziente",regionale,null,"3"));
+			obiettivi.add(new Obiettivo("Adozione di linee guida basate sull’evidenza, qualità dei sistemi e dei processi clinico assistenziali",regionale,null,"4"));
+			obiettivi.add(new Obiettivo("Umanizzazione delle cure/relazione/comunicazione",regionale,null,"5"));
+			obiettivi.add(new Obiettivo("Cure palliative e terapia del dolore",regionale,null,"6"));
+			obiettivi.add(new Obiettivo("Prevenzione e presa in carico della persona affetta da cronicità",regionale,null,"7"));
+			obiettivi.add(new Obiettivo("Integrazione professionale tra ospedale e territorio, con sviluppo e implementazione dei PDTA (prioritariamente su BPCO, scompenso cardiaco, fibrillazione atriale, diabete, sclerosi multipla)",regionale,null,"8"));
+			obiettivi.add(new Obiettivo("Malattia di Alzheimer e altri tipi di declino cognitivo e demenze",regionale,null,"9"));
+			obiettivi.add(new Obiettivo("Promozione corretti stili di vita",regionale,null,"10"));
+			obiettivi.add(new Obiettivo("Promozione dell’appropriatezza prescrittiva dei farmaci",regionale,null,"11"));
+			obiettivi.add(new Obiettivo("Interventi socio-sanitari (famiglia, infanzia, adolescenza, giovani, anziani, disabilità, dipendenze, salute mentale)",regionale,null,"12"));
+			obiettivi.add(new Obiettivo("Cultura del lavoro in team multiprofessionale e adozioni di modelli di lavoro in rete",regionale,null,"13"));
+			obiettivi.add(new Obiettivo("Sicurezza degli operatori nell'ambiente di lavoro (T.U. 81/2008)",regionale,null,"14"));
+			obiettivi.add(new Obiettivo("Valorizzazione delle risorse umane",regionale,null,"15"));
 
 			//Obettivi Nazionali
 			//TECNICO-PROFESSIONALI

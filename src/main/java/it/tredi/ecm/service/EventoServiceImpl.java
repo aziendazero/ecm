@@ -698,7 +698,7 @@ public class EventoServiceImpl implements EventoService {
 		return crediti;
 	}
 
-	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, int numeroPartecipanti, RiepilogoRES riepilogoRES){
+	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, Integer numeroPartecipanti, RiepilogoRES riepilogoRES){
 		float crediti = 0.0f;
 		float oreFrontale = 0f;
 		float oreInterattiva = 0f;
@@ -749,6 +749,8 @@ public class EventoServiceImpl implements EventoService {
 			float creditiInterattiva = 0f;
 
 			//metodologia frontale
+			numeroPartecipanti = numeroPartecipanti!= null ? numeroPartecipanti.intValue() : 0;
+			
 			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
 				creditiFrontale = oreFrontale * 1.0f;
 				creditiFrontale = (creditiFrontale + (creditiFrontale*0.20f));
@@ -890,15 +892,18 @@ public class EventoServiceImpl implements EventoService {
 			}
 			*/
 		}else if(evento instanceof EventoFSC){
-			((EventoFSC)evento).setFasiAzioniRuoli(eventoWrapper.getProgrammaEventoFSC());
 			if(eventoWrapper.getProgrammaEventoFSC() != null){
+				((EventoFSC)evento).setFasiAzioniRuoli(eventoWrapper.getProgrammaEventoFSC());
 				for(FaseAzioniRuoliEventoFSCTypeA fase : ((EventoFSC)evento).getFasiAzioniRuoli()){
 					fase.setEvento(((EventoFSC)evento));
 				}
-
 			}
 		}else if(evento instanceof EventoFAD){
-			((EventoFAD) evento).setProgrammaFAD(eventoWrapper.getProgrammaEventoFAD());
+			if(eventoWrapper.getProgrammaEventoFAD() != null){
+				((EventoFAD) evento).setProgrammaFAD(eventoWrapper.getProgrammaEventoFAD());
+			}else{
+				((EventoFAD) evento).setProgrammaFAD(new ArrayList<DettaglioAttivitaFAD>());
+			}
 		}
 	}
 

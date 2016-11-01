@@ -182,6 +182,7 @@
 							<input id="targetTable" type="text" name="addPersonaTo" style="display: none;" />
 							<input id="typePersona" type="text" name="typePersona" style="display: none;" />
 							<input id="fromLookUp" type="text" name="fromLookUp" style="display: none;" />
+							<input id="modificaElementoPersona" type="text" name="modificaElemento" style="display: none;" />
 
 						</form>
 					</div>
@@ -289,6 +290,7 @@
 							<input id="targetTableFull" type="text" name="addPersonaFullTo" style="display: none;" />
 							<input id="typePersonaFull" type="text" name="typePersonaFull" style="display: none;" />
 							<input id="fromLookUpFull" type="text" name="fromLookUpFull" style="display: none;" />
+							<input id="modificaElementoPersonaFull" type="text" name="modificaElementoFull" style="display: none;" />
 						</form>
 					</div>
 					<div class="modal-footer">
@@ -551,6 +553,28 @@
 			    initAllCommon();
 			});
 
+			//reinit dei widget complessi nella modale add persona
+			function reInitModaleAddAttivita(){
+			$('input.flat').iCheck({
+		            checkboxClass: 'icheckbox_flat-green',
+		            radioClass: 'iradio_flat-green'
+		        });
+				//reinit selecpicker
+			    $('select').selectpicker({
+					selectAllText : 'Seleziona tutti',
+					deselectAllText : 'Deseleziona tutti',
+					countSelectedText : '{0} selezionate'
+				});
+
+			    var handler = $('.ora').clockpicker({
+			    	donetext: [[#{label.applica}]],
+			    	align: 'left',
+			        autoclose: true,
+			        'default': 'now'
+			    });
+
+			}
+
 			function initAllCommon(){
 				days = getDayNamesShort();
 				months = getMonthNames();
@@ -745,15 +769,24 @@
 			function mostraNascondiCampiFinanziamento(value) {
 				if(value == "true") {
 					$(".finanziamento-si").slideDown("slow");
-					$(".finanziamento-no").slideUp("slow");
+					$(".finanziamento-no").slideUp("fast");
 					$("#contrattiAccordiConvenzioni").prop("disabled", false);
 					$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", true);
 				}
 				else {
-					$(".finanziamento-si").slideUp("slow");
-					$(".finanziamento-no").slideDown("slow");
-					$("#contrattiAccordiConvenzioni").prop("disabled", true);
-					$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", false);
+					if(value == "false") {
+						$(".finanziamento-si").slideUp("fast");
+						$(".finanziamento-no").slideDown("slow");
+						$("#contrattiAccordiConvenzioni").prop("disabled", true);
+						$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", false);
+					}
+					//caso non ancora selezionato nulla
+					else {
+						$(".finanziamento-si").hide();
+						$(".finanziamento-no").hide();
+						$("#contrattiAccordiConvenzioni").prop("disabled", true);
+						$("#autocertificazioneAssenzaFinanziamenti").prop("disabled", true);
+					}
 				}
 			}
 
@@ -847,16 +880,18 @@
 		  	}
 
 			//apre la finestra di inserimento di una persona
-			function openAddPersonaTo(target,type,fromLookup){
+			function openAddPersonaTo(target,type,fromLookup,modificaElemento){
 				if(type == 'Full'){
 					$('#targetTableFull').val(target);
 					$('#typePersonaFull').val(type);
 					$('#fromLookUpFull').val(fromLookup);
+					$('#modificaElementoPersonaFull').val(modificaElemento);
 					console.log('fromLookUpFull:' + fromLookup);
 				}else{
 					$('#targetTable').val(target);
 					$('#typePersona').val(type);
 					$('#fromLookUp').val(fromLookup);
+					$('#modificaElementoPersona').val(modificaElemento);
 					console.log('fromLookUp:' + fromLookup);
 
 					if(target == 'responsabiliScientifici'){
@@ -873,8 +908,12 @@
 
 			//chiude la modale di inserimento di una persona svuotandone i contenuti
 			function closeModaleAddPersona(){
+				console.log('closeModaleAddPersona')
 				$("#add-persona-modal .close").click();
 				$("#add-persona-modal form")[0].reset();
+				$("#cognome_persona").val('');
+				$("#nome_persona").val('');
+				$("#codice_fiscale").val('');
 				$("#cv\\.id").val('');
 				$("#cv\\.nomeFile").val('');
 				$("#cv_label").text('').attr('href','');
@@ -885,8 +924,15 @@
 
 			//chiude la modale di inserimento di una personaFull svuotandone i contenuti
 			function closeModaleAddPersonaFull(){
+				console.log('closeModaleAddPersonaFull')
 				$("#add-personaFull-modal .close").click();
 				$("#add-personaFull-modal form")[0].reset();
+				$("#cognome_personaFull").val('');
+				$("#nome_personaFull").val('');
+				$("#codice_fiscaleFull").val('');
+				$("#emailFull").val('');
+				$("#telefonoFull").val('');
+				$("#cellulareFull").val('');
 			}
 
 			//chiude la modale di inserimento di uno sponsor svuotandone i contenuti
@@ -919,6 +965,29 @@
 					deselectAllText : 'Deseleziona tutti',
 					countSelectedText : '{0} selezionate'
 				});
+			}
+			function sendAjaxModificaPersonaTo(target,type,fromLookup,modificaElemento){
+				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modifica/|}]] + target + '/' + modificaElemento;
+				if(type == 'Full'){
+					$.get(url).done(function(data) {
+						$('#container-addPersonaFullTo').html(data);
+						$('#add-'+ target).click();
+						openAddPersonaTo(target,type,true,modificaElemento);
+					  })
+				  	.fail(function() {
+				    	alert( "error" );
+				 	 })
+				}else{
+					$.get(url).done(function(data) {
+						$('#container-addPersonaTo').html(data);
+						reInitModaleAddPersona();
+						$('#add-'+ target).click();
+						openAddPersonaTo(target,type,true,modificaElemento);
+					  })
+				  	.fail(function() {
+				    	alert( "error" );
+				 	 })
+				}
 			}
 
 			//sumbit della modale di inserimento persona
@@ -989,6 +1058,20 @@
 
 				$("#" + target).load(url);
 				reInitDataTable(target);
+			}
+
+			//modifica persona
+			function modificaPersonaFrom(target,caller){
+				var modificaElemento = $(caller).parent().parent().data('row-id');
+				if(modificaElemento == undefined)
+					modificaElemento = 0;
+				if(target == 'responsabiliScientifici'){
+					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
+				}else if(target == 'docenti'){
+					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
+				}else if(target == 'responsabileSegreteria'){
+					sendAjaxModificaPersonaTo(target,'Full',false,modificaElemento);
+				}
 			}
 
 			//delete di uno sponsor
@@ -1143,7 +1226,10 @@
 							<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
 						</td>
 						<td>
-							<a onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger" th:text="#{label.elimina}">
+							<a onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1190,7 +1276,10 @@
 							<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
 						</td>
 						<td>
-							<a onclick="removePersonaFrom('docenti',this)" class="btn btn-danger" th:text="#{label.elimina}">
+							<a onclick="modificaPersonaFrom('docenti',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a onclick="removePersonaFrom('docenti',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1232,7 +1321,10 @@
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.telefono}"></td>
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.cellulare}"></td>
 						<td>
-							<a onclick="removePersonaFrom('responsabileSegreteria',this)" class="btn btn-danger" th:text="#{label.elimina}">
+							<a onclick="modificaPersonaFrom('responsabileSegreteria',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a onclick="removePersonaFrom('responsabileSegreteria',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1312,7 +1404,7 @@
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaRES">
 			<div id="attivitaRES">
-				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12" 
+				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12"
 						th:each="data , status : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
 						th:if="${data.value.programma.giorno!=null}">
 					<div class="item form-group">
@@ -1329,50 +1421,58 @@
 							<span th:text="#{label.sede}" class="text-uppercase">SEDE</span>
 						</label>
 					</div>
-					<div class="item form-group">
+					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')} ? 'bad'">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.provincia}">Provincia</span>
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-provincia=__${status.index}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}" />
+							<input type="text" th:attr="data-programma-provincia=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}" />
 						</div>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.provincia')}__}"></div>
 					</div>
 
-					<div class="item form-group">
+					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.comune')} ? 'bad'">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.comune}">Comune</span>
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-comune=__${status.index}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}" />
+							<input type="text" th:attr="data-programma-comune=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}" />
 						</div>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.comune')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.comune')}__}"></div>
 					</div>
-
-					<div class="item form-group">
+					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.indirizzo')} ? 'bad'">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.indirizzo}">Indirizzo</span>
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-indirizzo=__${status.index}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.indirizzo}" />
+							<input type="text" th:attr="data-programma-indirizzo=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.indirizzo}" />
 						</div>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.indirizzo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.indirizzo')}__}"></div>
 					</div>
-
-					<div class="item form-group">
+					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')} ? 'bad'">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.luogo}">Luogo</span>
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-luogo=__${status.index}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.luogo}" />
+							<input type="text" th:attr="data-programma-luogo=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.luogo}" />
 						</div>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.luogo')}__}"></div>
 					</div>
+
+
+					<div th:text="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')}"></div>
+					<div>QUIIIIIIIIIIIII</div>
+
 
 					<div class="col-xs-12">
 						<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
 						<div th:attr="data-programma-id=__${data.key}__">
-							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+								th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad-table'">
 								<thead>
 									<tr>
 										<th th:text="#{label.orario_inizio}">ORARIO INIZIO</th>
@@ -1394,7 +1494,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr th:attr="data-row-id=${__${status2.index}__}" th:each="attivita , status2 : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma}">
+									<tr th:attr="data-row-id=${__${status2.index}__}, data-is-pausa=${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].isPausa()}" th:each="attivita , status2 : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma}">
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioInizio}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioFine}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].argomento}"></td>
@@ -1404,7 +1504,10 @@
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].metodologiaDidattica?.nome}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td>
 										<td>
-											<a onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger" th:text="#{label.elimina}">
+											<a onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+												<span><i class="fa fa-pencil"></i></span>
+											</a>
+											<a onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
 												<span><i class="fa fa-trash"></i></span>
 											</a>
 										</td>
@@ -1452,7 +1555,7 @@
 											<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
 											<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 											<th>
-												<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__,false)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
+												<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
 													<span><i class="fa fa-plus"></i></span>
 												</a>
 											</th>
@@ -1480,7 +1583,10 @@
 											 </td>
 											<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].tempoDedicato}"></td>
 											<td>
-												<a onclick="removeAttivitaFrom('attivitaFSC',this)" class="btn btn-danger" th:text="#{label.elimina}">
+												<a onclick="modificaAttivitaFrom('attivitaFSC',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+													<span><i class="fa fa-pencil"></i></span>
+												</a>
+												<a onclick="removeAttivitaFrom('attivitaFSC',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
 													<span><i class="fa fa-trash"></i></span>
 												</a>
 											</td>
@@ -1529,7 +1635,10 @@
 									<td th:text="${attivita.metodologiaDidattica?.nome}"></td>
 									<td th:text="${attivita.oreAttivita}"></td>
 									<td>
-										<a onclick="removeAttivitaFrom('attivitaFAD',this)" class="btn btn-danger" th:text="#{label.elimina}">
+										<a onclick="modificaAttivitaFrom('attivitaFAD',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+											<span><i class="fa fa-pencil"></i></span>
+										</a>
+										<a onclick="removeAttivitaFrom('attivitaFAD',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
 											<span><i class="fa fa-trash"></i></span>
 										</a>
 									</td>

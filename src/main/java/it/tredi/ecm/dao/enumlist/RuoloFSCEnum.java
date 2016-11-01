@@ -28,7 +28,7 @@ public enum RuoloFSCEnum {
 	TUTOR(2,"Tutor", RuoloFSCBaseEnum.TUTOR),
 	ESPERTO(3,"Esperto", RuoloFSCBaseEnum.ESPERTO),
 	
-	COORDINATORE(4,"Coordinatore del programma di training di cui i primi tre replicabili", RuoloFSCBaseEnum.COORDINATORE),
+	COORDINATORE(4,"Coordinatore del programma di training", RuoloFSCBaseEnum.COORDINATORE),
 	COORDINATORE_GRUPPI(5,"Coordinatore di gruppi di lavoro, di studio o miglioramento in qualità", RuoloFSCBaseEnum.COORDINATORE),
 	COORDINATORE_ATTIVITA_RICERCA(6,"Coordinatore attività di ricerca", RuoloFSCBaseEnum.COORDINATORE),
 	COORDINATORE_ATTIVITA_AUDIT(7,"Coordinatore attività di audit", RuoloFSCBaseEnum.COORDINATORE),

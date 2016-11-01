@@ -67,7 +67,7 @@ public class File extends BaseEntity{
 	@JoinColumn(name="file_id")
 	private List<FileData> fileData;
 	
-	public void setData(byte[] dataArray){
+	@JsonIgnore public void setData(byte[] dataArray){
 		if(fileData == null || fileData.isEmpty()){
 			fileData = new ArrayList<FileData>();	
 			fileData.add(new FileData());
@@ -75,7 +75,7 @@ public class File extends BaseEntity{
 		fileData.get(0).setData(dataArray);
 	}
 	
-	public byte[] getData(){
+	@JsonIgnore	public byte[] getData(){
 		if(this.getFileData() != null && !fileData.isEmpty())
 			return fileData.get(0).getData();
 		return new byte[0];
@@ -126,7 +126,10 @@ public class File extends BaseEntity{
 	@JsonIgnore public boolean isREPORTPARTECIPANTI() {
 		return this.tipo.equals(FileEnum.FILE_REPORT_PARTECIPANTI);
 	}
-
+	@JsonIgnore public boolean isEVENTIPIANOFORMATIVO() {
+		return this.tipo.equals(FileEnum.FILE_EVENTI_PIANO_FORMATIVO);
+	}
+	
 	//ENGINEERING TEST FILE
 	@JsonIgnore	public boolean isFILEDAFIRMARE(){
 		return this.tipo.equals(FileEnum.FILE_DA_FIRMARE);
@@ -156,6 +159,7 @@ public class File extends BaseEntity{
 	}
  
 	@Override
+	@JsonIgnore
 	public Object clone() throws CloneNotSupportedException {
 		File cloned = (File) super.clone();
 		

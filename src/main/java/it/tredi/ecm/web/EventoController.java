@@ -355,7 +355,7 @@ public class EventoController {
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
 				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				if(wrapper.getReportPartecipanti().getId() == null)
-					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.inserire_il_rendiconto", "error"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.warning", "message.inserire_il_rendiconto", "alert"));
 				else {
 					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + wrapper.getReportPartecipanti().getId() + " da validare"));
 					File file = wrapper.getReportPartecipanti();
@@ -368,7 +368,7 @@ public class EventoController {
 								redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
 							}
 							else {
-								redirectAttrs.addFlashAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+								redirectAttrs.addFlashAttribute("message", new Message("message.warning", "error.formatNonAcceptedXML", "alert"));
 							}
 						}
 					}
@@ -379,7 +379,7 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
 				if (ex instanceof EcmException) //errore gestito
 //TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
-					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
 				else
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
@@ -403,7 +403,7 @@ public class EventoController {
 				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"),ex);
 				if (ex instanceof EcmException) //errore gestito
 	//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
-					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
 				else
 					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
@@ -426,7 +426,7 @@ public class EventoController {
 				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"),ex);
 				if (ex instanceof EcmException) //errore gestito
 	//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
-					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "error"));
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
 				else
 					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"));
@@ -582,58 +582,73 @@ public class EventoController {
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaTo", method=RequestMethod.POST, params={"addPersonaTo"})
 	public String addPersonaTo(@RequestParam("addPersonaTo") String target,
 								@RequestParam("fromLookUp") String fromLookUp,
+								@RequestParam(name = "modificaElemento",required=false) String modificaElemento,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			//TODO da fare solo se rispetta il validator
-			AnagraficaEventoBase anagraficaBase = eventoWrapper.getTempPersonaEvento().getAnagrafica();
-			//check se non esiste -> si registra l'anagrafica per il provider
-			if(anagraficaBase != null && !anagraficaBase.getCodiceFiscale().isEmpty()){
-				if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaBase.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
-					if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew()){
-						File cv = fileService.getFile(eventoWrapper.getCv().getId());
-						cv.getData();
-						if(fromLookUp != null && Boolean.valueOf(fromLookUp)){
-							File f = (File) cv.clone();
-							fileService.save(f);
-							anagraficaBase.setCv(f);
-						}else{
-							anagraficaBase.setCv(cv);
+			if(modificaElemento == null || modificaElemento.isEmpty()){
+				//INSERIMENTO NUOVA PERSONA
+				
+				//TODO da fare solo se rispetta il validator
+				AnagraficaEventoBase anagraficaBase = eventoWrapper.getTempPersonaEvento().getAnagrafica();
+				//check se non esiste -> si registra l'anagrafica per il provider
+				if(anagraficaBase != null && !anagraficaBase.getCodiceFiscale().isEmpty()){
+					if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaBase.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
+						if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew()){
+							File cv = fileService.getFile(eventoWrapper.getCv().getId());
+							cv.getData();
+							if(fromLookUp != null && Boolean.valueOf(fromLookUp)){
+								File f = (File) cv.clone();
+								fileService.save(f);
+								anagraficaBase.setCv(f);
+							}else{
+								anagraficaBase.setCv(cv);
+							}
 						}
+						AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
+						anagraficaEventoToSave.setAnagrafica(anagraficaBase);
+						anagraficaEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
+						anagraficaEventoService.save(anagraficaEventoToSave);
 					}
-					AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
-					anagraficaEventoToSave.setAnagrafica(anagraficaBase);
-					anagraficaEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
-					anagraficaEventoService.save(anagraficaEventoToSave);
 				}
-			}
-			//PersonaEvento p = (PersonaEvento) Utils.copy(eventoWrapper.getTempPersonaEvento());
-			PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
-			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in in AddAttivitaRES (select si basa su id della entity)
-				//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
-
-				File cv = p.getAnagrafica().getCv();
-				if(cv != null) {
-					cv.getData();
-					File f = (File) cv.clone();
-					fileService.save(f);
-					p.getAnagrafica().setCv(f);
+			
+				PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
+				if(target.equalsIgnoreCase("responsabiliScientifici")){
+					//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in in AddAttivitaRES (select si basa su id della entity)
+					//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
+	
+					File cv = p.getAnagrafica().getCv();
+					if(cv != null) {
+						cv.getData();
+						File f = (File) cv.clone();
+						fileService.save(f);
+						p.getAnagrafica().setCv(f);
+					}
+	
+					personaEventoRepository.save(p);
+					eventoWrapper.getResponsabiliScientifici().add(p);
+				}else if(target.equalsIgnoreCase("docenti")){
+	
+					File cv = p.getAnagrafica().getCv();
+					if(cv != null) {
+						cv.getData();
+						File f = (File) cv.clone();
+						fileService.save(f);
+						p.getAnagrafica().setCv(f);
+					}
+	
+					personaEventoRepository.save(p);
+					eventoWrapper.getDocenti().add(p);
 				}
-
-				personaEventoRepository.save(p);
-				eventoWrapper.getResponsabiliScientifici().add(p);
-			}else if(target.equalsIgnoreCase("docenti")){
-
-				File cv = p.getAnagrafica().getCv();
-				if(cv != null) {
-					cv.getData();
-					File f = (File) cv.clone();
-					fileService.save(f);
-					p.getAnagrafica().setCv(f);
+			}else{
+				//MODIFICA
+				int index = Integer.parseInt(modificaElemento);
+				if(target.equalsIgnoreCase("responsabiliScientifici")){
+					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+					eventoWrapper.getResponsabiliScientifici().set(index, eventoWrapper.getTempPersonaEvento());
+				}else if(target.equalsIgnoreCase("docenti")){
+					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+					eventoWrapper.getDocenti().set(index, eventoWrapper.getTempPersonaEvento());
 				}
-
-				personaEventoRepository.save(p);
-				eventoWrapper.getDocenti().add(p);
 			}
 			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
 			return EDIT + " :: " + target;
@@ -646,25 +661,34 @@ public class EventoController {
 
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaFullTo", method=RequestMethod.POST, params={"addPersonaFullTo"})
 	public String addPersonaFullTo(@RequestParam("addPersonaFullTo") String target,
-								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+									@RequestParam(name = "modificaElementoFull",required=false) String modificaElemento,
+										@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			//TODO da fare solo se rispetta il validator
-			AnagraficaFullEventoBase anagraficaFull = eventoWrapper.getTempPersonaFullEvento().getAnagrafica();
-			//check se non esiste -> si registra l'anagrafica per il provider
-			if(anagraficaFull != null && !anagraficaFull.getCodiceFiscale().isEmpty()){
-				if(anagraficaFullEventoService.getAnagraficaFullEventoByCodiceFiscaleForProvider(anagraficaFull.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
-					AnagraficaFullEvento anagraficaFullEventoToSave = new AnagraficaFullEvento();
-					anagraficaFullEventoToSave.setAnagrafica(anagraficaFull);
-					anagraficaFullEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
-					anagraficaFullEventoService.save(anagraficaFullEventoToSave);
+			if(modificaElemento == null || modificaElemento.isEmpty()){
+				//INSERIMENTO NUOVA PERSONA
+			
+				//TODO da fare solo se rispetta il validator
+				AnagraficaFullEventoBase anagraficaFull = eventoWrapper.getTempPersonaFullEvento().getAnagrafica();
+				//check se non esiste -> si registra l'anagrafica per il provider
+				if(anagraficaFull != null && !anagraficaFull.getCodiceFiscale().isEmpty()){
+					if(anagraficaFullEventoService.getAnagraficaFullEventoByCodiceFiscaleForProvider(anagraficaFull.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
+						AnagraficaFullEvento anagraficaFullEventoToSave = new AnagraficaFullEvento();
+						anagraficaFullEventoToSave.setAnagrafica(anagraficaFull);
+						anagraficaFullEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
+						anagraficaFullEventoService.save(anagraficaFullEventoToSave);
+					}
 				}
+	
+				//PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
+				PersonaFullEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaFullEvento());
+				if(target.equalsIgnoreCase("responsabileSegreteria")){
+					eventoWrapper.getEvento().setResponsabileSegreteria(p);
+				}
+			}else{
+				//MODIFICA
+				eventoWrapper.getEvento().setResponsabileSegreteria(eventoWrapper.getTempPersonaFullEvento());
 			}
-
-			//PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
-			PersonaFullEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaFullEvento());
-			if(target.equalsIgnoreCase("responsabileSegreteria")){
-				eventoWrapper.getEvento().setResponsabileSegreteria(p);
-			}
+			
 			eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento());
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -780,39 +804,51 @@ public class EventoController {
 	@RequestMapping(value = "/provider/{providerId}/evento/addAttivitaTo", method=RequestMethod.POST)
 	public String addAttivitaTo(@RequestParam("target") String target,
 								@RequestParam("addAttivitaTo") String addAttivitaTo,
+								@RequestParam("modificaElemento") Integer modificaElemento,
 								@RequestParam(name = "pausa",required=false) Boolean pausa,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
-			if(target.equalsIgnoreCase("attivitaRES")){
-				//DettaglioAttivitaRES attivitaRES = (DettaglioAttivitaRES) Utils.copy(eventoWrapper.getTempAttivitaRES());
-				DettaglioAttivitaRES attivitaRES =  SerializationUtils.clone(eventoWrapper.getTempAttivitaRES());
-				attivitaRES.calcolaOreAttivita();
-				
-				Long programmaIndexLong = Long.valueOf(programmaIndex);
-				LOGGER.debug("EventoRES - evento/addAttivitaTo programmaIndexLong: " + programmaIndexLong);
-				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().add(attivitaRES);
-				
-				if(pausa.booleanValue())
-					attivitaRES.setAsPausa();
-				eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
-			}else if(target.equalsIgnoreCase("attivitaFSC")){
-				AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());
-				//test
-//				Map<RuoloFSCEnum, RuoloOreFSC> mappaRuoloOre = eventoWrapper.getMappaRuoloOre();
-//				Set<RuoloOreFSC> temp = azioniRuoli.getRuoli();
-//				temp.clear();
-//				for(RuoloOreFSC rof : mappaRuoloOre.values()) {
-//					temp.add(new RuoloOreFSC(rof.getRuolo(), rof.getTempoDedicato()));
-//				}
-//				azioniRuoli.setRuoli(temp);
-				//
-				eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().add(azioniRuoli);
-				eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
-			}else if(target.equalsIgnoreCase("attivitaFAD")){
-				DettaglioAttivitaFAD attivitaFAD =  SerializationUtils.clone(eventoWrapper.getTempAttivitaFAD());
-				eventoWrapper.getProgrammaEventoFAD().add(attivitaFAD);
-				eventoWrapper.setTempAttivitaFAD(new DettaglioAttivitaFAD());
+			if(modificaElemento == null){
+				//INSERIMENTO 
+				int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
+				if(target.equalsIgnoreCase("attivitaRES")){
+					DettaglioAttivitaRES attivitaRES =  SerializationUtils.clone(eventoWrapper.getTempAttivitaRES());
+					attivitaRES.calcolaOreAttivita();
+					Long programmaIndexLong = Long.valueOf(programmaIndex);
+					LOGGER.debug("EventoRES - evento/addAttivitaTo programmaIndexLong: " + programmaIndexLong);
+					eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().add(attivitaRES);
+					
+					if(pausa.booleanValue())
+						attivitaRES.setAsPausa();
+					eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
+				}else if(target.equalsIgnoreCase("attivitaFSC")){
+					AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());
+					eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().add(azioniRuoli);
+					eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
+				}else if(target.equalsIgnoreCase("attivitaFAD")){
+					DettaglioAttivitaFAD attivitaFAD =  SerializationUtils.clone(eventoWrapper.getTempAttivitaFAD());
+					eventoWrapper.getProgrammaEventoFAD().add(attivitaFAD);
+					eventoWrapper.setTempAttivitaFAD(new DettaglioAttivitaFAD());
+				}
+			}else{
+				//MODIFICA
+				int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
+				int elementoIndex = Integer.valueOf(modificaElemento).intValue();
+				if(target.equalsIgnoreCase("attivitaRES")){
+					DettaglioAttivitaRES attivitaRES =  eventoWrapper.getTempAttivitaRES();
+					attivitaRES.calcolaOreAttivita();
+					Long programmaIndexLong = Long.valueOf(programmaIndex);
+					eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().set(elementoIndex, attivitaRES);
+					eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
+				}else if(target.equalsIgnoreCase("attivitaFSC")){
+					AzioneRuoliEventoFSC azioniRuoli = eventoWrapper.getTempAttivitaFSC();
+					eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().set(elementoIndex, azioniRuoli);
+					eventoWrapper.setTempAttivitaFSC(new AzioneRuoliEventoFSC());
+				}else if(target.equalsIgnoreCase("attivitaFAD")){
+					DettaglioAttivitaFAD attivitaFAD =  eventoWrapper.getTempAttivitaFAD();
+					eventoWrapper.getProgrammaEventoFAD().set(elementoIndex, attivitaFAD);
+					eventoWrapper.setTempAttivitaFAD(new DettaglioAttivitaFAD());
+				}
 			}
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -852,31 +888,6 @@ public class EventoController {
 			return EDIT + " :: " + target;
 		}
 	}
-
-	//TODO CONTROLLARE DATEINTERMEDIEPROGRAMMA
-	//non deve mai essere creato a mano 
-	/*
-	@RequestMapping(value = "/provider/{providerId}/evento/addProgramma/{target}", method=RequestMethod.GET)
-	public String addProgramma(@PathVariable("target") String target,
-										@RequestParam("programmaDate") String programmaDate,
-												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
-		try{
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			LocalDate data = LocalDate.parse(programmaDate, dtf);
-			if(target.equalsIgnoreCase("attivitaRES")){
-				ProgrammaGiornalieroRES programma = new ProgrammaGiornalieroRES();
-				programma.setGiorno(data);
-				programma.setSede(((EventoRES)eventoWrapper.getEvento()).getSedeEvento());
-				eventoWrapper.getProgrammaEventoRES().add(programma);
-			}
-			return EDIT + " :: " + target;
-		}catch (Exception ex){
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
-			return EDIT + " :: " + target;
-		}
-	}
-	*/
 
 	@RequestMapping(value = "/provider/{providerId}/evento/showSection/{sectionIndex}", method=RequestMethod.POST)
 	public String showSection(@PathVariable("sectionIndex") String sIndex, @ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper,
@@ -1030,6 +1041,65 @@ public class EventoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
 			return EDITFSC + " :: ruoloOreFSC";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/modifica/{target}/{modificaElemento}", method=RequestMethod.GET)
+	public String modificaPersona(@PathVariable("target") String target,
+									@PathVariable("modificaElemento") Long modificaElemento,
+												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			if(target.equalsIgnoreCase("responsabiliScientifici")){
+				PersonaEvento p = eventoWrapper.getResponsabiliScientifici().get(modificaElemento.intValue());
+				eventoWrapper.setTempPersonaEvento(p);
+				eventoWrapper.setCv(p.getAnagrafica().getCv());
+				return EDIT + " :: #addPersonaTo";
+			}else if(target.equalsIgnoreCase("docenti")){
+				PersonaEvento p = eventoWrapper.getDocenti().get(modificaElemento.intValue());
+				eventoWrapper.setTempPersonaEvento(p);
+				eventoWrapper.setCv(p.getAnagrafica().getCv());
+				return EDIT + " :: #addPersonaTo";
+			}else if(target.equalsIgnoreCase("responsabileSegreteria")){
+				PersonaFullEvento p = eventoWrapper.getEvento().getResponsabileSegreteria();
+				eventoWrapper.setTempPersonaFullEvento(p);
+				return EDIT + " :: #addPersonaFullTo";
+			}
+			
+			return "redirect:/home";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/modificaAttivita/{target}/{addAttivitaTo}/{modificaElemento}", method=RequestMethod.GET)
+	public String modificaAttivita(@PathVariable("target") String target,
+									@PathVariable("addAttivitaTo") String addAttivitaTo,
+									@PathVariable("modificaElemento") Integer modificaElemento,
+											@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
+			int elementoIndex = Integer.valueOf(modificaElemento).intValue();
+			if(target.equalsIgnoreCase("attivitaRES")){
+				Long programmaIndexLong = Long.valueOf(programmaIndex);
+				DettaglioAttivitaRES attivita = eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().get(elementoIndex);
+				eventoWrapper.setTempAttivitaRES(attivita);
+				return EDITRES + " :: #addAttivitaRES";
+			}else if(target.equalsIgnoreCase("attivitaFSC")){
+				AzioneRuoliEventoFSC azione = eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().get(elementoIndex);
+				eventoWrapper.setTempAttivitaFSC(azione);
+				return EDITFSC + " :: #addAttivitaFSC";
+			}else if(target.equalsIgnoreCase("attivitaFAD")){
+				DettaglioAttivitaFAD attivitaFAD = eventoWrapper.getProgrammaEventoFAD().get(elementoIndex);
+				eventoWrapper.setTempAttivitaFAD(attivitaFAD);
+				return EDITFAD + " :: #addAttivitaFAD";
+			}
+			return "redirect:/home";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
 		}
 	}
 

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,11 +22,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PianoFormativoWrapper;
 
@@ -39,6 +45,7 @@ public class PianoFormativoController {
 
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private ProviderService providerService;
+	@Autowired private FileService fileService;
 
 	@Autowired private HttpServletRequest request;
 
@@ -133,6 +140,9 @@ public class PianoFormativoController {
 	public String showListaPianiFormativi(@PathVariable Long providerId, @RequestParam(required = false) String accordion, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/list"));
 		try{
+			PianoFormativoWrapper pianoFormativoWrapper = new PianoFormativoWrapper();
+			pianoFormativoWrapper.setImportEventiDaCsvFile(new File(FileEnum.FILE_EVENTI_PIANO_FORMATIVO));
+			model.addAttribute("pianoFormativoWrapper", pianoFormativoWrapper);
 			model.addAttribute("pianoFormativoList", pianoFormativoService.getAllPianiFormativiForProvider(providerId));
 			model.addAttribute("pianiIdFromAccreditamento", pianoFormativoService.getAllPianiFormativiIdInAccreditamentoForProvider(providerId));
 			model.addAttribute("canInsertPianoFormativo", providerService.canInsertPianoFormativo(providerId));
@@ -192,6 +202,46 @@ public class PianoFormativoController {
 		Set<Integer> anniDisponibiliList = new HashSet<Integer>();
 		anniDisponibiliList.add(new Integer(annoCorrente + 1));
 		return anniDisponibiliList;
+	}
+	
+	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
+	@RequestMapping(value = "/provider/{providerId}/pianoFormativo/{pianoFormativoId}/importaEventiDaCSV", method = RequestMethod.POST)
+	public String importaEventiDaCSV(@PathVariable Long providerId,
+			@PathVariable Long pianoFormativoId, @ModelAttribute("pianoFormativoWrapper") PianoFormativoWrapper wrapper, BindingResult result,
+			Model model, RedirectAttributes redirectAttrs) {
+		try{
+			LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/importaEventiDaCSV"));
+			model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+			
+			if(wrapper.getImportEventiDaCsvFile().getId() == null)
+				redirectAttrs.addFlashAttribute("message", new Message("message.warning", "message.inserire_il_rendiconto", "alert"));
+			else {
+				File file = wrapper.getImportEventiDaCsvFile();
+				if(file != null && !file.isNew()){
+					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + file.getId() + " da importare"));
+					String fileName = file.getNomeFile().trim().toUpperCase();
+					if (fileName.endsWith(".CSV")) {
+						wrapper.setImportEventiDaCsvFile(fileService.getFile(file.getId()));
+						pianoFormativoService.importaEventiDaCSV(pianoFormativoId, wrapper.getImportEventiDaCsvFile());
+						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
+					}
+					else {
+						redirectAttrs.addFlashAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+					}
+				}
+			}
+			return "redirect:/provider/{providerId}/pianoFormativo/list?accordion=" + pianoFormativoService.getPianoFormativo(pianoFormativoId).getAnnoPianoFormativo();
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/importaEventiDaCSV"), ex);
+				if (ex instanceof EcmException) //errore gestito
+	//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
+				else
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/importaEventiDaCSV"));
+			return "redirect:/provider/{providerId}/pianoFormativo/list?accordion=" + pianoFormativoService.getPianoFormativo(pianoFormativoId).getAnnoPianoFormativo();
+		}
 	}
 
 }

@@ -42,6 +42,8 @@ public class EcmAppConfiguration {
 	private int numeroMassimoResponsabiliEvento = 3;
 	@Value("${giorni.max.evento.fsc}")
 	private int giorniMaxEventoFSC = 730;
+	@Value("${giorni.max.evento.fad}")
+	private int giorniMaxEventoFAD = 365;
 	@Value("${numero.minimo.partecipanti.convegno.congresso.res}")
 	private int numeroMinimoPartecipantiConvegnoCongressoRES = 200;
 	@Value("${numero.massimo.partecipanti.workshop.seminario.res}")
@@ -78,6 +80,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setGiorniMinEventoProviderB(giorniMinEventoProviderB);
 		ecmProperties.setNumeroMassimoResponsabiliEvento(numeroMassimoResponsabiliEvento);
 		ecmProperties.setGiorniMaxEventoFSC(giorniMaxEventoFSC);
+		ecmProperties.setGiorniMaxEventoFAD(giorniMaxEventoFAD);
 		ecmProperties.setNumeroMinimoPartecipantiConvegnoCongressoRES(numeroMinimoPartecipantiConvegnoCongressoRES);
 		ecmProperties.setNumeroMassimoPartecipantiWorkshopSeminarioRES(numeroMassimoPartecipantiWorkshopSeminarioRES);
 		ecmProperties.setNumeroMassimoPartecipantiCorsoAggiornamentoRES(numeroMassimoPartecipantiCorsoAggiornamentoRES);

@@ -1,7 +1,6 @@
 package it.tredi.ecm.web.validator;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
@@ -17,8 +17,12 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
+import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Sponsor;
+import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
+import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
+import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
@@ -417,7 +421,28 @@ public class EventoValidator {
 		 * stesso numero delle date (gestito lato interfaccia)
 		 * devono avere tutti i campi inseriti
 		 * */
-		//TODO aspettare barduz con la modifica alle date
+		//numero delle date totali
+		int dateIntermedie = evento.getDateIntermedie() != null ? evento.getDateIntermedie().size() : 0;
+		if(evento.getProgramma() == null || evento.getProgramma().isEmpty())
+			errors.rejectValue(prefix + "programma", "error.empty");
+		else if(evento.getProgramma().size() != dateIntermedie + 2)
+			errors.rejectValue(prefix + "programma", "error.numero_programmi_errato");
+		else {
+			boolean atLeastOneErrorProgramma = false;
+			for(ProgrammaGiornalieroRES pgr : evento.getProgramma()) {
+				//ciclo alla ricerca di questo Programma per farmi dare la chiave nella mappa
+				Long key = -1L;
+				for(Entry<Long, EventoRESProgrammaGiornalieroWrapper> entry : wrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().entrySet()) {
+					if(entry.getValue().getProgramma().equals(pgr)) {
+						key = entry.getKey();
+						break;
+					}
+				}
+				validateProgrammaRES(pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEvento());
+			}
+			if(atLeastOneErrorProgramma)
+				errors.rejectValue(prefix + "programma", "error.campi_mancanti_programma");
+		}
 
 		/* BROCHURE EVENTO (campo obbligatorio se TIPOLOGIA EVENTO == CONVEGNO_CONGRESSO o WORKSHOP_SEMINARIO)
 		 * file allegato
@@ -435,18 +460,16 @@ public class EventoValidator {
 		 * */
 		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty())
 			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
-		else if ((evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
-				&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE))
-				|| evento.getVerificaApprendimento().size() > 1)
+		else if (evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
+				&& (!evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE)
+				|| evento.getVerificaApprendimento().size() > 1))
 			errors.rejectValue(prefix + "verificaApprendimento", "error.solo_autocertificazione_selezionabile");
 		else if ((evento.getTipologiaEvento() != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO)
 				&& evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE))
 			errors.rejectValue(prefix + "verificaApprendimento",  "error.autocertificazione_non_selezionabile");
 
 		/* DURATA COMPLESSIVA (autocompilato)
-		 * controllo di sicurezza, la durata totale dell'evento deve essere di più di 3 ore
-		 * dato che ogni attività deve essere di minimo 3 ore, va da se che il controllo verrà sempre superato
-		 * o segnalato nelle attività
+		 * controllo di sicurezza, la durata totale dell'evento deve essere di minimo 3 ore
 		 * */
 		if(evento.getDurata() < ecmProperties.getDurataMinimaEventoRES())
 			errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
@@ -507,7 +530,7 @@ public class EventoValidator {
 
 	//validate FSC
 	private void validateFSC(EventoFSC evento, Errors errors, String prefix) {
-		
+
 		/* SEDE (tutti campi obbligatori)
 		 * provincia da selezione, comune da selezione, almeno 1 char indirizzo, almeno 1 char luogo
 		 * */
@@ -527,7 +550,7 @@ public class EventoValidator {
 			if(evento.getSedeEvento().getLuogo() == null || evento.getSedeEvento().getLuogo().isEmpty())
 				errors.rejectValue(prefix + "sedeEvento.luogo", "error.empty");
 		}
-		
+
 		/* DATA FINE (campo obbligatorio)
 		 * la data di fine deve può essere compresa nello stesso anno solare della data di inizio
 		 * e l'evento non può avere durata superiore a 730 giorni
@@ -536,26 +559,26 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "dataFine", "error.empty");
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
-		else if(evento.getDataInizio() != null && evento.getDataFine().getYear() == evento.getDataInizio().getYear()) 
+		else if(evento.getDataInizio() != null && evento.getDataFine().getYear() == evento.getDataInizio().getYear())
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_fsc_non_valida");
 		else if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFSC())))
 			errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fsc730");
-		
-		
+
+
 		/* TIPOLOGIA EVENTO (campo obbligatorio)
 		 * selectpicker (influenza altri campi, ma il controllo su questo campo è banale)
 		 * */
 		if(evento.getTipologiaEvento() == null)
 			errors.rejectValue(prefix + "tipologiaEvento", "error.empty");
-		
+
 		/* TIPOLOGIA GRUPPO (campo obbligatorio se tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO)
 		 * selectpicker
 		 * */
 		if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
-				&& evento.getTipologiaGruppo() == null) 
+				&& evento.getTipologiaGruppo() == null)
 			errors.rejectValue(prefix + "tipologiaGruppo", "error.empty");
-		
+
 		/* SPERIMENTAZIONE CLINICA (campo obbligatorio se tipologiaEvento == ATTIVITA_DI_RICERCA)
 		 * radio
 		 * */
@@ -563,7 +586,7 @@ public class EventoValidator {
 				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA
 				&& evento.getSperimentazioneClinica() == null)
 			errors.rejectValue(prefix + "sperimentazioneClinica", "error.empty");
-		
+
 		/* OTTENUTO PARERE ETICO (campo obbligatorio se tipologiaEvento == ATTIVITA_DI_RICERCA && sperimentazioneClinica == true)
 		 * spunta richiesta
 		 * */
@@ -574,19 +597,19 @@ public class EventoValidator {
 				&& (evento.getOttenutoComitatoEtico() == null
 				|| evento.getOttenutoComitatoEtico() == false))
 			errors.rejectValue(prefix + "ottenutoComitatoEtico", "error.empty");
-		
+
 		/* DESCRIZIONE DEL PROGETTO E RILEVANZA FORMATIVA (campo obbligatorio)
 		 * campo testuale
 		 * almeno 1 char
 		 * */
 		if(evento.getDescrizioneProgetto() == null || evento.getDescrizioneProgetto().isEmpty())
 			errors.rejectValue(prefix + "descrizioneProgetto", "error.empty");
-		
+
 		/* FASI/AZIONI/RUOLI FSC
-		 * 
+		 *
 		 * */
 		//TODO
-		
+
 		/* NUMERO PARTECIPANTI (campo obbligatorio)
 		 * se tipologiaEvento == TRAINING_INDIVIDUALIZZATO massimo 5 partecipanti per tutor
 		 * se tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO massimo 25 partecipanti
@@ -603,9 +626,9 @@ public class EventoValidator {
 				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiAuditClinicoFSC())
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti25");
-		
+
 		/* DURATA COMPLESSIVA (autocompilato)
-		 * controlli di sicurezza: 
+		 * controlli di sicurezza:
 		 * - la durata totale dell'evento deve essere di più di 10 ore per AUDIT_CLINICO_ASSISTENZIALE
 		 * - la durata totale dell'evento deve essere di più di 8 ore per GRUPPI_DI_MIGLIORAMENTO
 		 * - la durata totale dell'evento deve essere di più di 8 ore per PROGETTI_DI_MIGLIORAMENTO
@@ -621,20 +644,20 @@ public class EventoValidator {
 					&& evento.getDurata() < ecmProperties.getDurataMinimaProgettiMiglioramentoFSC())
 				errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
 		}
-		
+
 		/* VERIFICA PRESENZA PARTECIPANTI (campo obbligatorio)
 		 * checkbox
 		 * almeno 1 selezionato
 		 * */
 		if(evento.getVerificaPresenzaPartecipanti() == null || evento.getVerificaPresenzaPartecipanti().isEmpty())
 			errors.rejectValue(prefix + "verificaPresenzaPartecipanti", "error.empty");
-		
+
 		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
 		 * checkbox
 		 * */
 		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty())
 			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
-		
+
 		/* INDICATORE EFFICACIA FORMATIVA (campo obbligatorio se tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO)
 		 * campo testuale
 		 * almeno 1 char
@@ -644,18 +667,143 @@ public class EventoValidator {
 				&& (evento.getIndicatoreEfficaciaFormativa() == null
 				|| evento.getIndicatoreEfficaciaFormativa().isEmpty()))
 			errors.rejectValue(prefix + "indicatoreEfficaciaFormativa", "error.empty");
-		
+
 		/* QUOTA DI PARTECIPAZIONE (campo obbligatorio)
 		 * campo numerico (BigDecimal)
 		 * */
 		if(evento.getQuotaPartecipazione() == null)
 			errors.rejectValue(prefix + "quotaPartecipazione", "error.empty");
-		
+
 	}
 
 	//validate FAD
 	private void validateFAD(EventoFAD evento, Errors errors, String prefix) {
-		//TODO
+
+		/* DATA FINE (campo obbligatorio)
+		 * la data di fine deve può essere compresa nello stesso anno solare della data di inizio
+		 * e l'evento non può avere durata superiore a 365 giorni
+		 * */
+		if(evento.getDataFine() == null)
+			errors.rejectValue(prefix + "dataFine", "error.empty");
+		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
+			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
+		else if(evento.getDataInizio() != null && evento.getDataFine().getYear() == evento.getDataInizio().getYear())
+			errors.rejectValue(prefix + "dataFine", "error.data_fine_fad_non_valida");
+		else if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFAD())))
+			errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fad365");
+
+		/* PARTECIPANTI (campo obbligatorio)
+		 * massimo 5 cifre
+		 * */
+		if(evento.getNumeroPartecipanti() == null)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.empty");
+		else if(evento.getNumeroPartecipanti() < 0 || evento.getNumeroPartecipanti() > 99999)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.numero_partecipanti_non_valido");
+
+		/* TIPOLOGIA EVENTO (campo obbligatorio)
+		 * selectpicker
+		 * */
+		if(evento.getTipologiaEvento() == null)
+			errors.rejectValue(prefix + "tipologiaEvento", "error.empty");
+
+		/* DOCENTI/RELATORI/TUTOR (serie di campi obbligatori)
+		 * ripetibile complesso di classe PersonaEvento
+		 * minimo 1
+		 * devono avere tutti i campi inseriti
+		 * */
+		if(evento.getDocenti() == null || evento.getDocenti().isEmpty())
+			errors.rejectValue(prefix + "docenti", "error.empty");
+		else {
+			int counter = 0;
+			boolean atLeastOneErrorPersonaEvento = false;
+			for(PersonaEvento p : evento.getDocenti()) {
+				boolean hasError = validatePersonaEvento(p, "docente");
+				if(hasError) {
+					errors.rejectValue("docenti["+counter+"]", "error.campi_mancanti_persona");
+					atLeastOneErrorPersonaEvento = true;
+				}
+				counter++;
+			}
+			if(atLeastOneErrorPersonaEvento)
+				errors.rejectValue(prefix + "docenti", "error.campi_mancanti_docenti");
+		}
+
+		/* RAZIONALE (campo obbligatorio)
+		 * campo testuale libero
+		 * almeno 1 char
+		 * */
+		if(evento.getRazionale() == null || evento.getRazionale().isEmpty())
+			errors.rejectValue(prefix + "razionale", "error.empty");
+
+		/* RISULTATI ATTESI (campo obbligatorio)
+		 * campo testuale libero ripetibile
+		 * almeno 1 char
+		 * almeno 1 elemento
+		 * se non ci sono elementi, la input su cui inserire l'errore punterà al primo elemento della mappa
+		 * */
+		if(evento.getRisultatiAttesi() == null || evento.getRisultatiAttesi().isEmpty())
+			errors.rejectValue("risultatiAttesiMapTemp[1]", "error.empty");
+
+		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
+		 * campo complesso composto da checkbox e radio
+		 * deve avere almeno 1 checkbox selezionata
+		 * per ogni checkbox selezionata deve corrispondere un radio selezionato
+		 * */
+		if(evento.getVerificaApprendimento() == null)
+			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
+		else {
+			int numCheck = 0;
+			boolean noRadio = false;
+			for(VerificaApprendimentoFAD vaf : evento.getVerificaApprendimento()) {
+				if(vaf.getVerificaApprendimento() != null) {
+					numCheck++;
+					if(vaf.getVerificaApprendimentoInner() == null)
+						noRadio = true;
+				}
+			}
+			if(numCheck == 0)
+				errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
+			else if(noRadio)
+				errors.rejectValue(prefix + "verificaApprendimento", "error.mancano_spunte_radio_verifica_apprendimento_fad");
+		}
+
+		/* RADIO SUPPORTO DISCIPLINARE (campo obbligatorio)
+		 * radio
+		 * */
+		if(evento.getSupportoSvoltoDaEsperto() == null)
+			errors.rejectValue(prefix + "supportoSvoltoDaEsperto", "error.empty");
+
+		/* CREDITI (campo obbligatorio/autocompilato)
+		 * il campo viene autocompilato
+		 * a questo punto l'utente può scegliere di accettare il valore
+		 * o inserirne uno lui -> se NON accetta il valore il campo crediti che deve inserire è obbligatorio
+		 * campo numerico (Float)
+		 * */
+		if(evento.getCrediti() == null)
+			errors.rejectValue(prefix + "crediti", "error.empty");
+
+		/* QUOTA DI PARTECIPAZIONE (campo obbligatorio)
+		 * campo numerico (BigDecimal)
+		 * */
+		if(evento.getQuotaPartecipazione() == null)
+			errors.rejectValue(prefix + "quotaPartecipazione", "error.empty");
+
+		/* DOTAZIONE HARDWARE / SOFTWARE (campo obbligatorio)
+		 * file allegato
+		 * */
+		if(evento.getRequisitiHardwareSoftware() == null || evento.getRequisitiHardwareSoftware().isNew())
+			errors.rejectValue("requisitiHardwareSoftware", "error.empty");
+
+		/* ACCESSO PIATTAFORMA (serie di campi obbligatori)
+		 * 3 campi testuali
+		 * */
+		if(evento.getUserId() == null || evento.getUserId().isEmpty())
+			errors.rejectValue(prefix + "userId", "error.empty");
+		if(evento.getPassword() == null || evento.getPassword().isEmpty())
+			errors.rejectValue(prefix + "password", "error.empty");
+		if(evento.getUrl() == null || evento.getUrl().isEmpty())
+			errors.rejectValue(prefix + "url", "error.empty");
+
 	}
 
 	//validate PersonaEvento (tipoPersona serve a distinguere il caso responsabileScientifico da Docente)
@@ -727,5 +875,90 @@ public class EventoValidator {
 			return true;
 
 		return false;
+	}
+
+	//validate ProgrammaRES
+	private void validateProgrammaRES(ProgrammaGiornalieroRES programma, Errors errors, String prefix, TipologiaEventoRESEnum tipologiaEvento){
+
+		//data (gratis, non è un dato che può inseririre l'utente, ma viene generata
+		//all'inserimento delle date di inzio, fine e intermedie
+
+		//sede
+		if(programma.getSede() == null)
+			errors.rejectValue(prefix + "sede", "error.sede_evento_null");
+		if(programma.getSede().getProvincia() == null || programma.getSede().getProvincia().isEmpty())
+			errors.rejectValue(prefix + "sede.provincia", "error.empty");
+		if(programma.getSede().getComune() == null || programma.getSede().getComune().isEmpty())
+			errors.rejectValue(prefix + "sede.comune", "error.empty");
+		if(programma.getSede().getLuogo() == null || programma.getSede().getLuogo().isEmpty())
+			errors.rejectValue(prefix + "sede.luogo", "error.empty");
+		if(programma.getSede().getIndirizzo() == null || programma.getSede().getIndirizzo().isEmpty())
+			errors.rejectValue(prefix + "sede.indirizzo", "error.empty");
+
+		//lista attività
+		if(programma.getProgramma() == null || programma.getProgramma().isEmpty())
+			errors.rejectValue(prefix + "programma", "error.empty");
+		else {
+			int counter = 0;
+			boolean atLeastOneErrorDettaglioAttivita = false;
+			for(DettaglioAttivitaRES dar : programma.getProgramma()) {
+				boolean hasError = validateDettaglioAttivitaRES(dar, tipologiaEvento);
+				if(hasError) {
+					errors.rejectValue("programma["+counter+"]", "error.campi_mancanti_dettaglio_attivita");
+					atLeastOneErrorDettaglioAttivita = true;
+				}
+				counter++;
+			}
+			if(atLeastOneErrorDettaglioAttivita)
+				errors.rejectValue(prefix + "programma", "error.campi_mancanti_dettaglio_attivita");
+		}
+	}
+
+	//validate DettaglioAttivita del ProgrammaRES
+	private boolean validateDettaglioAttivitaRES(DettaglioAttivitaRES dettaglio, TipologiaEventoRESEnum tipologiaEvento){
+
+		//tutti i campi devono essere inseriti, con eccezione di:
+		// 1) se tipologiaEvento è CONVEGNI_CONGRESSI, bisogna inserire un programma semplificato
+		//con nessun risultato atteso, obiettivo formativo OBV1 e le relative metodologie
+		// 2) se il dettaglio attività è una pausa necessario solo orari
+		if(dettaglio.getOrarioInizio() == null)
+			return true;
+		if(dettaglio.getOrarioFine() == null)
+			return true;
+
+		//controlli per non pausa [ 2) ]
+		if(!dettaglio.isPausa()) {
+			if(dettaglio.getArgomento() == null || dettaglio.getArgomento().isEmpty())
+				return true;
+			if(dettaglio.getDocente() == null)
+				return true;
+			if(dettaglio.getObiettivoFormativo() == null)
+				return true;
+			if(dettaglio.getMetodologiaDidattica() == null)
+				return true;
+		}
+
+		//controllo per eventi non di tipolgia CONVEGNO_CONGRESSO [ 1) ]
+		if(tipologiaEvento != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
+			if(dettaglio.getRisultatoAtteso() == null)
+				return true;
+		}
+		//controllo specifico per tipologia di eventi CONVEGNO_CONGRESSO [ 1) ]
+		else {
+			if(dettaglio.getRisultatoAtteso() != null)
+				return true;
+			if(dettaglio.getObiettivoFormativo() != ObiettiviFormativiRESEnum.OBV1)
+				return true;
+			//io lascerei così, la probabilita che le enum cambino e spacchino tutto è troppo alta.. se proprio richiesto abilitare il seguente
+//			if(dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._1
+//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._2
+//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._3
+//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._4
+//					|| dettaglio.getMetodologiaDidattica() != MetodologiaDidatticaRESEnum._5)
+//				return true;
+		}
+
+		return false;
+
 	}
 }
