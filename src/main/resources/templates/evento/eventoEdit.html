@@ -115,7 +115,7 @@
 									<span class="required">*</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<input required="required"	class="form-control col-md-7 col-xs-12"
+									<input id="qualifica" required="required"	class="form-control col-md-7 col-xs-12"
 										type="text" th:field="${eventoWrapper.tempPersonaEvento.qualifica}"  />
 								</div>
 							</div>
@@ -807,7 +807,7 @@
 
  			//reinizializzazione delle datatable
 			function reInitDataTable(target){
-				if(target == 'responsabiliScientifici'){
+				/* if(target == 'responsabiliScientifici'){
 		  			tables['responsabiliScientifici'].destroy();
 		  			tables['responsabiliScientifici'] = $('#responsabiliScientifici').DataTable({
 				    	"bFilter" : false,
@@ -876,7 +876,7 @@
 							"sClass": "center"
 						}]
 				    });
-			  	}
+			  	} */
 		  	}
 
 			//apre la finestra di inserimento di una persona
@@ -914,6 +914,7 @@
 				$("#cognome_persona").val('');
 				$("#nome_persona").val('');
 				$("#codice_fiscale").val('');
+				$("#qualifica").val('');
 				$("#cv\\.id").val('');
 				$("#cv\\.nomeFile").val('');
 				$("#cv_label").text('').attr('href','');
