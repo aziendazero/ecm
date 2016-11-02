@@ -62,6 +62,8 @@ public class Accreditamento extends BaseEntity{
 	
 	private Long giorniIntegrazione;
 	private Long giorniPreavvisoRigetto;
+	private Boolean integrazioneEseguitaDaProvider;
+	private Boolean preavvisoRigettoEseguitoDaProvider;
 
 	@JoinColumn(name = "provider_id")
 	@OneToOne(fetch = FetchType.LAZY)
