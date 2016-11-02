@@ -71,7 +71,7 @@ public class AccountValidator{
 
 	private void validateAccount(Account account, Errors errors, String prefix){
 		//Presenza e univocità dello username
-		if(account.getUsername().isEmpty()){
+		if(account.getUsername() == null || account.getUsername().isEmpty()){
 			errors.rejectValue(prefix + "username", "error.empty");
 		}else{
 			Optional<Account> user = accountService.getUserByUsername(account.getUsername());

@@ -92,7 +92,9 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		if(richiedente.isSegreteria()) {
 			Set<Provider> listaProvider = providerService.getAll();
 			for (Provider p : listaProvider) {
-				destinatariMap.put(p.getDenominazioneLegale(), p.getAccount());
+				for(Account account : p.getAccounts()) {
+					destinatariMap.put(p.getDenominazioneLegale(), account);
+				}
 			}
 		}
 		else {

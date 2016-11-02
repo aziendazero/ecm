@@ -59,6 +59,17 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				profile.setProfileEnum(ProfileEnum.ENGINEERING);
 				profileRepository.save(profile);
 				
+				//Provider
+				provider = new Provider();
+				provider.setDenominazioneLegale("Engineering s.r.l.");
+				provider.setCodiceFiscale("engineeringSRL");
+				provider.setHasPartitaIVA(true);
+				provider.setPartitaIva("01234567897");
+				provider.setTipoOrganizzatore(TipoOrganizzatore.AZIENDE_SANITARIE);
+				provider.setStatus(ProviderStatoEnum.INSERITO);
+				//provider.setAccount(account);
+				providerRepository.save(provider);
+
 				//Account
 				Account account = new Account();
 				account.setEmail("demo@eng.it");
@@ -70,18 +81,10 @@ public class EngineeringLoader implements ApplicationListener<ContextRefreshedEv
 				account.setLocked(false);
 				account.getProfiles().add(profile);
 				account.setDataScadenzaPassword(LocalDate.parse("2017-12-31"));
+				account.setNome("Amministratore");
+				account.setCognome("Provider");
+				account.setProvider(provider);
 				accountRepository.save(account);
-
-				//Provider
-				provider = new Provider();
-				provider.setDenominazioneLegale("Engineering s.r.l.");
-				provider.setCodiceFiscale("engineeringSRL");
-				provider.setHasPartitaIVA(true);
-				provider.setPartitaIva("01234567897");
-				provider.setTipoOrganizzatore(TipoOrganizzatore.AZIENDE_SANITARIE);
-				provider.setStatus(ProviderStatoEnum.INSERITO);
-				provider.setAccount(account);
-				providerRepository.save(provider);
 
 				//Accreditamento
 				Accreditamento accreditamento = null;
