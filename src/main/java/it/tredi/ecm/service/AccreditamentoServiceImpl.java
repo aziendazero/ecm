@@ -820,13 +820,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto()){
 			if(currentUser.isProvider()){
 				Long providerId = getProviderIdForAccreditamento(accreditamentoId);
-				Long accountIdForProvider = providerService.getAccountIdForProvider(providerId);
-				if(currentUser.getAccount().getId().equals(accountIdForProvider)){
+				if(currentUser.getAccount().getProvider() != null &&  currentUser.getAccount().getProvider().getId().equals(providerId)){
 					TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
 					if(task == null){
 						return false;
 					}
-
 					return true;
 				}
 				return false;
@@ -837,6 +835,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception  {
+		changeState(accreditamentoId, stato, null);
+	}
+	
+	@Override
+	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception  {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
 
 		//In alcuni stati devono essere effettuate altre operazioni
@@ -932,6 +935,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					valutazioneService.delete(v);
 				}
 			}
+		} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
+			if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE)
+				accreditamento.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
+			else if(accreditamento.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+				accreditamento.setPreavvisoRigettoEseguitoDaProvider(eseguitoDaUtente);
 		}
 
 		accreditamento.setStato(stato);

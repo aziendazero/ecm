@@ -16,6 +16,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private WorkflowService workflowService;
+	@Autowired private AccountService accountService;
 
 	/**		PROVIDER	**/
 	@Override
@@ -46,7 +47,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 			return true;
 
 		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW)){
-			return isProviderOwner(currentUser.getAccount().getId(), providerId);
+			return isProviderUser(currentUser.getAccount().getId(), providerId);
 		}
 
 		return false;
@@ -58,15 +59,15 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 			return true;
 
 		if(currentUser.hasRole(RoleEnum.PROVIDER_EDIT)){
-			return isProviderOwner(currentUser.getAccount().getId(), providerId);
+			return isProviderUser(currentUser.getAccount().getId(), providerId);
 		}
 
 		return false;
 	}
 
-	private boolean isProviderOwner(Long currentUserAccountId, Long providerId){
-		Long accountId = providerService.getAccountIdForProvider(providerId);
-		return accountId.equals(currentUserAccountId);
+	private boolean isProviderUser(Long currentUserAccountId, Long providerId){
+		Long accountProviderId = accountService.getProviderIdById(currentUserAccountId);
+		return providerId.equals(accountProviderId);
 	}
 
 	/**		ACCREDITAMENTO	**/
@@ -110,7 +111,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 	private boolean isAccreditamentoOwner(Long currentUserAccountId, Long accreditamentoId){
 		Long providerId = accreditamentoService.getProviderIdForAccreditamento(accreditamentoId);
-		return isProviderOwner(currentUserAccountId, providerId);
+		return isProviderUser(currentUserAccountId, providerId);
 	}
 
 	/**		USER	**/
@@ -124,6 +125,52 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 		return false;
 	}
+
+	//Controlla se l'utente corrente può modificare l'utente di un dato provider
+	@Override
+	public boolean canProviderEditUser(CurrentUser currentUser, Long providerId, Long userId) {
+		if(currentUser == null)
+			return false;
+
+		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW)) {
+			//Controllo se il providerId su cui si sta operando corrisponde al provider dell'utente corrente
+			if(currentUser.getAccount().getProvider() != null && currentUser.getAccount().getProvider().getId().equals(providerId)) {
+				//Controllo se l'utente in modifica userId fda parte del provider
+				return isProviderUser(userId, providerId);
+			}
+		}
+
+		return false;
+	}
+	
+	//Controlla se l'utente corrente può visualizzare la lista degli utenti di un dato provider
+	@Override
+	public boolean canShowAllProviderUser(CurrentUser currentUser, Long providerId) {
+		if(currentUser == null)
+			return false;
+
+		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW)) {
+			if(currentUser.getAccount().getProvider() != null && currentUser.getAccount().getProvider().getId().equals(providerId))
+				return true;
+		}
+
+		return false;
+	}
+	
+	//Controlla se l'utente corrente può inserire un nuovo utente di un dato provider
+	@Override
+	public boolean canProviderCreateUser(CurrentUser currentUser, Long providerId) {
+		if(currentUser == null)
+			return false;
+
+		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW)) {
+			if(currentUser.getAccount().getProvider() != null && currentUser.getAccount().getProvider().getId().equals(providerId))
+				return true;
+		}
+
+		return false;
+	}
+	
 
 	@Override
 	public boolean canShowUser(CurrentUser currentUser, Long userId) {
@@ -279,14 +326,14 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 	@Override
 	public boolean canShowAllEventiProvider(CurrentUser currentUser, Long providerId) {
-		if (isProviderOwner(currentUser.getAccount().getId(), providerId) || currentUser.isSegreteria())
+		if (isProviderUser(currentUser.getAccount().getId(), providerId) || currentUser.isSegreteria())
 			return true;
 		return false;
 	}
 
 	@Override
 	public boolean canCreateEvento(CurrentUser currentUser, Long providerId) {
-		if (isProviderOwner(currentUser.getAccount().getId(), providerId) || currentUser.isSegreteria())
+		if (isProviderUser(currentUser.getAccount().getId(), providerId) || currentUser.isSegreteria())
 			return true;
 		return false;
 	}
