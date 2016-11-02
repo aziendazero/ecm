@@ -1114,7 +1114,7 @@ public class EventoController {
 			 					HttpServletRequest request, Model model, RedirectAttributes redirectAttrs){
 		try{
 			String rootUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
-			String url = engineeringService.paga(eventoId, rootUrl + request.getContextPath() + "/provider/" + providerId + "/evento/list");
+			String url = engineeringService.pagaEvento(eventoId, rootUrl + request.getContextPath() + "/provider/" + providerId + "/evento/list");
 			
 			if (StringUtils.hasText(url)) {
 				return "redirect:" + url;

@@ -753,7 +753,7 @@ public class EventoServiceImpl implements EventoService {
 			
 			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
 				creditiFrontale = oreFrontale * 1.0f;
-				creditiFrontale = (creditiFrontale + (creditiFrontale*0.20f));
+				creditiFrontale = (creditiFrontale + (creditiFrontale*0.25f));
 			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
 				//TODO 25% decrescente
 			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){

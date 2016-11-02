@@ -18,12 +18,17 @@ public interface PagamentoRepository extends CrudRepository<Pagamento, Long> {
 	public Set<Provider> findAllProviderNotPagamentoEffettuato(@Param("annoPagamento")Integer annoPagamento);
 
 	public Set<Pagamento> findAll();
+	
+	public Set<Pagamento> findAllByProviderId(Long providerId);
+	
+	@Query("SELECT p FROM Pagamento p WHERE p.provider.pagato = false AND p.provider.pagInCorso = true")
+	public Set<Pagamento> getPagamentiProviderDaVerificare();
 
 	@Query("SELECT p FROM Pagamento p WHERE p.evento = :evento")
 	public Pagamento getPagamentoByEvento(@Param("evento")Evento evento);
 
 	@Query("SELECT p FROM Pagamento p WHERE p.evento.pagato = false AND p.evento.pagInCorso = true")
-	public Set<Pagamento> getPagamentiDaVerificare();
+	public Set<Pagamento> getPagamentiEventiDaVerificare();
 
 }
 

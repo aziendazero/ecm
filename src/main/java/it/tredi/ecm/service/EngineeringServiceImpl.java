@@ -79,7 +79,7 @@ import it.veneto.regione.schemas._2012.pagamenti.ente.StTipoIdentificativoUnivoc
 public class EngineeringServiceImpl implements EngineeringService {
 	
 	@Autowired private FileRepository fileRepository;
-	@Autowired private PagamentoRepository pagamentoRepository;
+	@Autowired private PagamentoService pagamentoService;
 	@Autowired private EventoRepository eventoRepository;
 	@Autowired private PagDovutiLogRepository invioDovutiRepository;
 	@Autowired private PagPagatiLogRepository chiediPagatiRepository;
@@ -106,6 +106,9 @@ public class EngineeringServiceImpl implements EngineeringService {
 	public static final String PAGAMENTO_PARZIALMENTE_ESEGUITO = "2";
 	public static final String DECORRENZA_TERMINI = "3";
 	public static final String DECORRENZA_TERMINI_PARZIALE = "4";
+	
+	public static final String CAUSALE_PAGAMENTO_EVENTO = "Pagamento Evento";
+	public static final String CAUSALE_PAGAMENTO_QUOTA_PROVIDER = "Pagamento Quota Accreditamento Provider - anno ";
 	
 	public static final Logger LOGGER = Logger.getLogger(EngineeringServiceImpl.class);
 	
@@ -191,29 +194,28 @@ public class EngineeringServiceImpl implements EngineeringService {
 		}
 	}
 	
-	public String pagaQuotaProvider(Long providerId, String backURL) throws Exception {
+	public String pagaQuotaProvider(Long providerId, Integer annoRiferimento, boolean primoAnno, String backURL) throws Exception {
 		Provider provider = providerService.getProvider(providerId);
 		
 		if(provider == null){
 			throw new Exception("Provider non trovato");
 		}
 		
-//		Pagamento p = pagamentoRepository.getPagamentoByProvider(provider);
-//		if (p == null) {
-//			p = new Pagamento();
-//			p.setProvider(provider);
-//		}
+		Pagamento p = pagamentoService.getPagamentoByProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
+		if (p == null) {
+			p = pagamentoService.preparePagamentoProviderPerQuotaAnnua(providerId, annoRiferimento, primoAnno);
+		}
 		
+		String url = prepareDatiPagamento(p, provider, CAUSALE_PAGAMENTO_QUOTA_PROVIDER + annoRiferimento, backURL);
 		
-		
-		return "";
+		return url;
 	}
 
-	public String paga(Long idEvento, String backURL) throws Exception {
+	public String pagaEvento(Long idEvento, String backURL) throws Exception {
 
 		Evento e = eventoRepository.findOne(idEvento);
 	
-		Pagamento p = pagamentoRepository.getPagamentoByEvento(e);
+		Pagamento p = pagamentoService.getPagamentoByEvento(e);
 		if (p == null) {
 			p = new Pagamento();
 			p.setEvento(e);
@@ -227,8 +229,6 @@ public class EngineeringServiceImpl implements EngineeringService {
 		//p.setCodiceFiscale(soggetto.getCodiceFiscale());
 		p.setCodiceFiscale("");
 		p.setPartitaIva(soggetto.getPartitaIva());
-		//Provider Multi Account 
-		//p.setEmail(soggetto.getAccount().getEmail());
 		p.setEmail(soggetto.getEmailStruttura());
 		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
 		p.setCausale("VERSAMENTO DI PROVA");
@@ -242,7 +242,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setImporto(e.getCosto());
 		
 		p.setDataInvio(new Date());
-		pagamentoRepository.save(p);
+		pagamentoService.save(p);
 		
 		PaaSILInviaDovuti dovuti = createPagamentoMessage(p, backURL);
 		
@@ -268,10 +268,56 @@ public class EngineeringServiceImpl implements EngineeringService {
 			e.setPagInCorso(false);
 		}
 
-		pagamentoRepository.save(p);
+		pagamentoService.save(p);
 		eventoRepository.save(e);
 		invioDovutiRepository.save(log);
 		
+		return response.getUrl();
+	}
+	
+	private String prepareDatiPagamento(Pagamento p, Provider soggetto, String causale, String backURL) throws Exception{
+		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
+		p.setAnagrafica(soggetto.getDenominazioneLegale());
+		p.setPartitaIva(soggetto.getPartitaIva());
+		p.setEmail(soggetto.getEmailStruttura());
+		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
+		p.setCausale(causale);
+		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
+		
+		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.
+		String iud = StringUtils.rightPad(engineeringProperties.getServizio() + fmt.get().format(new Date()), 35, "0");
+		LOGGER.info("IUD: " + iud);
+		
+		p.setIdentificativoUnivocoDovuto(iud);
+		p.setDataInvio(new Date());
+		pagamentoService.save(p);
+		
+		PaaSILInviaDovuti dovuti = createPagamentoMessage(p, backURL);
+		
+		IntestazionePPT header = new IntestazionePPT();
+		header.setCodIpaEnte(engineeringProperties.getIpa());
+		
+		PaaSILInviaDovutiRisposta response = port.get().paaSILInviaDovuti(dovuti, header);
+		
+		p.setIdSession(response.getIdSession());		
+		soggetto.setPagInCorso(true);
+		
+		PagDovutiLog log = new PagDovutiLog();
+		
+		log.setPagamento(p);
+		log.setDataRichiesta(new Date());
+		log.setEsito(response.getEsito());
+		log.setIdSession(response.getIdSession());
+		if (response.getFault() != null) {
+			log.setFaultCode(response.getFault().getFaultCode());
+			log.setFaultString(response.getFault().getFaultString());
+			log.setFaultDescription(response.getFault().getDescription());
+			soggetto.setPagInCorso(false);
+		}
+
+		pagamentoService.save(p);
+		providerService.save(soggetto);
+		invioDovutiRepository.save(log);
 		return response.getUrl();
 	}
 	
@@ -346,7 +392,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 	
 	public void esitoPagamenti() throws Exception {
 		
-		Set<Pagamento> pagamenti = pagamentoRepository.getPagamentiDaVerificare();
+		Set<Pagamento> pagamenti = pagamentoService.getPagamentiEventiDaVerificare();
 		
 		Holder<FaultBean> fault;
 		Holder<DataHandler> pagati;
@@ -411,7 +457,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 					log.setIdentificativoUnivocoRiscosse(item.getIdentificativoUnivocoRiscossione());
 					log.setImportoTotalePagato(item.getSingoloImportoPagato().doubleValue());
 					
-					pagamentoRepository.save(p);
+					pagamentoService.save(p);
 				    
 				}
 				
@@ -430,8 +476,8 @@ public class EngineeringServiceImpl implements EngineeringService {
 		Iterable<PagPagatiLog> ppl = chiediPagatiRepository.findAll();
 		chiediPagatiRepository.delete(ppl);
 		
-		Iterable<Pagamento> p = pagamentoRepository.findAll();
-		pagamentoRepository.delete(p);
+		Iterable<Pagamento> p = pagamentoService.getAllPagamenti();
+		pagamentoService.deleteAll(p);
 		
 		Set<Evento> evs = eventoRepository.findAllByProviderId(idProvider);
 		for (Evento ev : evs) {

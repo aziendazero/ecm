@@ -1,7 +1,9 @@
 package it.tredi.ecm.service;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;

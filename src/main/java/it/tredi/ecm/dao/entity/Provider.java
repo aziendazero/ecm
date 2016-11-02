@@ -55,7 +55,7 @@ import lombok.Setter;
 public class Provider extends BaseEntity{
 	/*	ACCOUNTS DEL PROVIDER	*/
 	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE })	
-	List<Account> accounts;
+	Set<Account> accounts;
 
 	/*	INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE	*/
 	private String denominazioneLegale;
@@ -65,6 +65,9 @@ public class Provider extends BaseEntity{
 	private String partitaIva;
 	private String codiceFiscale;
 	private String emailStruttura;
+	
+	private Boolean pagato = false;
+	private Boolean pagInCorso = false;
 	
 	public Long getCodiceIdentificativoUnivoco(){
 		return this.getId();

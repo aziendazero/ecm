@@ -56,6 +56,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AccountRepository accountRepository;
 	@Autowired private EmailService emailService;
 	@Autowired private AccountService accountService;
+	@Autowired private PagamentoService pagamentoService;
 
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
@@ -997,8 +998,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
 		if(stato == AccreditamentoStatoEnum.DINIEGO)
 			provider.setStatus(ProviderStatoEnum.DINIEGO);
-		//TODO pagamento provider
-
+		
+		pagamentoService.preparePagamentoProviderPerQuotaAnnua(provider.getId(), LocalDate.now().getYear(), true);
 	}
 
 	@Override

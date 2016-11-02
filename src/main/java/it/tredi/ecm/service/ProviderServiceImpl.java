@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
