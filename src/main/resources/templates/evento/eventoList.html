@@ -138,7 +138,7 @@
 									<td th:text="${evento.proceduraFormativa.nome}"></td>
 									<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
-									<td th:unless="${evento.pagato}"><span class="label-non-pagato" th:text="#{label.non_pagato}"></span></td>
+									<td th:unless="${evento.pagato}"><span class="label-non-pagato" th:text="#{label.pagInCorso}"></span></td>
 									<td th:text="${evento.dataScadenzaPagamento == null} ? '' : ${#temporals.format(evento.dataScadenzaPagamento, 'dd/MM/yyyy')}"></td>
 									<td>
 										<div class="button-container single">
