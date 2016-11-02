@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.activation.DataHandler;
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -43,6 +44,8 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.PagDovutiLog;
@@ -55,6 +58,7 @@ import it.tredi.ecm.dao.repository.FileRepository;
 import it.tredi.ecm.dao.repository.PagDovutiLogRepository;
 import it.tredi.ecm.dao.repository.PagPagatiLogRepository;
 import it.tredi.ecm.dao.repository.PagamentoRepository;
+import it.tredi.ecm.service.bean.EngineeringProperties;
 import it.tredi.ecm.utils.HttpAuthenticateProxy;
 import it.veneto.regione.pagamenti.ente.FaultBean;
 import it.veneto.regione.pagamenti.ente.PaaSILInviaDovuti;
@@ -74,50 +78,20 @@ import it.veneto.regione.schemas._2012.pagamenti.ente.StTipoIdentificativoUnivoc
 @Service
 public class EngineeringServiceImpl implements EngineeringService {
 	
-	@Autowired
-	private FileRepository fileRepository;
-	
-	@Autowired
-	private PagamentoRepository pagamentoRepository;
-	
-	@Autowired
-	private EventoRepository eventoRepository;
-	
-	@Autowired
-	private PagDovutiLogRepository invioDovutiRepository;
-	
-	@Autowired
-	private PagPagatiLogRepository chiediPagatiRepository;
+	@Autowired private FileRepository fileRepository;
+	@Autowired private PagamentoRepository pagamentoRepository;
+	@Autowired private EventoRepository eventoRepository;
+	@Autowired private PagDovutiLogRepository invioDovutiRepository;
+	@Autowired private PagPagatiLogRepository chiediPagatiRepository;
+	@Autowired private EngineeringProperties engineeringProperties;
+	@Autowired private ProviderService providerService;
 	
 	/** Non credo varierà, ma meglio parametrizzare e settare su file o tabella di configurazione */
 	public static final String VERSIONE = "6.0";
 	
-	/** Parametri per connettersi al servizio. Da parametrizzare in quanto saranno diversi tra test e produzione */
-	public static final String IPA = "C_D530";
-	public static final String PASSWORD = "password";
-	
-	/** Id servizio assegnato da MyPay- DA parametrizzare in quanto dovrà essere aggiornato */
-	public static final String SERVIZIO = "005";
-	
 	/** Permette tutti i tipi di pagamento. Si può modificare se necessario impedire certe forme di pagamento (vedi documentazione) */
 	public static final String TIPO_VERSAMENTO_ALL = "ALL";
-	
-	//public static final String ENDPOINT_PAGAMENTI = "http://payweb.ve.eng.it/pa/services/PagamentiTelematiciDovutiPagati"; // TEST ENGINEERING
-	/** L'endpoint andrebbe parametrizzato, ovviamente sarà diverso tra test e produzione  */
-	public static final String ENDPOINT_PAGAMENTI = "https://paygov.collaudo.regione.veneto.it/pa/services/PagamentiTelematiciDovutiPagati"; // COLLAUDO REGIONE
-	
-	/** Da aggiornare con il dato definitivo (da concordare con Regione) */
-	public static final String DATI_SPECIFICI_RISCOSSIONE = "9/123456"; //TODO Specifico in base a cosa pago, da concordare con RVE e Mola.
-	
-	/** Da aggiornare con il dato definitivo (da concordare con Regione) */
-	public static final String TIPO_DOVUTI = "ALTRO";
-
-	private static final boolean USE_PROXY = false;
-	private static final String PROXY_HOST = ""; // DA VALORIZZARE CON PROXY
-	private static final String PROXY_PORT = ""; // DA VALORIZZARE CON PORTA PROXY
-
-	private static final String PROXY_USERNAME = ""; // PER ALCUNI PROXY POTREBBE ANCHE NON ESSERE VALORIZZATO. IN EFFETTO DOVREBBE ESSERE COSI' PER QUELLO DI REGIONE
-	private static final String PROXY_PASSWORD = ""; // PASSWORD
+	public static String ENDPOINT_PAGAMENTI = ""; 
 	
 	// costanti
 	public static final String ENTE_NON_VALIDO = "PAA_ENTE_NON_VALIDO"; // codice IPA Ente non valido o password errata
@@ -139,7 +113,11 @@ public class EngineeringServiceImpl implements EngineeringService {
 	private static JAXBContext jCtPagatiContext = null;
 	private static JAXBContext jPaaSILInviaDovutiContext = null;
 	
-	
+	@PostConstruct
+	public void init(){
+		ENDPOINT_PAGAMENTI = engineeringProperties.getEndpointPagamenti();
+		setProxy();
+	}
 	
 	protected static ThreadLocal<DateFormat> fmt = new ThreadLocal<DateFormat>() {
 		protected DateFormat initialValue() {
@@ -199,25 +177,42 @@ public class EngineeringServiceImpl implements EngineeringService {
 	     return jPaaSILInviaDovutiContext;
 	}
 	
+	
 	/**
-	 * Inizializzo qui il proxy, probabilmente va spostato in un punto centrale per l'applicativo.
+	 * Era prima nel costruttore, spostato qui per evitare errore autowired all' avvio
 	 */
-	public EngineeringServiceImpl() {
-		
-		if (USE_PROXY) {
-			System.setProperty("https.proxyHost", PROXY_HOST);
-			System.setProperty("https.proxyPort", PROXY_PORT);
-			if (StringUtils.isNotBlank(PROXY_USERNAME)) {
-				Authenticator.setDefault(new HttpAuthenticateProxy(PROXY_USERNAME, PROXY_PASSWORD));
+	public void setProxy(){
+		if (engineeringProperties.isUseProxy()) {
+			System.setProperty("https.proxyHost", engineeringProperties.getProxyHost());
+			System.setProperty("https.proxyPort", engineeringProperties.getProxyPort());
+			if (StringUtils.isNotBlank(engineeringProperties.getProxyUsername())) {
+				Authenticator.setDefault(new HttpAuthenticateProxy(engineeringProperties.getProxyUsername(), engineeringProperties.getProxyPassword()));
 			}
 		}
 	}
 	
+	public String pagaQuotaProvider(Long providerId, String backURL) throws Exception {
+		Provider provider = providerService.getProvider(providerId);
+		
+		if(provider == null){
+			throw new Exception("Provider non trovato");
+		}
+		
+//		Pagamento p = pagamentoRepository.getPagamentoByProvider(provider);
+//		if (p == null) {
+//			p = new Pagamento();
+//			p.setProvider(provider);
+//		}
+		
+		
+		
+		return "";
+	}
 
 	public String paga(Long idEvento, String backURL) throws Exception {
 
 		Evento e = eventoRepository.findOne(idEvento);
-		
+	
 		Pagamento p = pagamentoRepository.getPagamentoByEvento(e);
 		if (p == null) {
 			p = new Pagamento();
@@ -226,17 +221,19 @@ public class EngineeringServiceImpl implements EngineeringService {
 		
 		Provider soggetto = e.getProvider();
 		
+		
 		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
 		p.setAnagrafica(soggetto.getDenominazioneLegale());
-		p.setCodiceFiscale(soggetto.getCodiceFiscale());
+		//p.setCodiceFiscale(soggetto.getCodiceFiscale());
+		p.setCodiceFiscale("");
 		p.setPartitaIva(soggetto.getPartitaIva());
 		p.setEmail(soggetto.getAccount().getEmail());
 		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
 		p.setCausale("VERSAMENTO DI PROVA");
-		p.setDatiSpecificiRiscossione(DATI_SPECIFICI_RISCOSSIONE); 
+		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
 		
 		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.
-		String iud = StringUtils.rightPad(SERVIZIO + fmt.get().format(new Date()), 35, "0");
+		String iud = StringUtils.rightPad(engineeringProperties.getServizio() + fmt.get().format(new Date()), 35, "0");
 		LOGGER.info("IUD: " + iud);
 		
 		p.setIdentificativoUnivocoDovuto(iud);
@@ -248,7 +245,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		PaaSILInviaDovuti dovuti = createPagamentoMessage(p, backURL);
 		
 		IntestazionePPT header = new IntestazionePPT();
-		header.setCodIpaEnte(IPA);
+		header.setCodIpaEnte(engineeringProperties.getIpa());
 		
 		PaaSILInviaDovutiRisposta response = port.get().paaSILInviaDovuti(dovuti, header);
 		
@@ -290,7 +287,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		versamento.setCausaleVersamento(p.getCausale());
 		versamento.setCommissioneCaricoPA(p.getCommissioneCaricoPa() != null ? BigDecimal.valueOf(p.getCommissioneCaricoPa()) : null);
 		versamento.setDatiSpecificiRiscossione(p.getDatiSpecificiRiscossione());
-		versamento.setIdentificativoTipoDovuto(TIPO_DOVUTI);
+		versamento.setIdentificativoTipoDovuto(engineeringProperties.getTipoDovuti());
 		versamento.setIdentificativoUnivocoDovuto(p.getIdentificativoUnivocoDovuto());
 		versamento.setImportoSingoloVersamento(BigDecimal.valueOf(p.getImporto()));
 		
@@ -320,7 +317,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		
 		
 		PaaSILInviaDovuti dovuti = new PaaSILInviaDovuti();
-		dovuti.setPassword(PASSWORD);
+		dovuti.setPassword(engineeringProperties.getPassword());
 		
 		// uso la trasformazione per omettere la dichiarazione XML
 		Transformer transformer = tf.get();
@@ -359,7 +356,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 				fault = new Holder<FaultBean>();
 				pagati = new Holder<DataHandler>();
 				
-				port.get().paaSILChiediPagati(IPA, PASSWORD, p.getIdSession(), fault, pagati);
+				port.get().paaSILChiediPagati(engineeringProperties.getIpa(), engineeringProperties.getPassword(), p.getIdSession(), fault, pagati);
 				
 				// traccio la chiamata
 				log = new PagPagatiLog();

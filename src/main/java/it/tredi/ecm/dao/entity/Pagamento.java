@@ -1,6 +1,5 @@
 package it.tredi.ecm.dao.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 

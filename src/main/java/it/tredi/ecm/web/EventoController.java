@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
@@ -64,6 +67,7 @@ import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AnagraficaEventoService;
 import it.tredi.ecm.service.AnagraficaFullEventoService;
+import it.tredi.ecm.service.EngineeringService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ObiettivoService;
@@ -91,6 +95,8 @@ public class EventoController {
 
 	@Autowired private RuoloOreFSCValidator ruoloOreFSCValidator;
 	@Autowired private EventoValidator eventoValidator;
+	
+	@Autowired private EngineeringService engineeringService;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -1102,5 +1108,26 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
+	
+	@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/paga", method=RequestMethod.GET)
+	public String pagaEvento(@PathVariable("providerId") Long providerId, @PathVariable("eventoId") Long eventoId,
+			 					HttpServletRequest request, Model model, RedirectAttributes redirectAttrs){
+		try{
+			String rootUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+			String url = engineeringService.paga(eventoId, rootUrl + request.getContextPath() + "/provider/" + providerId + "/evento/list");
+			
+			if (StringUtils.hasText(url)) {
+				return "redirect:" + url;
+			}
+			
+			return "redirect:/provider/{providerId}/evento/list";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+	}
+	
+	
 
 }
