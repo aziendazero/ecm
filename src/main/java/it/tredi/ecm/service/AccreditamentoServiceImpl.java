@@ -820,13 +820,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto()){
 			if(currentUser.isProvider()){
 				Long providerId = getProviderIdForAccreditamento(accreditamentoId);
-				Long accountIdForProvider = providerService.getAccountIdForProvider(providerId);
-				if(currentUser.getAccount().getId().equals(accountIdForProvider)){
+				if(currentUser.getAccount().getProvider() != null &&  currentUser.getAccount().getProvider().getId().equals(providerId)){
 					TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
 					if(task == null){
 						return false;
 					}
-
 					return true;
 				}
 				return false;

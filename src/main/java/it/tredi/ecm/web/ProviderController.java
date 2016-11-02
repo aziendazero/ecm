@@ -129,8 +129,8 @@ public class ProviderController {
 	/*** WORKFLOW ***/
 	@RequestMapping("/workflow/token/{token}/provider/{providerId}")
 	@ResponseBody
-	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("providerId") Long providerId) throws Exception{
-		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato} token: " + token + "; providerId: " + providerId));
+	public ResponseState GetProviderUsers(@PathVariable("token") String token, @PathVariable("providerId") Long providerId) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/provider/{providerId} token: " + token + "; providerId: " + providerId));
 
 		if(!tokenService.checkTokenAndDelete(token)) {
 			String msg = "Impossibile trovare il token passato token: " + token;
@@ -148,8 +148,14 @@ public class ProviderController {
 
 		ResponseUsername responseUsername = new ResponseUsername();
 		Set<String> usernames = new HashSet<>();
-		if(provider.getAccount() != null && provider.getAccount().getUsernameWorkflow() != null && !provider.getAccount().getUsernameWorkflow().isEmpty())
-			usernames.add(provider.getAccount().getUsernameWorkflow());
+		//if(provider.getAccount() != null && provider.getAccount().getUsernameWorkflow() != null && !provider.getAccount().getUsernameWorkflow().isEmpty())
+		//	usernames.add(provider.getAccount().getUsernameWorkflow());
+		if(provider.getAccounts() != null && !provider.getAccounts().isEmpty()) {
+			for(Account account : provider.getAccounts()) {
+				usernames.add(account.getUsernameWorkflow());
+			}
+		}
+		
 		responseUsername.setUserNames(usernames);
 		ResponseState responseState = new ResponseState(false, "Elenco usernames");
 		ObjectMapper objMapper = new ObjectMapper();

@@ -41,4 +41,7 @@ public interface SecurityAccessService {
 	public boolean canShowAllEventi(CurrentUser currentUser);
 	public boolean canShowAllEventiProvider(CurrentUser currentUser, Long providerId);
 	public boolean canCreateEvento(CurrentUser currentUser, Long providerId);
+	public boolean canShowAllProviderUser(CurrentUser currentUser, Long providerId);
+	boolean canProviderEditUser(CurrentUser currentUser, Long providerId, Long userId);
+	boolean canProviderCreateUser(CurrentUser currentUser, Long providerId);
 }

@@ -53,29 +53,29 @@
 									<h2 class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{message.info_login}"></h2>
 
 									<!-- username -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.account.username')} ? 'bad'">
+									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.account.username')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nomeUtente">
 											<span class="required" th:text="#{label.nome_utente}">label.nome_utente</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="text" id="nomeUtente" th:field="${providerForm.provider.account.username}"
+											<input type="text" id="nomeUtente" th:field="${providerForm.account.username}"
 												required="required" class="form-control col-md-7 col-xs-12" />
 										</div>
-										<div th:if="${#fields.hasErrors('providerForm.provider.account.username')}" class="alert" th:errors="${providerForm.provider.account.username}"></div>
+										<div th:if="${#fields.hasErrors('providerForm.account.username')}" class="alert" th:errors="${providerForm.account.username}"></div>
 									</div>
 
 									<!-- email -->
-									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.provider.account.email')} ? 'bad'">
+									<div class="item form-group" th:classappend="${#fields.hasErrors('providerForm.account.email')} ? 'bad'">
 										<label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">
 											<span class="required" th:text="#{label.email}">label.email</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-md-6 col-sm-6 col-xs-12">
-											<input type="email" id="email" th:field="${providerForm.provider.account.email}"
+											<input type="email" id="email" th:field="${providerForm.account.email}"
 												required="required" class="form-control col-md-7 col-xs-12" />
 										</div>
-										<div th:if="${#fields.hasErrors('providerForm.provider.account.email')}" class="alert" th:errors="${providerForm.provider.account.email}"></div>
+										<div th:if="${#fields.hasErrors('providerForm.account.email')}" class="alert" th:errors="${providerForm.account.email}"></div>
 									</div>
 								</div>
 								<div id="step-2" class="wizard_content" style="display: none;">

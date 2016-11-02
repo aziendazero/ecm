@@ -181,4 +181,14 @@ public class AccountServiceImpl implements AccountService{
 		}
 		return emailList;
 	}
+	
+	@Override
+	public Long getProviderIdById(Long accountId) {
+		return accountRepository.getProviderIdById(accountId).orElse(null);
+	}
+	
+	@Override
+	public Set<Account> findAllByProviderId(Long providerId) {
+		return accountRepository.findAllByProviderId(providerId);
+	}
 }

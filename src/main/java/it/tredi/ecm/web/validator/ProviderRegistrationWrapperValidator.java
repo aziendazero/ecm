@@ -20,7 +20,10 @@ public class ProviderRegistrationWrapperValidator{
 	public void validate(Object target, Errors errors) {
 		LOGGER.info(Utils.getLogMessage("Validazione ProviderRegistrationWrapper"));
 		ProviderRegistrationWrapper providerForm = (ProviderRegistrationWrapper)target;
-		accountValidator.validate(providerForm.getProvider().getAccount(), errors, "provider.account.");
+		//Provider nulti account
+		//accountValidator.validate(providerForm.getProvider().getAccount(), errors, "provider.account.");
+		//In registrazione viene aggiunto un solo account
+		accountValidator.validate(providerForm.getAccount(), errors, "account.");
 
 		providerValidator.validateForRegistrazione(providerForm.getProvider(), errors, "provider.");
 		validateLegale(providerForm.getLegale(), errors);

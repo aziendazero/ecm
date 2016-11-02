@@ -1,5 +1,8 @@
 package it.tredi.ecm.web;
 
+import java.util.HashSet;
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -19,10 +22,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Profile;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.CurrentUserDetailsService;
 import it.tredi.ecm.service.ProfileAndRoleService;
+import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccountChangePassword;
 import it.tredi.ecm.web.bean.Message;
@@ -39,6 +45,7 @@ public class AccountController{
 	@Autowired private ProfileAndRoleService profileAndRoleService;
 	@Autowired private AccountValidator accountValidator;
 	@Autowired private CurrentUserDetailsService currentUserDetailsService;
+	@Autowired private ProviderService providerService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -101,6 +108,46 @@ public class AccountController{
 		}
 	}
 
+	/**
+	 * Modifica account per provider ridirezione
+	 **/
+	@RequestMapping("/provider/user/{id}/edit")
+	public String editUserForProvider(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/user/" + id + "/edit"));
+		try {
+			Provider currentProvider = providerService.getProvider();
+			if(currentProvider.isNew()){
+				throw new Exception("Provider non registrato");
+			}else{
+				Long providerId = currentProvider.getId();
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/user/" + id + "/edit"));
+				return "redirect:/provider/"+providerId+"/user/" + id + "/edit";
+			}
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/user/" + id + "/edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
+			return "redirect:/home";
+		}
+	}
+
+	/**
+	 * Modifica account per provider
+	 **/
+	@PreAuthorize("@securityAccessServiceImpl.canProviderEditUser(principal,#providerId,#id)")
+	@RequestMapping("/provider/{providerId}/user/{id}/edit")
+	public String editUserForProvider(@PathVariable Long providerId, @PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
+		try{
+			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/user/" + id + "/edit"));
+			return goToEdit(model, accountService.getUserById(id));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/user/" + id + "/edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:" + URL_LIST;
+		}
+	}
+
 	@PreAuthorize("@securityAccessServiceImpl.canCreateUser(principal)")
 	@RequestMapping("/user/new")
 	public String newUser(Model model, RedirectAttributes redirectAttrs){
@@ -114,10 +161,66 @@ public class AccountController{
 		}
 	}
 
+	/**
+	 * Modifica account per provider
+	 **/
+	@RequestMapping("provider/user/new")
+	public String newUserForProvider(Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/user/new"));
+		try {
+			Provider currentProvider = providerService.getProvider();
+			if(currentProvider.isNew()){
+				throw new Exception("Provider non registrato");
+			}else{
+				Long providerId = currentProvider.getId();
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/user/new"));
+				return "redirect:/provider/"+providerId+"/user/new";
+			}
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/user/new"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
+			return "redirect:/home";
+		}
+	}
+
+	/**
+	 * Modifica account per provider
+	 **/
+	@PreAuthorize("@securityAccessServiceImpl.canProviderCreateUser(principal,#providerId)")
+	@RequestMapping("provider/{providerId}/user/new")
+	public String newUserForProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		try {
+			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/user/new"));
+			return goToEdit(model, new Account());
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /user/new"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:" + URL_LIST;
+		}
+	}
+
 	@RequestMapping(value = "/user/save", method = RequestMethod.POST)
 	public String saveUser(@ModelAttribute("account") Account account, BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		LOGGER.info(Utils.getLogMessage("POST /user/save"));
+		String urlListRedirect = URL_LIST;
 		try {
+			Provider currentProvider = providerService.getProvider();
+			if(currentProvider != null) {
+				//si sta salvando un nuovo utente del  provider
+				urlListRedirect = "/provider" + URL_LIST;
+				account.setProvider(currentProvider);
+				Optional<Profile> providerProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDER);
+				if(account.getProfiles() == null)
+					account.setProfiles(new HashSet<Profile>());
+				for(Profile profile : account.getProfiles()) {
+					account.getProfiles().remove(profile);
+				}
+				if(providerProfile.isPresent())
+					account.getProfiles().add(providerProfile.get());
+			}
+			
 			accountValidator.validate(account, result);
 			if(result.hasErrors()){
 				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
@@ -134,8 +237,8 @@ public class AccountController{
 						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.utente_creato", "success"));
 					else
 						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.utente_salvato", "success"));
-					LOGGER.info(Utils.getLogMessage("REDIRECT:" + URL_LIST));
-					return "redirect:" + URL_LIST;
+					LOGGER.info(Utils.getLogMessage("REDIRECT:" + urlListRedirect));
+					return "redirect:" + urlListRedirect;
 				}catch (Exception ex){
 					LOGGER.error(Utils.getLogMessage("POST /user/save"),ex);
 					model.addAttribute("profileList", profileAndRoleService.getAllProfile());
@@ -146,8 +249,8 @@ public class AccountController{
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /user/save"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT:" + URL_LIST));
-			return "redirect:" + URL_LIST;
+			LOGGER.info(Utils.getLogMessage("REDIRECT:" + urlListRedirect));
+			return "redirect:" + urlListRedirect;
 		}
 	}
 
@@ -213,6 +316,49 @@ public class AccountController{
 		}
 		return "redirect:/login";
 	}
+	
+	/**
+	 * Lista account per provider
+	 **/
+	@RequestMapping("/provider/user/list")
+	public String showAccountForProvider(Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/user/list"));
+		try {
+			Provider currentProvider = providerService.getProvider();
+			if(currentProvider.isNew()){
+				throw new Exception("Provider non registrato");
+			}else{
+				Long providerId = currentProvider.getId();
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/user/list"));
+				return "redirect:/provider/"+providerId+"/user/list";
+			}
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/user/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
+			return "redirect:/home";
+		}
+	}
+		
+	/**
+	 * Lista account per provider
+	 **/
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllProviderUser(principal,#providerId)")
+	@RequestMapping("/provider/{providerId}/user/list")
+	public String showAccountForProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		try {
+			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/user/list"));
+			model.addAttribute("accountList", accountService.findAllByProviderId(providerId));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
+			return LIST;
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /user/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+	
 
 	private String goToEdit(Model model, Account account){
 		model.addAttribute("account", account);

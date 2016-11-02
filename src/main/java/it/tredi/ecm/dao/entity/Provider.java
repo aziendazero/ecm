@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -52,9 +53,9 @@ import lombok.Setter;
 
 })
 public class Provider extends BaseEntity{
-	/*	ACCOUNT LEGATO AL PROFILO PROVIDER	*/
-	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-	private Account account;
+	/*	ACCOUNTS DEL PROVIDER	*/
+	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE })	
+	List<Account> accounts;
 
 	/*	INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE	*/
 	private String denominazioneLegale;

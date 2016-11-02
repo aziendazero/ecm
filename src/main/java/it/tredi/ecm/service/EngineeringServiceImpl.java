@@ -230,7 +230,9 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setAnagrafica(soggetto.getDenominazioneLegale());
 		p.setCodiceFiscale(soggetto.getCodiceFiscale());
 		p.setPartitaIva(soggetto.getPartitaIva());
-		p.setEmail(soggetto.getAccount().getEmail());
+		//Provider Multi Account 
+		//p.setEmail(soggetto.getAccount().getEmail());
+		p.setEmail(soggetto.getEmailStruttura());
 		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
 		p.setCausale("VERSAMENTO DI PROVA");
 		p.setDatiSpecificiRiscossione(DATI_SPECIFICI_RISCOSSIONE); 
