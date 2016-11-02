@@ -9,20 +9,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
-import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
+import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
+import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
+import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
@@ -121,7 +126,7 @@ public class EventoValidator {
 			for(PersonaEvento p : evento.getResponsabili()) {
 				boolean hasError = validatePersonaEvento(p, "responsabile");
 				if(hasError) {
-					errors.rejectValue("responsabiliScientifici["+counter+"]", "error.campi_mancanti_persona");
+					errors.rejectValue("responsabiliScientifici["+counter+"]", "");
 					atLeastOneErrorPersonaEvento = true;
 				}
 				counter++;
@@ -164,7 +169,7 @@ public class EventoValidator {
 			for(Sponsor s : evento.getSponsors()) {
 				boolean hasError = validateSponsor(s);
 				if(hasError) {
-					errors.rejectValue("sponsors["+counter+"]", "error.campi_mancanti_sponsor");
+					errors.rejectValue("sponsors["+counter+"]", "");
 					atLeastOneErrorSponsor = true;
 				}
 				counter++;
@@ -253,7 +258,7 @@ public class EventoValidator {
 			for(Partner p : evento.getPartners()) {
 				boolean hasError = validatePartner(p);
 				if(hasError) {
-					errors.rejectValue("partners["+counter+"]", "error.campi_mancanti_partner");
+					errors.rejectValue("partners["+counter+"]", "");
 					atLeastOneErrorPartner = true;
 				}
 				counter++;
@@ -391,7 +396,7 @@ public class EventoValidator {
 			for(PersonaEvento p : evento.getDocenti()) {
 				boolean hasError = validatePersonaEvento(p, "docente");
 				if(hasError) {
-					errors.rejectValue("docenti["+counter+"]", "error.campi_mancanti_persona");
+					errors.rejectValue("docenti["+counter+"]", "");
 					atLeastOneErrorPersonaEvento = true;
 				}
 				counter++;
@@ -428,7 +433,6 @@ public class EventoValidator {
 		else if(evento.getProgramma().size() != dateIntermedie + 2)
 			errors.rejectValue(prefix + "programma", "error.numero_programmi_errato");
 		else {
-			boolean atLeastOneErrorProgramma = false;
 			for(ProgrammaGiornalieroRES pgr : evento.getProgramma()) {
 				//ciclo alla ricerca di questo Programma per farmi dare la chiave nella mappa
 				Long key = -1L;
@@ -440,8 +444,6 @@ public class EventoValidator {
 				}
 				validateProgrammaRES(pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEvento());
 			}
-			if(atLeastOneErrorProgramma)
-				errors.rejectValue(prefix + "programma", "error.campi_mancanti_programma");
 		}
 
 		/* BROCHURE EVENTO (campo obbligatorio se TIPOLOGIA EVENTO == CONVEGNO_CONGRESSO o WORKSHOP_SEMINARIO)
@@ -552,18 +554,14 @@ public class EventoValidator {
 		}
 
 		/* DATA FINE (campo obbligatorio)
-		 * la data di fine deve può essere compresa nello stesso anno solare della data di inizio
-		 * e l'evento non può avere durata superiore a 730 giorni
+		 * l'evento non può avere durata superiore a 730 giorni
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
-		else if(evento.getDataInizio() != null && evento.getDataFine().getYear() == evento.getDataInizio().getYear())
-			errors.rejectValue(prefix + "dataFine", "error.data_fine_fsc_non_valida");
 		else if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFSC())))
 			errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fsc730");
-
 
 		/* TIPOLOGIA EVENTO (campo obbligatorio)
 		 * selectpicker (influenza altri campi, ma il controllo su questo campo è banale)
@@ -605,10 +603,46 @@ public class EventoValidator {
 		if(evento.getDescrizioneProgetto() == null || evento.getDescrizioneProgetto().isEmpty())
 			errors.rejectValue(prefix + "descrizioneProgetto", "error.empty");
 
-		/* FASI/AZIONI/RUOLI FSC
-		 *
+		/* FASI DAINSERIRE (campo obbligatorio se tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO)
+		 * radio
+		 * gestione perticolare per tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO
 		 * */
-		//TODO
+		if(evento.getTipologiaEvento() != null
+				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+				&& evento.getFasiDaInserire() == null)
+			errors.rejectValue(prefix + "fasiDaInserire", "error.empty");
+
+		/* FASI/AZIONI/RUOLI FSC
+		 * (serie di campi obbligatori)
+		 * ripetibile complesso di classe fasiAzioniRuoli
+		 * cambia a seconda della tipologia di evento FSC
+		 * devono avere tutti i campi inseriti
+		 * */
+		if(evento.getFasiAzioniRuoli() == null || evento.getFasiAzioniRuoli().isEmpty())
+			errors.rejectValue(prefix + "fasiAzioniRuoli", "error.empty");
+		else {
+			int counter = 0;
+
+			//gestione particolare tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO
+			//eseguo i controlli solo alle fasiDaInserire specificate da fasiDaInserire
+			if(evento.getTipologiaEvento() != null
+					&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+					&& evento.getFasiDaInserire() != null) {
+				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
+					if(evento.getFasiDaInserire().getFasiAbilitate().contains(far.getFaseDiLavoro()))
+						validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEvento());
+					counter++;
+				}
+			}
+
+			//gestione di default
+			else {
+				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
+					validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEvento());
+					counter++;
+				}
+			}
+		}
 
 		/* NUMERO PARTECIPANTI (campo obbligatorio)
 		 * se tipologiaEvento == TRAINING_INDIVIDUALIZZATO massimo 5 partecipanti per tutor
@@ -687,8 +721,6 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "dataFine", "error.empty");
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
-		else if(evento.getDataInizio() != null && evento.getDataFine().getYear() == evento.getDataInizio().getYear())
-			errors.rejectValue(prefix + "dataFine", "error.data_fine_fad_non_valida");
 		else if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFAD())))
 			errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fad365");
 
@@ -719,7 +751,7 @@ public class EventoValidator {
 			for(PersonaEvento p : evento.getDocenti()) {
 				boolean hasError = validatePersonaEvento(p, "docente");
 				if(hasError) {
-					errors.rejectValue("docenti["+counter+"]", "error.campi_mancanti_persona");
+					errors.rejectValue("docenti["+counter+"]", "");
 					atLeastOneErrorPersonaEvento = true;
 				}
 				counter++;
@@ -904,7 +936,7 @@ public class EventoValidator {
 			for(DettaglioAttivitaRES dar : programma.getProgramma()) {
 				boolean hasError = validateDettaglioAttivitaRES(dar, tipologiaEvento);
 				if(hasError) {
-					errors.rejectValue(prefix + "programma["+counter+"]", "error.campi_mancanti_dettaglio_attivita");
+					errors.rejectValue(prefix + "programma["+counter+"]", "");
 					atLeastOneErrorDettaglioAttivita = true;
 				}
 				counter++;
@@ -959,8 +991,193 @@ public class EventoValidator {
 	//				return true;
 			}
 		}
+		return false;
+	}
+
+	//validate FasiAzioniRuoliFSC
+	private void validateFasiAzioniRuoliFSC(FaseAzioniRuoliEventoFSCTypeA faseAzioniRuoli, Errors errors, String prefix, TipologiaEventoFSCEnum tipologiaEvento) {
+
+		//fase di lavoro (gratis, non viene inserita dall'utente, ma generata
+		//automaticamente dal sistema
+
+		//azioniRuoli (almeno 1 azione per fase)
+		if(faseAzioniRuoli.getAzioniRuoli() == null || faseAzioniRuoli.getAzioniRuoli().isEmpty())
+			errors.rejectValue(prefix + "azioniRuoli", "error.empty");
+		else {
+			int counter = 0;
+			boolean atLeastOneErrorAzione = false;
+			for(AzioneRuoliEventoFSC aref : faseAzioniRuoli.getAzioniRuoli()) {
+				Boolean hasError = validateAzioneRuoliFSC(aref, tipologiaEvento);
+				if(hasError) {
+					errors.rejectValue(prefix + "azioniRuoli["+counter+"]", "");
+					atLeastOneErrorAzione = true;
+				}
+				counter++;
+			}
+			if(atLeastOneErrorAzione)
+				errors.rejectValue(prefix + "azioniRuoli", "error.campi_con_errori_azione_ruoli"+tipologiaEvento);
+		}
+	}
+
+	//validate azioniRuoli delle FasiAzioniRuoliFSC
+	private boolean validateAzioneRuoliFSC(AzioneRuoliEventoFSC azioneRuoli, TipologiaEventoFSCEnum tipologiaEvento) {
+
+		//parte in comune
+		if(azioneRuoli.getAzione() == null || azioneRuoli.getAzione().isEmpty())
+			return true;
+		if(azioneRuoli.getObiettivoFormativo() == null)
+			return true;
+		if(azioneRuoli.getRisultatiAttesi() == null || azioneRuoli.getRisultatiAttesi().isEmpty())
+			return true;
+		if(azioneRuoli.getMetodiDiLavoro() == null || azioneRuoli.getMetodiDiLavoro().isEmpty())
+			return true;
+		if(azioneRuoli.getRuoli() == null || azioneRuoli.getRuoli().isEmpty())
+			return true;
+
+		//parti specifiche
+		int numCoordinatori = 0;
+		int numResponsabili = 0;
+		boolean hasPartecipante = false;
+		boolean hasTutor = false;
+		if(tipologiaEvento != null) switch(tipologiaEvento) {
+
+			//caso 1) tipologiaEvento == TRAINING_INDIVIDUALIZZATO
+			// - almeno 1 ruolo partecipante, tutor per azione
+			// - almeno 1 ora non frazionabile per il partecipante
+			// - massimo 1 coordinatore per azione
+			// - tutti campi obbligatori
+			case TRAINING_INDIVIDUALIZZATO:
+
+				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
+					if(r.getTempoDedicato() == null)
+						return true;
+					if(r.getRuolo() == null)
+						return true;
+					else {
+						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE)
+							numCoordinatori++;
+						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
+							if(r.getTempoDedicato() < 1)
+								return true;
+							else
+								hasPartecipante = true;
+						}
+						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.TUTOR)
+							hasTutor = true;
+					}
+				}
+				if(numCoordinatori > 1 || !hasPartecipante || !hasTutor)
+					return true;
+
+			break;
+
+			//caso 2) tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO
+			// - almeno una fase (azione per semplicità)
+			// - almeno un ruolo partecipante per fase
+			// - almeno 2 ore non frazionabili per partecipante, campo valorizzabile solo con multipli di 2
+			// - massimo un coordinatore per fase
+			// - tutti i campi obbligatori
+			case GRUPPI_DI_MIGLIORAMENTO:
+
+				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
+					if(r.getTempoDedicato() == null)
+						return true;
+					if(r.getRuolo() == null)
+						return true;
+					else {
+						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE)
+							numCoordinatori++;
+						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
+							if(r.getTempoDedicato() < 2)
+								return true;
+							else if((r.getTempoDedicato() % 2) != 0f)
+								return true;
+							hasPartecipante = true;
+						}
+					}
+				}
+				if(numCoordinatori > 1 || !hasPartecipante)
+					return true;
+
+			break;
+
+			//caso3) tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO
+			// - controllo a seconda delle fasi inserite
+			// - almeno 1 azione per fase
+			// - almeno 1 ruolo partecipante per azione
+			// - massimo un responsabile per fase
+			// - tutti i campi obbligatori
+			case PROGETTI_DI_MIGLIORAMENTO:
+
+				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
+					if(r.getTempoDedicato() == null)
+						return true;
+					if(r.getRuolo() == null)
+						return true;
+					else {
+						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
+							hasPartecipante = true;
+						}
+						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.RESPONSABILE)
+							numResponsabili++;
+					}
+				}
+				if(!hasPartecipante || numResponsabili > 1)
+					return true;
+
+			break;
+
+			//caso4) tipologiaEvento == ATTIVITA_DI_RICERCA
+			// - almeno 1 azione per fase
+			// - almeno 1 ruolo partecipante per azione
+			// - tutti i campi obbligatori
+			case ATTIVITA_DI_RICERCA:
+
+				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
+					if(r.getTempoDedicato() == null)
+						return true;
+					if(r.getRuolo() == null)
+						return true;
+					else {
+						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
+							hasPartecipante = true;
+						}
+					}
+				}
+				if(!hasPartecipante)
+					return true;
+
+			break;
+
+			//caso5) tipologiaEvento == AUDIT_CLINICO_ASSISTENZIALE
+			// - almeno 1 azione per fase
+			// - almeno 1 ruolo partecipante per azione
+			// - almeno 2 ore non frazionabili per partecipante, campo valorizzabile solo con multipli di 2
+			// - tutti i campi obbligatori
+			case AUDIT_CLINICO_ASSISTENZIALE:
+
+				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
+					if(r.getTempoDedicato() == null)
+						return true;
+					if(r.getRuolo() == null)
+						return true;
+					else {
+						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
+							if(r.getTempoDedicato() < 2)
+								return true;
+							else if((r.getTempoDedicato() % 2) != 0f)
+								return true;
+							hasPartecipante = true;
+						}
+					}
+				}
+				if(!hasPartecipante)
+					return true;
+
+			break;
+
+		}
 
 		return false;
-
 	}
 }

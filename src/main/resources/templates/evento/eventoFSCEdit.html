@@ -248,7 +248,7 @@
 							<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
 
 								<!-- TODO rimuovere -->
-								<!-- <div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
+								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div>
 
 								<!-- DENOMINAZIONE LEGALE PROVIDER -->
 								<div class="item form-group">
@@ -724,7 +724,7 @@
 								<th:block th:if="${eventoWrapper.evento.tipologiaEvento == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO}">
 
 									<!-- SELEZIONE FASI DA INSERIRE -->
-									<div class="item form-group">
+									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.fasiDaInserire')} ? 'bad'">
 										<label class="control_label col-md-4 col-sm-4 col-xs-11">
 											<span th:text="#{label.selezionare_le_fasi_da_inserire}">Selezionare le fasi da inserire</span>
 										</label>
@@ -736,6 +736,7 @@
 												</label>
 											</div>
 										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.fasiDaInserire')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.fasiDaInserire')}__}"></div>
 									</div>
 
 									<div class="divider-dashed"></div>
@@ -794,11 +795,12 @@
 												<tbody>
 													<tr th:each="riepilogo , r : ${eventoWrapper.riepilogoRuoliFSC}">
 														<td th:text="${riepilogo.value.ruolo?.nome}"></td>
-														<td th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
-														<td>
+														<td th:unless="${riepilogo.value.ruolo?.ruoloBase == null}" th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
+														<td th:if="${riepilogo.value.ruolo?.ruoloBase == null}"></td>
+														<td th:unless="${riepilogo.key == null}">
 															<input th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" />
 														</td>
-
+														<td th:if="${riepilogo.key == null}"></td>
 														<td th:text="${riepilogo.value?.tempoDedicato}"></td>
 														<td th:text="${riepilogo.value?.crediti}"></td>
 													</tr>
@@ -1221,16 +1223,6 @@
 						countSelectedText : '{0} selezionate'
 					});
 
-					//Aggancio eventi
-					$('#tipologiaEventoId').on('change', setEvResTipologiaGruppo);
-					$('#tipologiaEventoId').on('change', setEvResSperimentazioneClinica);
-					$('#tipologiaEventoId').on('change', setEvResOttenutoComitatoEtico);
-					$('#tipologiaEventoId').on('change', setEvResIndicatoreObbligatorio);
-
-					//non funziona
-					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
-					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
-
 					$('#addRuoloOreFSC-ruolo').prop('disabled',true);
 
 					initAll();
@@ -1241,6 +1233,16 @@
 			            checkboxClass: 'icheckbox_flat-green',
 			            radioClass: 'iradio_flat-green'
 			        });
+
+					//Aggancio eventi
+					$('#tipologiaEventoId').on('change', setEvResTipologiaGruppo);
+					$('#tipologiaEventoId').on('change', setEvResSperimentazioneClinica);
+					$('#tipologiaEventoId').on('change', setEvResOttenutoComitatoEtico);
+					$('#tipologiaEventoId').on('change', setEvResIndicatoreObbligatorio);
+
+					//non funziona
+					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
+					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
 
 					setEvResTipologiaGruppo();
 					setEvResSperimentazioneClinica();

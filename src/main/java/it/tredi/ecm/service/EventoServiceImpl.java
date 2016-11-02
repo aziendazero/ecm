@@ -202,10 +202,10 @@ public class EventoServiceImpl implements EventoService {
 		Evento evento = eventoWrapper.getEvento();
 
 		calculateAutoCompilingData(eventoWrapper);
-		
+
 		if(evento instanceof EventoRES){
 			EventoRES eventoRES = ((EventoRES) evento);
-			
+
 			//date intermedie e programma giornaliero
 			eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().updateEventoRES();
 
@@ -234,14 +234,14 @@ public class EventoServiceImpl implements EventoService {
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				eventoRES.setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
-			
+
 			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
 			if(((EventoRES) evento).isConfermatiCrediti()){
 				evento.setCrediti(eventoWrapper.getCreditiProposti());
 			}
 		}else if(evento instanceof EventoFSC){
 			retrieveProgrammaAndAddJoin(eventoWrapper);
-			
+
 			if(eventoWrapper.getRiepilogoRuoliFSC() != null) {
 				((EventoFSC) evento).getRiepilogoRuoli().clear();
 				((EventoFSC) evento).getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());
@@ -283,7 +283,7 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD) evento).getVerificaApprendimento().addAll(nuoviVAF);
 
 			retrieveProgrammaAndAddJoin(eventoWrapper);
-			
+
 			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
 			if(((EventoFAD) evento).getConfermatiCrediti().booleanValue()){
 				evento.setCrediti(eventoWrapper.getCreditiProposti());
@@ -470,12 +470,12 @@ public class EventoServiceImpl implements EventoService {
 
 			//mappa ruoli ore
 			eventoWrapper.initMappaRuoloOreFSC();
-			
+
 			//Riepilogo RuoloOreFSC
 			eventoWrapper.initRiepilogoRuoliFSC();
 			for(RiepilogoRuoliFSC r : ((EventoFSC) evento).getRiepilogoRuoli())
 				eventoWrapper.getRiepilogoRuoliFSC().put(r.getRuolo(), r);
-			
+
 		}else if(evento instanceof EventoFAD){
 			//Docenti
 			eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
@@ -548,8 +548,8 @@ public class EventoServiceImpl implements EventoService {
 
 		return eventoWrapper;
 	}
-	
-	
+
+
 	@Override
 	public void calculateAutoCompilingData(EventoWrapper eventoWrapper) throws Exception {
 		calcoloDurataEvento(eventoWrapper);
@@ -561,11 +561,11 @@ public class EventoServiceImpl implements EventoService {
 		float durata = 0;
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
-			
+
 			//durata = calcoloDurataEventoRES(eventoWrapper.getProgrammaEventoRES());
 			durata = calcoloDurataEventoRES(eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values());
-			
-			
+
+
 			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			durata = calcoloDurataEventoFSC(eventoWrapper.getProgrammaEventoFSC(), eventoWrapper.getRiepilogoRuoliFSC());
@@ -602,7 +602,7 @@ public class EventoServiceImpl implements EventoService {
 		return durata;
 	}
 	 */
-	
+
 	private float calcoloDurataEventoRES(Collection<EventoRESProgrammaGiornalieroWrapper> programma){
 		float durata = 0;
 
@@ -620,10 +620,10 @@ public class EventoServiceImpl implements EventoService {
 
 	private float calcoloDurataEventoFSC(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum, RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		float durata = 0;
-		
+
 		prepareRiepilogoRuoli(programma, riepilogoRuoliFSC);
 		durata = getMaxDurataPatecipanti(riepilogoRuoliFSC);
-		
+
 		durata = Utils.getRoundedFloatValue(durata);
 		return durata;
 	}
@@ -636,7 +636,7 @@ public class EventoServiceImpl implements EventoService {
 
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getTempoDedicato() > max)
+				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getTempoDedicato() > max)
 					max = pairs.getValue().getTempoDedicato();
 			 }
 		}
@@ -647,15 +647,15 @@ public class EventoServiceImpl implements EventoService {
 	private float calcoloDurataEventoFAD(List<DettaglioAttivitaFAD> programma, RiepilogoFAD riepilogoFAD){
 		float durata = 0;
 		riepilogoFAD.clear();
-		
+
 		if(programma != null){
 			for(DettaglioAttivitaFAD dett : programma){
 				durata += dett.getOreAttivita();
-				
+
 				//popolo la lista di obiettivi
 				if(dett.getObiettivoFormativo() != null)
 					riepilogoFAD.getObiettivi().add(dett.getObiettivoFormativo());
-				
+
 				//popolo la lista di metodologie con annesso calcolo di ore
 				if(dett.getMetodologiaDidattica() != null){
 					if(riepilogoFAD.getMetodologie().containsKey(dett.getMetodologiaDidattica())){
@@ -702,7 +702,7 @@ public class EventoServiceImpl implements EventoService {
 		float crediti = 0.0f;
 		float oreFrontale = 0f;
 		float oreInterattiva = 0f;
-		
+
 		riepilogoRES.clear();
 
 		for(EventoRESProgrammaGiornalieroWrapper progrGio : programma) {
@@ -712,11 +712,11 @@ public class EventoServiceImpl implements EventoService {
 				}else if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA){
 					oreInterattiva += a.getOreAttivita();
 				}
-				
+
 				//popolo la lista di obiettivi formativi utilizzati
 				if(a.getObiettivoFormativo() != null)
 					riepilogoRES.getObiettivi().add(a.getObiettivoFormativo());
-				
+
 				//popolo la lista di metodologie con annesso calcolo di ore
 				if(a.getMetodologiaDidattica() != null){
 					if(riepilogoRES.getMetodologie().containsKey(a.getMetodologiaDidattica())){
@@ -728,7 +728,7 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 		}
-		
+
 		riepilogoRES.setTotaleOreFrontali(oreFrontale);
 		riepilogoRES.setTotaleOreInterattive(oreInterattiva);
 
@@ -750,7 +750,7 @@ public class EventoServiceImpl implements EventoService {
 
 			//metodologia frontale
 			numeroPartecipanti = numeroPartecipanti!= null ? numeroPartecipanti.intValue() : 0;
-			
+
 			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
 				creditiFrontale = oreFrontale * 1.0f;
 				creditiFrontale = (creditiFrontale + (creditiFrontale*0.25f));
@@ -771,22 +771,22 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		crediti = Utils.getRoundedFloatValue(crediti);
-		
+
 		return crediti;
 	}
-	
+
 	private float calcoloCreditiFormativiEventoFSC(TipologiaEventoFSCEnum tipologiaEvento, EventoWrapper wrapper){
 		float crediti = 0.0f;
-		
+
 		calcolaCreditiPartecipantiFSC(tipologiaEvento, wrapper.getRiepilogoRuoliFSC());
 		crediti = getMaxCreditiPartecipantiFSC(wrapper.getRiepilogoRuoliFSC());
 		calcolaCreditiAltriRuoliFSC(tipologiaEvento, wrapper.getRiepilogoRuoliFSC(),crediti);
-		
+
 		return crediti;
 	}
-	
+
 	/*
-	 * Ragruppo i Ruoli coinvolti in una mappa <Ruolo,RiepilogoRuoloOreFSC> 
+	 * Ragruppo i Ruoli coinvolti in una mappa <Ruolo,RiepilogoRuoloOreFSC>
 	 * dove il RiepilogoRuoloOreFSC avra la somma delle ore dei ruoli
 	 * */
 	private void prepareRiepilogoRuoli(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
@@ -796,24 +796,26 @@ public class EventoServiceImpl implements EventoService {
 				v.setTempoDedicato(0f);
 				v.setCrediti(0f);
 			});
-			
+
 			for(FaseAzioniRuoliEventoFSCTypeA fase : programma)
 				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli())
 					for(RuoloOreFSC ruolo : azione.getRuoli())
 					{
 						if(riepilogoRuoliFSC.containsKey(ruolo.getRuolo())){
 							RiepilogoRuoliFSC r = riepilogoRuoliFSC.get(ruolo.getRuolo());
-							r.addTempo(ruolo.getTempoDedicato());
+							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
+							r.addTempo(tempoDedicato);
 						}else{
-							RiepilogoRuoliFSC r = new RiepilogoRuoliFSC(ruolo.getRuolo(), ruolo.getTempoDedicato(), 0.0f);
+							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
+							RiepilogoRuoliFSC r = new RiepilogoRuoliFSC(ruolo.getRuolo(), tempoDedicato, 0.0f);
 							riepilogoRuoliFSC.put(ruolo.getRuolo(), r);
 						}
 					}
 		}
 	}
-	
+
 	/*
-	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> calcolo i crediti dei PARTECIPANTI 
+	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> calcolo i crediti dei PARTECIPANTI
 	 * */
 	private void calcolaCreditiPartecipantiFSC(TipologiaEventoFSCEnum tipologia, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		if(riepilogoRuoliFSC != null){
@@ -821,12 +823,12 @@ public class EventoServiceImpl implements EventoService {
 
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE)
+				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE)
 					pairs.getValue().calcolaCrediti(tipologia,0f);
 			 }
 		}
 	}
-	
+
 	/*
 	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> calcolo i crediti degli altri RUOLI
 	 * */
@@ -836,12 +838,12 @@ public class EventoServiceImpl implements EventoService {
 
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()).getRuoloBase() != RuoloFSCBaseEnum.PARTECIPANTE)
+				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() != RuoloFSCBaseEnum.PARTECIPANTE)
 					pairs.getValue().calcolaCrediti(tipologia,maxValue);
 			 }
 		}
 	}
-	
+
 	/*
 	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> individuo il valore MAX numero crediti attribuito a un PARTECIPANTE
 	 * */
@@ -853,23 +855,23 @@ public class EventoServiceImpl implements EventoService {
 
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getCrediti() > max)
+				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getCrediti() > max)
 					max = pairs.getValue().getCrediti();
 			 }
 		}
 
 		return max;
 	}
-	
+
 
 	private float calcoloCreditiFormativiEventoFAD(float durata, Boolean conTutor){
 		float crediti = 0.0f;
-		
+
 		if(conTutor != null && conTutor)
 			crediti = durata * 1.5f;
 		else
 			crediti = durata * 1.0f;
-		
+
 		crediti = Utils.getRoundedFloatValue(crediti);
 		return crediti;
 	}

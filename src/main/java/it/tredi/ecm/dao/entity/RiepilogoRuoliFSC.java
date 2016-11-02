@@ -16,13 +16,13 @@ import lombok.Setter;
 @Setter
 @Embeddable
 public class RiepilogoRuoliFSC {
-	
+
 	public static final float TRAINING_INDIVIDUALIZZATO_MAX_CREDITI = 30f;
 	public static final float GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI = 50f;
 	public static final float PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI = 50f;
 	public static final float ATTIVITA_DI_RICERCA_MAX_CREDITI = 3f;
 	public static final float AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI = 50f;
-	
+
 	@Enumerated(EnumType.STRING)
 	private RuoloFSCEnum ruolo;
 	private float tempoDedicato;
@@ -41,7 +41,7 @@ public class RiepilogoRuoliFSC {
 		this.tempoDedicato = tempoDedicato;
 		this.crediti = crediti;
 	}
-	
+
 	public RiepilogoRuoliFSC(RuoloFSCEnum ruolo, float tempoDedicato, float crediti, int numeroPartecipanti){
 		this.ruolo = ruolo;
 		this.tempoDedicato = tempoDedicato;
@@ -64,140 +64,140 @@ public class RiepilogoRuoliFSC {
 	}
 
 	public void calcolaCrediti(TipologiaEventoFSCEnum tipologiaEvento, float f){
-		if(tipologiaEvento != null){
+		if(tipologiaEvento != null && ruolo != null){
 			switch(tipologiaEvento){
-				case TRAINING_INDIVIDUALIZZATO: 
+				case TRAINING_INDIVIDUALIZZATO:
 					{
 						/*
 						 * PARTECIPANTI:	1 credito ogni ora (max 30) NON FRAZIONABILE
 						 * TUTOR:			1 credito ogni 6 ore
 						 * ESPERTO:			1 credito ongi ora (max 'crediti evento')
 						 * COORDINATORE		1 credito ongi ora (max 'crediti evento')
-						 * 
-						 * */	
+						 *
+						 * */
 						switch(ruolo.getRuoloBase())
-						{					
+						{
 							case PARTECIPANTE: crediti = 1*tempoDedicato;
-												crediti = (int) crediti;	
-												crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI : crediti; 
+												crediti = (int) crediti;
+												crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI : crediti;
 								break;
-							
+
 							case TUTOR: crediti = 1*(tempoDedicato/6);
 								break;
-								
+
 							case ESPERTO: crediti = 1*tempoDedicato;
-											crediti = (crediti > f) ? f : crediti; 
+											crediti = (crediti > f) ? f : crediti;
 								break;
-								
+
 							case COORDINATORE: crediti = 1*tempoDedicato;
 												crediti = (crediti > f) ? f : crediti;
 								break;
-								
+
 							default:	crediti = 0.0f;
 								break;
 						}
 					}
 					break;
-					
-				case GRUPPI_DI_MIGLIORAMENTO: 
+
+				case GRUPPI_DI_MIGLIORAMENTO:
 				{
 					/*
 					 * PARTECIPANTI:	1 credito ogni 2 ore (max 50) NON FRAZIONABILE
 					 * COORDINATORE		1 credito ongi ora (max 'crediti evento')
-					 * 
-					 * */	
+					 *
+					 * */
 					switch(ruolo.getRuoloBase())
-					{					
+					{
 						case PARTECIPANTE: crediti = 1*(tempoDedicato/2);
 											crediti = (int) crediti;
-											crediti = (crediti > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI : crediti; 
+											crediti = (crediti > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI : crediti;
 							break;
-						
+
 						case COORDINATORE: crediti = 1*tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
-							
+
 						default:	crediti = 0.0f;
 							break;
 					}
 				}
 				break;
-				
-				case PROGETTI_DI_MIGLIORAMENTO: 
+
+				case PROGETTI_DI_MIGLIORAMENTO:
 				{
 					/*
 					 * PARTECIPANTI:	0.5 credito ogni ora (max 50) NON FRAZIONABILE
 					 * ESPERTO:			1 credito ongi ora (max 'crediti evento')
 					 * COORDINATORE:	1 credito ongi ora (max 'crediti evento')
 					 * RESPONSABILE:	1 credito ongi ora (max 'crediti evento')
-					 * 
-					 * */	
+					 *
+					 * */
 					switch(ruolo.getRuoloBase())
-					{					
+					{
 						case PARTECIPANTE: crediti = 0.5f*tempoDedicato;
 											crediti = (int) crediti;
-											crediti = (crediti > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI : crediti; 
-											
+											crediti = (crediti > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI : crediti;
+
 							break;
-						
+
 						case ESPERTO: crediti = 1*tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
-							break;	
-							
+							break;
+
 						case COORDINATORE: crediti = 1*tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
-							
+
 						case RESPONSABILE: crediti = 1*tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
-							
+
 						default:	crediti = 0.0f;
 							break;
 					}
 				}
 				break;
-				
-				case ATTIVITA_DI_RICERCA: 
+
+				case ATTIVITA_DI_RICERCA:
 				{
 					/*
 					 * PARTECIPANTI:	1 credito ogni ora (max 3)
 					 * COORDINATORE:	1 credito ongi ora (max 'crediti evento')
-					 * 
-					 * */	
+					 *
+					 * */
 					switch(ruolo.getRuoloBase())
-					{					
+					{
 						case PARTECIPANTE: crediti = ATTIVITA_DI_RICERCA_MAX_CREDITI;
 							break;
-						
+
 						case COORDINATORE: crediti = 1*tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
-							
+
 						default:	crediti = 0.0f;
 							break;
 					}
 				}
 				break;
-				
+
 				case AUDIT_CLINICO_ASSISTENZIALE:
 				{
 					/*
 					 * PARTECIPANTI:	1 credito ogni ora (max 3) NON FRAZIONABILE
 					 * COORDINATORE:	1 credito ongi ora (max 'crediti evento')
-					 * 
-					 * */	
+					 *
+					 * */
 					switch(ruolo.getRuoloBase())
-					{					
+					{
 						case PARTECIPANTE: crediti = 2*(tempoDedicato/2);
 											crediti = (int) crediti;
-											crediti = (crediti > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI : crediti; 
+											crediti = (crediti > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI : crediti;
 							break;
-						
+
 						case COORDINATORE: crediti = 1*tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
-							
+
 						default:	crediti = 0.0f;
 							break;
 					}
@@ -206,21 +206,21 @@ public class RiepilogoRuoliFSC {
 
 			default: break;
 			}
-			
-			crediti = Utils.getRoundedFloatValue(crediti);	
-			
+
+			crediti = Utils.getRoundedFloatValue(crediti);
+
 		}else{
 			crediti = 0.0f;
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		RiepilogoRuoliFSC second = (RiepilogoRuoliFSC)obj;
-		
+
 		if(second == null)
 			return false;
-		
+
 		if(second.getRuolo() == this.ruolo){
 			return true;
 		}else{
