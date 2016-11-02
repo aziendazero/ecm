@@ -523,7 +523,7 @@ public class PdfServiceImpl implements PdfService {
             Object[] valuesDataValid = {diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 			msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2})."); 
-            Object[] valuesDataSed = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getNumeroProtocollo()};
+			Object[] valuesDataSed = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(yearFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataSed), fontCorpo));
 
 			tableNoteTrasp.addCell(cell);
@@ -608,7 +608,8 @@ public class PdfServiceImpl implements PdfService {
             Object[] valuesRigetto3 = {diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};	        	        
             list.add(getListItem(msgFormat.format(valuesRigetto3), fontListItem));
 
-			msgFormat = new MessageFormat("di rigettare l’istanza di accreditamento provvisorio come Provider regionale ECM del NOME PROVIDER in nome del legale rappresentante pro-tempore validata in data DATA VALIDAZIONE per le seguenti motivazioni:"); 
+            //di rigettare l’istanza di accreditamento provvisorio come Provider regionale ECM del NOME PROVIDER in nome del legale rappresentante pro-tempore validata in data DATA VALIDAZIONE per le seguenti motivazioni:
+			msgFormat = new MessageFormat("di rigettare l’istanza di accreditamento provvisorio come Provider regionale ECM del {0} in nome del legale rappresentante pro-tempore validata in data {1} per le seguenti motivazioni:"); 
             Object[] valuesRigetto4 = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
             ListItem listItem = getListItem(msgFormat.format(valuesRigetto4), fontListItem);
             
@@ -776,12 +777,18 @@ public class PdfServiceImpl implements PdfService {
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2620 del 29 dicembre 2014 recante “Aggiornamento della ricognizione dei procedimenti amministrativi di competenza della Giunta regionale, con individuazione del relativo termine di conclusione”, in particolare l’allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei Provider regionali, quantificato in 180 giorni;");
 	        
-			msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento provvisorio;"); 
-            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};	        
-            addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
+	        //Togliere nei casi:
+	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
+	        if(accreditatoInfo.getIntegrazioneInfo() != null) {
+				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento provvisorio;"); 
+	            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};	        
+	            addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
+	        }
             
             addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. n. 382498 del 13 settembre 2013, con la quale codesta Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S. all’adempimento delle procedure formali della fase istruttoria dell’accreditamento provvisorio dei Provider e alla sottoscrizione della richiesta di documentazione integrativa ai sensi della L.241/1990 e ss.mm.ii;");			
 	        
+	        //Togliere nei casi:
+	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
             //Integrazione
             if(accreditatoInfo.getIntegrazioneInfo() != null) {
 				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1} notificata al Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii. a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};"); 
@@ -789,6 +796,10 @@ public class PdfServiceImpl implements PdfService {
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
             }
 
+	        //Togliere nei casi:
+	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
+	        //	accreditamento al secondo giro, cioe' con richiesta di integrazione senza preavviso di rigetto
+            // in pratica mostrare solo se accreditamento avvunuto dopo il Preavviso di rigetto 
             //Rigetto
             if(accreditatoInfo.getRigettoInfo() != null) {
 				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}. notificata al {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento standard che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii. a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};"); 
@@ -796,8 +807,14 @@ public class PdfServiceImpl implements PdfService {
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto));
             }
 
-			msgFormat = new MessageFormat("VISTA la documentazione prodotta da parte del Provider {0} per il tramite del legale rappresentante pro-tempore in ossequio al richiamato art.10 bis della L.241/1990 e ss.mm.ii.;"); 
-	        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));	        	
+	        //Togliere nei casi:
+	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
+	        //	accreditamento al secondo giro, cioe' con richiesta di integrazione senza preavviso di rigetto
+            // in pratica mostrare solo se accreditamento avvunuto dopo il Preavviso di rigetto 
+            if(accreditatoInfo.getRigettoInfo() != null) {            
+				msgFormat = new MessageFormat("VISTA la documentazione prodotta da parte del Provider {0} per il tramite del legale rappresentante pro-tempore in ossequio al richiamato art.10 bis della L.241/1990 e ss.mm.ii.;"); 
+		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
+            }
             
 	        addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente ed il contenuto di cui alla/e citata/e comunicazione/i trasmessa/e dal Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S.;");
 	        addCorpoParagraph(document, false, true, "VERIFICATA la sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
