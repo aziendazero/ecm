@@ -57,7 +57,37 @@
 						</div>
 						<div class="modal-body">
 
-							<div>TODO table con eventi del piano formativo e un button che mandi in /provider/${providerId}/eventoPianoFormativo/${eventoPianoFormativo.id}/fulfill </div>
+							<div th:if="${#lists.isEmpty(eventoAttuazioneList)}">
+								<h2 class="col-xs-12 text-center">
+									<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_evento_list}">Non ci sono eventi da attuare!</i>
+								</h2>
+							</div>
+
+							<table th:unless="${#lists.isEmpty(eventoList)}" id="tableAttuazione" class="datatable-responsive-eventi-attuazione table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
+										<th th:text="#{label.titolo}">label.titolo</th>
+										<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
+										<th th:text="#{label.obiettivo_formativo_nazionale}">label.obiettivo_strategioco_nazionale</th>
+										<th th:text="#{label.obiettivo_formativo_regionale}">label.obiettivo_strategioco_regionale</th>
+										<th th:text="#{label.azioni}">label.azioni</th>
+									</tr>
+								</thead>
+								<tbody th:remove="all-but-first">
+									<tr th:each="eventoPF, row : ${eventoAttuazioneList}">
+										<td th:text="${eventoPF.getCodiceIdentificativo()}"></td>
+										<td th:text="${eventoPF.titolo}"></td>
+										<td th:text="${eventoPF.proceduraFormativa.nome}"></td>
+										<td th:text="${eventoPF.obiettivoNazionale.nome}"></td>
+										<td th:text="${eventoPF.obiettivoRegionale.nome}"></td>
+										<td>
+											<a class="btn btn-primary btn-table single" th:href="@{|/provider/${providerId}/eventoPianoFormativo/${eventoPF.id}/fulfill|}"><i class="glyphicon glyphicon-step-forward"> </i> <span th:text="#{label.attua}"> </span></a>
+										</td>
+									</tr>
+								</tbody>
+
+							</table>
 
 						</div>
 						<div class="modal-footer">
@@ -138,7 +168,7 @@
 									<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
 									<td th:unless="${evento.pagato}">
-										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>	
+										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>
 										<span th:unless="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.da_pagare}"></span>
 									</td>
 									<td th:text="${evento.dataScadenzaPagamento == null} ? '' : ${#temporals.format(evento.dataScadenzaPagamento, 'dd/MM/yyyy')}"></td>
@@ -172,6 +202,20 @@
 							"sClass": "center"
 						} ]
 					})
+
+					$(".datatable-responsive-eventi-attuazione").DataTable({
+						"bInfo" : false,
+						"bPaginate" : false,
+						scrollY: 300,
+						"bScrollCollapse": true,
+					    scroller: true,
+					    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+					    "columnDefs": [
+					                   	{"targets": [ '_all' ], "orderable": false },
+					                    {"targets": 5, "orderable": false, "width": "1px"},
+					                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
+					                  ],
+					});
 
 					if([[${error}]]) {
 						$("#scelta-tipologia-modal").modal("show");

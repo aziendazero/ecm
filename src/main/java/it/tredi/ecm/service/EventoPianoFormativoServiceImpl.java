@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -73,6 +74,14 @@ public class EventoPianoFormativoServiceImpl implements EventoPianoFormativoServ
 		// finito controllo/elaborazione
 		// se File csv -> salvo File rendiconto in evento.setReportPartecipantiCSV così come è stato inviato
 		// se File xml, xml.p7m, xml.zip.p7m e ha passato la validazione/è il risultato dell'elaborazione -> salvo File risultato in evento.setReportPartecimantiXML
+	}
+
+	@Override
+	public Set<EventoPianoFormativo> getAllEventiAttuabiliForProviderId(Long providerId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero tutti gli eventi del piano formativo attuabili per il provider: " + providerId));
+		//TODO calcolo dell'anno formativo attuabile
+		Integer pianoFormativo = LocalDateTime.now().getYear();
+		return eventoPianoFormativoRepository.findAllByProviderIdAndPianoFormativoAndAttuatoFalse(providerId, pianoFormativo);
 	}
 
 }

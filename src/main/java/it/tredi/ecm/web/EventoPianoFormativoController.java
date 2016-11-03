@@ -587,7 +587,7 @@ public class EventoPianoFormativoController {
 	}
 
 	private void populateListFromAccreditamento(Model model, long accreditamentoId) throws Exception{
-		DatiAccreditamento datiAccreditamento = accreditamentoService.getDatiAccreditamentoForAccreditamento(accreditamentoId);
+		DatiAccreditamento datiAccreditamento = accreditamentoService.getDatiAccreditamentoForAccreditamentoId(accreditamentoId);
 		model.addAttribute("proceduraFormativaList", datiAccreditamento.getProcedureFormative());
 		model.addAttribute("professioneList", datiAccreditamento.getProfessioniSelezionate());
 		model.addAttribute("disciplinaList", datiAccreditamento.getDiscipline());

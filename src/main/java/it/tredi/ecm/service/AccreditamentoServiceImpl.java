@@ -478,7 +478,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception{
+	public DatiAccreditamento getDatiAccreditamentoForAccreditamentoId(Long accreditamentoId) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Recupero datiAccreditamento per la domanda " + accreditamentoId));
 		DatiAccreditamento datiAccreditamento = accreditamentoRepository.getDatiAccreditamentoForAccreditamento(accreditamentoId);
 		if(datiAccreditamento == null)
@@ -838,7 +838,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception  {
 		changeState(accreditamentoId, stato, null);
 	}
-	
+
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception  {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
@@ -857,7 +857,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
 			List<String> listaCriticita = new ArrayList<String>();
 			fieldEditabiliAccreditamento.forEach(v -> {
-	            //Richiesta 
+	            //Richiesta
 	            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire singole note sui campi] (pag 4)
 				if(v.getNota() == null || v.getNota().isEmpty())
 					listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
@@ -1008,7 +1008,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
 		if(stato == AccreditamentoStatoEnum.DINIEGO)
 			provider.setStatus(ProviderStatoEnum.DINIEGO);
-		
+
 		pagamentoService.preparePagamentoProviderPerQuotaAnnua(provider.getId(), LocalDate.now().getYear(), true);
 	}
 

@@ -60,7 +60,7 @@ public interface AccreditamentoService{
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception;
 	public void approvaIntegrazione(Long accreditamentoId) throws Exception;
 
-	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception;
+	public DatiAccreditamento getDatiAccreditamentoForAccreditamentoId(Long accreditamentoId) throws Exception;
 	public Long getProviderIdForAccreditamento(Long accreditamentoId);
 
 	//Vaschetta segreteria

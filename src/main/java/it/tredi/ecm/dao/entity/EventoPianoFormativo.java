@@ -79,6 +79,9 @@ public class EventoPianoFormativo extends BaseEntity{
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
 
+	//flag per capire se è attuato o meno
+	private boolean attuato = false;
+
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
 		if(discipline != null){

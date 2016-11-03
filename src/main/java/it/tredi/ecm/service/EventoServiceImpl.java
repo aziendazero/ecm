@@ -37,7 +37,6 @@ import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
-import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -46,7 +45,6 @@ import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.FileEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
@@ -54,6 +52,7 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
@@ -63,7 +62,6 @@ import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
-import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Service
@@ -77,6 +75,7 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
 	@Autowired private SponsorRepository sponsorRepository;
 	@Autowired private PartnerRepository partnerRepository;
+	@Autowired private EventoPianoFormativoRepository eventoPianoFormativoRepository;
 
 	@Autowired
 	private RendicontazioneInviataService rendicontazioneInviataService;
@@ -194,7 +193,6 @@ public class EventoServiceImpl implements EventoService {
 		// TODO Auto-generated method stub
 		return true;
 	}
-
 
 	/*	SALVATAGGIO	*/
 	@Override
