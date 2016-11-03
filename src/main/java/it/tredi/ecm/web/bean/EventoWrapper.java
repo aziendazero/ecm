@@ -270,7 +270,7 @@ public class EventoWrapper {
 
 	public void initProgrammiFAD(){
 		this.getRisultatiAttesiMapTemp().put(1L, null);
-		this.programmaEventoFAD.add(new DettaglioAttivitaFAD());
+//		this.programmaEventoFAD.add(new DettaglioAttivitaFAD());
 	}
 
 	public void initMappaVerificaApprendimentoFAD() {
