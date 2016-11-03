@@ -109,8 +109,16 @@ public class PagamentoServiceImpl implements PagamentoService {
 		pagamento.setProvider(provider);
 		pagamento.setAnnoPagamento(annoRiferimento);
 		
+		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
+		pagamento.setAnagrafica(provider.getDenominazioneLegale());
+		pagamento.setPartitaIva(provider.getPartitaIva());
+		pagamento.setEmail(provider.getEmailStruttura());
+		pagamento.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
+		pagamento.setCausale(EngineeringServiceImpl.CAUSALE_PAGAMENTO_QUOTA_PROVIDER + annoRiferimento);
+		
 		if(primoAnno){
 			pagamento.setImporto(importoBase);
+			pagamento.setDataScadenzaPagamento(LocalDate.now().plusDays(90));
 		}else{
 			if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
 				//TODO calcolare il numero di eventi realizzati l'anno precedente all'anno di riferimento per il pagamento

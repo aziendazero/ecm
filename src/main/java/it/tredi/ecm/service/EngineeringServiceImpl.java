@@ -277,11 +277,11 @@ public class EngineeringServiceImpl implements EngineeringService {
 	
 	private String prepareDatiPagamento(Pagamento p, Provider soggetto, String causale, String backURL) throws Exception{
 		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
-		p.setAnagrafica(soggetto.getDenominazioneLegale());
-		p.setPartitaIva(soggetto.getPartitaIva());
-		p.setEmail(soggetto.getEmailStruttura());
-		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
-		p.setCausale(causale);
+//		p.setAnagrafica(soggetto.getDenominazioneLegale());
+//		p.setPartitaIva(soggetto.getPartitaIva());
+//		p.setEmail(soggetto.getEmailStruttura());
+//		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
+//		p.setCausale(causale);
 		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
 		
 		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.

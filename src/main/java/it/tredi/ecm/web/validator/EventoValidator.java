@@ -962,14 +962,16 @@ public class EventoValidator {
 		//sede
 		if(programma.getSede() == null)
 			errors.rejectValue(prefix + "sede", "error.sede_evento_null");
-		if(programma.getSede().getProvincia() == null || programma.getSede().getProvincia().isEmpty())
-			errors.rejectValue(prefix + "sede.provincia", "error.empty");
-		if(programma.getSede().getComune() == null || programma.getSede().getComune().isEmpty())
-			errors.rejectValue(prefix + "sede.comune", "error.empty");
-		if(programma.getSede().getLuogo() == null || programma.getSede().getLuogo().isEmpty())
-			errors.rejectValue(prefix + "sede.luogo", "error.empty");
-		if(programma.getSede().getIndirizzo() == null || programma.getSede().getIndirizzo().isEmpty())
-			errors.rejectValue(prefix + "sede.indirizzo", "error.empty");
+		else {
+			if(programma.getSede().getProvincia() == null || programma.getSede().getProvincia().isEmpty())
+				errors.rejectValue(prefix + "sede.provincia", "error.empty");
+			if(programma.getSede().getComune() == null || programma.getSede().getComune().isEmpty())
+				errors.rejectValue(prefix + "sede.comune", "error.empty");
+			if(programma.getSede().getLuogo() == null || programma.getSede().getLuogo().isEmpty())
+				errors.rejectValue(prefix + "sede.luogo", "error.empty");
+			if(programma.getSede().getIndirizzo() == null || programma.getSede().getIndirizzo().isEmpty())
+				errors.rejectValue(prefix + "sede.indirizzo", "error.empty");
+		}
 
 		//lista attività
 		if(programma.getProgramma() == null || programma.getProgramma().isEmpty())

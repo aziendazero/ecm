@@ -49,6 +49,7 @@ public class PagamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
 			model.addAttribute("pagamentoList", pagamentoService.getAllPagamentiByProviderId(id));
+			model.addAttribute("providerId",id);
 			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 			return LIST;
 		}
@@ -57,5 +58,20 @@ public class PagamentoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect: /provider/{id}/pagamento/list";
 		}
+	}
+	
+	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
+	@RequestMapping("/provider/{id}/pagamento/inserisci")
+	public String inserisciPagamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
+		try {
+			pagamentoService.preparePagamentoProviderPerQuotaAnnua(id, 2017, true);
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET " + LIST),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/provider/{id}/pagamento/list";
+		}
+		return "redirect:/provider/"+ id + "/pagamento/list";
 	}
 }
