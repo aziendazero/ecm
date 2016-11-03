@@ -23,6 +23,7 @@ public class PagamentoServiceImpl implements PagamentoService {
 	
 	@Autowired private PagamentoRepository pagamentoRepository;
 	@Autowired private ProviderService providerService;
+	@Autowired private EngineeringServiceImpl engineeringService;
 	@Autowired private EcmProperties ecmProperties;
 	
 	@Override
@@ -32,33 +33,45 @@ public class PagamentoServiceImpl implements PagamentoService {
 		return (pagamento != null) ? true : false;
 	}
 	
+//	@Override
+//	public Set<Provider> getAllProviderNotPagamentoEffettuato(Integer annoPagamento) {
+//		LOGGER.debug(Utils.getLogMessage("Recupero lista Provider che non hanno effettuato il pagamento per anno " + annoPagamento));
+//		
+//		Set<Provider> list = pagamentoRepository.findAllProviderNotPagamentoEffettuato(annoPagamento);
+//		if(list != null)
+//			LOGGER.debug(Utils.getLogMessage("Trovati " + list.size() + " Provider"));
+//		else
+//			LOGGER.debug(Utils.getLogMessage("Nessun Provider trovato"));
+//		
+//		return list;
+//	}
+	
 	@Override
-	public Set<Provider> getAllProviderNotPagamentoEffettuato(Integer annoPagamento) {
-		LOGGER.debug(Utils.getLogMessage("Recupero lista Provider che non hanno effettuato il pagamento per anno " + annoPagamento));
-		
-		Set<Provider> list = pagamentoRepository.findAllProviderNotPagamentoEffettuato(annoPagamento);
-		if(list != null)
-			LOGGER.debug(Utils.getLogMessage("Trovati " + list.size() + " Provider"));
-		else
-			LOGGER.debug(Utils.getLogMessage("Nessun Provider trovato"));
-		
-		return list;
+	public Pagamento getPagamentoById(Long pagamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento " + pagamentoId));
+		return pagamentoRepository.findOne(pagamentoId);
 	}
 	
 	@Override
-	public Pagamento getPagamentoByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
-		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento quota Provider " + providerId + " per anno " + annoRiferimento));
-		Pagamento p = pagamentoRepository.findOneByProviderIdAndAnnoPagamento(providerId, annoRiferimento);
-		if(p == null)
-			LOGGER.debug(Utils.getLogMessage("Pagamento non trovato"));
-		return p;
+	public Pagamento getPagamentoByQuotaAnnualeId(Long quotaAnnualeId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento per quota annuale: " + quotaAnnualeId));
+		return pagamentoRepository.findOneByQuotaAnnualeId(quotaAnnualeId);
 	}
 	
-	@Override
-	public Set<Pagamento> getPagamentiProviderDaVerificare() {
-		LOGGER.debug(Utils.getLogMessage("Recupero lista di Pagamenti quota di Provider in sospeso"));
-		return pagamentoRepository.getPagamentiProviderDaVerificare();
-	}
+//	@Override
+//	public Pagamento getPagamentoByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
+//		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento quota Provider " + providerId + " per anno " + annoRiferimento));
+//		Pagamento p = pagamentoRepository.findOneByProviderIdAndAnnoPagamento(providerId, annoRiferimento);
+//		if(p == null)
+//			LOGGER.debug(Utils.getLogMessage("Pagamento non trovato"));
+//		return p;
+//	}
+	
+//	@Override
+//	public Set<Pagamento> getPagamentiProviderDaVerificare() {
+//		LOGGER.debug(Utils.getLogMessage("Recupero lista di Pagamenti quota di Provider in sospeso"));
+//		return pagamentoRepository.getPagamentiProviderDaVerificare();
+//	}
 	
 	@Override
 	public Pagamento getPagamentoByEvento(Evento evento) {
@@ -92,58 +105,82 @@ public class PagamentoServiceImpl implements PagamentoService {
 		return pagamentoRepository.findAll();
 	}
 	
-	@Override
-	public Set<Pagamento> getAllPagamentiByProviderId(Long providerId) {
-		LOGGER.debug(Utils.getLogMessage("Recupero lista di tutti i pagamenti per il provider " + providerId));
-		return pagamentoRepository.findAllByProviderId(providerId);
-	}
+//	@Override
+//	public Set<Pagamento> getAllPagamentiByProviderId(Long providerId) {
+//		LOGGER.debug(Utils.getLogMessage("Recupero lista di tutti i pagamenti per il provider " + providerId));
+//		return pagamentoRepository.findAllByProviderId(providerId);
+//	}
 	
-	@Override
-	public Pagamento preparePagamentoProviderPerQuotaAnnua(Long providerId, Integer annoRiferimento, boolean primoAnno) {
-		LOGGER.debug(Utils.getLogMessage("Creazione pagamento per quota iscrizione anno " + annoRiferimento + " per provider " + providerId));
-		
-		Double importoBase = 258.22;
-		
-		Provider provider = providerService.getProvider(providerId);
-		Pagamento pagamento = new Pagamento();
-		pagamento.setProvider(provider);
-		pagamento.setAnnoPagamento(annoRiferimento);
-		
-		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
-		pagamento.setAnagrafica(provider.getDenominazioneLegale());
-		pagamento.setPartitaIva(provider.getPartitaIva());
-		pagamento.setEmail(provider.getEmailStruttura());
-		pagamento.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
-		pagamento.setCausale(EngineeringServiceImpl.CAUSALE_PAGAMENTO_QUOTA_PROVIDER + annoRiferimento);
-		
-		if(primoAnno){
-			pagamento.setImporto(importoBase);
-			pagamento.setDataScadenzaPagamento(LocalDate.now().plusDays(90));
-		}else{
-			if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
-				//TODO calcolare il numero di eventi realizzati l'anno precedente all'anno di riferimento per il pagamento
-				int numeroEventi = 0;
-				if(numeroEventi <= 30){
-					pagamento.setImporto(3000.00);
-				}else if(numeroEventi > 30 && numeroEventi <= 60){
-					pagamento.setImporto(5500.00);
-				}else if(numeroEventi > 60 && numeroEventi <= 90){
-					pagamento.setImporto(8000.00);
-				}else if(numeroEventi > 90 && numeroEventi <= 120){
-					pagamento.setImporto(10500.00);
-				}else if(numeroEventi > 120){
-					pagamento.setImporto(13000.00);
-				}
-				//entro il 31 luglio
-				pagamento.setDataScadenzaPagamento(LocalDate.of(annoRiferimento, 7, 31));
-			}else if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("B")){
-				pagamento.setImporto(importoBase);
-				//entro il 31 marzo
-				pagamento.setDataScadenzaPagamento(LocalDate.of(annoRiferimento, 3, 31));
-			}
-		}
-		
-		save(pagamento);
-		return pagamento;
-	}
+//	@Override
+//	public String pagaQuotaAnnualeForProvider(Long pagamentoId, String backURL) throws Exception {
+//		LOGGER.debug(Utils.getLogMessage("Chiamata a EngineeringServiceImpl per pagamento quota per il pagamento: " + pagamentoId));
+//		String url = null;
+//		
+//		Pagamento pagamento = getPagamentoById(pagamentoId); 
+//		if(pagamento != null)
+//			url = engineeringService.pagaQuotaProvider(pagamentoId, backURL);
+//		
+//		return url;
+//	}
+	
+//	@Override
+//	public Pagamento createPagamentoProviderPerQuotaAnnua(Long providerId, Integer annoRiferimento, boolean primoAnno) {
+//		LOGGER.debug(Utils.getLogMessage("Creazione pagamento per quota iscrizione anno " + annoRiferimento + " per provider " + providerId));
+//		
+//		Double importoBase = 258.22;
+//		
+//		Provider provider = providerService.getProvider(providerId);
+//		Pagamento pagamento = new Pagamento();
+//		pagamento.setProvider(provider);
+//		pagamento.setAnnoPagamento(annoRiferimento);
+//		
+//		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
+//		pagamento.setAnagrafica(provider.getDenominazioneLegale());
+//		pagamento.setPartitaIva(provider.getPartitaIva());
+//		pagamento.setEmail(provider.getEmailStruttura());
+//		pagamento.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
+//		pagamento.setCausale(EngineeringServiceImpl.CAUSALE_PAGAMENTO_QUOTA_PROVIDER + annoRiferimento);
+//		
+//		if(primoAnno){
+//			if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
+//				//Provider tipo A -> primo anno non pagano
+//				pagamento.setImporto(0.00);
+//				pagamento.setDataScadenzaPagamento(LocalDate.now());
+//				pagamento.setDataPagamento(LocalDate.now());
+//				pagamento.setCodiceEsito(EngineeringServiceImpl.PAGAMENTO_ESEGUITO);
+//				provider.setPagato(true);
+//			}else if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("B")){
+//				//Provider tipo B -> primo anno pagano quota fissa
+//				pagamento.setImporto(importoBase);
+//				pagamento.setDataScadenzaPagamento(LocalDate.now().plusDays(90));
+//			}
+//		}else{
+//			if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
+//				//TODO calcolare il numero di eventi realizzati l'anno precedente all'anno di riferimento per il pagamento
+//				//Provider tipo A -> anni successivi pagano in funzione degli eventi realizzati
+//				int numeroEventi = 0;
+//				if(numeroEventi <= 30){
+//					pagamento.setImporto(3000.00);
+//				}else if(numeroEventi > 30 && numeroEventi <= 60){
+//					pagamento.setImporto(5500.00);
+//				}else if(numeroEventi > 60 && numeroEventi <= 90){
+//					pagamento.setImporto(8000.00);
+//				}else if(numeroEventi > 90 && numeroEventi <= 120){
+//					pagamento.setImporto(10500.00);
+//				}else if(numeroEventi > 120){
+//					pagamento.setImporto(13000.00);
+//				}
+//				//entro il 31 luglio
+//				pagamento.setDataScadenzaPagamento(LocalDate.of(annoRiferimento, 7, 31));
+//			}else if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("B")){
+//				//Provider tipo B -> anni successivi pagano quota fissa
+//				pagamento.setImporto(importoBase);
+//				//entro il 31 marzo
+//				pagamento.setDataScadenzaPagamento(LocalDate.of(annoRiferimento, 3, 31));
+//			}
+//		}
+//		
+//		save(pagamento);
+//		return pagamento;
+//	}
 }

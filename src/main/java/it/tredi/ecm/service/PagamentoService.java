@@ -9,12 +9,15 @@ import it.tredi.ecm.utils.Utils;
 
 public interface PagamentoService {
 	public boolean providerIsPagamentoEffettuato(Long providerId, Integer annoRiferimento);
-	public Set<Provider> getAllProviderNotPagamentoEffettuato(Integer annoRiferimento);
+//	public Set<Provider> getAllProviderNotPagamentoEffettuato(Integer annoRiferimento);
+	public Pagamento getPagamentoById(Long pagamentoId);
 	
 	/* Pagamenti Quote Provider */
-	public Pagamento getPagamentoByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
-	public Set<Pagamento> getPagamentiProviderDaVerificare();
-	public Set<Pagamento> getAllPagamentiByProviderId(Long providerId);
+//	public String pagaQuotaAnnualeForProvider(Long pagamentoId, String backURL) throws Exception;
+//	public Pagamento getPagamentoByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
+//	public Set<Pagamento> getPagamentiProviderDaVerificare();
+//	public Set<Pagamento> getAllPagamentiByProviderId(Long providerId);
+	public Pagamento getPagamentoByQuotaAnnualeId(Long quotaAnnualeId);
 	
 	/* Pagamenti Eventi */
 	public Pagamento getPagamentoByEvento(Evento evento);
@@ -24,6 +27,6 @@ public interface PagamentoService {
 	public void deleteAll(Iterable<Pagamento> pagamenti);
 	public Set<Pagamento> getAllPagamenti();
 	
-	public Pagamento preparePagamentoProviderPerQuotaAnnua(Long providerId, Integer annoRiferimento, boolean primoAnno);
+//	public Pagamento createPagamentoProviderPerQuotaAnnua(Long providerId, Integer annoRiferimento, boolean primoAnno);
 	
 }

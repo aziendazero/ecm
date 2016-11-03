@@ -235,7 +235,7 @@ public class EngineeringController {
 		try {
 			// questo metodo andrebbe chiamato ogni TOT (da dimensionare in base al carico previsto) via scheduler.
 			// in questo prototipo ho inserito un pulsante per invocarlo a piacere.
-			engineeringService.esitoPagamenti();
+			engineeringService.esitoPagamentiEventi();
 			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
 			
 			return "engineering/mypayTest";

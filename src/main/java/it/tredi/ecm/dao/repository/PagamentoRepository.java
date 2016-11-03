@@ -13,23 +13,25 @@ import it.tredi.ecm.dao.entity.Provider;
 public interface PagamentoRepository extends CrudRepository<Pagamento, Long> {
 
 	public Pagamento findOneByProviderIdAndAnnoPagamento(Long providerId, Integer annoPagamento);
+	
+	public Pagamento findOneByQuotaAnnualeId(Long quotaAnnualeId);
 
-	@Query("SELECT distinct p FROM Provider p WHERE p.status IN ('ACCREDITATO_PROVVISORIAMENTE','ACCREDITATO_STANDARD') and p.id NOT IN (SELECT distinct pag.provider.id FROM Pagamento pag WHERE pag.annoPagamento = :annoPagamento)")
-	public Set<Provider> findAllProviderNotPagamentoEffettuato(@Param("annoPagamento")Integer annoPagamento);
+//	@Query("SELECT distinct p FROM Provider p WHERE p.status IN ('ACCREDITATO_PROVVISORIAMENTE','ACCREDITATO_STANDARD') and p.id NOT IN (SELECT distinct pag.provider.id FROM Pagamento pag WHERE pag.annoPagamento = :annoPagamento) and p.codiceEsito not in ('PAA_ESEGUITO')")
+//	public Set<Provider> findAllProviderNotPagamentoEffettuato(@Param("annoPagamento")Integer annoPagamento);
 
+//	@Query("SELECT p FROM Pagamento p WHERE p.provider.pagato = false AND p.provider.pagInCorso = true")
+//	public Set<Pagamento> getPagamentiProviderDaVerificare();
+	
+//	public Set<Pagamento> findAllByProviderId(Long providerId);
+	
 	public Set<Pagamento> findAll();
 	
-	public Set<Pagamento> findAllByProviderId(Long providerId);
-	
-	@Query("SELECT p FROM Pagamento p WHERE p.provider.pagato = false AND p.provider.pagInCorso = true")
-	public Set<Pagamento> getPagamentiProviderDaVerificare();
-
 	@Query("SELECT p FROM Pagamento p WHERE p.evento = :evento")
 	public Pagamento getPagamentoByEvento(@Param("evento")Evento evento);
 
 	@Query("SELECT p FROM Pagamento p WHERE p.evento.pagato = false AND p.evento.pagInCorso = true")
 	public Set<Pagamento> getPagamentiEventiDaVerificare();
-
+	
 }
 
 

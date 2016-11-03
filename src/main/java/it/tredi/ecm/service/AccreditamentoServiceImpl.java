@@ -56,7 +56,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AccountRepository accountRepository;
 	@Autowired private EmailService emailService;
 	@Autowired private AccountService accountService;
-	@Autowired private PagamentoService pagamentoService;
+//	@Autowired private PagamentoService pagamentoService;
+	@Autowired private QuotaAnnualeService quotaAnnualeService;
 
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
@@ -1009,7 +1010,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(stato == AccreditamentoStatoEnum.DINIEGO)
 			provider.setStatus(ProviderStatoEnum.DINIEGO);
 		
-		pagamentoService.preparePagamentoProviderPerQuotaAnnua(provider.getId(), LocalDate.now().getYear(), true);
+		quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);
 	}
 
 	@Override

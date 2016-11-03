@@ -31,7 +31,11 @@ public class Pagamento extends BaseEntity{
 	private Double importo;
 	@Column(name = "anno_pagamento")
 	private Integer annoPagamento;
-
+	
+	@JoinColumn(name = "fk_quota_annuale")
+	@OneToOne(fetch = FetchType.LAZY)
+	private QuotaAnnuale quotaAnnuale;
+	
 	@ManyToOne
 	private Provider provider;
 

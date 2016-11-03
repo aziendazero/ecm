@@ -16,34 +16,37 @@
 						<a class="btn btn-primary" th:href="@{|/provider/${providerId}/pagamento/verifica|}">Verifica Pagamento</a>
 					</div>
 					<div class="x_content">
-						<table th:unless="${#lists.isEmpty(pagamentoList)}" id="datatable-pagamentiProvider" class="table table-striped table-bordered dt-responsive nowrap datatable-responsive" cellspacing="0" width="100%">
+						<table th:unless="${#lists.isEmpty(quoteAnnualiList)}" id="datatable-pagamentiProvider" class="table table-striped table-bordered dt-responsive nowrap datatable-responsive" cellspacing="0" width="100%">
 							<thead>
 								<tr>
 									<th th:text="#{label.causale}">Inserimento Domanda Accreditamento Standard</th>
 									<th th:text="#{label.importo}">Inserimento Eventi</th>
 									<th th:text="#{label.data_scadenza_pagamento}">Inserimento Piano Formativo</th>
-									<th th:text="#{label.dataEsito}">Inserimento Piano Formativo</th>
 									<th th:text="#{label.stato_pagamento}">Inserimento Piano Formativo</th>
+									<th th:text="#{label.data_esecuzione}">Inserimento Piano Formativo</th>
+									<th th:text="#{label.azioni}">Inserimento Piano Formativo</th>
 								</tr>
 							</thead>
-							<tbody th:unless="${#lists.isEmpty(pagamentoList)}" th:remove="all-but-first">
-								<tr th:each="pagamento : ${pagamentoList}">
-									<td th:text="${pagamento.causale}">3d informatica</td>
-									<td th:text="${pagamento.importo}">informatica</td>
-									<td th:text="${#temporals.format(pagamento.dataScadenzaPagamento,'dd/MM/yyyy')}">stato</td>
-									<td th:text="${pagamento.dataEsitoSingoloPagamento != null ? #temporals.format(pagamento.dataEsitoSingoloPagamento,'dd/MM/yyyy') : ''}">abilitato/non abilitato</td>
-									<td th:if="${pagamento.codiceEsito == T(it.tredi.ecm.service.EngineeringServiceImpl).PAGAMENTO_ESEGUITO}">
+							<tbody th:unless="${#lists.isEmpty(quoteAnnualiList)}" th:remove="all-but-first">
+								<tr th:each="quotaAnnuale : ${quoteAnnualiList}">
+									<td th:text="${quotaAnnuale.pagamento.causale}">3d informatica</td>
+									<td th:text="${quotaAnnuale.pagamento.importo}">informatica</td>
+									<td th:text="${#temporals.format(quotaAnnuale.pagamento.dataScadenzaPagamento,'dd/MM/yyyy')}">stato</td>
+									<td th:if="${quotaAnnuale.pagato}">
 										<span th:text="#{label.pagato}" class="label-pagato"></span>
 									</td>
-									<td th:unless="${pagamento.codiceEsito == T(it.tredi.ecm.service.EngineeringServiceImpl).PAGAMENTO_ESEGUITO}">
-										<span th:text="#{label.da_pagare}" class="label-non-pagato"></span>
+									<td th:unless="${quotaAnnuale.pagato}">
+										<span th:if="${quotaAnnuale.pagInCorso}" th:text="#{label.pagInCorso}" class="label-non-pagato"></span>
+										<span th:unless="${quotaAnnuale.pagInCorso}" th:text="#{label.da_pagare}" class="label-non-pagato"></span>
 									</td>
-									
-									<td th:text="${pagamento.esitoSingoloPagamento}">abilitato/non abilitato</td>
+									<td th:text="${quotaAnnuale.pagamento.dataPagamento == null} ? '' : ${#temporals.format(quotaAnnuale.pagamento.dataPagamento,'dd/MM/yyyy')}">abilitato/non abilitato</td>
+									<td>
+										<a th:unless="${quotaAnnuale.pagato}" class="btn btn-success btn-table double" th:href="@{|/provider/${providerId}/pagamento/${quotaAnnuale.id}/paga|}"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
+									</td>
 								</tr>
 							</tbody>
 						</table>
-						<div th:if="${#lists.isEmpty(providerList)}">
+						<div th:if="${#lists.isEmpty(quoteAnnualiList)}">
 							<h2 class="col-xs-12 text-center">
 								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_pagamento_trovato}">Nessun pagamento trovato</i>
 							</h2>
