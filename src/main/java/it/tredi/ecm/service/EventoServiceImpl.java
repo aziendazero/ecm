@@ -795,7 +795,10 @@ public class EventoServiceImpl implements EventoService {
 			riepilogoRuoliFSC.forEach( (k,v) -> {
 				v.setTempoDedicato(0f);
 				v.setCrediti(0f);
+				if(v.getRuolo() == null)
+					riepilogoRuoliFSC.remove(k);
 			});
+//			riepilogoRuoliFSC.clear();
 
 			for(FaseAzioniRuoliEventoFSCTypeA fase : programma)
 				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli())

@@ -21,6 +21,7 @@ import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
@@ -50,7 +51,7 @@ public class EventoValidator {
 		if (evento instanceof EventoRES)
 			validateRES(((EventoRES) evento), wrapper, errors, prefix);
 		else if (evento instanceof EventoFSC)
-			validateFSC(((EventoFSC) evento), errors, prefix);
+			validateFSC(((EventoFSC) evento), wrapper, errors, prefix);
 		else if (evento instanceof EventoFAD)
 			validateFAD(((EventoFAD) evento), errors, prefix);
 
@@ -531,7 +532,7 @@ public class EventoValidator {
 	}
 
 	//validate FSC
-	private void validateFSC(EventoFSC evento, Errors errors, String prefix) {
+	private void validateFSC(EventoFSC evento, EventoWrapper wrapper, Errors errors, String prefix) {
 
 		/* SEDE (tutti campi obbligatori)
 		 * provincia da selezione, comune da selezione, almeno 1 char indirizzo, almeno 1 char luogo
@@ -642,6 +643,27 @@ public class EventoValidator {
 					counter++;
 				}
 			}
+		}
+
+		/* TABELLA RIEPILOGO FSC
+		 * - numero partecipanti (campo obbligatorio)
+		 * - controllo sulle ore per ruolo a seconda della tipologiaEvento
+		 * */
+		if(evento.getRiepilogoRuoli() == null || evento.getRiepilogoRuoli().isEmpty())
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.errori_calcolo_tabella_riepilogo");
+		else {
+			boolean atLeastOneErrorTabella = false;
+			for(RiepilogoRuoliFSC rrf : evento.getRiepilogoRuoli()) {
+				if(rrf.getRuolo() != null) {
+					boolean hasError = validateTabellaRuoliFSC(rrf, evento.getTipologiaEvento());
+					if(hasError) {
+						errors.rejectValue("riepilogoRuoliFSC["+rrf.getRuolo()+"]", "");
+						atLeastOneErrorTabella = true;
+					}
+				}
+			}
+			if(atLeastOneErrorTabella)
+				errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEvento());
 		}
 
 		/* NUMERO PARTECIPANTI (campo obbligatorio)
@@ -785,12 +807,17 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "programmaFAD", "error.empty");
 		else {
 			int counter = 0;
+			boolean atLeastOneErrorAttivita = false;
 			for(DettaglioAttivitaFAD daf : evento.getProgrammaFAD()) {
-				boolean hasError = validateProgrammaFAD(daf, errors, "programmaEventoFAD["+counter+"]");
-				if(hasError)
-					errors.rejectValue(prefix + "programmaFAD", "error.campi_con_errori_programma_fad");
+				boolean hasError = validateProgrammaFAD(daf);
+				if(hasError) {
+					errors.rejectValue("programmaEventoFAD["+counter+"]", "error.campi_con_errori_programma_fad");
+					atLeastOneErrorAttivita = true;
+				}
 				counter++;
 			}
+			if(atLeastOneErrorAttivita)
+				errors.rejectValue(prefix + "programmaFAD", "error.campi_con_errori_programma_fad");
 		}
 
 		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
@@ -949,6 +976,7 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "programma", "error.empty");
 		else {
 			int counter = 0;
+			boolean atLeastOneAttivita = false; //controllo che non siano state inserite solo pause
 			boolean atLeastOneErrorDettaglioAttivita = false;
 			for(DettaglioAttivitaRES dar : programma.getProgramma()) {
 				boolean hasError = validateDettaglioAttivitaRES(dar, tipologiaEvento);
@@ -956,10 +984,14 @@ public class EventoValidator {
 					errors.rejectValue(prefix + "programma["+counter+"]", "");
 					atLeastOneErrorDettaglioAttivita = true;
 				}
+				if(!dar.isPausa())
+					atLeastOneAttivita = true;
 				counter++;
 			}
 			if(atLeastOneErrorDettaglioAttivita)
 				errors.rejectValue(prefix + "programma", "error.campi_mancanti_dettaglio_attivita");
+			else if(!atLeastOneAttivita)
+				errors.rejectValue(prefix + "programma", "error.solo_pause_programma_res");
 		}
 	}
 
@@ -973,6 +1005,8 @@ public class EventoValidator {
 		if(dettaglio.getOrarioInizio() == null)
 			return true;
 		if(dettaglio.getOrarioFine() == null)
+			return true;
+		else if(dettaglio.getOrarioFine().isBefore(dettaglio.getOrarioInizio()))
 			return true;
 
 		//controlli per non pausa [ 2) ]
@@ -1198,32 +1232,81 @@ public class EventoValidator {
 		return false;
 	}
 
+	//validate tabella ruoli FSC
+	private boolean validateTabellaRuoliFSC(RiepilogoRuoliFSC riepilogoRuoli, TipologiaEventoFSCEnum tipologiaEvento) {
+
+		//campi in comuni obbligatori (partecipanti > 0)
+		if(riepilogoRuoli.getNumeroPartecipanti() <= 0)
+			return true;
+
+		//tipologiaEvento == TRAINING_INDIVIDUALIZZATO || ATTIVITA_DI_RICERCA nessun controllo
+
+
+		if(tipologiaEvento != null)
+			switch(tipologiaEvento) {
+
+				//tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO
+				// - massimo 25 partecipanti per ruolo
+				// - impegno complessivo minimo 8 ore totali per tutti i ruoli
+				case GRUPPI_DI_MIGLIORAMENTO:
+
+					if(riepilogoRuoli.getNumeroPartecipanti() > 25)
+						return true;
+					if(riepilogoRuoli.getTempoDedicato() < 8f)
+						return true;
+
+				break;
+
+				//tipologiaEvento == PROGETTI DI MIGLIORAMENTO
+				// - impegno complessivo minimo 8 ore totali per ruolo PARTECIPANTE
+				case PROGETTI_DI_MIGLIORAMENTO:
+
+					if(riepilogoRuoli.getRuolo() != null
+						&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE
+						&& riepilogoRuoli.getTempoDedicato() < 8f)
+						return true;
+
+				break;
+
+				//tipologiaEvento == AUDIT_CLINICO_ASSISTENZIALE
+				// - impegno complessivo minimo di 10 ore totali per ruolo PARTECIPANTE
+				case AUDIT_CLINICO_ASSISTENZIALE:
+
+					if(riepilogoRuoli.getRuolo() != null
+						&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE
+						&& riepilogoRuoli.getTempoDedicato() < 10f)
+						return true;
+
+				break;
+
+				default:
+				break;
+
+			}
+
+		return false;
+	}
+
 	//validate ProgrammaFAD
-	private boolean validateProgrammaFAD(DettaglioAttivitaFAD attivita, Errors errors, String prefix) {
+	private boolean validateProgrammaFAD(DettaglioAttivitaFAD attivita) {
 
 		//tutti i campi obbligatori
 		if(attivita.getArgomento() == null || attivita.getArgomento().isEmpty()) {
-			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
 			return true;
 		}
 		if(attivita.getDocente() == null) {
-			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
 			return true;
 		}
 		if(attivita.getRisultatoAtteso() == null || attivita.getRisultatoAtteso().isEmpty()) {
-			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
 			return true;
 		}
 		if(attivita.getObiettivoFormativo() == null) {
-			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
 			return true;
 		}
 		if(attivita.getMetodologiaDidattica() == null) {
-			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
 			return true;
 		}
 		if(attivita.getOreAttivita() <= 0f) {
-			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
 			return true;
 		}
 

@@ -550,6 +550,19 @@
 					}]
 			    });
 
+			  	//init datatable tabella riepilogo fsc
+			  	tables['tabellaRuoliFSC'] = $('#tabellaRuoliFSC').DataTable({
+			  		"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+					"ordering" : false,
+					"columnDefs": [{
+						"targets": 2,
+						"width": "1px",
+						"sClass": "center"
+					}]
+			    });
+
 			    initAllCommon();
 			});
 
