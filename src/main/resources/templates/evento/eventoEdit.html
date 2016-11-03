@@ -1413,7 +1413,17 @@
 			<div id="attivitaRES">
 				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12"
 						th:each="data , status : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
-						th:if="${data.value.programma.giorno!=null}">
+						th:if="${data.value.programma.giorno!=null 
+							and 
+							( 
+								data.value.tipoData!=T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).FINE
+								or 
+								(
+								data.value.tipoData==T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).FINE
+								and
+								not data.value.programma.giorno.equals(eventoWrapper.evento.dataInizio)
+								)
+							)  }">
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.programma_del}" class="text-uppercase">Programma del</span>
