@@ -60,7 +60,10 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 		}
 		if(dataFineKey == null) {
 			index++;
-			programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.FINE, new ProgrammaGiornalieroRES())));
+			//E' possibile che la data fine corrisponda con la data inizio e quindi non sia stato creato
+			ProgrammaGiornalieroRES progFine = new ProgrammaGiornalieroRES();
+			progFine.setGiorno(eventoRES.getDataFine());
+			programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.FINE, progFine)));
 			dataFineKey = index;
 		}
 		//Se tutto e' ok non dovrebbe servire ma in caso di dati sporchi ci potrebbero essere delle date intermedie non presenti fra i programmi giornalieri
@@ -170,20 +173,31 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 		//Aggiorno nel caso le date inizio e fine siano state modificate
 		aggiornaDati();
 		Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		Set<Long> oldIdProgrammaAncoraPresenti = new HashSet<Long>();
+		//Potrebbe essere gia' stata eseguita questa operazione quindi in eventoRES.getProgramma() potrei avere gia' dei programmi nuovi inseriti lil elimino e riesegup
+		Iterator<ProgrammaGiornalieroRES> i = eventoRES.getProgramma().iterator();
+		while (i.hasNext()) {
+			ProgrammaGiornalieroRES prg = i.next();
+			if(prg.isNew()) {
+				i.remove();
+			}
+		}	
 		for(EventoRESProgrammaGiornalieroWrapper evpgw : this.getSortedProgrammiGiornalieriMap().values()) {
 			if(evpgw.getProgramma().getGiorno() == null) {
-				//quelli non nuovi vanno elliminati se hanno la data null
+				//quelli non nuovi vanno eliminati se hanno la data null
 				if(!evpgw.getProgramma().isNew()) {
 					eventoRES.getProgramma().remove(evpgw.getProgramma());
 				}
 			} else {
+				//giorno != null
 				if(evpgw.getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.INTERMEDIA)
 					dateIntermedie.add(evpgw.getProgramma().getGiorno());
 				if(evpgw.getProgramma().isNew()) {
-					//aggiungo il programma all'evento, quelli non new ci sono gia' e sono aggiornati
-					eventoRES.getProgramma().add(evpgw.getProgramma());
+					if(evpgw.getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.FINE && evpgw.getProgramma().getGiorno().equals(eventoRES.getDataInizio()))
+						continue;
+					//aggiungo il programma all'evento, se non gia' aggiunto, quelli non new ci sono gia' e sono aggiornati
+					if(!eventoRES.getProgramma().contains(evpgw.getProgramma()))
+						eventoRES.getProgramma().add(evpgw.getProgramma());
 				} else {
 					oldIdProgrammaAncoraPresenti.add(evpgw.getProgramma().getId());
 				}
@@ -191,13 +205,23 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 		}
 		eventoRES.setDateIntermedie(dateIntermedie);
 		//per i programmi restano da sistemare eventuali programmi presenti prima ma che ora sono stati cancellati
-		Iterator<ProgrammaGiornalieroRES> i = eventoRES.getProgramma().iterator();
+		//eventuali doppioni, per giorno
+		//eventuali programmi con giorno non piu' impostato
+		i = eventoRES.getProgramma().iterator();
+		Set<LocalDate> dateDistinct = new HashSet<LocalDate>();
 		while (i.hasNext()) {
 			ProgrammaGiornalieroRES prg = i.next();
-			if(!prg.isNew() && !oldIdProgrammaAncoraPresenti.contains(prg.getId())) {
+			if(!prg.isNew() && (!oldIdProgrammaAncoraPresenti.contains(prg.getId()) || prg.getGiorno() == null)) {
 				i.remove();
+			} else {
+				if(dateDistinct.contains(prg.getGiorno())) {
+					i.remove();
+				} else {
+					dateDistinct.add(prg.getGiorno());
+				}
 			}
-		}		
+		}
+		
 	}
 	
 	/*
