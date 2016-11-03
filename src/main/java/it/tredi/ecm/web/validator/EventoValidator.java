@@ -960,8 +960,13 @@ public class EventoValidator {
 		//all'inserimento delle date di inzio, fine e intermedie
 
 		//sede
-		if(programma.getSede() == null)
+		if(programma.getSede() == null){
 			errors.rejectValue(prefix + "sede", "error.sede_evento_null");
+			errors.rejectValue(prefix + "sede.provincia", "error.empty");
+			errors.rejectValue(prefix + "sede.comune", "error.empty");
+			errors.rejectValue(prefix + "sede.luogo", "error.empty");
+			errors.rejectValue(prefix + "sede.indirizzo", "error.empty");
+		}
 		else {
 			if(programma.getSede().getProvincia() == null || programma.getSede().getProvincia().isEmpty())
 				errors.rejectValue(prefix + "sede.provincia", "error.empty");
