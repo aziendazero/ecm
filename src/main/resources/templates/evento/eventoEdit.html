@@ -1616,10 +1616,13 @@
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaFAD">
 			<div id="attivitaFAD" th:if="${eventoWrapper.programmaEventoFAD != null}">
-				<div class="col-xs-12">
-					<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
-					<div data-programma-id="0">
-						<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+				<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad'">
+					<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
+					<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.programmaFAD')}__}"></div>
+					<div class="item form-group" style="clear:both; padding:2px;"></div>
+					<div data-programma-id="0" class="item form-group" style="clear:both">
+						<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+							th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad-table'">
 							<thead>
 								<tr>
 									<th th:text="#{label.argomento}">ARGOMENTO</th>
@@ -1636,7 +1639,9 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr th:attr="data-row-id=${__${row.index}__}" th:each="attivita , row : ${eventoWrapper.programmaEventoFAD}">
+								<tr th:attr="data-row-id=${__${row.index}__}"
+									th:each="attivita , row : ${eventoWrapper.programmaEventoFAD}"
+									th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFAD['+__${row.index}__+']')} ? 'bad-row'">
 									<td th:text="${attivita.argomento}"></td>
 									<td th:text="${attivita.docente?.anagrafica?.cognome}"></td>
 									<td th:text="${attivita.risultatoAtteso}"></td>

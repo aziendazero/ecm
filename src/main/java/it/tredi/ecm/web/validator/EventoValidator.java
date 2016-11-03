@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
@@ -25,7 +26,6 @@ import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
-import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
@@ -776,6 +776,23 @@ public class EventoValidator {
 		if(evento.getRisultatiAttesi() == null || evento.getRisultatiAttesi().isEmpty())
 			errors.rejectValue("risultatiAttesiMapTemp[1]", "error.empty");
 
+		/* PROGRAMMA FAD
+		 * (serie di campi obbligatori)
+		 * ripetibile complesso di classe DettaglioAttivitàFAD
+		 * devono avere tutti i campi inseriti
+		 * */
+		if(evento.getProgrammaFAD() == null || evento.getProgrammaFAD().isEmpty())
+			errors.rejectValue(prefix + "programmaFAD", "error.empty");
+		else {
+			int counter = 0;
+			for(DettaglioAttivitaFAD daf : evento.getProgrammaFAD()) {
+				boolean hasError = validateProgrammaFAD(daf, errors, "programmaEventoFAD["+counter+"]");
+				if(hasError)
+					errors.rejectValue(prefix + "programmaFAD", "error.campi_con_errori_programma_fad");
+				counter++;
+			}
+		}
+
 		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
 		 * campo complesso composto da checkbox e radio
 		 * deve avere almeno 1 checkbox selezionata
@@ -1180,4 +1197,37 @@ public class EventoValidator {
 
 		return false;
 	}
+
+	//validate ProgrammaFAD
+	private boolean validateProgrammaFAD(DettaglioAttivitaFAD attivita, Errors errors, String prefix) {
+
+		//tutti i campi obbligatori
+		if(attivita.getArgomento() == null || attivita.getArgomento().isEmpty()) {
+			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
+			return true;
+		}
+		if(attivita.getDocente() == null) {
+			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
+			return true;
+		}
+		if(attivita.getRisultatoAtteso() == null || attivita.getRisultatoAtteso().isEmpty()) {
+			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
+			return true;
+		}
+		if(attivita.getObiettivoFormativo() == null) {
+			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
+			return true;
+		}
+		if(attivita.getMetodologiaDidattica() == null) {
+			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
+			return true;
+		}
+		if(attivita.getOreAttivita() <= 0f) {
+			errors.rejectValue(prefix, "error.campi_con_errori_programma_fad");
+			return true;
+		}
+
+		return false;
+	}
+
 }
