@@ -1,7 +1,9 @@
 package it.tredi.ecm.web.validator;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,8 @@ public class EventoValidator {
 
 	@Autowired private EcmProperties ecmProperties;
 
+	private Set<String> risultatiAttesiUtilizzati;
+
 	public void validate(Object target, EventoWrapper wrapper, Errors errors, String prefix){
 		Evento evento = (Evento) target;
 		validateCommon(evento, errors, prefix);
@@ -53,7 +57,7 @@ public class EventoValidator {
 		else if (evento instanceof EventoFSC)
 			validateFSC(((EventoFSC) evento), wrapper, errors, prefix);
 		else if (evento instanceof EventoFAD)
-			validateFAD(((EventoFAD) evento), errors, prefix);
+			validateFAD(((EventoFAD) evento), wrapper, errors, prefix);
 
 		Utils.logDebugErrorFields(LOGGER, errors);
 
@@ -197,6 +201,8 @@ public class EventoValidator {
 		 * */
 		if(evento.getContenutiEvento() != null
 				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
 				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null)
@@ -209,6 +215,8 @@ public class EventoValidator {
 		 * */
 		if(evento.getContenutiEvento() != null
 				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
 				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null)
@@ -413,26 +421,15 @@ public class EventoValidator {
 		if(evento.getRazionale() == null || evento.getRazionale().isEmpty())
 			errors.rejectValue(prefix + "razionale", "error.empty");
 
-		/* RISULTATI ATTESI (campo obbligatorio)
-		 * campo testuale libero ripetibile
-		 * almeno 1 char
-		 * almeno 1 elemento
-		 * se non ci sono elementi, la input su cui inserire l'errore punterà al primo elemento della mappa
-		 * */
-		if(evento.getRisultatiAttesi() == null || evento.getRisultatiAttesi().isEmpty())
-			errors.rejectValue("risultatiAttesiMapTemp[1]", "error.empty");
-
 		/* PROGRAMMA RES (serie di campi obbligatori)
 		 * ripetibile complesso di classe ProgrammaGiornalieroRES
 		 * stesso numero delle date (gestito lato interfaccia)
 		 * devono avere tutti i campi inseriti
+		 * N.B. creo un set di risultati attesi per verificare dopo il ciclo del programma se sono stati utilizzati tutti
 		 * */
-		//numero delle date totali
-		int dateIntermedie = evento.getDateIntermedie() != null ? evento.getDateIntermedie().size() : 0;
+		risultatiAttesiUtilizzati = new HashSet<String>();
 		if(evento.getProgramma() == null || evento.getProgramma().isEmpty())
 			errors.rejectValue(prefix + "programma", "error.empty");
-		else if(evento.getProgramma().size() != dateIntermedie + 2)
-			errors.rejectValue(prefix + "programma", "error.numero_programmi_errato");
 		else {
 			for(ProgrammaGiornalieroRES pgr : evento.getProgramma()) {
 				//ciclo alla ricerca di questo Programma per farmi dare la chiave nella mappa
@@ -444,6 +441,35 @@ public class EventoValidator {
 					}
 				}
 				validateProgrammaRES(pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEvento());
+			}
+		}
+
+		/* RISULTATI ATTESI (campo obbligatorio)
+		 * campo testuale libero ripetibile
+		 * almeno 1 char
+		 * almeno 1 elemento
+		 * se non ci sono elementi, la input su cui inserire l'errore punterà al primo elemento della mappa
+		 * controllo che effettivamente tutti i risultati attesi siano stati utilizzati
+		 * devono essere presenti nel set precedentemente settato durante il ciclo del programma
+		 * controllo solo se tipologiaEvento != CONVEGNO_CONGRESSO
+		 * */
+		if(evento.getTipologiaEvento() != null && evento.getTipologiaEvento() != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
+			if(evento.getRisultatiAttesi() == null || evento.getRisultatiAttesi().isEmpty())
+				errors.rejectValue(prefix + "risultatiAttesi", "error.empty");
+			else{
+				for (String ra : evento.getRisultatiAttesi()) {
+					if(!ra.isEmpty() && !risultatiAttesiUtilizzati.contains(ra)) {
+						//ciclo alla ricerca di questa data per farmi dare la chiave nella mappa
+						Long key = -1L;
+						for(Entry<Long, String> entry : wrapper.getRisultatiAttesiMapTemp().entrySet()) {
+							if(entry.getValue().equals(ra)) {
+								key = entry.getKey();
+								break;
+							}
+						}
+						errors.rejectValue("risultatiAttesiMapTemp[" + key + "]", "error.risultato_atteso_non_utilizzato");
+					}
+				}
 			}
 		}
 
@@ -733,7 +759,7 @@ public class EventoValidator {
 	}
 
 	//validate FAD
-	private void validateFAD(EventoFAD evento, Errors errors, String prefix) {
+	private void validateFAD(EventoFAD evento, EventoWrapper wrapper, Errors errors, String prefix) {
 
 		/* DATA FINE (campo obbligatorio)
 		 * la data di fine deve può essere compresa nello stesso anno solare della data di inizio
@@ -789,20 +815,13 @@ public class EventoValidator {
 		if(evento.getRazionale() == null || evento.getRazionale().isEmpty())
 			errors.rejectValue(prefix + "razionale", "error.empty");
 
-		/* RISULTATI ATTESI (campo obbligatorio)
-		 * campo testuale libero ripetibile
-		 * almeno 1 char
-		 * almeno 1 elemento
-		 * se non ci sono elementi, la input su cui inserire l'errore punterà al primo elemento della mappa
-		 * */
-		if(evento.getRisultatiAttesi() == null || evento.getRisultatiAttesi().isEmpty())
-			errors.rejectValue("risultatiAttesiMapTemp[1]", "error.empty");
-
 		/* PROGRAMMA FAD
 		 * (serie di campi obbligatori)
 		 * ripetibile complesso di classe DettaglioAttivitàFAD
 		 * devono avere tutti i campi inseriti
+		 * N.B. mentre ciclo il programma FAD mi segno tutti i risultati attesi utilizzati
 		 * */
+		risultatiAttesiUtilizzati = new HashSet<String>();
 		if(evento.getProgrammaFAD() == null || evento.getProgrammaFAD().isEmpty())
 			errors.rejectValue(prefix + "programmaFAD", "error.empty");
 		else {
@@ -818,6 +837,33 @@ public class EventoValidator {
 			}
 			if(atLeastOneErrorAttivita)
 				errors.rejectValue(prefix + "programmaFAD", "error.campi_con_errori_programma_fad");
+		}
+
+		/* RISULTATI ATTESI (campo obbligatorio)
+		 * campo testuale libero ripetibile
+		 * almeno 1 char
+		 * almeno 1 elemento
+		 * se non ci sono elementi, la input su cui inserire l'errore punterà al primo elemento della mappa
+		 * controllo che effettivamente tutti i risultati attesi siano stati utilizzati
+		 * devono essere presenti nel set precedentemente settato durante il ciclo del programma
+		 * controllo solo se tipologiaEvento != CONVEGNO_CONGRESSO
+		 * */
+		if(evento.getRisultatiAttesi() == null || evento.getRisultatiAttesi().isEmpty())
+			errors.rejectValue(prefix + "risultatiAttesi", "error.empty");
+		else{
+			for (String ra : evento.getRisultatiAttesi()) {
+				if(!ra.isEmpty() && !risultatiAttesiUtilizzati.contains(ra)) {
+					//ciclo alla ricerca di questa data per farmi dare la chiave nella mappa
+					Long key = -1L;
+					for(Entry<Long, String> entry : wrapper.getRisultatiAttesiMapTemp().entrySet()) {
+						if(entry.getValue().equals(ra)) {
+							key = entry.getKey();
+							break;
+						}
+					}
+					errors.rejectValue("risultatiAttesiMapTemp[" + key + "]", "error.risultato_atteso_non_utilizzato");
+				}
+			}
 		}
 
 		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
@@ -1004,6 +1050,9 @@ public class EventoValidator {
 
 	//validate DettaglioAttivita del ProgrammaRES
 	private boolean validateDettaglioAttivitaRES(DettaglioAttivitaRES dettaglio, TipologiaEventoRESEnum tipologiaEvento){
+
+		//per prima cose se ho un risultato atteso lo aggiungo al set
+		risultatiAttesiUtilizzati.add(dettaglio.getRisultatoAtteso());
 
 		//tutti i campi devono essere inseriti, con eccezione di:
 		// 1) se tipologiaEvento è CONVEGNI_CONGRESSI, bisogna inserire un programma semplificato
@@ -1296,6 +1345,9 @@ public class EventoValidator {
 
 	//validate ProgrammaFAD
 	private boolean validateProgrammaFAD(DettaglioAttivitaFAD attivita) {
+
+		//per prima cose se ho un risultato atteso lo aggiungo al set
+		risultatiAttesiUtilizzati.add(attivita.getRisultatoAtteso());
 
 		//tutti i campi obbligatori
 		if(attivita.getArgomento() == null || attivita.getArgomento().isEmpty()) {
