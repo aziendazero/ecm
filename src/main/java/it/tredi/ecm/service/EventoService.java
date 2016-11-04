@@ -33,5 +33,9 @@ public interface EventoService {
 	//TODO Questo metodo puo' diventare private
 	public void retrieveProgrammaAndAddJoin(EventoWrapper eventoWrapper);
 	public void aggiornaDati(EventoWrapper eventoWrapper);
+	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId);
+
+	//TODO chiedere 1 mese di ferie almeno (joe19 mode on)
+	public Evento prepareRiedizioneEvento(Evento evento);
 
 }

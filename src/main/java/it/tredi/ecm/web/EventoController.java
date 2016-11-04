@@ -50,6 +50,7 @@ import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
+import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaFADEnum;
@@ -184,6 +185,7 @@ public class EventoController {
 			String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
 			model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
 			model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
+			model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
 			model.addAttribute("denominazioneProvider", denominazioneProvider);
 			model.addAttribute("providerId", providerId);
 			model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
@@ -240,6 +242,24 @@ public class EventoController {
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
+	@RequestMapping("/provider/{providerId}/evento/{eventoId}/re-edit")
+	public String rieditaEvento(@PathVariable Long providerId, @PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId +"/re-edit"));
+		try {
+			Evento evento = eventoService.getEvento(eventoId);
+			EventoWrapper wrapper = prepareEventoWrapperRiedizione(evento, providerId);
+			return goToEdit(model, wrapper);
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId +"/re-edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+	}
+
+
+	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
 	@RequestMapping(value= "/provider/{providerId}/evento/save", method = RequestMethod.POST)
 	public String saveEvento(@ModelAttribute EventoWrapper eventoWrapper, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"));
@@ -247,6 +267,11 @@ public class EventoController {
 			//salvataggio temporaneo senza validatore (in stato di bozza)
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
+
+			//se stato non è mai stato salvato -> BOZZA
+			if(evento.getStato() == null)
+				evento.setStato(EventoStatoEnum.BOZZA);
+
 			eventoService.save(evento);
 
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato_in_bozza_success", "success"));
@@ -269,9 +294,6 @@ public class EventoController {
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 
-			//validatore bozza -> flow
-			//casi in cui mi serve il wrapper:
-			//1) date intermedie RES
 			eventoValidator.validate(evento, eventoWrapper, result, "evento.");
 
 			if(result.hasErrors()){
@@ -281,7 +303,7 @@ public class EventoController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				//TODO settare date varie e cambiare stato evento.
+				evento.setStato(EventoStatoEnum.VALIDATO);
 				eventoService.save(evento);
 				LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 			}
@@ -560,16 +582,24 @@ public class EventoController {
 			case FSC: evento = new EventoFSC(); break;
 			default: evento = new Evento(); break;
 		}
-		evento.setProvider(eventoPianoFormativo.getProvider());
-		evento.setProceduraFormativa(eventoPianoFormativo.getProceduraFormativa());
-		evento.setObiettivoNazionale(eventoPianoFormativo.getObiettivoNazionale());
-		evento.setObiettivoRegionale(eventoPianoFormativo.getObiettivoRegionale());
-		evento.setDiscipline(eventoPianoFormativo.getDiscipline());
+		evento.setFromEventoPianoFormativo(eventoPianoFormativo);
 		eventoWrapper.setEvento(evento);
 		eventoWrapper.initProgrammi();
 //		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperAttuazione(" + eventoPianoFormativo.getId() + ") - exiting"));
+		return eventoWrapper;
+	}
+
+	private EventoWrapper prepareEventoWrapperRiedizione(Evento evento, long providerId) throws AccreditamentoNotFoundException, Exception {
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperAttuazione(" + evento.getId() + ") - entering"));
+		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), providerId);
+		Evento riedizioneEvento = eventoService.prepareRiedizioneEvento(evento);
+		eventoWrapper.setEvento(riedizioneEvento);
+		eventoWrapper.initProgrammi();
+//		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
+
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperAttuazione(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;
 	}
 

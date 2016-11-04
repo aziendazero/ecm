@@ -155,6 +155,10 @@ table.datatable-responsive-eventi-attuazione thead .sorting_asc:after {
 	visibility: hidden;
 }
 
+table.datatable-responsive-eventi-riedizione thead .sorting_asc:after {
+	visibility: hidden;
+}
+
 .dropdown-header {
 	color: white;
 	font-weight: bold;

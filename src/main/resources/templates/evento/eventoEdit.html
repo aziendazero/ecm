@@ -409,7 +409,10 @@
 
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.creazione_nuovo_evento(${eventoWrapper.proceduraFormativa})}"></h2>
+						<h2 th:if="${eventoWrapper.evento.isNew() and !eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.creazione_nuovo_evento(${eventoWrapper.proceduraFormativa})}"></h2>
+						<h2 th:unless="${eventoWrapper.evento.isNew() or eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_tipo(${eventoWrapper.proceduraFormativa})}"></h2>
+						<h2 th:if="${eventoWrapper.evento.isNew() and eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.accreditamento_evento_piano_formativo(${eventoWrapper.proceduraFormativa})}"></h2>
+						<h2 th:unless="${eventoWrapper.evento.isNew() or !eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_accreditato(${eventoWrapper.proceduraFormativa})}"></h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
 
@@ -1426,11 +1429,11 @@
 			<div id="attivitaRES">
 				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12"
 						th:each="data , status : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
-						th:if="${data.value.programma.giorno!=null 
-							and 
-							( 
+						th:if="${data.value.programma.giorno!=null
+							and
+							(
 								data.value.tipoData!=T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).FINE
-								or 
+								or
 								(
 								data.value.tipoData==T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).FINE
 								and

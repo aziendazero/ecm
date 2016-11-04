@@ -63,7 +63,7 @@
 								</h2>
 							</div>
 
-							<table th:unless="${#lists.isEmpty(eventoList)}" id="tableAttuazione" class="datatable-responsive-eventi-attuazione table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<table th:unless="${#lists.isEmpty(eventoAttuazioneList)}" id="tableAttuazione" class="datatable-responsive-eventi-attuazione table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<thead>
 									<tr>
 										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
@@ -82,11 +82,10 @@
 										<td th:text="${eventoPF.obiettivoNazionale.nome}"></td>
 										<td th:text="${eventoPF.obiettivoRegionale.nome}"></td>
 										<td>
-											<a class="btn btn-primary btn-table single" th:href="@{|/provider/${providerId}/eventoPianoFormativo/${eventoPF.id}/fulfill|}"><i class="glyphicon glyphicon-step-forward"> </i> <span th:text="#{label.attua}"> </span></a>
+											<a class="btn btn-primary btn-table single" th:href="@{|/provider/${providerId}/eventoPianoFormativo/${eventoPF.id}/fulfill|}"><i class="glyphicon glyphicon-step-forward"> </i> <span th:text="#{label.accredita}"> </span></a>
 										</td>
 									</tr>
 								</tbody>
-
 							</table>
 
 						</div>
@@ -107,7 +106,34 @@
 						</div>
 						<div class="modal-body">
 
-							<div>TODO table con eventi completati e un button che mandi in /provider/${providerId}/evento/${evento.id}/republication </div>
+							<div th:if="${#lists.isEmpty(eventoRiedizioneList)}">
+								<h2 class="col-xs-12 text-center">
+									<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_evento_list}">Non ci sono eventi da attuare!</i>
+								</h2>
+							</div>
+
+							<table th:unless="${#lists.isEmpty(eventoRiedizioneList)}" id="tableRiedizione" class="datatable-responsive-eventi-riedizione table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
+										<th th:text="#{label.titolo}">label.titolo</th>
+										<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
+										<th th:text="#{label.data_inizio}">label.data_inizio</th>
+										<th th:text="#{label.azioni}">label.azioni</th>
+									</tr>
+								</thead>
+								<tbody th:remove="all-but-first">
+									<tr th:each="evento, row : ${eventoRiedizioneList}">
+										<td th:text="${evento.getCodiceIdentificativo()}"></td>
+										<td th:text="${evento.titolo}"></td>
+										<td th:text="${evento.proceduraFormativa.nome}"></td>
+										<td th:text="${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')}"></td>
+										<td>
+											<a class="btn btn-primary btn-table single" th:href="@{|/provider/${providerId}/evento/${evento.id}/re-edit|}"><i class="glyphicon glyphicon-repeat"> </i> <span th:text="#{label.riedita}"> </span></a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 
 						</div>
 						<div class="modal-footer">
@@ -154,8 +180,8 @@
 									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 									<th th:text="#{label.titolo}">label.titolo</th>
 									<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
-									<th th:text="#{label.prezzo}">label.prezzo</th>
-									<th th:text="#{label.stato}">label.stato</th>
+									<th th:text="#{label.stato}"></th>
+									<th th:text="#{label.stato_pagamento}">label.stato_pagamento</th>
 									<th th:text="#{label.data_scadenza_pagamento}">label.data_scadenza_pagamento</th>
 									<th th:text="#{label.azioni}">label.azioni</th>
 								</tr>
@@ -165,7 +191,7 @@
 									<td><a th:text="${evento.getCodiceIdentificativo()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/show|}"></a></td>
 									<td th:text="${evento.titolo}"></td>
 									<td th:text="${evento.proceduraFormativa.nome}"></td>
-									<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
+									<td th:text="${evento.stato.nome}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
 									<td th:unless="${evento.pagato}">
 										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>
@@ -213,6 +239,20 @@
 					    "columnDefs": [
 					                   	{"targets": [ '_all' ], "orderable": false },
 					                    {"targets": 5, "orderable": false, "width": "1px"},
+					                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
+					                  ],
+					});
+
+					$(".datatable-responsive-eventi-riedizione").DataTable({
+						"bInfo" : false,
+						"bPaginate" : false,
+						scrollY: 300,
+						"bScrollCollapse": true,
+					    scroller: true,
+					    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+					    "columnDefs": [
+					                   	{"targets": [ '_all' ], "orderable": false },
+					                    {"targets": 4, "orderable": false, "width": "1px"},
 					                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
 					                  ],
 					});
