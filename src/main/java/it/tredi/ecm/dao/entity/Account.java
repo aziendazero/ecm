@@ -129,6 +129,20 @@ public class Account extends BaseEntity{
 
 		return toRet;
 	}
+	
+	public String getFullNameBase(){
+		String toRet = "";
+		if(nome != null) 
+			toRet = nome;
+
+		if(cognome != null) {
+			if(!toRet.isEmpty())
+				toRet += " ";
+			toRet += cognome;
+		}
+		
+		return toRet;
+	}
 
 	public boolean isSegreteria() {
 		for (Profile p : profiles){
