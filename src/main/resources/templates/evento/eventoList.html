@@ -134,7 +134,7 @@
 								<tr th:each="evento, row : ${eventoList}">
 									<td><a th:text="${evento.getCodiceIdentificativo()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/show|}"></a></td>
 									<td th:text="${evento.titolo}"></td>
-									<td th:text="${evento.proceduraFormativa.nome}"></td>
+									<td th:text="${evento.proceduraFormativa.name()}"></td>
 									<td th:text="${#numbers.formatDecimal(evento.costo, 1, 'POINT', 2, 'COMMA')}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
 									<td th:unless="${evento.pagato}">
