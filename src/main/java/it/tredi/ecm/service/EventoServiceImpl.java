@@ -945,7 +945,6 @@ public class EventoServiceImpl implements EventoService {
 			default: riedizione = new Evento(); break;
 		}
 
-
 		return riedizione;
 	}
 
