@@ -32,6 +32,7 @@ import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
+import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
@@ -44,6 +45,7 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
+import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
@@ -52,6 +54,7 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
@@ -74,6 +77,7 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
 	@Autowired private SponsorRepository sponsorRepository;
 	@Autowired private PartnerRepository partnerRepository;
+	@Autowired private EventoPianoFormativoRepository eventoPianoFormativoRepository;
 
 	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
 	@Autowired private FileService fileService;
@@ -101,12 +105,28 @@ public class EventoServiceImpl implements EventoService {
 			evento.buildPrefix();
 		}
 		eventoRepository.save(evento);
+
+		//se attuazione di evento del piano formativo aggiorna il flag
+		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
+			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
+			eventoPianoFormativo.setAttuato(true);
+			eventoPianoFormativoRepository.save(eventoPianoFormativo);
+		}
 	}
 
 	@Override
 	@Transactional
 	public void delete(Long id) {
 		LOGGER.debug("Eliminazione evento:" + id);
+
+		//controllo se attuazione di un evento del piano formativo
+		Evento evento = getEvento(id);
+		if(evento.isEventoDaPianoFormativo() && evento.getEventoPianoFormativo().isAttuato()) {
+			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
+			eventoPianoFormativo.setAttuato(false);
+			eventoPianoFormativoRepository.save(eventoPianoFormativo);
+		}
+
 		eventoRepository.delete(id);
 	}
 
@@ -184,7 +204,6 @@ public class EventoServiceImpl implements EventoService {
 		// TODO Auto-generated method stub
 		return true;
 	}
-
 
 	/*	SALVATAGGIO	*/
 	@Override
@@ -834,7 +853,10 @@ public class EventoServiceImpl implements EventoService {
 			riepilogoRuoliFSC.forEach( (k,v) -> {
 				v.setTempoDedicato(0f);
 				v.setCrediti(0f);
+				if(v.getRuolo() == null)
+					riepilogoRuoliFSC.remove(k);
 			});
+//			riepilogoRuoliFSC.clear();
 
 			for(FaseAzioniRuoliEventoFSCTypeA fase : programma)
 				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli())
@@ -946,6 +968,27 @@ public class EventoServiceImpl implements EventoService {
 				((EventoFAD) evento).setProgrammaFAD(new ArrayList<DettaglioAttivitaFAD>());
 			}
 		}
+	}
+
+	@Override
+	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero tutti gli eventi del piano formativo rieditabili per il provider: " + providerId));
+		return eventoRepository.findAllByProviderIdAndStatoNotAndDataInizioBefore(providerId, EventoStatoEnum.BOZZA, LocalDate.now());
+	}
+
+	//TODO sta roba non funzionerà mai
+	@Override
+	public Evento prepareRiedizioneEvento(Evento evento) {
+		Evento riedizione;
+		switch(evento.getProceduraFormativa()){
+			case FAD: riedizione = new EventoFAD(); break;
+			case RES: riedizione = new EventoRES(); break;
+			case FSC: riedizione = new EventoFSC(); break;
+			default: riedizione = new Evento(); break;
+		}
+
+
+		return riedizione;
 	}
 
 }

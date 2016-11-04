@@ -553,33 +553,35 @@
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.razionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.razionale')}__}"></div>
 								</div>
+
 								<!-- RISULTATI ATTESI -->
-								<div class="item form-group">
-									<label class="control-label col-xs-1">
-										<span>17</span>
-									</label>
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="risultatiAttesi">
-										<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
-										<span class="required">*</span>
-									</label>
-								</div>
-								<div class="risultati-attesi-container" id="risultatiAttesiId">
-									<div th:fragment="risultatiAttesiId"
-										th:class="${row.last ? 'nextRisultatoAtteso item form-group' : 'prevRisultatoAtteso item form-group'}"
-										th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
-										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[1]')} ? 'bad'">
-										<div class='col-md-4 col-sm-4 col-xs-12'></div>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
-											<input type="hidden" th:value="${risultato.key}" />
-											<input type="text" class="form-control risultatoPicker"
-												th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" />
-											<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}">
-												<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
-											</span>
-										</div>
-										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[1]')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('risultatiAttesiMapTemp[1]')}__}"></div>
+									<div class="item form-group">
+										<label class="control-label col-xs-1">
+											<span>17</span>
+										</label>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="risultatiAttesi">
+											<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
+											<span class="required">*</span>
+										</label>
 									</div>
-								</div>
+									<div class="risultati-attesi-container" id="risultatiAttesiId">
+										<div th:fragment="risultatiAttesiId"
+											th:class="${row.last ? 'nextRisultatoAtteso item form-group' : 'prevRisultatoAtteso item form-group'}"
+											th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
+											th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[__${risultato.key}__]') or #maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.risultatiAttesi')} ? 'bad'">
+											<div class='col-md-4 col-sm-4 col-xs-12'></div>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
+												<input type="hidden" th:value="${risultato.key}" />
+												<input type="text" class="form-control risultatoPicker"
+													th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" />
+												<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}">
+													<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
+												</span>
+											</div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[__${risultato.key}__]')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('risultatiAttesiMapTemp['+risultato.key+']')}__}"></div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.risultatiAttesi')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.risultatiAttesi')}__}"></div>
+										</div>
+									</div>
 
 								<div class="divider-dashed"></div>
 

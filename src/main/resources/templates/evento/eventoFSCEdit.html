@@ -494,32 +494,38 @@
 										<span th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
 										<span class="required">*</span>
 									</label>
-
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-										<select id="obiettivoNazionale"
-											class="selectpicker required"
-											th:field="${eventoWrapper.evento.obiettivoNazionale}"
-											data-width="100%" data-style="btn-primary"
-											data-actions-box="true" data-size="10"
-											data-hide-disabled="false"
-											title="Seleziona un obiettivo...">
-											<optgroup class="optgroup-primary"
-												th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
-												th:label="${categoriaObiettivoNazionale.nome}"
-												th:remove="all-but-first">
-												<option
-													th:each="obiettivoNazionale, row: ${eventoWrapper.obiettiviNazionali}"
-													th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
-													th:value="${obiettivoNazionale.id}"
-													th:text="${obiettivoNazionale.nome}">
-												</option>
-											</optgroup>
-										</select>
-									</div>
-									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.obiettivoNazionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.obiettivoNazionale')}__}"></div>
-									<div class="col-xs-1">
-										<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
-									</div>
+									<th:block th:unless="${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+											<select id="obiettivoNazionale"
+												class="selectpicker required"
+												th:field="${eventoWrapper.evento.obiettivoNazionale}"
+												data-width="100%" data-style="btn-primary"
+												data-actions-box="true" data-size="10"
+												data-hide-disabled="false"
+												title="Seleziona un obiettivo...">
+												<optgroup class="optgroup-primary"
+													th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
+													th:label="${categoriaObiettivoNazionale.nome}"
+													th:remove="all-but-first">
+													<option
+														th:each="obiettivoNazionale, row: ${eventoWrapper.obiettiviNazionali}"
+														th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
+														th:value="${obiettivoNazionale.id}"
+														th:text="${obiettivoNazionale.nome}">
+													</option>
+												</optgroup>
+											</select>
+										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.obiettivoNazionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.obiettivoNazionale')}__}"></div>
+										<div class="col-xs-1">
+											<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+										</div>
+									</th:block>
+									<th:block th:if="${eventoWrapper.evento.isEventoDaPianoFormativo()}">>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+											<div th:text="${eventoWrapper.evento.obiettivoNazionale.nome}" class="value-edit"></div>
+										</div>
+									</th:block>
 								</div>
 
 								<!-- OBIETTIVO REGIONALE -->
@@ -779,10 +785,15 @@
 										<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
 										<span class="required">*</span>
 									</label>
+									<div class="item alert-tabella-evento form-group no-margin" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.riepilogoRuoli')} ? 'bad'">
+										<div class="col-lg-5 col-md-7 col-sm-8 col-xs-12"></div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.riepilogoRuoli')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.riepilogoRuoli')}__}"></div>
+									</div>
 									<div class="item form-group" style="clear:both; padding:2px;"></div>
 									<div class="item form-group" style="clear:both">
 										<div class="col-xs-offset-1 col-xs-10">
-											<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+											<table id="tabellaRuoliFSC" class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+												th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.riepilogoRuoli')} ? 'bad-table'">
 												<thead>
 													<tr>
 														<th th:text="#{label.ruolo}">OBIETTIVO FORMATIVO</th>
@@ -793,12 +804,13 @@
 													</tr>
 												</thead>
 												<tbody>
-													<tr th:each="riepilogo , r : ${eventoWrapper.riepilogoRuoliFSC}">
+													<tr th:each="riepilogo , r : ${eventoWrapper.riepilogoRuoliFSC}"
+														th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'riepilogoRuoliFSC['+riepilogo.key+']')} ? 'bad-row'">
 														<td th:text="${riepilogo.value.ruolo?.nome}"></td>
 														<td th:unless="${riepilogo.value.ruolo?.ruoloBase == null}" th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
 														<td th:if="${riepilogo.value.ruolo?.ruoloBase == null}"></td>
 														<td th:unless="${riepilogo.key == null}">
-															<input th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" />
+															<input style="color: #73879C;" th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" />
 														</td>
 														<td th:if="${riepilogo.key == null}"></td>
 														<td th:text="${riepilogo.value?.tempoDedicato}"></td>
@@ -1213,7 +1225,6 @@
 				selectRuoliCoinvolti['ATTIVITA_DI_RICERCA'] = new Array(['PARTECIPANTE','COORDINATORE_ATTIVITA_RICERCA']);
 				selectRuoliCoinvolti['AUDIT_CLINICO_ASSISTENZIALE'] = new Array(['PARTECIPANTE','COORDINATORE_ATTIVITA_AUDIT']);
 				selectRuoliCoinvolti['PROGETTI_DI_MIGLIORAMENTO'] = new Array(['PARTECIPANTE','ESPERTO','COORDINATORE_GRUPPI','RESPONSABILE_PROGETTO']);
-
 
 				$(document).ready(function() {
 					//init selecpicker

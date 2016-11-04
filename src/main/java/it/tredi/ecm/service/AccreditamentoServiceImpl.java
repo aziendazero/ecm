@@ -479,7 +479,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception{
+	public DatiAccreditamento getDatiAccreditamentoForAccreditamentoId(Long accreditamentoId) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Recupero datiAccreditamento per la domanda " + accreditamentoId));
 		DatiAccreditamento datiAccreditamento = accreditamentoRepository.getDatiAccreditamentoForAccreditamento(accreditamentoId);
 		if(datiAccreditamento == null)
@@ -1002,14 +1002,23 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public void inviaValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
+	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
 		workflowService.eseguiTaskTaskInserimentoEsitoOdgForUser(curentUser, getAccreditamento(accreditamentoId), stato);
 		Provider provider = providerService.getProvider(getProviderIdForAccreditamento(accreditamentoId));
-		if(stato == AccreditamentoStatoEnum.ACCREDITATO)
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO){
+			Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+			if(accreditamento.isProvvisorio()) {
 			provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
+				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(4));
+			} else {
+				provider.setStatus(ProviderStatoEnum.ACCREDITATO_STANDARD);
+				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(2));
+			}
+			save(accreditamento);
+		}
 		if(stato == AccreditamentoStatoEnum.DINIEGO)
 			provider.setStatus(ProviderStatoEnum.DINIEGO);
-		
+		providerService.save(provider);
 		quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);
 	}
 
