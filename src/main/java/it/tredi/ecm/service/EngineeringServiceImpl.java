@@ -199,7 +199,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 	public String pagaQuotaProvider(Long pagamentoId, String backURL) throws Exception {
 		Pagamento p = pagamentoService.getPagamentoById(pagamentoId);
-		String url = prepareDatiPagamento(p, p.getQuotaAnnuale(), CAUSALE_PAGAMENTO_QUOTA_PROVIDER + p.getAnnoPagamento(), backURL);
+		String url = prepareDatiPagamentoPerQuotaAnnuale(p, p.getQuotaAnnuale(), CAUSALE_PAGAMENTO_QUOTA_PROVIDER + p.getQuotaAnnuale().getAnnoRiferimento(), backURL);
 		return url;
 	}
 
@@ -267,7 +267,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		return response.getUrl();
 	}
 
-	private String prepareDatiPagamento(Pagamento p, QuotaAnnuale quotaAnnuale, String causale, String backURL) throws Exception{
+	private String prepareDatiPagamentoPerQuotaAnnuale(Pagamento p, QuotaAnnuale quotaAnnuale, String causale, String backURL) throws Exception{
 		Provider soggetto = quotaAnnuale.getProvider();
 		
 		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.

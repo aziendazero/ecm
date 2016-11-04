@@ -3,20 +3,15 @@ package it.tredi.ecm.service;
 import java.time.LocalDate;
 import java.util.Set;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
-import it.tredi.ecm.dao.repository.PagamentoRepository;
 import it.tredi.ecm.dao.repository.QuotaAnnualeRepository;
-import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 
 @Service
@@ -27,7 +22,6 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 	@Autowired private ProviderService providerService;
 	@Autowired private EngineeringServiceImpl engineeringService;
 	@Autowired private PagamentoService pagamentoService;
-	@Autowired private EcmProperties ecmProperties;
 	
 	@Override
 	public QuotaAnnuale createPagamentoProviderPerQuotaAnnuale(Long providerId, Integer annoRiferimento, boolean primoAnno) {
@@ -42,8 +36,6 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 		
 		Pagamento pagamento = new Pagamento();
 		pagamento.setQuotaAnnuale(quotaAnnuale);
-		//pagamento.setProvider(provider);
-		//pagamento.setAnnoPagamento(annoRiferimento);
 		
 		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
 		pagamento.setAnagrafica(provider.getDenominazioneLegale());
@@ -59,7 +51,6 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 				pagamento.setDataScadenzaPagamento(LocalDate.now());
 				pagamento.setDataPagamento(LocalDate.now());
 				pagamento.setCodiceEsito(EngineeringServiceImpl.PAGAMENTO_ESEGUITO);
-				//provider.setPagato(true);
 				quotaAnnuale.setPagato(true);
 			}else if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("B")){
 				//Provider tipo B -> primo anno pagano quota fissa
@@ -116,9 +107,20 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 	}
 	
 	@Override
-	public Set<Provider> getAllProviderNotPagamentoEffettuato(Integer annoPagamento) {
+	public Set<Provider> getAllProviderNotPagamentoEffettuato() {
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di Provider con pagamenti in sospeso"));
-		return quotaAnnualeRepository.findAllProviderNotPagamentoEffettuato(annoPagamento);
+		return quotaAnnualeRepository.findAllProviderNotPagamentoEffettuato();
+	}
+	
+	@Override
+	public Set<Provider> getAllProviderNotPagamentoRegistrato(Integer annoRiferimento) {
+		LOGGER.debug(Utils.getLogMessage("Recupero lista di Provider che non hanno una quota annuale registrata per l'anno: " + annoRiferimento));
+		Set<Provider> providerList = quotaAnnualeRepository.findAllProviderNotPagamentoRegistrato(annoRiferimento);
+
+		if(providerList != null)
+			LOGGER.info(Utils.getLogMessage("Trovati " + providerList.size() + " provider"));
+		
+		return providerList; 
 	}
 	
 	@Override

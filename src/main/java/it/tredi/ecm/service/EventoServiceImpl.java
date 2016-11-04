@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.persistence.criteria.CriteriaBuilder.Case;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
@@ -38,7 +37,6 @@ import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
-import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -47,7 +45,6 @@ import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.FileEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
@@ -64,7 +61,6 @@ import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
-import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Service
@@ -79,17 +75,10 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private SponsorRepository sponsorRepository;
 	@Autowired private PartnerRepository partnerRepository;
 
-	@Autowired
-	private RendicontazioneInviataService rendicontazioneInviataService;
-
-	@Autowired
-	private FileService fileService;
-
-	@Autowired
-	private CogeapsWsRestClient cogeapsWsRestClient;
-
-	@Autowired
-	private EcmProperties ecmProperties;
+	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
+	@Autowired private FileService fileService;
+	@Autowired private CogeapsWsRestClient cogeapsWsRestClient;
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public Evento getEvento(Long id) {
