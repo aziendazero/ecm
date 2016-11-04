@@ -56,7 +56,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AccountRepository accountRepository;
 	@Autowired private EmailService emailService;
 	@Autowired private AccountService accountService;
-	@Autowired private PagamentoService pagamentoService;
+//	@Autowired private PagamentoService pagamentoService;
+	@Autowired private QuotaAnnualeService quotaAnnualeService;
 
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
@@ -838,7 +839,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception  {
 		changeState(accreditamentoId, stato, null);
 	}
-
+	
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception  {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
@@ -857,7 +858,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
 			List<String> listaCriticita = new ArrayList<String>();
 			fieldEditabiliAccreditamento.forEach(v -> {
-	            //Richiesta
+	            //Richiesta 
 	            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire singole note sui campi] (pag 4)
 				if(v.getNota() == null || v.getNota().isEmpty())
 					listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
@@ -1001,15 +1002,24 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public void inviaValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
+	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
 		workflowService.eseguiTaskTaskInserimentoEsitoOdgForUser(curentUser, getAccreditamento(accreditamentoId), stato);
 		Provider provider = providerService.getProvider(getProviderIdForAccreditamento(accreditamentoId));
-		if(stato == AccreditamentoStatoEnum.ACCREDITATO)
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO){
+			Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+			if(accreditamento.isProvvisorio()) {
 			provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
+				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(4));
+			} else {
+				provider.setStatus(ProviderStatoEnum.ACCREDITATO_STANDARD);
+				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(2));
+			}
+			save(accreditamento);
+		}
 		if(stato == AccreditamentoStatoEnum.DINIEGO)
 			provider.setStatus(ProviderStatoEnum.DINIEGO);
-
-		pagamentoService.preparePagamentoProviderPerQuotaAnnua(provider.getId(), LocalDate.now().getYear(), true);
+		providerService.save(provider);
+		quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);
 	}
 
 	@Override

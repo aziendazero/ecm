@@ -190,11 +190,11 @@
 								<tr th:each="evento, row : ${eventoList}">
 									<td><a th:text="${evento.getCodiceIdentificativo()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/show|}"></a></td>
 									<td th:text="${evento.titolo}"></td>
-									<td th:text="${evento.proceduraFormativa.nome}"></td>
+									<td th:text="${evento.proceduraFormativa.name()}"></td>
 									<td th:text="${evento.stato.nome}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
 									<td th:unless="${evento.pagato}">
-										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>
+										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>	
 										<span th:unless="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.da_pagare}"></span>
 									</td>
 									<td th:text="${evento.dataScadenzaPagamento == null} ? '' : ${#temporals.format(evento.dataScadenzaPagamento, 'dd/MM/yyyy')}"></td>

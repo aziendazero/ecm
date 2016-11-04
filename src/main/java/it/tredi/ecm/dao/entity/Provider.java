@@ -66,8 +66,8 @@ public class Provider extends BaseEntity{
 	private String codiceFiscale;
 	private String emailStruttura;
 	
-	private Boolean pagato = false;
-	private Boolean pagInCorso = false;
+//	private Boolean pagato = false;
+//	private Boolean pagInCorso = false;
 	
 	public Long getCodiceIdentificativoUnivoco(){
 		return this.getId();

@@ -79,17 +79,10 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private PartnerRepository partnerRepository;
 	@Autowired private EventoPianoFormativoRepository eventoPianoFormativoRepository;
 
-	@Autowired
-	private RendicontazioneInviataService rendicontazioneInviataService;
-
-	@Autowired
-	private FileService fileService;
-
-	@Autowired
-	private CogeapsWsRestClient cogeapsWsRestClient;
-
-	@Autowired
-	private EcmProperties ecmProperties;
+	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
+	@Autowired private FileService fileService;
+	@Autowired private CogeapsWsRestClient cogeapsWsRestClient;
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -768,10 +761,10 @@ public class EventoServiceImpl implements EventoService {
 			numeroPartecipanti = numeroPartecipanti!= null ? numeroPartecipanti.intValue() : 0;
 
 			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
-				creditiFrontale = oreFrontale * 1.0f;
-				creditiFrontale = (creditiFrontale + (creditiFrontale*0.25f));
+				creditiFrontale = oreFrontale * 1.25f;
 			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
-				//TODO 25% decrescente
+				float creditiDecrescenti = getQuotaFasciaDecrescenteForRES(numeroPartecipanti);
+				creditiFrontale = oreFrontale * creditiDecrescenti;
 			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){
 				creditiFrontale = oreFrontale * 1.0f;
 			}else if(numeroPartecipanti >= 101 && numeroPartecipanti <= 150){
@@ -789,6 +782,55 @@ public class EventoServiceImpl implements EventoService {
 		crediti = Utils.getRoundedFloatValue(crediti);
 
 		return crediti;
+	}
+	
+	private float getQuotaFasciaDecrescenteForRES(int numeroPartecipanti){
+		switch (numeroPartecipanti){
+			case 21: return 1.24f;
+			case 22: return 1.23f;
+			case 23: return 1.23f;
+			case 24: return 1.22f;
+			case 25: return 1.21f;
+			case 26: return 1.20f;
+			case 27: return 1.19f;
+			case 28: return 1.19f;
+			case 29: return 1.18f;
+			case 30: return 1.17f;
+			case 31: return 1.16f;
+			case 32: return 1.15f;
+			case 33: return 1.15f;
+			case 34: return 1.14f;
+			case 35: return 1.13f;
+			case 36: return 1.12f;
+			case 37: return 1.11f;
+			case 38: return 1.10f;
+			case 39: return 1.10f;
+			case 40: return 1.08f;
+			case 41: return 1.08f;
+			case 42: return 1.07f;
+			case 43: return 1.06f;
+			case 44: return 1.06f;
+			case 45: return 1.05f;
+			case 46: return 1.04f;
+			case 47: return 1.03f;
+			case 48: return 1.02f;
+			case 49: return 1.02f;
+			case 50: return 1.01f;
+			
+			default: return 0.0f;
+		}
+		
+	}
+	
+	private float ricercaDicotomica(int left, int right, int numero){
+		int val = (left + right)/2;
+		if(val == numero)
+			return numero;
+		else if(val > numero)
+			return ricercaDicotomica(left, val, numero);
+		else
+			return ricercaDicotomica(val, right, numero);
+		
 	}
 
 	private float calcoloCreditiFormativiEventoFSC(TipologiaEventoFSCEnum tipologiaEvento, EventoWrapper wrapper){

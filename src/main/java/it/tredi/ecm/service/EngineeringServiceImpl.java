@@ -10,6 +10,7 @@ import java.net.Authenticator;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,7 @@ import it.tredi.ecm.dao.entity.PagDovutiLog;
 import it.tredi.ecm.dao.entity.PagPagatiLog;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.FileRepository;
@@ -77,7 +79,7 @@ import it.veneto.regione.schemas._2012.pagamenti.ente.StTipoIdentificativoUnivoc
 
 @Service
 public class EngineeringServiceImpl implements EngineeringService {
-	
+
 	@Autowired private FileRepository fileRepository;
 	@Autowired private PagamentoService pagamentoService;
 	@Autowired private EventoRepository eventoRepository;
@@ -85,14 +87,15 @@ public class EngineeringServiceImpl implements EngineeringService {
 	@Autowired private PagPagatiLogRepository chiediPagatiRepository;
 	@Autowired private EngineeringProperties engineeringProperties;
 	@Autowired private ProviderService providerService;
-	
+	@Autowired private QuotaAnnualeService quotaAnnualeService;
+
 	/** Non credo varierà, ma meglio parametrizzare e settare su file o tabella di configurazione */
 	public static final String VERSIONE = "6.0";
-	
+
 	/** Permette tutti i tipi di pagamento. Si può modificare se necessario impedire certe forme di pagamento (vedi documentazione) */
 	public static final String TIPO_VERSAMENTO_ALL = "ALL";
 	public static String ENDPOINT_PAGAMENTI = ""; 
-	
+
 	// costanti
 	public static final String ENTE_NON_VALIDO = "PAA_ENTE_NON_VALIDO"; // codice IPA Ente non valido o password errata
 	public static final String ID_SESSION_NON_VALIDO = "PAA_ID_SESSION_NON_VALIDO"; // idSession non valido
@@ -100,36 +103,36 @@ public class EngineeringServiceImpl implements EngineeringService {
 	public static final String PAGAMENTO_IN_CORSO = "PAA_PAGAMENTO_IN_CORSO"; // pagamento in corso
 	public static final String PAGAMENTO_ANNULLATO = "PAA_PAGAMENTO_ANNULLATO"; // pagamento annullato
 	public static final String PAGAMENTO_SCADUTO = "PAA_PAGAMENTO_SCADUTO"; // pagamento scaduto
-	
+
 	public static final String PAGAMENTO_ESEGUITO = "0";
 	public static final String PAGAMENTO_NON_ESEGUITO = "1";
 	public static final String PAGAMENTO_PARZIALMENTE_ESEGUITO = "2";
 	public static final String DECORRENZA_TERMINI = "3";
 	public static final String DECORRENZA_TERMINI_PARZIALE = "4";
-	
+
 	public static final String CAUSALE_PAGAMENTO_EVENTO = "Pagamento Evento";
 	public static final String CAUSALE_PAGAMENTO_QUOTA_PROVIDER = "Pagamento Quota Accreditamento Provider - anno ";
-	
+
 	public static final Logger LOGGER = Logger.getLogger(EngineeringServiceImpl.class);
-	
+
 	private static JAXBContext jCtDovutiContext = null;
 	private static JAXBContext jCtPagatiContext = null;
 	private static JAXBContext jPaaSILInviaDovutiContext = null;
-	
+
 	@PostConstruct
 	public void init(){
 		ENDPOINT_PAGAMENTI = engineeringProperties.getEndpointPagamenti();
 		setProxy();
 	}
-	
+
 	protected static ThreadLocal<DateFormat> fmt = new ThreadLocal<DateFormat>() {
 		protected DateFormat initialValue() {
 			return new SimpleDateFormat("yyyyMMdd'T'HHmmssSSS'Z'");
 		}
 	};
-	
+
 	protected static ThreadLocal<Transformer> tf = new ThreadLocal<Transformer>() {
-		
+
 		protected Transformer initialValue() {
 			// An implementation of the TransformerFactory class is NOT guaranteed to be thread safe
 			TransformerFactory tf = TransformerFactory.newInstance();
@@ -142,45 +145,45 @@ public class EngineeringServiceImpl implements EngineeringService {
 			return transformer;
 		}
 	};
-	
+
 	protected static ThreadLocal<PagamentiTelematiciDovutiPagati> port = new ThreadLocal<PagamentiTelematiciDovutiPagati>() {
-		
+
 		protected PagamentiTelematiciDovutiPagati initialValue() {
-		
+
 			PagamentiTelematiciDovutiPagatiService service = new PagamentiTelematiciDovutiPagatiService();
 			PagamentiTelematiciDovutiPagati port = service.getPagamentiTelematiciDovutiPagatiPort();
-			
+
 			BindingProvider bp = (BindingProvider) port;
 			Map<String, Object> context = bp.getRequestContext();
-			
+
 			context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, ENDPOINT_PAGAMENTI);
-			
+
 			return port;
 		}
 	};
-	
+
 	public static synchronized JAXBContext getCtDovutiContext() throws JAXBException {
-		 if (jCtDovutiContext == null) {
-			 jCtDovutiContext = JAXBContext.newInstance(CtDovuti.class);
-	     }
-	     return jCtDovutiContext;
+		if (jCtDovutiContext == null) {
+			jCtDovutiContext = JAXBContext.newInstance(CtDovuti.class);
+		}
+		return jCtDovutiContext;
 	}
-	
+
 	public static synchronized JAXBContext getCtPagatiContext() throws JAXBException {
-		 if (jCtPagatiContext == null) {
-			 jCtPagatiContext = JAXBContext.newInstance(CtPagati.class);
-	     }
-	     return jCtPagatiContext;
+		if (jCtPagatiContext == null) {
+			jCtPagatiContext = JAXBContext.newInstance(CtPagati.class);
+		}
+		return jCtPagatiContext;
 	}
-	
+
 	public static synchronized JAXBContext getPaaSILInviaDovutiContext() throws JAXBException {
-		 if (jPaaSILInviaDovutiContext == null) {
-			 jPaaSILInviaDovutiContext = JAXBContext.newInstance(PaaSILInviaDovuti.class);
-	     }
-	     return jPaaSILInviaDovutiContext;
+		if (jPaaSILInviaDovutiContext == null) {
+			jPaaSILInviaDovutiContext = JAXBContext.newInstance(PaaSILInviaDovuti.class);
+		}
+		return jPaaSILInviaDovutiContext;
 	}
-	
-	
+
+
 	/**
 	 * Era prima nel costruttore, spostato qui per evitare errore autowired all' avvio
 	 */
@@ -193,37 +196,26 @@ public class EngineeringServiceImpl implements EngineeringService {
 			}
 		}
 	}
-	
-	public String pagaQuotaProvider(Long providerId, Integer annoRiferimento, boolean primoAnno, String backURL) throws Exception {
-		Provider provider = providerService.getProvider(providerId);
-		
-		if(provider == null){
-			throw new Exception("Provider non trovato");
-		}
-		
-		Pagamento p = pagamentoService.getPagamentoByProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
-		if (p == null) {
-			p = pagamentoService.preparePagamentoProviderPerQuotaAnnua(providerId, annoRiferimento, primoAnno);
-		}
-		
-		String url = prepareDatiPagamento(p, provider, CAUSALE_PAGAMENTO_QUOTA_PROVIDER + annoRiferimento, backURL);
-		
+
+	public String pagaQuotaProvider(Long pagamentoId, String backURL) throws Exception {
+		Pagamento p = pagamentoService.getPagamentoById(pagamentoId);
+		String url = prepareDatiPagamentoPerQuotaAnnuale(p, p.getQuotaAnnuale(), CAUSALE_PAGAMENTO_QUOTA_PROVIDER + p.getQuotaAnnuale().getAnnoRiferimento(), backURL);
 		return url;
 	}
 
 	public String pagaEvento(Long idEvento, String backURL) throws Exception {
 
 		Evento e = eventoRepository.findOne(idEvento);
-	
+
 		Pagamento p = pagamentoService.getPagamentoByEvento(e);
 		if (p == null) {
 			p = new Pagamento();
 			p.setEvento(e);
 		}
-		
+
 		Provider soggetto = e.getProvider();
-		
-		
+
+
 		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
 		p.setAnagrafica(soggetto.getDenominazioneLegale());
 		//p.setCodiceFiscale(soggetto.getCodiceFiscale());
@@ -233,30 +225,30 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
 		p.setCausale("VERSAMENTO DI PROVA");
 		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
-		
+
 		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.
 		String iud = StringUtils.rightPad(engineeringProperties.getServizio() + fmt.get().format(new Date()), 35, "0");
 		LOGGER.info("IUD: " + iud);
-		
+
 		p.setIdentificativoUnivocoDovuto(iud);
 		p.setImporto(e.getCosto());
-		
+
 		p.setDataInvio(new Date());
 		pagamentoService.save(p);
-		
+
 		PaaSILInviaDovuti dovuti = createPagamentoMessage(p, backURL);
-		
+
 		IntestazionePPT header = new IntestazionePPT();
 		header.setCodIpaEnte(engineeringProperties.getIpa());
-		
+
 		PaaSILInviaDovutiRisposta response = port.get().paaSILInviaDovuti(dovuti, header);
-		
+
 		p.setIdSession(response.getIdSession());		
 		e = p.getEvento();
 		e.setPagInCorso(true);
-		
+
 		PagDovutiLog log = new PagDovutiLog();
-		
+
 		log.setPagamento(p);
 		log.setDataRichiesta(new Date());
 		log.setEsito(response.getEsito());
@@ -271,39 +263,42 @@ public class EngineeringServiceImpl implements EngineeringService {
 		pagamentoService.save(p);
 		eventoRepository.save(e);
 		invioDovutiRepository.save(log);
-		
+
 		return response.getUrl();
 	}
-	
-	private String prepareDatiPagamento(Pagamento p, Provider soggetto, String causale, String backURL) throws Exception{
-		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
-//		p.setAnagrafica(soggetto.getDenominazioneLegale());
-//		p.setPartitaIva(soggetto.getPartitaIva());
-//		p.setEmail(soggetto.getEmailStruttura());
-//		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
-//		p.setCausale(causale);
-		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
+
+	private String prepareDatiPagamentoPerQuotaAnnuale(Pagamento p, QuotaAnnuale quotaAnnuale, String causale, String backURL) throws Exception{
+		Provider soggetto = quotaAnnuale.getProvider();
 		
+		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
+		//		p.setAnagrafica(soggetto.getDenominazioneLegale());
+		//		p.setPartitaIva(soggetto.getPartitaIva());
+		//		p.setEmail(soggetto.getEmailStruttura());
+		//		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
+		//		p.setCausale(causale);
+		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
+
 		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.
 		String iud = StringUtils.rightPad(engineeringProperties.getServizio() + fmt.get().format(new Date()), 35, "0");
 		LOGGER.info("IUD: " + iud);
-		
+
 		p.setIdentificativoUnivocoDovuto(iud);
 		p.setDataInvio(new Date());
 		pagamentoService.save(p);
-		
+
 		PaaSILInviaDovuti dovuti = createPagamentoMessage(p, backURL);
-		
+
 		IntestazionePPT header = new IntestazionePPT();
 		header.setCodIpaEnte(engineeringProperties.getIpa());
-		
+
 		PaaSILInviaDovutiRisposta response = port.get().paaSILInviaDovuti(dovuti, header);
-		
+
 		p.setIdSession(response.getIdSession());		
-		soggetto.setPagInCorso(true);
-		
+		//soggetto.setPagInCorso(true);
+		quotaAnnuale.setPagInCorso(true);
+
 		PagDovutiLog log = new PagDovutiLog();
-		
+
 		log.setPagamento(p);
 		log.setDataRichiesta(new Date());
 		log.setEsito(response.getEsito());
@@ -312,15 +307,17 @@ public class EngineeringServiceImpl implements EngineeringService {
 			log.setFaultCode(response.getFault().getFaultCode());
 			log.setFaultString(response.getFault().getFaultString());
 			log.setFaultDescription(response.getFault().getDescription());
-			soggetto.setPagInCorso(false);
+			//soggetto.setPagInCorso(false);
+			quotaAnnuale.setPagInCorso(true);
 		}
 
 		pagamentoService.save(p);
-		providerService.save(soggetto);
+		//providerService.save(soggetto);
+		quotaAnnualeService.save(quotaAnnuale);
 		invioDovutiRepository.save(log);
 		return response.getUrl();
 	}
-	
+
 	/**
 	 * Crea l'oggetto PaaSILInviaDovuti per effettuare il pagamento su MyPay
 	 * @param p l'oggetto Pagamento con le informazioni sul pagamento da effettuare
@@ -338,15 +335,15 @@ public class EngineeringServiceImpl implements EngineeringService {
 		versamento.setIdentificativoTipoDovuto(engineeringProperties.getTipoDovuti());
 		versamento.setIdentificativoUnivocoDovuto(p.getIdentificativoUnivocoDovuto());
 		versamento.setImportoSingoloVersamento(BigDecimal.valueOf(p.getImporto()));
-		
+
 		CtDatiVersamentoDovuti datiVersamento = new CtDatiVersamentoDovuti();
 		datiVersamento.setTipoVersamento(p.getTipoVersamento());
 		datiVersamento.getDatiSingoloVersamento().add(versamento);
-		
+
 		CtIdentificativoUnivocoPersonaFG u = new CtIdentificativoUnivocoPersonaFG();
 		u.setCodiceIdentificativoUnivoco(StringUtils.isNotBlank(p.getCodiceFiscale()) ? p.getCodiceFiscale() : p.getPartitaIva());
 		u.setTipoIdentificativoUnivoco(StTipoIdentificativoUnivocoPersFG.G); // soggetto giuridico
-		
+
 		CtSoggettoPagatore soggettoPagatore = new CtSoggettoPagatore();
 		soggettoPagatore.setAnagraficaPagatore(p.getAnagrafica());
 		soggettoPagatore.setCapPagatore(p.getCap());
@@ -357,16 +354,16 @@ public class EngineeringServiceImpl implements EngineeringService {
 		soggettoPagatore.setLocalitaPagatore(p.getLocalita());
 		soggettoPagatore.setNazionePagatore(p.getNazione());
 		soggettoPagatore.setProvinciaPagatore(p.getProvincia());
-		
+
 		CtDovuti ctDovuti = new CtDovuti();
 		ctDovuti.setDatiVersamento(datiVersamento);
 		ctDovuti.setSoggettoPagatore(soggettoPagatore);
 		ctDovuti.setVersioneOggetto(VERSIONE); 
-		
-		
+
+
 		PaaSILInviaDovuti dovuti = new PaaSILInviaDovuti();
 		dovuti.setPassword(engineeringProperties.getPassword());
-		
+
 		// uso la trasformazione per omettere la dichiarazione XML
 		Transformer transformer = tf.get();
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
@@ -374,69 +371,72 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 		ByteArrayOutputStream w = new ByteArrayOutputStream();
 		transformer.transform(new JAXBSource(getCtDovutiContext(), ctDovuti), new StreamResult(w));
-		
+
 		dovuti.setDovuti(w.toByteArray());
 		w.close();
-		
+
 		dovuti.setEnteSILInviaRispostaPagamentoUrl(backUrl);
-		
+
 		// marshalling in byte[]
 		final Marshaller m2 = getPaaSILInviaDovutiContext().createMarshaller();
 		m2.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		m2.setProperty(Marshaller.JAXB_FRAGMENT, true);
 		final StringWriter w2 = new StringWriter();
 		m2.marshal(dovuti, w2);
-		
+
 		return dovuti;
 	}
-	
-	public void esitoPagamenti() throws Exception {
-		
+
+	/*
+	 * TODO Da mettere nel Thread
+	 * */
+	public void esitoPagamentiEventi() throws Exception {
+
 		Set<Pagamento> pagamenti = pagamentoService.getPagamentiEventiDaVerificare();
-		
+
 		Holder<FaultBean> fault;
 		Holder<DataHandler> pagati;
-		
+
 		PagPagatiLog log;
-		
+
 		for (Pagamento p : pagamenti) {
 			if (StringUtils.isNotBlank(p.getIdSession())) {
 				fault = new Holder<FaultBean>();
 				pagati = new Holder<DataHandler>();
-				
+
 				port.get().paaSILChiediPagati(engineeringProperties.getIpa(), engineeringProperties.getPassword(), p.getIdSession(), fault, pagati);
-				
+
 				// traccio la chiamata
 				log = new PagPagatiLog();
 				log.setPagamento(p);
 				log.setDataRichiesta(new Date());
 				log.setIdSession(p.getIdSession());
-				
+
 				// In presenza di un fault code posso avere 2 casi: pagamento in corso (ancora senza esito), oppure fallito (es timeout).
 				if (fault != null && fault.value != null) {
 					log.setFaultCode(fault.value.getFaultCode());
 					log.setFaultDescription(fault.value.getDescription());
 					log.setFaultString(fault.value.getFaultString());
-					
+
 					// Se fault e diverso da non iniziato o in corso, il pagamento è fallito e va ripetuto.
 					if (!PAGAMENTO_IN_CORSO.equals(log.getFaultCode()) && !PAGAMENTO_NON_INIZIATO.equals(log.getFaultCode())) {
 						Evento e = p.getEvento();
 						e.setPagInCorso(false);
 						eventoRepository.save(e);
 					}
-					
+
 				} else if (pagati != null && pagati.value != null) {
 					String xml = new String(java.util.Base64.getDecoder().decode(IOUtils.toByteArray(pagati.value.getInputStream())));
 					StringReader reader = new StringReader(xml);
 					final Unmarshaller um = getCtPagatiContext().createUnmarshaller();
 					CtPagati pagatiXml = (CtPagati)um.unmarshal(reader);
-					
+
 					Evento e = p.getEvento();
 					// se sono qui il pagamento e' concluso: potrebbe essere andato a buon fine o meno.
 					e.setPagInCorso(false);
 					log.setCodiceEsito(pagatiXml.getDatiPagamento().getCodiceEsitoPagamento());
 					p.setCodiceEsito(log.getCodiceEsito());
-					
+
 					// Se esito = 0 allora il pagamento risulta eseguito correttamente. Altrimenti deve essere rifatto.
 					if (PAGAMENTO_ESEGUITO.equals(p.getCodiceEsito())) {
 						e.setPagato(true);
@@ -444,41 +444,126 @@ public class EngineeringServiceImpl implements EngineeringService {
 						e.setPagato(false);
 					}
 					eventoRepository.save(e);
-					
+
 					CtDatiSingoloPagamentoPagati item = pagatiXml.getDatiPagamento().getDatiSingoloPagamento().get(0);
 					p.setDataEsitoSingoloPagamento(item.getDataEsitoSingoloPagamento().getTime());
 					p.setEsitoSingoloPagamento(item.getEsitoSingoloPagamento());
 					p.setIdentificativoUnivocoRiscosse(item.getIdentificativoUnivocoRiscossione());
 					p.setImportoTotalePagato(item.getSingoloImportoPagato().doubleValue());
+
+					// informazioni ridondanti in caso qualcuno dovesse ripetere il pagamento posso risalire allo storico.
+					log.setDataEsitoSingoloPagamento(item.getDataEsitoSingoloPagamento().getTime());
+					log.setEsitoSingoloPagamento(item.getEsitoSingoloPagamento());
+					log.setIdentificativoUnivocoRiscosse(item.getIdentificativoUnivocoRiscossione());
+					log.setImportoTotalePagato(item.getSingoloImportoPagato().doubleValue());
+
+					pagamentoService.save(p);
+
+				}
+
+				chiediPagatiRepository.save(log);
+
+			}
+		}
+
+	}
+
+	/*
+	 * TODO Da mettere nel Thread
+	 * */
+	public void esitoPagamentiQuoteAnnuali() throws Exception {
+//		Set<Pagamento> pagamenti = pagamentoService.getPagamentiProviderDaVerificare();
+		Set<Pagamento> pagamenti = quotaAnnualeService.getPagamentiProviderDaVerificare();
+		
+		Holder<FaultBean> fault;
+		Holder<DataHandler> pagati;
+
+		PagPagatiLog log;
+
+		for (Pagamento p : pagamenti) {
+			if (StringUtils.isNotBlank(p.getIdSession())) {
+				fault = new Holder<FaultBean>();
+				pagati = new Holder<DataHandler>();
+
+				port.get().paaSILChiediPagati(engineeringProperties.getIpa(), engineeringProperties.getPassword(), p.getIdSession(), fault, pagati);
+
+				// traccio la chiamata
+				log = new PagPagatiLog();
+				log.setPagamento(p);
+				log.setDataRichiesta(new Date());
+				log.setIdSession(p.getIdSession());
+
+				// In presenza di un fault code posso avere 2 casi: pagamento in corso (ancora senza esito), oppure fallito (es timeout).
+				if (fault != null && fault.value != null) {
+					log.setFaultCode(fault.value.getFaultCode());
+					log.setFaultDescription(fault.value.getDescription());
+					log.setFaultString(fault.value.getFaultString());
+
+					// Se fault e diverso da non iniziato o in corso, il pagamento è fallito e va ripetuto.
+					if (!PAGAMENTO_IN_CORSO.equals(log.getFaultCode()) && !PAGAMENTO_NON_INIZIATO.equals(log.getFaultCode())) {
+//						Provider provider = p.getProvider();
+//						provider.setPagInCorso(false);
+//						providerService.save(provider);
+						QuotaAnnuale quotaAnnuale = p.getQuotaAnnuale();
+						quotaAnnuale.setPagInCorso(false);
+						quotaAnnualeService.save(quotaAnnuale);
+					}
+				} else if (pagati != null && pagati.value != null) {
+					String xml = new String(java.util.Base64.getDecoder().decode(IOUtils.toByteArray(pagati.value.getInputStream())));
+					StringReader reader = new StringReader(xml);
+					final Unmarshaller um = getCtPagatiContext().createUnmarshaller();
+					CtPagati pagatiXml = (CtPagati)um.unmarshal(reader);
+
+					//Provider provider = p.getProvider();
+					//provider.setPagInCorso(false);
+					QuotaAnnuale quotaAnnuale = p.getQuotaAnnuale();
+					quotaAnnuale.setPagInCorso(false);
+					log.setCodiceEsito(pagatiXml.getDatiPagamento().getCodiceEsitoPagamento());
+					p.setCodiceEsito(log.getCodiceEsito());
+
+					// Se esito = 0 allora il pagamento risulta eseguito correttamente. Altrimenti deve essere rifatto.
+					if (PAGAMENTO_ESEGUITO.equals(p.getCodiceEsito())) {
+						//provider.setPagato(true);
+						quotaAnnuale.setPagato(true);
+					} else {
+//						provider.setPagato(false);
+						quotaAnnuale.setPagato(false);
+					}
+//					providerService.save(provider);
+					quotaAnnualeService.save(quotaAnnuale);
+
+					CtDatiSingoloPagamentoPagati item = pagatiXml.getDatiPagamento().getDatiSingoloPagamento().get(0);
+					p.setDataEsitoSingoloPagamento(item.getDataEsitoSingoloPagamento().getTime());
+					p.setEsitoSingoloPagamento(item.getEsitoSingoloPagamento());
+					p.setIdentificativoUnivocoRiscosse(item.getIdentificativoUnivocoRiscossione());
+					p.setImportoTotalePagato(item.getSingoloImportoPagato().doubleValue());
+					p.setDataPagamento(item.getDataEsitoSingoloPagamento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 					
 					// informazioni ridondanti in caso qualcuno dovesse ripetere il pagamento posso risalire allo storico.
 					log.setDataEsitoSingoloPagamento(item.getDataEsitoSingoloPagamento().getTime());
 					log.setEsitoSingoloPagamento(item.getEsitoSingoloPagamento());
 					log.setIdentificativoUnivocoRiscosse(item.getIdentificativoUnivocoRiscossione());
 					log.setImportoTotalePagato(item.getSingoloImportoPagato().doubleValue());
-					
+
 					pagamentoService.save(p);
-				    
 				}
-				
 				chiediPagatiRepository.save(log);
-				
 			}
 		}
-		
+
 	}
-	
+
 	public void azzeraPagamenti(Long idProvider) throws Exception {
 		Iterable<PagDovutiLog> pdl = invioDovutiRepository.findAll();
 		invioDovutiRepository.delete(pdl);
-		
-		
+
+
 		Iterable<PagPagatiLog> ppl = chiediPagatiRepository.findAll();
 		chiediPagatiRepository.delete(ppl);
-		
+
 		Iterable<Pagamento> p = pagamentoService.getAllPagamenti();
 		pagamentoService.deleteAll(p);
-		
+
 		Set<Evento> evs = eventoRepository.findAllByProviderId(idProvider);
 		for (Evento ev : evs) {
 			ev.setPagato(false);
@@ -486,7 +571,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 			eventoRepository.save(ev);
 		}
 	}
-	
+
 	public void saveFileFirmato(String xml) throws Exception {
 
 		xml = java.net.URLDecoder.decode(xml, "UTF-8");
@@ -502,7 +587,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		String idString = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/INFORMAZIONI").evaluate(doc);  
 
 		File file = fileRepository.findOne(Long.parseLong(idString));
-		
+
 		InputStream is = null;
 		URL url = new URL(urlSignedBytes);
 		try {
@@ -515,7 +600,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		} finally {
 			if (is != null) { is.close(); }
 		}
-		
+
 	}
 
 }

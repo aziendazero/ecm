@@ -211,10 +211,4 @@ public class PianoFormativoTest {
 		for(it.tredi.ecm.dao.entity.File f :  provider.getFiles())
 			System.out.println(f.getNomeFile());
 	}
-	
-	@Test
-	public void testPagamento(){
-		pagamentoService.getAllProviderNotPagamentoEffettuato(new Integer(2017));
-	}
-	
 }

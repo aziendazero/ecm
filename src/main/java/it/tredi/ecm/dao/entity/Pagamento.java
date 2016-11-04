@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import lombok.Getter;
@@ -18,10 +17,7 @@ import lombok.Setter;
 @Setter
 public class Pagamento extends BaseEntity{
 	/*
-	 * Creazione record di pagamento per ogni provider all'inizio dell'anno (dataPagamento = null)
-	 *
-	 * Esiste l'apposito metodo PagamentoRepository.findAllProviderNotPagamentoEffettuato(annoPagamento)
-	 * per individuare lo stato del pagamento per i provider per l'anno in corso
+	 * La logica per il pagamento delle quote annuali e' gestita attraverso la entity QuotaAnnuale
 	 *
 	 * */
 	@Column(name = "data_pagamento")
@@ -29,11 +25,10 @@ public class Pagamento extends BaseEntity{
 	@Column(name = "data_scadenza_pagamento")
 	private LocalDate dataScadenzaPagamento;
 	private Double importo;
-	@Column(name = "anno_pagamento")
-	private Integer annoPagamento;
-
-	@ManyToOne
-	private Provider provider;
+	
+	@JoinColumn(name = "fk_quota_annuale")
+	@OneToOne(fetch = FetchType.LAZY)
+	private QuotaAnnuale quotaAnnuale;
 
 	@JoinColumn(name = "fk_evento")
 	@OneToOne(fetch = FetchType.LAZY)

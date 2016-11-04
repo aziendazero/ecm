@@ -1587,7 +1587,6 @@
 											<th th:text="#{label.risultati_attesi}">RISULTATAO ATTESO</th>
 											<th th:text="#{label.metodi_di_lavoro}">METODO DI LAVORO</th>
 											<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
-											<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 											<th>
 												<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
 													<span><i class="fa fa-plus"></i></span>
@@ -1616,7 +1615,6 @@
 											 		</li>
 												</ul>
 											 </td>
-											<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].tempoDedicato}"></td>
 											<td>
 												<a onclick="modificaAttivitaFrom('attivitaFSC',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
 													<span><i class="fa fa-pencil"></i></span>
