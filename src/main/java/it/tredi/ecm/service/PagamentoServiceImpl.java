@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.repository.PagamentoRepository;
@@ -46,8 +48,10 @@ public class PagamentoServiceImpl implements PagamentoService {
 	
 	@Override
 	public Set<Pagamento> getPagamentiEventiDaVerificare() {
-		LOGGER.debug(Utils.getLogMessage("Recupero lista di Pagamenti Eventi in sospeso"));
-		return pagamentoRepository.getPagamentiEventiDaVerificare();
+		LOGGER.debug("Recupero lista di Pagamenti quota di Eventi in sospeso");
+		Set<Pagamento> pagamenti = pagamentoRepository.getPagamentiEventiDaVerificare();
+		LOGGER.debug("Trovati: " + ((pagamenti!=null) ? pagamenti.size() : "0")  + " Pagamenti in sospeso");
+		return pagamenti;
 	}
 	
 	@Override

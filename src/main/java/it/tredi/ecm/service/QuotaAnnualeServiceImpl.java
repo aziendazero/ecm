@@ -102,8 +102,10 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 	
 	@Override
 	public Set<Pagamento> getPagamentiProviderDaVerificare() {
-		LOGGER.debug(Utils.getLogMessage("Recupero lista di Pagamenti quota di Provider in sospeso"));
-		return quotaAnnualeRepository.getPagamentiProviderDaVerificare();
+		LOGGER.debug("Recupero lista di Pagamenti quota di Provider in sospeso");
+		Set<Pagamento> pagamenti = quotaAnnualeRepository.getPagamentiProviderDaVerificare(); 
+		LOGGER.debug("Trovati: " + ((pagamenti!=null) ? pagamenti.size() : "0")  + " Pagamenti in sospeso");
+		return pagamenti;
 	}
 	
 	@Override

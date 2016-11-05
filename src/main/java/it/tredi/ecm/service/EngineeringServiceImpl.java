@@ -17,6 +17,7 @@ import java.util.Set;
 
 import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -62,6 +63,7 @@ import it.tredi.ecm.dao.repository.PagPagatiLogRepository;
 import it.tredi.ecm.dao.repository.PagamentoRepository;
 import it.tredi.ecm.service.bean.EngineeringProperties;
 import it.tredi.ecm.utils.HttpAuthenticateProxy;
+import it.tredi.ecm.utils.Utils;
 import it.veneto.regione.pagamenti.ente.FaultBean;
 import it.veneto.regione.pagamenti.ente.PaaSILInviaDovuti;
 import it.veneto.regione.pagamenti.ente.PaaSILInviaDovutiRisposta;
@@ -391,7 +393,6 @@ public class EngineeringServiceImpl implements EngineeringService {
 	 * TODO Da mettere nel Thread
 	 * */
 	public void esitoPagamentiEventi() throws Exception {
-
 		Set<Pagamento> pagamenti = pagamentoService.getPagamentiEventiDaVerificare();
 
 		Holder<FaultBean> fault;
@@ -472,7 +473,6 @@ public class EngineeringServiceImpl implements EngineeringService {
 	 * TODO Da mettere nel Thread
 	 * */
 	public void esitoPagamentiQuoteAnnuali() throws Exception {
-//		Set<Pagamento> pagamenti = pagamentoService.getPagamentiProviderDaVerificare();
 		Set<Pagamento> pagamenti = quotaAnnualeService.getPagamentiProviderDaVerificare();
 		
 		Holder<FaultBean> fault;
@@ -501,9 +501,6 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 					// Se fault e diverso da non iniziato o in corso, il pagamento è fallito e va ripetuto.
 					if (!PAGAMENTO_IN_CORSO.equals(log.getFaultCode()) && !PAGAMENTO_NON_INIZIATO.equals(log.getFaultCode())) {
-//						Provider provider = p.getProvider();
-//						provider.setPagInCorso(false);
-//						providerService.save(provider);
 						QuotaAnnuale quotaAnnuale = p.getQuotaAnnuale();
 						quotaAnnuale.setPagInCorso(false);
 						quotaAnnualeService.save(quotaAnnuale);
@@ -514,8 +511,6 @@ public class EngineeringServiceImpl implements EngineeringService {
 					final Unmarshaller um = getCtPagatiContext().createUnmarshaller();
 					CtPagati pagatiXml = (CtPagati)um.unmarshal(reader);
 
-					//Provider provider = p.getProvider();
-					//provider.setPagInCorso(false);
 					QuotaAnnuale quotaAnnuale = p.getQuotaAnnuale();
 					quotaAnnuale.setPagInCorso(false);
 					log.setCodiceEsito(pagatiXml.getDatiPagamento().getCodiceEsitoPagamento());
@@ -523,13 +518,10 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 					// Se esito = 0 allora il pagamento risulta eseguito correttamente. Altrimenti deve essere rifatto.
 					if (PAGAMENTO_ESEGUITO.equals(p.getCodiceEsito())) {
-						//provider.setPagato(true);
 						quotaAnnuale.setPagato(true);
 					} else {
-//						provider.setPagato(false);
 						quotaAnnuale.setPagato(false);
 					}
-//					providerService.save(provider);
 					quotaAnnualeService.save(quotaAnnuale);
 
 					CtDatiSingoloPagamentoPagati item = pagatiXml.getDatiPagamento().getDatiSingoloPagamento().get(0);
