@@ -2,7 +2,6 @@ package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -20,11 +19,8 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Where;
-
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
@@ -65,9 +61,6 @@ public class Provider extends BaseEntity{
 	private String partitaIva;
 	private String codiceFiscale;
 	private String emailStruttura;
-	
-//	private Boolean pagato = false;
-//	private Boolean pagInCorso = false;
 	
 	public Long getCodiceIdentificativoUnivoco(){
 		return this.getId();
@@ -130,8 +123,8 @@ public class Provider extends BaseEntity{
 	@Column(name ="can_insert_evento")
 	private boolean canInsertEvento;
 
-	@OneToMany(mappedBy = "provider")
-	private Set<Pagamento> pagamenti = new HashSet<Pagamento>();
+//	@OneToMany(mappedBy = "provider")
+//	private Set<QuotaAnnuale> pagamenti = new HashSet<QuotaAnnuale>();
 	
 	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;
