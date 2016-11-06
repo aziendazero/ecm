@@ -205,7 +205,7 @@ public class Evento extends BaseEntity{
 	@Column(name = "data_scadenza_pagamento")//data scadenza pagamento
 	private LocalDate dataScadenzaPagamento;
 
-	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="responsabile_id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
 
