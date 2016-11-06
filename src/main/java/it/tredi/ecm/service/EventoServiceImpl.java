@@ -1116,7 +1116,7 @@ public class EventoServiceImpl implements EventoService {
 	public PersonaFullEvento copyPersonaFullEvento(PersonaFullEvento personaFull) {
 		PersonaFullEvento personaFullCopiata = new PersonaFullEvento();
 		personaFullCopiata.setAnagrafica(personaFull.getAnagrafica());
-		personaFullEventoRepository.save(personaFullCopiata);
+//		personaFullEventoRepository.save(personaFullCopiata);
 		return personaFullCopiata;
 	}
 

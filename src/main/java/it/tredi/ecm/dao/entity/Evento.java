@@ -217,7 +217,7 @@ public class Evento extends BaseEntity{
 	protected Float durata;//calcolo automatico
 	protected Float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
-	@OneToOne(cascade=CascadeType.MERGE)
+	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="responsabile_segreteria_id")
 	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();
 
