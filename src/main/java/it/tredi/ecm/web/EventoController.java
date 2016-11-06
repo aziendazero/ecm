@@ -304,6 +304,7 @@ public class EventoController {
 				return EDIT;
 			}else{
 				evento.setStato(EventoStatoEnum.VALIDATO);
+				evento.setValidatorCheck(true);
 				eventoService.save(evento);
 				LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 			}
@@ -516,6 +517,7 @@ public class EventoController {
 			default: evento = new Evento(); break;
 		}
 		evento.setProvider(providerService.getProvider(providerId));
+		evento.setAccreditamento(accreditamentoService.getAccreditamentoAttivoForProvider(providerId));
 		evento.setProceduraFormativa(proceduraFormativa);
 		eventoWrapper.setEvento(evento);
 		eventoWrapper.initProgrammi();
@@ -597,7 +599,7 @@ public class EventoController {
 		Evento riedizioneEvento = eventoService.prepareRiedizioneEvento(evento);
 		eventoWrapper.setEvento(riedizioneEvento);
 		eventoWrapper.initProgrammi();
-//		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
+		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperAttuazione(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;

@@ -175,6 +175,7 @@ public class Evento extends BaseEntity{
 		this.discipline = epf.getDiscipline();
 		this.prefix = epf.getCodiceIdentificativo();
 		this.edizione = 0;
+		this.pianoFormativo = epf.getPianoFormativo();
 	}
 
 	public void buildPrefix(){
@@ -204,7 +205,7 @@ public class Evento extends BaseEntity{
 	@Column(name = "data_scadenza_pagamento")//data scadenza pagamento
 	private LocalDate dataScadenzaPagamento;
 
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
 	@JoinColumn(name="responsabile_id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
 
@@ -216,7 +217,7 @@ public class Evento extends BaseEntity{
 	protected Float durata;//calcolo automatico
 	protected Float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne(cascade=CascadeType.MERGE)
 	@JoinColumn(name="responsabile_segreteria_id")
 	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();
 
