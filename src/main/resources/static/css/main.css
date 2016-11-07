@@ -1183,8 +1183,9 @@ tr.integrazione-eliminazione td:first-child a{
 
 .tooltip-inner {
 	white-space: pre-wrap;
-	min-width: 300px;
+	min-width: 310px;
 	background-color: #337ab7;
+	font-weight: bold;
 }
 
 .tooltip-arrow {

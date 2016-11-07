@@ -146,7 +146,7 @@
 											<span th:text="#{label.metodologia_didattica}">Metodologia Didattica</span>
 											<span class="required">*</span>
 										</label>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="razionale">
 											<select
 												id="addAttivitaRES-metodolgieDidattiche"
 												class="selectpicker selectMetodologieDidattiche"
@@ -161,6 +161,9 @@
 													th:text="${metodologiaDidattica.nome}">
 												</option>
 											</select>
+										</div>
+										<div class="col-xs-1">
+											<div th:attr="data-original-title=#{label.info_metodologie_interattive}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
 										</div>
 									</div>
 
