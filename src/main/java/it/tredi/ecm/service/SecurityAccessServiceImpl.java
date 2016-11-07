@@ -132,7 +132,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 
-		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW)) {
+		if(currentUser.hasRole(RoleEnum.PROVIDER_USER_EDIT)) {
 			//Controllo se il providerId su cui si sta operando corrisponde al provider dell'utente corrente
 			if(currentUser.getAccount().getProvider() != null && currentUser.getAccount().getProvider().getId().equals(providerId)) {
 				//Controllo se l'utente in modifica userId fda parte del provider
@@ -149,7 +149,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 
-		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW)) {
+		if(currentUser.hasRole(RoleEnum.PROVIDER_USER_SHOW)) {
 			if(currentUser.getAccount().getProvider() != null && currentUser.getAccount().getProvider().getId().equals(providerId))
 				return true;
 		}
@@ -163,7 +163,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		if(currentUser == null)
 			return false;
 
-		if(currentUser.hasRole(RoleEnum.PROVIDER_SHOW)) {
+		if(currentUser.hasRole(RoleEnum.PROVIDER_USER_CREATE)) {
 			if(currentUser.getAccount().getProvider() != null && currentUser.getAccount().getProvider().getId().equals(providerId))
 				return true;
 		}
