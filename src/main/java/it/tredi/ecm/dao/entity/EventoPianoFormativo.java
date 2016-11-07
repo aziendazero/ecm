@@ -80,6 +80,7 @@ public class EventoPianoFormativo extends BaseEntity{
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
 
 	//flag per capire se è attuato o meno
+	@Column(columnDefinition="boolean default false")
 	private boolean attuato = false;
 
 	public Set<Professione> getProfessioniSelezionate(){
