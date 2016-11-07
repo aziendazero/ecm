@@ -9,12 +9,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import it.tredi.ecm.service.EngineeringServiceImpl;
+import it.tredi.ecm.service.QuotaAnnualeServiceImpl;
 
 @Component
 public class PagamentoTask {
 	private static Logger LOGGER = LoggerFactory.getLogger(PagamentoTask.class);
 	
 	@Autowired EngineeringServiceImpl engineeringService;
+	@Autowired QuotaAnnualeServiceImpl quotaAnnualeService;
 	
 	@Async
 	@Transactional
@@ -24,6 +26,7 @@ public class PagamentoTask {
 		
 		engineeringService.esitoPagamentiEventi();
 		engineeringService.esitoPagamentiQuoteAnnuali();
+		quotaAnnualeService.checkAndCreateQuoteAnnualiPerAnnoInCorso();
 		
 		LOGGER.debug("controllaEsitoPagamenti - exiting");
 	}

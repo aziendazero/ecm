@@ -75,7 +75,7 @@ public class PagamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
 			//pagamentoService.createPagamentoProviderPerQuotaAnnua(id, 2017, true);
-			quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(id, 2017, true);
+			quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(id, 2017, false);
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET " + LIST),ex);

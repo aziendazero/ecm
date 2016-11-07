@@ -14,6 +14,7 @@ import lombok.Setter;
 public class QuotaAnnuale extends BaseEntity{
 	private Boolean pagato = false;
 	private Boolean pagInCorso = false;
+	private Boolean primoAnno = false;
 	
 	@Column(name = "anno_riferimento")
 	private Integer annoRiferimento;

@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Profile;
+import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.QuotaAnnualeService;
+import it.tredi.ecm.service.QuotaAnnualeServiceImpl;
 import it.tredi.ecm.service.SedutaService;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
@@ -32,6 +35,7 @@ public class LoginController {
 	@Autowired private ProviderService providerService;
 	@Autowired private AccountService accountService;
 	@Autowired private SedutaService sedutaService;
+	@Autowired private QuotaAnnualeService quotaAnnualeService;
 
 	@RequestMapping("/")
 	public String root(Locale locale) {
@@ -83,6 +87,7 @@ public class LoginController {
 					wrapper.setBadReferee(accountService.countAllRefereeWithValutazioniNonDate());
 					wrapper.setDomandeDaValutareAll(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, null));
 					wrapper.setDomandeInInsODG(accreditamentoService.countAllAccreditamentiInseribiliInODG());
+					wrapper.setProviderPagamentoNonEffettuatoAllaScadenza(quotaAnnualeService.countProviderNotPagamentoEffettuatoAllaScadenza());
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);

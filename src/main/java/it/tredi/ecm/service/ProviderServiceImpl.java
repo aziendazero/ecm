@@ -206,4 +206,22 @@ public class ProviderServiceImpl implements ProviderService {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio Provider da Integrazione"));
 		save(provider);
 	}
+	
+	@Override
+	public void bloccaFunzionalitaForPagamento(Long providerId) {
+		LOGGER.debug("Blocco canInsertPianoFormativo e canInsertEventi per Provider: " + providerId);
+		Provider provider = getProvider(providerId);
+		provider.setCanInsertPianoFormativo(false);
+		provider.setCanInsertEvento(false);
+		save(provider);
+	}
+
+	@Override
+	public void abilitaFunzionalitaAfterPagamento(Long providerId) {
+		LOGGER.debug("Abilito canInsertPianoFormativo e canInsertEventi per Provider: " + providerId);
+		Provider provider = getProvider(providerId);
+		provider.setCanInsertPianoFormativo(true);
+		provider.setCanInsertEvento(true);
+		save(provider);
+	}
 }
