@@ -21,6 +21,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -64,6 +68,25 @@ import lombok.Setter;
 @Table(name = "evento")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "eventoType")
+@NamedEntityGraphs({
+
+	@NamedEntityGraph(name="graph.evento.forRiedizione",
+			attributeNodes = {@NamedAttributeNode("id"),
+					@NamedAttributeNode(value="brochureEvento", subgraph="fileFull")},
+			subgraphs = {@NamedSubgraph(name="fileFull", attributeNodes={
+					@NamedAttributeNode("id"),
+					@NamedAttributeNode("nomeFile"),
+					@NamedAttributeNode("tipo"),
+					@NamedAttributeNode(value="fileData", subgraph="fileData")
+			}), @NamedSubgraph(name="fileData", attributeNodes={
+					@NamedAttributeNode("id"),
+					@NamedAttributeNode("data")
+			})
+			}
+	)
+
+})
+
 public class Evento extends BaseEntity{
 	private static Logger LOGGER = LoggerFactory.getLogger(Evento.class);
 	/*
@@ -138,7 +161,7 @@ public class Evento extends BaseEntity{
 	//false -> dopo 90gg
 	private boolean canDoRendicontazione = false;
 
-	@Enumerated(EnumType.STRING)
+	//@Enumerated(EnumType.STRING)
 	private EventoStatoEnum stato;//vedi descrizione in EventoStatoEnum
 	private boolean validatorCheck = false; //(durante il salvataggio check di un flag per sapere se sono stati rispettati tutti i vincoli del validator)
 
