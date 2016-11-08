@@ -65,7 +65,7 @@ import it.tredi.ecm.web.bean.PersonaWrapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-//@Ignore
+@Ignore
 @ActiveProfiles("dev")
 @WithUserDetails("segreteria")
 @Rollback(false)

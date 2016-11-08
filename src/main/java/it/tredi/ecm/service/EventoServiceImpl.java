@@ -51,6 +51,7 @@ import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
@@ -586,6 +587,7 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD)eventoWrapper.getEvento()).setDurata(durata);
 		}
 
+		durata = Utils.getRoundedFloatValue(durata, 2);
 		return durata;
 	}
 
@@ -635,7 +637,7 @@ public class EventoServiceImpl implements EventoService {
 		prepareRiepilogoRuoli(programma, riepilogoRuoliFSC);
 		durata = getMaxDurataPatecipanti(riepilogoRuoliFSC);
 
-		durata = Utils.getRoundedFloatValue(durata);
+		durata = Utils.getRoundedFloatValue(durata, 2);
 		return durata;
 	}
 
@@ -689,7 +691,7 @@ public class EventoServiceImpl implements EventoService {
 			}
 		}
 
-		durata = Utils.getRoundedFloatValue(durata);
+		durata = Utils.getRoundedFloatValue(durata, 2);
 		return durata;
 	}
 
@@ -791,7 +793,7 @@ public class EventoServiceImpl implements EventoService {
 			crediti = creditiFrontale + creditiInterattiva;
 		}
 
-		crediti = Utils.getRoundedFloatValue(crediti);
+		crediti = Utils.getRoundedFloatValue(crediti, 1);
 
 		return crediti;
 	}
@@ -862,18 +864,23 @@ public class EventoServiceImpl implements EventoService {
 	private void prepareRiepilogoRuoli(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		if(riepilogoRuoliFSC != null)
 		{
-			riepilogoRuoliFSC.forEach( (k,v) -> {
-				v.setTempoDedicato(0f);
-				v.setCrediti(0f);
-				if(v.getRuolo() == null)
-					riepilogoRuoliFSC.remove(k);
-			});
-//			riepilogoRuoliFSC.clear();
-
-			for(FaseAzioniRuoliEventoFSCTypeA fase : programma)
-				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli())
+			Set<RuoloFSCEnum> ruoliUsati = new HashSet<RuoloFSCEnum>();
+			
+			Iterator<Entry<RuoloFSCEnum, RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
+			while(iterator.hasNext()){
+				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
+				pairs.getValue().setTempoDedicato(0f);
+				pairs.getValue().setCrediti(0f);
+				if(pairs.getValue().getRuolo() == null)
+					iterator.remove();
+			}
+			
+			for(FaseAzioniRuoliEventoFSCTypeA fase : programma){
+				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
 					for(RuoloOreFSC ruolo : azione.getRuoli())
 					{
+						ruoliUsati.add(ruolo.getRuolo());
+						
 						if(riepilogoRuoliFSC.containsKey(ruolo.getRuolo())){
 							RiepilogoRuoliFSC r = riepilogoRuoliFSC.get(ruolo.getRuolo());
 							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
@@ -884,6 +891,17 @@ public class EventoServiceImpl implements EventoService {
 							riepilogoRuoliFSC.put(ruolo.getRuolo(), r);
 						}
 					}
+				}
+			}
+			
+			iterator = riepilogoRuoliFSC.entrySet().iterator();
+			while(iterator.hasNext()){
+				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
+				if(!ruoliUsati.contains(pairs.getValue().getRuolo()))
+					iterator.remove();
+			}
+			
+			
 		}
 	}
 
@@ -945,7 +963,7 @@ public class EventoServiceImpl implements EventoService {
 		else
 			crediti = durata * 1.0f;
 
-		crediti = Utils.getRoundedFloatValue(crediti);
+		crediti = Utils.getRoundedFloatValue(crediti, 1);
 		return crediti;
 	}
 

@@ -120,7 +120,7 @@ public class Utils {
 
 		src.forEach(f -> {
 			if(f.getIdField().getSubSetField() == type)
-				dst. add(f);
+				dst.add(f);
 		});
 
 		return dst;
@@ -205,18 +205,18 @@ public class Utils {
         return toBean;
     }
 	
-	public static float getRoundedFloatValue(float value){
-		BigDecimal bg = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
+	public static float getRoundedFloatValue(float value, int precision){
+		BigDecimal bg = new BigDecimal(value).setScale(precision, RoundingMode.HALF_UP);
 		return bg.floatValue();
 	}
 	
-	public static float getRoundedFloatValue(BigDecimal value){
-		BigDecimal bg = value.setScale(2, RoundingMode.HALF_UP);
+	public static float getRoundedFloatValue(BigDecimal value, int precision){
+		BigDecimal bg = value.setScale(precision, RoundingMode.HALF_UP);
 		return bg.floatValue();
 	}
 	
-	public static Double getRoundedDoubleValue(Double value){
-		BigDecimal bg = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
+	public static Double getRoundedDoubleValue(Double value, int precision){
+		BigDecimal bg = new BigDecimal(value).setScale(precision, RoundingMode.HALF_UP);
 		return bg.doubleValue();
 	}
 }

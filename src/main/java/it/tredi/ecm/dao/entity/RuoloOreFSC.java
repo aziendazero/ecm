@@ -7,6 +7,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,5 +26,9 @@ public class RuoloOreFSC implements Serializable{
 	public RuoloOreFSC(RuoloFSCEnum ruolo, Float tempoDedicato) {
 		this.ruolo = ruolo;
 		this.tempoDedicato = tempoDedicato;
+	}
+	
+	public void setTempoDedicato(float t){
+		this.tempoDedicato = Utils.getRoundedFloatValue(t, 2);
 	}
 }

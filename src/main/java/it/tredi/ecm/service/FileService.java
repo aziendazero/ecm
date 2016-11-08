@@ -2,6 +2,7 @@ package it.tredi.ecm.service;
 
 import java.util.HashMap;
 
+import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 
