@@ -161,7 +161,7 @@ public class Evento extends BaseEntity{
 	//false -> dopo 90gg
 	private boolean canDoRendicontazione = false;
 
-	//@Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.STRING)
 	private EventoStatoEnum stato;//vedi descrizione in EventoStatoEnum
 	private boolean validatorCheck = false; //(durante il salvataggio check di un flag per sapere se sono stati rispettati tutti i vincoli del validator)
 
