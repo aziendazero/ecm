@@ -1495,13 +1495,14 @@
 					.done(function(data) {
 						//alert(data);
 					  	$('#' + target).html(data);
+					 	 //Aggiorno il tab 2
+					 	 sendAjaxReloadSection('2');
 					  	reInitComponents();
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
 				    	alert( "error" );
 				 	 })
-				 	 sendAjaxReloadSection('2');
 
 					/*
 					var cloned = $("<div class='nextDataIntermedia item form-group'></div>")
@@ -1532,14 +1533,14 @@
 					.done(function(data) {
 						//alert(data);
 					  	$('#' + target).html(data);
+					 	 //Aggiorno il tab 2
+					 	 sendAjaxReloadSection('2');
 					  	reInitComponents();
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
 				    	alert( "error" );
 				 	 })
-				 	 //Aggiorno il tab 2
-				 	 sendAjaxReloadSection('2');
 
 					/*
 					console.log($(caller).closest(".item").html());
@@ -1939,6 +1940,7 @@
 				}
 
 				function sendAjaxReloadSection(sectionIndex){
+					//alert('sendAjaxReloadSection - sectionIndex: ' + sectionIndex);
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoRES').serialize())
 					.done(function(data) {
 					  	$('#section-' + sectionIndex).html(data);
