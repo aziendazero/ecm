@@ -17,7 +17,6 @@ import it.tredi.ecm.web.bean.EventoWrapper;
 
 public interface EventoService {
 	public Evento getEvento(Long id);
-	public Set<Evento> getAllEventiFromProvider(Long providerId);
 	public void save(Evento evento);
 	public void delete(Long id);
 
@@ -49,4 +48,6 @@ public interface EventoService {
 	public Set<Partner> copyPartnerListEvento(Set<Partner> partners);
 	public List<DettaglioAttivitaFAD> copyProgrammaEventoFAD(List<DettaglioAttivitaFAD> programmaFAD, List<PersonaEvento> docentiEventoRieditato);
 
+	public Set<Evento> getEventiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
+	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
 }

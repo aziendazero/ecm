@@ -34,6 +34,7 @@ import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -78,9 +79,9 @@ public class Evento extends BaseEntity{
 	 * 		*EVENTO inserito come RIEDIZIONE -> PREFIX dell'evento padre + #edizione
 	 * */
 	private String prefix;
-	private int edizione = 0;
+	private int edizione = 1;
 	public String getCodiceIdentificativo(){
-		if(edizione > 0)
+		if(edizione > 1)
 			return prefix + "-" + edizione;
 		else return prefix;
 	}
@@ -174,7 +175,7 @@ public class Evento extends BaseEntity{
 		this.professioniEvento = epf.getProfessioniEvento();
 		this.discipline = epf.getDiscipline();
 		this.prefix = epf.getCodiceIdentificativo();
-		this.edizione = 0;
+		this.edizione = 1;
 		this.pianoFormativo = epf.getPianoFormativo();
 	}
 
@@ -265,7 +266,7 @@ public class Evento extends BaseEntity{
 
 			//ridotto di 1/3
 			if(altreFormeFinanziamento != null && !altreFormeFinanziamento.booleanValue()){
-				costo = (costo*2)/3;
+				 costo = Utils.getRoundedDoubleValue((costo*2)/3);
 			}
 		}else{
 			throw new Exception("provider non classificato correttamente");

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
@@ -28,6 +29,8 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	
 	@Autowired private ProviderService providerService;
 	@Autowired private RelazioneAnnualeRepository relazioneAnnualeRepository;
+	@Autowired private EventoPianoFormativoService eventoPianoFormativoService;
+	@Autowired private EventoService eventoService;
 	
 	@Override
 	public Set<RelazioneAnnuale> getAllRelazioneAnnuale() {
@@ -68,7 +71,7 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 		
 		LocalDate dataScadenza = LocalDate.of(LocalDate.now().getYear(), 4, 30);
 		if(LocalDate.now().isAfter(dataScadenza)){
-			listaProvider = getAllProviderNotRelazioneAnnualeRegistrata(LocalDate.now().getYear());
+			listaProvider = getAllProviderNotRelazioneAnnualeRegistrata(LocalDate.now().getYear() - 1);
 		}
 		
 		return listaProvider;
@@ -88,7 +91,11 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
 		RelazioneAnnuale relazioneAnnuale = new RelazioneAnnuale();
 		
-		//TODO logica creazione relazioneAnnuale con compilazione automatica dei dati
+		relazioneAnnuale.setAnnoRiferimento(annoRiferimento);
+		relazioneAnnuale.setProvider(providerService.getProvider(providerId));
+		
+		relazioneAnnuale.setEventiPFA(eventoPianoFormativoService.getAllEventiFromProviderInPianoFormativo(providerId, annoRiferimento));
+		relazioneAnnuale.setEventiAttuati(eventoService.getEventiByProviderIdAndAnnoRiferimento(providerId, annoRiferimento));
 		
 		return relazioneAnnuale;
 	}
