@@ -54,6 +54,7 @@ import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
@@ -849,6 +850,8 @@ public class EventoServiceImpl implements EventoService {
 	private void prepareRiepilogoRuoli(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		if(riepilogoRuoliFSC != null)
 		{
+			Set<RuoloFSCEnum> ruoliUsati = new HashSet<RuoloFSCEnum>();
+			
 			Iterator<Entry<RuoloFSCEnum, RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
 			while(iterator.hasNext()){
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
@@ -858,10 +861,12 @@ public class EventoServiceImpl implements EventoService {
 					iterator.remove();
 			}
 			
-			for(FaseAzioniRuoliEventoFSCTypeA fase : programma)
-				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli())
+			for(FaseAzioniRuoliEventoFSCTypeA fase : programma){
+				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
 					for(RuoloOreFSC ruolo : azione.getRuoli())
 					{
+						ruoliUsati.add(ruolo.getRuolo());
+						
 						if(riepilogoRuoliFSC.containsKey(ruolo.getRuolo())){
 							RiepilogoRuoliFSC r = riepilogoRuoliFSC.get(ruolo.getRuolo());
 							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
@@ -872,6 +877,17 @@ public class EventoServiceImpl implements EventoService {
 							riepilogoRuoliFSC.put(ruolo.getRuolo(), r);
 						}
 					}
+				}
+			}
+			
+			iterator = riepilogoRuoliFSC.entrySet().iterator();
+			while(iterator.hasNext()){
+				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
+				if(!ruoliUsati.contains(pairs.getValue().getRuolo()))
+					iterator.remove();
+			}
+			
+			
 		}
 	}
 

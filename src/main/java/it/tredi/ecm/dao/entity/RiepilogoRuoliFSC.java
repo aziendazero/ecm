@@ -75,25 +75,25 @@ public class RiepilogoRuoliFSC {
 						/*
 						 * PARTECIPANTI:	1 credito ogni ora (max 30) NON FRAZIONABILE
 						 * TUTOR:			1 credito ogni 6 ore
-						 * ESPERTO:			1 credito ongi ora (max 'crediti evento')
-						 * COORDINATORE		1 credito ongi ora (max 'crediti evento')
+						 * ESPERTO:			1 credito ogni ora (max 'crediti evento')
+						 * COORDINATORE		1 credito ogni ora (max 'crediti evento')
 						 *
 						 * */
 						switch(ruolo.getRuoloBase())
 						{
-							case PARTECIPANTE: crediti = 1*tempoDedicato;
-												crediti = (int) crediti;
+							case PARTECIPANTE:  crediti = 1 * (int) tempoDedicato;
+												//crediti = (int) crediti;
 												crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI : crediti;
 								break;
 
-							case TUTOR: crediti = 1*(tempoDedicato/6);
+							case TUTOR: crediti = 1 * (int) (tempoDedicato/6) ;
 								break;
 
-							case ESPERTO: crediti = 1*tempoDedicato;
+							case ESPERTO: 	crediti = 1 * (int) tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 								break;
 
-							case COORDINATORE: crediti = 1*tempoDedicato;
+							case COORDINATORE: 	crediti = 1 * (int) tempoDedicato;
 												crediti = (crediti > f) ? f : crediti;
 								break;
 
@@ -107,17 +107,17 @@ public class RiepilogoRuoliFSC {
 				{
 					/*
 					 * PARTECIPANTI:	1 credito ogni 2 ore (max 50) NON FRAZIONABILE
-					 * COORDINATORE		1 credito ongi ora (max 'crediti evento')
+					 * COORDINATORE		1 credito ogni ora (max 'crediti evento')
 					 *
 					 * */
 					switch(ruolo.getRuoloBase())
 					{
-						case PARTECIPANTE: crediti = 1*(tempoDedicato/2);
-											crediti = (int) crediti;
+						case PARTECIPANTE: 	crediti = 1 * (int) (tempoDedicato/2);
+											//crediti = (int) crediti;
 											crediti = (crediti > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI : crediti;
 							break;
 
-						case COORDINATORE: crediti = 1*tempoDedicato;
+						case COORDINATORE:  crediti = 1 * (int) tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
 
@@ -138,21 +138,21 @@ public class RiepilogoRuoliFSC {
 					 * */
 					switch(ruolo.getRuoloBase())
 					{
-						case PARTECIPANTE: crediti = 0.5f*tempoDedicato;
-											crediti = (int) crediti;
+						case PARTECIPANTE:  crediti = 0.5f * (int) tempoDedicato;
+											//crediti = (int) crediti;
 											crediti = (crediti > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI : crediti;
 
 							break;
 
-						case ESPERTO: crediti = 1*tempoDedicato;
+						case ESPERTO: crediti = 1 * (int) tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
 
-						case COORDINATORE: crediti = 1*tempoDedicato;
+						case COORDINATORE: crediti = 1 * (int) tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
 
-						case RESPONSABILE: crediti = 1*tempoDedicato;
+						case RESPONSABILE: crediti = 1 * (int) tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
 
@@ -174,7 +174,7 @@ public class RiepilogoRuoliFSC {
 						case PARTECIPANTE: crediti = ATTIVITA_DI_RICERCA_MAX_CREDITI;
 							break;
 
-						case COORDINATORE: crediti = 1*tempoDedicato;
+						case COORDINATORE: crediti = 1 * (int) tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
 
@@ -187,18 +187,18 @@ public class RiepilogoRuoliFSC {
 				case AUDIT_CLINICO_ASSISTENZIALE:
 				{
 					/*
-					 * PARTECIPANTI:	1 credito ogni ora (max 3) NON FRAZIONABILE
-					 * COORDINATORE:	1 credito ongi ora (max 'crediti evento')
+					 * PARTECIPANTI:	2 crediti ogni 2 ore (max 50) NON FRAZIONABILE
+					 * COORDINATORE:	1 credito ogni ora (max 'crediti evento')
 					 *
 					 * */
 					switch(ruolo.getRuoloBase())
 					{
-						case PARTECIPANTE: crediti = 2*(tempoDedicato/2);
+						case PARTECIPANTE: crediti = 2 * (int) (tempoDedicato/2);
 											crediti = (int) crediti;
 											crediti = (crediti > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI : crediti;
 							break;
 
-						case COORDINATORE: crediti = 1*tempoDedicato;
+						case COORDINATORE: crediti = 1 * (int) tempoDedicato;
 											crediti = (crediti > f) ? f : crediti;
 							break;
 
