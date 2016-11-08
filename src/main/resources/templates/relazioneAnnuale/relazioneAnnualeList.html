@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.lista_relazioni_annuali}">Lista delle Relazioni Annuali</h2>
+						<div class="pull-right buttons-header">
+							<div class="dropdown pull-right">
+								<a class="btn btn-primary pull-right" th:if="${canInsertRelazioneAnnuale}" th:text="#{label.inserisci_relazione_annuale}" th:href="@{|/provider/${providerId}/relazioneAnnuale/insert|}"></a>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<div th:if="${#lists.isEmpty(relazioneList)}">
+							<h2 class="col-xs-12 text-center">
+								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessuna_relazione_annuale_list}">Non ci sono eventi!</i>
+							</h2>
+						</div>
+
+						<table th:unless="${#lists.isEmpty(relazioneList)}" class="datatable-responsive-relazione table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.provider}">label.provider</th>
+									<th th:text="#{label.anno_riferimento}">label.anno_riferimento</th>
+									<th th:text="#{label.azioni}">label.azioni</th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="relazione, row : ${relazioneList}">
+									<td th:text="${relazione.provider.denominazioneLegale}"></td>
+									<td th:text="${relazione.annoRiferimento}"></td>
+									<td>
+										<div class="button-container single">
+											<a class="btn btn-primary btn-table double" th:href="@{|/provider/${relazione.provider.id}/relazioneAnnuale/${relazione.id}/edit|}"><i class="fa fa-pencil"> </i> <span th:text="#{label.modifica}"> </span></a>
+											<a class="btn btn-info btn-table double" th:href="@{|/provider/${relazione.provider.id}/relazioneAnnuale/${relazione.id}/show|}"><i class="fa fa-eye"> </i> <span th:text="#{label.mostra}"> </span></a>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				$(document).ready(function() {
+
+					$(".datatable-responsive-eventi-provider").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [ {
+							"targets": 6,
+							"width": "1px",
+							"sClass": "center"
+						} ]
+					})
+
+				})
+
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

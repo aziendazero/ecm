@@ -1952,7 +1952,7 @@
 				}
 
 				function sendAjaxReloadSection(sectionIndex){
-					alert('sendAjaxReloadSection - sectionIndex: ' + sectionIndex);
+					//alert('sendAjaxReloadSection - sectionIndex: ' + sectionIndex);
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoRES').serialize())
 					.done(function(data) {
 					  	$('#section-' + sectionIndex).html(data);

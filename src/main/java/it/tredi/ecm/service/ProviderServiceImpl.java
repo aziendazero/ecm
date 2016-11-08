@@ -1,5 +1,7 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,6 +24,7 @@ import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.repository.ProviderRepository;
 import it.tredi.ecm.service.bean.CurrentUser;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 import it.tredi.ecm.utils.Utils;
 
@@ -191,6 +194,17 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public boolean canInsertEvento(Long providerId) {
 		return providerRepository.canInsertEvento(providerId);
+	}
+	
+	@Override
+	public boolean canInsertRelazioneAnnuale(Long providerId) {
+		int annoRiferimento = LocalDate.now().getYear();
+		if(!LocalDate.now().isAfter(LocalDate.of(annoRiferimento, 3, 31)))
+			return true;
+		else{
+			Boolean b = providerRepository.canInsertRelazioneAnnuale(providerId); 
+			return (b != null) ? b.booleanValue() : false;
+		}
 	}
 
 	@Override
