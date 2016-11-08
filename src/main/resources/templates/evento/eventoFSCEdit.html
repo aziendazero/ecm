@@ -804,11 +804,11 @@
 												th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.riepilogoRuoli')} ? 'bad-table'">
 												<thead>
 													<tr>
-														<th th:text="#{label.ruolo}">OBIETTIVO FORMATIVO</th>
-														<th th:text="#{label.codifica}">RISULTATAO ATTESO</th>
-														<th th:text="#{label.numero_partecipanti}">METODO DI LAVORO</th>
-														<th th:text="#{label.impegno_complessivo_ore}">RUOLI COINVOLTI</th>
-														<th th:text="#{label.crediti}">ORE ATTIVITA'</th>
+														<th th:text="#{label.ruolo}"></th>
+														<th th:text="#{label.codifica}"></th>
+														<th th:text="#{label.numero_partecipanti}"></th>
+														<th th:text="#{label.impegno_complessivo_ore}"></th>
+														<th th:text="#{label.crediti}"></th>
 													</tr>
 												</thead>
 												<tbody>
@@ -827,31 +827,31 @@
 												</tbody>
 											</table>
 										</div>
+										<div class="col-xs-1" th:if="${eventoWrapper.evento.tipologiaEvento == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).TRAINING_INDIVIDUALIZZATO}">
+											<div th:attr="data-original-title=#{label.info_tooltip_numero_partecipanti_fsc}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+										</div>
 									</div>
 								</div>
 
-								<!-- NUMERO PARTECIPANTI -->
-								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipanti')} ? 'bad'">
-									<label class="control-label col-xs-1">
-										<span>21</span>
-									</label>
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="numeroPartecipanti">
-										<span th:text="#{label.numero_partecipanti}">Numero dei partecipanti</span>
-										<span class="required">*</span>
-									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="numeroPartecipanti">
-										<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.numeroPartecipanti}" />
-									</div>
-									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipanti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.numeroPartecipanti')}__}"></div>
-									<div class="col-xs-1" th:if="${eventoWrapper.evento.tipologiaEvento == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).TRAINING_INDIVIDUALIZZATO}">
-										<div th:attr="data-original-title=#{label.info_tooltip_numero_partecipanti_fsc}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
-									</div>
-								</div>
+<!-- 								NUMERO PARTECIPANTI  (autocompilato al salvataggio && solo in show) -->
+<!-- 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipanti')} ? 'bad'"> -->
+<!-- 									<label class="control-label col-xs-1"> -->
+<!-- 										<span>21</span> -->
+<!-- 									</label> -->
+<!-- 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="numeroPartecipanti"> -->
+<!-- 										<span th:text="#{label.numero_partecipanti}">Numero dei partecipanti</span> -->
+<!-- 										<span class="required">*</span> -->
+<!-- 									</label> -->
+<!-- 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="numeroPartecipanti"> -->
+<!-- 										<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.numeroPartecipanti}" /> -->
+<!-- 									</div> -->
+<!-- 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipanti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.numeroPartecipanti')}__}"></div> -->
+<!-- 								</div> -->
 
 								<!-- DURATA  -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.durata')} ? 'bad'">
 				 					<label class="control-label col-xs-1">
-				 						<span>22</span>
+				 						<span>21</span>
 				 					</label>
 				 					<label class="control-label col-md-3 col-sm-3 col-xs-11" for="durata">
 				 						<span th:text="#{label.durata}">Durata</span>
@@ -865,7 +865,7 @@
 				 				<!-- CREDITI FORMATIVI -->
 								<div class="item form-group">
 									<label class="control-label col-xs-1">
-										<span>23</span>
+										<span>22</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="creditiFormativi">
 										<span th:text="#{label.crediti_formativi_attribuiti_evento}">Crediti attribuiti all'evento</span>
@@ -881,7 +881,7 @@
 								<!-- VERIFICA PRESENZA PARTECIPANTI -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaPresenzaPartecipanti')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>24</span>
+										<span>23</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="verificaPresenzaPartecipanti">
 										<span th:text="#{label.verifica_presenza_partecipanti}">Verifica presenza partecipanti</span>
@@ -903,7 +903,7 @@
 								<!-- VERIFICA APPRENDIMENTO PARTECIPANTI -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>25</span>
+										<span>24</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="verificaApprendimentoPartecipanti">
 										<span th:text="#{label.verifica_apprendimento_partecipanti}">Verifica Apprendimento partecipanti</span>
@@ -925,7 +925,7 @@
 								<!-- INDICATORE EFFICACIA -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.indicatoreEfficaciaFormativa')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>26</span>
+										<span>25</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="indicatore">
 										<span th:text="#{label.indicatore_efficacia}">Indicatori per misurare l’efficacia formativa del progetto</span>
@@ -940,7 +940,7 @@
 								<!-- RESPONSABILE SEGRETERIA ORGANIZZATIVA -->
 								<div class="item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabileSegreteria')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>27</span>
+										<span>26</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="responsabileSegreteria">
 										<span th:text="#{label.responsabile_segreteria_organizzativa}">Responsabile segreteria organizzativa</span>
@@ -959,7 +959,7 @@
 								<!-- QUOTA PARTECIPAZIONE -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.quotaPartecipazione')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>28</span>
+										<span>27</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="quota">
 										<span th:text="#{label.quota_partecipazione}">Quota di partecipazione</span>
@@ -977,7 +977,7 @@
 								<!-- RADIO SPONSOR -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzato')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>29</span>
+										<span>28</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
 										<span th:text="#{label.evento_sponsorizzato_radio}">L'Evento è sponsorizzato?</span>
@@ -1079,7 +1079,7 @@
 								<!-- RADIO FORME FINANZIAMENTO -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.altreFormeFinanziamento')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>30</span>
+										<span>29</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
 										<span th:text="#{label.forme_finanziamento_radio}">Sono presenti forme di finanziamento?</span>
@@ -1140,7 +1140,7 @@
 								<!-- RADIO PARTNER -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoAvvalePartner')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>31</span>
+										<span>30</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
 										<span th:text="#{label.si_avvale_di_partner}">L’evento si avvale di partner?</span>
@@ -1181,7 +1181,7 @@
 								<!-- DICHIARAZIONE CONFLITTO INTERESSI -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'dichiarazioneAssenzaConflittoInteresse')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>32</span>
+										<span>31</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dichiarazioneAssenzaConflittoInteresse">
 										<span th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
@@ -1202,7 +1202,7 @@
 								<!-- PROCEDURA VERIFICA QUALITÀ -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.proceduraVerificaQualitaPercepita')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>33</span>
+										<span>32</span>
 									</label>
 									<div class="control-label col-md-3 col-sm-3 col-xs-11">
 									</div>
@@ -1223,7 +1223,7 @@
 								<!-- AUTORIZZAZIONE -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.autorizzazionePrivacy')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span>34</span>
+										<span>33</span>
 									</label>
 									<div class="control-label col-md-3 col-sm-3 col-xs-11">
 									</div>

@@ -62,7 +62,7 @@ public class EventoWrapper {
 	private Set<Obiettivo> obiettiviNazionali;
 	private Set<Obiettivo> obiettiviRegionali;
 	private Set<Disciplina> disciplinaList;
-	private Set<Professione> professioneList;
+	private List<Professione> professioneList;
 	private File cv;
 	private File sponsorFile;
 	private File partnerFile;
