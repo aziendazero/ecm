@@ -1494,9 +1494,21 @@
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addDataIntermedia/|}]] + target, $('#formEventoRES').serialize())
 					.done(function(data) {
 						//alert(data);
-					  	$('#' + target).html(data);
-					 	 //Aggiorno il tab 2
-					 	 sendAjaxReloadSection('2');
+						//Aggiorno le 2 sezioni target
+						var htmlObj = $.parseHTML($.trim(data));
+						//alert(htmlObj.length);
+						/*
+						$.each( htmlObj, function( i, el ) {
+							if(el.nodeName.toLowerCase() === 'div') { 
+								//alert(el.nodeName);
+								//alert($(el).find('#' + target).length);
+								alert($(el).find('#' + target).html());
+								//alert($(el).find('#' + target)[0].outerHTML);
+							}
+						});						
+					  	*/
+						$('#' + target).html( $(htmlObj[0]).find('#' + target).html() );
+					  	$('#section-2').html( $(htmlObj[0]).find('#section-2').html() );
 					  	reInitComponents();
 					  })
 				  	.fail(function() {
@@ -1532,10 +1544,10 @@
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeDataIntermedia/|}]] + key + '/' + target, $('#formEventoRES').serialize())
 					.done(function(data) {
 						//alert(data);
-					  	$('#' + target).html(data);
-					 	 //Aggiorno il tab 2
-					 	 sendAjaxReloadSection('2');
-					  	reInitComponents();
+						var htmlObj = $.parseHTML($.trim(data));
+						$('#' + target).html( $(htmlObj[0]).find('#' + target).html() );
+					  	$('#section-2').html( $(htmlObj[0]).find('#section-2').html() );
+					 	reInitComponents();
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
