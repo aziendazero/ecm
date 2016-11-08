@@ -849,14 +849,15 @@ public class EventoServiceImpl implements EventoService {
 	private void prepareRiepilogoRuoli(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		if(riepilogoRuoliFSC != null)
 		{
-			riepilogoRuoliFSC.forEach( (k,v) -> {
-				v.setTempoDedicato(0f);
-				v.setCrediti(0f);
-				if(v.getRuolo() == null)
-					riepilogoRuoliFSC.remove(k);
-			});
-//			riepilogoRuoliFSC.clear();
-
+			Iterator<Entry<RuoloFSCEnum, RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
+			while(iterator.hasNext()){
+				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
+				pairs.getValue().setTempoDedicato(0f);
+				pairs.getValue().setCrediti(0f);
+				if(pairs.getValue().getRuolo() == null)
+					iterator.remove();
+			}
+			
 			for(FaseAzioniRuoliEventoFSCTypeA fase : programma)
 				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli())
 					for(RuoloOreFSC ruolo : azione.getRuoli())

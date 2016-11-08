@@ -120,7 +120,7 @@ public class Utils {
 
 		src.forEach(f -> {
 			if(f.getIdField().getSubSetField() == type)
-				dst. add(f);
+				dst.add(f);
 		});
 
 		return dst;
