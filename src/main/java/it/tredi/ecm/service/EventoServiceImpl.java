@@ -29,7 +29,6 @@ import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
-import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
@@ -39,10 +38,8 @@ import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.entity.FileData;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
-import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -83,6 +80,7 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private SponsorRepository sponsorRepository;
 	@Autowired private PartnerRepository partnerRepository;
 	@Autowired private EventoPianoFormativoRepository eventoPianoFormativoRepository;
+	@Autowired private IntegrazioneService integrazioneService;
 
 	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
 	@Autowired private FileService fileService;
@@ -584,6 +582,12 @@ public class EventoServiceImpl implements EventoService {
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			durata = calcoloDurataEventoFSC(eventoWrapper.getProgrammaEventoFSC(), eventoWrapper.getRiepilogoRuoliFSC());
 			((EventoFSC)eventoWrapper.getEvento()).setDurata(durata);
+			//calcolo partecipanti
+			int numPartecipanti = calcolaNumeroRuoloFSC(RuoloFSCBaseEnum.PARTECIPANTE, eventoWrapper.getRiepilogoRuoliFSC());
+			eventoWrapper.getEvento().setNumeroPartecipanti(numPartecipanti);
+			//calcolo tutor
+			int numTutor = calcolaNumeroRuoloFSC(RuoloFSCBaseEnum.TUTOR, eventoWrapper.getRiepilogoRuoliFSC());
+			((EventoFSC) eventoWrapper.getEvento()).setNumeroTutor(numTutor);
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
 			durata = calcoloDurataEventoFAD(eventoWrapper.getProgrammaEventoFAD(), ((EventoFAD)eventoWrapper.getEvento()).getRiepilogoFAD());
 			((EventoFAD)eventoWrapper.getEvento()).setDurata(durata);
@@ -656,6 +660,16 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		return max;
+	}
+
+	private int calcolaNumeroRuoloFSC(RuoloFSCBaseEnum ruolo, Map<RuoloFSCEnum, RiepilogoRuoliFSC> riepilogoRuoliMap) {
+		int counter = 0;
+		for(RiepilogoRuoliFSC rrf : riepilogoRuoliMap.values()) {
+			if(rrf.getRuolo().getRuoloBase() == ruolo) {
+				counter = counter + rrf.getNumeroPartecipanti();
+			}
+		}
+		return counter;
 	}
 
 	private float calcoloDurataEventoFAD(List<DettaglioAttivitaFAD> programma, RiepilogoFAD riepilogoFAD){
@@ -981,88 +995,6 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAllByProviderIdAndStatoNotAndDataInizioBefore(providerId, EventoStatoEnum.BOZZA, LocalDate.now());
 	}
 
-	//TODO sta roba non funzionerà mai
-	@Override
-	@Transactional
-	public Evento prepareRiedizioneEvento(Evento eventoPadre) throws Exception {
-		Evento riedizione;
-		switch(eventoPadre.getProceduraFormativa()){
-			case FAD: riedizione = new EventoFAD(); break;
-			case RES: riedizione = new EventoRES(); break;
-			case FSC: riedizione = new EventoFSC(); break;
-			default: riedizione = new Evento(); break;
-		}
-
-		//INIZIO setting delle info dell'Evento generale ****************************************************************************************
-
-		riedizione.setPrefix(eventoPadre.getPrefix());
-		int ultimaEdizioneEvento = getLastEdizioneEventoByPrefix(eventoPadre.getPrefix());
-		if(ultimaEdizioneEvento != -1)
-			LOGGER.debug(Utils.getLogMessage("Recupero ultima edizione: success - " + ultimaEdizioneEvento));
-		else
-			throw new Exception("Errore nel calcolo dell'edizione");
-		riedizione.setEdizione(++ultimaEdizioneEvento);
-		LOGGER.debug(Utils.getLogMessage("Codice identificativo evento rieditato: " + riedizione.getCodiceIdentificativo()));
-
-		riedizione.setProceduraFormativa(eventoPadre.getProceduraFormativa());
-		riedizione.setTitolo(eventoPadre.getTitolo());
-		riedizione.setObiettivoNazionale(eventoPadre.getObiettivoNazionale());
-		riedizione.setObiettivoRegionale(eventoPadre.getObiettivoRegionale());
-		riedizione.setPianoFormativo(eventoPadre.getPianoFormativo());
-		riedizione.setProvider(eventoPadre.getProvider());
-		riedizione.setAccreditamento(eventoPadre.getAccreditamento());
-		riedizione.setProfessioniEvento(eventoPadre.getProfessioniEvento());
-		riedizione.setDiscipline(eventoPadre.getDiscipline());
-		riedizione.setEventoPadre(eventoPadre);
-		riedizione.setDestinatariEvento(eventoPadre.getDestinatariEvento());
-		riedizione.setContenutiEvento(eventoPadre.getContenutiEvento());
-		riedizione.setDataInizio(eventoPadre.getDataInizio());
-		riedizione.setDataFine(eventoPadre.getDataFine());
-		riedizione.setResponsabili(copyPersonaListEvento(eventoPadre.getResponsabili()));
-		riedizione.setNumeroPartecipanti(eventoPadre.getNumeroPartecipanti());
-		riedizione.setBrochureEvento(eventoPadre.getBrochureEvento());
-		riedizione.setResponsabileSegreteria(copyPersonaFullEvento(eventoPadre.getResponsabileSegreteria()));
-		riedizione.setQuotaPartecipazione(eventoPadre.getQuotaPartecipazione());
-		riedizione.setEventoSponsorizzato(eventoPadre.getEventoSponsorizzato());
-		riedizione.setSponsors(copySponsorListEvento(eventoPadre.getSponsors()));
-		riedizione.setEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(eventoPadre.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia());
-		riedizione.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(eventoPadre.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia());
-		riedizione.setAutocertificazioneAutorizzazioneMinisteroSalute(eventoPadre.getAutocertificazioneAutorizzazioneMinisteroSalute());
-		riedizione.setAltreFormeFinanziamento(eventoPadre.getAltreFormeFinanziamento());
-		riedizione.setAutocertificazioneAssenzaFinanziamenti(eventoPadre.getAutocertificazioneAssenzaFinanziamenti());
-		riedizione.setContrattiAccordiConvenzioni(eventoPadre.getContrattiAccordiConvenzioni());
-		riedizione.setEventoAvvalePartner(eventoPadre.getEventoAvvalePartner());
-		riedizione.setPartners(copyPartnerListEvento(eventoPadre.getPartners()));
-		riedizione.setDichiarazioneAssenzaConflittoInteresse(eventoPadre.getDichiarazioneAssenzaConflittoInteresse());
-
-		//FINE setting delle info dell'Evento generale ******************************************************************************************
-
-		//INIZIO setting delle info dell'Evento particolari alla proceduraFormativa +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-		if(riedizione instanceof EventoFAD) {
-
-			((EventoFAD) riedizione).setTipologiaEvento(((EventoFAD) eventoPadre).getTipologiaEvento());
-			((EventoFAD) riedizione).setDocenti(copyPersonaListEvento(((EventoFAD) eventoPadre).getDocenti()));
-			((EventoFAD) riedizione).setRazionale(((EventoFAD) eventoPadre).getRazionale());
-			((EventoFAD) riedizione).setRisultatiAttesi(((EventoFAD) eventoPadre).getRisultatiAttesi());
-			((EventoFAD) riedizione).setProgrammaFAD(copyProgrammaEventoFAD(((EventoFAD) eventoPadre).getProgrammaFAD(), ((EventoFAD) riedizione).getDocenti()));
-			((EventoFAD) riedizione).setVerificaApprendimento(copyListaVerificaApprendimentoFAD(((EventoFAD) eventoPadre).getVerificaApprendimento()));
-			((EventoFAD) riedizione).setConfermatiCrediti(((EventoFAD) eventoPadre).getConfermatiCrediti());
-			((EventoFAD) riedizione).setSupportoSvoltoDaEsperto(((EventoFAD) eventoPadre).getSupportoSvoltoDaEsperto());
-			((EventoFAD) riedizione).setMaterialeDurevoleRilasciatoAiPratecipanti(((EventoFAD) eventoPadre).getMaterialeDurevoleRilasciatoAiPratecipanti());;
-			((EventoFAD) riedizione).setRequisitiHardwareSoftware(((EventoFAD) eventoPadre).getRequisitiHardwareSoftware());;
-			((EventoFAD) riedizione).setUserId(((EventoFAD) eventoPadre).getUserId());
-			((EventoFAD) riedizione).setPassword(((EventoFAD) eventoPadre).getPassword());
-			((EventoFAD) riedizione).setUrl(((EventoFAD) eventoPadre).getUrl());
-
-		}
-
-		//FINE setting delle info dell'Evento particolari alla proceduraFormativa +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-		return riedizione;
-
-	}
-
 	@Override
 	public int getLastEdizioneEventoByPrefix(String prefix) {
 		Page<Integer> result = eventoRepository.findLastEdizioneOfEventoByPrefix(prefix, new PageRequest(0, 1));
@@ -1072,132 +1004,72 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
-	public List<PersonaEvento> copyPersonaListEvento(List<PersonaEvento> listaPersone) {
-		List<PersonaEvento> listaCopiata = new ArrayList<PersonaEvento>();
-		for(PersonaEvento pe : listaPersone) {
-			listaCopiata.add(copyPersonaEvento(pe));
-		}
-		return listaCopiata;
+	public Evento getEventoForRiedizione(Long eventoId) {
+		return eventoRepository.findOneForRiedizione(eventoId);
 	}
 
-	private PersonaEvento copyPersonaEvento(PersonaEvento persona) {
-		PersonaEvento personaCopiata = new PersonaEvento();
-		personaCopiata.setAnagrafica(persona.getAnagrafica());
-		//gestioneFile
-		personaCopiata.getAnagrafica().setCv(copiaFile(persona.getAnagrafica().getCv()));
-		personaCopiata.setQualifica(persona.getQualifica());
-		personaCopiata.setRuolo(persona.getRuolo());
-		personaCopiata.setTitolare(persona.getTitolare());
-		personaEventoRepository.save(personaCopiata);
-		return personaCopiata;
-	}
-
-	private File copiaFile(File file) {
-		File fileCopiato = new File();
-		fileCopiato.setData(file.getData());
-		fileCopiato.setNomeFile(file.getNomeFile());
-		fileCopiato.setTipo(file.getTipo());
-		fileCopiato.setFileData(copiaFileData(file.getFileData()));
-		fileService.save(fileCopiato);
-		return fileCopiato;
-	}
-
-	private List<FileData> copiaFileData(List<FileData> listaFileData) {
-		List<FileData> listaFileDataCopiata = new ArrayList<FileData>();
-		for (FileData fd : listaFileData) {
-			FileData fdnew = new FileData();
-			fdnew.setData(fd.getData());
-			listaFileDataCopiata.add(fdnew);
-		}
-		return listaFileDataCopiata;
-	}
-
+	//TODO sta roba non funzionerà mai
 	@Override
-	public PersonaFullEvento copyPersonaFullEvento(PersonaFullEvento personaFull) {
-		PersonaFullEvento personaFullCopiata = new PersonaFullEvento();
-		personaFullCopiata.setAnagrafica(personaFull.getAnagrafica());
-//		personaFullEventoRepository.save(personaFullCopiata);
-		return personaFullCopiata;
+	@Transactional
+	public Evento prepareRiedizioneEvento(Evento eventoPadre) throws Exception {
+		Evento riedizione = eventoPadre;
+		integrazioneService.detach(riedizione);
+		handleCopyDetach(riedizione);
+		riedizione.setEdizione(getLastEdizioneEventoByPrefix(eventoPadre.getPrefix()));
+		riedizione.setEventoPadre(eventoPadre);
+		return riedizione;
 	}
 
-	@Override
-	public Set<Sponsor> copySponsorListEvento(Set<Sponsor> sponsors) {
-		Set<Sponsor> setCopiato = new HashSet<Sponsor>();
-		for(Sponsor s : sponsors) {
-			setCopiato.add(copySponsor(s));
+	//annulla l'id degli oggetti che vanno copiati e annulla gli oggetti che NON vanno copiati, ma ricalcolati
+	private void handleCopyDetach(Evento riedizione) throws CloneNotSupportedException {
+		//casi specifici evento
+		if(riedizione instanceof EventoFAD) {
+			for(PersonaEvento d : ((EventoFAD) riedizione).getDocenti()) {
+				d.setId(null);
+				d.getAnagrafica().setCv(fileService.copyFile(d.getAnagrafica().getCv()));
+			}
+			//spunta necessaria da leggere
+			((EventoFAD) riedizione).setConfermatiCrediti(null);
+			((EventoFAD) riedizione).setRequisitiHardwareSoftware(fileService.copyFile(((EventoFAD) riedizione).getRequisitiHardwareSoftware()));
+			//ricalcolato
+			((EventoFAD) riedizione).setRiepilogoFAD(null);
 		}
-		return setCopiato;
-	}
-
-	private Sponsor copySponsor(Sponsor sponsor) {
-		Sponsor sponsorCopiato = new Sponsor();
-		sponsorCopiato.setName(sponsor.getName());
-		sponsorCopiato.setSponsorFile(sponsor.getSponsorFile());
-		sponsorRepository.save(sponsorCopiato);
-		return sponsorCopiato;
-	}
-
-	@Override
-	public Set<Partner> copyPartnerListEvento(Set<Partner> partners) {
-		Set<Partner> setCopiato = new HashSet<Partner>();
-		for(Partner s : partners) {
-			setCopiato.add(copyPartner(s));
+		else if (riedizione instanceof EventoRES) {
+			//TODO
 		}
-		return setCopiato;
-	}
-
-	private Partner copyPartner(Partner partner) {
-		Partner partnerCopiato = new Partner();
-		partnerCopiato.setName(partner.getName());
-		partnerCopiato.setPartnerFile(partner.getPartnerFile());
-		partnerRepository.save(partnerCopiato);
-		return partnerCopiato;
-	}
-
-	@Override
-	public List<DettaglioAttivitaFAD> copyProgrammaEventoFAD(List<DettaglioAttivitaFAD> programmaFAD, List<PersonaEvento> docentiEventoRieditato) {
-		List<DettaglioAttivitaFAD> programmaCopiato = new ArrayList<DettaglioAttivitaFAD>();
-		for(DettaglioAttivitaFAD daf : programmaFAD) {
-			programmaCopiato.add(copyDettaglioAttivitaFAD(daf, docentiEventoRieditato));
+		else if (riedizione instanceof EventoFSC) {
+			//TODO
 		}
-		return programmaCopiato;
-	}
-
-	private DettaglioAttivitaFAD copyDettaglioAttivitaFAD(DettaglioAttivitaFAD dettaglioAttivita, List<PersonaEvento> docentiEventoRieditato) {
-		DettaglioAttivitaFAD dettaglioAttivitaCopiato = new DettaglioAttivitaFAD();
-		dettaglioAttivitaCopiato.setArgomento(dettaglioAttivita.getArgomento());
-		dettaglioAttivitaCopiato.setMetodologiaDidattica(dettaglioAttivita.getMetodologiaDidattica());
-		dettaglioAttivitaCopiato.setObiettivoFormativo(dettaglioAttivita.getObiettivoFormativo());
-		dettaglioAttivitaCopiato.setRisultatoAtteso(dettaglioAttivita.getRisultatoAtteso());
-		dettaglioAttivitaCopiato.setOreAttivita(dettaglioAttivita.getOreAttivita());
-		// seleziona docente
-		dettaglioAttivitaCopiato.setDocente(findDocenteCopiato(docentiEventoRieditato, dettaglioAttivita.getDocente()));
-		return dettaglioAttivitaCopiato;
-	}
-
-	//TODO migliorare (equals() ad hoc?)
-	private PersonaEvento findDocenteCopiato(List<PersonaEvento> docentiEventoRieditato, PersonaEvento docente) {
-		for(PersonaEvento pe : docentiEventoRieditato) {
-			if(pe.getAnagrafica().equals(docente.getAnagrafica()))
-				return pe;
+		//caso generale evento
+		riedizione.setCanAttachSponsor(true);
+		riedizione.setCanDoPagamento(false);
+		riedizione.setCanDoRendicontazione(false);
+		riedizione.setValidatorCheck(false);
+		riedizione.setReportPartecipantiXML(null);
+		riedizione.setReportPartecipantiCSV(null);
+		riedizione.setEventoPianoFormativo(null);
+		riedizione.setDataScadenzaPagamento(null);
+		for(PersonaEvento pe : riedizione.getResponsabili()) {
+			pe.setId(null);
+			pe.getAnagrafica().setCv(fileService.copyFile(pe.getAnagrafica().getCv()));
 		}
-		return null;
-	}
-
-	private List<VerificaApprendimentoFAD> copyListaVerificaApprendimentoFAD(List<VerificaApprendimentoFAD> listaVerificaApprendimento) {
-		List<VerificaApprendimentoFAD> listaCopiata = new ArrayList<VerificaApprendimentoFAD>();
-		for(VerificaApprendimentoFAD vaf : listaVerificaApprendimento) {
-			listaCopiata.add(copyVerificaApprendimentoFAD(vaf));
+		riedizione.setBrochureEvento(fileService.copyFile(riedizione.getBrochureEvento()));
+		riedizione.getResponsabileSegreteria().setId(null);
+		for(Sponsor s : riedizione.getSponsors()) {
+			s.setId(null);
+			s.setSponsorFile(fileService.copyFile(s.getSponsorFile()));
 		}
-		return listaCopiata;
+		riedizione.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(fileService.copyFile(riedizione.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia()));
+		riedizione.setAutocertificazioneAutorizzazioneMinisteroSalute(fileService.copyFile(riedizione.getAutocertificazioneAutorizzazioneMinisteroSalute()));
+		riedizione.setAutocertificazioneAssenzaFinanziamenti(fileService.copyFile(riedizione.getAutocertificazioneAssenzaFinanziamenti()));
+		riedizione.setContrattiAccordiConvenzioni(fileService.copyFile(riedizione.getContrattiAccordiConvenzioni()));
+		for(Partner p : riedizione.getPartners()) {
+			p.setId(null);
+			p.setPartnerFile(fileService.copyFile(p.getPartnerFile()));
+		}
+		riedizione.setDichiarazioneAssenzaConflittoInteresse(fileService.copyFile(riedizione.getDichiarazioneAssenzaConflittoInteresse()));
+		//spunte necessarie da leggere
+		riedizione.setProceduraVerificaQualitaPercepita(null);
+		riedizione.setAutorizzazionePrivacy(null);
 	}
-
-	private VerificaApprendimentoFAD copyVerificaApprendimentoFAD(VerificaApprendimentoFAD verificaApprendimento) {
-		VerificaApprendimentoFAD verificaApprendimentoCopiata = new VerificaApprendimentoFAD();
-		verificaApprendimentoCopiata.setVerificaApprendimento(verificaApprendimento.getVerificaApprendimento());
-		verificaApprendimentoCopiata.setVerificaApprendimentoInner(verificaApprendimento.getVerificaApprendimentoInner());
-		return verificaApprendimentoCopiata;
-	}
-
-
 }

@@ -696,18 +696,22 @@ public class EventoValidator {
 		 * se tipologiaEvento == TRAINING_INDIVIDUALIZZATO massimo 5 partecipanti per tutor
 		 * se tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO massimo 25 partecipanti
 		 * se tipologiaEvento == AUDIT_CLINICO_ASSISTENZIALE massimo 25 partecipanti
+		 * N.B. devio gli errori sulla tebella di riepilogo, dove vengono effettivamente inseriti i partecipanti/tutor
 		 * */
 		if(evento.getNumeroPartecipanti() == null)
-			errors.rejectValue(prefix + "numeroPartecipanti", "error.empty");
-		//TODO trovare modo per contare partecipanti / tutor
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.empty");
 		else if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiGruppiMiglioramentoFSC())
-			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti25");
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEvento());
 		else if(evento.getTipologiaEvento() != null
 				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiAuditClinicoFSC())
-			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti25");
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEvento());
+		else if(evento.getTipologiaEvento() != null
+				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+				&& evento.getNumeroPartecipanti() > (evento.getNumeroTutor() * 5))
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEvento());
 
 		/* DURATA COMPLESSIVA (autocompilato)
 		 * controlli di sicurezza:

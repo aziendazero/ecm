@@ -43,10 +43,5 @@ public interface EventoService {
 	//TODO chiedere 1 mese di ferie almeno (joe19 mode on)
 	public Evento prepareRiedizioneEvento(Evento evento) throws Exception;
 	public int getLastEdizioneEventoByPrefix(String prefix);
-	public List<PersonaEvento> copyPersonaListEvento(List<PersonaEvento> responsabili) throws CloneNotSupportedException;
-	public PersonaFullEvento copyPersonaFullEvento(PersonaFullEvento responsabileSegreteria);
-	public Set<Sponsor> copySponsorListEvento(Set<Sponsor> sponsors);
-	public Set<Partner> copyPartnerListEvento(Set<Partner> partners);
-	public List<DettaglioAttivitaFAD> copyProgrammaEventoFAD(List<DettaglioAttivitaFAD> programmaFAD, List<PersonaEvento> docentiEventoRieditato);
-
+	public Evento getEventoForRiedizione(Long eventoId);
 }
