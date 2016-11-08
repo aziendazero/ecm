@@ -64,4 +64,10 @@ public class FileServiceImpl implements FileService{
 	public void saveFileSuDisco(File file){
 		
 	}
+	
+	@Override
+	public File copyFile(File file) {
+		// TODO TOM
+		return null;
+	}
 }
