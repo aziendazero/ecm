@@ -72,8 +72,7 @@ import it.tredi.ecm.web.bean.EventoWrapper;
 public class EventoServiceImpl implements EventoService {
 	public static final Logger LOGGER = Logger.getLogger(Evento.class);
 
-	@Autowired
-	private EventoRepository eventoRepository;
+	@Autowired private EventoRepository eventoRepository;
 
 	@Autowired private PersonaEventoRepository personaEventoRepository;
 	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
@@ -91,12 +90,6 @@ public class EventoServiceImpl implements EventoService {
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
 		return eventoRepository.findOne(id);
-	}
-
-	@Override
-	public Set<Evento> getAllEventiFromProvider(Long providerId) {
-		LOGGER.debug("Recupero eventi del provider: " + providerId);
-		return eventoRepository.findAllByProviderId(providerId);
 	}
 
 	@Override
@@ -1071,5 +1064,19 @@ public class EventoServiceImpl implements EventoService {
 		//spunte necessarie da leggere
 		riedizione.setProceduraVerificaQualitaPercepita(null);
 		riedizione.setAutorizzazionePrivacy(null);
+	}
+	
+	@Override
+	public Set<Evento> getEventiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
+		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
+		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
+		return eventoRepository.findAllByProviderIdAndDataFineBetween(providerId, leftDate, rightDate);
+	}
+	
+	@Override
+	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
+		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
+		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
+		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
 	}
 }

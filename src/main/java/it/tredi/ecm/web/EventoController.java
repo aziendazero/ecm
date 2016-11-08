@@ -1012,7 +1012,8 @@ public class EventoController {
 		try{
 			if(eventoWrapper.getEvento() instanceof EventoRES){
 				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().addProgrammaGiornalieroIntermedio(null);
-				return EDITRES + " :: " + sectionToRefresh;
+				//return EDITRES + " :: " + sectionToRefresh;
+				return EDITRES + " :: eventoRESEdit";
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
 			}
@@ -1030,7 +1031,8 @@ public class EventoController {
 			Long k = Long.valueOf(key);
 			if(eventoWrapper.getEvento() instanceof EventoRES){
 				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().removeProgrammaGiornalieroIntermedio(k);
-				return EDITRES + " :: " + sectionToRefresh;
+				//return EDITRES + " :: " + sectionToRefresh;
+				return EDITRES + " :: eventoRESEdit";
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
 			}

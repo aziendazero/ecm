@@ -164,6 +164,18 @@
 							</div>
 						</div>
 					</div>
+					
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('provider/list')">
+							<div class="icon"><i class="fa fa-eye-slash"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza}"></div>
+			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+			                	<p class="count-text" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza == 1} ? #{label.non_ha_pagato_quota_annuale} :  #{label.non_hanno_pagato_quota_annuale}"></p>
+							</div>
+						</div>
+					</div>
+					
 				</div>
 
 				<!-- COMMISSIONE -->

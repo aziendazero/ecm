@@ -10,6 +10,7 @@ import java.net.Authenticator;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
@@ -519,6 +520,10 @@ public class EngineeringServiceImpl implements EngineeringService {
 					// Se esito = 0 allora il pagamento risulta eseguito correttamente. Altrimenti deve essere rifatto.
 					if (PAGAMENTO_ESEGUITO.equals(p.getCodiceEsito())) {
 						quotaAnnuale.setPagato(true);
+						//Se si riferisce al pagamento della prima quota per iscrizione -> abilito le funzionalita'
+						if(quotaAnnuale.getPrimoAnno() != null && quotaAnnuale.getPrimoAnno().booleanValue())
+							providerService.abilitaFunzionalitaAfterPagamento(quotaAnnuale.getProvider().getId());
+						
 					} else {
 						quotaAnnuale.setPagato(false);
 					}

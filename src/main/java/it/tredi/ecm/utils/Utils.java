@@ -214,4 +214,9 @@ public class Utils {
 		BigDecimal bg = value.setScale(2, RoundingMode.HALF_UP);
 		return bg.floatValue();
 	}
+	
+	public static Double getRoundedDoubleValue(Double value){
+		BigDecimal bg = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
+		return bg.doubleValue();
+	}
 }

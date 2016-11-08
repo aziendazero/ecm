@@ -39,9 +39,9 @@ public class EventoPianoFormativo extends BaseEntity{
 	 * 		*EVENTO inserito come RIEDIZIONE -> PREFIX dell'evento padre
 	 * */
 	private String prefix;
-	private int edizione = 0;
+	private int edizione = 1;
 	public String getCodiceIdentificativo(){
-		if(edizione > 0)
+		if(edizione > 1)
 			return prefix + "-" + edizione;
 		else return prefix;
 	}

@@ -28,4 +28,7 @@ public interface ProviderService {
 	public boolean hasAlreadySedeLegaleProvider(Provider provider, Sede sede);
 	
 	public void saveFromIntegrazione(Provider provider);
+	
+	public void bloccaFunzionalitaForPagamento(Long providerId);
+	public void abilitaFunzionalitaAfterPagamento(Long providerId);
 }

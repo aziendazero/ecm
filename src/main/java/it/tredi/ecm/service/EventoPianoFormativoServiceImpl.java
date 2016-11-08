@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -83,5 +84,4 @@ public class EventoPianoFormativoServiceImpl implements EventoPianoFormativoServ
 		Integer pianoFormativo = LocalDateTime.now().getYear();
 		return eventoPianoFormativoRepository.findAllByProviderIdAndPianoFormativoAndAttuatoFalse(providerId, pianoFormativo);
 	}
-
 }

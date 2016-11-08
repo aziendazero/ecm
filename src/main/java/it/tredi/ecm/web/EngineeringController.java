@@ -190,7 +190,7 @@ public class EngineeringController {
 	@RequestMapping("/engineering/test/mypay")
 	public String engineeringTestMypay(Model model, RedirectAttributes redirectAttrs){
 		try {
-			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
+			model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerService.getProvider().getId()));
 			return "engineering/mypayTest";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
@@ -216,7 +216,7 @@ public class EngineeringController {
 			}
 			
 			
-			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
+			model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerService.getProvider().getId()));
 			
 			return "engineering/mypayTest";
 		}catch (Exception ex){
@@ -236,7 +236,7 @@ public class EngineeringController {
 			// questo metodo andrebbe chiamato ogni TOT (da dimensionare in base al carico previsto) via scheduler.
 			// in questo prototipo ho inserito un pulsante per invocarlo a piacere.
 			engineeringService.esitoPagamentiEventi();
-			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
+			model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerService.getProvider().getId()));
 			
 			return "engineering/mypayTest";
 		}catch (Exception ex){
@@ -256,7 +256,7 @@ public class EngineeringController {
 		// Posso comunque ripeterlo. MyPay lo registrerà come nuovo pagamento.
 		try {
 			engineeringService.azzeraPagamenti(providerService.getProvider().getId());
-			model.addAttribute("eventoList", eventoService.getAllEventiFromProvider(providerService.getProvider().getId()));
+			model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerService.getProvider().getId()));
 			
 			return "engineering/mypayTest";
 		}catch (Exception ex){

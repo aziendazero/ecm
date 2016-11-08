@@ -17,7 +17,6 @@ import it.tredi.ecm.web.bean.EventoWrapper;
 
 public interface EventoService {
 	public Evento getEvento(Long id);
-	public Set<Evento> getAllEventiFromProvider(Long providerId);
 	public void save(Evento evento);
 	public void delete(Long id);
 
@@ -44,4 +43,6 @@ public interface EventoService {
 	public Evento prepareRiedizioneEvento(Evento evento) throws Exception;
 	public int getLastEdizioneEventoByPrefix(String prefix);
 	public Evento getEventoForRiedizione(Long eventoId);
+	public Set<Evento> getEventiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
+	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
 }
