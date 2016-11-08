@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -34,7 +35,7 @@ import it.tredi.ecm.service.EventoService;
 @WithUserDetails("provider")
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING) // ordina i test in base al nome crescente
 @Rollback(false)
-//@Ignore
+@Ignore
 public class RiedizioneEventoTest {
 
 	@Autowired private WebApplicationContext webApplicationContext;
