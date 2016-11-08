@@ -34,7 +34,7 @@ public class Helper {
 		dbEventoDataMap.put("cod_accr", CODICE_ENTE_ACCREDITANTE);
 		dbEventoDataMap.put("data_ini", evento.getDataInizio().format(DateTimeFormatter.ISO_LOCAL_DATE));
 		dbEventoDataMap.put("data_fine", evento.getDataFine().format(DateTimeFormatter.ISO_LOCAL_DATE));
-		dbEventoDataMap.put("ore", Float.toString(evento.getDurata()));
+		dbEventoDataMap.put("ore", Integer.toString((int)Math.floor(evento.getDurata())));
 		dbEventoDataMap.put("crediti", Float.toString(evento.getCrediti()));
 		dbEventoDataMap.put("tipo_form", Integer.toString(evento.getProceduraFormativa().getId()));
 		dbEventoDataMap.put("tipo_eve", "E");

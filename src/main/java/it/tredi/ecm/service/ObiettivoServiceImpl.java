@@ -60,7 +60,10 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 	@Override
 	public Obiettivo findOneByCodiceCogeaps(String codiceCogeaps, boolean nazionale) {
 		LOGGER.info("Retrieving Obiettivo by CodiceCogeaps (" + codiceCogeaps +") and Nazionale (" + nazionale + ")");
-		return obiettivoRepository.findOneByCodiceCogeapsAndNazionale(codiceCogeaps, nazionale);		
+		Set<Obiettivo> obiettivi = obiettivoRepository.findAllByCodiceCogeapsAndNazionale(codiceCogeaps, nazionale);
+		if (obiettivi == null)
+			return null;
+		return obiettivi.iterator().next();
 	}
 	
 }
