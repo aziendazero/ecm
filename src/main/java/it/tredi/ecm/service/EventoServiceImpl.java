@@ -631,7 +631,7 @@ public class EventoServiceImpl implements EventoService {
 		prepareRiepilogoRuoli(programma, riepilogoRuoliFSC);
 		durata = getMaxDurataPatecipanti(riepilogoRuoliFSC);
 
-		durata = Utils.getRoundedFloatValue(durata);
+		durata = Utils.getRoundedFloatValue(durata, 2);
 		return durata;
 	}
 
@@ -675,7 +675,7 @@ public class EventoServiceImpl implements EventoService {
 			}
 		}
 
-		durata = Utils.getRoundedFloatValue(durata);
+		durata = Utils.getRoundedFloatValue(durata, 2);
 		return durata;
 	}
 
@@ -777,7 +777,7 @@ public class EventoServiceImpl implements EventoService {
 			crediti = creditiFrontale + creditiInterattiva;
 		}
 
-		crediti = Utils.getRoundedFloatValue(crediti);
+		crediti = Utils.getRoundedFloatValue(crediti, 1);
 
 		return crediti;
 	}
@@ -931,7 +931,7 @@ public class EventoServiceImpl implements EventoService {
 		else
 			crediti = durata * 1.0f;
 
-		crediti = Utils.getRoundedFloatValue(crediti);
+		crediti = Utils.getRoundedFloatValue(crediti, 1);
 		return crediti;
 	}
 

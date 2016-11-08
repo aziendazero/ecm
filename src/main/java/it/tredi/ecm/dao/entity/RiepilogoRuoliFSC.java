@@ -207,7 +207,7 @@ public class RiepilogoRuoliFSC {
 			default: break;
 			}
 
-			crediti = Utils.getRoundedFloatValue(crediti);
+			crediti = Utils.getRoundedFloatValue(crediti, 1);
 
 		}else{
 			crediti = 0.0f;
