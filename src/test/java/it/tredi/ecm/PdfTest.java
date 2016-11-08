@@ -27,10 +27,12 @@ import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Seduta;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.dao.repository.ProfileRepository;
@@ -43,6 +45,7 @@ import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PdfService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ValutazioneService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -77,6 +80,9 @@ public class PdfTest {
 	
 	@Autowired 
 	private FieldEditabileAccreditamentoService fieldEditabileService;
+	
+	@Autowired 
+	private ValutazioneService valutazioneService;
 	
 	/*
 	@Before
@@ -142,9 +148,10 @@ public class PdfTest {
 	@Ignore
 	@Transactional
 	public void creazionePdfPerAccreditamento() throws Exception {
-		Long accreditamentoId = 209L;
+		Long accreditamentoId = 1696L;
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
-		AccreditamentoStatoEnum stato = AccreditamentoStatoEnum.INTEGRAZIONE;
+		AccreditamentoStatoEnum stato = AccreditamentoStatoEnum.DINIEGO;
+		Boolean eseguitoDaUtente = false;
 
 		//In alcuni stati devono essere effettuate altre operazioni
 		//Creazione pdf
@@ -160,7 +167,7 @@ public class PdfTest {
 			Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
 			List<String> listaCriticita = new ArrayList<String>();
 			fieldEditabiliAccreditamento.forEach(v -> {
-	            //Richiesta 
+	            //Richiesta
 	            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire singole note sui campi] (pag 4)
 				if(v.getNota() == null || v.getNota().isEmpty())
 					listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
@@ -203,6 +210,12 @@ public class PdfTest {
 
 				}
 			}
+			/*
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
+			List<String> listaCriticita = new ArrayList<String>();
+			fieldIntegrazioneAccreditamento.forEach(v -> {
+				listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
+			});*/
 			PdfAccreditamentoProvvisorioRigettoInfo rigettoInfo = new PdfAccreditamentoProvvisorioRigettoInfo(accreditamento, sedutaRigetto, sedutaIntegrazione, sedutaPreavvisoRigetto);
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
 			accreditamento.setDecretoDiniego(file);
@@ -225,6 +238,19 @@ public class PdfTest {
 			PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo(accreditamento, sedutaAccreditamento, sedutaIntegrazione, sedutaPreavvisoRigetto);
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
 			accreditamento.setDecretoAccreditamento(file);
+		} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
+			//Cancelliamo le Valutazioni non completate
+			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
+			for(Valutazione v : valutazioni){
+				if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE && v.getDataValutazione() == null){
+					valutazioneService.delete(v);
+				}
+			}
+		} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
+			if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE)
+				accreditamento.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
+			else if(accreditamento.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+				accreditamento.setPreavvisoRigettoEseguitoDaProvider(eseguitoDaUtente);
 		}		
 		accreditamentoRepository.save(accreditamento);
 	}

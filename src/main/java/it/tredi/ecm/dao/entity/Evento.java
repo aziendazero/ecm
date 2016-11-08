@@ -21,6 +21,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -64,6 +68,25 @@ import lombok.Setter;
 @Table(name = "evento")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "eventoType")
+@NamedEntityGraphs({
+
+	@NamedEntityGraph(name="graph.evento.forRiedizione",
+			attributeNodes = {@NamedAttributeNode("id"),
+					@NamedAttributeNode(value="brochureEvento", subgraph="fileFull")},
+			subgraphs = {@NamedSubgraph(name="fileFull", attributeNodes={
+					@NamedAttributeNode("id"),
+					@NamedAttributeNode("nomeFile"),
+					@NamedAttributeNode("tipo"),
+					@NamedAttributeNode(value="fileData", subgraph="fileData")
+			}), @NamedSubgraph(name="fileData", attributeNodes={
+					@NamedAttributeNode("id"),
+					@NamedAttributeNode("data")
+			})
+			}
+	)
+
+})
+
 public class Evento extends BaseEntity{
 	private static Logger LOGGER = LoggerFactory.getLogger(Evento.class);
 	/*
@@ -138,6 +161,7 @@ public class Evento extends BaseEntity{
 	//false -> dopo 90gg
 	private boolean canDoRendicontazione = false;
 
+	@Enumerated(EnumType.STRING)
 	private EventoStatoEnum stato;//vedi descrizione in EventoStatoEnum
 	private boolean validatorCheck = false; //(durante il salvataggio check di un flag per sapere se sono stati rispettati tutti i vincoli del validator)
 
@@ -174,6 +198,7 @@ public class Evento extends BaseEntity{
 		this.discipline = epf.getDiscipline();
 		this.prefix = epf.getCodiceIdentificativo();
 		this.edizione = 0;
+		this.pianoFormativo = epf.getPianoFormativo();
 	}
 
 	public void buildPrefix(){
@@ -198,11 +223,11 @@ public class Evento extends BaseEntity{
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_fine")//fine evento
 	private LocalDate dataFine;
-	
+
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_scadenza_pagamento")//data scadenza pagamento
 	private LocalDate dataScadenzaPagamento;
-	
+
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="responsabile_id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
@@ -222,7 +247,7 @@ public class Evento extends BaseEntity{
 	private BigDecimal quotaPartecipazione;
 
 	private Boolean eventoSponsorizzato;
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
 	@JoinColumn(name="evento_id")
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();
 
@@ -239,7 +264,7 @@ public class Evento extends BaseEntity{
 	private File contrattiAccordiConvenzioni;
 
 	private Boolean eventoAvvalePartner;
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
 	@JoinColumn(name="evento_id")
 	private Set<Partner> partners = new HashSet<Partner>();
 
@@ -260,7 +285,7 @@ public class Evento extends BaseEntity{
 			}else{
 				costo = 1500.00;
 			}
-			
+
 			//ridotto di 1/3
 			if(altreFormeFinanziamento != null && !altreFormeFinanziamento.booleanValue()){
 				costo = (costo*2)/3;
@@ -268,7 +293,7 @@ public class Evento extends BaseEntity{
 		}else{
 			throw new Exception("provider non classificato correttamente");
 		}
-		
+
 		if(dataFine != null)
 			setDataScadenzaPagamento(dataFine.plusDays(90));
 	}

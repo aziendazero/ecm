@@ -29,14 +29,15 @@ public class PdfAccreditamentoProvvisorioRigettoInfo {
 		integrazioneInfo = new PdfInfoIntegrazioneRigetto();
 		integrazioneInfo.setDataSedutaCommissione(sedutaIntegrazione.getData());
 		integrazioneInfo.setVerbaleNumero(sedutaIntegrazione.getNumeroVerbale());
+		integrazioneInfo.setEseguitaDaProvider(accreditamento.getIntegrazioneEseguitaDaProvider());
 		//TODO
-		//integrazioneInfo.setEseguitaDaProvider(eseguitaDaProvider);		
 		//integrazioneInfo.setDataProtocollo(dataProtocollo);
 		//integrazioneInfo.setNumeroProtocollo(numeroProtocollo);
 		
 		rigettoInfo = new PdfInfoIntegrazioneRigetto();
 		rigettoInfo.setDataSedutaCommissione(sedutaPreavvisoRigetto.getData());
 		rigettoInfo.setVerbaleNumero(sedutaPreavvisoRigetto.getNumeroVerbale());
+		rigettoInfo.setEseguitaDaProvider(accreditamento.getPreavvisoRigettoEseguitoDaProvider());
 		//TODO
 		//rigettoInfo.setEseguitaDaProvider(eseguitaDaProvider);		
 		//rigettoInfo.setDataProtocollo(dataProtocollo);

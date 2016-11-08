@@ -18,7 +18,7 @@
 							</button>
 							<h4 class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 						</div>
-						<div class="modal-body">
+						<div class="modal-body" id="container-attivitaFSC">
 							<form id="addAttivitaFSC" name="addAttivitaFSC" class="form-horizontal form-label-left"
 									th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
 									th:object="${eventoWrapper.tempAttivitaFSC}" method="post" enctype="multipart/form-data"
@@ -142,6 +142,9 @@
 									<input id="targetTableAttivitaFSC" type="text" name="target" style="display: none;" />
 									<!-- fase a cui agganciare l'attività -->
 									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
+
+									<!-- rowIndex in modifica -->
+									<input id="modificaElementoAttivitaFSC" name="modificaElemento" type="text" style="display: none;" />
 								</form>
 							</div>
 							<div class="modal-footer">
@@ -245,7 +248,7 @@
 							<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
 
 								<!-- TODO rimuovere -->
-								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div>
+<!-- 								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
 
 								<!-- DENOMINAZIONE LEGALE PROVIDER -->
 								<div class="item form-group">
@@ -488,35 +491,41 @@
 										<span>13</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivoNazionale">
-										<span th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
+										<span th:text="#{label.obiettivo_strategico_nazionale}">Obiettivo Strategico Nazionale</span>
 										<span class="required">*</span>
 									</label>
-
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-										<select id="obiettivoNazionale"
-											class="selectpicker required"
-											th:field="${eventoWrapper.evento.obiettivoNazionale}"
-											data-width="100%" data-style="btn-primary"
-											data-actions-box="true" data-size="10"
-											data-hide-disabled="false"
-											title="Seleziona un obiettivo...">
-											<optgroup class="optgroup-primary"
-												th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
-												th:label="${categoriaObiettivoNazionale.nome}"
-												th:remove="all-but-first">
-												<option
-													th:each="obiettivoNazionale, row: ${eventoWrapper.obiettiviNazionali}"
-													th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
-													th:value="${obiettivoNazionale.id}"
-													th:text="${obiettivoNazionale.nome}">
-												</option>
-											</optgroup>
-										</select>
-									</div>
-									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.obiettivoNazionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.obiettivoNazionale')}__}"></div>
-									<div class="col-xs-1">
-										<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
-									</div>
+									<th:block th:unless="${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+											<select id="obiettivoNazionale"
+												class="selectpicker required"
+												th:field="${eventoWrapper.evento.obiettivoNazionale}"
+												data-width="100%" data-style="btn-primary"
+												data-actions-box="true" data-size="10"
+												data-hide-disabled="false"
+												title="Seleziona un obiettivo...">
+												<optgroup class="optgroup-primary"
+													th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
+													th:label="${categoriaObiettivoNazionale.nome}"
+													th:remove="all-but-first">
+													<option
+														th:each="obiettivoNazionale, row: ${eventoWrapper.obiettiviNazionali}"
+														th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
+														th:value="${obiettivoNazionale.id}"
+														th:text="${obiettivoNazionale.nome}">
+													</option>
+												</optgroup>
+											</select>
+										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.obiettivoNazionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.obiettivoNazionale')}__}"></div>
+										<div class="col-xs-1">
+											<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+										</div>
+									</th:block>
+									<th:block th:if="${eventoWrapper.evento.isEventoDaPianoFormativo()}">>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+											<div th:text="${eventoWrapper.evento.obiettivoNazionale.nome}" class="value-edit"></div>
+										</div>
+									</th:block>
 								</div>
 
 								<!-- OBIETTIVO REGIONALE -->
@@ -525,7 +534,7 @@
 										<span>14</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivorRegionale">
-										<span th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Strategico Regionale</span>
+										<span th:text="#{label.obiettivo_strategico_regionale}">Obiettivo Strategico Regionale</span>
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -721,7 +730,7 @@
 								<th:block th:if="${eventoWrapper.evento.tipologiaEvento == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO}">
 
 									<!-- SELEZIONE FASI DA INSERIRE -->
-									<div class="item form-group">
+									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.fasiDaInserire')} ? 'bad'">
 										<label class="control_label col-md-4 col-sm-4 col-xs-11">
 											<span th:text="#{label.selezionare_le_fasi_da_inserire}">Selezionare le fasi da inserire</span>
 										</label>
@@ -733,6 +742,7 @@
 												</label>
 											</div>
 										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.fasiDaInserire')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.fasiDaInserire')}__}"></div>
 									</div>
 
 									<div class="divider-dashed"></div>
@@ -775,10 +785,15 @@
 										<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
 										<span class="required">*</span>
 									</label>
+									<div class="item alert-tabella-evento form-group no-margin" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.riepilogoRuoli')} ? 'bad'">
+										<div class="col-lg-5 col-md-7 col-sm-8 col-xs-12"></div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.riepilogoRuoli')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.riepilogoRuoli')}__}"></div>
+									</div>
 									<div class="item form-group" style="clear:both; padding:2px;"></div>
 									<div class="item form-group" style="clear:both">
 										<div class="col-xs-offset-1 col-xs-10">
-											<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+											<table id="tabellaRuoliFSC" class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+												th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.riepilogoRuoli')} ? 'bad-table'">
 												<thead>
 													<tr>
 														<th th:text="#{label.ruolo}">OBIETTIVO FORMATIVO</th>
@@ -789,13 +804,15 @@
 													</tr>
 												</thead>
 												<tbody>
-													<tr th:each="riepilogo , r : ${eventoWrapper.riepilogoRuoliFSC}">
+													<tr th:each="riepilogo , r : ${eventoWrapper.riepilogoRuoliFSC}"
+														th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'riepilogoRuoliFSC['+riepilogo.key+']')} ? 'bad-row'">
 														<td th:text="${riepilogo.value.ruolo?.nome}"></td>
-														<td th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
-														<td>
-															<input th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" />
+														<td th:unless="${riepilogo.value.ruolo?.ruoloBase == null}" th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
+														<td th:if="${riepilogo.value.ruolo?.ruoloBase == null}"></td>
+														<td th:unless="${riepilogo.key == null}">
+															<input style="color: #73879C;" th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" />
 														</td>
-
+														<td th:if="${riepilogo.key == null}"></td>
 														<td th:text="${riepilogo.value?.tempoDedicato}"></td>
 														<td th:text="${riepilogo.value?.crediti}"></td>
 													</tr>
@@ -958,7 +975,7 @@
 										<span th:text="#{label.evento_sponsorizzato_radio}">L'Evento è sponsorizzato?</span>
 										<span class="required">*</span>
 									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 										<div class="radio">
 											<label>
 												<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${true}" />
@@ -973,8 +990,11 @@
 										</div>
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzato')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.eventoSponsorizzato')}__}"></div>
+									<div class="col-xs-1">
+										<div th:attr="data-original-title=#{label.info_sponsor_evento}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+									</div>
 								</div>
-								<div class="sponsor-si" style="display: none;">
+								<div class="sponsor-si">
 									<div class="no-padding item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')} ? 'bad'">
 										<div class="col-lg-9 col-md-11 col-sm-11 col-xs-12"></div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.sponsors')}__}"></div>
@@ -1106,7 +1126,7 @@
 										<span th:text="#{label.si_avvale_di_partner}">L’evento si avvale di partner?</span>
 										<span class="required">*</span>
 									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 										<div class="radio">
 											<label>
 												<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${true}" />
@@ -1121,6 +1141,9 @@
 										</div>
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoAvvalePartner')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.eventoAvvalePartner')}__}"></div>
+									<div class="col-xs-1">
+										<div th:attr="data-original-title=#{label.info_partner_evento}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+									</div>
 								</div>
 								<div class="no-padding partner-si item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.partners')} ? 'bad'">
 									<div class="col-lg-9 col-md-11 col-sm-11 col-xs-12"></div>
@@ -1209,7 +1232,6 @@
 				selectRuoliCoinvolti['AUDIT_CLINICO_ASSISTENZIALE'] = new Array(['PARTECIPANTE','COORDINATORE_ATTIVITA_AUDIT']);
 				selectRuoliCoinvolti['PROGETTI_DI_MIGLIORAMENTO'] = new Array(['PARTECIPANTE','ESPERTO','COORDINATORE_GRUPPI','RESPONSABILE_PROGETTO']);
 
-
 				$(document).ready(function() {
 					//init selecpicker
 				    $('select').selectpicker({
@@ -1217,16 +1239,6 @@
 						deselectAllText : 'Deseleziona tutti',
 						countSelectedText : '{0} selezionate'
 					});
-
-					//Aggancio eventi
-					$('#tipologiaEventoId').on('change', setEvResTipologiaGruppo);
-					$('#tipologiaEventoId').on('change', setEvResSperimentazioneClinica);
-					$('#tipologiaEventoId').on('change', setEvResOttenutoComitatoEtico);
-					$('#tipologiaEventoId').on('change', setEvResIndicatoreObbligatorio);
-
-					//non funziona
-					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
-					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
 
 					$('#addRuoloOreFSC-ruolo').prop('disabled',true);
 
@@ -1238,6 +1250,16 @@
 			            checkboxClass: 'icheckbox_flat-green',
 			            radioClass: 'iradio_flat-green'
 			        });
+
+					//Aggancio eventi
+					$('#tipologiaEventoId').on('change', setEvResTipologiaGruppo);
+					$('#tipologiaEventoId').on('change', setEvResSperimentazioneClinica);
+					$('#tipologiaEventoId').on('change', setEvResOttenutoComitatoEtico);
+					$('#tipologiaEventoId').on('change', setEvResIndicatoreObbligatorio);
+
+					//non funziona
+					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
+					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
 
 					setEvResTipologiaGruppo();
 					setEvResSperimentazioneClinica();
@@ -1395,9 +1417,10 @@
 
 
 			 /********************* PROGRAMMA GIORNALIERO ****************************/
-			  function openAddAttivitaTo(target,programmaIndex){
+			  function openAddAttivitaTo(target,programmaIndex,modificaElemento){
 					$('#targetTableAttivitaFSC').val(target);
 					$('#addAttivitaTo').val(programmaIndex);
+					$('#modificaElementoAttivitaFSC').val(modificaElemento);
 
 					var tipologiaEvento = $('#tipologiaEventoId').val();
 					setEvFSCRuoliCoinvolti();
@@ -1474,6 +1497,30 @@
 
 					$("#" + target).load(url);
 				}
+
+				//modifica Attivita
+				function modificaAttivitaFrom(target,caller){
+					var modificaElemento = $(caller).parent().parent().data('row-id');
+					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('fase-id');
+					if(modificaElemento == undefined)
+						modificaElemento = 0;
+
+					sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento);
+				}
+
+				function sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento){
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
+					$.get(url).done(function(data) {
+						$('#container-' + target).html(data);
+						reInitModaleAddAttivita();
+						$('#add-attivita').click();
+						openAddAttivitaTo(target,programmaIndex,modificaElemento);
+					  })
+				  	.fail(function() {
+				    	alert( "error" );
+				 	 })
+				}
+
 
 				/*parametrizzabile - è  identica a RES*/
 				function reloadSection(selectedTab){

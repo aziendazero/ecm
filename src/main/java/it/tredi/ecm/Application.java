@@ -7,13 +7,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 
 import it.tredi.ecm.config.UserChangePasswordCheckFilter;
 
 @SpringBootApplication
+@EnableScheduling
+@EnableAsync
 public class Application {
-
+	
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}

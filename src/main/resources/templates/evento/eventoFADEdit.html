@@ -18,7 +18,7 @@
 						</button>
 						<h4 id="container-title" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 					</div>
-					<div class="modal-body">
+					<div class="modal-body" id="container-attivitaFAD">
 						<form id="addAttivitaFAD" name="addAttivitaFAD" class="form-horizontal form-label-left"
 								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
 								th:object="${eventoWrapper.tempAttivitaFAD}" method="post" enctype="multipart/form-data"
@@ -148,6 +148,9 @@
 								<input id="targetTableAttivitaFAD" type="text" name="target" style="display: none;" />
 								<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
 
+								<!-- rowIndex in modifica -->
+								<input id="modificaElementoAttivitaFAD" name="modificaElemento" type="text" style="display: none;" />
+
 							</form>
 						</div>
 						<div class="modal-footer">
@@ -191,7 +194,7 @@
 							<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
 
 								<!-- TODO rimuovere -->
-								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div>
+<!-- 								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
 
 								<!-- DENOMINAZIONE LEGALE PROVIDER -->
 								<div class="item form-group">
@@ -348,7 +351,7 @@
 										<span>9</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivoNazionale">
-										<span th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
+										<span th:text="#{label.obiettivo_strategico_nazionale}">Obiettivo Strategico Nazionale</span>
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
@@ -384,7 +387,7 @@
 										<span>10</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivorRegionale">
-										<span th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Strategico Regionale</span>
+										<span th:text="#{label.obiettivo_strategico_regionale}">Obiettivo Strategico Regionale</span>
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -550,33 +553,35 @@
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.razionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.razionale')}__}"></div>
 								</div>
+
 								<!-- RISULTATI ATTESI -->
-								<div class="item form-group">
-									<label class="control-label col-xs-1">
-										<span>17</span>
-									</label>
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="risultatiAttesi">
-										<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
-										<span class="required">*</span>
-									</label>
-								</div>
-								<div class="risultati-attesi-container" id="risultatiAttesiId">
-									<div th:fragment="risultatiAttesiId"
-										th:class="${row.last ? 'nextRisultatoAtteso item form-group' : 'prevRisultatoAtteso item form-group'}"
-										th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
-										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[1]')} ? 'bad'">
-										<div class='col-md-4 col-sm-4 col-xs-12'></div>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
-											<input type="hidden" th:value="${risultato.key}" />
-											<input type="text" class="form-control risultatoPicker"
-												th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" />
-											<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}">
-												<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
-											</span>
-										</div>
-										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[1]')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('risultatiAttesiMapTemp[1]')}__}"></div>
+									<div class="item form-group">
+										<label class="control-label col-xs-1">
+											<span>17</span>
+										</label>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="risultatiAttesi">
+											<span th:text="#{label.risultati_attesi}">Risultati Attesi</span>
+											<span class="required">*</span>
+										</label>
 									</div>
-								</div>
+									<div class="risultati-attesi-container" id="risultatiAttesiId">
+										<div th:fragment="risultatiAttesiId"
+											th:class="${row.last ? 'nextRisultatoAtteso item form-group' : 'prevRisultatoAtteso item form-group'}"
+											th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
+											th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[__${risultato.key}__]') or #maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.risultatiAttesi')} ? 'bad'">
+											<div class='col-md-4 col-sm-4 col-xs-12'></div>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
+												<input type="hidden" th:value="${risultato.key}" />
+												<input type="text" class="form-control risultatoPicker"
+													th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" />
+												<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}">
+													<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
+												</span>
+											</div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[__${risultato.key}__]')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('risultatiAttesiMapTemp['+risultato.key+']')}__}"></div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.risultatiAttesi')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.risultatiAttesi')}__}"></div>
+										</div>
+									</div>
 
 								<div class="divider-dashed"></div>
 
@@ -880,7 +885,7 @@
 										<span th:text="#{label.evento_sponsorizzato_radio}">L'Evento è sponsorizzato?</span>
 										<span class="required">*</span>
 									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 										<div class="radio">
 											<label>
 												<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${true}" />
@@ -895,8 +900,11 @@
 										</div>
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzato')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.eventoSponsorizzato')}__}"></div>
+									<div class="col-xs-1">
+										<div th:attr="data-original-title=#{label.info_sponsor_evento}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+									</div>
 								</div>
-								<div class="sponsor-si" style="display: none;">
+								<div class="sponsor-si">
 									<div class="no-padding item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')} ? 'bad'">
 										<div class="col-lg-9 col-md-11 col-sm-11 col-xs-12"></div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.sponsors')}__}"></div>
@@ -1028,7 +1036,7 @@
 										<span th:text="#{label.si_avvale_di_partner}">L’evento si avvale di partner?</span>
 										<span class="required">*</span>
 									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 										<div class="radio">
 											<label>
 												<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${true}" />
@@ -1043,6 +1051,9 @@
 										</div>
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoAvvalePartner')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.eventoAvvalePartner')}__}"></div>
+									<div class="col-xs-1">
+										<div th:attr="data-original-title=#{label.info_partner_evento}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+									</div>
 								</div>
 								<div class="no-padding partner-si item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.partners')} ? 'bad'">
 									<div class="col-lg-9 col-md-11 col-sm-11 col-xs-12"></div>
@@ -1256,13 +1267,18 @@
 				}
 
 				/********************* PROGRAMMA GIORNALIERO ****************************/
-				function openAddAttivitaTo(target){
+				function openAddAttivitaTo(target,modificaElemento){
 					$('#targetTableAttivitaFAD').val(target);
+					$('#modificaElementoAttivitaFAD').val(modificaElemento);
 				}
 
 				function closeModaleAddAttivitaTo(){
 					$("#add-attivitaFAD-modal .close").click();
 					$("#add-attivitaFAD-modal form")[0].reset();
+
+					$('#tempAttivitaFAD\\.orarioInizio').val('');
+					$('#tempAttivitaFAD\\.orarioFine').val('');
+					$('#tempAttivitaFAD\\.argomento').val('');
 
 					$.each($("#add-attivitaFAD-modal .selectpicker"),function(){
 						$(this).selectpicker('val','');
@@ -1291,6 +1307,29 @@
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
 
 					$("#" + target).load(url);
+				}
+
+				//modifica Attivita
+				function modificaAttivitaFrom(target,caller){
+					var modificaElemento = $(caller).parent().parent().data('row-id');
+					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					if(modificaElemento == undefined)
+						modificaElemento = 0;
+
+					sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento);
+				}
+
+				function sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento){
+					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
+					$.get(url).done(function(data) {
+						$('#container-' + target).html(data);
+						reInitModaleAddAttivita();
+						$('#add-attivita').click();
+						openAddAttivitaTo(target,modificaElemento);
+					  })
+				  	.fail(function() {
+				    	alert( "error" );
+				 	 })
 				}
 
 				//********************************************************************************
@@ -1385,7 +1424,7 @@
 
 				function removeAllFromSelectAttivitaFAD(target) {
 					$.each($("#" + target + " option"), function() {
-						this.remove();
+						$(this).remove();
 					})
 					$('#' + target).selectpicker('refresh');
 				}

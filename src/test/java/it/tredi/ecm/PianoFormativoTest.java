@@ -87,21 +87,25 @@ public class PianoFormativoTest {
 	//@Before
 	@Transactional
 	public void init() {
-		Account account = new Account();
-		account.setUsername("junit");
-		account.setPassword("junit");
-		account.setEmail("junit@3di.it");
-		accountRepository.save(account);
 		
-		account = accountRepository.findOne(account.getId());
 		
 		Provider provider = new Provider();
 		provider.setDenominazioneLegale("VR 46");
 		provider.setPartitaIva("00464646460");
 		provider.setTipoOrganizzatore(TipoOrganizzatore.PRIVATI);
 		provider.setStatus(ProviderStatoEnum.INSERITO);
-		provider.setAccount(account);
+		//provider.setAccount(account);
 		providerService.save(provider);
+
+		Account account = new Account();
+		account.setUsername("junit");
+		account.setPassword("junit");
+		account.setEmail("junit@3di.it");
+		account.setNome("Amministratore");
+		account.setCognome("Provider");		
+		account.setProvider(provider);
+		accountRepository.save(account);
+		//account = accountRepository.findOne(account.getId());
 		
 		Accreditamento accreditamento = null;
 		
@@ -207,10 +211,4 @@ public class PianoFormativoTest {
 		for(it.tredi.ecm.dao.entity.File f :  provider.getFiles())
 			System.out.println(f.getNomeFile());
 	}
-	
-	@Test
-	public void testPagamento(){
-		pagamentoService.getAllProviderNotPagamentoEffettuato(new Integer(2017));
-	}
-	
 }

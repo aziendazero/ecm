@@ -86,20 +86,23 @@ public class PersonaTest {
 		persona.setRuolo(Ruolo.RESPONSABILE_SEGRETERIA);
 		personaService.save(persona);
 		
-		Account account = new Account();
-		account.setUsername("junit");
-		account.setPassword("junit");
-		account.setEmail("junit@3di.it");
-		accountRepository.save(account);
-		
 		Provider provider = new Provider();
 		provider.setDenominazioneLegale("VR 46");
 		provider.setPartitaIva("00464646460");
 		provider.setTipoOrganizzatore(TipoOrganizzatore.PRIVATI);
 		provider.setStatus(ProviderStatoEnum.INSERITO);
 		provider.addPersona(persona);
-		provider.setAccount(account);
+		//provider.setAccount(account);
 		providerService.save(provider);
+		
+		Account account = new Account();
+		account.setUsername("junit");
+		account.setPassword("junit");
+		account.setEmail("junit@3di.it");
+		account.setNome("Amministratore");
+		account.setCognome("Provider");
+		account.setProvider(provider);
+		accountRepository.save(account);
 		
 		personaService.save(persona);
 		

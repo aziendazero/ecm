@@ -14,6 +14,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -65,6 +66,10 @@ public class Account extends BaseEntity{
 	}
 			)
 	private Set<Profile> profiles = new HashSet<Profile>();
+	
+	@ManyToOne
+	@JoinColumn(name = "provider_id")	
+	private Provider provider;
 
 	public boolean isPasswordExpired(){
 		if(dataScadenzaPassword == null || !dataScadenzaPassword.isAfter(LocalDate.now()))
@@ -106,12 +111,37 @@ public class Account extends BaseEntity{
 	}
 
 	public String getFullName(){
-		String c = "";
-		String n = "";
-		if(cognome != null) c = cognome;
-		if(nome != null) n = nome;
+		String toRet = "";
+		if(nome != null) 
+			toRet = nome;
 
-		return n + " " + c;
+		if(cognome != null) {
+			if(!toRet.isEmpty())
+				toRet += " ";
+			toRet += cognome;
+		}
+		
+		if(provider != null) {
+			if(!toRet.isEmpty())
+				toRet += " ";
+			toRet += "(" + provider.getDenominazioneLegale() + ")";
+		}
+
+		return toRet;
+	}
+	
+	public String getFullNameBase(){
+		String toRet = "";
+		if(nome != null) 
+			toRet = nome;
+
+		if(cognome != null) {
+			if(!toRet.isEmpty())
+				toRet += " ";
+			toRet += cognome;
+		}
+		
+		return toRet;
 	}
 
 	public boolean isSegreteria() {
@@ -124,9 +154,11 @@ public class Account extends BaseEntity{
 	}
 
 	public boolean isProvider() {
-		for (Profile p : profiles){
-			if(p.getProfileEnum().equals(ProfileEnum.PROVIDER)){
-				return true;
+		if(provider != null) {
+			for (Profile p : profiles){
+				if(p.getProfileEnum().equals(ProfileEnum.PROVIDER)){
+					return true;
+				}
 			}
 		}
 		return false;

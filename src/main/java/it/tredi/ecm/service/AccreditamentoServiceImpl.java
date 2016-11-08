@@ -42,12 +42,14 @@ import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
 import it.tredi.ecm.service.bean.CurrentUser;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 
 @Service
 public class AccreditamentoServiceImpl implements AccreditamentoService {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoServiceImpl.class);
 	private static long millisecondiInGiorno = 86400000;
+	private static long millisecondiInMinuto = 60000;
 
 	@Autowired private AccreditamentoRepository accreditamentoRepository;
 
@@ -56,6 +58,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AccountRepository accountRepository;
 	@Autowired private EmailService emailService;
 	@Autowired private AccountService accountService;
+//	@Autowired private PagamentoService pagamentoService;
+	@Autowired private QuotaAnnualeService quotaAnnualeService;
 
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
@@ -69,6 +73,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private PdfService pdfService;
 
 	@Autowired private MessageSource messageSource;
+	
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -328,6 +334,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			valutazioneReferee.setAccreditamento(accreditamento);
 			valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
 			valutazioneService.save(valutazioneReferee);
+			emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
 		}
 
@@ -370,6 +377,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, a.getId());
 				valutazione.setDataValutazione(null);
 				valutazioneService.save(valutazione);
+				emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			}
 		}
 
@@ -398,6 +406,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamentoRepository.save(accreditamento);
 
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
+		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
+			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
+			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
+		}
 		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
 	}
 
@@ -410,6 +422,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamentoRepository.save(accreditamento);
 
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
+		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
+			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
+			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
+		}
 		workflowService.eseguiTaskRichiestaPreavvisoRigettoForCurrentUser(accreditamento, timerIntegrazioneRigetto);
 	}
 
@@ -475,7 +491,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public DatiAccreditamento getDatiAccreditamentoForAccreditamento(Long accreditamentoId) throws Exception{
+	public DatiAccreditamento getDatiAccreditamentoForAccreditamentoId(Long accreditamentoId) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Recupero datiAccreditamento per la domanda " + accreditamentoId));
 		DatiAccreditamento datiAccreditamento = accreditamentoRepository.getDatiAccreditamentoForAccreditamento(accreditamentoId);
 		if(datiAccreditamento == null)
@@ -818,13 +834,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto()){
 			if(currentUser.isProvider()){
 				Long providerId = getProviderIdForAccreditamento(accreditamentoId);
-				Long accountIdForProvider = providerService.getAccountIdForProvider(providerId);
-				if(currentUser.getAccount().getId().equals(accountIdForProvider)){
+				if(currentUser.getAccount().getProvider() != null &&  currentUser.getAccount().getProvider().getId().equals(providerId)){
 					TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
 					if(task == null){
 						return false;
 					}
-
 					return true;
 				}
 				return false;
@@ -835,6 +849,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception  {
+		changeState(accreditamentoId, stato, null);
+	}
+	
+	@Override
+	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception  {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
 
 		//In alcuni stati devono essere effettuate altre operazioni
@@ -930,6 +949,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					valutazioneService.delete(v);
 				}
 			}
+		} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
+			if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE)
+				accreditamento.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
+			else if(accreditamento.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+				accreditamento.setPreavvisoRigettoEseguitoDaProvider(eseguitoDaUtente);
 		}
 
 		accreditamento.setStato(stato);
@@ -990,15 +1014,24 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public void inviaValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
+	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
 		workflowService.eseguiTaskTaskInserimentoEsitoOdgForUser(curentUser, getAccreditamento(accreditamentoId), stato);
 		Provider provider = providerService.getProvider(getProviderIdForAccreditamento(accreditamentoId));
-		if(stato == AccreditamentoStatoEnum.ACCREDITATO)
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO){
+			Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+			if(accreditamento.isProvvisorio()) {
 			provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
+				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(4));
+			} else {
+				provider.setStatus(ProviderStatoEnum.ACCREDITATO_STANDARD);
+				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(2));
+			}
+			save(accreditamento);
+		}
 		if(stato == AccreditamentoStatoEnum.DINIEGO)
 			provider.setStatus(ProviderStatoEnum.DINIEGO);
-		//TODO pagamento provider
-
+		providerService.save(provider);
+		quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);
 	}
 
 	@Override

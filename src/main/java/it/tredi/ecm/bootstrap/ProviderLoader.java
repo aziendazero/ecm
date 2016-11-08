@@ -34,7 +34,7 @@ import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
 
 @Component
-@org.springframework.context.annotation.Profile({"dev","simone","abarducci"})
+@org.springframework.context.annotation.Profile({"dev","simone","abarducci", "tom"})
 public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ProviderLoader.class);
 
@@ -104,12 +104,17 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			provider.setCodiceCogeaps("ORG213");
 
 			provider.setStatus(ProviderStatoEnum.INSERITO);
-			provider.setAccount(account);
+			//provider.setAccount(account);
 			provider.addPersona(legale);
 			provider.addPersona(richiedente);
 			provider.addSede(sedeLegale);
 			legale.getAnagrafica().setTelefono("123456");
 			providerRepository.save(provider);
+			
+			account.setProvider(provider);
+			account.setNome("Amministratore");
+			account.setCognome("Provider");
+			accountRepository.save(account);
 
 			Accreditamento accreditamento = null;
 			try{

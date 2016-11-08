@@ -13,6 +13,7 @@ div.left_col {
 
 h3.profile {
 	white-space:normal;
+	min-height: 75px;
 }
 
 body.nav-sm .container.body .right_col {

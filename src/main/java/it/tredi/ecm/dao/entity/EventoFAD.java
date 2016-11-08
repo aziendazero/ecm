@@ -12,12 +12,11 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
 
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +37,8 @@ public class EventoFAD extends Evento{
 	private String razionale;
 	@ElementCollection
 	private Set<String> risultatiAttesi = new HashSet<String>();
-	@ElementCollection
+
+	@ElementCollection(fetch = FetchType.EAGER) //TODO fastfix per demo.. sarebbe da utilizzare lazy con la annotazione in web.xml(?)
 	@JoinColumn(name = "programma_fad_id")
 	private List<DettaglioAttivitaFAD> programmaFAD = new ArrayList<DettaglioAttivitaFAD>();
 
@@ -58,7 +58,7 @@ public class EventoFAD extends Evento{
 	private String userId;
 	private String password;
 	private String url;
-	
+
 
 	@Embedded
 	private RiepilogoFAD riepilogoFAD = new RiepilogoFAD();

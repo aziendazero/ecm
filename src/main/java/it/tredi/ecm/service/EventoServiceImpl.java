@@ -17,6 +17,8 @@ import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.cogeaps.CogeapsCaricaResponse;
@@ -27,17 +29,20 @@ import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
+import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
+import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.FileData;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
-import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -45,8 +50,8 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
+import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
@@ -54,6 +59,7 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
@@ -63,7 +69,6 @@ import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
-import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Service
@@ -77,18 +82,12 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
 	@Autowired private SponsorRepository sponsorRepository;
 	@Autowired private PartnerRepository partnerRepository;
+	@Autowired private EventoPianoFormativoRepository eventoPianoFormativoRepository;
 
-	@Autowired
-	private RendicontazioneInviataService rendicontazioneInviataService;
-
-	@Autowired
-	private FileService fileService;
-
-	@Autowired
-	private CogeapsWsRestClient cogeapsWsRestClient;
-
-	@Autowired
-	private EcmProperties ecmProperties;
+	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
+	@Autowired private FileService fileService;
+	@Autowired private CogeapsWsRestClient cogeapsWsRestClient;
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -111,12 +110,28 @@ public class EventoServiceImpl implements EventoService {
 			evento.buildPrefix();
 		}
 		eventoRepository.save(evento);
+
+		//se attuazione di evento del piano formativo aggiorna il flag
+		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
+			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
+			eventoPianoFormativo.setAttuato(true);
+			eventoPianoFormativoRepository.save(eventoPianoFormativo);
+		}
 	}
 
 	@Override
 	@Transactional
 	public void delete(Long id) {
 		LOGGER.debug("Eliminazione evento:" + id);
+
+		//controllo se attuazione di un evento del piano formativo
+		Evento evento = getEvento(id);
+		if(evento.isEventoDaPianoFormativo() && evento.getEventoPianoFormativo().isAttuato()) {
+			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
+			eventoPianoFormativo.setAttuato(false);
+			eventoPianoFormativoRepository.save(eventoPianoFormativo);
+		}
+
 		eventoRepository.delete(id);
 	}
 
@@ -195,17 +210,16 @@ public class EventoServiceImpl implements EventoService {
 		return true;
 	}
 
-
 	/*	SALVATAGGIO	*/
 	@Override
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) throws Exception{
 		Evento evento = eventoWrapper.getEvento();
 
 		calculateAutoCompilingData(eventoWrapper);
-		
+
 		if(evento instanceof EventoRES){
 			EventoRES eventoRES = ((EventoRES) evento);
-			
+
 			//date intermedie e programma giornaliero
 			eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().updateEventoRES();
 
@@ -234,14 +248,14 @@ public class EventoServiceImpl implements EventoService {
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				eventoRES.setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
-			
+
 			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
 			if(((EventoRES) evento).isConfermatiCrediti()){
 				evento.setCrediti(eventoWrapper.getCreditiProposti());
 			}
 		}else if(evento instanceof EventoFSC){
 			retrieveProgrammaAndAddJoin(eventoWrapper);
-			
+
 			if(eventoWrapper.getRiepilogoRuoliFSC() != null) {
 				((EventoFSC) evento).getRiepilogoRuoli().clear();
 				((EventoFSC) evento).getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());
@@ -283,7 +297,7 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD) evento).getVerificaApprendimento().addAll(nuoviVAF);
 
 			retrieveProgrammaAndAddJoin(eventoWrapper);
-			
+
 			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
 			if(((EventoFAD) evento).getConfermatiCrediti().booleanValue()){
 				evento.setCrediti(eventoWrapper.getCreditiProposti());
@@ -470,12 +484,12 @@ public class EventoServiceImpl implements EventoService {
 
 			//mappa ruoli ore
 			eventoWrapper.initMappaRuoloOreFSC();
-			
+
 			//Riepilogo RuoloOreFSC
 			eventoWrapper.initRiepilogoRuoliFSC();
 			for(RiepilogoRuoliFSC r : ((EventoFSC) evento).getRiepilogoRuoli())
 				eventoWrapper.getRiepilogoRuoliFSC().put(r.getRuolo(), r);
-			
+
 		}else if(evento instanceof EventoFAD){
 			//Docenti
 			eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
@@ -548,8 +562,8 @@ public class EventoServiceImpl implements EventoService {
 
 		return eventoWrapper;
 	}
-	
-	
+
+
 	@Override
 	public void calculateAutoCompilingData(EventoWrapper eventoWrapper) throws Exception {
 		calcoloDurataEvento(eventoWrapper);
@@ -561,11 +575,11 @@ public class EventoServiceImpl implements EventoService {
 		float durata = 0;
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
-			
+
 			//durata = calcoloDurataEventoRES(eventoWrapper.getProgrammaEventoRES());
 			durata = calcoloDurataEventoRES(eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values());
-			
-			
+
+
 			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			durata = calcoloDurataEventoFSC(eventoWrapper.getProgrammaEventoFSC(), eventoWrapper.getRiepilogoRuoliFSC());
@@ -602,7 +616,7 @@ public class EventoServiceImpl implements EventoService {
 		return durata;
 	}
 	 */
-	
+
 	private float calcoloDurataEventoRES(Collection<EventoRESProgrammaGiornalieroWrapper> programma){
 		float durata = 0;
 
@@ -620,10 +634,10 @@ public class EventoServiceImpl implements EventoService {
 
 	private float calcoloDurataEventoFSC(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum, RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		float durata = 0;
-		
+
 		prepareRiepilogoRuoli(programma, riepilogoRuoliFSC);
 		durata = getMaxDurataPatecipanti(riepilogoRuoliFSC);
-		
+
 		durata = Utils.getRoundedFloatValue(durata);
 		return durata;
 	}
@@ -636,7 +650,7 @@ public class EventoServiceImpl implements EventoService {
 
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getTempoDedicato() > max)
+				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getTempoDedicato() > max)
 					max = pairs.getValue().getTempoDedicato();
 			 }
 		}
@@ -647,15 +661,15 @@ public class EventoServiceImpl implements EventoService {
 	private float calcoloDurataEventoFAD(List<DettaglioAttivitaFAD> programma, RiepilogoFAD riepilogoFAD){
 		float durata = 0;
 		riepilogoFAD.clear();
-		
+
 		if(programma != null){
 			for(DettaglioAttivitaFAD dett : programma){
 				durata += dett.getOreAttivita();
-				
+
 				//popolo la lista di obiettivi
 				if(dett.getObiettivoFormativo() != null)
 					riepilogoFAD.getObiettivi().add(dett.getObiettivoFormativo());
-				
+
 				//popolo la lista di metodologie con annesso calcolo di ore
 				if(dett.getMetodologiaDidattica() != null){
 					if(riepilogoFAD.getMetodologie().containsKey(dett.getMetodologiaDidattica())){
@@ -698,25 +712,25 @@ public class EventoServiceImpl implements EventoService {
 		return crediti;
 	}
 
-	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, int numeroPartecipanti, RiepilogoRES riepilogoRES){
+	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, Integer numeroPartecipanti, RiepilogoRES riepilogoRES){
 		float crediti = 0.0f;
 		float oreFrontale = 0f;
 		float oreInterattiva = 0f;
-		
+
 		riepilogoRES.clear();
 
 		for(EventoRESProgrammaGiornalieroWrapper progrGio : programma) {
 			for(DettaglioAttivitaRES a : progrGio.getProgramma().getProgramma()){
 				if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
 					oreFrontale += a.getOreAttivita();
-				}else{
+				}else if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA){
 					oreInterattiva += a.getOreAttivita();
 				}
-				
+
 				//popolo la lista di obiettivi formativi utilizzati
 				if(a.getObiettivoFormativo() != null)
 					riepilogoRES.getObiettivi().add(a.getObiettivoFormativo());
-				
+
 				//popolo la lista di metodologie con annesso calcolo di ore
 				if(a.getMetodologiaDidattica() != null){
 					if(riepilogoRES.getMetodologie().containsKey(a.getMetodologiaDidattica())){
@@ -728,7 +742,7 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 		}
-		
+
 		riepilogoRES.setTotaleOreFrontali(oreFrontale);
 		riepilogoRES.setTotaleOreInterattive(oreInterattiva);
 
@@ -749,11 +763,13 @@ public class EventoServiceImpl implements EventoService {
 			float creditiInterattiva = 0f;
 
 			//metodologia frontale
+			numeroPartecipanti = numeroPartecipanti!= null ? numeroPartecipanti.intValue() : 0;
+
 			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
-				creditiFrontale = oreFrontale * 1.0f;
-				creditiFrontale = (creditiFrontale + (creditiFrontale*0.20f));
+				creditiFrontale = oreFrontale * 1.25f;
 			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
-				//TODO 25% decrescente
+				float creditiDecrescenti = getQuotaFasciaDecrescenteForRES(numeroPartecipanti);
+				creditiFrontale = oreFrontale * creditiDecrescenti;
 			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){
 				creditiFrontale = oreFrontale * 1.0f;
 			}else if(numeroPartecipanti >= 101 && numeroPartecipanti <= 150){
@@ -769,22 +785,71 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		crediti = Utils.getRoundedFloatValue(crediti);
-		
+
 		return crediti;
 	}
-	
+
+	private float getQuotaFasciaDecrescenteForRES(int numeroPartecipanti){
+		switch (numeroPartecipanti){
+			case 21: return 1.24f;
+			case 22: return 1.23f;
+			case 23: return 1.23f;
+			case 24: return 1.22f;
+			case 25: return 1.21f;
+			case 26: return 1.20f;
+			case 27: return 1.19f;
+			case 28: return 1.19f;
+			case 29: return 1.18f;
+			case 30: return 1.17f;
+			case 31: return 1.16f;
+			case 32: return 1.15f;
+			case 33: return 1.15f;
+			case 34: return 1.14f;
+			case 35: return 1.13f;
+			case 36: return 1.12f;
+			case 37: return 1.11f;
+			case 38: return 1.10f;
+			case 39: return 1.10f;
+			case 40: return 1.08f;
+			case 41: return 1.08f;
+			case 42: return 1.07f;
+			case 43: return 1.06f;
+			case 44: return 1.06f;
+			case 45: return 1.05f;
+			case 46: return 1.04f;
+			case 47: return 1.03f;
+			case 48: return 1.02f;
+			case 49: return 1.02f;
+			case 50: return 1.01f;
+
+			default: return 0.0f;
+		}
+
+	}
+
+	private float ricercaDicotomica(int left, int right, int numero){
+		int val = (left + right)/2;
+		if(val == numero)
+			return numero;
+		else if(val > numero)
+			return ricercaDicotomica(left, val, numero);
+		else
+			return ricercaDicotomica(val, right, numero);
+
+	}
+
 	private float calcoloCreditiFormativiEventoFSC(TipologiaEventoFSCEnum tipologiaEvento, EventoWrapper wrapper){
 		float crediti = 0.0f;
-		
+
 		calcolaCreditiPartecipantiFSC(tipologiaEvento, wrapper.getRiepilogoRuoliFSC());
 		crediti = getMaxCreditiPartecipantiFSC(wrapper.getRiepilogoRuoliFSC());
 		calcolaCreditiAltriRuoliFSC(tipologiaEvento, wrapper.getRiepilogoRuoliFSC(),crediti);
-		
+
 		return crediti;
 	}
-	
+
 	/*
-	 * Ragruppo i Ruoli coinvolti in una mappa <Ruolo,RiepilogoRuoloOreFSC> 
+	 * Ragruppo i Ruoli coinvolti in una mappa <Ruolo,RiepilogoRuoloOreFSC>
 	 * dove il RiepilogoRuoloOreFSC avra la somma delle ore dei ruoli
 	 * */
 	private void prepareRiepilogoRuoli(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
@@ -793,25 +858,30 @@ public class EventoServiceImpl implements EventoService {
 			riepilogoRuoliFSC.forEach( (k,v) -> {
 				v.setTempoDedicato(0f);
 				v.setCrediti(0f);
+				if(v.getRuolo() == null)
+					riepilogoRuoliFSC.remove(k);
 			});
-			
+//			riepilogoRuoliFSC.clear();
+
 			for(FaseAzioniRuoliEventoFSCTypeA fase : programma)
 				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli())
 					for(RuoloOreFSC ruolo : azione.getRuoli())
 					{
 						if(riepilogoRuoliFSC.containsKey(ruolo.getRuolo())){
 							RiepilogoRuoliFSC r = riepilogoRuoliFSC.get(ruolo.getRuolo());
-							r.addTempo(ruolo.getTempoDedicato());
+							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
+							r.addTempo(tempoDedicato);
 						}else{
-							RiepilogoRuoliFSC r = new RiepilogoRuoliFSC(ruolo.getRuolo(), ruolo.getTempoDedicato(), 0.0f);
+							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
+							RiepilogoRuoliFSC r = new RiepilogoRuoliFSC(ruolo.getRuolo(), tempoDedicato, 0.0f);
 							riepilogoRuoliFSC.put(ruolo.getRuolo(), r);
 						}
 					}
 		}
 	}
-	
+
 	/*
-	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> calcolo i crediti dei PARTECIPANTI 
+	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> calcolo i crediti dei PARTECIPANTI
 	 * */
 	private void calcolaCreditiPartecipantiFSC(TipologiaEventoFSCEnum tipologia, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		if(riepilogoRuoliFSC != null){
@@ -819,12 +889,12 @@ public class EventoServiceImpl implements EventoService {
 
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE)
+				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE)
 					pairs.getValue().calcolaCrediti(tipologia,0f);
 			 }
 		}
 	}
-	
+
 	/*
 	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> calcolo i crediti degli altri RUOLI
 	 * */
@@ -834,12 +904,12 @@ public class EventoServiceImpl implements EventoService {
 
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()).getRuoloBase() != RuoloFSCBaseEnum.PARTECIPANTE)
+				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() != RuoloFSCBaseEnum.PARTECIPANTE)
 					pairs.getValue().calcolaCrediti(tipologia,maxValue);
 			 }
 		}
 	}
-	
+
 	/*
 	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> individuo il valore MAX numero crediti attribuito a un PARTECIPANTE
 	 * */
@@ -851,23 +921,23 @@ public class EventoServiceImpl implements EventoService {
 
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getCrediti() > max)
+				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getCrediti() > max)
 					max = pairs.getValue().getCrediti();
 			 }
 		}
 
 		return max;
 	}
-	
+
 
 	private float calcoloCreditiFormativiEventoFAD(float durata, Boolean conTutor){
 		float crediti = 0.0f;
-		
+
 		if(conTutor != null && conTutor)
 			crediti = durata * 1.5f;
 		else
 			crediti = durata * 1.0f;
-		
+
 		crediti = Utils.getRoundedFloatValue(crediti);
 		return crediti;
 	}
@@ -890,16 +960,244 @@ public class EventoServiceImpl implements EventoService {
 			}
 			*/
 		}else if(evento instanceof EventoFSC){
-			((EventoFSC)evento).setFasiAzioniRuoli(eventoWrapper.getProgrammaEventoFSC());
 			if(eventoWrapper.getProgrammaEventoFSC() != null){
+				((EventoFSC)evento).setFasiAzioniRuoli(eventoWrapper.getProgrammaEventoFSC());
 				for(FaseAzioniRuoliEventoFSCTypeA fase : ((EventoFSC)evento).getFasiAzioniRuoli()){
 					fase.setEvento(((EventoFSC)evento));
 				}
-
 			}
 		}else if(evento instanceof EventoFAD){
-			((EventoFAD) evento).setProgrammaFAD(eventoWrapper.getProgrammaEventoFAD());
+			if(eventoWrapper.getProgrammaEventoFAD() != null){
+				((EventoFAD) evento).setProgrammaFAD(eventoWrapper.getProgrammaEventoFAD());
+			}else{
+				((EventoFAD) evento).setProgrammaFAD(new ArrayList<DettaglioAttivitaFAD>());
+			}
 		}
 	}
+
+	@Override
+	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero tutti gli eventi del piano formativo rieditabili per il provider: " + providerId));
+		return eventoRepository.findAllByProviderIdAndStatoNotAndDataInizioBefore(providerId, EventoStatoEnum.BOZZA, LocalDate.now());
+	}
+
+	//TODO sta roba non funzionerà mai
+	@Override
+	@Transactional
+	public Evento prepareRiedizioneEvento(Evento eventoPadre) throws Exception {
+		Evento riedizione;
+		switch(eventoPadre.getProceduraFormativa()){
+			case FAD: riedizione = new EventoFAD(); break;
+			case RES: riedizione = new EventoRES(); break;
+			case FSC: riedizione = new EventoFSC(); break;
+			default: riedizione = new Evento(); break;
+		}
+
+		//INIZIO setting delle info dell'Evento generale ****************************************************************************************
+
+		riedizione.setPrefix(eventoPadre.getPrefix());
+		int ultimaEdizioneEvento = getLastEdizioneEventoByPrefix(eventoPadre.getPrefix());
+		if(ultimaEdizioneEvento != -1)
+			LOGGER.debug(Utils.getLogMessage("Recupero ultima edizione: success - " + ultimaEdizioneEvento));
+		else
+			throw new Exception("Errore nel calcolo dell'edizione");
+		riedizione.setEdizione(++ultimaEdizioneEvento);
+		LOGGER.debug(Utils.getLogMessage("Codice identificativo evento rieditato: " + riedizione.getCodiceIdentificativo()));
+
+		riedizione.setProceduraFormativa(eventoPadre.getProceduraFormativa());
+		riedizione.setTitolo(eventoPadre.getTitolo());
+		riedizione.setObiettivoNazionale(eventoPadre.getObiettivoNazionale());
+		riedizione.setObiettivoRegionale(eventoPadre.getObiettivoRegionale());
+		riedizione.setPianoFormativo(eventoPadre.getPianoFormativo());
+		riedizione.setProvider(eventoPadre.getProvider());
+		riedizione.setAccreditamento(eventoPadre.getAccreditamento());
+		riedizione.setProfessioniEvento(eventoPadre.getProfessioniEvento());
+		riedizione.setDiscipline(eventoPadre.getDiscipline());
+		riedizione.setEventoPadre(eventoPadre);
+		riedizione.setDestinatariEvento(eventoPadre.getDestinatariEvento());
+		riedizione.setContenutiEvento(eventoPadre.getContenutiEvento());
+		riedizione.setDataInizio(eventoPadre.getDataInizio());
+		riedizione.setDataFine(eventoPadre.getDataFine());
+		riedizione.setResponsabili(copyPersonaListEvento(eventoPadre.getResponsabili()));
+		riedizione.setNumeroPartecipanti(eventoPadre.getNumeroPartecipanti());
+		riedizione.setBrochureEvento(eventoPadre.getBrochureEvento());
+		riedizione.setResponsabileSegreteria(copyPersonaFullEvento(eventoPadre.getResponsabileSegreteria()));
+		riedizione.setQuotaPartecipazione(eventoPadre.getQuotaPartecipazione());
+		riedizione.setEventoSponsorizzato(eventoPadre.getEventoSponsorizzato());
+		riedizione.setSponsors(copySponsorListEvento(eventoPadre.getSponsors()));
+		riedizione.setEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(eventoPadre.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia());
+		riedizione.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(eventoPadre.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia());
+		riedizione.setAutocertificazioneAutorizzazioneMinisteroSalute(eventoPadre.getAutocertificazioneAutorizzazioneMinisteroSalute());
+		riedizione.setAltreFormeFinanziamento(eventoPadre.getAltreFormeFinanziamento());
+		riedizione.setAutocertificazioneAssenzaFinanziamenti(eventoPadre.getAutocertificazioneAssenzaFinanziamenti());
+		riedizione.setContrattiAccordiConvenzioni(eventoPadre.getContrattiAccordiConvenzioni());
+		riedizione.setEventoAvvalePartner(eventoPadre.getEventoAvvalePartner());
+		riedizione.setPartners(copyPartnerListEvento(eventoPadre.getPartners()));
+		riedizione.setDichiarazioneAssenzaConflittoInteresse(eventoPadre.getDichiarazioneAssenzaConflittoInteresse());
+
+		//FINE setting delle info dell'Evento generale ******************************************************************************************
+
+		//INIZIO setting delle info dell'Evento particolari alla proceduraFormativa +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+		if(riedizione instanceof EventoFAD) {
+
+			((EventoFAD) riedizione).setTipologiaEvento(((EventoFAD) eventoPadre).getTipologiaEvento());
+			((EventoFAD) riedizione).setDocenti(copyPersonaListEvento(((EventoFAD) eventoPadre).getDocenti()));
+			((EventoFAD) riedizione).setRazionale(((EventoFAD) eventoPadre).getRazionale());
+			((EventoFAD) riedizione).setRisultatiAttesi(((EventoFAD) eventoPadre).getRisultatiAttesi());
+			((EventoFAD) riedizione).setProgrammaFAD(copyProgrammaEventoFAD(((EventoFAD) eventoPadre).getProgrammaFAD(), ((EventoFAD) riedizione).getDocenti()));
+			((EventoFAD) riedizione).setVerificaApprendimento(copyListaVerificaApprendimentoFAD(((EventoFAD) eventoPadre).getVerificaApprendimento()));
+			((EventoFAD) riedizione).setConfermatiCrediti(((EventoFAD) eventoPadre).getConfermatiCrediti());
+			((EventoFAD) riedizione).setSupportoSvoltoDaEsperto(((EventoFAD) eventoPadre).getSupportoSvoltoDaEsperto());
+			((EventoFAD) riedizione).setMaterialeDurevoleRilasciatoAiPratecipanti(((EventoFAD) eventoPadre).getMaterialeDurevoleRilasciatoAiPratecipanti());;
+			((EventoFAD) riedizione).setRequisitiHardwareSoftware(((EventoFAD) eventoPadre).getRequisitiHardwareSoftware());;
+			((EventoFAD) riedizione).setUserId(((EventoFAD) eventoPadre).getUserId());
+			((EventoFAD) riedizione).setPassword(((EventoFAD) eventoPadre).getPassword());
+			((EventoFAD) riedizione).setUrl(((EventoFAD) eventoPadre).getUrl());
+
+		}
+
+		//FINE setting delle info dell'Evento particolari alla proceduraFormativa +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+		return riedizione;
+
+	}
+
+	@Override
+	public int getLastEdizioneEventoByPrefix(String prefix) {
+		Page<Integer> result = eventoRepository.findLastEdizioneOfEventoByPrefix(prefix, new PageRequest(0, 1));
+		List<Integer> edizioneL = result.getContent();
+		int edizione = edizioneL.get(0) != null ? edizioneL.get(0) : -1;
+		return edizione;
+	}
+
+	@Override
+	public List<PersonaEvento> copyPersonaListEvento(List<PersonaEvento> listaPersone) {
+		List<PersonaEvento> listaCopiata = new ArrayList<PersonaEvento>();
+		for(PersonaEvento pe : listaPersone) {
+			listaCopiata.add(copyPersonaEvento(pe));
+		}
+		return listaCopiata;
+	}
+
+	private PersonaEvento copyPersonaEvento(PersonaEvento persona) {
+		PersonaEvento personaCopiata = new PersonaEvento();
+		personaCopiata.setAnagrafica(persona.getAnagrafica());
+		//gestioneFile
+		personaCopiata.getAnagrafica().setCv(copiaFile(persona.getAnagrafica().getCv()));
+		personaCopiata.setQualifica(persona.getQualifica());
+		personaCopiata.setRuolo(persona.getRuolo());
+		personaCopiata.setTitolare(persona.getTitolare());
+		personaEventoRepository.save(personaCopiata);
+		return personaCopiata;
+	}
+
+	private File copiaFile(File file) {
+		File fileCopiato = new File();
+		fileCopiato.setData(file.getData());
+		fileCopiato.setNomeFile(file.getNomeFile());
+		fileCopiato.setTipo(file.getTipo());
+		fileCopiato.setFileData(copiaFileData(file.getFileData()));
+		fileService.save(fileCopiato);
+		return fileCopiato;
+	}
+
+	private List<FileData> copiaFileData(List<FileData> listaFileData) {
+		List<FileData> listaFileDataCopiata = new ArrayList<FileData>();
+		for (FileData fd : listaFileData) {
+			FileData fdnew = new FileData();
+			fdnew.setData(fd.getData());
+			listaFileDataCopiata.add(fdnew);
+		}
+		return listaFileDataCopiata;
+	}
+
+	@Override
+	public PersonaFullEvento copyPersonaFullEvento(PersonaFullEvento personaFull) {
+		PersonaFullEvento personaFullCopiata = new PersonaFullEvento();
+		personaFullCopiata.setAnagrafica(personaFull.getAnagrafica());
+//		personaFullEventoRepository.save(personaFullCopiata);
+		return personaFullCopiata;
+	}
+
+	@Override
+	public Set<Sponsor> copySponsorListEvento(Set<Sponsor> sponsors) {
+		Set<Sponsor> setCopiato = new HashSet<Sponsor>();
+		for(Sponsor s : sponsors) {
+			setCopiato.add(copySponsor(s));
+		}
+		return setCopiato;
+	}
+
+	private Sponsor copySponsor(Sponsor sponsor) {
+		Sponsor sponsorCopiato = new Sponsor();
+		sponsorCopiato.setName(sponsor.getName());
+		sponsorCopiato.setSponsorFile(sponsor.getSponsorFile());
+		sponsorRepository.save(sponsorCopiato);
+		return sponsorCopiato;
+	}
+
+	@Override
+	public Set<Partner> copyPartnerListEvento(Set<Partner> partners) {
+		Set<Partner> setCopiato = new HashSet<Partner>();
+		for(Partner s : partners) {
+			setCopiato.add(copyPartner(s));
+		}
+		return setCopiato;
+	}
+
+	private Partner copyPartner(Partner partner) {
+		Partner partnerCopiato = new Partner();
+		partnerCopiato.setName(partner.getName());
+		partnerCopiato.setPartnerFile(partner.getPartnerFile());
+		partnerRepository.save(partnerCopiato);
+		return partnerCopiato;
+	}
+
+	@Override
+	public List<DettaglioAttivitaFAD> copyProgrammaEventoFAD(List<DettaglioAttivitaFAD> programmaFAD, List<PersonaEvento> docentiEventoRieditato) {
+		List<DettaglioAttivitaFAD> programmaCopiato = new ArrayList<DettaglioAttivitaFAD>();
+		for(DettaglioAttivitaFAD daf : programmaFAD) {
+			programmaCopiato.add(copyDettaglioAttivitaFAD(daf, docentiEventoRieditato));
+		}
+		return programmaCopiato;
+	}
+
+	private DettaglioAttivitaFAD copyDettaglioAttivitaFAD(DettaglioAttivitaFAD dettaglioAttivita, List<PersonaEvento> docentiEventoRieditato) {
+		DettaglioAttivitaFAD dettaglioAttivitaCopiato = new DettaglioAttivitaFAD();
+		dettaglioAttivitaCopiato.setArgomento(dettaglioAttivita.getArgomento());
+		dettaglioAttivitaCopiato.setMetodologiaDidattica(dettaglioAttivita.getMetodologiaDidattica());
+		dettaglioAttivitaCopiato.setObiettivoFormativo(dettaglioAttivita.getObiettivoFormativo());
+		dettaglioAttivitaCopiato.setRisultatoAtteso(dettaglioAttivita.getRisultatoAtteso());
+		dettaglioAttivitaCopiato.setOreAttivita(dettaglioAttivita.getOreAttivita());
+		// seleziona docente
+		dettaglioAttivitaCopiato.setDocente(findDocenteCopiato(docentiEventoRieditato, dettaglioAttivita.getDocente()));
+		return dettaglioAttivitaCopiato;
+	}
+
+	//TODO migliorare (equals() ad hoc?)
+	private PersonaEvento findDocenteCopiato(List<PersonaEvento> docentiEventoRieditato, PersonaEvento docente) {
+		for(PersonaEvento pe : docentiEventoRieditato) {
+			if(pe.getAnagrafica().equals(docente.getAnagrafica()))
+				return pe;
+		}
+		return null;
+	}
+
+	private List<VerificaApprendimentoFAD> copyListaVerificaApprendimentoFAD(List<VerificaApprendimentoFAD> listaVerificaApprendimento) {
+		List<VerificaApprendimentoFAD> listaCopiata = new ArrayList<VerificaApprendimentoFAD>();
+		for(VerificaApprendimentoFAD vaf : listaVerificaApprendimento) {
+			listaCopiata.add(copyVerificaApprendimentoFAD(vaf));
+		}
+		return listaCopiata;
+	}
+
+	private VerificaApprendimentoFAD copyVerificaApprendimentoFAD(VerificaApprendimentoFAD verificaApprendimento) {
+		VerificaApprendimentoFAD verificaApprendimentoCopiata = new VerificaApprendimentoFAD();
+		verificaApprendimentoCopiata.setVerificaApprendimento(verificaApprendimento.getVerificaApprendimento());
+		verificaApprendimentoCopiata.setVerificaApprendimentoInner(verificaApprendimento.getVerificaApprendimentoInner());
+		return verificaApprendimentoCopiata;
+	}
+
 
 }

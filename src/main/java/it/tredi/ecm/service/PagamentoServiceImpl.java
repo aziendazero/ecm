@@ -2,13 +2,17 @@ package it.tredi.ecm.service;
 
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Pagamento;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.repository.PagamentoRepository;
 import it.tredi.ecm.utils.Utils;
 
@@ -19,22 +23,50 @@ public class PagamentoServiceImpl implements PagamentoService {
 	@Autowired private PagamentoRepository pagamentoRepository;
 	
 	@Override
-	public boolean providerIsPagamentoEffettuato(Long providerId, Integer annoPagamento) {
-		LOGGER.debug(Utils.getLogMessage("Controllo se il Provider " + providerId + " ha effetturato il pagamento per anno " + annoPagamento));
-		Pagamento pagamento = pagamentoRepository.findOneByProviderIdAndAnnoPagamento(providerId, annoPagamento);
-		return (pagamento != null) ? true : false;
+	public Pagamento getPagamentoById(Long pagamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento " + pagamentoId));
+		return pagamentoRepository.findOne(pagamentoId);
 	}
 	
 	@Override
-	public Set<Provider> getAllProviderNotPagamentoEffettuato(Integer annoPagamento) {
-		LOGGER.debug(Utils.getLogMessage("Recupero lista Provider che non hanno effettuato il pagamento per anno " + annoPagamento));
-		
-		Set<Provider> list = pagamentoRepository.findAllProviderNotPagamentoEffettuato(annoPagamento);
-		if(list != null)
-			LOGGER.debug(Utils.getLogMessage("Trovati " + list.size() + " Provider"));
-		else
-			LOGGER.debug(Utils.getLogMessage("Nessun Provider trovato"));
-		
-		return list;
+	public Set<Pagamento> getAllPagamenti(){
+		LOGGER.debug(Utils.getLogMessage("Recupero lista di tutti i pagamenti"));
+		return pagamentoRepository.findAll();
 	}
+	
+	@Override
+	public Pagamento getPagamentoByQuotaAnnualeId(Long quotaAnnualeId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento per quota annuale: " + quotaAnnualeId));
+		return pagamentoRepository.findOneByQuotaAnnualeId(quotaAnnualeId);
+	}
+	
+	@Override
+	public Pagamento getPagamentoByEvento(Evento evento) {
+		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento evento " + evento.getId()));
+		return pagamentoRepository.getPagamentoByEvento(evento);
+	}
+	
+	@Override
+	public Set<Pagamento> getPagamentiEventiDaVerificare() {
+		LOGGER.debug("Recupero lista di Pagamenti quota di Eventi in sospeso");
+		Set<Pagamento> pagamenti = pagamentoRepository.getPagamentiEventiDaVerificare();
+		LOGGER.debug("Trovati: " + ((pagamenti!=null) ? pagamenti.size() : "0")  + " Pagamenti in sospeso");
+		return pagamenti;
+	}
+	
+	@Override
+	@Transactional
+	public void save(Pagamento p) {
+		LOGGER.debug(Utils.getLogMessage("Salvataggio Pagamento"));
+		pagamentoRepository.save(p);
+	}
+	
+	@Override
+	@Transactional
+	public void deleteAll(Iterable<Pagamento> pagamenti) {
+		LOGGER.debug(Utils.getLogMessage("Eliminazione tutti Pagamenti"));
+		pagamentoRepository.delete(pagamenti);
+	}
+	
+	
 }

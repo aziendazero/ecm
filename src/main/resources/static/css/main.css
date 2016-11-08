@@ -151,6 +151,14 @@ table.datatable-responsive-search-validation thead .sorting_asc:after {
 	visibility: hidden;
 }
 
+table.datatable-responsive-eventi-attuazione thead .sorting_asc:after {
+	visibility: hidden;
+}
+
+table.datatable-responsive-eventi-riedizione thead .sorting_asc:after {
+	visibility: hidden;
+}
+
 .dropdown-header {
 	color: white;
 	font-weight: bold;
@@ -1027,8 +1035,8 @@ h2 {
 	color: #FFF;
 	border-radius: 4px;
 	background-color: #CE5454;
-	max-width: 170px;
-	white-space: inherit;
+	max-width: 300px;
+	white-space: pre-line;
 	position: relative;
 	left: -15px;
 	opacity: 0;
@@ -1175,8 +1183,9 @@ tr.integrazione-eliminazione td:first-child a{
 
 .tooltip-inner {
 	white-space: pre-wrap;
-	min-width: 300px;
+	min-width: 310px;
 	background-color: #337ab7;
+	font-weight: bold;
 }
 
 .tooltip-arrow {

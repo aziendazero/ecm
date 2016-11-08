@@ -22,7 +22,7 @@ import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.WorkflowService;
 
 @Component
-@org.springframework.context.annotation.Profile({"dev","demo","simone","abarducci"})
+@org.springframework.context.annotation.Profile({"dev","demo","simone","abarducci", "tom"})
 public class AccountLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AccountLoader.class);
@@ -92,6 +92,22 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			role_writeAllProvider.setName(RoleEnum.PROVIDER_EDIT_ALL.name());
 			role_writeAllProvider.setDescription("PROVIDER (SCRITTURA TUTTI)");
 			roleRepository.save(role_writeAllProvider);
+			
+			//PROVIDER_USER_SHOW, PROVIDER_USER_EDIT, PROVIDER_USER_CREATE,
+			Role role_providerUserShow = new Role();
+			role_providerUserShow.setName(RoleEnum.PROVIDER_USER_SHOW.name());
+			role_providerUserShow.setDescription("PROVIDER (VISUALIZZAZIONE UTENTI DEL PROVIDER)");
+			roleRepository.save(role_providerUserShow);
+
+			Role role_providerUserEdit = new Role();
+			role_providerUserEdit.setName(RoleEnum.PROVIDER_USER_EDIT.name());
+			role_providerUserEdit.setDescription("PROVIDER (MODIFICA UTENTI DEL PROVIDER)");
+			roleRepository.save(role_providerUserEdit);
+
+			Role role_providerUserCreate = new Role();
+			role_providerUserCreate.setName(RoleEnum.PROVIDER_USER_CREATE.name());
+			role_providerUserCreate.setDescription("PROVIDER (CREAZIONE UTENTI DEL PROVIDER)");
+			roleRepository.save(role_providerUserCreate);
 
 			/* USER */
 			Role role_readUser = new Role();
@@ -127,6 +143,14 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			profile_provider.getRoles().add(role_readAccreditamento);
 			profile_provider.getRoles().add(role_writeAccreditamento);
 			profileRepository.save(profile_provider);
+
+			/* PROFILE PROVIDERUSERADMIN */
+			Profile profile_providerUserAdmin = new Profile();
+			profile_providerUserAdmin.setProfileEnum(ProfileEnum.PROVIDERUSERADMIN);
+			profile_providerUserAdmin.getRoles().add(role_providerUserCreate);
+			profile_providerUserAdmin.getRoles().add(role_providerUserEdit);
+			profile_providerUserAdmin.getRoles().add(role_providerUserShow);
+			profileRepository.save(profile_providerUserAdmin);
 
 			/* PROFILE SEGRETERIA */
 			Profile profile_admin = new Profile();
@@ -181,12 +205,13 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			provider.setExpiresDate(null);
 			provider.setLocked(false);
 			provider.getProfiles().add(profile_provider);
+			provider.getProfiles().add(profile_providerUserAdmin);
 			provider.setDataScadenzaPassword(LocalDate.now());
 
 			try {
 				//accountService.save(provider);
 				accountRepository.save(provider);
-				workflowService.saveOrUpdateBonitaUserByAccount(provider);				
+				workflowService.saveOrUpdateBonitaUserByAccount(provider);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -209,7 +234,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			try {
 				//accountService.save(admin);
 				accountRepository.save(admin);
-				workflowService.saveOrUpdateBonitaUserByAccount(admin);				
+				workflowService.saveOrUpdateBonitaUserByAccount(admin);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -231,7 +256,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			try {
 				//accountService.save(referee1);
 				accountRepository.save(referee1);
-				workflowService.saveOrUpdateBonitaUserByAccount(referee1);				
+				workflowService.saveOrUpdateBonitaUserByAccount(referee1);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -253,7 +278,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			try {
 				//accountService.save(referee2);
 				accountRepository.save(referee2);
-				workflowService.saveOrUpdateBonitaUserByAccount(referee2);				
+				workflowService.saveOrUpdateBonitaUserByAccount(referee2);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -275,7 +300,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			try {
 				//accountService.save(referee3);
 				accountRepository.save(referee3);
-				workflowService.saveOrUpdateBonitaUserByAccount(referee3);				
+				workflowService.saveOrUpdateBonitaUserByAccount(referee3);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -21,6 +21,7 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 //import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
+import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.service.AnagraficaEventoService;
 import it.tredi.ecm.service.EventoService;
@@ -39,7 +40,8 @@ public class EventoTest {
 	@Autowired private PersonaEventoRepository personaEventoRepo;
 	@Autowired private EventoService eventoService;
 	@Autowired private ProviderService providerService;
-	
+
+	@Autowired private EventoRepository eventoRepository;
 	
 	@Test
 	@Ignore
@@ -53,7 +55,11 @@ public class EventoTest {
 		
 		System.out.println("loadEvento");
 		*/
-		PersonaFullEvento pfev = new PersonaFullEvento();
+		//PersonaFullEvento pfev = new PersonaFullEvento();
+		
+		Evento evento = eventoRepository.findOneForRiedizione(2356L);
+		
+		System.out.println("evento: " + evento.getId());
 	}	
 	
 	@Test

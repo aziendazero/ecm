@@ -11,14 +11,30 @@ public interface EngineeringService {
 	 * @return l'URL di MyPay verso cui reindirizzare l'utente per il pagamento.
 	 * @throws Exception
 	 */
-	public String paga(Long idEvento, String backURL) throws Exception;
+	public String pagaEvento(Long idEvento, String backURL) throws Exception;
 	
 	/**
-	 * Recupera i pagamenti in sospeso e per ognuno di questi verifica su MyPay se e' disponibile l'esito.
+	 * Effettua la richiesta di pagamento su MyPay per la quota di un provider 
+	 * @param pagamentoid
+	 * @param backURL
+	 * @return l'URL di MyPay verso cui reindirizzare l'utente per il pagamento.
+	 * @throws Exception
+	 */
+	public String  pagaQuotaProvider(Long pagamentoId, String backURL) throws Exception;
+	
+	/**
+	 * Recupera i pagamenti degli eventi in sospeso e per ognuno di questi verifica su MyPay se e' disponibile l'esito.
 	 * Questo metodo andrebbe chiamato con uno scheduler a intervalli regolari.
 	 * @throws Exception
 	 */
-	public void esitoPagamenti() throws Exception;
+	public void esitoPagamentiEventi() throws Exception;
+	
+	/**
+	 * Recupera i pagamenti dei provider in sospeso e per ognuno di questi verifica su MyPay se e' disponibile l'esito.
+	 * Questo metodo andrebbe chiamato con uno scheduler a intervalli regolari.
+	 * @throws Exception
+	 */
+	public void esitoPagamentiQuoteAnnuali() throws Exception;
 	
 	/**
 	 * Metodo di utilità per resettare la situazione per poter ripetere i test.

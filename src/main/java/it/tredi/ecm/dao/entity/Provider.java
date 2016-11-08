@@ -19,11 +19,8 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Where;
-
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
@@ -52,9 +49,9 @@ import lombok.Setter;
 
 })
 public class Provider extends BaseEntity{
-	/*	ACCOUNT LEGATO AL PROFILO PROVIDER	*/
-	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-	private Account account;
+	/*	ACCOUNTS DEL PROVIDER	*/
+	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE })	
+	Set<Account> accounts;
 
 	/*	INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE	*/
 	private String denominazioneLegale;
@@ -126,8 +123,8 @@ public class Provider extends BaseEntity{
 	@Column(name ="can_insert_evento")
 	private boolean canInsertEvento;
 
-	@OneToMany(mappedBy = "provider")
-	private Set<Pagamento> pagamenti = new HashSet<Pagamento>();
+//	@OneToMany(mappedBy = "provider")
+//	private Set<QuotaAnnuale> pagamenti = new HashSet<QuotaAnnuale>();
 	
 	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;

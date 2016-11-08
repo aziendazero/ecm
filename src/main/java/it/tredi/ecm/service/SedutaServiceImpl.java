@@ -143,7 +143,7 @@ public class SedutaServiceImpl implements SedutaService {
 		Seduta seduta =  sedutaRepository.findOne(sedutaId);
 		for(ValutazioneCommissione val : seduta.getValutazioniCommissione()){
 			if(val.getAccreditamento().getStato() == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE)
-				accreditamentoService.inviaValutazioneCommissione(val.getAccreditamento().getId(), Utils.getAuthenticatedUser(), val.getStato());
+				accreditamentoService.inviaValutazioneCommissione(seduta, val.getAccreditamento().getId(), Utils.getAuthenticatedUser(), val.getStato());
 		}
 
 		if(canBeLocked(seduta)) {

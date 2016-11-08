@@ -9,7 +9,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
@@ -27,6 +29,9 @@ import it.tredi.ecm.utils.Utils;
 public class ProviderServiceImpl implements ProviderService {
 
 	private final Logger LOGGER = Logger.getLogger(ProviderService.class);
+	
+	private final String AMMINISTRATORE_PROVIDER_ACCOUNT_NOME = "Amministratore";
+	private final String AMMINISTRATORE_PROVIDER_ACCOUNT_COGNOME = "Provider";
 
 	@Autowired private ProviderRepository providerRepository;
 	@Autowired private PersonaService personaService;
@@ -39,10 +44,11 @@ public class ProviderServiceImpl implements ProviderService {
 		LOGGER.info("Retrieving Provider for current user...");
 		CurrentUser currentUser = Utils.getAuthenticatedUser();
 		if(currentUser != null){
-			Provider provider = providerRepository.findOneByAccountId(currentUser.getAccount().getId());
-			if(provider != null){
-				LOGGER.info("Found Provider (" + provider.getId() +")");
-				return provider;
+			//Provider multi account
+			//Provider provider = providerRepository.getProviderByAccountId(currentUser.getAccount().getId());
+			if(currentUser.getAccount().getProvider() != null){
+				LOGGER.info("Found Provider (" + currentUser.getAccount().getProvider().getId() +")");
+				return currentUser.getAccount().getProvider();
 			}
 			LOGGER.info("Provider not found");
 		}else{
@@ -80,6 +86,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Transactional
 	public void save(Provider provider) {
 		LOGGER.info("Saving Provider");
+		/*
 		if(provider.getAccount().isNew()){
 			try{
 				accountService.save(provider.getAccount());
@@ -87,6 +94,7 @@ public class ProviderServiceImpl implements ProviderService {
 				LOGGER.error("Impossibile salvare il Provider. Errore durante creazione Account",ex);
 			}
 		}
+		*/
 		providerRepository.save(provider);
 	}
 
@@ -129,8 +137,9 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	@Transactional
-	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerRegistrationWrapper) {
+	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerRegistrationWrapper) throws Exception {
 		Provider provider = providerRegistrationWrapper.getProvider();
+		Account account = providerRegistrationWrapper.getAccount();
 		Persona legale = providerRegistrationWrapper.getLegale();
 		if(providerRegistrationWrapper.isDelegato())
 			legale.setRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
@@ -138,14 +147,21 @@ public class ProviderServiceImpl implements ProviderService {
 			legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
 		File delega = providerRegistrationWrapper.getDelega();
 
-		if(provider.getAccount().getProfiles().isEmpty()){
-			Optional<Profile> providerProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDER);
-			if(providerProfile.isPresent())
-				provider.getAccount().getProfiles().add(providerProfile.get());
-		}
-
 		provider.setStatus(ProviderStatoEnum.INSERITO);
 		save(provider);
+
+		if(account.getProfiles().isEmpty()){
+			Optional<Profile> providerProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDER);
+			if(providerProfile.isPresent())
+				account.getProfiles().add(providerProfile.get());
+			Optional<Profile> providerAdminEnumProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDERUSERADMIN);
+			if(providerAdminEnumProfile.isPresent())
+				account.getProfiles().add(providerAdminEnumProfile.get());
+		}
+		account.setNome(AMMINISTRATORE_PROVIDER_ACCOUNT_NOME);
+		account.setCognome(AMMINISTRATORE_PROVIDER_ACCOUNT_COGNOME);
+		account.setProvider(provider);
+		accountService.save(account);
 
 		//Delegato consentito solo per alcuni tipi di Provider
 		if(providerRegistrationWrapper.isDelegato()){
@@ -161,11 +177,6 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Long getProviderIdByAccountId(Long accountId) {
 		return providerRepository.getIdByAccountId(accountId);
-	}
-
-	@Override
-	public Long getAccountIdForProvider(Long providerId) {
-		return providerRepository.getAccountIdById(providerId);
 	}
 
 	@Override

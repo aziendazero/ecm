@@ -10,10 +10,16 @@
 			<div class="x_panel">
 				<div class="x_title">
 					<h2 class="text-uppercase" th:text="#{label.utenti}"></h2>
+					<th:block th:if="${#authentication.principal.hasProfile('PROVIDER')}">
+					<a class="btn btn-primary pull-right" th:href="@{/provider/user/new}"
+						th:text="#{label.nuovo_utente}">label.nuovo_utente</a>					
+					</th:block>
+					<th:block th:unless="${#authentication.principal.hasProfile('PROVIDER')}">
 					<a class="btn btn-primary pull-right" th:href="@{/user/new}"
 						th:text="#{label.nuovo_utente}">label.nuovo_utente</a>
 					<a class="btn btn-primary pull-right" th:href="@{/profile/list}"
 						th:text="#{label.gestione_profili}">label.gestione_profili</a>
+					</th:block>
 					<div class="clearfix"></div>
 				</div>
 				<div class="x_content">
@@ -24,17 +30,21 @@
 							<thead>
 								<tr>
 									<th th:text="#{label.username}">label.username</th>
+									<th th:text="#{label.utente}">label.utente</th>
 									<th th:text="#{label.email}">label.email</th>
 									<th th:text="#{label.enabled}">label.enabled</th>
-									<th th:text="#{label.locked}">label.locked</th>
-									<th th:text="#{label.profili}">label.profili</th>
+									<th th:text="#{label.locked}" th:unless="${#authentication.principal.hasProfile('PROVIDER')}">label.locked</th>
+									<th th:text="#{label.profili}" th:unless="${#authentication.principal.hasProfile('PROVIDER')}">label.profili</th>
 									<th th:text="#{label.note}">label.note</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr th:each="account, row: ${accountList}">
 									<td><a th:href="@{|/user/${account.id}/edit|}"
-										th:text="${account.username}"></a></td>
+										th:text="${account.username}" th:unless="${#authentication.principal.hasProfile('PROVIDER')}"></a>
+										<a th:href="@{|/provider/user/${account.id}/edit|}"
+										th:text="${account.username}" th:if="${#authentication.principal.hasProfile('PROVIDER')}"></a></td>
+									<td th:text="${account.fullName}"></td>
 									<td th:text="${account.email}"></td>
 
 									<td class="text-center" th:if="${account.enabled}"><i
@@ -42,12 +52,12 @@
 									<td class="text-center" th:unless="${account.enabled}"><i
 										class="fa fa-ban red icon"></i></td>
 
-									<td class="text-center" th:if="${account.locked}"><i
+									<td class="text-center" th:if="${account.locked}" th:unless="${#authentication.principal.hasProfile('PROVIDER')}"><i
 										class="fa fa-lock red icon"></i></td>
-									<td class="text-center" th:unless="${account.locked}"><i
+									<td class="text-center" th:unless="${#authentication.principal.hasProfile('PROVIDER') || account.locked}"><i
 										class="fa fa-unlock green icon"></i></td>
 
-									<td th:text="${account.profileAsString}"></td>
+									<td th:text="${account.profileAsString}" th:unless="${#authentication.principal.hasProfile('PROVIDER')}"></td>
 									
 									<td th:text="${account.note}"></td>
 								</tr>

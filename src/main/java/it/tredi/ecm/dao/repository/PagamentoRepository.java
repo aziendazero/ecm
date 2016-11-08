@@ -8,23 +8,18 @@ import org.springframework.data.repository.query.Param;
 
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Pagamento;
-import it.tredi.ecm.dao.entity.Provider;
 
 public interface PagamentoRepository extends CrudRepository<Pagamento, Long> {
-
-	public Pagamento findOneByProviderIdAndAnnoPagamento(Long providrId, Integer annoPagamento);
-
-	@Query("SELECT distinct p FROM Provider p WHERE p.status IN ('ACCREDITATO_PROVVISORIAMENTE','ACCREDITATO_STANDARD') and p.id NOT IN (SELECT distinct pag.provider.id FROM Pagamento pag WHERE pag.annoPagamento = :annoPagamento)")
-	public Set<Provider> findAllProviderNotPagamentoEffettuato(@Param("annoPagamento")Integer annoPagamento);
-
 	public Set<Pagamento> findAll();
-
+	
+	public Pagamento findOneByQuotaAnnualeId(Long quotaAnnualeId);
+	
 	@Query("SELECT p FROM Pagamento p WHERE p.evento = :evento")
-	public Pagamento getPagamentoByEvento(@Param("evento")Evento evento);
+	public Pagamento getPagamentoByEvento(@Param("evento") Evento evento);
 
 	@Query("SELECT p FROM Pagamento p WHERE p.evento.pagato = false AND p.evento.pagInCorso = true")
-	public Set<Pagamento> getPagamentiDaVerificare();
-
+	public Set<Pagamento> getPagamentiEventiDaVerificare();
+	
 }
 
 

@@ -1,7 +1,9 @@
 package it.tredi.ecm.service;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
@@ -17,10 +19,9 @@ public interface ProviderService {
 	public Set<String> getFileTypeUploadedByProviderId(Long id);
 
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
-	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper);
+	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper) throws Exception;
 
 	public Long getProviderIdByAccountId(Long accountId);
-	public Long getAccountIdForProvider(Long providerId);
 	public boolean canInsertPianoFormativo(Long providerId);
 	public boolean canInsertEvento(Long providerId);
 	public boolean canInsertAccreditamentoStandard(Long providerId);
