@@ -183,13 +183,13 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 	
 	@Override
 	public void checkAndCreateQuoteAnnualiPerAnnoInCorso() {
-		LOGGER.debug("Creazione QuotaAnnuale per anno in corso");
+		LOGGER.info("Creazione QuotaAnnuale per anno in corso");
 		int annoInCorso = LocalDate.now().getYear();
 		Set<Provider> provideList = getAllProviderNotPagamentoRegistrato(annoInCorso);
 		if(provideList == null){
-			LOGGER.debug("Nessun provider senza pagamento trovato");
+			LOGGER.info("Nessun provider senza pagamento trovato");
 		}else{
-			LOGGER.debug("Trovati " + provideList.size() + " provider senza pagamento");	
+			LOGGER.info("Trovati " + provideList.size() + " provider senza pagamento");	
 			for(Provider p : provideList)
 				createPagamentoProviderPerQuotaAnnuale(p.getId(), annoInCorso, false);
 		}

@@ -582,6 +582,7 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD)eventoWrapper.getEvento()).setDurata(durata);
 		}
 
+		durata = Utils.getRoundedFloatValue(durata, 2);
 		return durata;
 	}
 

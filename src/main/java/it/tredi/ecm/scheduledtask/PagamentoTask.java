@@ -21,13 +21,13 @@ public class PagamentoTask {
 	@Async
 	@Transactional
 	public void controllaEsitoPagamenti() throws Exception{
-		LOGGER.debug(Thread.currentThread().getName());
-		LOGGER.debug("controllaEsitoPagamenti - entering");
+		LOGGER.info(Thread.currentThread().getName());
+		LOGGER.info("controllaEsitoPagamenti - entering");
 		
 		engineeringService.esitoPagamentiEventi();
 		engineeringService.esitoPagamentiQuoteAnnuali();
 		quotaAnnualeService.checkAndCreateQuoteAnnualiPerAnnoInCorso();
 		
-		LOGGER.debug("controllaEsitoPagamenti - exiting");
+		LOGGER.info("controllaEsitoPagamenti - exiting");
 	}
 }
