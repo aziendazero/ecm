@@ -73,6 +73,11 @@ import lombok.Setter;
 	@NamedEntityGraph(name="graph.evento.forRiedizione",
 			attributeNodes = {@NamedAttributeNode("id"),
 					@NamedAttributeNode(value="brochureEvento", subgraph="fileFull")},
+//					@NamedAttributeNode(value="autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", subgraph="fileFull"),
+//					@NamedAttributeNode(value="autocertificazioneAutorizzazioneMinisteroSalute", subgraph="fileFull"),
+//					@NamedAttributeNode(value="autocertificazioneAssenzaFinanziamenti", subgraph="fileFull"),
+//					@NamedAttributeNode(value="contrattiAccordiConvenzioni", subgraph="fileFull"),
+//					@NamedAttributeNode(value="dichiarazioneAssenzaConflittoInteresse", subgraph="fileFull")},
 			subgraphs = {@NamedSubgraph(name="fileFull", attributeNodes={
 					@NamedAttributeNode("id"),
 					@NamedAttributeNode("nomeFile"),
@@ -151,6 +156,7 @@ public class Evento extends BaseEntity{
 	}
 
 	//false -> dopo 90gg
+	//true -> dopo fineEvento
 	private boolean canAttachSponsor = true;
 	//true -> dopo fineEvento
 	//false -> dopo aver pagato
@@ -161,7 +167,7 @@ public class Evento extends BaseEntity{
 	//false -> dopo 90gg
 	private boolean canDoRendicontazione = false;
 
-	//@Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.STRING)
 	private EventoStatoEnum stato;//vedi descrizione in EventoStatoEnum
 	private boolean validatorCheck = false; //(durante il salvataggio check di un flag per sapere se sono stati rispettati tutti i vincoli del validator)
 

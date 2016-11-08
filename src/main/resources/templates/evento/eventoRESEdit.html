@@ -61,7 +61,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input class="form-control" type="text" th:field="${eventoWrapper.tempAttivitaRES.argomento}" />
+											<textarea class="form-control" th:field="${eventoWrapper.tempAttivitaRES.argomento}"></textarea>
 										</div>
 									</div>
 
@@ -488,7 +488,7 @@
 												<span class="input-group-addon not-last" onclick="$(this).prev().click()">
 						 							<i class="glyphicon glyphicon-calendar"></i>
 												</span>
-												<span class="input-group-addon" th:onclick="${row.count == (row.size - 1) ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}">
+												<span class="input-group-addon" th:onclick="${row.count == (row.size - 1) ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}" th:classappend="${row.count == (row.size - 1) ? 'add' : 'remove'}">
 													<i th:class="${row.count == (row.size - 1) ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 												</span>
 											</div>
@@ -565,22 +565,30 @@
 											<span>16</span>
 										</label>
 										<label class="control-label col-md-3 col-sm-3 col-xs-11">
-											<span th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
+											<span th:text="#{label.professioni}">Professioni</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
-											<div class="col-xs-12 select-with-margin-container">
-												<select id="professioni" class="selectpicker multi"
-													multiple="multiple" data-width="100%"
-													data-style="btn-primary" data-actions-box="true"
-													data-size="10" title="Seleziona una professione..."
-													onchange="abilitaDiscipline(this)"
-													data-selected-text-format="count" th:remove="all-but-first">
-													<option th:each="professione, row: ${eventoWrapper.professioneList}"
-														th:value="${professione.id}" th:text="${professione.nome}"
-														th:field="${eventoWrapper.evento.professioniSelezionate}"></option>
-												</select>
-											</div>
+											<select id="professioni" class="selectpicker multi"
+												multiple="multiple" data-width="100%"
+												data-style="btn-primary" data-actions-box="true"
+												data-size="10" title="Seleziona una professione..."
+												onchange="abilitaDiscipline(this)"
+												data-selected-text-format="count" th:remove="all-but-first">
+												<option th:each="professione, row: ${eventoWrapper.professioneList}"
+													th:value="${professione.id}" th:text="${professione.nome}"
+													th:field="${eventoWrapper.evento.professioniSelezionate}"></option>
+											</select>
+										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.discipline')}__}"></div>
+									</div>
+									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')} ? 'bad'">
+										<div class="col-xs-1"></div>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11">
+											<span th:text="#{label.discipline}">Discipline</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<select id="discipline" class="selectpicker multi"
 												th:field="${eventoWrapper.evento.discipline}"
 												multiple="multiple" data-width="100%"
@@ -762,7 +770,7 @@
 												<input type="hidden" th:value="${risultato.key}" />
 												<input type="text" class="form-control risultatoPicker"
 													th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" />
-												<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}">
+												<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}" th:classappend="${row.last ? 'add' : 'remove'}">
 													<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 												</span>
 											</div>
@@ -1193,6 +1201,10 @@
 													<span th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
 													<span class="required">*</span>
 												</label>
+												<div class="model-link">
+													<i class="fa fa-file-text"></i>
+													<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+												</div>
 												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 													<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block>
 												</div>
@@ -1207,6 +1219,10 @@
 													<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti_sponsor}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
 													<span class="required">*</span>
 												</label>
+												<div class="model-link">
+													<i class="fa fa-file-text"></i>
+													<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+												</div>
 												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 													<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block>
 												</div>
@@ -1265,6 +1281,10 @@
 												<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Allegato autocertificazione assenza finanziamenti</span>
 												<span class="required">*</span>
 											</label>
+											<div class="model-link">
+												<i class="fa fa-file-text"></i>
+												<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block>
 											</div>
@@ -1325,6 +1345,10 @@
 											<span th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
 											<span class="required">*</span>
 										</label>
+										<div class="model-link">
+											<i class="fa fa-file-text"></i>
+											<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block>
 										</div>

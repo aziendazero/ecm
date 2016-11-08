@@ -31,7 +31,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-										<input class="form-control" type="text" th:field="*{argomento}" />
+										<textarea class="form-control" th:field="*{argomento}"></textarea>
 									</div>
 								</div>
 
@@ -137,7 +137,7 @@
 								<!-- DURATA -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="durata">
-										<span th:text="#{label.durata}">Durata</span>
+										<span th:text="#{label.durata_impegno_studio}">Durata</span>
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata">
@@ -409,16 +409,15 @@
 								</div>
 
 								<!-- PROFESSIONI/DISCIPLINE -->
-								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')} ? 'bad'">
-									<label class="control-label col-xs-1">
-										<span>11</span>
-									</label>
-									<label class="control-label col-md-3 col-sm-3 col-xs-11">
-										<span th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
-										<span class="required">*</span>
-									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
-										<div class="col-xs-12 select-with-margin-container">
+									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')} ? 'bad'">
+										<label class="control-label col-xs-1">
+											<span>11</span>
+										</label>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11">
+											<span th:text="#{label.professioni}">Professioni</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
 											<select id="professioni" class="selectpicker multi"
 												multiple="multiple" data-width="100%"
 												data-style="btn-primary" data-actions-box="true"
@@ -430,24 +429,33 @@
 													th:field="${eventoWrapper.evento.professioniSelezionate}"></option>
 											</select>
 										</div>
-										<select id="discipline" class="selectpicker multi"
-											th:field="${eventoWrapper.evento.discipline}"
-											multiple="multiple" data-width="100%"
-											data-style="btn-success" data-actions-box="true"
-											data-size="10" data-hide-disabled="true"
-											title="Seleziona una disciplina..." disabled="disabled"
-											data-selected-text-format="count" th:remove="all-but-first">
-											<optgroup class="optgroup-success" disabled="disabled"
-												th:each="professione, row: ${eventoWrapper.professioneList}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
-												th:label="${professione.nome}" th:remove="all-but-first">
-												<option th:each="disciplina, row: ${eventoWrapper.disciplinaList}"
-													th:if="${disciplina.professione == professione}"
-													th:value="${disciplina.id}" th:text="${disciplina.nome}"></option>
-											</optgroup>
-										</select>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.discipline')}__}"></div>
 									</div>
-									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.discipline')}__}"></div>
-								</div>
+									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')} ? 'bad'">
+										<div class="col-xs-1"></div>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11">
+											<span th:text="#{label.discipline}">Discipline</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+											<select id="discipline" class="selectpicker multi"
+												th:field="${eventoWrapper.evento.discipline}"
+												multiple="multiple" data-width="100%"
+												data-style="btn-success" data-actions-box="true"
+												data-size="10" data-hide-disabled="true"
+												title="Seleziona una disciplina..." disabled="disabled"
+												data-selected-text-format="count" th:remove="all-but-first">
+												<optgroup class="optgroup-success" disabled="disabled"
+													th:each="professione, row: ${eventoWrapper.professioneList}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
+													th:label="${professione.nome}" th:remove="all-but-first">
+													<option th:each="disciplina, row: ${eventoWrapper.disciplinaList}"
+														th:if="${disciplina.professione == professione}"
+														th:value="${disciplina.id}" th:text="${disciplina.nome}"></option>
+												</optgroup>
+											</select>
+										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.discipline')}__}"></div>
+									</div>
 
 								<!-- NUMERO PARTECIPANTI PREVISTI -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipanti')} ? 'bad'">
@@ -512,13 +520,13 @@
 									</div>
 								</div>
 
-								<!-- DOCENTI/RELATORI/TUTOR -->
+								<!-- DOCENTI/TUTOR -->
 								<div class="item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.docenti')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>15</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="docenti-relatori-tutor">
-										<span th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
+										<span th:text="#{label.label.docente_tutor}">Docenti/Relatori/Tutor</span>
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"></div>
@@ -945,6 +953,10 @@
 												<span th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
 												<span class="required">*</span>
 											</label>
+											<div class="model-link">
+												<i class="fa fa-file-text"></i>
+												<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block>
 											</div>
@@ -959,6 +971,10 @@
 												<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti_sponsor}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
 												<span class="required">*</span>
 											</label>
+											<div class="model-link">
+												<i class="fa fa-file-text"></i>
+												<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block>
 											</div>
@@ -1017,6 +1033,10 @@
 											<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Allegato autocertificazione assenza finanziamenti</span>
 											<span class="required">*</span>
 										</label>
+										<div class="model-link">
+											<i class="fa fa-file-text"></i>
+											<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block>
 										</div>
@@ -1077,6 +1097,10 @@
 										<span th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
 										<span class="required">*</span>
 									</label>
+									<div class="model-link">
+										<i class="fa fa-file-text"></i>
+										<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+									</div>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block>
 									</div>

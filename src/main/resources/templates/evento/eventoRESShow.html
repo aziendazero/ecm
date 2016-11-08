@@ -555,7 +555,7 @@
 							<span class="label-show" th:text="#{label.quota_partecipazione}">Quota di partecipazione</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-							<div class="value" th:if="${eventoWrapper.evento.quotaPartecipazione != null}" th:text="${eventoWrapper.evento.quotaPartecipazione}"></div>
+							<div class="value" th:if="${eventoWrapper.evento.quotaPartecipazione != null}" th:text="${eventoWrapper.evento.quotaPartecipazione+'€'}"></div>
 							<div class="value danger" th:unless="${eventoWrapper.evento.quotaPartecipazione != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
