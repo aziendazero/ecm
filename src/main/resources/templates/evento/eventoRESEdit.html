@@ -61,7 +61,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input class="form-control" type="text" th:field="${eventoWrapper.tempAttivitaRES.argomento}" />
+											<textarea class="form-control" th:field="${eventoWrapper.tempAttivitaRES.argomento}"></textarea>
 										</div>
 									</div>
 
@@ -146,7 +146,7 @@
 											<span th:text="#{label.metodologia_didattica}">Metodologia Didattica</span>
 											<span class="required">*</span>
 										</label>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="razionale">
 											<select
 												id="addAttivitaRES-metodolgieDidattiche"
 												class="selectpicker selectMetodologieDidattiche"
@@ -161,6 +161,9 @@
 													th:text="${metodologiaDidattica.nome}">
 												</option>
 											</select>
+										</div>
+										<div class="col-xs-1">
+											<div th:attr="data-original-title=#{label.info_metodologie_interattive}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
 										</div>
 									</div>
 
@@ -220,7 +223,7 @@
 								<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
 
 									<!-- TODO rimuovere -->
-									<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div>
+<!-- 									<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
 
 									<!-- DENOMINAZIONE LEGALE PROVIDER -->
 									<div class="item form-group">
@@ -469,7 +472,6 @@
 										</label>
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dateIntermedie">
 											<span th:text="#{label.date_intermedie}">Data intermedie</span>
-											<span class="required">*</span>
 										</label>
 									</div>
 									<div class="date-intermedie-container" id="dateIntermedieId">
@@ -486,7 +488,7 @@
 												<span class="input-group-addon not-last" onclick="$(this).prev().click()">
 						 							<i class="glyphicon glyphicon-calendar"></i>
 												</span>
-												<span class="input-group-addon" th:onclick="${row.count == (row.size - 1) ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}">
+												<span class="input-group-addon" th:onclick="${row.count == (row.size - 1) ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}" th:classappend="${row.count == (row.size - 1) ? 'add' : 'remove'}">
 													<i th:class="${row.count == (row.size - 1) ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 												</span>
 											</div>
@@ -500,7 +502,7 @@
 											<span>14</span>
 										</label>
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivoNazionale">
-											<span th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
+											<span th:text="#{label.obiettivo_strategico_nazionale}">Obiettivo Strategico Nazionale</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
@@ -536,7 +538,7 @@
 											<span>15</span>
 										</label>
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivorRegionale">
-											<span th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Strategico Regionale</span>
+											<span th:text="#{label.obiettivo_strategico_regionale}">Obiettivo Strategico Regionale</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -563,22 +565,30 @@
 											<span>16</span>
 										</label>
 										<label class="control-label col-md-3 col-sm-3 col-xs-11">
-											<span th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
+											<span th:text="#{label.professioni}">Professioni</span>
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
-											<div class="col-xs-12 select-with-margin-container">
-												<select id="professioni" class="selectpicker multi"
-													multiple="multiple" data-width="100%"
-													data-style="btn-primary" data-actions-box="true"
-													data-size="10" title="Seleziona una professione..."
-													onchange="abilitaDiscipline(this)"
-													data-selected-text-format="count" th:remove="all-but-first">
-													<option th:each="professione, row: ${eventoWrapper.professioneList}"
-														th:value="${professione.id}" th:text="${professione.nome}"
-														th:field="${eventoWrapper.evento.professioniSelezionate}"></option>
-												</select>
-											</div>
+											<select id="professioni" class="selectpicker multi"
+												multiple="multiple" data-width="100%"
+												data-style="btn-primary" data-actions-box="true"
+												data-size="10" title="Seleziona una professione..."
+												onchange="abilitaDiscipline(this)"
+												data-selected-text-format="count" th:remove="all-but-first">
+												<option th:each="professione, row: ${eventoWrapper.professioneList}"
+													th:value="${professione.id}" th:text="${professione.nome}"
+													th:field="${eventoWrapper.evento.professioniSelezionate}"></option>
+											</select>
+										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.discipline')}__}"></div>
+									</div>
+									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.discipline')} ? 'bad'">
+										<div class="col-xs-1"></div>
+										<label class="control-label col-md-3 col-sm-3 col-xs-11">
+											<span th:text="#{label.discipline}">Discipline</span>
+											<span class="required">*</span>
+										</label>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<select id="discipline" class="selectpicker multi"
 												th:field="${eventoWrapper.evento.discipline}"
 												multiple="multiple" data-width="100%"
@@ -760,7 +770,7 @@
 												<input type="hidden" th:value="${risultato.key}" />
 												<input type="text" class="form-control risultatoPicker"
 													th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" />
-												<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}">
+												<span class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}" th:classappend="${row.last ? 'add' : 'remove'}">
 													<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 												</span>
 											</div>
@@ -1131,7 +1141,7 @@
 											<span th:text="#{label.evento_sponsorizzato_radio}">L'Evento è sponsorizzato?</span>
 											<span class="required">*</span>
 										</label>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 											<div class="radio">
 												<label>
 													<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${true}" />
@@ -1146,6 +1156,9 @@
 											</div>
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzato')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.eventoSponsorizzato')}__}"></div>
+										<div class="col-xs-1">
+											<div th:attr="data-original-title=#{label.info_sponsor_evento}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+										</div>
 									</div>
 									<div class="sponsor-si">
 										<div class="no-padding item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')} ? 'bad'">
@@ -1188,6 +1201,10 @@
 													<span th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
 													<span class="required">*</span>
 												</label>
+												<div class="model-link">
+													<i class="fa fa-file-text"></i>
+													<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+												</div>
 												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 													<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block>
 												</div>
@@ -1202,6 +1219,10 @@
 													<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti_sponsor}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
 													<span class="required">*</span>
 												</label>
+												<div class="model-link">
+													<i class="fa fa-file-text"></i>
+													<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+												</div>
 												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 													<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block>
 												</div>
@@ -1260,6 +1281,10 @@
 												<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Allegato autocertificazione assenza finanziamenti</span>
 												<span class="required">*</span>
 											</label>
+											<div class="model-link">
+												<i class="fa fa-file-text"></i>
+												<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block>
 											</div>
@@ -1279,7 +1304,7 @@
 											<span th:text="#{label.si_avvale_di_partner}">L’evento si avvale di partner?</span>
 											<span class="required">*</span>
 										</label>
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 											<div class="radio">
 												<label>
 													<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${true}" />
@@ -1294,6 +1319,9 @@
 											</div>
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoAvvalePartner')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.eventoAvvalePartner')}__}"></div>
+										<div class="col-xs-1">
+											<div th:attr="data-original-title=#{label.info_partner_evento}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+										</div>
 									</div>
 									<div class="no-padding partner-si item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.partners')} ? 'bad'">
 										<div class="col-lg-9 col-md-11 col-sm-11 col-xs-12"></div>
@@ -1317,6 +1345,10 @@
 											<span th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
 											<span class="required">*</span>
 										</label>
+										<div class="model-link">
+											<i class="fa fa-file-text"></i>
+											<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block>
 										</div>
@@ -1463,13 +1495,14 @@
 					.done(function(data) {
 						//alert(data);
 					  	$('#' + target).html(data);
+					 	 //Aggiorno il tab 2
+					 	 sendAjaxReloadSection('2');
 					  	reInitComponents();
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
 				    	alert( "error" );
 				 	 })
-				 	 sendAjaxReloadSection('2');
 
 					/*
 					var cloned = $("<div class='nextDataIntermedia item form-group'></div>")
@@ -1500,14 +1533,14 @@
 					.done(function(data) {
 						//alert(data);
 					  	$('#' + target).html(data);
+					 	 //Aggiorno il tab 2
+					 	 sendAjaxReloadSection('2');
 					  	reInitComponents();
 					  })
 				  	.fail(function() {
 				  		//TODO mostra error sui campi mancanti
 				    	alert( "error" );
 				 	 })
-				 	 //Aggiorno il tab 2
-				 	 sendAjaxReloadSection('2');
 
 					/*
 					console.log($(caller).closest(".item").html());
@@ -1907,6 +1940,7 @@
 				}
 
 				function sendAjaxReloadSection(sectionIndex){
+					//alert('sendAjaxReloadSection - sectionIndex: ' + sectionIndex);
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoRES').serialize())
 					.done(function(data) {
 					  	$('#section-' + sectionIndex).html(data);

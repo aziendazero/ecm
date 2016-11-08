@@ -154,6 +154,9 @@ public class ProviderServiceImpl implements ProviderService {
 			Optional<Profile> providerProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDER);
 			if(providerProfile.isPresent())
 				account.getProfiles().add(providerProfile.get());
+			Optional<Profile> providerAdminEnumProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDERUSERADMIN);
+			if(providerAdminEnumProfile.isPresent())
+				account.getProfiles().add(providerAdminEnumProfile.get());
 		}
 		account.setNome(AMMINISTRATORE_PROVIDER_ACCOUNT_NOME);
 		account.setCognome(AMMINISTRATORE_PROVIDER_ACCOUNT_COGNOME);

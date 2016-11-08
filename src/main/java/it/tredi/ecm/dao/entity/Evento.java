@@ -21,6 +21,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -65,6 +69,30 @@ import lombok.Setter;
 @Table(name = "evento")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "eventoType")
+@NamedEntityGraphs({
+
+	@NamedEntityGraph(name="graph.evento.forRiedizione",
+			attributeNodes = {@NamedAttributeNode("id"),
+					@NamedAttributeNode(value="brochureEvento", subgraph="fileFull")},
+//					@NamedAttributeNode(value="autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", subgraph="fileFull"),
+//					@NamedAttributeNode(value="autocertificazioneAutorizzazioneMinisteroSalute", subgraph="fileFull"),
+//					@NamedAttributeNode(value="autocertificazioneAssenzaFinanziamenti", subgraph="fileFull"),
+//					@NamedAttributeNode(value="contrattiAccordiConvenzioni", subgraph="fileFull"),
+//					@NamedAttributeNode(value="dichiarazioneAssenzaConflittoInteresse", subgraph="fileFull")},
+			subgraphs = {@NamedSubgraph(name="fileFull", attributeNodes={
+					@NamedAttributeNode("id"),
+					@NamedAttributeNode("nomeFile"),
+					@NamedAttributeNode("tipo"),
+					@NamedAttributeNode(value="fileData", subgraph="fileData")
+			}), @NamedSubgraph(name="fileData", attributeNodes={
+					@NamedAttributeNode("id"),
+					@NamedAttributeNode("data")
+			})
+			}
+	)
+
+})
+
 public class Evento extends BaseEntity{
 	private static Logger LOGGER = LoggerFactory.getLogger(Evento.class);
 	/*
@@ -129,6 +157,7 @@ public class Evento extends BaseEntity{
 	}
 
 	//false -> dopo 90gg
+	//true -> dopo fineEvento
 	private boolean canAttachSponsor = true;
 	//true -> dopo fineEvento
 	//false -> dopo aver pagato

@@ -42,12 +42,14 @@ import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
 import it.tredi.ecm.service.bean.CurrentUser;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 
 @Service
 public class AccreditamentoServiceImpl implements AccreditamentoService {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoServiceImpl.class);
 	private static long millisecondiInGiorno = 86400000;
+	private static long millisecondiInMinuto = 60000;
 
 	@Autowired private AccreditamentoRepository accreditamentoRepository;
 
@@ -71,6 +73,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private PdfService pdfService;
 
 	@Autowired private MessageSource messageSource;
+	
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -402,6 +406,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamentoRepository.save(accreditamento);
 
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
+		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
+			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
+			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
+		}
 		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
 	}
 
@@ -414,6 +422,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamentoRepository.save(accreditamento);
 
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
+		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
+			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
+			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
+		}
 		workflowService.eseguiTaskRichiestaPreavvisoRigettoForCurrentUser(accreditamento, timerIntegrazioneRigetto);
 	}
 

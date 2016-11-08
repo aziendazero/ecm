@@ -1183,8 +1183,9 @@ tr.integrazione-eliminazione td:first-child a{
 
 .tooltip-inner {
 	white-space: pre-wrap;
-	min-width: 300px;
+	min-width: 310px;
 	background-color: #337ab7;
+	font-weight: bold;
 }
 
 .tooltip-arrow {
@@ -1222,12 +1223,22 @@ tr.bad-row a{
 	color: white;
 }
 
-
-
 li.listStyle-elenco{
 	list-style-type: square;
 }
 
 li.listStyle-elenco > label{
 	vertical-align: top;
+}
+
+.input-group-addon.add {
+	background-color: #1abc9c;
+	color: white;
+	border-color: #169f85;
+}
+
+.input-group-addon.remove {
+	background-color: #d9534f;
+	color: white;
+	border-color: #d9534f;
 }

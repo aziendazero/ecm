@@ -92,6 +92,22 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			role_writeAllProvider.setName(RoleEnum.PROVIDER_EDIT_ALL.name());
 			role_writeAllProvider.setDescription("PROVIDER (SCRITTURA TUTTI)");
 			roleRepository.save(role_writeAllProvider);
+			
+			//PROVIDER_USER_SHOW, PROVIDER_USER_EDIT, PROVIDER_USER_CREATE,
+			Role role_providerUserShow = new Role();
+			role_providerUserShow.setName(RoleEnum.PROVIDER_USER_SHOW.name());
+			role_providerUserShow.setDescription("PROVIDER (VISUALIZZAZIONE UTENTI DEL PROVIDER)");
+			roleRepository.save(role_providerUserShow);
+
+			Role role_providerUserEdit = new Role();
+			role_providerUserEdit.setName(RoleEnum.PROVIDER_USER_EDIT.name());
+			role_providerUserEdit.setDescription("PROVIDER (MODIFICA UTENTI DEL PROVIDER)");
+			roleRepository.save(role_providerUserEdit);
+
+			Role role_providerUserCreate = new Role();
+			role_providerUserCreate.setName(RoleEnum.PROVIDER_USER_CREATE.name());
+			role_providerUserCreate.setDescription("PROVIDER (CREAZIONE UTENTI DEL PROVIDER)");
+			roleRepository.save(role_providerUserCreate);
 
 			/* USER */
 			Role role_readUser = new Role();
@@ -127,6 +143,14 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			profile_provider.getRoles().add(role_readAccreditamento);
 			profile_provider.getRoles().add(role_writeAccreditamento);
 			profileRepository.save(profile_provider);
+
+			/* PROFILE PROVIDERUSERADMIN */
+			Profile profile_providerUserAdmin = new Profile();
+			profile_providerUserAdmin.setProfileEnum(ProfileEnum.PROVIDERUSERADMIN);
+			profile_providerUserAdmin.getRoles().add(role_providerUserCreate);
+			profile_providerUserAdmin.getRoles().add(role_providerUserEdit);
+			profile_providerUserAdmin.getRoles().add(role_providerUserShow);
+			profileRepository.save(profile_providerUserAdmin);
 
 			/* PROFILE SEGRETERIA */
 			Profile profile_admin = new Profile();
@@ -181,6 +205,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			provider.setExpiresDate(null);
 			provider.setLocked(false);
 			provider.getProfiles().add(profile_provider);
+			provider.getProfiles().add(profile_providerUserAdmin);
 			provider.setDataScadenzaPassword(LocalDate.now());
 
 			try {

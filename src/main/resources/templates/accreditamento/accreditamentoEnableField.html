@@ -30,6 +30,9 @@
 									name="giorniIntegrazione"
 									data-actions-box="false" data-size="10"
 									data-hide-disabled="false">
+									<option th:if="${@ecmProperties.debugTestMode}" value="-1">1 minuto da usare per debug</option>
+									<option th:if="${@ecmProperties.debugTestMode}" value="-5">5 minuti da usare per debug</option>
+									<option th:if="${@ecmProperties.debugTestMode}" value="-10">10 minuti da usare per debug</option>
 									<option th:each="i : ${#numbers.sequence(giorniIntegrazioneMin, giorniIntegrazioneMax)}" th:value="${i}" th:text="${i}"></option>
 								</select>
 

@@ -330,15 +330,15 @@
 							</div>
 
 							<!-- FILE SPONSOR -->
-							<div class="item form-group">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cv">
-									<span th:text="#{label.contratto}">Contratto</span>
-									<span class="required">*</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTO_SPONSOR}', sponsorFile, null, null, null, true, null, false)" ></th:block>
-								</div>
-							</div>
+<!-- 							<div class="item form-group"> -->
+<!-- 								<label class="control-label col-md-3 col-sm-3 col-xs-11"> -->
+<!-- 									<span th:text="#{label.contratto}">Contratto</span> -->
+<!-- 									<span class="required">*</span> -->
+<!-- 								</label> -->
+<!-- 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"> -->
+<!-- 									<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTO_SPONSOR}', sponsorFile, null, null, null, true, null, false)" ></th:block> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
 
 <!-- 							<input id="targetTableSponsor" type="text" name="addSponsorTo" style="display: none;" /> -->
 <!-- 							<input id="typeSponsor" type="text" name="typeSponsor" style="display: none;" /> -->
@@ -1453,6 +1453,9 @@
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.sede}" class="text-uppercase">SEDE</span>
 						</label>
+						<div class="col-xs-1">
+							<div th:attr="data-original-title=#{label.info_sede_programmaRES}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+						</div>
 					</div>
 					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')} ? 'bad'">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">

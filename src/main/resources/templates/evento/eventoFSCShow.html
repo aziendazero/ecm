@@ -152,7 +152,7 @@
 					<!-- OBIETTIVO NAZIONALE -->
 					<div class="item form-group">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span class="label-show" th:text="#{label.obiettivo_formativo_nazionale}">Obiettivo Strategico Nazionale</span>
+							<span class="label-show" th:text="#{label.obiettivo_strategico_nazionale}">Obiettivo Strategico Nazionale</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 							<div class="value" th:if="${eventoWrapper.evento.obiettivoNazionale != null}" th:text="${eventoWrapper.evento.obiettivoNazionale.nome}"></div>
@@ -163,7 +163,7 @@
 					<!-- OBIETTIVO REGIONALE -->
 					<div class="item form-group">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span class="label-show" th:text="#{label.obiettivo_formativo_regionale}">Obiettivo Strategico Regionale</span>
+							<span class="label-show" th:text="#{label.obiettivo_strategico_regionale}">Obiettivo Strategico Regionale</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value" th:if="${eventoWrapper.evento.obiettivoRegionale != null}" th:text="${eventoWrapper.evento.obiettivoRegionale.nome}"></div>
@@ -282,7 +282,7 @@
 							</div>
 						</div>
 					</div>
-					
+
 					<!-- BROCHURE EVENTO -->
 					<div class="item form-group">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -318,7 +318,7 @@
 										<td>
 											<label th:text="${riepilogo.numeroPartecipanti}"></label>
 										</td>
-		
+
 										<td th:text="${riepilogo.tempoDedicato}"></td>
 										<td th:text="${riepilogo.crediti}"></td>
 									</tr>
@@ -326,7 +326,7 @@
 							</table>
 						</div>
 					</div>
-					
+
 					<!-- NUMERO PARTECIPANTI -->
 					<div class="item form-group">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -442,7 +442,7 @@
 							<span class="label-show" th:text="#{label.quota_partecipazione}">Quota di partecipazione</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-							<div class="value" th:if="${eventoWrapper.evento.quotaPartecipazione != null}" th:text="${eventoWrapper.evento.quotaPartecipazione}"></div>
+							<div class="value" th:if="${eventoWrapper.evento.quotaPartecipazione != null}" th:text="${eventoWrapper.evento.quotaPartecipazione+'€'}"></div>
 							<div class="value danger" th:unless="${eventoWrapper.evento.quotaPartecipazione != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
