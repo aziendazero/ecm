@@ -10,6 +10,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -65,16 +66,28 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		info = Introspector.getBeanInfo(obj.getClass());
 		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
 			Method method = pd.getReadMethod();
-			Object innerEntity = method.invoke(obj);
-			if(innerEntity instanceof BaseEntity){
-				LOGGER.debug(Utils.getLogMessage("Detach object " + innerEntity.getClass() + ": " + ((BaseEntity) innerEntity).getId()));
-				entityManager.detach(innerEntity);
-			}else if(innerEntity instanceof PersistentSet || innerEntity instanceof Collection){
-				Class<?> clazz = getTypeByField(obj.getClass(),pd.getName());
-				if(clazz != null && BaseEntity.class.isAssignableFrom(clazz)){
-					for(Object o : (Set<?>)innerEntity){
-						LOGGER.debug(Utils.getLogMessage("Detach object " + o.getClass() + ": " + ((BaseEntity) o).getId()));
-						entityManager.detach(o);
+			if(method != null) {
+				Object innerEntity = method.invoke(obj);
+				if(innerEntity != null) {
+					if(innerEntity instanceof BaseEntity){
+						LOGGER.debug(Utils.getLogMessage("Detach object " + innerEntity.getClass() + ": " + ((BaseEntity) innerEntity).getId()));
+						entityManager.detach(innerEntity);
+					}else if(innerEntity instanceof PersistentSet || innerEntity instanceof Collection){
+						Class<?> clazz = getTypeByField(obj.getClass(),pd.getName());
+						if(clazz != null && BaseEntity.class.isAssignableFrom(clazz)){
+							if(innerEntity instanceof Set<?>) {
+								for(Object o : (Set<?>)innerEntity){
+									LOGGER.debug(Utils.getLogMessage("Detach object " + o.getClass() + ": " + ((BaseEntity) o).getId()));
+									entityManager.detach(o);
+								}
+							}
+							else if (innerEntity instanceof List<?>) {
+								for(Object o : (List<?>)innerEntity){
+									LOGGER.debug(Utils.getLogMessage("Detach object " + o.getClass() + ": " + ((BaseEntity) o).getId()));
+									entityManager.detach(o);
+								}
+							}
+						}
 					}
 				}
 			}
@@ -87,21 +100,32 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 			entityManager.detach(obj);
 		}
 	}
-	
+
 	@Override
 	public <T> void isManaged(T obj) throws Exception {
 		BeanInfo info;
 		info = Introspector.getBeanInfo(obj.getClass());
 		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
 			Method method = pd.getReadMethod();
-			Object innerEntity = method.invoke(obj);
-			if(innerEntity instanceof BaseEntity){
-				LOGGER.debug(Utils.getLogMessage("MANAGED: object " + innerEntity.getClass() + ": " + ((BaseEntity) innerEntity).getId() + " - managed: " + entityManager.contains(innerEntity)));
-			}else if(innerEntity instanceof PersistentSet || innerEntity instanceof Collection){
-				Class<?> clazz = getTypeByField(obj.getClass(),pd.getName());
-				if(clazz != null && BaseEntity.class.isAssignableFrom(clazz)){
-					for(Object o : (Set<?>)innerEntity){
-						LOGGER.debug(Utils.getLogMessage("MANAGED: object " + o.getClass() + ": " + ((BaseEntity) o).getId() + " - managed: " + entityManager.contains(o)));
+			if(method != null) {
+				Object innerEntity = method.invoke(obj);
+				if(innerEntity != null) {
+					if(innerEntity instanceof BaseEntity){
+						LOGGER.debug(Utils.getLogMessage("MANAGED: object " + innerEntity.getClass() + ": " + ((BaseEntity) innerEntity).getId() + " - managed: " + entityManager.contains(innerEntity)));
+					}else if(innerEntity instanceof PersistentSet || innerEntity instanceof Collection){
+						Class<?> clazz = getTypeByField(obj.getClass(),pd.getName());
+						if(clazz != null && BaseEntity.class.isAssignableFrom(clazz)){
+							if(innerEntity instanceof Set<?>) {
+								for(Object o : (Set<?>)innerEntity){
+									LOGGER.debug(Utils.getLogMessage("MANAGED: object " + o.getClass() + ": " + ((BaseEntity) o).getId() + " - managed: " + entityManager.contains(o)));
+								}
+							}
+							else if (innerEntity instanceof List<?>) {
+								for(Object o : (List<?>)innerEntity){
+									LOGGER.debug(Utils.getLogMessage("MANAGED: object " + o.getClass() + ": " + ((BaseEntity) o).getId() + " - managed: " + entityManager.contains(o)));
+								}
+							}
+						}
 					}
 				}
 			}
@@ -154,7 +178,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				}
 			}
 		});
-		
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE).isEmpty())
 			applyIntegrazioneAndSave(accreditamento.getProvider().getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE));
 
@@ -202,7 +226,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				}
 			}
 		});
-		
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO).isEmpty())
 			applyIntegrazioneAndSave(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
 
@@ -457,7 +481,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 			objectToSave = entityManager.unwrap(SessionImplementor.class).getPersistenceContext().unproxy(objectToSave);
 			clazz = objectToSave.getClass();
 		}
-		
+
 		Object service = appContext.getBean(clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1) + "ServiceImpl");
 		Class<?>[] cArg = new Class[1];
 		cArg[0] = clazz;
@@ -514,7 +538,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		wrapper.setSubset(subset);
 		wrapper.setObjRef(objRef);
 		wrapper.setSelected(Utils.getSubsetOfIdFieldEnum(fullLista, subset));
-		
+
 		if(fullLista != null && !fullLista.isEmpty()) {
 			for(FieldEditabileAccreditamento fEdit : fullLista)
 				wrapper.getMappaNoteFieldEditabileAccreditamento().put(fEdit.getIdField(), fEdit.getNota());
@@ -527,7 +551,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 	public void saveEnableField(RichiestaIntegrazioneWrapper wrapper) {
 		Set<IdFieldEnum> listaDaView = wrapper.getSelected();
 		Set<IdFieldEnum> gruppo = new HashSet<IdFieldEnum>();
-		
+
 		if(listaDaView != null) {
 			if(!listaDaView.isEmpty())
 				listaDaView.forEach( f -> {
@@ -535,13 +559,13 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 						for(IdFieldEnum field : f.getGruppo())
 							gruppo.add(field);
 				});
-			
+
 			listaDaView.addAll(gruppo);
 		}
 
 		//SI carica la lista dei FieldEditabileAccreditamento da DB per l'accreditamento corrente
 		Set<FieldEditabileAccreditamento> listaFull = fieldEditabileAccreditamentoService.getFullLista(wrapper.getAccreditamentoId(), wrapper.getObjRef());
-		//Filtro la listaFull di tutti i FieldEditabileAccreditamento salvati sul DB con il SubSetFieldEnum corrente 
+		//Filtro la listaFull di tutti i FieldEditabileAccreditamento salvati sul DB con il SubSetFieldEnum corrente
 		//ottenendo la lista dei FieldEditabileAccreditamento salvati su db gestiti in questo momento
 		Set<FieldEditabileAccreditamento> listaSubset = Utils.getSubset(listaFull, wrapper.getSubset());
 
@@ -557,14 +581,14 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 
 		fieldEditabileAccreditamentoService.insertFieldEditabileForAccreditamento(wrapper.getAccreditamentoId(), wrapper.getObjRef(), wrapper.getSubset(), listaDaView, wrapper.getMappaNoteFieldEditabileAccreditamento());
 	}
-	
+
 	@Override
 	public void checkIfFieldIntegraizoniConfirmedForAccreditamento(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) {
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-		
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER).isEmpty())
 			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER));
-		
+
 		//fieldIntegrazione per i multi-istanza
 		Set<Sede> sedi = sedeService.getSediFromIntegrazione(accreditamento.getProvider().getId());
 		sedi.forEach( s -> {
@@ -584,7 +608,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				}
 			}
 		});
-		
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE).isEmpty())
 			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider().getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.LEGALE_RAPPRESENTANTE));
 
@@ -631,11 +655,11 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				}
 			}
 		});
-		
+
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO).isEmpty())
 			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
 	}
-	
+
 	private void checkIfFieldIntegraizoniConfirmed(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList){
 		for(FieldIntegrazioneAccreditamento field : fieldIntegrazioneList){
 			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE){

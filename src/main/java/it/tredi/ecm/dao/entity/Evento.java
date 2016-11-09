@@ -38,6 +38,7 @@ import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -73,6 +74,11 @@ import lombok.Setter;
 	@NamedEntityGraph(name="graph.evento.forRiedizione",
 			attributeNodes = {@NamedAttributeNode("id"),
 					@NamedAttributeNode(value="brochureEvento", subgraph="fileFull")},
+//					@NamedAttributeNode(value="autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", subgraph="fileFull"),
+//					@NamedAttributeNode(value="autocertificazioneAutorizzazioneMinisteroSalute", subgraph="fileFull"),
+//					@NamedAttributeNode(value="autocertificazioneAssenzaFinanziamenti", subgraph="fileFull"),
+//					@NamedAttributeNode(value="contrattiAccordiConvenzioni", subgraph="fileFull"),
+//					@NamedAttributeNode(value="dichiarazioneAssenzaConflittoInteresse", subgraph="fileFull")},
 			subgraphs = {@NamedSubgraph(name="fileFull", attributeNodes={
 					@NamedAttributeNode("id"),
 					@NamedAttributeNode("nomeFile"),
@@ -101,9 +107,9 @@ public class Evento extends BaseEntity{
 	 * 		*EVENTO inserito come RIEDIZIONE -> PREFIX dell'evento padre + #edizione
 	 * */
 	private String prefix;
-	private int edizione = 0;
+	private int edizione = 1;
 	public String getCodiceIdentificativo(){
-		if(edizione > 0)
+		if(edizione > 1)
 			return prefix + "-" + edizione;
 		else return prefix;
 	}
@@ -151,6 +157,7 @@ public class Evento extends BaseEntity{
 	}
 
 	//false -> dopo 90gg
+	//true -> dopo fineEvento
 	private boolean canAttachSponsor = true;
 	//true -> dopo fineEvento
 	//false -> dopo aver pagato
@@ -197,7 +204,7 @@ public class Evento extends BaseEntity{
 		this.professioniEvento = epf.getProfessioniEvento();
 		this.discipline = epf.getDiscipline();
 		this.prefix = epf.getCodiceIdentificativo();
-		this.edizione = 0;
+		this.edizione = 1;
 		this.pianoFormativo = epf.getPianoFormativo();
 	}
 
@@ -247,6 +254,9 @@ public class Evento extends BaseEntity{
 	private BigDecimal quotaPartecipazione;
 
 	private Boolean eventoSponsorizzato;
+
+	private Boolean letteInfoAllegatoSponsor;
+
 	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
 	@JoinColumn(name="evento_id")
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();
@@ -288,7 +298,7 @@ public class Evento extends BaseEntity{
 
 			//ridotto di 1/3
 			if(altreFormeFinanziamento != null && !altreFormeFinanziamento.booleanValue()){
-				costo = (costo*2)/3;
+				 costo = Utils.getRoundedDoubleValue((costo*2)/3, 2);
 			}
 		}else{
 			throw new Exception("provider non classificato correttamente");

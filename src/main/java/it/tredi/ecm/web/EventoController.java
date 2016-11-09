@@ -2,6 +2,7 @@ package it.tredi.ecm.web;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
+import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
@@ -47,6 +49,7 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
+import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
@@ -246,7 +249,7 @@ public class EventoController {
 	public String rieditaEvento(@PathVariable Long providerId, @PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId +"/re-edit"));
 		try {
-			Evento evento = eventoService.getEvento(eventoId);
+			Evento evento = eventoService.getEventoForRiedizione(eventoId);
 			EventoWrapper wrapper = prepareEventoWrapperRiedizione(evento, providerId);
 			return goToEdit(model, wrapper);
 		}
@@ -555,7 +558,14 @@ public class EventoController {
 		eventoWrapper.setObiettiviNazionali(obiettivoService.getObiettiviNazionali());
 		eventoWrapper.setObiettiviRegionali(obiettivoService.getObiettiviRegionali());
 		DatiAccreditamento datiAccreditamento = accreditamentoService.getDatiAccreditamentoForAccreditamentoId(accreditamentoService.getAccreditamentoAttivoForProvider(providerId).getId());
-		eventoWrapper.setProfessioneList(datiAccreditamento.getProfessioniSelezionate());
+		List<Professione> professioneList = new ArrayList<Professione>();
+		professioneList.addAll(datiAccreditamento.getProfessioniSelezionate());
+		professioneList.sort(new Comparator<Professione>() {
+			 public int compare(Professione p1, Professione p2) {
+				 return (p1.getNome().compareTo(p2.getNome()));
+			 }
+		});
+		eventoWrapper.setProfessioneList(professioneList);
 		eventoWrapper.setDisciplinaList(datiAccreditamento.getDiscipline());
 		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.EDIT);
 		eventoWrapper.setMappaErroriValidazione(new HashMap<String, String>());
@@ -1002,7 +1012,8 @@ public class EventoController {
 		try{
 			if(eventoWrapper.getEvento() instanceof EventoRES){
 				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().addProgrammaGiornalieroIntermedio(null);
-				return EDITRES + " :: " + sectionToRefresh;
+				//return EDITRES + " :: " + sectionToRefresh;
+				return EDITRES + " :: eventoRESEdit";
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
 			}
@@ -1020,7 +1031,8 @@ public class EventoController {
 			Long k = Long.valueOf(key);
 			if(eventoWrapper.getEvento() instanceof EventoRES){
 				eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().removeProgrammaGiornalieroIntermedio(k);
-				return EDITRES + " :: " + sectionToRefresh;
+				//return EDITRES + " :: " + sectionToRefresh;
+				return EDITRES + " :: eventoRESEdit";
 			} else {
 				throw new Exception("Metodo chiamato dalla pagina errata aspettatto EventoRES.");
 			}

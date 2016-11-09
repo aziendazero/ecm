@@ -61,16 +61,6 @@ public class EventoFSC extends Evento{
 	@ElementCollection
 	private List<RiepilogoRuoliFSC> riepilogoRuoli = new ArrayList<RiepilogoRuoliFSC>();
 
-	public float calcoloDurata(){
-		float durata = 0.0f;
-		//TODO
-		return durata;
-	}
-
-	public float calcoloCreditiFormativi(){
-		float crediti = 0.0f;
-		//TODO
-		return crediti;
-	}
+	private Integer numeroTutor;
 
 }

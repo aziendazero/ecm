@@ -14,9 +14,15 @@ public interface QuotaAnnualeService {
 	public Set<QuotaAnnuale> getAllQuotaAnnuale();
 	public Set<QuotaAnnuale> getAllQuotaAnnualeByProviderId(Long providerId);
 	
+	public QuotaAnnuale getQuotaAnnualeForProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
 	public Set<Pagamento> getPagamentiProviderDaVerificare();
-	public Set<Provider> getAllProviderNotPagamentoEffettuato();
+	public boolean hasProviderPagamentiNonEffettuati(Long providerId);
 	public Set<Provider> getAllProviderNotPagamentoRegistrato(Integer annoRiferimento);
+	
+	public void checkAndCreateQuoteAnnualiPerAnnoInCorso();
+	
+	public Set<Provider> getAllProviderNotPagamentoEffettuatoAllaScadenza();
+	public int countProviderNotPagamentoEffettuatoAllaScadenza();
 	
 	public void save(QuotaAnnuale quotaAnnuale);
 }

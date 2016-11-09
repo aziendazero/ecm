@@ -14,6 +14,7 @@ import javax.persistence.MapKeyColumn;
 
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
+import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,4 +42,11 @@ public class RiepilogoRES {
 		this.totaleOreInterattive = 0.0f;
 	}
 	
+	public void setTotaleOreFrontali(Float t){
+		this.totaleOreFrontali = Utils.getRoundedFloatValue(t, 2);
+	}
+	
+	public void setTotaleOreInterattive(Float t){
+		this.totaleOreInterattive = Utils.getRoundedFloatValue(t, 2);
+	}
 }
