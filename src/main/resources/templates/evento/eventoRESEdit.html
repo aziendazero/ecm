@@ -1500,7 +1500,7 @@
 
 				//funzione che aggiunge una data intermedia, aumenta il name in base alle date già presenti
 				function aggiungiDataIntermedia(caller, target) {
-					alert('aggiungiDataIntermedia');
+					//alert('aggiungiDataIntermedia');
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addDataIntermedia/|}]] + target, $('#formEventoRES').serialize())
 					.done(function(data) {
 						//alert(data);
@@ -1543,7 +1543,7 @@
 
 				//rimuove una data intermedia
 				function rimuoviDataIntermedia(caller, target, key) {
-					alert('rimuoviDataIntermedia');
+					//alert('rimuoviDataIntermedia');
 					//alert('url: ' + [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeDataIntermedia/|}]] + key + '/' + target);
 					//alert('target: ' + target);
 					//alert($('#' + target).size());
@@ -1962,7 +1962,7 @@
 				}
 
 				function sendAjaxReloadSection(sectionIndex){
-					alert('sendAjaxReloadSection - sectionIndex: ' + sectionIndex);
+					//alert('sendAjaxReloadSection - sectionIndex: ' + sectionIndex);
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoRES').serialize())
 					.done(function(data) {
 					  	$('#section-' + sectionIndex).html(data);

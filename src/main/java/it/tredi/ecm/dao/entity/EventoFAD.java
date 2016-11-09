@@ -36,7 +36,7 @@ public class EventoFAD extends Evento{
 
 	private String razionale;
 	@ElementCollection
-	private Set<String> risultatiAttesi = new HashSet<String>();
+	private List<String> risultatiAttesi = new ArrayList<String>();
 
 	@ElementCollection(fetch = FetchType.EAGER) //TODO fastfix per demo.. sarebbe da utilizzare lazy con la annotazione in web.xml(?)
 	@JoinColumn(name = "programma_fad_id")

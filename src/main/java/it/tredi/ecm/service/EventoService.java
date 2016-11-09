@@ -45,4 +45,9 @@ public interface EventoService {
 	public Evento getEventoForRiedizione(Long eventoId);
 	public Set<Evento> getEventiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
 	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
+
+	// detacha e clona l'Evento Padre da rieditare
+//	public <T> void detachEvento(T obj) throws Exception;
+	public Evento detachEvento(Evento evento) throws Exception;
+
 }
