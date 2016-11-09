@@ -28,6 +28,7 @@
 		<servlet-api.version>3.0.0</servlet-api.version>
 		<liquibaseplugin.version>3.4.2</liquibaseplugin.version>
 		<liquibase-hibernate4.version>3.5</liquibase-hibernate4.version>
+		<postgresql.version>9.4.1211</postgresql.version>
 	</properties>
 
 	<!-- profiles> <profile> <id>dev</id> <properties> <activatedProperties>dev</activatedProperties> 
@@ -175,6 +176,10 @@
 			<artifactId>
 				spring-boot-starter-data-elasticsearch
 			</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jersey</artifactId>
 		</dependency>
 	</dependencies>
 

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+
+		<div class="row">
+			<div class="col-xs-12">
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.relazione_annuale_anno(${#numbers.formatInteger(relazioneAnnualeWrapper.relazioneAnnuale.annoRiferimento,0)})}"></h2>
+						<div class="pull-right buttons-header">
+							<div class="dropdown pull-right">
+  								<a class="btn btn-primary" th:href="@{|/provider/${relazioneAnnualeWrapper.providerId}/relazioneAnnuale/list|}" th:text="#{label.indietro}"></a>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					
+					<th:block th:include="relazioneAnnuale/relazioneAnnualeFragment :: relazioneAnnuale('show')"></th:block>
+				
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

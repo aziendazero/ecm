@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<!-- fragment interno della relazioneAnnuale, la parte di paginazione è gestita dai file relazioneAnnualeShow, relazioneAnnualeEdit -->
+	<!-- parametri del fragment: String passata come parametro per definire la modalità e prende personaWrapper dal module del chiamante -->
+	<th:block th:fragment="relazioneAnnuale(mode)">
+		<th:block th:with="editabile=${mode == 'edit'},
+			showOnly=${mode == 'show'}">
+			<!-- ogni parte non in comune sarà gestita in maniera appropriata -->
+			<div class="x_content">
+				<!-- rimuove il tag form se la relazioneAnnuale NON è editabile -->
+				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
+					<form th:remove="${!showOnly} ? none : tag"
+						id="formRelazioneAnnuale" class="form-horizontal form-label-left"
+						th:action="@{|/provider/${relazioneAnnualeWrapper.providerId}/relazioneAnnuale/|} + ${editabile ? 'save' : mode}"
+						method="post" enctype="multipart/form-data"
+						novalidate="novalidate">
+
+						<!-- gli input hidden non sono necessari se NON editabile -->
+						<th:block th:unless="${showOnly}">
+							<input type="hidden" name="editId" th:value="${relazioneAnnualeWrapper.relazioneAnnuale.id}" />
+							<input type="hidden" th:field="${relazioneAnnualeWrapper.relazioneAnnuale.provider.id}" />
+							<input type="hidden" th:field="${relazioneAnnualeWrapper.relazioneAnnuale.annoRiferimento}" />
+						</th:block>
+
+						<th:block th:if="${showOnly}">
+							<h3 th:text="#{label.rapporto_eventi}">Rapporto Eventi</h3>
+							<!-- Eventi definiti nel PFA dell anno precedente -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.eventi_inseriti_pfa_anno}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.eventiInseritiPFA}"></div>
+								</div>
+							</div>
+							
+							<!-- numero di eventi rendicontati come attuazione di eventi del PFA dell'anno precedente -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.eventi_definitivi_da_pfa_anno}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.eventiDefinitiviPFA}"></div>
+								</div>
+							</div>
+							
+							<!-- numero di eventi manuali rendicontati nell'anno precedente -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.eventi_manuali_defintivi_anno}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.eventiDefinitiviManuali}"></div>
+								</div>
+							</div>
+							
+							<!-- rapportoAttuazione -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.rapportoAttuazione}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoAttuazione + ' %'}"></div>
+								</div>
+							</div>
+	
+							<div class="divider"></div>
+						</th:block>
+
+						<h3 th:text="#{label.rapporto_economico}">Rapporto Economico</h3>
+						<!-- numeroPartecipantiNoCrediti -->
+						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.numero_partecipanti_no_crediti}">Nome</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="numeroPartecipantiNoCrediti" name="numeroPartecipantiNoCrediti"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti}" />
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti}"></div>
+						</div>
+						
+						<!-- costiTotaliEventi -->
+						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.costi_totali_eventi}">Nome</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="costiTotaliEventi" name="costiTotaliEventi"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi}" />
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi}"></div>
+						</div>
+						
+						<!-- ricaviDaSponsor -->
+						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.ricavi_da_sponsor}">Nome</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="ricaviDaSponsor" name="ricaviDaSponsor"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor}" />
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor}"></div>
+						</div>
+						
+						<!-- altriFinanziamenti -->
+						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.altri_finanziamenti}">Nome</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="altriFinanziamenti" name="altriFinanziamenti"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti}" />
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti}"></div>
+						</div>
+
+						<!-- quoteDiPartecipazione -->
+						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.quote_di_partecipazione}">Nome</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="quoteDiPartecipazione" name="quoteDiPartecipazione"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione}" />
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione}"></div>
+						</div>
+						
+						<th:block th:if="${showOnly}">
+							<!-- rapportoCostiEntrate -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.rapporto_costi_entrate}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoCostiEntrate + ' %'}"></div>
+								</div>
+							</div>
+						</th:block>
+						
+						<div th:if="${editabile}" class="divider-dashed"></div>
+						
+						<!--   ALLEGATO (RELAZIONE FINALE)   -->
+						<th:block th:if="${editabile}">
+							<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale')} ? 'bad'">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span th:text="#{label.relazioneFinale}">Relazione Finale</span>
+									<span class="required" id="brochure-obbligatoria">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<th:block th:include="fragments/allegati :: allegati(relazioneAnnualeWrapper, false, relazioneFinale, null, null, null, true, null, true)" ></th:block>
+								</div>
+								<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale}"></div>
+							</div>
+						</th:block>
+						<th:block th:if="${showOnly}">
+							<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span class="label-show" th:text="#{label.relazioneFinale}">Cognome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<a th:if="${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale != null}" class="value" th:href="@{|/file/${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale.id}|}" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale.nomeFile}"></a>
+									<div th:if="${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale == null}" class="value" th:text="#{label.allegato_non_inserito}"></div>
+								</div>
+							</div>
+						</th:block>
+						
+						<div class="divider"></div>
+						
+						<th:block th:if="${showOnly}">
+							<h3 th:text="#{label.resoconti_eventi}">Resoconto Eventi</h3>
+							<!-- Riepilogo -->
+							<div class="item form-group">
+			 					<label class="control-label col-md-4 col-sm-4 col-xs-12">
+			 						<span class="label-show" th:text="#{label.resoconto_obiettivi}">Tipologia di obiettivi formativi</span>
+			 					</label>
+			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			 						<div class="value-edit">
+			 							<ul>
+											<li class="listStyle-elenco" th:each="obiettivo, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoObiettivi}">
+												<label th:text="${obiettivo.key.nome + ' - ' + obiettivo.value}"></label>
+											</li>
+			 							</ul>
+		 							</div>
+			 					</div>
+			 				</div>
+							
+							<div class="item form-group">
+			 					<label class="control-label col-md-4 col-sm-4 col-xs-12">
+			 						<span class="label-show" th:text="#{label.resoconto_professioni}">Tipologia di obiettivi formativi</span>
+			 					</label>
+			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			 						<div class="value-edit">
+			 							<ul>
+											<li class="listStyle-elenco" th:each="professione, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoProfessioni}">
+												<label th:text="${professione.key.nome + ' - ' + professione.value}"></label>
+											</li>
+			 							</ul>
+		 							</div>
+			 					</div>
+			 				</div>
+			 				
+			 				<div class="item form-group">
+			 					<label class="control-label col-md-4 col-sm-4 col-xs-12">
+			 						<span class="label-show" th:text="#{label.resoconto_discipline}">Tipologia di obiettivi formativi</span>
+			 					</label>
+			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			 						<div class="value-edit">
+			 							<ul>
+											<li class="listStyle-elenco" th:each="disciplina, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoDiscipline}">
+												<label th:text="${disciplina.key.nome + ' - ' + disciplina.value}"></label>
+											</li>
+			 							</ul>
+		 							</div>
+			 					</div>
+			 				</div>
+			 				
+			 				<div class="item form-group">
+			 					<label class="control-label col-md-4 col-sm-4 col-xs-12">
+			 						<span class="label-show" th:text="#{label.resoconto_obiettivi_regionali}">Tipologia di obiettivi formativi</span>
+			 					</label>
+			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			 						<div class="value-edit">
+			 							<ul>
+											<li class="listStyle-elenco" th:each="obiettivo, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoObiettiviRegionali}">
+												<label th:text="${obiettivo.key.nome + ' - ' + obiettivo.value}"></label>
+											</li>
+			 							</ul>
+		 							</div>
+			 					</div>
+			 				</div>
+							
+							<!-- rapportoObiettiviRegionali -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.rapporto_obiettivi_regionali}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali + ' %'}"></div>
+								</div>
+							</div>
+						</th:block>
+				
+						<input id="submitButton" type="submit" style="display: none;" />
+
+					</form>
+				</div>
+			</div>
+		</th:block>
+	</th:block>
+</body>
+</html>

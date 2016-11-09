@@ -33,6 +33,12 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Autowired private EventoService eventoService;
 	
 	@Override
+	public RelazioneAnnuale getRelazioneAnnuale(Long relazioneAnnualeId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero Relazione Annuale: " + relazioneAnnualeId));
+		return relazioneAnnualeRepository.findOne(relazioneAnnualeId);
+	}
+	
+	@Override
 	public Set<RelazioneAnnuale> getAllRelazioneAnnuale() {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le Relazioni Annuali"));
 		return relazioneAnnualeRepository.findAll();
@@ -89,6 +95,12 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Override
 	public RelazioneAnnuale createRelazioneAnnuale(Long providerId, Integer annoRiferimento) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
+		
+		RelazioneAnnuale r = getRelazioneAnnualeForProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
+		if(r != null){
+			return null;
+		}
+		
 		RelazioneAnnuale relazioneAnnuale = new RelazioneAnnuale();
 		
 		relazioneAnnuale.setAnnoRiferimento(annoRiferimento);

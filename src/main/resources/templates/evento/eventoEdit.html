@@ -1536,7 +1536,8 @@
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].risultatoAtteso}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].obiettivoFormativo?.nome}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].metodologiaDidattica?.nome}"></td>
-										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td>
+										<!-- <td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td> -->
+										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita)}"></td>
 										<td>
 											<a onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
 												<span><i class="fa fa-pencil"></i></span>

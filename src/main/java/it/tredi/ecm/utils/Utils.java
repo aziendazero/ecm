@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -218,5 +219,11 @@ public class Utils {
 	public static Double getRoundedDoubleValue(Double value, int precision){
 		BigDecimal bg = new BigDecimal(value).setScale(precision, RoundingMode.HALF_UP);
 		return bg.doubleValue();
+	}
+	
+	public static String formatOrario(float durata){
+		int ore = (int) durata;
+		int minuti = (int) ((durata*60) % 60);
+		return ore + ":" + minuti;
 	}
 }
