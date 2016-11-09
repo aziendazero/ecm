@@ -56,13 +56,16 @@
 
 				$(document).ready(function() {
 
-					$(".datatable-responsive-eventi-provider").DataTable({
+					$(".datatable-responsive-relazione").DataTable({
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
 						"ordering" : false,
 						"columnDefs": [ {
-							"targets": 6,
+							"targets": 1,
+							"width": "1px",
+							"sClass": "center"},{
+							"targets": 2,
 							"width": "1px",
 							"sClass": "center"
 						} ]

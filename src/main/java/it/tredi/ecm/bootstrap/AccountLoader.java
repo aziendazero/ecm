@@ -96,7 +96,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			//PROVIDER_USER_SHOW, PROVIDER_USER_EDIT, PROVIDER_USER_CREATE,
 			Role role_providerUserShow = new Role();
 			role_providerUserShow.setName(RoleEnum.PROVIDER_USER_SHOW.name());
-			role_providerUserShow.setDescription("PROVIDER (VISUALIZZAZIONE UTENTI DEL PROVIDER)");
+			role_providerUserShow.setDescription("ò");
 			roleRepository.save(role_providerUserShow);
 
 			Role role_providerUserEdit = new Role();

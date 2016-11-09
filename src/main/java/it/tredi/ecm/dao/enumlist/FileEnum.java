@@ -53,6 +53,8 @@ public enum FileEnum {
 	FILE_EVENTI_PIANO_FORMATIVO(43, "File CSV per import eventi piano formativo"),
 	FILE_REQUISITI_HARDWARE_SOFTWARE(43, "Dotazione hardware e software necessaria all'utente per svolgere l'evento"),
 
+	FILE_RELAZIONE_FINALE(44, "Relazione Finale"),
+	
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 

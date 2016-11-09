@@ -12,7 +12,6 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
@@ -22,9 +21,6 @@ import javax.persistence.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
-import it.tredi.ecm.dao.enumlist.IdFieldEnum;
-import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
-import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,15 +53,15 @@ public class RelazioneAnnuale extends BaseEntity{
 	private int eventiInseritiPFA = 0;//numero di eventi inseriti nel PFA dell'anno precedente
 	private int eventiDefinitiviPFA = 0;//numero di eventi rendicontati come attuazione di eventi del PFA dell'anno precedente
 	private int eventiDefinitiviManuali = 0;//numero di eventi manuali rendicontati nell'anno precedente
-	private float rapportoAttuazione = 0;//numero di eventi manuali rendicontati nell'anno precedente
+	private BigDecimal rapportoAttuazione = new BigDecimal(0);;//eventiDefinitiviPFA/eventiInseritiPFA
 
-	private int numeroPartecipantiNoCrediti;
+	private Integer numeroPartecipantiNoCrediti;
 	private BigDecimal costiTotaliEventi = new BigDecimal(0);
 	private BigDecimal ricaviDaSponsor = new BigDecimal(0);
 	private BigDecimal altriFinanziamenti = new BigDecimal(0);
 	private BigDecimal quoteDiPartecipazione = new BigDecimal(0);
 	
-	private float rapportoCostiEntrate = 0;//(costiTotaliEventi / (ricaviDaSponsor + altriFinanziamenti + quoteDiPartecipazione))
+	private BigDecimal rapportoCostiEntrate = new BigDecimal(0);//(costiTotaliEventi / (ricaviDaSponsor + altriFinanziamenti + quoteDiPartecipazione))
 	
 	@ElementCollection
 	@MapKeyColumn(name="key_obiettivo_nazionale")
@@ -91,7 +87,7 @@ public class RelazioneAnnuale extends BaseEntity{
 	@CollectionTable(name="relazione_annuale_riepilogo_obiettivi_nazionali", joinColumns=@JoinColumn(name="relazione_annuale_id"))
 	private Map<Obiettivo, Integer> riepilogoObiettiviRegionali = new HashMap<Obiettivo, Integer>();
 	
-	private float rapportoObiettiviRegionali = 0;//(# eventi con ObiettiviRegionali / # totale di eventi)
+	private BigDecimal rapportoObiettiviRegionali =  new BigDecimal(0);;//(# eventi con ObiettiviRegionali / # totale di eventi)
 	
 	@OneToOne
 	private File relazioneFinale;
@@ -147,20 +143,20 @@ public class RelazioneAnnuale extends BaseEntity{
 		}
 		
 		if(eventiInseritiPFA > 0 )
-			rapportoAttuazione = Utils.getRoundedFloatValue((eventiDefinitiviPFA/eventiInseritiPFA), 2);
+			rapportoAttuazione = BigDecimal.valueOf(eventiDefinitiviPFA/eventiInseritiPFA).multiply(new BigDecimal(100));
 		
-		float sum = (ricaviDaSponsor.floatValue() + altriFinanziamenti.floatValue() + quoteDiPartecipazione.floatValue());
+		double sum = (ricaviDaSponsor.doubleValue() + altriFinanziamenti.doubleValue() + quoteDiPartecipazione.doubleValue());
 		if(sum > 0)
-			rapportoCostiEntrate = (costiTotaliEventi.floatValue() / sum);
+			rapportoCostiEntrate = BigDecimal.valueOf(costiTotaliEventi.doubleValue() / sum).multiply(new BigDecimal(100));
 		
 		riepilogoObiettiviRegionali.forEach( (k,v) -> {
 			if(k.isNonRientraTraObiettiviRegionali()){
-				rapportoObiettiviRegionali += v;
+				rapportoObiettiviRegionali = rapportoObiettiviRegionali.add(BigDecimal.valueOf(v.doubleValue()));
 			}
 		});
 		
 		if(eventiAttuati != null && eventiAttuati.size() > 0)
-			rapportoObiettiviRegionali = rapportoObiettiviRegionali/eventiAttuati.size();
+			rapportoObiettiviRegionali = rapportoObiettiviRegionali.divide(new BigDecimal(eventiAttuati.size())).multiply(new BigDecimal(100));
 	}
 	
 	private void getInfoRiepilogo(Evento e){

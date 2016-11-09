@@ -33,6 +33,12 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Autowired private EventoService eventoService;
 	
 	@Override
+	public RelazioneAnnuale getRelazioneAnnuale(Long relazioneAnnualeId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero Relazione Annuale: " + relazioneAnnualeId));
+		return relazioneAnnualeRepository.findOne(relazioneAnnualeId);
+	}
+	
+	@Override
 	public Set<RelazioneAnnuale> getAllRelazioneAnnuale() {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le Relazioni Annuali"));
 		return relazioneAnnualeRepository.findAll();
