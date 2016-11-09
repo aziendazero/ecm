@@ -158,6 +158,12 @@ public class EventoValidator {
 		if(evento.getEventoSponsorizzato() == null)
 			errors.rejectValue(prefix + "eventoSponsorizzato", "error.empty");
 
+		/* CHECK INFO SPONSOR (campo obbligatorio)
+		 * spunta richiesta
+		 * */
+		if(evento.getLetteInfoAllegatoSponsor() == null || evento.getLetteInfoAllegatoSponsor() == false)
+			errors.rejectValue(prefix + "letteInfoAllegatoSponsor", "error.empty");
+
 		/* SPONSOR (campo obbligatorio)
 		 * campo complesso ripetibile di tipo Sponsor
 		 * deve avere tutti i campi inseriti
@@ -1263,7 +1269,6 @@ public class EventoValidator {
 			//caso5) tipologiaEvento == AUDIT_CLINICO_ASSISTENZIALE
 			// - almeno 1 azione per fase
 			// - almeno 1 ruolo partecipante per azione
-			// - almeno 2 ore non frazionabili per partecipante, campo valorizzabile solo con multipli di 2
 			// - tutti i campi obbligatori
 			case AUDIT_CLINICO_ASSISTENZIALE:
 
@@ -1275,8 +1280,6 @@ public class EventoValidator {
 					else {
 						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 							if(r.getTempoDedicato() < 2)
-								return true;
-							else if((r.getTempoDedicato() % 2) != 0f)
 								return true;
 							hasPartecipante = true;
 						}

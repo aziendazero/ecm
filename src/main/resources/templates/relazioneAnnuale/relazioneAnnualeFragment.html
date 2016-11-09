@@ -23,7 +23,8 @@
 						<!-- gli input hidden non sono necessari se NON editabile -->
 						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${relazioneAnnualeWrapper.relazioneAnnuale.id}" />
-							<input type="hidden" th:field="${relazioneAnnualeWrapper.providerId}" />
+							<input type="hidden" th:field="${relazioneAnnualeWrapper.relazioneAnnuale.provider.id}" />
+							<input type="hidden" th:field="${relazioneAnnualeWrapper.relazioneAnnuale.annoRiferimento}" />
 						</th:block>
 
 						<th:block th:if="${showOnly}">
@@ -189,10 +190,21 @@
 							</div>
 						</th:block>
 						
-						<!--   ALLEGATO (RELAZIONE FINALE)   -->
 						<div th:if="${editabile}" class="divider-dashed"></div>
 						
-						<th:block th:if="${editabile}" th:include="fragments/allegati :: allegati(relazioneAnnualeWrapper, false, relazioneFinale, null, null, null, true, null, true)" ></th:block>
+						<!--   ALLEGATO (RELAZIONE FINALE)   -->
+						<th:block th:if="${editabile}">
+							<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale')} ? 'bad'">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span th:text="#{label.relazioneFinale}">Relazione Finale</span>
+									<span class="required" id="brochure-obbligatoria">*</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<th:block th:include="fragments/allegati :: allegati(relazioneAnnualeWrapper, false, relazioneFinale, null, null, null, true, null, true)" ></th:block>
+								</div>
+								<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale}"></div>
+							</div>
+						</th:block>
 						<th:block th:if="${showOnly}">
 							<div class="item form-group">
 									<label class="control-label col-md-4 col-sm-4 col-xs-12">

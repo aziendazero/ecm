@@ -998,11 +998,21 @@
 										</div>
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzato')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.eventoSponsorizzato')}__}"></div>
-									<div class="col-xs-1">
-										<div th:attr="data-original-title=#{label.info_sponsor_evento}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
-									</div>
 								</div>
 								<div class="sponsor-si">
+									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.letteInfoAllegatoSponsor')} ? 'bad'">
+										<div class="control-label col-md-4 col-sm-4 col-xs-12"></div>
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+											<div class="checkbox">
+												<label>
+													<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.letteInfoAllegatoSponsor}" th:value="${true}" />
+													<span th:text="#{label.info_sponsor_evento}"></span>
+													<span class="required">*</span>
+												</label>
+											</div>
+										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.letteInfoAllegatoSponsor')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.letteInfoAllegatoSponsor')}__}"></div>
+									</div>
 									<div class="no-padding item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')} ? 'bad'">
 										<div class="col-lg-9 col-md-11 col-sm-11 col-xs-12"></div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.sponsors')}__}"></div>

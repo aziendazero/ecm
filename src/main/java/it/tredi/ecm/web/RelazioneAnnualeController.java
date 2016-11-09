@@ -96,9 +96,12 @@ public class RelazioneAnnualeController {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/relazioneAnnuale/insert"));
 		try {
 			RelazioneAnnuale relazioneAnnuale = relazioneAnnualeService.createRelazioneAnnuale(providerId, LocalDate.now().getYear());
-			relazioneAnnuale.elabora();
-			relazioneAnnualeService.save(relazioneAnnuale);
-			return "redirect:/provider/{providerId}/relazioneAnnuale/list";
+			if(relazioneAnnuale == null){
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				return "redirect:/provider/" + providerId + "/relazioneAnnuale/list";
+			}else{
+				return goToNew(model, prepareWrapperNew(relazioneAnnuale));
+			}
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/relazioneAnnuale/list"),ex);
@@ -139,7 +142,7 @@ public class RelazioneAnnualeController {
 	
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping(value = "/provider/{providerId}/relazioneAnnuale/save", method=RequestMethod.POST)
-	public String showRelazioniAnnualiForProvider(@PathVariable Long providerId, @ModelAttribute("relazioneAnnualeWrapper") RelazioneAnnualeWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs){
+	public String saveRelazioniAnnualiForProvider(@PathVariable Long providerId, @ModelAttribute("relazioneAnnualeWrapper") RelazioneAnnualeWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/relazioneAnnuale/save"));
 		try {
 			
@@ -147,7 +150,7 @@ public class RelazioneAnnualeController {
 				wrapper.getRelazioneAnnuale().setRelazioneFinale(fileService.getFile(wrapper.getRelazioneFinale().getId()));
 			}
 			
-			relazioneAnnualeValidator.validate(wrapper.getRelazioneAnnuale(), result, "");
+			relazioneAnnualeValidator.validate(wrapper.getRelazioneAnnuale(), result, "relazioneAnnuale.");
 			
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
@@ -168,7 +171,14 @@ public class RelazioneAnnualeController {
 		}
 	}
 	
-	
+	private RelazioneAnnualeWrapper prepareWrapperNew(RelazioneAnnuale relazioneAnnuale){
+		RelazioneAnnualeWrapper wrapper = new RelazioneAnnualeWrapper();
+		relazioneAnnuale.setAnnoRiferimento(LocalDate.now().getYear());
+		wrapper.setProviderId(relazioneAnnuale.getProvider().getId());
+		wrapper.setRelazioneAnnuale(relazioneAnnuale);
+		wrapper.setRelazioneFinale(relazioneAnnuale.getRelazioneFinale());
+		return wrapper;
+	}
 	
 	private RelazioneAnnualeWrapper prepareWrapperEdit(RelazioneAnnuale relazioneAnnuale){
 		RelazioneAnnualeWrapper wrapper = new RelazioneAnnualeWrapper();

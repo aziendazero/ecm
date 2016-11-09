@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.FileData;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.FileRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
@@ -60,14 +62,18 @@ public class FileServiceImpl implements FileService{
 			throw ex;
 		}
 	}
-	
+
 	public void saveFileSuDisco(File file){
-		
+
 	}
-	
+
 	@Override
-	public File copyFile(File file) {
-		// TODO TOM
-		return null;
+	public File copyFile(File file) throws CloneNotSupportedException {
+		if(file != null) {
+			File fileCopiato = (File) file.clone();
+			save(fileCopiato);
+			return fileCopiato;
+		}
+		else return null;
 	}
 }

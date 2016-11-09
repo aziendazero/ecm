@@ -254,6 +254,9 @@ public class Evento extends BaseEntity{
 	private BigDecimal quotaPartecipazione;
 
 	private Boolean eventoSponsorizzato;
+
+	private Boolean letteInfoAllegatoSponsor;
+
 	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
 	@JoinColumn(name="evento_id")
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();

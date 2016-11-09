@@ -34,11 +34,11 @@ public class RelazioneAnnualeValidator {
 		}
 		
 		if(relazioneAnnuale.getAltriFinanziamenti() == null){
-			errors.rejectValue(prefix + "altriFinaziamenti", "error.empty");
+			errors.rejectValue(prefix + "altriFinanziamenti", "error.empty");
 		}
 		
 		if(relazioneAnnuale.getQuoteDiPartecipazione() == null){
-			errors.rejectValue(prefix + "quotePartecipazione", "error.empty");
+			errors.rejectValue(prefix + "quoteDiPartecipazione", "error.empty");
 		}
 		
 		if(relazioneAnnuale.getRelazioneFinale() == null || relazioneAnnuale.getRelazioneFinale().getData().length == 0){
