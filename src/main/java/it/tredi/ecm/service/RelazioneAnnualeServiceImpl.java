@@ -106,9 +106,13 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 		relazioneAnnuale.setAnnoRiferimento(annoRiferimento);
 		relazioneAnnuale.setProvider(providerService.getProvider(providerId));
 		
-		relazioneAnnuale.setEventiPFA(eventoPianoFormativoService.getAllEventiFromProviderInPianoFormativo(providerId, annoRiferimento));
-		relazioneAnnuale.setEventiAttuati(eventoService.getEventiByProviderIdAndAnnoRiferimento(providerId, annoRiferimento));
-		
 		return relazioneAnnuale;
+	}
+	
+	@Override
+	public void elaboraRelazioneAnnuale(RelazioneAnnuale relazioneAnnuale) {
+		relazioneAnnuale.setEventiPFA(eventoPianoFormativoService.getAllEventiFromProviderInPianoFormativo(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
+		relazioneAnnuale.setEventiAttuati(eventoService.getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
+		relazioneAnnuale.elabora();
 	}
 }

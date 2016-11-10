@@ -288,7 +288,7 @@
 									<span class="label-show" th:text="#{label.rapporto_obiettivi_regionali}">Cognome</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali + ' %'}"></div>
+									<div class="value" th:classappend="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali &lt; 30} ? 'danger'" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali + ' %'}"></div>
 								</div>
 							</div>
 						</th:block>
