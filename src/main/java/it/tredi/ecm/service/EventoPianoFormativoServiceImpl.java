@@ -34,6 +34,7 @@ public class EventoPianoFormativoServiceImpl implements EventoPianoFormativoServ
 		return eventoPianoFormativoRepository.findAllByProviderId(providerId);
 	}
 
+	//Recupero gli eventi inseriti nel PFA per l'elaborazione della Relazione Annuale
 	@Override
 	public Set<EventoPianoFormativo> getAllEventiFromProviderInPianoFormativo(Long providerId, Integer pianoFormativo) {
 		LOGGER.debug("Recupero eventi del provider " + providerId + " relativi al piano formativo " + pianoFormativo);
