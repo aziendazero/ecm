@@ -53,7 +53,9 @@
 													
 													<th:block th:if="${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}">
 														<a th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
-	
+														<a th:text="#{label.elimina_tutti_eventi_da_pfa}" class="btn btn-danger with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/deleteAll|}"></a>
+														
+														<div class="divider"></div>
 														<!-- importazione eventi piano formativo -->
 														<form class="form-horizontal form-label-left" th:action="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/importaEventiDaCSV|}"
 																method="post" enctype="multipart/form-data" novalidate="novalidate">

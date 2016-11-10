@@ -358,51 +358,72 @@
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
-
-						<!-- PROFESSIONI/DISCIPLINE -->
-						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.discipline')} ? 'bad'">
-							<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
-							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.discipline') : ''}"></label>
-							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="evento_professioni-select">
-								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioni_discipline}">Professioni/discipline</span>
-								<span th:if="${editabile}" class="required">*</span>
-							</label>
+						
+						<div>
+							<th:block th:if="${editabile or valutabile}">
+								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.discipline') : ''}"></label>
+								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="evento_professioni-select">
+									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioni}">Professioni/discipline</span>
+									<span th:if="${editabile}" class="required">*</span>
+								</label>
+							</th:block>
 							<th:block th:if="${editabile}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
-									<div class="col-xs-12 select-with-margin-container">
-										<select id="professioni" class="selectpicker required multi"
-											multiple="multiple" data-width="100%"
-											data-style="btn-primary" data-actions-box="true"
-											data-size="10" title="Seleziona una professione..."
-											onchange="abilitaDiscipline(this)"
-											th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
-											data-selected-text-format="count" th:remove="all-but-first">
-											<option th:each="professione, row: ${professioneList}"
-												th:value="${professione.id}" th:text="${professione.nome}"
-												th:field="${eventoWrapper.evento.professioniSelezionate}">Professione
-												selezionata</option>
-										</select>
+								<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.discipline')} ? 'bad'">
+									<!-- label necessaria per formattazione in ogni caso, vuota se NON editabile -->
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
+										<div class="col-xs-12 select-with-margin-container">
+											<select id="professioni" class="selectpicker required multi"
+												multiple="multiple" data-width="100%"
+												data-style="btn-primary" data-actions-box="true"
+												data-size="10" title="Seleziona una professione..."
+												onchange="abilitaDiscipline(this)"
+												th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
+												data-selected-text-format="count" th:remove="all-but-first">
+												<option th:each="professione, row: ${professioneList}"
+													th:value="${professione.id}" th:text="${professione.nome}"
+													th:field="${eventoWrapper.evento.professioniSelezionate}">Professione
+													selezionata</option>
+											</select>
+										</div>
 									</div>
-									<select id="discipline" class="selectpicker required multi"
-										th:field="${eventoWrapper.evento.discipline}"
-										multiple="multiple" data-width="100%" th:attr="data-editabile=${#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
-										data-style="btn-success" data-actions-box="true"
-										th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
-										data-size="10" data-hide-disabled="true"
-										title="Seleziona una disciplina..." disabled="disabled"
-										data-selected-text-format="count" th:remove="all-but-first">
-										<optgroup class="optgroup-success" disabled="disabled"
-											th:each="professione, row: ${professioneList}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
-											th:label="${professione.nome}" th:remove="all-but-first">
-											<option th:each="disciplina, row: ${disciplinaList}"
-												th:if="${disciplina.professione == professione}"
-												th:value="${disciplina.id}" th:text="${disciplina.nome}">Disciplina
-												selezionata</option>
-										</optgroup>
-									</select>
+									<div th:if="${#fields.hasErrors('eventoWrapper.evento.discipline')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.discipline}"></div>
+								</div>
+								<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('eventoWrapper.evento.discipline')} ? 'bad'">
+									<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}"></label>
+									<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="evento_professioni-select">
+										<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.discipline}">Professioni/discipline</span>
+										<span th:if="${editabile}" class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
+										<div class="col-xs-12 select-with-margin-container">
+											<select id="discipline" class="selectpicker required multi"
+												th:field="${eventoWrapper.evento.discipline}"
+												multiple="multiple" data-width="100%" th:attr="data-editabile=${#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
+												data-style="btn-success" data-actions-box="true"
+												th:disabled="${!#lists.contains(eventoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.discipline'))}"
+												data-size="10" data-hide-disabled="true"
+												title="Seleziona una disciplina..." disabled="disabled"
+												data-selected-text-format="count" th:remove="all-but-first">
+												<optgroup class="optgroup-success" disabled="disabled"
+													th:each="professione, row: ${professioneList}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
+													th:label="${professione.nome}" th:remove="all-but-first">
+													<option th:each="disciplina, row: ${disciplinaList}"
+														th:if="${disciplina.professione == professione}"
+														th:value="${disciplina.id}" th:text="${disciplina.nome}">Disciplina
+														selezionata</option>
+													</optgroup>
+											</select>
+										</div>
+									</div>
+									<div th:if="${#fields.hasErrors('eventoWrapper.evento.discipline')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.discipline}"></div>
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
+								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('evento.discipline') : ''}"></label>
+								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="evento_professioni-select">
+									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioni_discipline}">Professioni/discipline</span>
+									<span th:if="${editabile}" class="required">*</span>
+								</label>
 								<th:block th:if="${eventoWrapper.evento.professioniEvento == 'Generale'}">
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 										<div class="value" th:text="#{label.tutte_le_professioni}"></div>
@@ -490,7 +511,6 @@
 									</div>
 								</div>
 		                    </th:block>
-		                    <div th:if="${#fields.hasErrors('eventoWrapper.evento.discipline')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.discipline}"></div>
 
 							<input id="submitButton" type="submit" style="display: none;" />
 
