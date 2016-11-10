@@ -33,6 +33,12 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Autowired private EventoService eventoService;
 	
 	@Override
+	public RelazioneAnnuale getRelazioneAnnuale(Long relazioneAnnualeId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero Relazione Annuale: " + relazioneAnnualeId));
+		return relazioneAnnualeRepository.findOne(relazioneAnnualeId);
+	}
+	
+	@Override
 	public Set<RelazioneAnnuale> getAllRelazioneAnnuale() {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le Relazioni Annuali"));
 		return relazioneAnnualeRepository.findAll();
@@ -89,14 +95,24 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Override
 	public RelazioneAnnuale createRelazioneAnnuale(Long providerId, Integer annoRiferimento) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
+		
+		RelazioneAnnuale r = getRelazioneAnnualeForProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
+		if(r != null){
+			return null;
+		}
+		
 		RelazioneAnnuale relazioneAnnuale = new RelazioneAnnuale();
 		
 		relazioneAnnuale.setAnnoRiferimento(annoRiferimento);
 		relazioneAnnuale.setProvider(providerService.getProvider(providerId));
 		
-		relazioneAnnuale.setEventiPFA(eventoPianoFormativoService.getAllEventiFromProviderInPianoFormativo(providerId, annoRiferimento));
-		relazioneAnnuale.setEventiAttuati(eventoService.getEventiByProviderIdAndAnnoRiferimento(providerId, annoRiferimento));
-		
 		return relazioneAnnuale;
+	}
+	
+	@Override
+	public void elaboraRelazioneAnnuale(RelazioneAnnuale relazioneAnnuale) {
+		relazioneAnnuale.setEventiPFA(eventoPianoFormativoService.getAllEventiFromProviderInPianoFormativo(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
+		relazioneAnnuale.setEventiAttuati(eventoService.getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
+		relazioneAnnuale.elabora();
 	}
 }

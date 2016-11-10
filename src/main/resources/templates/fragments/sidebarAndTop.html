@@ -52,9 +52,9 @@
 									<li><a th:href="@{/provider/evento/list}" th:text="#{label.eventi}"></a></li>
 
 									<li><a th:href="@{/provider/user/list}" th:text="#{label.utenti}" th:if="${#authentication.principal.hasProfile('PROVIDERUSERADMIN')}">label.utenti</a></li>
-									<li><a th:href="@{/provider/pagamento/list}" th:text="#{label.pagamenti_annuali}">label.pagamenti</a></li>
+									<li><a th:href="@{/provider/pagamento/list}" th:text="#{label.contributo_annuale}">label.contributo_annuale</a></li>
+									<li><a th:href="@{/provider/relazioneAnnuale/list}"  th:text="#{label.relazione_annuale}">label.relazione_annuale</a></li>
 									<!--
-									<li><a href="#" th:text="#{label.relazione_annuale}">label.relazione_annuale</a></li>
 									<li><a href="#" th:text="#{label.contributo_annuale}">label.contributo_annuale</a></li>
 									 -->
 								</ul>

@@ -122,6 +122,8 @@ public class Provider extends BaseEntity{
 	private boolean canInsertPianoFormativo;
 	@Column(name ="can_insert_evento")
 	private boolean canInsertEvento;
+	@Column(name ="can_insert_relazione_annuale")
+	private Boolean canInsertRelazioneAnnuale;
 
 //	@OneToMany(mappedBy = "provider")
 //	private Set<QuotaAnnuale> pagamenti = new HashSet<QuotaAnnuale>();

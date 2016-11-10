@@ -31,4 +31,12 @@ public class Obiettivo extends BaseEntity{
 		this.categoria = categoria;
 		this.codiceCogeaps = codiceCogeaps;
 	}
+	
+	//obiettivo regionale -> Non rientra in uno degli obiettivi regionali
+	public boolean isNonRientraTraObiettiviRegionali(){
+		if(!nazionale){
+			return codiceCogeaps.equalsIgnoreCase("1");
+		}
+		return false;
+	}
 }

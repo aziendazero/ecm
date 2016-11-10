@@ -18,6 +18,7 @@ import it.tredi.ecm.dao.entity.FileData;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.FileRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.utils.Utils;
 
 @Service
 public class FileServiceImpl implements FileService{
@@ -70,8 +71,10 @@ public class FileServiceImpl implements FileService{
 	@Override
 	public File copyFile(File file) throws CloneNotSupportedException {
 		if(file != null) {
+			LOGGER.debug(Utils.getLogMessage("Clonazione File id: " + file.getId()));
 			File fileCopiato = (File) file.clone();
 			save(fileCopiato);
+			LOGGER.debug(Utils.getLogMessage("File Clonato id: " + fileCopiato.getId()));
 			return fileCopiato;
 		}
 		else return null;

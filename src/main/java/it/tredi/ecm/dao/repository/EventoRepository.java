@@ -24,6 +24,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	
 	public Set<Evento> findAllByProviderIdAndDataFineBetween(Long providerId, LocalDate start, LocalDate end);
 	public Set<Evento> findAllByProviderIdAndDataFineBetweenAndStato(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum stato);
+	public Set<Evento> findAllByProviderIdAndDataFineBetweenAndStatoNot(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum stato);
 	
 	@Query("SELECT e FROM Evento e WHERE e.id = :id")
 	@EntityGraph(value = "graph.evento.forRiedizione", type = EntityGraphType.FETCH)

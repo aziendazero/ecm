@@ -151,17 +151,9 @@
 						<h2 th:text="${denominazioneProvider != null} ? #{label.lista_eventi_provider(${denominazioneProvider})} : #{label.lista_eventi}">Lista degli eventi</h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
-  								<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" th:if="${canCreateEvento}">
-									<span th:text="#{label.nuovo_evento}"></span>
-									<span class="caret"></span>
-								</button>
-								<!-- menù raggruppato per segreteria -->
-								<ul class="dropdown-menu actions">
-									<!-- <li><a th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button" class="ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni"></a></li> -->
-									<li><a th:text="#{label.creazione_evento}" data-toggle="modal" data-target=".modal-scelta-tipologia"></a></li>
-									<li><a th:text="#{label.attuazione_evento}" data-toggle="modal" data-target=".modal-scelta-attuazione"></a></li>
-									<li><a th:text="#{label.riedizione_evento}" data-toggle="modal" data-target=".modal-scelta-riedizione"></a></li>
-								</ul>
+								<a class="btn btn-primary pull-right" th:text="#{label.riedizione_evento}" data-toggle="modal" data-target=".modal-scelta-riedizione"></a>
+								<a class="btn btn-primary pull-right" th:text="#{label.nuovo_evento_da_pfa}" data-toggle="modal" data-target=".modal-scelta-attuazione"></a>
+								<a class="btn btn-primary pull-right" th:text="#{label.creazione_evento}" data-toggle="modal" data-target=".modal-scelta-tipologia"></a>
 							</div>
 						</div>
 						<div class="clearfix"></div>

@@ -249,7 +249,7 @@ public class EventoController {
 	public String rieditaEvento(@PathVariable Long providerId, @PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId +"/re-edit"));
 		try {
-			Evento evento = eventoService.getEventoForRiedizione(eventoId);
+			Evento evento = eventoService.getEvento(eventoId);
 			EventoWrapper wrapper = prepareEventoWrapperRiedizione(evento, providerId);
 			return goToEdit(model, wrapper);
 		}

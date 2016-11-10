@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+
+		<div class="row">
+			<div class="col-xs-12">
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:if="${relazioneAnnualeWrapper.relazioneAnnuale.isNew()}" th:text="#{label.inserimento_relazione_annuale(${#numbers.formatInteger(relazioneAnnualeWrapper.relazioneAnnuale.annoRiferimento,0)})}"></h2>
+						<h2 th:unless="${relazioneAnnualeWrapper.relazioneAnnuale.isNew()}" th:text="#{label.modifica_relazione_annuale(${#numbers.formatInteger(relazioneAnnualeWrapper.relazioneAnnuale.annoRiferimento,0)})}"></h2>
+						<div class="pull-right buttons-header">
+							<div class="dropdown pull-right">
+  								<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
+  								<a class="btn btn-primary" th:href="@{|/provider/${relazioneAnnualeWrapper.providerId}/relazioneAnnuale/list|}" th:text="#{label.indietro}"></a>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					
+					<th:block th:include="relazioneAnnuale/relazioneAnnualeFragment :: relazioneAnnuale('edit')"></th:block>
+				
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
