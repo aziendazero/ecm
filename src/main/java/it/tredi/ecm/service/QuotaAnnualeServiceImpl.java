@@ -8,14 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.repository.QuotaAnnualeRepository;
 import it.tredi.ecm.utils.Utils;
-import scala.noinline;
 
 @Service
 public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
@@ -25,6 +23,7 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 	@Autowired private ProviderService providerService;
 	@Autowired private EngineeringServiceImpl engineeringService;
 	@Autowired private PagamentoService pagamentoService;
+	@Autowired private EventoService eventoService;
 	
 	@Override
 	public QuotaAnnuale createPagamentoProviderPerQuotaAnnuale(Long providerId, Integer annoRiferimento, boolean primoAnno) {
@@ -32,7 +31,7 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 		
 		QuotaAnnuale qA = getQuotaAnnualeForProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
 		if(qA != null){
-			LOGGER.debug("Impossiible creare la quota annuale in quanto gia registrata!");
+			LOGGER.debug("Impossibile creare la quota annuale in quanto gia registrata!");
 		}else{
 			Double importoBase = 258.22;
 			
@@ -70,9 +69,13 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 				providerService.bloccaFunzionalitaForPagamento(providerId);
 			}else{
 				if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
-					//TODO calcolare il numero di eventi realizzati l'anno precedente all'anno di riferimento per il pagamento
 					//Provider tipo A -> anni successivi pagano in funzione degli eventi realizzati
 					int numeroEventi = 0;
+					
+					Set<Evento> listaEventi = eventoService.getEventiRendicontatiByProviderIdAndAnnoRiferimento(providerId, annoRiferimento - 1);
+					if(listaEventi != null)
+						numeroEventi = listaEventi.size();
+					
 					if(numeroEventi <= 30){
 						pagamento.setImporto(3000.00);
 					}else if(numeroEventi > 30 && numeroEventi <= 60){
