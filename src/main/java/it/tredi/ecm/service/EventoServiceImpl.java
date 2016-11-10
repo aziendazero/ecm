@@ -3,10 +3,7 @@ package it.tredi.ecm.service;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,10 +23,6 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
-import org.hibernate.collection.internal.PersistentSet;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.proxy.HibernateProxy;
-import org.postgresql.util.PGtokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +36,6 @@ import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
-import it.tredi.ecm.dao.entity.BaseEntity;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
@@ -1061,20 +1053,36 @@ public class EventoServiceImpl implements EventoService {
 	public Evento detachEvento(Evento eventoPadre) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("DETACH evento id: " + eventoPadre.getId()));
 
-		touchFirstLevelOfEverythingElse(eventoPadre);
+		touchFirstLevelOfEverything(eventoPadre);
 
 		//casi specifici
 		if(eventoPadre instanceof EventoFAD) {
 
 			LOGGER.debug(Utils.getLogMessage("Procedura di detach EventoFAD - start"));
-			//docenti
+
 			LOGGER.debug(Utils.getLogMessage("Detach Docenti"));
 			for(PersonaEvento d : ((EventoFAD) eventoPadre).getDocenti()) {
 				LOGGER.debug(Utils.getLogMessage("Detach Docente: " + d.getId()));
 				entityManager.detach(d);
 			}
+		}
 
-			((EventoFAD) eventoPadre).getVerificaApprendimento().size();
+		else if(eventoPadre instanceof EventoRES) {
+
+			LOGGER.debug(Utils.getLogMessage("Procedura di detach EventoRES - start"));
+
+			LOGGER.debug(Utils.getLogMessage("Detach Docenti"));
+			for(PersonaEvento d : ((EventoRES) eventoPadre).getDocenti()) {
+				LOGGER.debug(Utils.getLogMessage("Detach Docente: " + d.getId()));
+				entityManager.detach(d);
+			}
+
+			LOGGER.debug(Utils.getLogMessage("Detach Programmi RES"));
+			for(ProgrammaGiornalieroRES pgr : ((EventoRES) eventoPadre).getProgramma()) {
+				pgr.getProgramma().size(); //touch che non viene raggiunto perchè al secondo livello
+				LOGGER.debug(Utils.getLogMessage("Detach Programma RES: " + pgr.getId()));
+				entityManager.detach(pgr);
+			}
 		}
 
 		//parte in comune
@@ -1107,7 +1115,7 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	//nobel per il workaround 2016 (in pratica fa una get di tutto | solo il primo livello della entity passata)
-	public <T> void touchFirstLevelOfEverythingElse(T obj) throws Exception{
+	public <T> void touchFirstLevelOfEverything(T obj) throws Exception{
 		BeanInfo info = Introspector.getBeanInfo(obj.getClass());
 		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
 			Method method = pd.getReadMethod();
@@ -1123,9 +1131,9 @@ public class EventoServiceImpl implements EventoService {
 	private void cloneDetachedEvento(Evento riedizione) throws CloneNotSupportedException {
 
 		if(riedizione instanceof EventoFAD) {
-			//spunta necessaria da leggere
+
 			LOGGER.debug(Utils.getLogMessage("Procedura di clonazione EventoFAD - start"));
-			//docenti
+
 			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio Docenti"));
 			for(PersonaEvento d : ((EventoFAD) riedizione).getDocenti()) {
 				LOGGER.debug(Utils.getLogMessage("Clonazione Docente: " + d.getId()));
@@ -1151,8 +1159,53 @@ public class EventoServiceImpl implements EventoService {
 			List<VerificaApprendimentoFAD> verificaApprendimentoFAD = new ArrayList<VerificaApprendimentoFAD>();
 			verificaApprendimentoFAD.addAll(Arrays.asList(((EventoFAD) riedizione).getVerificaApprendimento().toArray(new VerificaApprendimentoFAD[((EventoFAD) riedizione).getVerificaApprendimento().size()])));
 			((EventoFAD) riedizione).setVerificaApprendimento(verificaApprendimentoFAD);
-
 		}
+
+		else if(riedizione instanceof EventoRES) {
+
+			LOGGER.debug(Utils.getLogMessage("Procedura di clonazione EventoRES - start"));
+
+			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio Docenti"));
+			for(PersonaEvento d : ((EventoRES) riedizione).getDocenti()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione Docente: " + d.getId()));
+				d.setId(null);
+				d.getAnagrafica().setCv(fileService.copyFile(d.getAnagrafica().getCv()));
+				personaEventoRepository.save(d);
+				LOGGER.debug(Utils.getLogMessage("Docente clonato salvato: " + d.getId()));
+			}
+
+			//va fatto così o hibernate si offende p.s. grande Barduz
+			LOGGER.debug(Utils.getLogMessage("Clonazione Programmi RES"));
+			List<ProgrammaGiornalieroRES> programmaRES = new ArrayList<ProgrammaGiornalieroRES>();
+			for(ProgrammaGiornalieroRES pgr : ((EventoRES) riedizione).getProgramma()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione ProgrammaRES: " + pgr.getId()));
+				pgr.setId(null);
+				LOGGER.debug(Utils.getLogMessage("Clonazione del suo dettaglioAttività RES"));
+				List<DettaglioAttivitaRES> dettaglioAttivitaRESList = new ArrayList<DettaglioAttivitaRES>();
+				dettaglioAttivitaRESList.addAll(Arrays.asList(pgr.getProgramma().toArray(new DettaglioAttivitaRES[pgr.getProgramma().size()])));
+				pgr.setProgramma(dettaglioAttivitaRESList);
+				programmaRES.add(pgr);
+			}
+			((EventoRES) riedizione).setProgramma(programmaRES);
+
+			((EventoRES) riedizione).setConfermatiCrediti(null);
+
+			((EventoRES) riedizione).setDocumentoVerificaRicaduteFormative(fileService.copyFile(((EventoRES) riedizione).getDocumentoVerificaRicaduteFormative()));
+
+			//ricalcolato
+			((EventoRES) riedizione).setRiepilogoRES(new RiepilogoRES());
+		}
+
+//		else if(riedizione instanceof EventoFSC) {
+//
+//			LOGGER.debug(Utils.getLogMessage("Procedura di clonazione EventoFSC - start"));
+//
+//			((EventoFSC) riedizione).setOttenutoComitatoEtico(null);
+//
+//
+//
+//
+//		}
 
 		//parte in comune
 		LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio Responsabili"));
@@ -1206,200 +1259,13 @@ public class EventoServiceImpl implements EventoService {
 		riedizione.setContrattiAccordiConvenzioni(fileService.copyFile(riedizione.getContrattiAccordiConvenzioni()));
 		riedizione.setDichiarazioneAssenzaConflittoInteresse(fileService.copyFile(riedizione.getDichiarazioneAssenzaConflittoInteresse()));
 
+		LOGGER.debug(Utils.getLogMessage("Stato settato: BOZZA"));
+		riedizione.setStato(EventoStatoEnum.BOZZA);
+
 		riedizione.setId(null);
 
 		LOGGER.debug(Utils.getLogMessage("Procedura di detach e clonazione Evento - success"));
 	}
-
-
-
-//	/**
-//	 * Effettua il detach dell'entity in modo tale da non rendere effetive le modifche fatte all'oggetto
-//	 * Il detach viene applicato a tutte le entity presenti all'interno attraverso l'introspezione e la reflection
-//	 * */
-//	@Override
-//	public <T> void detachEvento(T obj) throws Exception{
-//		BeanInfo info;
-//		info = Introspector.getBeanInfo(obj.getClass());
-//		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-//			Method method = pd.getReadMethod();
-//			if(method != null) {
-//				Object innerEntity = method.invoke(obj);
-//				if(innerEntity != null) {
-//					if(innerEntity instanceof BaseEntity){
-//						//get file
-//						if(innerEntity instanceof File)
-//							((File) innerEntity).getData();
-//						LOGGER.debug(Utils.getLogMessage("Detach object " + innerEntity.getClass() + ": " + ((BaseEntity) innerEntity).getId()));
-//						entityManager.detach(innerEntity);
-//					}else if(innerEntity instanceof PersistentSet || innerEntity instanceof Collection){
-//						Class<?> clazz = getTypeByField(obj.getClass(),pd.getName());
-//						if(clazz != null && BaseEntity.class.isAssignableFrom(clazz)){
-//							if(innerEntity instanceof Set<?>) {
-//								((Set<?>) innerEntity).size();
-//								for(Object o : (Set<?>)innerEntity){
-//									LOGGER.debug(Utils.getLogMessage("Detach object " + o.getClass() + ": " + ((BaseEntity) o).getId()));
-//									entityManager.detach(o);
-//								}
-//							}
-//							else if (innerEntity instanceof List<?>){
-//								((List<?>) innerEntity).size();
-//								for(Object o : (List<?>)innerEntity){
-//									LOGGER.debug(Utils.getLogMessage("Detach object " + o.getClass() + ": " + ((BaseEntity) o).getId()));
-//									entityManager.detach(o);
-//								}
-//							}
-//						}
-//						else if(clazz != null) {
-//							if(innerEntity instanceof Set<?>) {
-//								for(Object o : (Set<?>)innerEntity){
-//									// 1st price workaround 2016 per la categoria cicli interessanti
-//								}
-//							}
-//							else if (innerEntity instanceof List<?>) {
-//								for(Object o : (List<?>)innerEntity){
-//									// 2nd price workaround 2016 per la categoria cicli interessanti
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//		if(obj instanceof BaseEntity){
-//			if(obj instanceof HibernateProxy){
-//				obj = (T) entityManager.unwrap(SessionImplementor.class).getPersistenceContext().unproxy(obj);
-//			}
-//			LOGGER.debug(Utils.getLogMessage("Detach object " + obj.getClass()));
-//			entityManager.detach(obj);
-//		}
-//	}
-//
-//	//recupero il tipo <generic> di un campo
-//	private Class<?> getTypeByField(Class<?> clazz, String fieldName) throws Exception{
-//		Field field = null;
-//		//Si fa cosi, ma se l'oggetto è caricato da repository, hibernate lo wrappa in un suo oggetto e quindi la reflection non funge più
-//		//Sembrerebbe che gli oggetti di hibernate extends le Entity originali e quindi tentiamo la reflection sulla superClasse
-//		try{
-//			field = clazz.getDeclaredField(fieldName);
-//		}catch (Exception ex){
-//			try{
-//				field = clazz.getSuperclass().getDeclaredField(fieldName);
-//			}catch  (Exception ex1){
-//				return null;
-//			}
-//		}
-//
-//		Type genericFieldType = field.getGenericType();
-//
-//		if(genericFieldType instanceof ParameterizedType){
-//			ParameterizedType aType = (ParameterizedType) genericFieldType;
-//			Type[] fieldArgTypes = aType.getActualTypeArguments();
-//			return (Class<?>) fieldArgTypes[0];
-//		}
-//
-//		return (Class<?>)genericFieldType;
-//	}
-
-
-
-//	//annulla l'id degli oggetti che vanno copiati e annulla gli oggetti che NON vanno copiati, ma ricalcolati
-//	private void handleCopyDetach(Evento riedizione) throws CloneNotSupportedException {
-//		//casi specifici evento
-//		if(riedizione instanceof EventoFAD) {
-//
-//			//docenti
-//			for(PersonaEvento d : ((EventoFAD) riedizione).getDocenti()) {
-//				d.setId(null);
-//				d.getAnagrafica().setCv(fileService.copyFile(d.getAnagrafica().getCv()));
-//				personaEventoRepository.save(d);
-//			}
-//
-//			//spunta necessaria da leggere
-//			((EventoFAD) riedizione).setConfermatiCrediti(null);
-//
-//			((EventoFAD) riedizione).setRequisitiHardwareSoftware(fileService.copyFile(((EventoFAD) riedizione).getRequisitiHardwareSoftware()));
-//
-//			//ricalcolato
-//			((EventoFAD) riedizione).setRiepilogoFAD(new RiepilogoFAD());
-//
-//			//liste di embedded da gestire ad hoc
-//			List<DettaglioAttivitaFAD> programmaFAD = new ArrayList<DettaglioAttivitaFAD>();
-//			programmaFAD.addAll(Arrays.asList(((EventoFAD) riedizione).getProgrammaFAD().toArray(new DettaglioAttivitaFAD[((EventoFAD) riedizione).getProgrammaFAD().size()])));
-//			((EventoFAD) riedizione).setProgrammaFAD(programmaFAD);
-//			List<VerificaApprendimentoFAD> verificaApprendimentoFAD = new ArrayList<VerificaApprendimentoFAD>();
-//			verificaApprendimentoFAD.addAll(Arrays.asList(((EventoFAD) riedizione).getVerificaApprendimento().toArray(new VerificaApprendimentoFAD[((EventoFAD) riedizione).getVerificaApprendimento().size()])));
-//			((EventoFAD) riedizione).setVerificaApprendimento(verificaApprendimentoFAD);
-//
-//		}
-//		else if (riedizione instanceof EventoRES) {
-//
-//			//docenti
-//			for(PersonaEvento d : ((EventoRES) riedizione).getDocenti()) {
-//				d.setId(null);
-//				d.getAnagrafica().setCv(fileService.copyFile(d.getAnagrafica().getCv()));
-//				personaEventoRepository.save(d);
-//			}
-//
-//			//programma
-//			for(ProgrammaGiornalieroRES pgr : ((EventoRES) riedizione).getProgramma()) {
-//				pgr.setId(null);
-//				List<DettaglioAttivitaRES> listaDettaglioAttivitaRES = new ArrayList<DettaglioAttivitaRES>();
-//				System.out.println("Ciao, ho caricato la lista, so che ci sono: " + pgr.getProgramma().size() + " elementi, ma fra una istruzione me ne dimenticherò e ti darò un lazy ex");;
-//				listaDettaglioAttivitaRES.addAll(Arrays.asList(pgr.getProgramma().toArray(new DettaglioAttivitaRES[pgr.getProgramma().size()])));
-//				pgr.setProgramma(listaDettaglioAttivitaRES);
-//			}
-//
-//			//spunta necessaria da leggere
-//			((EventoRES) riedizione).setConfermatiCrediti(null);
-//
-//			((EventoRES) riedizione).setDocumentoVerificaRicaduteFormative(fileService.copyFile(((EventoRES) riedizione).getDocumentoVerificaRicaduteFormative()));
-//
-//			//ricalcolato
-//			((EventoRES) riedizione).setRiepilogoRES(new RiepilogoRES());
-//
-//		}
-//		else if (riedizione instanceof EventoFSC) {
-//			//TODO
-//		}
-//		//caso generale evento
-//		riedizione.setCanAttachSponsor(true);
-//		riedizione.setCanDoPagamento(false);
-//		riedizione.setCanDoRendicontazione(false);
-//		riedizione.setValidatorCheck(false);
-//		riedizione.setReportPartecipantiXML(null);
-//		riedizione.setReportPartecipantiCSV(null);
-//		riedizione.setEventoPianoFormativo(null);
-//		riedizione.setDataScadenzaPagamento(null);
-//		riedizione.setInviiRendicontazione(new HashSet<RendicontazioneInviata>());
-//		riedizione.setPagato(null);
-//		riedizione.setPagInCorso(null);
-//		for(PersonaEvento pe : riedizione.getResponsabili()) {
-//			pe.setId(null);
-//			pe.getAnagrafica().setCv(fileService.copyFile(pe.getAnagrafica().getCv()));
-//			personaEventoRepository.save(pe);
-//		}
-//		riedizione.setBrochureEvento(fileService.copyFile(riedizione.getBrochureEvento()));
-//		riedizione.getResponsabileSegreteria().setId(null);
-//		for(Sponsor s : riedizione.getSponsors()) {
-//			s.setId(null);
-//			s.setSponsorFile(fileService.copyFile(s.getSponsorFile()));
-//		}
-//		riedizione.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(fileService.copyFile(riedizione.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia()));
-//		riedizione.setAutocertificazioneAutorizzazioneMinisteroSalute(fileService.copyFile(riedizione.getAutocertificazioneAutorizzazioneMinisteroSalute()));
-//		riedizione.setAutocertificazioneAssenzaFinanziamenti(fileService.copyFile(riedizione.getAutocertificazioneAssenzaFinanziamenti()));
-//		riedizione.setContrattiAccordiConvenzioni(fileService.copyFile(riedizione.getContrattiAccordiConvenzioni()));
-//		for(Partner p : riedizione.getPartners()) {
-//			p.setId(null);
-//			p.setPartnerFile(fileService.copyFile(p.getPartnerFile()));
-//		}
-//		riedizione.setDichiarazioneAssenzaConflittoInteresse(fileService.copyFile(riedizione.getDichiarazioneAssenzaConflittoInteresse()));
-//		//spunte necessarie da leggere
-//		riedizione.setProceduraVerificaQualitaPercepita(null);
-//		riedizione.setAutorizzazionePrivacy(null);
-//		riedizione.setLetteInfoAllegatoSponsor(null);
-//		riedizione.setId(null);
-//	}
 
 	@Override
 	public Set<Evento> getEventiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
