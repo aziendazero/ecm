@@ -157,7 +157,7 @@ public class RelazioneAnnualeController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				wrapper.getRelazioneAnnuale().elabora();
+				relazioneAnnualeService.elaboraRelazioneAnnuale(wrapper.getRelazioneAnnuale());
 				relazioneAnnualeService.save(wrapper.getRelazioneAnnuale());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.relazione_annuale_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/relazioneAnnuale/list"));

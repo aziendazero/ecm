@@ -16,5 +16,6 @@ public interface RelazioneAnnualeService {
 	public int countProviderNotRelazioneAnnualeRegistrataAllaScadenza();
 	
 	public RelazioneAnnuale createRelazioneAnnuale(Long providerId, Integer annoRiferimento);
+	public void elaboraRelazioneAnnuale(RelazioneAnnuale relazioneAnnuale);
 	public void save(RelazioneAnnuale relazioneAnnuale);
 }

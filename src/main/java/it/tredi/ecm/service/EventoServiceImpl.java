@@ -1320,4 +1320,11 @@ public class EventoServiceImpl implements EventoService {
 		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
 	}
+	
+	@Override
+	public Set<Evento> getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
+		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
+		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
+		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStatoNot(providerId, leftDate, rightDate, EventoStatoEnum.BOZZA);
+	}
 }

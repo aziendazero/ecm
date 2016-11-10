@@ -84,10 +84,10 @@ public class RelazioneAnnuale extends BaseEntity{
 	@ElementCollection
 	@MapKeyColumn(name="key_obiettivo_regionale")
     @Column(name="value")
-	@CollectionTable(name="relazione_annuale_riepilogo_obiettivi_nazionali", joinColumns=@JoinColumn(name="relazione_annuale_id"))
+	@CollectionTable(name="relazione_annuale_riepilogo_obiettivi_regionali", joinColumns=@JoinColumn(name="relazione_annuale_id"))
 	private Map<Obiettivo, Integer> riepilogoObiettiviRegionali = new HashMap<Obiettivo, Integer>();
 	
-	private BigDecimal rapportoObiettiviRegionali =  new BigDecimal(0);;//(# eventi con ObiettiviRegionali / # totale di eventi)
+	private BigDecimal rapportoObiettiviRegionali =  new BigDecimal(0);//(# eventi con ObiettiviRegionali / # totale di eventi)
 	
 	@OneToOne
 	private File relazioneFinale;
@@ -101,11 +101,24 @@ public class RelazioneAnnuale extends BaseEntity{
 	}
 	
 	public void elabora(){
+		
+		eventiInseritiPFA = 0;//numero di eventi inseriti nel PFA dell'anno precedente
+		eventiDefinitiviPFA = 0;//numero di eventi rendicontati come attuazione di eventi del PFA dell'anno precedente
+		eventiDefinitiviManuali = 0;//numero di eventi manuali rendicontati nell'anno precedente
+		rapportoAttuazione = new BigDecimal(0);//eventiDefinitiviPFA/eventiInseritiPFA
+		rapportoCostiEntrate = new BigDecimal(0);
+		rapportoObiettiviRegionali =  new BigDecimal(0);
+		
+		riepilogoProfessioni.clear();
+		riepilogoDiscipline.clear();
+		riepilogoObiettiviRegionali.clear();
+		riepilogoObiettivi.clear();
+		
 		if(eventiPFA != null)
 			eventiInseritiPFA = eventiPFA.size();
 		
 		if(eventiAttuati != null){
-			for(Evento e :  eventiRendicontati){
+			for(Evento e :  eventiAttuati){
 				if(e.getStato() == EventoStatoEnum.CANCELLATO){
 					eventiAnnullati.add(e);
 				}else if(e.getStato() == EventoStatoEnum.RAPPORTATO){
@@ -113,6 +126,7 @@ public class RelazioneAnnuale extends BaseEntity{
 					if(e.isRiedizione()){
 						eventiRendicontati_Riedizione.add(e);
 					}else{
+						eventiRendicontati.add(e);
 						if(e.isEventoDaPianoFormativo()){
 							eventiDefinitiviPFA++;
 						}else{
@@ -149,19 +163,25 @@ public class RelazioneAnnuale extends BaseEntity{
 		if(sum > 0)
 			rapportoCostiEntrate = BigDecimal.valueOf(costiTotaliEventi.doubleValue() / sum).multiply(new BigDecimal(100));
 		
-		riepilogoObiettiviRegionali.forEach( (k,v) -> {
-			if(k.isNonRientraTraObiettiviRegionali()){
-				rapportoObiettiviRegionali = rapportoObiettiviRegionali.add(BigDecimal.valueOf(v.doubleValue()));
-			}
-		});
-		
-		if(eventiAttuati != null && eventiAttuati.size() > 0)
-			rapportoObiettiviRegionali = rapportoObiettiviRegionali.divide(new BigDecimal(eventiAttuati.size())).multiply(new BigDecimal(100));
+		if(riepilogoObiettiviRegionali != null){
+			riepilogoObiettiviRegionali.forEach( (k,v) -> {
+				if(!k.isNonRientraTraObiettiviRegionali()){
+					rapportoObiettiviRegionali = rapportoObiettiviRegionali.add(BigDecimal.valueOf(v.doubleValue()));
+				}
+			});
+		}
+			
+		if(eventiAttuati != null && eventiAttuati.size() > 0){
+			double val = (rapportoObiettiviRegionali.doubleValue() / eventiAttuati.size()) * 100;
+			rapportoObiettiviRegionali = BigDecimal.valueOf(val);
+		}
 	}
 	
 	private void getInfoRiepilogo(Evento e){
-		addElement(e.getObiettivoNazionale(), riepilogoObiettivi);
-		addElement(e.getObiettivoRegionale(), riepilogoObiettiviRegionali);
+		if(e.getObiettivoNazionale() != null)
+			addElement(e.getObiettivoNazionale(), riepilogoObiettivi);
+		if(e.getObiettivoRegionale() != null)
+			addElement(e.getObiettivoRegionale(), riepilogoObiettiviRegionali);
 		
 		for(Professione p : e.getProfessioniSelezionate()){
 			addElement(p, riepilogoProfessioni);
@@ -190,7 +210,8 @@ public class RelazioneAnnuale extends BaseEntity{
 	private <T> void addElement(T element, Map<T,Integer> mappa){
 		if(mappa.containsKey(element)){
 			int value = mappa.get(element);
-			mappa.put(element,value++);
+			value++;
+			mappa.put(element,value);
 		}else{
 			mappa.put(element,1);
 		}
