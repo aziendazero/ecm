@@ -560,15 +560,8 @@
 										<tbody>
 											<tr th:each="sponsor, row : ${eventoWrapper.evento.sponsors}">
 												<td th:text="${sponsor.name}"></td>
-<<<<<<< HEAD
 												<td th:if="${sponsor.sponsorFile != null}"><a th:href="@{|/file/${sponsor.sponsorFile.id}|}" th:text="${sponsor.sponsorFile.nomeFile}"></a></td>
 												<td th:unless="${sponsor.sponsorFile != null}"><span class="danger" th:text="#{label.allegato_non_inserito}"></span></td>
-=======
-												<td th:if="${sponsor.sponsorFile != null}">
-													<a th:href="@{|/file/${sponsor.sponsorFile.id}|}" th:text="${sponsor.sponsorFile.nomeFile}"></a>
-												</td>
-												<td th:if="${sponsor.sponsorFile == null}"></td>
->>>>>>> branch 'master' of http://gitlab.bo.priv/ecm/it.tredi.ecm.git
 											</tr>
 										</tbody>
 									</table>
