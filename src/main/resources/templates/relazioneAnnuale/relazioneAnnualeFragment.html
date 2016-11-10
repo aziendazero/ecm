@@ -59,6 +59,16 @@
 								</div>
 							</div>
 							
+							<!-- totale eventi rendicontati nell'anno precedente -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.totale_eventi_defintivi}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.totaleEventiDefinitivi}"></div>
+								</div>
+							</div>
+							
 							<!-- rapportoAttuazione -->
 							<div class="item form-group">
 								<label class="control-label col-md-4 col-sm-4 col-xs-12">

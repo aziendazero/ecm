@@ -53,6 +53,7 @@ public class RelazioneAnnuale extends BaseEntity{
 	private int eventiInseritiPFA = 0;//numero di eventi inseriti nel PFA dell'anno precedente
 	private int eventiDefinitiviPFA = 0;//numero di eventi rendicontati come attuazione di eventi del PFA dell'anno precedente
 	private int eventiDefinitiviManuali = 0;//numero di eventi manuali rendicontati nell'anno precedente
+	private int totaleEventiDefinitivi = 0;// totale numero di eventi rendicontati nell'anno precedente (eventiDefinitiviPFA + eventiDefinitiviManuali)
 	private BigDecimal rapportoAttuazione = new BigDecimal(0);;//eventiDefinitiviPFA/eventiInseritiPFA
 
 	private Integer numeroPartecipantiNoCrediti;
@@ -105,6 +106,7 @@ public class RelazioneAnnuale extends BaseEntity{
 		eventiInseritiPFA = 0;//numero di eventi inseriti nel PFA dell'anno precedente
 		eventiDefinitiviPFA = 0;//numero di eventi rendicontati come attuazione di eventi del PFA dell'anno precedente
 		eventiDefinitiviManuali = 0;//numero di eventi manuali rendicontati nell'anno precedente
+		totaleEventiDefinitivi = 0;
 		rapportoAttuazione = new BigDecimal(0);//eventiDefinitiviPFA/eventiInseritiPFA
 		rapportoCostiEntrate = new BigDecimal(0);
 		rapportoObiettiviRegionali =  new BigDecimal(0);
@@ -155,6 +157,8 @@ public class RelazioneAnnuale extends BaseEntity{
 				}
 			}
 		}
+		
+		totaleEventiDefinitivi = eventiDefinitiviPFA + eventiDefinitiviManuali;
 		
 		if(eventiInseritiPFA > 0 )
 			rapportoAttuazione = BigDecimal.valueOf(eventiDefinitiviPFA/eventiInseritiPFA).multiply(new BigDecimal(100));
