@@ -173,4 +173,10 @@ public class Provider extends BaseEntity{
 		Provider entitapiatta = (Provider) o;
 		return Objects.equals(id, entitapiatta.id);
 	}
+	
+	public boolean isGruppoA(){
+		if(tipoOrganizzatore != null && tipoOrganizzatore.getGruppo().equalsIgnoreCase("A"))
+			return true;
+		return false;
+	}
 }

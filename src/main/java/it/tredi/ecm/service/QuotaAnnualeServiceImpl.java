@@ -52,7 +52,7 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 			pagamento.setCausale(EngineeringServiceImpl.CAUSALE_PAGAMENTO_QUOTA_PROVIDER + annoRiferimento);
 			
 			if(primoAnno){
-				if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
+				if(provider.isGruppoA()){
 					//Provider tipo A -> primo anno non pagano
 					pagamento.setImporto(0.00);
 					pagamento.setDataScadenzaPagamento(LocalDate.now());
@@ -68,7 +68,7 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 				/* Se la quota si riferisce al primo anno -> blocco le funzionalita' finche non paga*/
 				providerService.bloccaFunzionalitaForPagamento(providerId);
 			}else{
-				if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
+				if(provider.isGruppoA()){
 					//Provider tipo A -> anni successivi pagano in funzione degli eventi realizzati
 					int numeroEventi = 0;
 					
