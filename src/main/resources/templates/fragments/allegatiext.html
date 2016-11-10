@@ -122,7 +122,7 @@
 			var propertyName = $(element).attr("propertyName");
 			var fileId = $("#"+propertyName+"\\.id").attr('value');
 
-			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper?.tempPersonaEvento?.anagrafica  and __${wrapper}__ != providerForm}  and __${wrapper}__ != relazioneAnnualeWrapper} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
+			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper?.tempPersonaEvento?.anagrafica  and __${wrapper}__ != providerForm  and __${wrapper}__ != relazioneAnnualeWrapper} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
 
 	 		var oMyForm = new FormData();
             oMyForm.append("multiPartFile", $(element)[0].files[0]);
