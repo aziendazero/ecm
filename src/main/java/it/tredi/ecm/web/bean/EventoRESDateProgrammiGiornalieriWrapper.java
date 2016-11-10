@@ -1,7 +1,6 @@
 package it.tredi.ecm.web.bean;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -14,9 +13,11 @@ import java.util.TreeSet;
 
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.SedeEvento;
 
 public class EventoRESDateProgrammiGiornalieriWrapper {
 	private EventoRES eventoRES;
+	private SedeEvento sedeUltimoAggiornamento;
 	private Long index = 0L;
 	private Long dataInizioKey = null;
 	private Long dataFineKey = null;
@@ -24,6 +25,10 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 	
 	public EventoRESDateProgrammiGiornalieriWrapper(EventoRES eventoRES) {
 		this.eventoRES = eventoRES;
+		this.sedeUltimoAggiornamento = new SedeEvento();
+		if(eventoRES.getSedeEvento() != null) {
+			this.sedeUltimoAggiornamento.copiaDati(eventoRES.getSedeEvento());
+		}
 		//yengo i programmi giornalieri solo se esistono fra le date INIZIO FINE o INTERMEDIE
 		for(ProgrammaGiornalieroRES pg : this.eventoRES.getProgramma()) {
 			//Quelle senza giorno non vengono considerate, in realta' non dovrebbero neppure venire salvate su db
@@ -165,6 +170,36 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 	public void aggiornaDati() {
 		sortedProgrammiGiornalieriMap.get(dataInizioKey).getProgramma().setGiorno(eventoRES.getDataInizio());
 		sortedProgrammiGiornalieriMap.get(dataFineKey).getProgramma().setGiorno(eventoRES.getDataFine());
+		
+		if(!SedeEvento.compare(this.sedeUltimoAggiornamento, this.eventoRES.getSedeEvento())) {
+			//la sede è cambiata rispetto all'originale
+			for(EventoRESProgrammaGiornalieroWrapper eventoProgrGiorWrap : sortedProgrammiGiornalieriMap.values()){
+				//se la sede del programma e' uguale alla sede originale la aggiorno con la sede dell'evento
+				if(SedeEvento.compare(eventoProgrGiorWrap.getProgramma().getSede(), this.sedeUltimoAggiornamento)) {
+					if(eventoProgrGiorWrap.getProgramma().getSede() == null)
+						eventoProgrGiorWrap.getProgramma().setSede(new SedeEvento());
+					eventoProgrGiorWrap.getProgramma().getSede().copiaDati(this.eventoRES.getSedeEvento());
+				}
+			}
+			//
+			this.sedeUltimoAggiornamento.copiaDati(this.eventoRES.getSedeEvento());
+		}
+		
+		/*
+		//Controllo se un dato è stato inserito nella sede
+		if(!SedeEvento.isEmpty(this.eventoRES.getSedeEvento())) {
+			for(EventoRESProgrammaGiornalieroWrapper eventoProgrGiorWrap : sortedProgrammiGiornalieriMap.values()){
+				if(eventoProgrGiorWrap.getProgramma().getSede() == null)
+					eventoProgrGiorWrap.getProgramma().setSede(this.eventoRES.getSedeEvento());
+				else {
+					if(eventoProgrGiorWrap.getProgramma().getSede().isEmpty()) {
+						eventoProgrGiorWrap.getProgramma().setSede(this.eventoRES.getSedeEvento());
+					}
+				}
+			}
+		}
+		*/
+			
 		refreshSortedProgrammiGiornalieriMap();
 	}
 	

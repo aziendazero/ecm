@@ -1,5 +1,5 @@
-<!-- 
-	fragment degli allegati 
+<!--
+	fragment degli allegati
 	<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}', brochure, null, null, null, false, null, false)" ></th:block>
 -->
 <!DOCTYPE html>
@@ -111,7 +111,7 @@
 		function setAllegatoExt(idInput) {
 			$(idInput).click();
 		}
-	
+
 		function submitFirma() {
 				var oMyForm = $('#formFirma').attr('action', [[@{|/engineering/test/firma/invio|}]]);
 				oMyForm.submit();
