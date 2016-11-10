@@ -48,7 +48,7 @@ public class XmlReportBuilder {
 		handleEventoEl(eventoEl, dbEventoDataMap, Helper.EVENTO_XML_ATTRIBUTES);
 		
 		//parsing CSV e dati partecipanti
-		Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(new StringReader(new String(csv, CSV_REPORT_ENCODING)));
+		Iterable<CSVRecord> records = CSVFormat.EXCEL.withDelimiter(';').withFirstRecordAsHeader().parse(new StringReader(new String(csv, CSV_REPORT_ENCODING)));
 		for (CSVRecord record : records) {
 		    Map<String, String> map = buildRowMapFromCSVRow(record, CSV_FIELDS);
 		    Element partecipanteEl = DocumentHelper.createElement("partecipante");
