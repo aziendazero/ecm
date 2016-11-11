@@ -142,9 +142,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 	}
 
 	private ProceduraFormativa getEventoProceduraformativaFromCSVRow(CSVRecord record, DatiAccreditamento datiAccreditamento) throws Exception {
-		String procedura_formativa = record.get("RES/FAD/FSC");
-		if (procedura_formativa == null)
-			procedura_formativa = record.get(0);
+		String procedura_formativa = record.get(0);
 		ProceduraFormativa proceduraFormativa = null;
 		try {
 			proceduraFormativa = ProceduraFormativa.valueOf(procedura_formativa.trim().toUpperCase());
@@ -158,23 +156,17 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 	}
 	
 	private String getEventoTitoloFromCSVRow(CSVRecord record) throws Exception {
-		String titolo = record.get("titolo");
-		if (titolo == null)
-			titolo = record.get(1);
+		String titolo = record.get(1);
 		return titolo;
 	}
 	
 	private String getEventoGeneraleSettorialeFromCVSRow(CSVRecord record) throws Exception {
-		String cod_prof_disciplina = record.get("cod_prof.disciplina");
-		if (cod_prof_disciplina == null)
-			cod_prof_disciplina = record.get(4);
+		String cod_prof_disciplina = record.get(4);
 		return (cod_prof_disciplina.length() == 0)? "Generale" : "Settoriale";
 	}
 	
 	private Obiettivo getEventoObiettivoNazionaleFromCVSRow(CSVRecord record) throws Exception {
-		String obiettivo_nazionale = record.get("obiettivo_nazionale");
-		if (obiettivo_nazionale == null)
-			obiettivo_nazionale = record.get(2);
+		String obiettivo_nazionale = record.get(2);
 		Obiettivo obiettivo = obiettivoService.findOneByCodiceCogeaps(obiettivo_nazionale.trim(), true);
 		if (obiettivo == null || !obiettivo.isNazionale())
 			throw new Exception("Obiettivo nazionale non valido: " + obiettivo_nazionale);
@@ -182,9 +174,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 	}
 	
 	private Obiettivo getEventoObiettivoRegionaleFromCVSRow(CSVRecord record) throws Exception {
-		String obiettivo_regionale = record.get("obiettivo_regionale");
-		if (obiettivo_regionale == null)
-			obiettivo_regionale = record.get(3);
+		String obiettivo_regionale = record.get(3);
 		Obiettivo obiettivo = obiettivoService.findOneByCodiceCogeaps(obiettivo_regionale.trim(), false);
 		if (obiettivo == null || obiettivo.isNazionale())
 			throw new Exception("Obiettivo regionale non valido: " + obiettivo_regionale);
@@ -192,9 +182,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 	}
 	
 	private Set<Disciplina> getEventoDisciplineFromCSVRow(CSVRecord record, DatiAccreditamento datiAccreditamento) throws Exception {
-		String cod_prof_disciplina = record.get("cod_prof.disciplina");
-		if (cod_prof_disciplina == null)
-			cod_prof_disciplina = record.get(4);
+		String cod_prof_disciplina = record.get(4);
 		cod_prof_disciplina = cod_prof_disciplina.trim();
 		
 		if (cod_prof_disciplina.length() == 0) { //generale -> prendo tutte le professioni (in realta tutte le discipline compatibili con i dati di accreditamento)

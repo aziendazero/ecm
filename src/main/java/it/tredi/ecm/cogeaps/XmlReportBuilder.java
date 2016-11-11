@@ -23,7 +23,8 @@ public class XmlReportBuilder {
 //TODO - fare gestione errori più evoluta
 	
 	public final static String CSV_REPORT_ENCODING = "CP1252";
-	private final static String []CSV_FIELDS = {"cod_fisc", "nome", "cognome", "ruolo", "lib_dip", "cred_acq", "data_acq", "part_reclutato", "sponsor", "cod_prof.disciplina"};
+	private final static String []CSV_FIELDS_LABEL = {"cof_fisc", "nome", "cognome", "ruolo", "lib_dip", "cred_acq", "data_acq", "part_reclutato", "sponsor", "cod_prof.disciplina"};
+	private final static String []CSV_FIELDS_XML = {"cod_fisc", "nome", "cognome", "ruolo", "lib_dip", "cred_acq", "data_acq", "part_reclutato", "sponsor", "cod_prof.disciplina"};
 	private final static String CSV_COD_PROF_DISCIPLINA_FIELD = "cod_prof.disciplina";
 	
 	public static byte []buildXMLReportForCogeaps(byte []csv, Evento evento) throws Exception {
@@ -50,22 +51,27 @@ public class XmlReportBuilder {
 		//parsing CSV e dati partecipanti
 		Iterable<CSVRecord> records = CSVFormat.EXCEL.withDelimiter(';').withFirstRecordAsHeader().parse(new StringReader(new String(csv, CSV_REPORT_ENCODING)));
 		for (CSVRecord record : records) {
-		    Map<String, String> map = buildRowMapFromCSVRow(record, CSV_FIELDS);
+		    Map<String, String> map = buildRowMapFromCSVRow(record, CSV_FIELDS_LABEL, CSV_FIELDS_XML);
 		    Element partecipanteEl = DocumentHelper.createElement("partecipante");
 		    eventoEl.add(partecipanteEl);
-		    handlePartecipanteEl(partecipanteEl, map, CSV_FIELDS);
+		    handlePartecipanteEl(partecipanteEl, map, CSV_FIELDS_XML);
 		}
 		return xmlDoc;
 	}	
 	
-	private static Map<String, String> buildRowMapFromCSVRow(CSVRecord record, String []fields_arr) {
+	private static Map<String, String> buildRowMapFromCSVRow(CSVRecord record, String []label_fields_arr, String []xml_fields_arr) {
 		Map<String, String> map = new HashMap<>();
-		for (int i=0; i<fields_arr.length; i++) {
-			String key =  fields_arr[i];
-			String value = record.get(key);
-			if (value == null)
+		for (int i=0; i<label_fields_arr.length; i++) {
+			String key =  label_fields_arr[i];
+			String xml_key =  xml_fields_arr[i];
+			String value = "";
+			try {
+				value = record.get(key);
+			}
+			catch (Exception e) {
 				value = record.get(i);
-			map.put(key, value);
+			}
+			map.put(xml_key, value);
 		}
 		return map;
 	}
