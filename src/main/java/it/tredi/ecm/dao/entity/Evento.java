@@ -286,7 +286,7 @@ public class Evento extends BaseEntity{
 	private Boolean autorizzazionePrivacy;
 
 	public void calcolaCosto() throws Exception{
-		if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
+		if(provider.isGruppoA()){
 			costo = 0.00;
 			pagato = true;
 		}else if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("B")){

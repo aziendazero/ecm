@@ -243,14 +243,16 @@ public class EventoValidator {
 				&& evento.getContrattiAccordiConvenzioni() == null)
 			errors.rejectValue("contrattiAccordiConvenzioni", "error.empty");
 
-		/* AUTOCERTIFICAZIONE ASSENZA FINANZIAMENTI
+		/* AUTOCERTIFICAZIONE ASSENZA FINANZIAMENTI (facoltativo solo per i provider del gruppo A)
 		 * (campo obbligatorio se altreFormeFinanziamento == false)
 		 * file allegato
 		 * */
-		if(evento.getAltreFormeFinanziamento() != null
-				&& evento.getAltreFormeFinanziamento() == false
-				&& evento.getAutocertificazioneAssenzaFinanziamenti() == null)
-			errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.empty");
+		if(!evento.getProvider().isGruppoA()){
+			if(evento.getAltreFormeFinanziamento() != null
+					&& evento.getAltreFormeFinanziamento() == false
+					&& evento.getAutocertificazioneAssenzaFinanziamenti() == null)
+				errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.empty");
+		}
 
 		/* RADIO EVENTO PARTNER (campo obbligatorio)
 		 * radio

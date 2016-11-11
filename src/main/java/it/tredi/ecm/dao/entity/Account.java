@@ -141,6 +141,12 @@ public class Account extends BaseEntity{
 			toRet += cognome;
 		}
 
+		if(provider != null) {
+			if(!toRet.isEmpty())
+				toRet += " ";
+			toRet += "(" + provider.getId() + ")";
+		}
+		
 		return toRet;
 	}
 

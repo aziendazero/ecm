@@ -68,10 +68,8 @@ import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
-import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
-import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -83,19 +81,15 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private EventoRepository eventoRepository;
 
 	@Autowired private PersonaEventoRepository personaEventoRepository;
-	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
 	@Autowired private SponsorRepository sponsorRepository;
 	@Autowired private PartnerRepository partnerRepository;
 	@Autowired private EventoPianoFormativoRepository eventoPianoFormativoRepository;
-	@Autowired private IntegrazioneService integrazioneService;
 	@PersistenceContext EntityManager entityManager;
 
 
 	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
 	@Autowired private FileService fileService;
 	@Autowired private CogeapsWsRestClient cogeapsWsRestClient;
-	@Autowired private EcmProperties ecmProperties;
-
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -845,17 +839,6 @@ public class EventoServiceImpl implements EventoService {
 
 			default: return 0.0f;
 		}
-
-	}
-
-	private float ricercaDicotomica(int left, int right, int numero){
-		int val = (left + right)/2;
-		if(val == numero)
-			return numero;
-		else if(val > numero)
-			return ricercaDicotomica(left, val, numero);
-		else
-			return ricercaDicotomica(val, right, numero);
 
 	}
 
