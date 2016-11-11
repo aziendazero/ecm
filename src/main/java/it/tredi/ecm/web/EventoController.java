@@ -894,7 +894,7 @@ public class EventoController {
 	public String addAttivitaTo(@RequestParam("target") String target,
 								@RequestParam("addAttivitaTo") String addAttivitaTo,
 								@RequestParam("modificaElemento") Integer modificaElemento,
-								@RequestParam(name = "pausa",required=false) Boolean pausa,
+								@RequestParam(name = "extraType",required=false) String extraType,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			if(modificaElemento == null){
@@ -907,8 +907,10 @@ public class EventoController {
 					LOGGER.debug("EventoRES - evento/addAttivitaTo programmaIndexLong: " + programmaIndexLong);
 					eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().add(attivitaRES);
 
-					if(pausa.booleanValue())
-						attivitaRES.setAsPausa();
+					if(extraType != null){
+						attivitaRES.setExtraType(extraType);
+					}
+					 
 					eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
 				}else if(target.equalsIgnoreCase("attivitaFSC")){
 					AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());

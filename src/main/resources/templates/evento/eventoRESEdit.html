@@ -17,6 +17,7 @@
 							</button>
 							<h4 id="container-titleNoPausa" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 							<h4 id="container-titlePausa" class="modal-title" th:text="#{label.inserisci_pausa}">Inserisci pausa</h4>
+							<h4 id="container-titleValutazioneApprendimento" class="modal-title" th:text="#{label.inserisci_valutazione_apprendimento}">Inserisci pausa</h4>
 						</div>
 						<div class="modal-body" id="container-attivitaRES">
 							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
@@ -169,7 +170,7 @@
 
 									<input id="targetTableAttivitaRES" type="text" name="target" style="display: none;" />
 									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
-									<input id="pausa" type="text" name="pausa" style="display: none;" />
+									<input id="extraType" type="text" name="extraType" style="display: none;" />
 
 									<input id="addAttivitaTo_provincia" type="text" style="display: none;" />
 									<input id="addAttivitaTo_comune" type="text" style="display: none;" />
@@ -1799,10 +1800,10 @@
 				};
 
 	/********************* PROGRAMMA GIORNALIERO ****************************/
-				function openAddAttivitaTo(target,programmaIndex,pausa,modificaElemento){
+				function openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento){
 					$('#targetTableAttivitaRES').val(target);
 					$('#addAttivitaTo').val(programmaIndex);
-					$('#pausa').val(pausa);
+					$('#extraType').val(extraType);
 					$('#modificaElementoAttivitaRES').val(modificaElemento);
 
 					var provinciaVal = $("[data-programma-provincia='" + programmaIndex + "']").val();
@@ -1815,9 +1816,14 @@
 					$('#addAttivitaTo_indirizzo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.indirizzo").val(indirizzoVal);
 					$('#addAttivitaTo_luogo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.luogo").val(luogoVal);
 
-					if(pausa){
+					if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO'){
 						$("#container-titleNoPausa").hide();
-						$("#container-titlePausa").show();
+						
+						if(extraType == 'PAUSA')
+							$("#container-titlePausa").show();
+						else
+							$("#container-titleValutazioneApprendimento").show();
+							
 						$("#container-argomento").hide();
 						$("#container-docente").hide();
 						$("#container-risultatoAtteso").hide();
@@ -1825,6 +1831,7 @@
 						$("#container-metodologiaDidattica").hide();
 					}else{
 						$("#container-titlePausa").hide();
+						$("#container-titleValutazioneApprendimento").hide();
 						$("#container-titleNoPausa").show();
 						$("#container-argomento").show();
 						$("#container-docente").show();
@@ -1896,22 +1903,22 @@
 				function modificaAttivitaFrom(target,caller){
 					var modificaElemento = $(caller).parent().parent().data('row-id');
 					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('programma-id');
-					var pausa = $(caller).parent().parent().data('is-pausa');
+					var extraType = $(caller).parent().parent().data('extra-type');
 					if(modificaElemento == undefined)
 						modificaElemento = 0;
 
-					console.log('modificaAttivitaFrom:' + target + "," + programmaIndex + ',' + pausa + ',' + modificaElemento);
+					console.log('modificaAttivitaFrom:' + target + "," + programmaIndex + ',' + extraType + ',' + modificaElemento);
 
-					sendAjaxModificaAttivitaTo(target,programmaIndex,pausa,modificaElemento);
+					sendAjaxModificaAttivitaTo(target,programmaIndex,extraType,modificaElemento);
 				}
 
-				function sendAjaxModificaAttivitaTo(target,programmaIndex,pausa,modificaElemento){
+				function sendAjaxModificaAttivitaTo(target,programmaIndex,extraType,modificaElemento){
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
 					$.get(url).done(function(data) {
 						$('#container-' + target).html(data);
 						reInitModaleAddAttivita();
 						$('#add-attivita').click();
-						openAddAttivitaTo(target,programmaIndex,pausa,modificaElemento);
+						openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento);
 					  })
 				  	.fail(function() {
 				    	alert( "error" );

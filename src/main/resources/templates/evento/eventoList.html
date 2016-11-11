@@ -174,7 +174,8 @@
 									<th th:text="#{label.procedure_formative_tipologia}">label.procedure_formative_tipologia</th>
 									<th th:text="#{label.titolo}">label.titolo</th>
 									<th th:text="#{label.sede}">label.sede</th>
-									<th th:text="#{label.date}">label.date</th>
+									<th th:text="#{label.data_inizio}">label.date</th>
+									<th th:text="#{label.data_fine}">label.date</th>
 									<th th:text="#{label.stato}"></th>
 									<th th:text="#{label.numero_partecipanti}">label.titolo</th>
 									<th th:text="#{label.ore_corso}">label.ore_corso</th>
@@ -189,11 +190,23 @@
 									<td th:text="${evento.edizione}"></td>
 									<td th:text="${evento.proceduraFormativa.name()}"></td>
 									<td th:text="${evento.titolo}"></td>
-									<td th:text="#{label.sede}"></td>
-									<td th:text="#{label.date}">label.date</td>
+									<td th:text="${evento.sedeEvento?.luogo}"></td>
+									<td th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></td>
+									<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
+							<!-- 		<td>
+										<ul>
+											<li><span th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></span></li>
+											<th:block th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).RES}">
+												<li th:each="data, d : ${evento.dateIntermedie}">
+													<span th:text="${#temporals.format(data, 'dd/MM/yyyy')}"></span>
+												</li>
+											</th:block>
+											<li><span th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></span></li>
+										</ul>
+									</td> -->
 									<td th:text="${evento.stato.nome}"></td>
 									<td th:text="${evento.numeroPartecipanti}"></td>
-									<td th:text="${evento.durata + ' (ore)'}"></td>
+									<td th:text="${evento.durata}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
 									<td th:unless="${evento.pagato}">
 										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>	

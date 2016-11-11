@@ -213,7 +213,6 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				accountRepository.save(provider);
 				workflowService.saveOrUpdateBonitaUserByAccount(provider);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -236,7 +235,6 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				accountRepository.save(admin);
 				workflowService.saveOrUpdateBonitaUserByAccount(admin);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -258,7 +256,6 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				accountRepository.save(referee1);
 				workflowService.saveOrUpdateBonitaUserByAccount(referee1);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -280,7 +277,6 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				accountRepository.save(referee2);
 				workflowService.saveOrUpdateBonitaUserByAccount(referee2);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -302,7 +298,6 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				accountRepository.save(referee3);
 				workflowService.saveOrUpdateBonitaUserByAccount(referee3);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

@@ -26,6 +26,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.cogeaps.CogeapsCaricaResponse;
@@ -105,6 +107,7 @@ public class EventoServiceImpl implements EventoService {
 			eventoRepository.saveAndFlush(evento);
 			evento.buildPrefix();
 		}
+		evento.setDataUltimaModifica(LocalDateTime.now());
 		eventoRepository.save(evento);
 
 		//se attuazione di evento del piano formativo aggiorna il flag
@@ -191,13 +194,13 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public List<Evento> getAllEventi() {
 		LOGGER.debug("Recupero tutti gli eventi");
-		return eventoRepository.findAll();
+		return eventoRepository.findAll(new Sort(Direction.DESC, "dataUltimaModifica"));
 	}
 
 	@Override
 	public Set<Evento> getAllEventiForProviderId(Long providerId) {
 		LOGGER.debug("Recupero tutti gli eventi del provider: " + providerId);
-		return eventoRepository.findAllByProviderId(providerId);
+		return eventoRepository.findAllByProviderIdOrderByDataUltimaModificaDesc(providerId);
 	}
 
 	@Override
@@ -622,7 +625,7 @@ public class EventoServiceImpl implements EventoService {
 		if(programma != null){
 			for(EventoRESProgrammaGiornalieroWrapper progrGior : programma){
 				for(DettaglioAttivitaRES dett : progrGior.getProgramma().getProgramma()){
-					if(!dett.isPausa())
+					if(!dett.isPausa() && !dett.isValutazioneApprendimento())
 						durata += dett.getOreAttivita();
 				}
 			}

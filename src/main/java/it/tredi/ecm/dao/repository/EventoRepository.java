@@ -16,6 +16,7 @@ import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 
 public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Set<Evento> findAllByProviderId(Long providerId);
+	public Set<Evento> findAllByProviderIdOrderByDataUltimaModificaDesc(Long providerId);
 
 	public Set<Evento> findAllByProviderIdAndStatoNotAndDataInizioBefore(Long providerId, EventoStatoEnum stato, LocalDate now);
 
