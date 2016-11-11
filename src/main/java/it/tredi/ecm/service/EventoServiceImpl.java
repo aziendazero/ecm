@@ -57,6 +57,7 @@ import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
@@ -68,10 +69,8 @@ import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
-import it.tredi.ecm.dao.repository.PersonaFullEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
-import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -83,19 +82,15 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private EventoRepository eventoRepository;
 
 	@Autowired private PersonaEventoRepository personaEventoRepository;
-	@Autowired private PersonaFullEventoRepository personaFullEventoRepository;
 	@Autowired private SponsorRepository sponsorRepository;
 	@Autowired private PartnerRepository partnerRepository;
 	@Autowired private EventoPianoFormativoRepository eventoPianoFormativoRepository;
-	@Autowired private IntegrazioneService integrazioneService;
 	@PersistenceContext EntityManager entityManager;
 
 
 	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
 	@Autowired private FileService fileService;
 	@Autowired private CogeapsWsRestClient cogeapsWsRestClient;
-	@Autowired private EcmProperties ecmProperties;
-
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -669,9 +664,11 @@ public class EventoServiceImpl implements EventoService {
 
 	private int calcolaNumeroRuoloFSC(RuoloFSCBaseEnum ruolo, Map<RuoloFSCEnum, RiepilogoRuoliFSC> riepilogoRuoliMap) {
 		int counter = 0;
-		for(RiepilogoRuoliFSC rrf : riepilogoRuoliMap.values()) {
-			if(rrf.getRuolo().getRuoloBase() == ruolo) {
-				counter = counter + rrf.getNumeroPartecipanti();
+		if(riepilogoRuoliMap != null){
+			for(RiepilogoRuoliFSC rrf : riepilogoRuoliMap.values()) {
+				if(rrf.getRuolo().getRuoloBase() == ruolo) {
+					counter = counter + rrf.getNumeroPartecipanti();
+				}
 			}
 		}
 		return counter;
@@ -843,17 +840,6 @@ public class EventoServiceImpl implements EventoService {
 
 			default: return 0.0f;
 		}
-
-	}
-
-	private float ricercaDicotomica(int left, int right, int numero){
-		int val = (left + right)/2;
-		if(val == numero)
-			return numero;
-		else if(val > numero)
-			return ricercaDicotomica(left, val, numero);
-		else
-			return ricercaDicotomica(val, right, numero);
 
 	}
 
@@ -1085,6 +1071,23 @@ public class EventoServiceImpl implements EventoService {
 			}
 		}
 
+		else if(eventoPadre instanceof EventoFSC) {
+
+			LOGGER.debug(Utils.getLogMessage("Procedura di detach EventoFSC - start"));
+
+			LOGGER.debug(Utils.getLogMessage("Detach Fasi Azioni Ruoli FSC"));
+			for(FaseAzioniRuoliEventoFSCTypeA far : ((EventoFSC) eventoPadre).getFasiAzioniRuoli()) {
+				LOGGER.debug(Utils.getLogMessage("Detach Fase: " + far.getId()));
+				for(AzioneRuoliEventoFSC aref : far.getAzioniRuoli()) {
+					LOGGER.debug(Utils.getLogMessage("Detach Azioni Ruoli: " + aref.getId()));
+					aref.getRuoli().size(); //touch che non viene raggiunto perchè al terzo livello
+					aref.getMetodiDiLavoro().size(); //touch che non viene raggiunto perchè al terzo livello
+					entityManager.detach(aref);
+				}
+				entityManager.detach(far);
+			}
+		}
+
 		//parte in comune
 		LOGGER.debug(Utils.getLogMessage("Detach Responsabili Scientifici"));
 		for(PersonaEvento r : eventoPadre.getResponsabili()) {
@@ -1174,7 +1177,7 @@ public class EventoServiceImpl implements EventoService {
 				LOGGER.debug(Utils.getLogMessage("Docente clonato salvato: " + d.getId()));
 			}
 
-			//va fatto così o hibernate si offende p.s. grande Barduz
+			//va fatto così o hibernate si offende p.s. grande Barduz!!
 			LOGGER.debug(Utils.getLogMessage("Clonazione Programmi RES"));
 			List<ProgrammaGiornalieroRES> programmaRES = new ArrayList<ProgrammaGiornalieroRES>();
 			for(ProgrammaGiornalieroRES pgr : ((EventoRES) riedizione).getProgramma()) {
@@ -1196,16 +1199,41 @@ public class EventoServiceImpl implements EventoService {
 			((EventoRES) riedizione).setRiepilogoRES(new RiepilogoRES());
 		}
 
-//		else if(riedizione instanceof EventoFSC) {
-//
-//			LOGGER.debug(Utils.getLogMessage("Procedura di clonazione EventoFSC - start"));
-//
-//			((EventoFSC) riedizione).setOttenutoComitatoEtico(null);
-//
-//
-//
-//
-//		}
+		else if(riedizione instanceof EventoFSC) {
+
+			LOGGER.debug(Utils.getLogMessage("Procedura di clonazione EventoFSC - start"));
+
+			((EventoFSC) riedizione).setOttenutoComitatoEtico(null);
+
+			//solito giro strano per non fare agitare hibernate, stavolta doppio.. sigh
+			LOGGER.debug(Utils.getLogMessage("Clonazione Fasi Azioni Ruoli FSC"));
+			List<FaseAzioniRuoliEventoFSCTypeA> fasiAzioniRuoli = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
+			for(FaseAzioniRuoliEventoFSCTypeA far : ((EventoFSC) riedizione).getFasiAzioniRuoli()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione fase FSC: " + far.getId()));
+				far.setId(null);
+				LOGGER.debug(Utils.getLogMessage("Clonazione dei sui azioni ruoli FSC"));
+				List<AzioneRuoliEventoFSC> azioniRuoli = new ArrayList<AzioneRuoliEventoFSC>();
+				for(AzioneRuoliEventoFSC aref : far.getAzioniRuoli()) {
+					LOGGER.debug(Utils.getLogMessage("Clonazione azione ruoli FSC: " + aref.getId()));
+					aref.setId(null);
+					LOGGER.debug(Utils.getLogMessage("Clonazione dei ruoli"));
+					List<RuoloOreFSC> ruoli = new ArrayList<RuoloOreFSC>();
+					ruoli.addAll(Arrays.asList(aref.getRuoli().toArray(new RuoloOreFSC[aref.getRuoli().size()])));
+					aref.setRuoli(ruoli);
+					LOGGER.debug(Utils.getLogMessage("Clonazione metodi di lavoro"));
+					Set<MetodoDiLavoroEnum> metodiDiLavoro = new HashSet<MetodoDiLavoroEnum>();
+					metodiDiLavoro.addAll(Arrays.asList(aref.getMetodiDiLavoro().toArray(new MetodoDiLavoroEnum[aref.getMetodiDiLavoro().size()])));
+					aref.setMetodiDiLavoro(metodiDiLavoro);
+					azioniRuoli.add(aref);
+				}
+				far.setAzioniRuoli(azioniRuoli);
+				fasiAzioniRuoli.add(far);
+			}
+			((EventoFSC) riedizione).setFasiAzioniRuoli(fasiAzioniRuoli);
+
+			//ricalcolato
+			((EventoFSC) riedizione).setRiepilogoRuoli(new ArrayList<RiepilogoRuoliFSC>());
+		}
 
 		//parte in comune
 		LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio Responsabili"));
@@ -1280,7 +1308,7 @@ public class EventoServiceImpl implements EventoService {
 		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
 	}
-	
+
 	@Override
 	public Set<Evento> getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
 		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);

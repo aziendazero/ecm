@@ -55,7 +55,7 @@ public class EventoFSC extends Evento{
 
 	private String fasiAzioniRuoliJson;
 
-	@OneToMany(mappedBy="evento", cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="evento", cascade=CascadeType.ALL, orphanRemoval=true)
 	private List<FaseAzioniRuoliEventoFSCTypeA> fasiAzioniRuoli = new ArrayList<FaseAzioniRuoliEventoFSCTypeA>();
 
 	@ElementCollection

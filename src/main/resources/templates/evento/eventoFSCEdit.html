@@ -1131,7 +1131,7 @@
 										<div class="col-xs-1"></div>
 										<label class="control-label col-md-3 col-sm-3 col-xs-11">
 											<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Allegato autocertificazione assenza finanziamenti</span>
-											<span class="required">*</span>
+											<span th:unless="${eventoWrapper.evento.provider.isGruppoA()}" class="required">*</span>
 										</label>
 										<div class="model-link">
 											<i class="fa fa-file-text"></i>

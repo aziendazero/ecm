@@ -28,6 +28,7 @@ public class ComunicazioneWrapper {
 	private ComunicazioneAmbitoEnum[] ambitoList;
 	private ComunicazioneTipologiaEnum[] tipologiaList;
 	private boolean canRespond;
+	private boolean canCloseComunicazione;
 	private ComunicazioneResponse risposta;
 	private File allegatoComunicazione;
 	private File allegatoRisposta;

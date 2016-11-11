@@ -66,9 +66,9 @@ public class Account extends BaseEntity{
 	}
 			)
 	private Set<Profile> profiles = new HashSet<Profile>();
-	
+
 	@ManyToOne
-	@JoinColumn(name = "provider_id")	
+	@JoinColumn(name = "provider_id")
 	private Provider provider;
 
 	public boolean isPasswordExpired(){
@@ -112,7 +112,7 @@ public class Account extends BaseEntity{
 
 	public String getFullName(){
 		String toRet = "";
-		if(nome != null) 
+		if(nome != null)
 			toRet = nome;
 
 		if(cognome != null) {
@@ -120,19 +120,24 @@ public class Account extends BaseEntity{
 				toRet += " ";
 			toRet += cognome;
 		}
-		
+
 		if(provider != null) {
 			if(!toRet.isEmpty())
 				toRet += " ";
 			toRet += "(" + provider.getDenominazioneLegale() + ")";
 		}
 
+		if(isSegreteria()) {
+			toRet += " ";
+			toRet += "(Segreteria ECM)";
+		}
+
 		return toRet;
 	}
-	
+
 	public String getFullNameBase(){
 		String toRet = "";
-		if(nome != null) 
+		if(nome != null)
 			toRet = nome;
 
 		if(cognome != null) {
@@ -140,7 +145,13 @@ public class Account extends BaseEntity{
 				toRet += " ";
 			toRet += cognome;
 		}
-		
+
+		if(provider != null) {
+			if(!toRet.isEmpty())
+				toRet += " ";
+			toRet += "(" + provider.getId() + ")";
+		}
+
 		return toRet;
 	}
 
@@ -176,6 +187,15 @@ public class Account extends BaseEntity{
 	public boolean isCommissioneEcm() {
 		for (Profile p : profiles){
 			if(p.getProfileEnum().equals(ProfileEnum.COMMISSIONE)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isProviderUserAdmin() {
+		for (Profile p : profiles){
+			if(p.getProfileEnum().equals(ProfileEnum.PROVIDERUSERADMIN)){
 				return true;
 			}
 		}

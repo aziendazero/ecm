@@ -1,5 +1,6 @@
 package it.tredi.ecm.web;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -475,12 +476,50 @@ public class EventoPianoFormativoController {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/delete"));
 		return removeEvento(null, providerId, pianoFormativoId, id, redirectAttrs);
 	}
-
+	
+	/*
+	 * ELIMINAZIONE DI TUTTI GLI EVENTI DAL PIANO FORMATIVO (piano formativo)
+	 * */
+	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
+	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/deleteAll")
+	public String removeAllEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId,
+			Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll"));
+		return removeAllEventi(providerId, pianoFormativoId, redirectAttrs);
+	}
+	
+	private String removeAllEventi(Long providerId, Long pianoFormativoId, RedirectAttributes redirectAttrs){
+		try{
+			Set<Long> ids = new HashSet<Long>();
+			PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
+			for(EventoPianoFormativo e : pianoFormativo.getEventiPianoFormativo()){
+				ids.add(e.getId());
+			}
+			
+			pianoFormativo.getEventiPianoFormativo().clear();
+			pianoFormativoService.save(pianoFormativo);
+			for(Long id : ids)
+				eventoService.delete(id);
+			
+			redirectAttrs.addFlashAttribute("accordion", pianoFormativo.getAnnoPianoFormativo());
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+			return "redirect:/provider/" + providerId + "/pianoFormativo/list";
+				
+		}catch(Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/deleteAll"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+	
 	private String removeEvento(Long accreditamentoId, Long providerId, Long pianoFormativoId, Long eventoId, RedirectAttributes redirectAttrs) {
 		try{
 			PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
-			pianoFormativo.removeEvento(eventoId);
-			pianoFormativoService.save(pianoFormativo);
+//			pianoFormativo.removeEvento(eventoId);
+//			pianoFormativoService.save(pianoFormativo);
+			
+			pianoFormativoService.removeEventoFrom(eventoId, pianoFormativoId);
 			eventoService.delete(eventoId);
 			// caso fromAccreditamento
 			if (accreditamentoId != null) {

@@ -29,7 +29,7 @@
 							</thead>
 							<tbody th:remove="all-but-first">
 								<tr th:each="anagrafica, row : ${anagraficaList}">
-									<td><a th:text="${anagrafica.codiceFiscale}" th:href="@{|/provider/${anagrafica.provider.id}/anagrafica/${anagrafica.id}/edit|}">Codice fiscale</a></td>
+									<td><a th:text="${anagrafica.codiceFiscale}" th:href="@{|/provider/${anagrafica.provider.id}/anagrafica/${anagrafica.id}/show|}">Codice fiscale</a></td>
 									<td th:text="${anagrafica.nome}">Cognome</td>
 									<td th:text="${anagrafica.cognome}">Cognome</td>
 								</tr>

@@ -54,6 +54,8 @@ public enum FileEnum {
 	FILE_REQUISITI_HARDWARE_SOFTWARE(43, "Dotazione hardware e software necessaria all'utente per svolgere l'evento"),
 
 	FILE_RELAZIONE_FINALE(44, "Relazione Finale"),
+	FILE_ACCREDITAMENTO_STANDARD(45,"Richiesta di Accreditamento Standard"),
+	FILE_RELAZIONE_ANNUALE(46, "Relazione Annuale"),
 	
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");

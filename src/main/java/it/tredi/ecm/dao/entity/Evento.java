@@ -172,7 +172,7 @@ public class Evento extends BaseEntity{
 	private EventoStatoEnum stato;//vedi descrizione in EventoStatoEnum
 	private boolean validatorCheck = false; //(durante il salvataggio check di un flag per sapere se sono stati rispettati tutti i vincoli del validator)
 
-	@OneToMany(mappedBy="evento")
+	@OneToMany(mappedBy="evento", cascade=CascadeType.ALL)
 	@OrderBy("data_invio DESC")
 	private Set<RendicontazioneInviata> inviiRendicontazione = new HashSet<RendicontazioneInviata>();
 
@@ -286,7 +286,7 @@ public class Evento extends BaseEntity{
 	private Boolean autorizzazionePrivacy;
 
 	public void calcolaCosto() throws Exception{
-		if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("A")){
+		if(provider.isGruppoA()){
 			costo = 0.00;
 			pagato = true;
 		}else if(provider.getTipoOrganizzatore().getGruppo().equalsIgnoreCase("B")){

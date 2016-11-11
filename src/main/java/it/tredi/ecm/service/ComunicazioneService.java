@@ -22,10 +22,15 @@ public interface ComunicazioneService {
 	Map<String, Account> getAllDestinatariDisponibili(Long id);
 	void send(Comunicazione comunicazione, File allegato);
 	boolean canAccountRespondToComunicazione(Account account, Comunicazione comunicazione);
+	boolean canAccountCloseComunicazione(Account account, Comunicazione comunicazione);
 	void contrassegnaComeLetta(Long id);
 	void reply(ComunicazioneResponse risposta, Long id, File allegato);
-	Set<Comunicazione> getAllComunicazioniRicevute(Account user);
-	Set<Comunicazione> getAllComunicazioniInviate(Account user);
-	Set<Comunicazione> getAllComunicazioniChiuse(Account user);
+	Set<Comunicazione> getAllComunicazioniRicevuteByAccount(Account user);
+	Set<Comunicazione> getAllComunicazioniInviateByAccount(Account user);
+	Set<Comunicazione> getAllComunicazioniChiuseByAccount(Account user);
+	Set<Comunicazione> getAllComunicazioniNonLetteByAccount(Account user);
+	void chiudiComunicazioneById(Long id);
+	int countAllComunicazioniByAccountId(Long currentAccountId);
+	Set<Comunicazione> getAllComunicazioniByAccount(Account user);
 
 }

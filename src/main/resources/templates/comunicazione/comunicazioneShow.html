@@ -9,7 +9,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 
-				<!-- modale riepilogo  -->
+				<!-- modale risposta  -->
 				<div id="response-modal" class="modal fade modal-response"
 					data-model-index="1" role="dialog">
 					<div class="modal-dialog modal-lg">
@@ -81,6 +81,9 @@
 					<div class="x_title">
 						<h2 th:text="#{label.visualizzazione_comunicazione}"></h2>
 						<div class="pull-right buttons-header">
+							<a th:if="${comunicazioneWrapper.canCloseComunicazione}" class="btn btn-danger pull-right"
+									th:href="@{|/comunicazione/${comunicazioneWrapper.comunicazione.id}/close|}"
+									th:text="#{label.chiudi}">Chiudi</a>
 							<a th:if="${comunicazioneWrapper.canRespond}" class="btn btn-success pull-right"
 									data-toggle="modal" data-target=".modal-response"
 									th:text="#{label.rispondi}">Rispondi</a>

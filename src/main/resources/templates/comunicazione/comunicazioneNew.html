@@ -91,12 +91,12 @@
 										<div class="col-xs-12 col-sm-7">
 											<div class="no-padding">
 												<select
-													class="selectpicker required"
+													class="selectpicker"
 													th:field="${comunicazioneWrapper.comunicazione.ambito}"
 													data-width="100%" data-style="btn-primary"
 													data-actions-box="true" data-size="10"
 													data-hide-disabled="false"
-													id="ambitoSelect" onchange="abilitaTipologia()"
+													id="ambitoSelect" onchange="abilitaTipologia();"
 													title="Seleziona un ambito...">
 													<option
 														th:each="ambito, row: ${comunicazioneWrapper.ambitoList}"
@@ -116,12 +116,12 @@
 										<div class="col-xs-12 col-sm-7">
 											<div class="no-padding">
 												<select
-													class="selectpicker required"
+													class="selectpicker"
 													th:field="${comunicazioneWrapper.comunicazione.tipologia}"
 													data-width="100%" data-style="btn-primary"
 													data-actions-box="true" data-size="10"
 													data-hide-disabled="false"
-													disabled="disabled"
+													th:disabled="${comunicazioneWrapper.comunicazione.ambito == null}"
 													id="tipologiaSelect"
 													title="Seleziona una tipologia...">
 													<option
@@ -162,9 +162,26 @@
 				    	allowClear: true
 				    });
 
-					if([[${comunicazioneWrapper.comunicazione.ambito}]]) {
+					$(".tipologia-container").on("hidden.bs.select", function() {
+						$(this).removeClass('bad').find('div.alert').fadeOut(150, function() {
+							$(this).remove();
+						});
+					});
+
+					$(".ambito-container").on("changed.bs.select", function() {
 						abilitaTipologia();
+					});
+
+					$(".ambito-container").on("hidden.bs.select", function() {
+						$(this).removeClass('bad').find('div.alert').fadeOut(150, function() {
+							$(this).remove();
+						});
+					});
+
+					if([[${comunicazioneWrapper.comunicazione.ambito}]]) {
+						initTipologia();
 					}
+
 				});
 
 				function removeAlerts() {
@@ -173,6 +190,7 @@
 					});
 				}
 
+				//abilita le tipologia al change dell'ambito
 				function abilitaTipologia(){
 					// abilita la select della tipologia
 					$("#tipologiaSelect").prop("disabled", false);
@@ -183,6 +201,16 @@
 						else $(this).hide();
 					});
 					$("#tipologiaSelect").selectpicker('deselectAll');
+					$("#tipologiaSelect").selectpicker("refresh");
+				}
+
+				//mostra nasconde le tipologia al doc ready se ambito non è null
+				function initTipologia() {
+					$.each($("#tipologiaSelect option"), function() {
+						if($(this).attr("name") == $("#ambitoSelect").val())
+							$(this).show();
+						else $(this).hide();
+					});
 					$("#tipologiaSelect").selectpicker("refresh");
 				}
 

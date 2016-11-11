@@ -4,15 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
-import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
-import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.entity.Partner;
-import it.tredi.ecm.dao.entity.PersonaEvento;
-import it.tredi.ecm.dao.entity.PersonaFullEvento;
-import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
-import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
 public interface EventoService {

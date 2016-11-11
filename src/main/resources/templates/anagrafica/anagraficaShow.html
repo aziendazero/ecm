@@ -12,13 +12,12 @@
 					<div class="x_title">
 						<h2 th:text="#{label.modifica_dati_anagrafici(${anagraficaWrapper.anagrafica.nome}, ${anagraficaWrapper.anagrafica.cognome})}">Modifica dati anagrafici di Tizio Caio</h2>
 						<div class="pull-right buttons-header">
-							<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${anagraficaWrapper.anagrafica.provider.id}/anagrafica/list|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:include="anagrafica/anagraficaFragment :: anagrafica('edit')"></th:block>
+					<th:block th:include="anagrafica/anagraficaFragment :: anagrafica('show')"></th:block>
 				</div>
 			</div>
 		</div>

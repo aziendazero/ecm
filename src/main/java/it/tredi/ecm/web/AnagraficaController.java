@@ -31,6 +31,7 @@ public class AnagraficaController {
 	private final String EDIT = "/anagrafica/anagraficaEdit";
 	private final String LIST = "/anagrafica/anagraficaList";
 	private final String URL_LIST = "/provider/anagrafica/list";
+	private final String SHOW = "/anagrafica/anagraficaShow";
 
 	@Autowired private AnagraficaService anagraficaService;
 	@Autowired private ProviderService providerService;
@@ -65,6 +66,21 @@ public class AnagraficaController {
 			return "redirect:/home";
 		}
 	}
+	
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
+	@RequestMapping("/provider/{providerId}/anagrafica/list")
+	public String showAnagraficaListForProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		try {
+			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/anagrafica/list"));
+			model.addAttribute("anagraficaList", anagraficaService.getAllAnagraficheAttiveByProviderId(providerId));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
+			return LIST;
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/anagrafica/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/anagrafica/{anagraficaId}/edit")
@@ -74,6 +90,19 @@ public class AnagraficaController {
 			return goToEdit(model, prepareAnagraficaWrapper(anagraficaService.getAnagrafica(anagraficaId),providerId));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/anagrafica/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+	
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
+	@RequestMapping("/provider/{providerId}/anagrafica/{anagraficaId}/show")
+	public String showAnagrafica(@PathVariable Long providerId, @PathVariable Long anagraficaId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/{providerId}/anagrafica/{anagraficaId}/show"));
+		try {
+			return goToShow(model, prepareAnagraficaWrapper(anagraficaService.getAnagrafica(anagraficaId),providerId));
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/anagrafica/" + anagraficaId + "/show"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
@@ -108,6 +137,13 @@ public class AnagraficaController {
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
+	
+	private String goToShow(Model model, AnagraficaWrapper wrapper){
+		model.addAttribute("anagraficaWrapper", wrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+		return SHOW;
+	}
+
 
 	//utilizzato save (passa editId come hidden param)
 	private AnagraficaWrapper prepareAnagraficaWrapper(Anagrafica anagrafica){
