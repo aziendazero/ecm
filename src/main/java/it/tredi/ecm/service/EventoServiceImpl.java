@@ -244,11 +244,6 @@ public class EventoServiceImpl implements EventoService {
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				eventoRES.setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
-
-			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
-			if(((EventoRES) evento).getConfermatiCrediti().booleanValue()){
-				evento.setCrediti(eventoWrapper.getCreditiProposti());
-			}
 		}else if(evento instanceof EventoFSC){
 			retrieveProgrammaAndAddJoin(eventoWrapper);
 
@@ -294,11 +289,11 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD) evento).getVerificaApprendimento().addAll(nuoviVAF);
 
 			retrieveProgrammaAndAddJoin(eventoWrapper);
-
-			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
-			if(((EventoFAD) evento).getConfermatiCrediti().booleanValue()){
-				evento.setCrediti(eventoWrapper.getCreditiProposti());
-			}
+		}
+		
+		//valuto se salvare i crediti proposti o quelli calcolati dal sistema
+		if(evento.getConfermatiCrediti().booleanValue()){
+			evento.setCrediti(eventoWrapper.getCreditiProposti());
 		}
 
 		//Responsabili
@@ -714,7 +709,7 @@ public class EventoServiceImpl implements EventoService {
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			EventoFSC evento = ((EventoFSC)eventoWrapper.getEvento());
 			crediti = calcoloCreditiFormativiEventoFSC(evento.getTipologiaEvento(), eventoWrapper);
-			evento.setCrediti(crediti);
+			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FSC"));
 			return crediti;
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){

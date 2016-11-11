@@ -109,6 +109,8 @@ public class RelazioneAnnuale extends BaseEntity{
 		eventiDefinitiviPFA = 0;//numero di eventi rendicontati come attuazione di eventi del PFA dell'anno precedente
 		eventiDefinitiviManuali = 0;//numero di eventi manuali rendicontati nell'anno precedente
 		totaleEventiDefinitiviNoRiedizioni = 0;
+		totaleEventiDefinitiviConRiedizioni = 0;
+		
 		rapportoAttuazione = new BigDecimal(0);//eventiDefinitiviPFA/eventiInseritiPFA
 		rapportoCostiEntrate = new BigDecimal(0);
 		rapportoObiettiviRegionali =  new BigDecimal(0);
@@ -161,6 +163,10 @@ public class RelazioneAnnuale extends BaseEntity{
 		}
 		
 		totaleEventiDefinitiviNoRiedizioni = eventiDefinitiviPFA + eventiDefinitiviManuali;
+		if(eventiRendicontati != null)
+			totaleEventiDefinitiviConRiedizioni += eventiRendicontati.size();
+		if(eventiRendicontati_Riedizione != null)
+			totaleEventiDefinitiviConRiedizioni += eventiRendicontati_Riedizione.size();
 		
 		if(eventiInseritiPFA > 0 )
 			rapportoAttuazione = BigDecimal.valueOf(eventiDefinitiviPFA/eventiInseritiPFA).multiply(new BigDecimal(100));
@@ -196,21 +202,6 @@ public class RelazioneAnnuale extends BaseEntity{
 		for(Disciplina d : e.getDiscipline()){
 			addElement(d, riepilogoDiscipline);
 		}
-		
-//		if(riepilogoObiettivi.containsKey(e.getObiettivoNazionale())){
-//			int value = riepilogoObiettivi.get(e.getObiettivoNazionale());
-//			riepilogoObiettivi.put(e.getObiettivoNazionale(),value++);
-//		}else{
-//			riepilogoObiettivi.put(e.getObiettivoNazionale(),1);
-//		}
-//		
-//		if(riepilogoObiettiviRegionali.containsKey(e.getObiettivoRegionale())){
-//			int value = riepilogoObiettivi.get(e.getObiettivoRegionale());
-//			riepilogoObiettiviRegionali.put(e.getObiettivoRegionale(),value++);
-//		}else{
-//			riepilogoObiettiviRegionali.put(e.getObiettivoRegionale(),1);
-//		}
-		
 	}
 	
 	private <T> void addElement(T element, Map<T,Integer> mappa){

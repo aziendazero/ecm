@@ -58,7 +58,7 @@
 	<div class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${dataContainerObject}__.__${tipologia}__')} ? 'bad'">
 		<label class="control-label col-xs-1 text-right" th:text="${counter}">2</label>
 		<label class="control-label col-md-3 col-sm-3 col-xs-11"
-			for="procedure_formative_checkbox"><span th:text="#{label.procedure_formative}">Procedure formative</span><span class="required">*</span></label>
+			for="procedure_formative_checkbox"><span th:text="#{label.procedure_formative_tipologia}">Procedure formative</span><span class="required">*</span></label>
 		<th:block th:if="${#lists.contains(__${wrapper}__.idEditabili, counter)}">	
 			<div class="col-md-4 col-sm-4 col-xs-12" id="procedure_formative_checkbox">
 				<div class="checkbox" th:each="__${elemento}__, row : ${__${elemento}__List}">

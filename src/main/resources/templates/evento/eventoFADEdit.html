@@ -38,7 +38,7 @@
 								<!-- DOCENTE -->
 								<div id="container-docente" class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
-										<span th:text="#{label.docente}">Docente</span>
+										<span th:text="#{label.docente_tutor}">Docente</span>
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
@@ -230,7 +230,7 @@
 										<span>3</span>
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="proceduraFormativa">
-										<span th:text="#{label.procedura_formativa}">Id del Provider</span>
+										<span th:text="#{label.procedure_formative_tipologia}">Id del Provider</span>
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="proceduraFormativa">
@@ -520,7 +520,7 @@
 									</div>
 								</div>
 
-								<!-- DOCENTI/TUTOR -->
+								<!-- DOCENTI/RELATORI/TUTOR -->
 								<div class="item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.docenti')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>15</span>

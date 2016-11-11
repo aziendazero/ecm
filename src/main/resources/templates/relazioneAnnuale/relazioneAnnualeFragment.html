@@ -65,7 +65,7 @@
 									<span class="label-show" th:text="#{label.totale_eventi_defintivi_no_riedizioni}">Cognome</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.totaleEventiDefinitivi}"></div>
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.totaleEventiDefinitiviNoRiedizioni}"></div>
 								</div>
 							</div>
 							
@@ -75,8 +75,7 @@
 									<span class="label-show" th:text="#{label.totale_eventi_defintivi}">Cognome</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<!-- <div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.totaleEventiDefinitiviConRiedizioni}"></div> -->
-									<div class="value danger" th:text="${'Modifica DB con calcolo somma -> #eventi rendicontati'}"></div>
+									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.totaleEventiDefinitiviConRiedizioni}"></div>
 								</div>
 							</div>
 							
@@ -173,8 +172,8 @@
 										<span class="label-show" th:text="#{label.numero_partecipanti_acquisito_crediti}">Cognome</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<!-- TODO export da xml-->
 										<!-- <div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiConCrediti}"></div> -->
-										<div class="value danger" th:text="${'Calcolare da xml'}"></div>
 									</div>
 								</div>
 							</th:block>
@@ -185,7 +184,7 @@
 						<h3 th:text="#{label.resoconto_economico}">Resoconto Economico</h3>
 						<!-- numeroPartecipantiNoCrediti -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti')} ? 'bad'">
-							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" th:classappend="${showOnly} ? 'col-sm-offset-1'">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.numero_partecipanti_no_crediti}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
@@ -206,7 +205,7 @@
 						
 						<!-- costiTotaliEventi -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi')} ? 'bad'">
-							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" th:classappend="${showOnly} ? 'col-sm-offset-1'">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.costo_totale_eventi}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
@@ -227,7 +226,7 @@
 						
 						<!-- ricaviDaSponsor -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor')} ? 'bad'">
-							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" th:classappend="${showOnly} ? 'col-sm-offset-1'">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.ricavi_da_sponsor}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
@@ -248,7 +247,7 @@
 						
 						<!-- altriFinanziamenti -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti')} ? 'bad'">
-							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" th:classappend="${showOnly} ? 'col-sm-offset-1'">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.ricavi_altre_forme_finanziamento}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
@@ -269,7 +268,7 @@
 
 						<!-- quoteDiPartecipazione -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione')} ? 'bad'">
-							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" th:classappend="${showOnly} ? 'col-sm-offset-1'">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.quote_di_partecipazione}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
@@ -306,7 +305,7 @@
 						<!--   ALLEGATO (RELAZIONE FINALE)   -->
 						<th:block th:if="${editabile}">
 							<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale')} ? 'bad'">
-								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
 									<span th:text="#{label.relazioneFinale}">Relazione Finale</span>
 									<span class="required" id="brochure-obbligatoria">*</span>
 								</label>

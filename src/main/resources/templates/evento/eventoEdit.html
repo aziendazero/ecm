@@ -410,9 +410,9 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:if="${eventoWrapper.evento.isNew() and !eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.creazione_nuovo_evento(${eventoWrapper.proceduraFormativa})}"></h2>
-						<h2 th:unless="${eventoWrapper.evento.isNew() or eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_tipo(${eventoWrapper.proceduraFormativa})}"></h2>
+						<h2 th:unless="${eventoWrapper.evento.isNew() or eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_tipo(${eventoWrapper.proceduraFormativa},${eventoWrapper.evento.getCodiceIdentificativo()})}"></h2>
 						<h2 th:if="${eventoWrapper.evento.isNew() and eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.accreditamento_evento_piano_formativo(${eventoWrapper.proceduraFormativa})}"></h2>
-						<h2 th:unless="${eventoWrapper.evento.isNew() or !eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_accreditato(${eventoWrapper.proceduraFormativa})}"></h2>
+						<h2 th:unless="${eventoWrapper.evento.isNew() or !eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_accreditato(${eventoWrapper.proceduraFormativa},${eventoWrapper.evento.getCodiceIdentificativo()})}"></h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
 
@@ -1654,7 +1654,7 @@
 							<thead>
 								<tr>
 									<th th:text="#{label.argomento}">ARGOMENTO</th>
-									<th th:text="#{label.docente}">Docente</th>
+									<th th:text="#{label.docente_tutor}">Docente / Tutor</th>
 									<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
 									<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
 									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>

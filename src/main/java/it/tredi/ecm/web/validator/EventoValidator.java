@@ -161,9 +161,11 @@ public class EventoValidator {
 		/* CHECK INFO SPONSOR (campo obbligatorio)
 		 * spunta richiesta
 		 * */
-		if(evento.getLetteInfoAllegatoSponsor() == null || evento.getLetteInfoAllegatoSponsor() == false)
-			errors.rejectValue(prefix + "letteInfoAllegatoSponsor", "error.empty");
-
+		if(evento.getEventoSponsorizzato() != null && evento.getEventoSponsorizzato().booleanValue()){
+			if(evento.getLetteInfoAllegatoSponsor() == null || evento.getLetteInfoAllegatoSponsor() == false)
+				errors.rejectValue(prefix + "letteInfoAllegatoSponsor", "error.empty");
+		}
+		
 		/* SPONSOR (campo obbligatorio)
 		 * campo complesso ripetibile di tipo Sponsor
 		 * deve avere tutti i campi inseriti

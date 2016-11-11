@@ -45,9 +45,6 @@ public class EventoFAD extends Evento{
 	@ElementCollection
 	private List<VerificaApprendimentoFAD> verificaApprendimento = new ArrayList<VerificaApprendimentoFAD>();
 
-	//TODO sia FAD che RES
-	private Boolean confermatiCrediti;
-
 	private Boolean supportoSvoltoDaEsperto;
 
 	private String materialeDurevoleRilasciatoAiPratecipanti;

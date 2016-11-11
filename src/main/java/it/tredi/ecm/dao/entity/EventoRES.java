@@ -59,8 +59,6 @@ public class EventoRES extends Evento{
 	@ElementCollection
 	private Set<VerificaApprendimentoRESEnum> verificaApprendimento;
 
-	private Boolean confermatiCrediti;
-
 	@ElementCollection
 	private Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti;
 
