@@ -57,6 +57,7 @@ import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
@@ -1219,6 +1220,10 @@ public class EventoServiceImpl implements EventoService {
 					List<RuoloOreFSC> ruoli = new ArrayList<RuoloOreFSC>();
 					ruoli.addAll(Arrays.asList(aref.getRuoli().toArray(new RuoloOreFSC[aref.getRuoli().size()])));
 					aref.setRuoli(ruoli);
+					LOGGER.debug(Utils.getLogMessage("Clonazione metodi di lavoro"));
+					Set<MetodoDiLavoroEnum> metodiDiLavoro = new HashSet<MetodoDiLavoroEnum>();
+					metodiDiLavoro.addAll(Arrays.asList(aref.getMetodiDiLavoro().toArray(new MetodoDiLavoroEnum[aref.getMetodiDiLavoro().size()])));
+					aref.setMetodiDiLavoro(metodiDiLavoro);
 					azioniRuoli.add(aref);
 				}
 				far.setAzioniRuoli(azioniRuoli);
@@ -1303,7 +1308,7 @@ public class EventoServiceImpl implements EventoService {
 		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
 	}
-	
+
 	@Override
 	public Set<Evento> getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
 		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
