@@ -127,6 +127,11 @@ public class Account extends BaseEntity{
 			toRet += "(" + provider.getDenominazioneLegale() + ")";
 		}
 
+		if(isSegreteria()) {
+			toRet += " ";
+			toRet += "(Segreteria ECM)";
+		}
+
 		return toRet;
 	}
 
@@ -146,7 +151,7 @@ public class Account extends BaseEntity{
 				toRet += " ";
 			toRet += "(" + provider.getId() + ")";
 		}
-		
+
 		return toRet;
 	}
 

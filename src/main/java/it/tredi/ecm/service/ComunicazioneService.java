@@ -28,6 +28,7 @@ public interface ComunicazioneService {
 	Set<Comunicazione> getAllComunicazioniRicevuteByAccount(Account user);
 	Set<Comunicazione> getAllComunicazioniInviateByAccount(Account user);
 	Set<Comunicazione> getAllComunicazioniChiuseByAccount(Account user);
+	Set<Comunicazione> getAllComunicazioniNonLetteByAccount(Account user);
 	void chiudiComunicazioneById(Long id);
 	int countAllComunicazioniByAccountId(Long currentAccountId);
 	Set<Comunicazione> getAllComunicazioniByAccount(Account user);

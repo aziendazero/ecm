@@ -103,7 +103,7 @@
 											</div>
 										</div>
 									</a>
-									<a class="btn btn-primary pull-right with-margin-top" th:text="#{label.vedi_tutte}"></a>
+									<a class="btn btn-primary pull-right with-margin-top" th:text="#{label.vedi_tutte}" th:href="@{/comunicazione/notRead/list}"></a>
 								</th:block>
 								<div th:if="${#lists.isEmpty(ultimiMessaggiNonLetti)}" th:text="#{label.nessun_messaggio_non_letto}"></div>
 							</div>

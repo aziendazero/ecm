@@ -211,6 +211,8 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		return comunicazioneRepository.findAllComunicazioneByUser(user);
 	}
 
-
-
+	@Override
+	public Set<Comunicazione> getAllComunicazioniNonLetteByAccount(Account user) {
+		return comunicazioneRepository.findAllComunicazioneNonLetteOrderByDataCreazioneDesc(user.getId());
+	}
 }

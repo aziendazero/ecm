@@ -220,6 +220,10 @@ public class ComunicazioneController {
 					listaComunicazioni = comunicazioneService.getAllComunicazioniByAccount(Utils.getAuthenticatedUser().getAccount());
 					tipologiaLista = "label.storico";
 					break;
+				case "notRead":
+					listaComunicazioni = comunicazioneService.getAllComunicazioniNonLetteByAccount(Utils.getAuthenticatedUser().getAccount());
+					tipologiaLista = "label.non_ancora_lette";
+					break;
 				default: throw new Exception("Tipologia non riconosciuta");
 			}
 			model.addAttribute("listaComunicazioni", listaComunicazioni);

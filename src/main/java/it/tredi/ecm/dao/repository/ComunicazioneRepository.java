@@ -42,4 +42,7 @@ public interface ComunicazioneRepository  extends CrudRepository<Comunicazione, 
 
 	@Query ("SELECT c FROM Comunicazione c WHERE :user IN ELEMENTS(c.destinatari) OR :user = c.mittente")
 	Set<Comunicazione> findAllComunicazioneByUser(@Param("user") Account user);
+
+	@Query("SELECT c FROM Comunicazione c WHERE :userId IN ELEMENTS(c.utentiCheDevonoLeggere) ORDER BY c.dataUltimaModifica DESC")
+	Set<Comunicazione> findAllComunicazioneNonLetteOrderByDataCreazioneDesc(@Param("userId") Long userId);
 }
