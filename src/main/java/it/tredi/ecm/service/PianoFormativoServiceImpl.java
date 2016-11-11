@@ -34,6 +34,7 @@ import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.repository.PianoFormativoRepository;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.utils.Utils;
+import javassist.bytecode.analysis.Util;
 
 @Service
 public class PianoFormativoServiceImpl implements PianoFormativoService {
@@ -264,6 +265,35 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 				return disciplina;
 		}
 		return null;
+	}
+	
+	@Override
+	@Transactional
+	public void addEventoTo(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Inserimento eventoPianoFormativo " + eventoPianoFormatvioId + " nel piano formativo " + pianoFormativoId));
+		PianoFormativo pfa = getPianoFormativo(pianoFormativoId);
+		if(pfa == null){ new Exception("Piano Formativo non trovato"); }
+		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormatvioId);
+		if(epf == null){ new Exception("EventoPianoFormativo non trovato"); }
+		
+		pfa.addEvento(epf);
+		save(pfa);
+		eventoPianoFormativoService.save(epf);
+	}
+	
+	@Override
+	@Transactional
+	public void removeEventoFrom(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception{
+		LOGGER.debug(Utils.getLogMessage("Rimozione eventoPianoFormativo " + eventoPianoFormatvioId + " dal piano formativo " + pianoFormativoId));
+		PianoFormativo pfa = getPianoFormativo(pianoFormativoId);
+		if(pfa == null){ new Exception("Piano Formativo non trovato"); }
+		pfa.removeEvento(pianoFormativoId);
+		save(pfa);
+		
+		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormatvioId);
+		if(epf == null){ new Exception("EventoPianoFormativo non trovato"); }
+		epf.setPianoFormativo(null);
+		eventoPianoFormativoService.save(epf);
 	}
 	
 }

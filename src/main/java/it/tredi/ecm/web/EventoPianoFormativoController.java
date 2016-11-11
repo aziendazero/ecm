@@ -516,8 +516,10 @@ public class EventoPianoFormativoController {
 	private String removeEvento(Long accreditamentoId, Long providerId, Long pianoFormativoId, Long eventoId, RedirectAttributes redirectAttrs) {
 		try{
 			PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
-			pianoFormativo.removeEvento(eventoId);
-			pianoFormativoService.save(pianoFormativo);
+//			pianoFormativo.removeEvento(eventoId);
+//			pianoFormativoService.save(pianoFormativo);
+			
+			pianoFormativoService.removeEventoFrom(eventoId, pianoFormativoId);
 			eventoService.delete(eventoId);
 			// caso fromAccreditamento
 			if (accreditamentoId != null) {
