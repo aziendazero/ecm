@@ -31,7 +31,7 @@
 							<h3 th:text="#{label.rapporto_eventi}">Rapporto Eventi</h3>
 							<!-- Eventi definiti nel PFA dell anno precedente -->
 							<div class="item form-group">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 									<span class="label-show" th:text="#{label.eventi_inseriti_pfa_anno}">Cognome</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
@@ -41,7 +41,7 @@
 							
 							<!-- numero di eventi rendicontati come attuazione di eventi del PFA dell'anno precedente -->
 							<div class="item form-group">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 									<span class="label-show" th:text="#{label.eventi_definitivi_da_pfa_anno}">Cognome</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
@@ -51,7 +51,7 @@
 							
 							<!-- numero di eventi manuali rendicontati nell'anno precedente -->
 							<div class="item form-group">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 									<span class="label-show" th:text="#{label.eventi_manuali_defintivi_anno}">Cognome</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
@@ -61,17 +61,28 @@
 							
 							<!-- totale eventi rendicontati nell'anno precedente -->
 							<div class="item form-group">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12">
-									<span class="label-show" th:text="#{label.totale_eventi_defintivi}">Cognome</span>
+								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.totale_eventi_defintivi_no_riedizioni}">Cognome</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.totaleEventiDefinitivi}"></div>
 								</div>
 							</div>
 							
+							<!-- totale eventi rendicontati nell'anno precedente (incluso riedizioni) -->
+							<div class="item form-group">
+								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.totale_eventi_defintivi}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<!-- <div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.totaleEventiDefinitiviConRiedizioni}"></div> -->
+									<div class="value danger" th:text="${'Modifica DB con calcolo somma -> #eventi rendicontati'}"></div>
+								</div>
+							</div>
+							
 							<!-- rapportoAttuazione -->
 							<div class="item form-group">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 									<span class="label-show" th:text="#{label.rapportoAttuazione}">Cognome</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
@@ -81,11 +92,100 @@
 	
 							<div class="divider"></div>
 						</th:block>
-
-						<h3 th:text="#{label.rapporto_economico}">Rapporto Economico</h3>
+						
+						<th:block th:if="${showOnly}">
+							<h3 th:text="#{label.resoconto}">Resoconto</h3>
+							<!-- Riepilogo -->
+							<div class="item form-group">
+			 					<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+			 						<span class="label-show" th:text="#{label.resoconto_professioni}">Tipologia di obiettivi formativi</span>
+			 					</label>
+			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			 						<div class="value-edit">
+			 							<ul>
+											<li class="listStyle-elenco" th:each="professione, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoProfessioni}">
+												<label th:text="${professione.key.nome + ' - ' + professione.value}"></label>
+											</li>
+			 							</ul>
+		 							</div>
+			 					</div>
+			 				</div>
+			 				
+			 				<div class="item form-group">
+			 					<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+			 						<span class="label-show" th:text="#{label.resoconto_discipline}">Tipologia di obiettivi formativi</span>
+			 					</label>
+			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			 						<div class="value-edit">
+			 							<ul>
+											<li class="listStyle-elenco" th:each="disciplina, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoDiscipline}">
+												<label th:text="${disciplina.key.nome + ' - ' + disciplina.value}"></label>
+											</li>
+			 							</ul>
+		 							</div>
+			 					</div>
+			 				</div>
+			 				
+			 				<div class="item form-group">
+			 					<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+			 						<span class="label-show" th:text="#{label.resoconto_obiettivi}">Tipologia di obiettivi formativi</span>
+			 					</label>
+			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			 						<div class="value-edit">
+			 							<ul>
+											<li class="listStyle-elenco" th:each="obiettivo, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoObiettivi}">
+												<label th:text="${obiettivo.key.nome + ' - ' + obiettivo.value}"></label>
+											</li>
+			 							</ul>
+		 							</div>
+			 					</div>
+			 				</div>
+			 				
+			 				<div class="item form-group">
+			 					<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+			 						<span class="label-show" th:text="#{label.resoconto_obiettivi_regionali}">Tipologia di obiettivi formativi</span>
+			 					</label>
+			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+			 						<div class="value-edit">
+			 							<ul>
+											<li class="listStyle-elenco" th:each="obiettivo, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoObiettiviRegionali}">
+												<label th:text="${obiettivo.key.nome + ' - ' + obiettivo.value}"></label>
+											</li>
+			 							</ul>
+		 							</div>
+			 					</div>
+			 				</div>
+							
+							<!-- rapportoObiettiviRegionali -->
+							<div class="item form-group">
+								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.rapporto_obiettivi_regionali}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:classappend="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali &lt; 30} ? 'danger'" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali + ' %'}"></div>
+								</div>
+							</div>
+							
+							<th:block th:if="${showOnly}">
+								<!-- numero partecipanti/tutor/docenti che hanno acquisito i crediti -->
+								<div class="item form-group">
+									<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+										<span class="label-show" th:text="#{label.numero_partecipanti_acquisito_crediti}">Cognome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<!-- <div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiConCrediti}"></div> -->
+										<div class="value danger" th:text="${'Calcolare da xml'}"></div>
+									</div>
+								</div>
+							</th:block>
+							
+							<div class="divider"></div>
+						</th:block>
+						
+						<h3 th:text="#{label.resoconto_economico}">Resoconto Economico</h3>
 						<!-- numeroPartecipantiNoCrediti -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12">
+							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.numero_partecipanti_no_crediti}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
@@ -106,8 +206,8 @@
 						
 						<!-- costiTotaliEventi -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12">
-								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.costi_totali_eventi}">Nome</span>
+							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.costo_totale_eventi}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -127,7 +227,7 @@
 						
 						<!-- ricaviDaSponsor -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12">
+							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.ricavi_da_sponsor}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
@@ -148,8 +248,8 @@
 						
 						<!-- altriFinanziamenti -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12">
-								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.altri_finanziamenti}">Nome</span>
+							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.ricavi_altre_forme_finanziamento}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -169,7 +269,7 @@
 
 						<!-- quoteDiPartecipazione -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12">
+							<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.quote_di_partecipazione}">Nome</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
@@ -191,7 +291,7 @@
 						<th:block th:if="${showOnly}">
 							<!-- rapportoCostiEntrate -->
 							<div class="item form-group">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 									<span class="label-show" th:text="#{label.rapporto_costi_entrate}">Cognome</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
@@ -200,12 +300,13 @@
 							</div>
 						</th:block>
 						
-						<div th:if="${editabile}" class="divider-dashed"></div>
+						<div class="divider-dashed"></div>
 						
+						<h3 th:text="#{label.relazioneFinale}">Relazione Finale</h3>
 						<!--   ALLEGATO (RELAZIONE FINALE)   -->
 						<th:block th:if="${editabile}">
 							<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale')} ? 'bad'">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 									<span th:text="#{label.relazioneFinale}">Relazione Finale</span>
 									<span class="required" id="brochure-obbligatoria">*</span>
 								</label>
@@ -217,88 +318,12 @@
 						</th:block>
 						<th:block th:if="${showOnly}">
 							<div class="item form-group">
-									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 										<span class="label-show" th:text="#{label.relazioneFinale}">Cognome</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 									<a th:if="${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale != null}" class="value" th:href="@{|/file/${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale.id}|}" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale.nomeFile}"></a>
 									<div th:if="${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale == null}" class="value" th:text="#{label.allegato_non_inserito}"></div>
-								</div>
-							</div>
-						</th:block>
-						
-						<div class="divider"></div>
-						
-						<th:block th:if="${showOnly}">
-							<h3 th:text="#{label.resoconti_eventi}">Resoconto Eventi</h3>
-							<!-- Riepilogo -->
-							<div class="item form-group">
-			 					<label class="control-label col-md-4 col-sm-4 col-xs-12">
-			 						<span class="label-show" th:text="#{label.resoconto_obiettivi}">Tipologia di obiettivi formativi</span>
-			 					</label>
-			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-			 						<div class="value-edit">
-			 							<ul>
-											<li class="listStyle-elenco" th:each="obiettivo, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoObiettivi}">
-												<label th:text="${obiettivo.key.nome + ' - ' + obiettivo.value}"></label>
-											</li>
-			 							</ul>
-		 							</div>
-			 					</div>
-			 				</div>
-							
-							<div class="item form-group">
-			 					<label class="control-label col-md-4 col-sm-4 col-xs-12">
-			 						<span class="label-show" th:text="#{label.resoconto_professioni}">Tipologia di obiettivi formativi</span>
-			 					</label>
-			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-			 						<div class="value-edit">
-			 							<ul>
-											<li class="listStyle-elenco" th:each="professione, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoProfessioni}">
-												<label th:text="${professione.key.nome + ' - ' + professione.value}"></label>
-											</li>
-			 							</ul>
-		 							</div>
-			 					</div>
-			 				</div>
-			 				
-			 				<div class="item form-group">
-			 					<label class="control-label col-md-4 col-sm-4 col-xs-12">
-			 						<span class="label-show" th:text="#{label.resoconto_discipline}">Tipologia di obiettivi formativi</span>
-			 					</label>
-			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-			 						<div class="value-edit">
-			 							<ul>
-											<li class="listStyle-elenco" th:each="disciplina, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoDiscipline}">
-												<label th:text="${disciplina.key.nome + ' - ' + disciplina.value}"></label>
-											</li>
-			 							</ul>
-		 							</div>
-			 					</div>
-			 				</div>
-			 				
-			 				<div class="item form-group">
-			 					<label class="control-label col-md-4 col-sm-4 col-xs-12">
-			 						<span class="label-show" th:text="#{label.resoconto_obiettivi_regionali}">Tipologia di obiettivi formativi</span>
-			 					</label>
-			 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-			 						<div class="value-edit">
-			 							<ul>
-											<li class="listStyle-elenco" th:each="obiettivo, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoObiettiviRegionali}">
-												<label th:text="${obiettivo.key.nome + ' - ' + obiettivo.value}"></label>
-											</li>
-			 							</ul>
-		 							</div>
-			 					</div>
-			 				</div>
-							
-							<!-- rapportoObiettiviRegionali -->
-							<div class="item form-group">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12">
-									<span class="label-show" th:text="#{label.rapporto_obiettivi_regionali}">Cognome</span>
-								</label>
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:classappend="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali &lt; 30} ? 'danger'" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali + ' %'}"></div>
 								</div>
 							</div>
 						</th:block>
