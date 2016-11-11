@@ -93,7 +93,9 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			Set<Provider> listaProvider = providerService.getAll();
 			for (Provider p : listaProvider) {
 				for(Account account : p.getAccounts()) {
-					destinatariMap.put(p.getDenominazioneLegale(), account);
+					if(account.isProviderUserAdmin()) {
+						destinatariMap.put(p.getDenominazioneLegale(), account);
+					}
 				}
 			}
 		}
@@ -123,7 +125,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		comunicazione.setUtentiCheDevonoLeggere(utentiCheDevonoLeggere);
 		comunicazione.setDataCreazione(LocalDateTime.now());
 		comunicazione.setDataUltimaModifica(LocalDateTime.now());
-		if (allegato != null)
+		if (allegato != null && !allegato.isNew())
 			comunicazione.setAllegatoComunicazione(allegato);
 		comunicazioneRepository.save(comunicazione);
 	}
@@ -133,6 +135,13 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		if(!comunicazione.isChiusa() && (comunicazione.getDestinatari().contains(account) || comunicazione.getMittente().equals(account)))
 			return true;
 		else return false;
+	}
+
+	@Override
+	public boolean canAccountCloseComunicazione(Account account, Comunicazione comunicazione) {
+		if(!comunicazione.isChiusa() && account.isSegreteria())
+			return true;
+		return false;
 	}
 
 	@Override
@@ -152,7 +161,8 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		risposta.setDataRisposta(LocalDateTime.now());
 		comunicazione.setDataUltimaModifica(LocalDateTime.now());
 		risposta.setComunicazione(comunicazione);
-		risposta.setAllegatoRisposta(allegato);
+		if (allegato != null && !allegato.isNew())
+			risposta.setAllegatoRisposta(allegato);
 		risposte.add(risposta);
 		Set<Long> utentiCheDevonoLeggere = comunicazione.getUtentiCheDevonoLeggere();
 		utentiCheDevonoLeggere.add(comunicazione.getMittente().getId());
@@ -169,19 +179,38 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	}
 
 	@Override
-	public Set<Comunicazione> getAllComunicazioniRicevute(Account user) {
+	public Set<Comunicazione> getAllComunicazioniRicevuteByAccount(Account user) {
 		return comunicazioneRepository.findAllComunicazioniByDestinatario(user);
 	}
 
 	@Override
-	public Set<Comunicazione> getAllComunicazioniInviate(Account user) {
+	public Set<Comunicazione> getAllComunicazioniInviateByAccount(Account user) {
 		return comunicazioneRepository.findAllComunicazioneByMittente(user);
 	}
 
 	@Override
-	public Set<Comunicazione> getAllComunicazioniChiuse(Account user) {
+	public Set<Comunicazione> getAllComunicazioniChiuseByAccount(Account user) {
 		return comunicazioneRepository.findAllComunicazioneChiusaByUser(user);
 	}
+
+	@Override
+	public void chiudiComunicazioneById(Long id) {
+		Comunicazione comunicazione = comunicazioneRepository.findOne(id);
+		comunicazione.setChiusa(true);
+		comunicazioneRepository.save(comunicazione);
+	}
+
+	@Override
+	public int countAllComunicazioniByAccountId(Long id) {
+		Account user = accountService.getUserById(id);
+		return comunicazioneRepository.countAllComunicazioniByAccount(user);
+	}
+
+	@Override
+	public Set<Comunicazione> getAllComunicazioniByAccount(Account user) {
+		return comunicazioneRepository.findAllComunicazioneByUser(user);
+	}
+
 
 
 }

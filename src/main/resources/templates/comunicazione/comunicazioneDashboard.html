@@ -56,6 +56,16 @@
 									</div>
 								</div>
 							</div>
+							<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+								<div class="tile-stats clickable" onclick="goTo('comunicazione/all/list')">
+									<div class="icon"><i class="fa fa-archive"></i></div>
+									<div class="col-xs-10">
+					                	<div class="count" th:text="${numeroComunicazioniAll}"></div>
+					                	<h3 class="tile-h3" th:text="${numeroComunicazioniAll == 1} ? #{label.comunicazione} : #{label.comunicazioni}"></h3>
+					                	<p class="count-text" th:text="#{label.storico}"></p>
+									</div>
+								</div>
+							</div>
 
 						</div>
 					</div>

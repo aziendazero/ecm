@@ -58,6 +58,7 @@ public class ComunicazioneController {
 			model.addAttribute("numeroComunicazioniRicevute", comunicazioneService.countAllComunicazioniRicevuteByAccountId(currentAccountId));
 			model.addAttribute("numeroComunicazioniInviate", comunicazioneService.countAllComunicazioniInviateByAccountId(currentAccountId));
 			model.addAttribute("numeroComunicazioniBloccate", comunicazioneService.countAllComunicazioniBloccateByAccountId(currentAccountId));
+			model.addAttribute("numeroComunicazioniAll", comunicazioneService.countAllComunicazioniByAccountId(currentAccountId));
 			model.addAttribute("ultimiMessaggiNonLetti", comunicazioneService.getUltimi10MessaggiNonLetti(currentAccountId));
 			model.addAttribute("numeroMessaggiNonLetti", comunicazioneService.countAllMessaggiNonLetti(currentAccountId));
 			model.addAttribute("idUltimoMessaggioNonLetto", comunicazioneService.getIdUltimaComunicazioneRicevuta(currentAccountId));
@@ -138,6 +139,7 @@ public class ComunicazioneController {
 		LOGGER.info(Utils.getLogMessage("GET: /comunicazione/"+ id + "/read"));
 		try {
 			comunicazioneService.contrassegnaComeLetta(id);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
 			return "redirect:/comunicazione/dashboard";
 		}
 		catch (Exception ex){
@@ -176,25 +178,47 @@ public class ComunicazioneController {
 		}
 	}
 
+//	@PreAuthorize("@securityAccessServiceImpl.canCloseComunicazione(principal)") TODO
+	@RequestMapping("/comunicazione/{id}/close")
+	public String closeComunicazione(@PathVariable Long id,	Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET: /comunicazione/" + id + "/close"));
+		try {
+			//chiusura evento
+			comunicazioneService.chiudiComunicazioneById(id);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.comunicazione_chiusa", "success"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
+			return "redirect:/comunicazione/dashboard";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET: /comunicazione/" + id + "/close"),ex);
+			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
+			return SHOW;
+		}
+	}
+
 //	@PreAuthorize("@securityAccessServiceImpl.canShowComunicazioni(principal)") TODO
 	@RequestMapping("/comunicazione/{tipo}/list")
 	public String listaComunicazioniRicevute(@PathVariable String tipo, Model model, RedirectAttributes redirectAttrs) {
-		LOGGER.info(Utils.getLogMessage("GET: /comunicazione/received/list"));
+		LOGGER.info(Utils.getLogMessage("GET: /comunicazione/" + tipo + "/list"));
 		try {
 			Set<Comunicazione> listaComunicazioni;
 			String tipologiaLista;
 			switch (tipo) {
 				case "received":
-					listaComunicazioni = comunicazioneService.getAllComunicazioniRicevute(Utils.getAuthenticatedUser().getAccount());
+					listaComunicazioni = comunicazioneService.getAllComunicazioniRicevuteByAccount(Utils.getAuthenticatedUser().getAccount());
 					tipologiaLista = "label.ricevute";
 					break;
 				case "sent":
-					listaComunicazioni =  comunicazioneService.getAllComunicazioniInviate(Utils.getAuthenticatedUser().getAccount());
+					listaComunicazioni =  comunicazioneService.getAllComunicazioniInviateByAccount(Utils.getAuthenticatedUser().getAccount());
 					tipologiaLista = "label.inviate";
 					break;
 				case "locked":
-					listaComunicazioni =  comunicazioneService.getAllComunicazioniChiuse(Utils.getAuthenticatedUser().getAccount());
+					listaComunicazioni =  comunicazioneService.getAllComunicazioniChiuseByAccount(Utils.getAuthenticatedUser().getAccount());
 					tipologiaLista = "label.chiuse";
+					break;
+				case "all":
+					listaComunicazioni = comunicazioneService.getAllComunicazioniByAccount(Utils.getAuthenticatedUser().getAccount());
+					tipologiaLista = "label.storico";
 					break;
 				default: throw new Exception("Tipologia non riconosciuta");
 			}
@@ -230,6 +254,7 @@ public class ComunicazioneController {
 		Account currentUser = Utils.getAuthenticatedUser().getAccount();
 		ComunicazioneWrapper wrapper = new ComunicazioneWrapper(comunicazione);
 		wrapper.setCanRespond(comunicazioneService.canAccountRespondToComunicazione(currentUser, comunicazione));
+		wrapper.setCanCloseComunicazione(comunicazioneService.canAccountCloseComunicazione(currentUser, comunicazione));
 		wrapper.setRisposta(new ComunicazioneResponse(currentUser, comunicazione));
 		LOGGER.info(Utils.getLogMessage("prepareComunicazioneWrapperShow() - exiting"));
 		return wrapper;

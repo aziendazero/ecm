@@ -23,24 +23,22 @@
 							<table th:unless="${#lists.isEmpty(listaComunicazioni)}" id="datatable-comunicazione" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<thead>
 									<tr>
-										<th th:text="#{label.oggetto_list}"></th>
+										<th th:text="#{label.data_ultima_risposta}"></th>
 										<th th:text="#{label.mittente}"></th>
-										<th th:text="#{label.stato}"></th>
 										<th th:text="#{label.ambito_list}"></th>
 										<th th:text="#{label.tipologia_list}"></th>
-										<th th:text="#{label.data_creazione}"></th>
-										<th th:text="#{label.data_ultima_modifica}"></th>
+										<th th:text="#{label.oggetto_list}"></th>
+										<th th:text="#{label.stato}"></th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr th:each="comunicazione, row : ${listaComunicazioni}">
-										<td><a th:text="${comunicazione.oggetto}" th:href="@{|/comunicazione/${comunicazione.id}/show|}"></a></td>
-										<td th:text="${comunicazione.mittente.isSegreteria()} ? #{label.from_segreteria_list} : #{label.from_provider_list(${comunicazione.mittente.username}, 'TODOproviderName')}"></td>
-										<td th:text="${comunicazione.chiusa == true} ? #{label.chiusa} : #{label.aperta}"></td>
+										<td><a th:text="${#temporals.format(comunicazione.dataUltimaModifica, 'HH:mm - dd/MM/yyyy')}" th:href="@{|/comunicazione/${comunicazione.id}/show|}"></a></td>
+										<td th:text="${comunicazione.mittente.getFullName()}"></td>
 										<td th:text="${comunicazione.ambito.nome}"></td>
 										<td th:text="${comunicazione.tipologia.nome}"></td>
-										<td th:text="${#temporals.format(comunicazione.dataCreazione, 'HH:mm - dd/MM/yyyy')}"></td>
-										<td th:text="${#temporals.format(comunicazione.dataUltimaModifica, 'HH:mm - dd/MM/yyyy')}"></td>
+										<td th:text="${comunicazione.oggetto}"></td>
+										<td th:text="${comunicazione.chiusa == true} ? #{label.chiusa} : #{label.aperta}"></td>
 									</tr>
 								</tbody>
 							</table>
