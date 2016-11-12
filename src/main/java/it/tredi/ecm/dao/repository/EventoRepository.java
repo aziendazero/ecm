@@ -30,4 +30,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	@Query("SELECT e FROM Evento e WHERE e.id = :id")
 	@EntityGraph(value = "graph.evento.forRiedizione", type = EntityGraphType.FETCH)
 	public Evento findOneForRiedizione(@Param("id") Long id);
+	
+	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalse(Long providerId, LocalDate start, LocalDate end);
+	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(Long providerId, LocalDate now);
 }

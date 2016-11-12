@@ -1313,4 +1313,30 @@ public class EventoServiceImpl implements EventoService {
 		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStatoNot(providerId, leftDate, rightDate, EventoStatoEnum.BOZZA);
 	}
+	
+	@Override
+	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
+		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalse(providerId, LocalDate.now(), LocalDate.now().plusDays(30));
+	}
+	
+	@Override
+	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
+		Set<Evento> listaEventi = getEventiForProviderIdInScadenzaDiPagamento(providerId);
+		if(listaEventi != null)
+			return listaEventi.size();
+		return 0;
+	}
+	
+	@Override
+	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId) {
+		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(providerId, LocalDate.now());
+	}
+	
+	@Override
+	public int countEventiForProviderIdPagamentoScaduti(Long providerId) {
+		Set<Evento> listaEventi = getEventiForProviderIdPagamentoScaduti(providerId);
+		if(listaEventi != null)
+			return listaEventi.size();
+		return 0;
+	}
 }
