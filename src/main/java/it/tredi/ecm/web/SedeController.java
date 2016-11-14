@@ -75,18 +75,6 @@ public class SedeController {
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 	@Autowired private ObjectMapper jacksonObjectMapper;
 
-	/***	GLOBAL MODEL ATTRIBUTES	***/
-	@ModelAttribute("elencoProvince")
-	public List<String> getElencoProvince(){
-		List<String> elencoProvince = new ArrayList<String>();
-
-		elencoProvince.add("Venezia");
-		elencoProvince.add("Padova");
-		elencoProvince.add("Verona");
-
-		return elencoProvince;
-	}
-
 	@RequestMapping("/comuni")
 	@ResponseBody
 	public List<String>getElencoComuni(@RequestParam String provincia){

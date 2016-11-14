@@ -110,18 +110,6 @@ public class EventoController {
 	private final String EDITFSC = "evento/eventoFSCEdit";
 	private final String EDITFAD = "evento/eventoFADEdit";
 
-
-	@ModelAttribute("elencoProvince")
-	public List<String> getElencoProvince(){
-		List<String> elencoProvince = new ArrayList<String>();
-
-		elencoProvince.add("Venezia");
-		elencoProvince.add("Padova");
-		elencoProvince.add("Verona");
-
-		return elencoProvince;
-	}
-
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
