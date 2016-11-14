@@ -168,12 +168,16 @@ public class RelazioneAnnuale extends BaseEntity{
 		if(eventiRendicontati_Riedizione != null)
 			totaleEventiDefinitiviConRiedizioni += eventiRendicontati_Riedizione.size();
 		
-		if(eventiInseritiPFA > 0 )
-			rapportoAttuazione = BigDecimal.valueOf(eventiDefinitiviPFA/eventiInseritiPFA).multiply(new BigDecimal(100));
+		if(eventiInseritiPFA > 0 ){
+			double val = ((double)eventiDefinitiviPFA/eventiInseritiPFA) * 100;
+			rapportoAttuazione = BigDecimal.valueOf(val);
+		}
 		
 		double sum = (ricaviDaSponsor.doubleValue() + altriFinanziamenti.doubleValue() + quoteDiPartecipazione.doubleValue());
-		if(sum > 0)
-			rapportoCostiEntrate = BigDecimal.valueOf(costiTotaliEventi.doubleValue() / sum).multiply(new BigDecimal(100));
+		if(sum > 0){
+			double val = ((double)costiTotaliEventi.doubleValue() / sum) * 100;
+			rapportoCostiEntrate = BigDecimal.valueOf(val);
+		}
 		
 		if(riepilogoObiettiviRegionali != null){
 			riepilogoObiettiviRegionali.forEach( (k,v) -> {
@@ -184,7 +188,7 @@ public class RelazioneAnnuale extends BaseEntity{
 		}
 			
 		if(eventiAttuati != null && eventiAttuati.size() > 0){
-			double val = (rapportoObiettiviRegionali.doubleValue() / eventiAttuati.size()) * 100;
+			double val = ((double)rapportoObiettiviRegionali.doubleValue() / eventiAttuati.size()) * 100;
 			rapportoObiettiviRegionali = BigDecimal.valueOf(val);
 		}
 	}
