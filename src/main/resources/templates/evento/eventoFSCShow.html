@@ -171,6 +171,18 @@
 						</div>
 					</div>
 
+					<!-- TIPOLOGIA DELL'EVENTO -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.tipologia_evento}">Tipologia di Evento</span>
+						</label>
+
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapper.evento.tipologiaEvento != null}" th:text="${eventoWrapper.evento.tipologiaEvento.nome}"></div>
+							<div class="value danger" th:unless="${eventoWrapper.evento.tipologiaEvento != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+
 					<!-- PROFESSIONI/DISCIPLINE -->
 					<div class="item form-group">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -606,6 +618,28 @@
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value" th:if="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.id}|}"></a></div>
 							<div class="value danger" th:unless="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}" th:text="#{label.allegato_non_inserito}"></div>
+						</div>
+					</div>
+					
+					<!-- PROCEDURA VERIFICA QUALITÀ -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.procedura_verifica_qualita}">E’ prevista una procedura di verifica della qualità percepita</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapper.evento.proceduraVerificaQualitaPercepita != null}" th:text="${eventoWrapper.evento.proceduraVerificaQualitaPercepita} ? #{label.sì} : #{label.no} "></div>
+							<div class="value danger" th:unless="${eventoWrapper.evento.proceduraVerificaQualitaPercepita != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					
+					<!-- AUTORIZZAZIONE -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.autorizzazione_privacy}">label.autorizzazione_privacy</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapper.evento.autorizzazionePrivacy != null}" th:text="${eventoWrapper.evento.autorizzazionePrivacy} ? #{label.sì} : #{label.no} "></div>
+							<div class="value danger" th:unless="${eventoWrapper.evento.autorizzazionePrivacy != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
