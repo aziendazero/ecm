@@ -275,7 +275,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		LOGGER.debug(Utils.getLogMessage("Rimozione eventoPianoFormativo " + eventoPianoFormatvioId + " dal piano formativo " + pianoFormativoId));
 		PianoFormativo pfa = getPianoFormativo(pianoFormativoId);
 		if(pfa == null){ new Exception("Piano Formativo non trovato"); }
-		pfa.removeEvento(pianoFormativoId);
+		pfa.removeEvento(eventoPianoFormatvioId);
 		save(pfa);
 		
 		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormatvioId);
