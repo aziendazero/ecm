@@ -1214,7 +1214,7 @@
 												</label>
 												<div class="model-link">
 													<i class="fa fa-file-text"></i>
-													<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+													<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="todo"></a>
 												</div>
 												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 													<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block>
@@ -1278,6 +1278,10 @@
 												<span th:text="#{label.allegato_contratti_accordi_convenzioni}">Allegato Contratti Accordi Convenzioni</span>
 												<span class="required">*</span>
 											</label>
+											<div class="model-link">
+												<i class="fa fa-file-text"></i>
+												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/MOD._SPONSORIZZAZIONE_PROVIDER-SPONSOR.pdf"></a>
+											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, contrattiAccordiConvenzioni, null, null, null, true, null, false)" ></th:block>
 											</div>
@@ -1294,7 +1298,7 @@
 											</label>
 											<div class="model-link">
 												<i class="fa fa-file-text"></i>
-												<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/Veneto/modello%20assenza%20finanziamenti%20Regione.pdf"></a>
 											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block>
@@ -1358,7 +1362,7 @@
 										</label>
 										<div class="model-link">
 											<i class="fa fa-file-text"></i>
-											<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+											<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/13.Conflitto_interessi_evento.pdf"></a>
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block>
@@ -1819,10 +1823,15 @@
 					if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO'){
 						$("#container-titleNoPausa").hide();
 						
-						if(extraType == 'PAUSA')
+						if(extraType == 'PAUSA'){
 							$("#container-titlePausa").show();
-						else
+							$("#container-titleValutazioneApprendimento").hide();
+						}
+						else{
 							$("#container-titleValutazioneApprendimento").show();
+							$("#container-titlePausa").hide();
+						}
+							
 							
 						$("#container-argomento").hide();
 						$("#container-docente").hide();

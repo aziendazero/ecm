@@ -1300,6 +1300,7 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAllByProviderIdAndDataFineBetween(providerId, leftDate, rightDate);
 	}
 
+	/* Eventi Rendicontati. Utilizzato per determinare la fascia di pagamento per la quota annuale */
 	@Override
 	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
 		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
@@ -1307,6 +1308,7 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
 	}
 
+	/* Eventi Attuati nell'anno annoRiferimento dal provider */
 	@Override
 	public Set<Evento> getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
 		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
@@ -1314,6 +1316,7 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStatoNot(providerId, leftDate, rightDate, EventoStatoEnum.BOZZA);
 	}
 	
+	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
 		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalse(providerId, LocalDate.now(), LocalDate.now().plusDays(30));
@@ -1327,6 +1330,7 @@ public class EventoServiceImpl implements EventoService {
 		return 0;
 	}
 	
+	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId) {
 		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(providerId, LocalDate.now());

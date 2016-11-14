@@ -1324,6 +1324,15 @@
 						reloadSection('tab2');
 					});
 					updateRuoliCoinvolti();
+					
+					abilitaDisabilitaCreditiInseritiUtente($(".crediti-conferma").iCheck('update')[0].checked);
+					
+					$(".crediti-conferma").on("ifChecked", function() {
+						abilitaDisabilitaCreditiInseritiUtente(true);
+					})
+					$(".crediti-conferma").on("ifUnchecked", function() {
+						abilitaDisabilitaCreditiInseritiUtente(false);
+					})
 				}
 
 
@@ -1415,6 +1424,19 @@
 							});
 						}
 					}
+				}
+				
+				//funzione che abilita o disabilita il campo per inserire i crediti formativi manualmente
+				//se l'utente accetta o meno i crediti proposti
+				function abilitaDisabilitaCreditiInseritiUtente(value) {
+					if(value) {
+						$(".crediti-proposti").val('');
+						$(".crediti-proposti").prop("disabled", true);
+					}
+					else {
+						$(".crediti-proposti").prop("disabled", false);
+					}
+
 				}
 
 		/* 		function updateSelectRuoliOre(){
