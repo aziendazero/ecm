@@ -19,7 +19,7 @@ public interface ComunicazioneService {
 	long getIdUltimaComunicazioneRicevuta(Long id);
 	List<Comunicazione> getUltimi10MessaggiNonLetti(Long id);
 	long countAllMessaggiNonLetti(Long id);
-	Map<String, Account> getAllDestinatariDisponibili(Long id);
+	Map<String, Set<Account>> getAllDestinatariDisponibili(Long id);
 	void send(Comunicazione comunicazione, File allegato);
 	boolean canAccountRespondToComunicazione(Account account, Comunicazione comunicazione);
 	boolean canAccountCloseComunicazione(Account account, Comunicazione comunicazione);

@@ -18,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +34,7 @@ indexes={ @Index(name="testIndex", columnList="username"),
 public class Account extends BaseEntity{
 	private String username;
 	private String password = "";
+	@JsonView(JsonViewModel.ComunicazioniDestinatari.class)
 	private String email;
 	private Date expiresDate;
 	private boolean locked;
@@ -110,6 +113,7 @@ public class Account extends BaseEntity{
 		return Objects.equals(id, entitapiatta.id);
 	}
 
+	@JsonView(JsonViewModel.ComunicazioniDestinatari.class)
 	public String getFullName(){
 		String toRet = "";
 		if(nome != null)
@@ -130,6 +134,21 @@ public class Account extends BaseEntity{
 		if(isSegreteria()) {
 			toRet += " ";
 			toRet += "(Segreteria ECM)";
+		}
+
+		if(isReferee()) {
+			toRet += " ";
+			toRet += "(Referee ECM)";
+		}
+
+		if(isCommissioneEcm()) {
+			toRet += " ";
+			toRet += "(Commissario ECM)";
+		}
+
+		if(isOsservatoreEcm()) {
+			toRet += " ";
+			toRet += "(Osservatore ECM)";
 		}
 
 		return toRet;
@@ -187,6 +206,15 @@ public class Account extends BaseEntity{
 	public boolean isCommissioneEcm() {
 		for (Profile p : profiles){
 			if(p.getProfileEnum().equals(ProfileEnum.COMMISSIONE)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isOsservatoreEcm() {
+		for (Profile p : profiles){
+			if(p.getProfileEnum().equals(ProfileEnum.OSSERVATORE)){
 				return true;
 			}
 		}

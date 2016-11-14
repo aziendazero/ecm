@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -13,11 +15,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
+import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.service.ComunicazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ComunicazioneWrapper;
@@ -35,6 +42,7 @@ public class ComunicazioneController {
 
 	@Autowired private ComunicazioneService comunicazioneService;
 	@Autowired private ComunicazioneValidator comunicazioneValidator;
+	@Autowired private ObjectMapper jacksonObjectMapper;
 
 	@ModelAttribute("comunicazioneWrapper")
 	public ComunicazioneWrapper getComunicazioneWrapperPreRequest(@RequestParam(value="editId", required = false) Long id){
@@ -101,7 +109,8 @@ public class ComunicazioneController {
 
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				comunicazioneWrapper.setDestinatariMap(comunicazioneService.getAllDestinatariDisponibili(comunicazioneWrapper.getComunicazione().getMittente().getId()));
+				String json = jacksonObjectMapper.writerWithView(JsonViewModel.ComunicazioniDestinatari.class).writeValueAsString(comunicazioneService.getAllDestinatariDisponibili(comunicazioneWrapper.getComunicazione().getMittente().getId()));
+				comunicazioneWrapper.setDestinatariJSON(json);
 				LOGGER.info(Utils.getLogMessage("VIEW: " + NEW));
 				return NEW;
 			}else{
@@ -239,10 +248,11 @@ public class ComunicazioneController {
 
 	// metodi privati di supporto
 
-	private ComunicazioneWrapper prepareComunicazioneWrapperNew(Comunicazione comunicazione) {
+	private ComunicazioneWrapper prepareComunicazioneWrapperNew(Comunicazione comunicazione) throws JsonProcessingException {
 		LOGGER.info(Utils.getLogMessage("prepareComunicazioneWrapperNew() - entering"));
 		ComunicazioneWrapper wrapper = new ComunicazioneWrapper(comunicazione);
-		wrapper.setDestinatariMap(comunicazioneService.getAllDestinatariDisponibili(comunicazione.getMittente().getId()));
+		String json = jacksonObjectMapper.writerWithView(JsonViewModel.ComunicazioniDestinatari.class).writeValueAsString(comunicazioneService.getAllDestinatariDisponibili(comunicazione.getMittente().getId()));
+		wrapper.setDestinatariJSON(json);
 		LOGGER.info(Utils.getLogMessage("prepareComunicazioneWrapperNew() - exiting"));
 		return wrapper;
 	}
