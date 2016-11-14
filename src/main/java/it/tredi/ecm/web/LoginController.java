@@ -18,6 +18,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.QuotaAnnualeService;
 import it.tredi.ecm.service.QuotaAnnualeServiceImpl;
@@ -36,6 +37,7 @@ public class LoginController {
 	@Autowired private AccountService accountService;
 	@Autowired private SedutaService sedutaService;
 	@Autowired private QuotaAnnualeService quotaAnnualeService;
+	@Autowired private EventoService eventoService;
 
 	@RequestMapping("/")
 	public String root(Locale locale) {
@@ -72,7 +74,8 @@ public class LoginController {
 				case PROVIDER:
 					wrapper.setIsProvider(true);
 					wrapper.setProviderId(providerService.getProviderIdByAccountId(currentUser.getAccount().getId()));
-					wrapper.setEventiDaPagare(3);
+					wrapper.setEventiDaPagare(eventoService.countEventiForProviderIdInScadenzaDiPagamento(currentUser.getAccount().getProvider().getId()));
+					wrapper.setEventiPagamentoScaduto(eventoService.countEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId()));
 					wrapper.setMessaggi(9);
 					wrapper.setAccreditamentiDaIntegrare(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.INTEGRAZIONE, wrapper.getProviderId()));
 					wrapper.setAccreditamentiInPreavvisoRigetto(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.PREAVVISO_RIGETTO, wrapper.getProviderId()));

@@ -1,7 +1,10 @@
 package it.tredi.ecm.web.validator;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -161,9 +164,11 @@ public class EventoValidator {
 		/* CHECK INFO SPONSOR (campo obbligatorio)
 		 * spunta richiesta
 		 * */
-		if(evento.getLetteInfoAllegatoSponsor() == null || evento.getLetteInfoAllegatoSponsor() == false)
-			errors.rejectValue(prefix + "letteInfoAllegatoSponsor", "error.empty");
-
+		if(evento.getEventoSponsorizzato() != null && evento.getEventoSponsorizzato().booleanValue()){
+			if(evento.getLetteInfoAllegatoSponsor() == null || evento.getLetteInfoAllegatoSponsor() == false)
+				errors.rejectValue(prefix + "letteInfoAllegatoSponsor", "error.empty");
+		}
+		
 		/* SPONSOR (campo obbligatorio)
 		 * campo complesso ripetibile di tipo Sponsor
 		 * deve avere tutti i campi inseriti
@@ -1049,7 +1054,7 @@ public class EventoValidator {
 					errors.rejectValue(prefix + "programma["+counter+"]", "");
 					atLeastOneErrorDettaglioAttivita = true;
 				}
-				if(!dar.isPausa())
+				if(!dar.isPausa() && !dar.isValutazioneApprendimento())
 					atLeastOneAttivita = true;
 				counter++;
 			}
@@ -1078,7 +1083,7 @@ public class EventoValidator {
 			return true;
 
 		//controlli per non pausa [ 2) ]
-		if(!dettaglio.isPausa()) {
+		if(!dettaglio.isPausa() && !dettaglio.isValutazioneApprendimento()) {
 			if(dettaglio.getArgomento() == null || dettaglio.getArgomento().isEmpty())
 				return true;
 			if(dettaglio.getDocente() == null)
@@ -1127,8 +1132,26 @@ public class EventoValidator {
 			boolean atLeastOneErrorAzione = false;
 			boolean atLeastOneTutor = false;
 			boolean atLeastOnePartecipante = false;
+			
+			Map<RuoloFSCEnum, Float> checkOrePartecipante = new HashMap<RuoloFSCEnum, Float>();
+			
 			for(AzioneRuoliEventoFSC aref : faseAzioniRuoli.getAzioniRuoli()) {
 				boolean[] validationResults = validateAzioneRuoliFSC(aref, tipologiaEvento);
+				
+				//sommo tutte le ore dei partecipanti per verificare che abbia almeno 2 ore non frazionabili
+				if(tipologiaEvento == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE){
+					for(RuoloOreFSC r : aref.getRuoli()) {
+						if(r.getTempoDedicato() != null && r.getRuolo() != null && r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE){
+							if(checkOrePartecipante.containsKey(r.getRuolo())){
+								float v = checkOrePartecipante.get(r.getRuolo());
+								checkOrePartecipante.put(r.getRuolo(),v + r.getTempoDedicato());
+							}else{
+								checkOrePartecipante.put(r.getRuolo(),r.getTempoDedicato());
+							}
+						}
+					}
+				}
+				
 				//hasErrors
 				if(validationResults[0]) {
 					errors.rejectValue(prefix + "azioniRuoli["+counter+"]", "");
@@ -1142,6 +1165,18 @@ public class EventoValidator {
 				}
 				counter++;
 			}
+			
+			//cerco se ci sono partecipanti con meno di 2 ore
+			if(checkOrePartecipante != null){
+				Iterator<Entry<RuoloFSCEnum,Float>> iterator = checkOrePartecipante.entrySet().iterator();
+
+				while (iterator.hasNext()) {
+					Map.Entry<RuoloFSCEnum,Float> pairs = iterator.next();
+					if(pairs.getValue() < 2)
+						atLeastOneErrorAzione = true;
+				 }
+			}
+			
 			if(atLeastOneErrorAzione)
 				errors.rejectValue(prefix + "azioniRuoli", "error.campi_con_errori_azione_ruoli"+tipologiaEvento);
 			else if(!atLeastOnePartecipante || (!atLeastOneTutor && tipologiaEvento == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO)) {
@@ -1294,8 +1329,8 @@ public class EventoValidator {
 						return new boolean[] {true, hasPartecipante, hasTutor};
 					else {
 						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
-							if(r.getTempoDedicato() < 2)
-								return new boolean[] {true, hasPartecipante, hasTutor};
+//							if(r.getTempoDedicato() < 2)
+//								return new boolean[] {true, hasPartecipante, hasTutor};
 							hasPartecipante = true;
 						}
 					}

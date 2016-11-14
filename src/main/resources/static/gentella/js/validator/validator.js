@@ -146,6 +146,9 @@ var validator = (function($){
                     case 'passwordEcm' :
                     	regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]/;
                     	break;
+                    case 'site' :
+                    	regex = /(http?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/;
+                    	break;
                     default :
                         regex = pattern;
                 }

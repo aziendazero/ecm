@@ -35,6 +35,9 @@ public class DettaglioAttivitaRES implements Serializable{
 	 */
 	private static final long serialVersionUID = -1084979219782048226L;
 	
+	private final String PAUSA = "PAUSA";
+	private final String VALUTAZIONE_APPRENDIMENTO = "VALUTAZIONE APPRENDIMENTO";
+	
 	@DateTimeFormat (pattern = "HH:mm")
 	@Column(name="orario_inizio")
 	private LocalTime orarioInizio;
@@ -56,7 +59,7 @@ public class DettaglioAttivitaRES implements Serializable{
 	private float oreAttivita;
 	
 	public void setAsPausa(){
-		this.argomento = "PAUSA";
+		this.argomento = PAUSA;
 		
 		this.docente = null;
 		this.risultatoAtteso = "";
@@ -65,7 +68,7 @@ public class DettaglioAttivitaRES implements Serializable{
 	}
 	
 	public boolean isPausa(){
-		if((this.argomento!= null && this.argomento.equalsIgnoreCase("PAUSA")) && 
+		if((this.argomento!= null && this.argomento.equalsIgnoreCase(PAUSA)) && 
 				this.docente == null && 
 				(this.risultatoAtteso != null && this.risultatoAtteso.isEmpty()) && 
 				this.obiettivoFormativo == null && 
@@ -73,6 +76,44 @@ public class DettaglioAttivitaRES implements Serializable{
 			return true;
 		else
 			return false;
+	}
+	
+	public void setAsValutazioneApprendimento(){
+		this.argomento = VALUTAZIONE_APPRENDIMENTO;
+		
+		this.docente = null;
+		this.risultatoAtteso = "";
+		this.obiettivoFormativo = null;
+		this.metodologiaDidattica = null;
+	}
+	
+	public boolean isValutazioneApprendimento(){
+		if((this.argomento!= null && this.argomento.equalsIgnoreCase(VALUTAZIONE_APPRENDIMENTO)) && 
+				this.docente == null && 
+				(this.risultatoAtteso != null && this.risultatoAtteso.isEmpty()) && 
+				this.obiettivoFormativo == null && 
+				this.metodologiaDidattica == null)
+			return true;
+		else
+			return false;
+	}
+	
+	public String getExtraType(){
+		if(isPausa())
+			return PAUSA;
+		
+		if(isValutazioneApprendimento())
+			return VALUTAZIONE_APPRENDIMENTO;
+		
+		return "";
+	}
+	
+	public void setExtraType(String extraType){
+		if(extraType.equalsIgnoreCase(PAUSA))
+			setAsPausa();
+		
+		if(extraType.equalsIgnoreCase(VALUTAZIONE_APPRENDIMENTO))
+			setAsValutazioneApprendimento();
 	}
 	
 	public void calcolaOreAttivita(){

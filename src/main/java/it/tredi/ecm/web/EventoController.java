@@ -1,12 +1,15 @@
 package it.tredi.ecm.web;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -31,6 +34,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
@@ -53,6 +58,9 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.EventoSearchEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
@@ -75,6 +83,7 @@ import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ObiettivoService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -109,18 +118,6 @@ public class EventoController {
 	private final String EDITRES = "evento/eventoRESEdit";
 	private final String EDITFSC = "evento/eventoFSCEdit";
 	private final String EDITFAD = "evento/eventoFADEdit";
-
-
-	@ModelAttribute("elencoProvince")
-	public List<String> getElencoProvince(){
-		List<String> elencoProvince = new ArrayList<String>();
-
-		elencoProvince.add("Venezia");
-		elencoProvince.add("Padova");
-		elencoProvince.add("Verona");
-
-		return elencoProvince;
-	}
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -894,7 +891,7 @@ public class EventoController {
 	public String addAttivitaTo(@RequestParam("target") String target,
 								@RequestParam("addAttivitaTo") String addAttivitaTo,
 								@RequestParam("modificaElemento") Integer modificaElemento,
-								@RequestParam(name = "pausa",required=false) Boolean pausa,
+								@RequestParam(name = "extraType",required=false) String extraType,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			if(modificaElemento == null){
@@ -907,8 +904,10 @@ public class EventoController {
 					LOGGER.debug("EventoRES - evento/addAttivitaTo programmaIndexLong: " + programmaIndexLong);
 					eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().add(attivitaRES);
 
-					if(pausa.booleanValue())
-						attivitaRES.setAsPausa();
+					if(extraType != null){
+						attivitaRES.setExtraType(extraType);
+					}
+					 
 					eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
 				}else if(target.equalsIgnoreCase("attivitaFSC")){
 					AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());
@@ -1213,6 +1212,36 @@ public class EventoController {
 		}
 	}
 
+	@RequestMapping("/provider/eventi/{search}/list")
+	public String getAllEventiByProviderIdForGruppo(@PathVariable("search") EventoSearchEnum search, Model model,
+			RedirectAttributes redirectAttrs) throws Exception {
+		LOGGER.info(Utils.getLogMessage("GET /provider/eventi/" + search + "/list"));
+		try {
+			
+			Set<Evento> listaEventi = new HashSet<Evento>();
+			CurrentUser currentUser = Utils.getAuthenticatedUser();
+			
+			switch(search){
+				case SCADENZA_PAGAMENTO : 	listaEventi = eventoService.getEventiForProviderIdInScadenzaDiPagamento(currentUser.getAccount().getProvider().getId());
+											break;
+				
+				case NON_RAPPORTATI : listaEventi = eventoService.getEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId());
+										break;
+				
+				default: break;
+			}
 
+			model.addAttribute("label", search.getNome());
+			model.addAttribute("eventoList", listaEventi);
+			model.addAttribute("canCreateEvento", false);
+			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
+			return LIST;
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/eventi/" + search + "/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
 
 }

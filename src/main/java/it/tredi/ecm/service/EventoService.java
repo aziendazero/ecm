@@ -43,5 +43,9 @@ public interface EventoService {
 	// detacha e clona l'Evento Padre da rieditare
 //	public <T> void detachEvento(T obj) throws Exception;
 	public Evento detachEvento(Evento evento) throws Exception;
-
+	
+	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId);
+	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId);
+	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId);
+	public int countEventiForProviderIdPagamentoScaduti(Long providerId);
 }

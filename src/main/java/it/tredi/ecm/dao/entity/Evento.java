@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -235,6 +236,9 @@ public class Evento extends BaseEntity{
 	@Column(name = "data_scadenza_pagamento")//data scadenza pagamento
 	private LocalDate dataScadenzaPagamento;
 
+	@Column(name = "data_ultima_modifica")//data ultima_modifica
+	private LocalDateTime dataUltimaModifica;
+	
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="responsabile_id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
@@ -247,6 +251,8 @@ public class Evento extends BaseEntity{
 	protected Float durata;//calcolo automatico
 	protected Float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
+	private Boolean confermatiCrediti;
+	
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="responsabile_segreteria_id")
 	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();

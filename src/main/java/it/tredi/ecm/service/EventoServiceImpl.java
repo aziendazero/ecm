@@ -26,6 +26,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.cogeaps.CogeapsCaricaResponse;
@@ -105,6 +107,7 @@ public class EventoServiceImpl implements EventoService {
 			eventoRepository.saveAndFlush(evento);
 			evento.buildPrefix();
 		}
+		evento.setDataUltimaModifica(LocalDateTime.now());
 		eventoRepository.save(evento);
 
 		//se attuazione di evento del piano formativo aggiorna il flag
@@ -191,13 +194,13 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public List<Evento> getAllEventi() {
 		LOGGER.debug("Recupero tutti gli eventi");
-		return eventoRepository.findAll();
+		return eventoRepository.findAll(new Sort(Direction.DESC, "dataUltimaModifica"));
 	}
 
 	@Override
 	public Set<Evento> getAllEventiForProviderId(Long providerId) {
 		LOGGER.debug("Recupero tutti gli eventi del provider: " + providerId);
-		return eventoRepository.findAllByProviderId(providerId);
+		return eventoRepository.findAllByProviderIdOrderByDataUltimaModificaDesc(providerId);
 	}
 
 	@Override
@@ -244,11 +247,6 @@ public class EventoServiceImpl implements EventoService {
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				eventoRES.setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
-
-			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
-			if(((EventoRES) evento).getConfermatiCrediti().booleanValue()){
-				evento.setCrediti(eventoWrapper.getCreditiProposti());
-			}
 		}else if(evento instanceof EventoFSC){
 			retrieveProgrammaAndAddJoin(eventoWrapper);
 
@@ -294,11 +292,11 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD) evento).getVerificaApprendimento().addAll(nuoviVAF);
 
 			retrieveProgrammaAndAddJoin(eventoWrapper);
-
-			//valuto se salvare i crediti proposti o quelli calcolati dal sistema
-			if(((EventoFAD) evento).getConfermatiCrediti().booleanValue()){
-				evento.setCrediti(eventoWrapper.getCreditiProposti());
-			}
+		}
+		
+		//valuto se salvare i crediti proposti o quelli calcolati dal sistema
+		if(evento.getConfermatiCrediti().booleanValue()){
+			evento.setCrediti(eventoWrapper.getCreditiProposti());
 		}
 
 		//Responsabili
@@ -627,7 +625,7 @@ public class EventoServiceImpl implements EventoService {
 		if(programma != null){
 			for(EventoRESProgrammaGiornalieroWrapper progrGior : programma){
 				for(DettaglioAttivitaRES dett : progrGior.getProgramma().getProgramma()){
-					if(!dett.isPausa())
+					if(!dett.isPausa() && !dett.isValutazioneApprendimento())
 						durata += dett.getOreAttivita();
 				}
 			}
@@ -714,7 +712,7 @@ public class EventoServiceImpl implements EventoService {
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			EventoFSC evento = ((EventoFSC)eventoWrapper.getEvento());
 			crediti = calcoloCreditiFormativiEventoFSC(evento.getTipologiaEvento(), eventoWrapper);
-			evento.setCrediti(crediti);
+			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FSC"));
 			return crediti;
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
@@ -1302,6 +1300,7 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAllByProviderIdAndDataFineBetween(providerId, leftDate, rightDate);
 	}
 
+	/* Eventi Rendicontati. Utilizzato per determinare la fascia di pagamento per la quota annuale */
 	@Override
 	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
 		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
@@ -1309,10 +1308,39 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
 	}
 
+	/* Eventi Attuati nell'anno annoRiferimento dal provider */
 	@Override
 	public Set<Evento> getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
 		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
 		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStatoNot(providerId, leftDate, rightDate, EventoStatoEnum.BOZZA);
+	}
+	
+	/* Vaschetta provider */
+	@Override
+	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
+		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalse(providerId, LocalDate.now(), LocalDate.now().plusDays(30));
+	}
+	
+	@Override
+	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
+		Set<Evento> listaEventi = getEventiForProviderIdInScadenzaDiPagamento(providerId);
+		if(listaEventi != null)
+			return listaEventi.size();
+		return 0;
+	}
+	
+	/* Vaschetta provider */
+	@Override
+	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId) {
+		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(providerId, LocalDate.now());
+	}
+	
+	@Override
+	public int countEventiForProviderIdPagamentoScaduti(Long providerId) {
+		Set<Evento> listaEventi = getEventiForProviderIdPagamentoScaduti(providerId);
+		if(listaEventi != null)
+			return listaEventi.size();
+		return 0;
 	}
 }

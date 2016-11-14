@@ -43,6 +43,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.engine.jdbc.ReaderInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -226,7 +227,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setPartitaIva(soggetto.getPartitaIva());
 		p.setEmail(soggetto.getEmailStruttura());
 		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
-		p.setCausale("VERSAMENTO DI PROVA");
+		p.setCausale(CAUSALE_PAGAMENTO_EVENTO + " - " + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo());
 		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
 
 		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.
@@ -239,7 +240,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setDataInvio(new Date());
 		pagamentoService.save(p);
 
-		PaaSILInviaDovuti dovuti = createPagamentoMessage(p, backURL);
+		PaaSILInviaDovuti dovuti = createPagamentoMessage(p, backURL, engineeringProperties.getTipoDovutoEvento());
 
 		IntestazionePPT header = new IntestazionePPT();
 		header.setCodIpaEnte(engineeringProperties.getIpa());
@@ -289,7 +290,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setDataInvio(new Date());
 		pagamentoService.save(p);
 
-		PaaSILInviaDovuti dovuti = createPagamentoMessage(p, backURL);
+		PaaSILInviaDovuti dovuti = createPagamentoMessage(p, backURL, engineeringProperties.getTipoDovutoQuotaAnnua());
 
 		IntestazionePPT header = new IntestazionePPT();
 		header.setCodIpaEnte(engineeringProperties.getIpa());
@@ -330,12 +331,12 @@ public class EngineeringServiceImpl implements EngineeringService {
 	 * @throws TransformerException 
 	 * @throws IOException 
 	 */
-	private PaaSILInviaDovuti createPagamentoMessage(Pagamento p, String backUrl) throws TransformerException, JAXBException, IOException {
+	private PaaSILInviaDovuti createPagamentoMessage(Pagamento p, String backUrl, String tipoDovuto) throws TransformerException, JAXBException, IOException {
 		CtDatiSingoloVersamentoDovuti versamento = new CtDatiSingoloVersamentoDovuti();
 		versamento.setCausaleVersamento(p.getCausale());
 		versamento.setCommissioneCaricoPA(p.getCommissioneCaricoPa() != null ? BigDecimal.valueOf(p.getCommissioneCaricoPa()) : null);
 		versamento.setDatiSpecificiRiscossione(p.getDatiSpecificiRiscossione());
-		versamento.setIdentificativoTipoDovuto(engineeringProperties.getTipoDovuti());
+		versamento.setIdentificativoTipoDovuto(tipoDovuto);
 		versamento.setIdentificativoUnivocoDovuto(p.getIdentificativoUnivocoDovuto());
 		versamento.setImportoSingoloVersamento(BigDecimal.valueOf(p.getImporto()));
 

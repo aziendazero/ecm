@@ -43,7 +43,7 @@ public class XmlReportValidator {
 			String xmlValue = eventoEl.attributeValue(evento_field);
 			String dbValue = dbEventoDataMap.get(evento_field);
 			if (!xmlValue.equals(dbValue))
-				throw new Exception("I dati dell'evento non corrispondono a quelli memorizzati nel databse: [" + evento_field + "]: " + xmlValue + " - " + dbValue);
+				throw new Exception("I dati dell'evento non corrispondono a quelli memorizzati nel databse: [" + evento_field + "]: '" + xmlValue + "' - '" + dbValue + "'");
 		}
 	}
 	

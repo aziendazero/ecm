@@ -22,8 +22,10 @@ public class EngineeringAppConfiguration {
 	private String endpointPagamenti = "";
 	@Value("${datispecifici.riscossione}")
 	private String datiSpecificiRiscossione = "";
-	@Value("${tipo.dovuti}")
-	private String tipoDovuti = "";
+	@Value("${tipo.dovuto.evento}")
+	private String tipoDovutoEvento = "";
+	@Value("${tipo.dovuto.quotaannua}")
+	private String tipoDovutoQuotaAnnua = "";
 	@Value("${proxy.attivo}")
 	private boolean useProxy = false;
 	@Value("${proxy.host}")
@@ -44,7 +46,8 @@ public class EngineeringAppConfiguration {
 		engineeringProperties.setServizio(servizio);
 		engineeringProperties.setEndpointPagamenti(endpointPagamenti);
 		engineeringProperties.setDatiSpecificiRiscossione(datiSpecificiRiscossione);
-		engineeringProperties.setTipoDovuti(tipoDovuti);
+		engineeringProperties.setTipoDovutoEvento(tipoDovutoEvento);
+		engineeringProperties.setTipoDovutoQuotaAnnua(tipoDovutoQuotaAnnua);
 		engineeringProperties.setUseProxy(useProxy);
 		engineeringProperties.setProxyHost(proxyHost);
 		engineeringProperties.setProxyPort(proxyPort);

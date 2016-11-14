@@ -11,7 +11,8 @@ public class EngineeringProperties {
 	private String servizio;
 	private  String endpointPagamenti;
 	private String datiSpecificiRiscossione;
-	private String tipoDovuti;
+	private String tipoDovutoEvento;
+	private String tipoDovutoQuotaAnnua;
 	private boolean useProxy;
 	private String proxyHost;
 	private String proxyPort;

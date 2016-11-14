@@ -17,6 +17,7 @@
 							</button>
 							<h4 id="container-titleNoPausa" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 							<h4 id="container-titlePausa" class="modal-title" th:text="#{label.inserisci_pausa}">Inserisci pausa</h4>
+							<h4 id="container-titleValutazioneApprendimento" class="modal-title" th:text="#{label.inserisci_valutazione_apprendimento}">Inserisci pausa</h4>
 						</div>
 						<div class="modal-body" id="container-attivitaRES">
 							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
@@ -169,7 +170,7 @@
 
 									<input id="targetTableAttivitaRES" type="text" name="target" style="display: none;" />
 									<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
-									<input id="pausa" type="text" name="pausa" style="display: none;" />
+									<input id="extraType" type="text" name="extraType" style="display: none;" />
 
 									<input id="addAttivitaTo_provincia" type="text" style="display: none;" />
 									<input id="addAttivitaTo_comune" type="text" style="display: none;" />
@@ -259,7 +260,7 @@
 											<span>3</span>
 										</label>
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="proceduraFormativa">
-											<span th:text="#{label.procedura_formativa}">Id del Provider</span>
+											<span th:text="#{label.procedure_formative_tipologia}">Id del Provider</span>
 										</label>
 
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="proceduraFormativa">
@@ -358,12 +359,10 @@
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
-												onchange="sendAjaxRequestProvincia()"
 												title="Seleziona una provincia...">
 												<option
-													th:each="provincia : ${elencoProvince}"
-													th:value="${provincia}"
-													th:text="${provincia}">
+													th:value="${eventoWrapper.evento.sedeEvento.provincia}"
+													th:text="${eventoWrapper.evento.sedeEvento.provincia}">
 												</option>
 											</select>
 										</div>
@@ -1213,7 +1212,7 @@
 												</label>
 												<div class="model-link">
 													<i class="fa fa-file-text"></i>
-													<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+													<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="todo"></a>
 												</div>
 												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 													<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block>
@@ -1277,6 +1276,10 @@
 												<span th:text="#{label.allegato_contratti_accordi_convenzioni}">Allegato Contratti Accordi Convenzioni</span>
 												<span class="required">*</span>
 											</label>
+											<div class="model-link">
+												<i class="fa fa-file-text"></i>
+												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/MOD._SPONSORIZZAZIONE_PROVIDER-SPONSOR.pdf"></a>
+											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, contrattiAccordiConvenzioni, null, null, null, true, null, false)" ></th:block>
 											</div>
@@ -1293,7 +1296,7 @@
 											</label>
 											<div class="model-link">
 												<i class="fa fa-file-text"></i>
-												<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/Veneto/modello%20assenza%20finanziamenti%20Regione.pdf"></a>
 											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block>
@@ -1357,7 +1360,7 @@
 										</label>
 										<div class="model-link">
 											<i class="fa fa-file-text"></i>
-											<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
+											<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/13.Conflitto_interessi_evento.pdf"></a>
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block>
@@ -1415,6 +1418,7 @@
 
 				</form>
 
+			<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 			    var days;
@@ -1490,6 +1494,9 @@
 					function openClock(caller){
 						$(caller).parent().click();
 					}
+					
+					//init per provincia e comune della sede
+					initProvinciaComune('provincia', 'comune');
 				}
 
 				//eventLister cambio tab
@@ -1799,10 +1806,10 @@
 				};
 
 	/********************* PROGRAMMA GIORNALIERO ****************************/
-				function openAddAttivitaTo(target,programmaIndex,pausa,modificaElemento){
+				function openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento){
 					$('#targetTableAttivitaRES').val(target);
 					$('#addAttivitaTo').val(programmaIndex);
-					$('#pausa').val(pausa);
+					$('#extraType').val(extraType);
 					$('#modificaElementoAttivitaRES').val(modificaElemento);
 
 					var provinciaVal = $("[data-programma-provincia='" + programmaIndex + "']").val();
@@ -1815,9 +1822,19 @@
 					$('#addAttivitaTo_indirizzo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.indirizzo").val(indirizzoVal);
 					$('#addAttivitaTo_luogo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.luogo").val(luogoVal);
 
-					if(pausa){
+					if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO'){
 						$("#container-titleNoPausa").hide();
-						$("#container-titlePausa").show();
+						
+						if(extraType == 'PAUSA'){
+							$("#container-titlePausa").show();
+							$("#container-titleValutazioneApprendimento").hide();
+						}
+						else{
+							$("#container-titleValutazioneApprendimento").show();
+							$("#container-titlePausa").hide();
+						}
+							
+							
 						$("#container-argomento").hide();
 						$("#container-docente").hide();
 						$("#container-risultatoAtteso").hide();
@@ -1825,6 +1842,7 @@
 						$("#container-metodologiaDidattica").hide();
 					}else{
 						$("#container-titlePausa").hide();
+						$("#container-titleValutazioneApprendimento").hide();
 						$("#container-titleNoPausa").show();
 						$("#container-argomento").show();
 						$("#container-docente").show();
@@ -1896,22 +1914,22 @@
 				function modificaAttivitaFrom(target,caller){
 					var modificaElemento = $(caller).parent().parent().data('row-id');
 					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('programma-id');
-					var pausa = $(caller).parent().parent().data('is-pausa');
+					var extraType = $(caller).parent().parent().data('extra-type');
 					if(modificaElemento == undefined)
 						modificaElemento = 0;
 
-					console.log('modificaAttivitaFrom:' + target + "," + programmaIndex + ',' + pausa + ',' + modificaElemento);
+					console.log('modificaAttivitaFrom:' + target + "," + programmaIndex + ',' + extraType + ',' + modificaElemento);
 
-					sendAjaxModificaAttivitaTo(target,programmaIndex,pausa,modificaElemento);
+					sendAjaxModificaAttivitaTo(target,programmaIndex,extraType,modificaElemento);
 				}
 
-				function sendAjaxModificaAttivitaTo(target,programmaIndex,pausa,modificaElemento){
+				function sendAjaxModificaAttivitaTo(target,programmaIndex,extraType,modificaElemento){
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
 					$.get(url).done(function(data) {
 						$('#container-' + target).html(data);
 						reInitModaleAddAttivita();
 						$('#add-attivita').click();
-						openAddAttivitaTo(target,programmaIndex,pausa,modificaElemento);
+						openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento);
 					  })
 				  	.fail(function() {
 				    	alert( "error" );

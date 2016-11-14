@@ -68,7 +68,7 @@
 									<tr>
 										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 										<th th:text="#{label.titolo}">label.titolo</th>
-										<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
+										<th th:text="#{label.procedure_formative_tipologia}">label.procedure_formative_tipologia</th>
 										<th th:text="#{label.obiettivo_formativo_nazionale}">label.obiettivo_strategioco_nazionale</th>
 										<th th:text="#{label.obiettivo_formativo_regionale}">label.obiettivo_strategioco_regionale</th>
 										<th th:text="#{label.azioni}">label.azioni</th>
@@ -78,7 +78,7 @@
 									<tr th:each="eventoPF, row : ${eventoAttuazioneList}">
 										<td th:text="${eventoPF.getCodiceIdentificativo()}"></td>
 										<td th:text="${eventoPF.titolo}"></td>
-										<td th:text="${eventoPF.proceduraFormativa.nome}"></td>
+										<td th:text="${eventoPF.proceduraFormativa.name()}"></td>
 										<td th:text="${eventoPF.obiettivoNazionale.nome}"></td>
 										<td th:text="${eventoPF.obiettivoRegionale.nome}"></td>
 										<td>
@@ -117,7 +117,7 @@
 									<tr>
 										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 										<th th:text="#{label.titolo}">label.titolo</th>
-										<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
+										<th th:text="#{label.procedure_formative_tipologia}">label.procedure_formative_tipologia</th>
 										<th th:text="#{label.data_inizio}">label.data_inizio</th>
 										<th th:text="#{label.azioni}">label.azioni</th>
 									</tr>
@@ -126,7 +126,7 @@
 									<tr th:each="evento, row : ${eventoRiedizioneList}">
 										<td th:text="${evento.getCodiceIdentificativo()}"></td>
 										<td th:text="${evento.titolo}"></td>
-										<td th:text="${evento.proceduraFormativa.nome}"></td>
+										<td th:text="${evento.proceduraFormativa.name()}"></td>
 										<td th:text="${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')}"></td>
 										<td>
 											<a class="btn btn-primary btn-table single" th:href="@{|/provider/${providerId}/evento/${evento.id}/re-edit|}"><i class="glyphicon glyphicon-repeat"> </i> <span th:text="#{label.riedita}"> </span></a>
@@ -148,12 +148,15 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="${denominazioneProvider != null} ? #{label.lista_eventi_provider(${denominazioneProvider})} : #{label.lista_eventi}">Lista degli eventi</h2>
+						<h2 th:if="${label == null}" th:text="${denominazioneProvider != null} ? #{label.lista_eventi_provider(${denominazioneProvider})} : #{label.lista_eventi}">Lista degli eventi</h2>
+						<h2 th:if="${label != null}" th:text="${label}">Lista degli eventi</h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
-								<a class="btn btn-primary pull-right" th:text="#{label.riedizione_evento}" data-toggle="modal" data-target=".modal-scelta-riedizione"></a>
-								<a class="btn btn-primary pull-right" th:text="#{label.nuovo_evento_da_pfa}" data-toggle="modal" data-target=".modal-scelta-attuazione"></a>
-								<a class="btn btn-primary pull-right" th:text="#{label.creazione_evento}" data-toggle="modal" data-target=".modal-scelta-tipologia"></a>
+								<th:block th:if="${canCreateEvento}">
+									<a class="btn btn-primary pull-right" th:text="#{label.riedizione_evento}" data-toggle="modal" data-target=".modal-scelta-riedizione"></a>
+									<a class="btn btn-primary pull-right" th:text="#{label.nuovo_evento_da_pfa}" data-toggle="modal" data-target=".modal-scelta-attuazione"></a>
+									<a class="btn btn-primary pull-right" th:text="#{label.creazione_evento}" data-toggle="modal" data-target=".modal-scelta-tipologia"></a>
+								</th:block>
 							</div>
 						</div>
 						<div class="clearfix"></div>
@@ -170,10 +173,16 @@
 							<thead>
 								<tr>
 									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
+									<th th:text="#{label.edizione}">label.edizione</th>
+									<th th:text="#{label.procedure_formative_tipologia}">label.procedure_formative_tipologia</th>
 									<th th:text="#{label.titolo}">label.titolo</th>
-									<th th:text="#{label.procedura_formativa}">label.procedura_formativa</th>
+									<th th:text="#{label.sede}">label.sede</th>
+									<th th:text="#{label.data_inizio}">label.date</th>
+									<th th:text="#{label.data_fine}">label.date</th>
 									<th th:text="#{label.stato}"></th>
-									<th th:text="#{label.stato_pagamento}">label.stato_pagamento</th>
+									<th th:text="#{label.numero_partecipanti}">label.titolo</th>
+									<th th:text="#{label.ore_corso}">label.ore_corso</th>
+									<th th:text="#{label.stato_pagamento}"></th>
 									<th th:text="#{label.data_scadenza_pagamento}">label.data_scadenza_pagamento</th>
 									<th th:text="#{label.azioni}">label.azioni</th>
 								</tr>
@@ -181,9 +190,33 @@
 							<tbody th:remove="all-but-first">
 								<tr th:each="evento, row : ${eventoList}">
 									<td><a th:text="${evento.getCodiceIdentificativo()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/show|}"></a></td>
-									<td th:text="${evento.titolo}"></td>
+									<td th:text="${evento.edizione}"></td>
 									<td th:text="${evento.proceduraFormativa.name()}"></td>
+									<td th:text="${evento.titolo}"></td>
+									
+									<td th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
+										<span></span>
+									</td>
+									<td th:unless="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
+										<span th:text="${evento.sedeEvento?.luogo}"></span>
+									</td>
+									
+									<td th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></td>
+									<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
+							<!-- 		<td>
+										<ul>
+											<li><span th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></span></li>
+											<th:block th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).RES}">
+												<li th:each="data, d : ${evento.dateIntermedie}">
+													<span th:text="${#temporals.format(data, 'dd/MM/yyyy')}"></span>
+												</li>
+											</th:block>
+											<li><span th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></span></li>
+										</ul>
+									</td> -->
 									<td th:text="${evento.stato.nome}"></td>
+									<td th:text="${evento.numeroPartecipanti}"></td>
+									<td th:text="${evento.durata}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
 									<td th:unless="${evento.pagato}">
 										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>	

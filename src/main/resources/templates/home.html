@@ -54,13 +54,23 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="show('XXX')">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('provider/eventi/SCADENZA_PAGAMENTO/list')">
 						<div class="tile-stats clickable">
 							<div class="icon"><i class="fa fa-euro"></i></div>
 							<div class="col-xs-10">
 			                	<div class="count" th:text="${homeWrapper.eventiDaPagare}"></div>
 			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiDaPagare == 1 ? #messages.msg('label.evento') : #messages.msg('label.eventi')}"></h3>
-			                	<p class="count-text" th:text="#{label.da_pagare}">Da pagare</p>
+			                	<p class="count-text" th:text="#{label.eventi_scadenza_pagamento}">Da pagare</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4" onclick="goTo('provider/eventi/NON_RAPPORTATI/list')">
+						<div class="tile-stats clickable">
+							<div class="icon"><i class="fa fa-euro"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.eventiPagamentoScaduto}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiPagamentoScaduto == 1 ? #messages.msg('label.evento') : #messages.msg('label.eventi')}"></h3>
+			                	<p class="count-text" th:text="#{label.eventi_scaduti_pagamento}">Da pagare</p>
 							</div>
 						</div>
 					</div>

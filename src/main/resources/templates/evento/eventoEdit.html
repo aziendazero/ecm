@@ -410,9 +410,9 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:if="${eventoWrapper.evento.isNew() and !eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.creazione_nuovo_evento(${eventoWrapper.proceduraFormativa})}"></h2>
-						<h2 th:unless="${eventoWrapper.evento.isNew() or eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_tipo(${eventoWrapper.proceduraFormativa})}"></h2>
+						<h2 th:unless="${eventoWrapper.evento.isNew() or eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_tipo(${eventoWrapper.proceduraFormativa},${eventoWrapper.evento.getCodiceIdentificativo()})}"></h2>
 						<h2 th:if="${eventoWrapper.evento.isNew() and eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.accreditamento_evento_piano_formativo(${eventoWrapper.proceduraFormativa})}"></h2>
-						<h2 th:unless="${eventoWrapper.evento.isNew() or !eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_accreditato(${eventoWrapper.proceduraFormativa})}"></h2>
+						<h2 th:unless="${eventoWrapper.evento.isNew() or !eventoWrapper.evento.isEventoDaPianoFormativo()}" th:text="#{label.modifica_evento_accreditato(${eventoWrapper.proceduraFormativa},${eventoWrapper.evento.getCodiceIdentificativo()})}"></h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
 
@@ -448,6 +448,7 @@
 				</div>
 			</div>
 		</div>
+		<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
 		<script th:inline="javascript">
 		/*<![CDATA[*/
 
@@ -467,24 +468,6 @@
 
 			  $('#counter').html(text_remaining + ' '+[[#{label.caratteri_rimanenti}]]);
 			});
-
-			//Funzione che popola la lista dei comuni
-			function sendAjaxRequestProvincia(){
-				var provincia = $('#provincia option:selected').val();
-				var start = [[@{/comuni?provincia=}]];
-				var end = provincia;
-				var url = start + end;
-				$.get(url, function(data){
-					$("#comune").empty();
-					for(var item = 0; item < data.length; item++){
-						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
-						$("#comune").append(option);
-					}
-					$("#comune").prop("disabled", false);
-					$("#comune").selectpicker('refresh');
-
-				});
-			};
 
 			$(document).ready(function() {
 
@@ -565,7 +548,7 @@
 						"sClass": "center"
 					}]
 			    });
-
+			  	
 			    initAllCommon();
 			});
 
@@ -592,6 +575,17 @@
 			}
 
 			function initAllCommon(){
+			  	//devo recuperare tutte le coppie provincia comune del programma giornaliero
+			  	$('.provincia').each(function() {
+			  		if($(this).attr("data-programma-provincia") != undefined) {
+			  			//console.log($(this).attr("data-programma-provincia"));
+			  			//recupero il relativo campo comune
+			  			//console.log('nome prov: ' + $(this).attr('id'));
+			  			//console.log('nome com: ' + $('.comune  [data-programma-comune="' + $(this).attr("data-programma-provincia") + '"]').attr('id'));
+			  			initProvinciaComune($(this).attr('id'), $('.comune  [data-programma-comune="' + $(this).attr("data-programma-provincia") + '"]').attr('id'));
+			  		}
+			  	});
+
 				days = getDayNamesShort();
 				months = getMonthNames();
 
@@ -1463,7 +1457,16 @@
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-provincia=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}" />
+							<select th:attr="data-programma-provincia=__${data.key}__, id=provprog__${data.key}__"
+								class="selectpicker required provincia"
+								th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"
+								data-width="100%" data-style="btn-primary"
+								data-actions-box="true" data-size="10"
+								data-hide-disabled="false"
+								title="Seleziona una provincia...">
+								<option th:value="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"
+									th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"/>
+							</select>
 						</div>
 						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.provincia')}__}"></div>
 					</div>
@@ -1474,7 +1477,17 @@
 							<span class="required">*</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-comune=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}" />
+                        	<select th:attr="data-programma-comune=__${data.key}__, id=comprog__${data.key}__"
+								class="selectpicker required comune"
+								th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"
+								data-width="100%" data-style="btn-primary"
+								data-actions-box="true" data-size="10"
+								data-hide-disabled="false"
+								onchange="sendAjaxRequestCAP()"
+								title="Seleziona un comune...">
+								<option th:value="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"
+									th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"/>
+							</select>
 						</div>
 						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.comune')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.comune')}__}"></div>
 					</div>
@@ -1516,17 +1529,20 @@
 										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
 										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 										<th>
-											<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,false)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-plus"></i></span>
 											</a>
-											<a id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-pause-circle-o"></i></span>
+											</a>
+											<a id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<span><i class="fa fa-pencil"></i></span>
 											</a>
 										</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr th:attr="data-row-id=${__${status2.index}__}, data-is-pausa=${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].isPausa()}"
+									<tr th:attr="data-row-id=${__${status2.index}__}, data-extra-type=${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].getExtraType()}"
 										th:each="attivita , status2 : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma}"
 										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma['+__${status2.index}__+']')} ? 'bad-row'">
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioInizio}"></td>
@@ -1654,7 +1670,7 @@
 							<thead>
 								<tr>
 									<th th:text="#{label.argomento}">ARGOMENTO</th>
-									<th th:text="#{label.docente}">Docente</th>
+									<th th:text="#{label.docente_tutor}">Docente / Tutor</th>
 									<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
 									<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
 									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
