@@ -6,4 +6,6 @@ public class JsonViewModel {
 		public static class Seduta{}
 		
 		public static class PersonaEventoForListaSelect{}
+		
+		public static class Provincia{}
 }

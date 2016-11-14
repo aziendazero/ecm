@@ -26,24 +26,10 @@
 
 				</div>
 			</div>
+			<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
+			
 			<script th:inline="javascript">
 			/*<![CDATA[*/
-			function sendAjaxRequestProvincia(){
-				var provincia = $('#provincia_sede option:selected').val();
-				var start = [[@{/comuni?provincia=}]];
-				var end = provincia;
-				var url = start + end;
-				$.get(url, function(data){
-					$("#comune_sede").empty();
-					$("#CAP_sede").empty();
-					for(var item = 0; item < data.length; item++){
-						var option = '<option value = "' + data[item] + '">' + data[item] + "</option>";
-						$("#comune_sede").append(option);
-					}
-					$("#comune_sede").selectpicker('refresh');
-					$("#CAP_sede").selectpicker('refresh');
-				});
-			};
 			function sendAjaxRequestCAP(){
 				var comune = $('#comune_sede option:selected').val();
 				var start = [[@{/cap?comune=}]];
@@ -60,6 +46,7 @@
 			};
 
 			$(document).ready(function() {
+				initProvinciaComune('provincia_sede', 'comune_sede');
 
 			   	$('#isSedeLegale').on('ifChecked', function() {
 			   		$('#isSedeOperativa').iCheck('enable');
