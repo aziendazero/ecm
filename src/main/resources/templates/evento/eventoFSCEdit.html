@@ -381,12 +381,10 @@
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
-											onchange="sendAjaxRequestProvincia()"
 											title="Seleziona una provincia...">
 											<option
-												th:each="provincia : ${elencoProvince}"
-												th:value="${provincia}"
-												th:text="${provincia}">
+												th:value="${eventoWrapper.evento.sedeEvento.provincia}"
+												th:text="${eventoWrapper.evento.sedeEvento.provincia}">
 											</option>
 										</select>
 									</div>
@@ -1277,6 +1275,7 @@
 				<input id="submitButton" type="submit" style="display: none;" />
 			</form>
 
+			<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 
@@ -1324,7 +1323,7 @@
 						reloadSection('tab2');
 					});
 					updateRuoliCoinvolti();
-					
+
 					abilitaDisabilitaCreditiInseritiUtente($(".crediti-conferma").iCheck('update')[0].checked);
 					
 					$(".crediti-conferma").on("ifChecked", function() {
@@ -1333,6 +1332,9 @@
 					$(".crediti-conferma").on("ifUnchecked", function() {
 						abilitaDisabilitaCreditiInseritiUtente(false);
 					})
+
+					//init per provincia e comune della sede
+					initProvinciaComune('provincia', 'comune');
 				}
 
 

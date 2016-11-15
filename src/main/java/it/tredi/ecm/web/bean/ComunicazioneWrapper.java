@@ -2,6 +2,7 @@ package it.tredi.ecm.web.bean;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
@@ -24,7 +25,7 @@ public class ComunicazioneWrapper {
 	}
 
 	private Comunicazione comunicazione;
-	private Map<String, Account> destinatariMap = new HashMap<String, Account>();
+	private String destinatariJSON;
 	private ComunicazioneAmbitoEnum[] ambitoList;
 	private ComunicazioneTipologiaEnum[] tipologiaList;
 	private boolean canRespond;

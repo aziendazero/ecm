@@ -110,8 +110,7 @@
 									<div class="sender-info">
 										<div class="row">
 											<div class="col-xs-12">
-												<strong th:text="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()} ? #{label.from_segreteria} : ${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></strong>
-<!-- 												<strong th:text="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()} ? #{label.from_segreteria} : #{label.from_provider(${comunicazioneWrapper.comunicazione.mittente.username}, 'TODOproviderName')}"></strong> -->
+												<strong th:text="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()} ? #{label.from_segreteria} : 'Da: ' + ${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></strong>
 												<span th:text="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()} ? '&lt;' + #{label.segreteria_ecm_mail} + '&gt;' : '&lt;' + ${comunicazioneWrapper.comunicazione.mittente.email} + '&gt;'"></span>
 												<br/>
 												<th:block th:unless="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
@@ -121,8 +120,7 @@
 												<th:block th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
 													<!--  un solo destinatario -->
 													<th:block th:if="${#lists.size(comunicazioneWrapper.comunicazione.destinatari) == 1}">
-														<strong th:text="${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></strong>
-														<!-- <strong th:text="#{label.to_provider(${comunicazioneWrapper.comunicazione.destinatari[0].username}, 'TODOproviderName')}"></strong> -->
+														<strong th:text="'A: ' + ${comunicazioneWrapper.comunicazione.destinatari[0].getFullName()}"></strong>
 														<span th:text="'&lt;' + ${comunicazioneWrapper.comunicazione.destinatari[0].email} + '&gt;'"></span>
 													</th:block>
 													<!--  destinatari multipli -->
@@ -131,8 +129,7 @@
 														<a onclick="toggleDestinatari()" class="sender-dropdown clickable"><i class="fa fa-chevron-down toggleIcon"></i></a>
 														<div class="destinatari" style="display: none">
 															<div class="with-margin-left" th:each="destinatario, row : ${comunicazioneWrapper.comunicazione.destinatari}">
-																<strong th:text="${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></strong>
-																<!-- <strong th:text="#{label.to_provider(${destinatario.username}, 'TODOproviderName')}"></strong> -->
+																<strong th:text="${destinatario.getFullName()}"></strong>
 																<span th:text="'&lt;' + ${destinatario.email} + '&gt;'"></span>
 															</div>
 														</div>

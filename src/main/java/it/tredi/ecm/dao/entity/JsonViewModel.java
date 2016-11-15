@@ -4,6 +4,10 @@ public class JsonViewModel {
 		public static class Integrazione {}
 
 		public static class Seduta{}
-		
+
 		public static class PersonaEventoForListaSelect{}
+
+		public static class ComunicazioniDestinatari{}
+		
+		public static class Provincia{}
 }

@@ -13,10 +13,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 @MappedSuperclass
 public class BaseEntity implements Cloneable, Serializable{
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -6484707207565905889L;
-	@JsonView(JsonViewModel.Integrazione.class)
+	@JsonView({JsonViewModel.Integrazione.class, JsonViewModel.ComunicazioniDestinatari.class})
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
     protected Long id;
 
@@ -31,12 +31,12 @@ public class BaseEntity implements Cloneable, Serializable{
     public boolean isNew() {
         return (this.id == null);
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
     }
-    
+
     @Override
 	public Object clone() throws CloneNotSupportedException {
     	return super.clone();

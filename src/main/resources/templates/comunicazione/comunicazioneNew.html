@@ -43,24 +43,35 @@
 										</div>
 									</div>
 
+									<div th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}" class="filter-destinatari-container item form-group">
+										<div class="col-sm-2 col-xs-2 text-right">
+											<label class="control-label" th:text="#{label.filtri}"></label>
+										</div>
+										<div class="col-xs-12 col-sm-10">
+											<select class="selectpicker" multiple="multiple"
+												data-width="100%" data-style="btn-info"
+												data-size="10" data-hide-disabled="false"
+												id="filterSelect" onchange="showHideDestinatari($(this).val())"
+												title="Nessun filtro">
+												<option th:text="#{label.commissione}"></option>
+												<option th:text="#{label.osservatori}"></option>
+												<option th:text="#{label.provider}"></option>
+												<option th:text="#{label.referee_ecm}"></option>
+											</select>
+										</div>
+									</div>
+
 									<div class="destinatari-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.destinatari')} ? 'bad-remade'">
 										<div class="col-sm-2 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.to}"></label>
 										</div>
 										<div class="col-xs-12 col-sm-10">
 											<select th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}" id="destinatari" class="comunicazione-input select2_multiple" multiple="multiple"
-													data-width="100%"
-													th:field="${comunicazioneWrapper.comunicazione.destinatari}"
-													data-style="btn-primary" data-actions-box="true"
-													data-size="10" title="Seleziona destinatari..."
-													onchange="removeAlerts()"
-													th:remove="all-but-first">
-													<optgroup th:each="destinatario, row: ${comunicazioneWrapper.destinatariMap}"
-														th:label="${destinatario.key}">
-														<option
-															th:value="${destinatario.value.id}" th:text="${destinatario.value.username} + ' &lt;' + ${destinatario.value.email} + '&gt;'">
-														</option>
-													</optgroup>
+												data-width="100%"
+												th:field="${comunicazioneWrapper.comunicazione.destinatari}"
+												data-size="10" title="Seleziona destinatari..."
+												onchange="removeAlerts()"
+												th:remove="all-but-first">
 											</select>
 											<div class="fixed-value" th:unless="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}"
 												th:text="#{label.segreteria_ecm} + ' &lt;' + #{label.segreteria_ecm_mail} + '&gt;' ">
@@ -156,6 +167,8 @@
 				</div>
 			</div>
 			<script th:inline="javascript">
+			/*<![CDATA[*/
+
 				$(document).ready(function() {
 					$(".select2_multiple").select2({
 				    	placeholder: "Seleziona destinatari",
@@ -182,7 +195,11 @@
 						initTipologia();
 					}
 
+					showHideDestinatari(null);
+
 				});
+
+				var allDestinatari = JSON.parse([[${comunicazioneWrapper.destinatariJSON}]]);
 
 				function removeAlerts() {
 					$(".destinatari-container").removeClass('bad-remade').find('div.alert').fadeOut(150, function() {
@@ -214,6 +231,25 @@
 					$("#tipologiaSelect").selectpicker("refresh");
 				}
 
+				//sistema la select degli account a cui inviare la comunicazione
+				function showHideDestinatari(values) {
+					if(values == null) {
+						values = ["Commissione ECM", "Osservatori ECM", "Provider", "Referee ECM"];
+					}
+					console.log(allDestinatari);
+					$("#destinatari").empty();
+					for(var i = 0 ; i < values.length ; i++) {
+						var optgroup = $("<optgroup label='" + values[i] + "'></optgroup>");
+						var filteredDestinatari = allDestinatari[values[i]];
+						for(var k = 0; k < filteredDestinatari.length; k++) {
+							var option = $("<option value='" + filteredDestinatari[k].id + "'>" + filteredDestinatari[k].fullName + ' &lt;'  + filteredDestinatari[k].email + '&gt;' + "</option>");
+							optgroup.append(option);
+						}
+						$("#destinatari").append(optgroup);
+					}
+				}
+
+			/*]]>*/
 			</script>
 		</div>
 	</div>

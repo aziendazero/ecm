@@ -1,8 +1,10 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +20,6 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.ComunicazioneRepository;
 import it.tredi.ecm.dao.repository.ComunicazioneResponseRepository;
@@ -83,29 +84,52 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		else return 0;
 	}
 
-	//controlla l'utente se segreteria o provider e restituisce la lista di tutti i possibili destinatari, mappati
-	//per l'esigenza di avere il nome del provider di riferimento (caso segreteria)
+	//controlla l'utente se segreteria o provider (gli unici a poter creare da 0 una comunicazine)
+	//e restituisce la lista di tutti i possibili destinatari, mappati
+	//per ruolo o nome del provider
 	@Override
-	public Map<String, Account> getAllDestinatariDisponibili(Long id) {
-		Map<String, Account> destinatariMap = new HashMap<String, Account>();
+	public Map<String, Set<Account>> getAllDestinatariDisponibili(Long id) {
+		Map<String, Set<Account>> destinatariMap = new HashMap<String, Set<Account>>();
 		Account richiedente = accountService.getUserById(id);
+		//caso segreteria invia a tutti
 		if(richiedente.isSegreteria()) {
-			Set<Provider> listaProvider = providerService.getAll();
-			for (Provider p : listaProvider) {
-				for(Account account : p.getAccounts()) {
-					if(account.isProviderUserAdmin()) {
-						destinatariMap.put(p.getDenominazioneLegale(), account);
-					}
+			//mappa tutti gli utenti (non viene gestito il caso dei doppioni, es: un utente sia referee che osservatore)
+			Set<Account> allUsers = accountService.getAllUsers();
+			Set<Account> setCommissione = new HashSet<Account>();
+			Set<Account> setOsservatori = new HashSet<Account>();
+			Set<Account> setProvider = new HashSet<Account>();
+			Set<Account> setReferee = new HashSet<Account>();
+			for(Account a : allUsers) {
+				//amministratori provider
+				if(a.isProviderUserAdmin()) {
+					setProvider.add(a);
+				}
+				//refree
+				if(a.isReferee()) {
+					setReferee.add(a);
+				}
+				//commissione
+				if(a.isCommissioneEcm()) {
+					setCommissione.add(a);
+				}
+				//osservatore
+				if(a.isOsservatoreEcm()) {
+					setOsservatori.add(a);
 				}
 			}
+			if(!setCommissione.isEmpty())
+				destinatariMap.put("Commissione ECM", setCommissione);
+			if(!setOsservatori.isEmpty())
+				destinatariMap.put("Osservatori ECM", setOsservatori);
+			if(!setProvider.isEmpty())
+				destinatariMap.put("Provider", setProvider);
+			if(!setReferee.isEmpty())
+				destinatariMap.put("Referee ECM", setReferee);
 		}
+		//caso provider che possono inviare solo alla segreteria
 		else {
 			Set<Account> listaSegretari = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
-			int index = 1;
-			for (Account a : listaSegretari) {
-				destinatariMap.put("segretario" + index, a);
-				index++;
-			}
+			destinatariMap.put("SegreteriaECM", listaSegretari);
 		}
 		return destinatariMap;
 	}
