@@ -4,8 +4,24 @@
 <head>
 </head>
 <body>
-<th:block th:fragment="allegati(wrapper, withIdEditabili, tipoAllegato, fieldKey, fieldRuolo, note, withFirma, mode, required)">
-
+<th:block th:fragment="allegati_old(wrapper, withIdEditabili, tipoAllegato, fieldKey, fieldRuolo, note, withFirma, mode, required)">
+	
+	<div class="row">
+		<div id="modalFrame" class="modal" tabindex="-1" role="dialog" >
+			<div role="document" style="margin: 30px auto; width: 520px;">
+				<!-- Modal content--> 
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<iframe id="firmaFrame" src="" class="frame_invisible"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<!-- wrapper con idEditabili -->
 	<th:block th:if="${__withIdEditabili__}" th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
@@ -34,7 +50,7 @@
 				<!-- pulsante per aggiungere firma -->
 				<th:block th:if="${withFirma}">
 					<div class="col-xs-1">
-						<button type="button" onclick="submitFirma()" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+						<button type="button" onclick="submitFirma(this)" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}" data-toggle="modal" data-target="#modalFrame"><i class="fa fa-pencil"></i></button>
 					</div>
 				</th:block>
 			</th:block>
@@ -97,7 +113,7 @@
 			<!-- pulsante per aggiungere firma -->
 			<th:block th:if="${withFirma}">
 				<div class="col-xs-1">
-					<button type="button" onclick="submitFirma()" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+					<button type="button" onclick="submitFirma(this)" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}" data-toggle="modal" data-target="#modalFrame"><i class="fa fa-pencil"></i></button>
 				</div>
 			</th:block>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${tipoAllegato}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${tipoAllegato}__}"></div>
@@ -109,10 +125,11 @@
 			$(idInput).click();
 		}
 
-		function submitFirma() {
-  				var oMyForm = $('#formFirma').attr('action', [[@{|/engineering/test/firma/invio|}]]);
-  				oMyForm.submit();
-  			}
+		function submitFirma(element) {
+			var propertyName = $(element).parent().parent().find('input[type=file]').attr("propertyName");
+			console.log('propertyName: ' + propertyName);
+			$("#firmaFrame").attr("src", [[@{|/engineering/test/firma/invio|}]] + '?idFile=' + $("#"+propertyName+"\\.id").val());
+		}
 
 		function submitFile(element){
 			var tipoAllegato = $(element).attr("id");

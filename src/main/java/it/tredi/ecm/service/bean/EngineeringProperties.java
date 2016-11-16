@@ -9,7 +9,7 @@ public class EngineeringProperties {
 	private String ipa;
 	private String password;
 	private String servizio;
-	private  String endpointPagamenti;
+	private String endpointPagamenti;
 	private String datiSpecificiRiscossione;
 	private String tipoDovutoEvento;
 	private String tipoDovutoQuotaAnnua;
@@ -18,4 +18,8 @@ public class EngineeringProperties {
 	private String proxyPort;
 	private String proxyUsername;
 	private String proxyPassword;
+	
+	private String firmaUrl;
+	private String firmaIdclassificazione;
+	private String firmaReferer;
 }

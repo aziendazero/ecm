@@ -36,6 +36,13 @@ public class EngineeringAppConfiguration {
 	private String proxyUsername = "";
 	@Value("${proxy.password}")
 	private String proxyPassword = "";
+	
+	@Value("${firma.url}")
+	private String firmaUrl = "";
+	@Value("${firma.idclassificazione}")
+	private String firmaIdclassificazione = "";
+	@Value("${firma.referer}")
+	private String firmaReferer = "";
 
 	@Bean
 	public EngineeringProperties engineeringProperties(){
@@ -53,6 +60,10 @@ public class EngineeringAppConfiguration {
 		engineeringProperties.setProxyPort(proxyPort);
 		engineeringProperties.setProxyUsername(proxyUsername);
 		engineeringProperties.setProxyPassword(proxyPassword);
+		
+		engineeringProperties.setFirmaUrl(firmaUrl);
+		engineeringProperties.setFirmaIdclassificazione(firmaIdclassificazione);
+		engineeringProperties.setFirmaReferer(firmaReferer);
 		
 		return engineeringProperties;
 	}

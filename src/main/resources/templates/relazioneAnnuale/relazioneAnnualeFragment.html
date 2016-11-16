@@ -310,7 +310,8 @@
 									<span class="required" id="brochure-obbligatoria">*</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<th:block th:include="fragments/allegati :: allegati(relazioneAnnualeWrapper, false, relazioneFinale, null, null, null, true, null, true)" ></th:block>
+									<!-- <th:block th:include="fragments/allegati :: allegati(relazioneAnnualeWrapper, false, relazioneFinale, null, null, null, true, null, true)" ></th:block> -->
+									<th:block th:include="fragments/allegatiext :: allegatiext(relazioneAnnualeWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_RELAZIONE_FINALE}', relazioneFinale, null, null, null, true, 'edit', true)" ></th:block>
 								</div>
 								<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.relazioneFinale}"></div>
 							</div>

@@ -215,7 +215,8 @@
 									<textarea class="comunicazione-testo" th:field="${comunicazioneWrapper.comunicazione.messaggio}"></textarea>
 								</div>
 
-								<th:block th:include="fragments/allegati :: allegati(comunicazioneWrapper, false, allegatoComunicazione, null, null, null, false, null, false)" ></th:block>
+								<!-- <th:block th:include="fragments/allegati :: allegati(comunicazioneWrapper, false, allegatoComunicazione, null, null, null, false, null, false)" ></th:block> -->
+								<th:block th:include="fragments/allegatiext :: allegatiext(comunicazioneWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ALLEGATO_COMUNICAZIONE}', allegatoComunicazione, null, null, null, false, null, false)" ></th:block>
 							</div>
 
 							<input id="submitButton" type="submit" style="display: none;" />

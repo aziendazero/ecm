@@ -268,7 +268,8 @@
 
 									<!-- delega -->
 									<div id="delegaFile" th:class="${providerForm.delegato == true} ? '' : 'hidden'">
-										<th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, null, true, true, true)" ></th:block>
+										<!-- <th:block th:include="fragments/allegati :: allegati(providerForm, false, delega, null, null, null, true, true, true)" ></th:block> -->
+										<th:block th:include="fragments/allegatiext :: allegatiext(providerForm, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DELEGA}', delega, null, null, null, true, true, true)" ></th:block>
 									</div>
 
 									<!-- Invia dati -->

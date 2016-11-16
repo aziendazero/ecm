@@ -23,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		 .antMatchers("/", "/crlcu-multiselect/**", "/gentella/**", "/clockpicker/**", "/shared/**", "/main", "/providerRegistration", "/confirmRegistration", "/user/resetPassword", "/file/upload", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**", "/workflow/**").permitAll()
+		 .antMatchers("/", "/crlcu-multiselect/**", "/gentella/**", "/engineering/**", "/clockpicker/**", "/shared/**", "/main", "/providerRegistration", "/confirmRegistration", "/user/resetPassword", "/file/upload", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**", "/workflow/**").permitAll()
 
 		 .antMatchers("/admin/**").hasAuthority("ADMIN")
          .anyRequest().authenticated()
@@ -42,8 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	     .and()
 	     	.rememberMe();
 
-		http.csrf()
-	      .ignoringAntMatchers("/engineering/test/firma/back");
+		http.csrf().ignoringAntMatchers("/engineering/test/firma/back")
+	     .and()
+	     	.headers().frameOptions().sameOrigin();
 
 		//http.addFilterAfter(new UserChangePasswordCheckFilter(), FilterSecurityInterceptor.class);
 	}

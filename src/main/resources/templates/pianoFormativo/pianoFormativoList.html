@@ -63,7 +63,10 @@
 																<i class="fa fa-file-text"></i>
 																<a id="importEventi_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/15.dichiarazione_esclusione_del_conflitto_di%20interessi_per_oggetto_sociale.pdf"></a>
 															</div>
-															<th:block th:include="fragments/allegati :: allegati(pianoFormativoWrapper, false, importEventiDaCsvFile, null, null, null, false, null, false)" ></th:block>
+															
+															<!-- <th:block th:include="fragments/allegati :: allegati(pianoFormativoWrapper, false, importEventiDaCsvFile, null, null, null, false, null, false)" ></th:block> -->
+															<th:block th:include="fragments/allegatiext :: allegatiext(pianoFormativoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_EVENTI_PIANO_FORMATIVO}', importEventiDaCsvFile, null, null, null, false, null, false)" ></th:block>
+															
 															<div class="item form-group with-margin-top">
 																<div class="col-xs-5"></div>
 																<div class="col-xs-2 text-center">

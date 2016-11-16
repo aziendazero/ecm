@@ -775,7 +775,8 @@
 										<span class="required hidden" id="brochure-obbligatoria">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, brochure, null, null, null, false, null, false)" ></th:block>
+										<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, brochure, null, null, null, false, null, false)" ></th:block> -->
+										<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_BROCHURE_EVENTO}', brochure, null, null, null, false, edit, false)" ></th:block>
 									</div>
 								</div>
 							</div>
@@ -1077,7 +1078,8 @@
 												<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
 											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block>
+												<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block> -->
+												<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE}', autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, edit, false)" ></th:block>
 											</div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAutorizzazioneMinisteroSalute')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('autocertificazioneAutorizzazioneMinisteroSalute')}__}"></div>
 										</div>
@@ -1095,7 +1097,8 @@
 												<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
 											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-												<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block>
+												<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block> -->
+												<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA}', autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, edit, false)" ></th:block>
 											</div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia')}__}"></div>
 										</div>
@@ -1139,7 +1142,8 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-											<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, contrattiAccordiConvenzioni, null, null, null, true, null, false)" ></th:block>
+											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, contrattiAccordiConvenzioni, null, null, null, true, null, false)" ></th:block> -->
+											<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTI_ACCORDI_CONVENZIONI}', contrattiAccordiConvenzioni, null, null, null, true, edit, false)" ></th:block>
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'contrattiAccordiConvenzioni')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('contrattiAccordiConvenzioni')}__}"></div>
 									</div>
@@ -1157,7 +1161,8 @@
 											<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-											<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block>
+											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block> -->
+											<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_FINANZIAMENTI}', autocertificazioneAssenzaFinanziamenti, null, null, null, true, edit, false)" ></th:block>
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAssenzaFinanziamenti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('autocertificazioneAssenzaFinanziamenti')}__}"></div>
 									</div>
@@ -1221,7 +1226,8 @@
 										<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
 									</div>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block>
+										<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block> -->
+										<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, false, edit, false)" ></th:block>
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'dichiarazioneAssenzaConflittoInteresse')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('dichiarazioneAssenzaConflittoInteresse')}__}"></div>
 								</div>
