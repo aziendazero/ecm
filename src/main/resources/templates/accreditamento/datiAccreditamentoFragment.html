@@ -492,7 +492,8 @@
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- ALLEGATO 1 (ESTRATTO DEL BILANCIO COMPLESSIVO) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${!showOnly ? 'estrattoBilancioComplessivo' : null}, null, ${editabile ? #messages.msg('label.required_fatturato') : null}, true, ${mode}, false)" ></th:block>
+						<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${!showOnly ? 'estrattoBilancioComplessivo' : null}, null, ${editabile ? #messages.msg('label.required_fatturato') : null}, true, ${mode}, false)" ></th:block> -->
+						<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ESTRATTO_BILANCIO_COMPLESSIVO}', estrattoBilancioComplessivo, ${!showOnly ? 'estrattoBilancioComplessivo' : null}, null, ${editabile ? #messages.msg('label.required_fatturato') : null}, true, ${mode}, false)" ></th:block>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
@@ -604,7 +605,8 @@
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- ALLEGATO 2 (ETRATTO BILANCIO RELATIVO FORMAZIONE + BUDGET PREVISIONALE) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${!showOnly ? 'estrattoBilancioFormazione' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${!showOnly ? 'estrattoBilancioFormazione' : null}, null, null, true, ${mode}, true)" ></th:block> -->
+						<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ESTRATTO_BILANCIO_FORMAZIONE}', estrattoBilancioFormazione, ${!showOnly ? 'estrattoBilancioFormazione' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
@@ -692,12 +694,14 @@
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- ALLEGATO 3 (ORGANIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${!showOnly ? 'organigramma' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${!showOnly ? 'organigramma' : null}, null, null, true, ${mode}, true)" ></th:block> -->
+						<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ORGANIGRAMMA}', organigramma,  ${!showOnly ? 'organigramma' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 						<!-- ALLEGATO 4 (FUNZIONIGRAMMA) -->
-						<th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${!showOnly ? 'funzionigramma' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${!showOnly ? 'funzionigramma' : null}, null, null, true, ${mode}, true)" ></th:block> -->
+						<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_FUNZIONIGRAMMA}', funzionigramma,  ${!showOnly ? 'funzionigramma' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<input id="submitButton" type="submit" style="display: none;" />
 

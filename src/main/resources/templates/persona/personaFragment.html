@@ -519,7 +519,8 @@
 						<!--   ALLEGATO 1 (ATTO DI NOMINA)   -->
 						<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}">
 							<div th:if="${editabile}" class="divider-dashed"></div>
-							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, attoNomina, ${showOnly ? null : 'attoNomina'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)" ></th:block>
+							<!-- <th:block th:include="fragments/allegati :: allegati(personaWrapper, true, attoNomina, ${showOnly ? null : 'attoNomina'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)" ></th:block> -->
+							<th:block th:include="fragments/allegatiext :: allegatiext(personaWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ATTO_NOMINA}', attoNomina, ${showOnly ? null : 'attoNomina'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)" ></th:block>
 						</div>
 
 						<div th:if="${valutabile and !personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
@@ -527,14 +528,16 @@
 						<!--   ALLEGATO 2 (DELEGA)   -->
 						<div th:if="${personaWrapper.persona.delegatoLegaleRappresentante}">
 							<div th:if="${editabile}" class="divider-dashed"></div>
-							<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, delega, ${showOnly ? null : 'delega'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block>
+							<!-- <th:block th:include="fragments/allegati :: allegati(personaWrapper, true, delega, ${showOnly ? null : 'delega'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block> -->
+							<th:block th:include="fragments/allegatiext :: allegatiext(personaWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DELEGA}', delega, ${showOnly ? null : 'delega'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block>
 						</div>
 
 						<div th:if="${valutabile and personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
 
 						<!--   ALLEGATO 3 (CURRICULUM VITAE)   -->
 						<div th:if="${editabile}" class="divider-dashed"></div>
-						<th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${showOnly ? null : 'cv'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block>
+						<!-- <th:block th:include="fragments/allegati :: allegati(personaWrapper, true, cv, ${showOnly ? null : 'cv'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block> -->
+						<th:block th:include="fragments/allegatiext :: allegatiext(personaWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}', cv, ${showOnly ? null : 'cv'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)"></th:block>
 
 						<div th:if="${valutabile and personaWrapper.persona.delegatoLegaleRappresentante}" class="divider"></div>
 

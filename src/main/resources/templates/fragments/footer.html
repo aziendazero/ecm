@@ -99,6 +99,11 @@
 			src="../static/spinJS/spin.js"
 			th:src="@{/spinJS/spin.js}"></script>
 			
+		<!-- gestione allegati e firmaWeb -->	
+		<th:block 
+			th:include="fragments/common-allegatiext :: common">
+		</th:block>
+			
 		<!-- initialize the validator.js  -->
 		<script th:inline="javascript">
 	        /*<![CDATA[*/

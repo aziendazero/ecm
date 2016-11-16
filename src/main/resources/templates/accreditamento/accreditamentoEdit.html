@@ -96,10 +96,12 @@
 							novalidate="novalidate">
 
 							<th:block th:if="${accreditamentoWrapper.accreditamento.isIntegrazione()}">
-								<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, noteOsservazioniIntegrazione, null, null, null, false, null, false)" ></th:block>
+								<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, noteOsservazioniIntegrazione, null, null, null, false, null, false)" ></th:block> -->
+								<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_NOTE_OSSERVAZIONI_INTEGRAZIONE}', noteOsservazioniIntegrazione, null, null, null, false, null, false)" ></th:block>
 							</th:block>
 							<th:block th:if="${accreditamentoWrapper.accreditamento.isPreavvisoRigetto()}">
-								<th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, noteOsservazioniPreavvisoRigetto, null, null, null, false, null, false)" ></th:block>
+								<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoWrapper, false, noteOsservazioniPreavvisoRigetto, null, null, null, false, null, false)" ></th:block> -->
+								<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_NOTE_OSSERVAZIONI_PREAVVISO_RIGETTO}', noteOsservazioniPreavvisoRigetto, null, null, null, false, null, false)" ></th:block>
 							</th:block>
 
 							<input id="submitButtonModal" type="submit" style="display: none;" />

@@ -61,7 +61,8 @@
 											<div th:if="${#fields.hasErrors('comunicazioneWrapper.risposta.messaggio')}" class="alert" th:errors="${comunicazioneWrapper.risposta.messaggio}"></div>
 										</div>
 
-										<th:block th:include="fragments/allegati :: allegati(comunicazioneWrapper, false, allegatoRisposta, null, null, null, false, null, false)" ></th:block>
+										<!-- <th:block th:include="fragments/allegati :: allegati(comunicazioneWrapper, false, allegatoRisposta, null, null, null, false, null, false)" ></th:block> -->
+										<th:block th:include="fragments/allegatiext :: allegatiext(comunicazioneWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ALLEGATO_RISPOSTA}', allegatoRisposta, null, null, null, false, null, false)" ></th:block>
 									</div>
 
 									<input id="submitButtonModal" type="submit" style="display: none;" />
