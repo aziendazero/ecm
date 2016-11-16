@@ -51,7 +51,8 @@ public class ProviderServiceImpl implements ProviderService {
 			//Provider provider = providerRepository.getProviderByAccountId(currentUser.getAccount().getId());
 			if(currentUser.getAccount().getProvider() != null){
 				LOGGER.info("Found Provider (" + currentUser.getAccount().getProvider().getId() +")");
-				return currentUser.getAccount().getProvider();
+				return providerRepository.findOne(currentUser.getAccount().getProvider().getId());
+				//return currentUser.getAccount().getProvider();
 			}
 			LOGGER.info("Provider not found");
 		}else{
