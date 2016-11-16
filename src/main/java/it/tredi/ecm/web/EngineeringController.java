@@ -31,12 +31,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.EngineeringService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.bean.EngineeringProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EngineeringWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -52,20 +55,16 @@ public class EngineeringController {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(EngineeringController.class);
 	
-	private static final String FIRMA_URL = "http://svilcomune.ve.eng.it/FirmaWeb/servlet/AdapterHTTP";
+	//private static final String FIRMA_URL = "http://svilcomune.ve.eng.it/FirmaWeb/servlet/AdapterHTTP";
+	//private static final String REFERER = "http://192.168.44.171:8080/ecm/*";
 	
-//	private static final String FIRMA_URL = "https://servizi.collaudo.regione.veneto.it/FirmaWeb/servlet/AdapterHTTP";
-	
-	private static final String REFERER = "http://192.168.44.171:8080/ecm/*";
-	
-	private static final String ID_CLASSIFICAZIONE = "60.00.05.00.00-C.120.21.1.B4";
-
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
 	@Autowired private EngineeringValidator engineeringValidator;
 	
 	@Autowired private EngineeringService engineeringService;
+	@Autowired private EngineeringProperties engineeringProperties;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -84,7 +83,9 @@ public class EngineeringController {
 	@RequestMapping("/engineering/test/firma")
 	public String engineeringTestFirma(Model model, RedirectAttributes redirectAttrs){
 		try {
-			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(providerService.getProvider()));
+			Provider p = providerService.getProvider();
+			p.getFiles();
+			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(p));
 			return "engineering/firmaTest";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore redirect firma"),ex);
@@ -94,22 +95,25 @@ public class EngineeringController {
 	}
 	
 	/*** TEST FIRMA ***/
-	@RequestMapping("/engineering/test/firma/invio")
-	public String engineeringTestFirmaInvio(@ModelAttribute("engineeringWrapper") 
-			EngineeringWrapper wrapper, HttpServletRequest request, BindingResult result,
-			RedirectAttributes redirectAttrs, Model model) {
+	@RequestMapping(value = "/engineering/firma/invio", method = RequestMethod.GET)
+	public String engineeringTestFirmaInvio(HttpServletRequest request, RedirectAttributes redirectAttrs, Model model) {
 
 		try {
-			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(providerService.getProvider()));
+			String idString = request.getParameter("idFile");
+			if (!StringUtils.hasText(idString)) {
+				throw new RuntimeException("ID file non trovato!");
+			}
+			
+			Long id = Long.parseLong(idString);
 			
 			String xmlMetadataToSign = "<archiviazione_metadati></archiviazione_metadati>";
 			model.addAttribute("xmlMetadataToSign", StringEscapeUtils.escapeXml(xmlMetadataToSign));
-			model.addAttribute("xmlDocumentToSign", prepareDocumentToSign(wrapper.getFileDaFirmare().getId()));
-			model.addAttribute("firmaWebUrl", FIRMA_URL);
-			model.addAttribute("referer", REFERER);
-			model.addAttribute("informazioni", wrapper.getFileDaFirmare().getId()); // Sfrutto per recuperare l'ID del file
+			model.addAttribute("xmlDocumentToSign", prepareDocumentToSign(id));
+			model.addAttribute("firmaWebUrl", engineeringProperties.getFirmaUrl());
+			model.addAttribute("referer", engineeringProperties.getFirmaReferer());
+			model.addAttribute("informazioni", id); // Sfrutto per recuperare l'ID del file
 
-			return "engineering/firmaSubmitForm";
+			return "engineering/firmaFrame";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore redirect firma"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -118,16 +122,19 @@ public class EngineeringController {
 	}
 	
 	/*** TEST FIRMA ***/
-	@RequestMapping(value = "/engineering/test/firma/back", method = RequestMethod.POST)
+	@RequestMapping(value = "/engineering/firma/back", method = RequestMethod.POST)
 	public String engineeringTestFirmaBack(Model model, HttpServletRequest request, RedirectAttributes redirectAttrs) {
 		try {
 			
 			String documentsToSign = request.getParameter("documentsToSign");
 			LOGGER.debug("Ricevuta da firmaWeb:\n" + documentsToSign);
-			engineeringService.saveFileFirmato(documentsToSign);
-
+			File file = engineeringService.saveFileFirmato(documentsToSign);
+			
+			ObjectMapper mapper = new ObjectMapper();
+			model.addAttribute("jsonFile", mapper.writeValueAsString(file));
+			
 			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(providerService.getProvider()));
-			return "engineering/firmaTest";
+			return "engineering/firmaBack";
 
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
@@ -158,7 +165,7 @@ public class EngineeringController {
 		f.setSOURCE(source);
 
 		DOCUMENT doc = new DOCUMENT();
-		doc.setIdClassificazione(ID_CLASSIFICAZIONE); 
+		doc.setIdClassificazione(engineeringProperties.getFirmaIdclassificazione()); 
 		doc.getFILE().add(f);
 
 		DOCUMENTS docs = new DOCUMENTS();
@@ -302,13 +309,14 @@ public class EngineeringController {
 
 	private EngineeringWrapper prepareEngineeringWrapper(Provider provider) {
 		EngineeringWrapper wrapper = new EngineeringWrapper();
-		wrapper.setProvider(provider);
-
+	
 		Set<File> files = provider.getFiles();
 		for(File file : files){
 			if(file.isFILEDAFIRMARE())
 				wrapper.setFileDaFirmare(file);
 		}
+
+		wrapper.setProvider(provider);
 
 		return wrapper;
 	}

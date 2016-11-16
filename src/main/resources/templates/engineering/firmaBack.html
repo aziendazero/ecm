@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/templatePublic">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2>Elaborazione completata</h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<p>&Egrave; possibile chiudere la finestra.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<th:block>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			$(document).ready(function () {
+				window.parent.setFileExtForSignatureResponse($.parseJSON([[${jsonFile}]]));
+			});
+		/*]]>*/
+		</script>
+		</th:block>	
+	</div>
+</body>
+</html>

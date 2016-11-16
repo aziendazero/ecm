@@ -10,7 +10,6 @@ import java.net.Authenticator;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
@@ -18,7 +17,6 @@ import java.util.Set;
 
 import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -37,18 +35,13 @@ import javax.xml.ws.Holder;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.engine.jdbc.ReaderInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
@@ -57,15 +50,11 @@ import it.tredi.ecm.dao.entity.PagPagatiLog;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
-import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.EventoRepository;
-import it.tredi.ecm.dao.repository.FileRepository;
 import it.tredi.ecm.dao.repository.PagDovutiLogRepository;
 import it.tredi.ecm.dao.repository.PagPagatiLogRepository;
-import it.tredi.ecm.dao.repository.PagamentoRepository;
 import it.tredi.ecm.service.bean.EngineeringProperties;
 import it.tredi.ecm.utils.HttpAuthenticateProxy;
-import it.tredi.ecm.utils.Utils;
 import it.veneto.regione.pagamenti.ente.FaultBean;
 import it.veneto.regione.pagamenti.ente.PaaSILInviaDovuti;
 import it.veneto.regione.pagamenti.ente.PaaSILInviaDovutiRisposta;
@@ -84,7 +73,7 @@ import it.veneto.regione.schemas._2012.pagamenti.ente.StTipoIdentificativoUnivoc
 @Service
 public class EngineeringServiceImpl implements EngineeringService {
 
-	@Autowired private FileRepository fileRepository;
+	@Autowired private FileService fileService;
 	@Autowired private PagamentoService pagamentoService;
 	@Autowired private EventoRepository eventoRepository;
 	@Autowired private PagDovutiLogRepository invioDovutiRepository;
@@ -272,17 +261,8 @@ public class EngineeringServiceImpl implements EngineeringService {
 	}
 
 	private String prepareDatiPagamentoPerQuotaAnnuale(Pagamento p, QuotaAnnuale quotaAnnuale, String causale, String backURL) throws Exception{
-		Provider soggetto = quotaAnnuale.getProvider();
-		
-		// i provider sono Ragioni Sociali, valorizzo i dati obbligatori.
-		//		p.setAnagrafica(soggetto.getDenominazioneLegale());
-		//		p.setPartitaIva(soggetto.getPartitaIva());
-		//		p.setEmail(soggetto.getEmailStruttura());
-		//		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
-		//		p.setCausale(causale);
 		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
 
-		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.
 		String iud = StringUtils.rightPad(engineeringProperties.getServizio() + fmt.get().format(new Date()), 35, "0");
 		LOGGER.info("IUD: " + iud);
 
@@ -298,7 +278,6 @@ public class EngineeringServiceImpl implements EngineeringService {
 		PaaSILInviaDovutiRisposta response = port.get().paaSILInviaDovuti(dovuti, header);
 
 		p.setIdSession(response.getIdSession());		
-		//soggetto.setPagInCorso(true);
 		quotaAnnuale.setPagInCorso(true);
 
 		PagDovutiLog log = new PagDovutiLog();
@@ -311,12 +290,10 @@ public class EngineeringServiceImpl implements EngineeringService {
 			log.setFaultCode(response.getFault().getFaultCode());
 			log.setFaultString(response.getFault().getFaultString());
 			log.setFaultDescription(response.getFault().getDescription());
-			//soggetto.setPagInCorso(false);
 			quotaAnnuale.setPagInCorso(true);
 		}
 
 		pagamentoService.save(p);
-		//providerService.save(soggetto);
 		quotaAnnualeService.save(quotaAnnuale);
 		invioDovutiRepository.save(log);
 		return response.getUrl();
@@ -570,10 +547,11 @@ public class EngineeringServiceImpl implements EngineeringService {
 		}
 	}
 
-	public void saveFileFirmato(String xml) throws Exception {
-
+	public File saveFileFirmato(String xml) throws Exception {
+		LOGGER.debug("Salvataggio file firmato");
+		
 		xml = java.net.URLDecoder.decode(xml, "UTF-8");
-		System.out.println(xml);
+		LOGGER.debug(xml);
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
@@ -584,7 +562,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		String name = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/@name").evaluate(doc);  
 		String idString = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/INFORMAZIONI").evaluate(doc);  
 
-		File file = fileRepository.findOne(Long.parseLong(idString));
+		File file = fileService.getFile(Long.parseLong(idString));
 
 		InputStream is = null;
 		URL url = new URL(urlSignedBytes);
@@ -593,12 +571,14 @@ public class EngineeringServiceImpl implements EngineeringService {
 			byte[] data = IOUtils.toByteArray(is);
 			file.setNomeFile(name + ".p7m");
 			file.setData(data);
-			fileRepository.save(file);
+			fileService.save(file);
 
 		} finally {
 			if (is != null) { is.close(); }
 		}
 
+		return file;
+		
 	}
 
 }

@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.File;
 
 public interface EngineeringService {
 	
@@ -44,5 +45,5 @@ public interface EngineeringService {
 	public void azzeraPagamenti(Long idProvider) throws Exception;
 
 	
-	public void saveFileFirmato(String xml) throws Exception;
+	public File saveFileFirmato(String xml) throws Exception;
 }

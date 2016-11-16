@@ -33,7 +33,7 @@
 		function submitFirma(propertyName) {
 			//var propertyName = $(element).parent().parent().find('input[type=file]').attr("propertyName");
 			console.log('propertyName: ' + propertyName);
-			$("#firmaFrame").attr("src", [[@{|/engineering/test/firma/invio|}]] + '?idFile=' + $("#"+propertyName+"\\.id").val());
+			$("#firmaFrame").attr("src", [[@{|/engineering/firma/invio|}]] + '?idFile=' + $("#"+propertyName+"\\.id").val());
 		}
 
 		function submitFileExt(element){
