@@ -20,7 +20,7 @@ import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.RoleRepository;
 
 @Component
-@org.springframework.context.annotation.Profile("prod")
+@org.springframework.context.annotation.Profile({"dev","prod"})
 public class AccountProdLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(AccountProdLoader.class);
 	
@@ -117,6 +117,22 @@ public class AccountProdLoader implements ApplicationListener<ContextRefreshedEv
 			role_createUser.setDescription("UTENTI (CREAZIONE)");
 			roleRepository.save(role_createUser);
 			
+			//PROVIDER_USER_SHOW, PROVIDER_USER_EDIT, PROVIDER_USER_CREATE,
+			Role role_providerUserShow = new Role();
+			role_providerUserShow.setName(RoleEnum.PROVIDER_USER_SHOW.name());
+			role_providerUserShow.setDescription("PROVIDER (LETTURA UTENTI DEL PROVIDER)");
+			roleRepository.save(role_providerUserShow);
+
+			Role role_providerUserEdit = new Role();
+			role_providerUserEdit.setName(RoleEnum.PROVIDER_USER_EDIT.name());
+			role_providerUserEdit.setDescription("PROVIDER (MODIFICA UTENTI DEL PROVIDER)");
+			roleRepository.save(role_providerUserEdit);
+
+			Role role_providerUserCreate = new Role();
+			role_providerUserCreate.setName(RoleEnum.PROVIDER_USER_CREATE.name());
+			role_providerUserCreate.setDescription("PROVIDER (CREAZIONE UTENTI DEL PROVIDER)");
+			roleRepository.save(role_providerUserCreate);
+			
 			
 			/***************************
 			****	INIT PROFILES	****
@@ -130,6 +146,14 @@ public class AccountProdLoader implements ApplicationListener<ContextRefreshedEv
 			profile_provider.getRoles().add(role_readAccreditamento);
 			profile_provider.getRoles().add(role_writeAccreditamento);
 			profileRepository.save(profile_provider);
+			
+			/* PROFILE PROVIDERUSERADMIN */
+			Profile profile_providerUserAdmin = new Profile();
+			profile_providerUserAdmin.setProfileEnum(ProfileEnum.PROVIDERUSERADMIN);
+			profile_providerUserAdmin.getRoles().add(role_providerUserCreate);
+			profile_providerUserAdmin.getRoles().add(role_providerUserEdit);
+			profile_providerUserAdmin.getRoles().add(role_providerUserShow);
+			profileRepository.save(profile_providerUserAdmin);
 			
 			/* PROFILE SEGRETERIA */
 			Profile profile_admin = new Profile();
@@ -173,62 +197,72 @@ public class AccountProdLoader implements ApplicationListener<ContextRefreshedEv
 
 			profileRepository.save(profile_osservatore);
 			
+			/* PROFILE VISUALIZZATORE */
+			Profile profile_visualizzatore = new Profile();
+			profile_visualizzatore.setProfileEnum(ProfileEnum.VISUALIZZATORE);
+			profileRepository.save(profile_visualizzatore);
+			
+			/* PROFILE OSSERVATORE */
+			Profile profile_comp_osservatore = new Profile();
+			profile_comp_osservatore.setProfileEnum(ProfileEnum.COMPONENTE_OSSERVATORE);
+			profileRepository.save(profile_comp_osservatore);
+			
 			
 			/***************************
 			****	INIT UTENTI ECM	****
 			****************************/
 			
-			Account admin = new Account();
-			admin.setUsername("admin");
-			admin.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
-			//admin.setPassword("admin");
-			admin.setEmail("segreteria@ecm.it");
-			admin.setChangePassword(false);
-			admin.setEnabled(true);
-			admin.setExpiresDate(null);
-			admin.setLocked(false);
-			admin.getProfiles().add(profile_admin);
-			admin.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
-			accountRepository.save(admin);
-
-			Account referee1 = new Account();
-			referee1.setUsername("referee1");
-			referee1.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
-			//referee1.setPassword("admin");
-			referee1.setEmail("referee1@ecm.it");
-			referee1.setChangePassword(false);
-			referee1.setEnabled(true);
-			referee1.setExpiresDate(null);
-			referee1.setLocked(false);
-			referee1.getProfiles().add(profile_referee);
-			referee1.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
-			accountRepository.save(referee1);
-			
-			Account referee2 = new Account();
-			referee2.setUsername("referee2");
-			referee2.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
-			//referee2.setPassword("admin");
-			referee2.setEmail("referee2@ecm.it");
-			referee2.setChangePassword(false);
-			referee2.setEnabled(true);
-			referee2.setExpiresDate(null);
-			referee2.setLocked(false);
-			referee2.getProfiles().add(profile_referee);
-			referee2.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
-			accountRepository.save(referee2);
-			
-			Account referee3 = new Account();
-			referee3.setUsername("referee3");
-			referee3.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
-			//referee3.setPassword("admin");
-			referee3.setEmail("referee3@ecm.it");
-			referee3.setChangePassword(false);
-			referee3.setEnabled(true);
-			referee3.setExpiresDate(null);
-			referee3.setLocked(false);
-			referee3.getProfiles().add(profile_referee);
-			referee3.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
-			accountRepository.save(referee3);
+//			Account admin = new Account();
+//			admin.setUsername("admin");
+//			admin.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+//			//admin.setPassword("admin");
+//			admin.setEmail("segreteria@ecm.it");
+//			admin.setChangePassword(false);
+//			admin.setEnabled(true);
+//			admin.setExpiresDate(null);
+//			admin.setLocked(false);
+//			admin.getProfiles().add(profile_admin);
+//			admin.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+//			accountRepository.save(admin);
+//
+//			Account referee1 = new Account();
+//			referee1.setUsername("referee1");
+//			referee1.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+//			//referee1.setPassword("admin");
+//			referee1.setEmail("referee1@ecm.it");
+//			referee1.setChangePassword(false);
+//			referee1.setEnabled(true);
+//			referee1.setExpiresDate(null);
+//			referee1.setLocked(false);
+//			referee1.getProfiles().add(profile_referee);
+//			referee1.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+//			accountRepository.save(referee1);
+//			
+//			Account referee2 = new Account();
+//			referee2.setUsername("referee2");
+//			referee2.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+//			//referee2.setPassword("admin");
+//			referee2.setEmail("referee2@ecm.it");
+//			referee2.setChangePassword(false);
+//			referee2.setEnabled(true);
+//			referee2.setExpiresDate(null);
+//			referee2.setLocked(false);
+//			referee2.getProfiles().add(profile_referee);
+//			referee2.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+//			accountRepository.save(referee2);
+//			
+//			Account referee3 = new Account();
+//			referee3.setUsername("referee3");
+//			referee3.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+//			//referee3.setPassword("admin");
+//			referee3.setEmail("referee3@ecm.it");
+//			referee3.setChangePassword(false);
+//			referee3.setEnabled(true);
+//			referee3.setExpiresDate(null);
+//			referee3.setLocked(false);
+//			referee3.getProfiles().add(profile_referee);
+//			referee3.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+//			accountRepository.save(referee3);
 			
 			LOGGER.info("BOOTSTRAP ECM - ACL creata");
 		}else{

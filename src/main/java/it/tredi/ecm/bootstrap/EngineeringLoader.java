@@ -33,7 +33,7 @@ import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
 
 @Component
-@org.springframework.context.annotation.Profile("dev")
+@org.springframework.context.annotation.Profile("sto")
 public class EngineeringLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 		private final static Logger LOGGER = LoggerFactory.getLogger(EngineeringLoader.class);
