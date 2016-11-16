@@ -1,10 +1,8 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +18,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.ComunicazioneRepository;
 import it.tredi.ecm.dao.repository.ComunicazioneResponseRepository;
@@ -223,5 +222,13 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	@Override
 	public Set<Comunicazione> getAllComunicazioniNonLetteByAccount(Account user) {
 		return comunicazioneRepository.findAllComunicazioneNonLetteOrderByDataCreazioneDesc(user.getId());
+	}
+
+	@Override
+	public Set<Comunicazione> getAllComunicazioniByProvider(Provider provider) {
+		Account adminProvider = accountService.getAmministratoreProviderForProvider(provider);
+		if(adminProvider != null)
+			return comunicazioneRepository.findAllComunicazioneByUser(adminProvider);
+		return null;
 	}
 }

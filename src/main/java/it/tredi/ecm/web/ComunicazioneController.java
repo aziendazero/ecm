@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
-import it.tredi.ecm.dao.entity.JsonViewModel;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.ComunicazioneService;
+import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SecurityAccessService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ComunicazioneWrapper;
@@ -42,6 +42,7 @@ public class ComunicazioneController {
 	@Autowired private ComunicazioneService comunicazioneService;
 	@Autowired private ComunicazioneValidator comunicazioneValidator;
 	@Autowired private SecurityAccessService securityAccessService;
+	@Autowired private ProviderService providerService;
 
 	@ModelAttribute("comunicazioneWrapper")
 	public ComunicazioneWrapper getComunicazioneWrapperPreRequest(@RequestParam(value="editId", required = false) Long id){
@@ -236,12 +237,32 @@ public class ComunicazioneController {
 			}
 			model.addAttribute("listaComunicazioni", listaComunicazioni);
 			model.addAttribute("tipologiaLista", tipologiaLista);
+			model.addAttribute("returnLink", "/comunicazione/dashboard");
 			return LIST;
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /comunicazione/received/list"),ex);
 			redirectAttrs.addFlashAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
 			return "redirect:/comunicazione/dashboard";
+		}
+	}
+
+//	@PreAuthorize("@securityAccessServiceImpl.canShowComunicazioniProvider(principal)") TODO
+	@RequestMapping("/provider/{providerId}/comunicazione/list")
+	public String listaComunicazioniRicevuteProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"));
+		try {
+			Provider provider = providerService.getProvider(providerId);
+			Set<Comunicazione> listaComunicazioni = comunicazioneService.getAllComunicazioniByProvider(provider);
+			model.addAttribute("listaComunicazioni", listaComunicazioni);
+			model.addAttribute("tipologiaLista", "label.comunicazioni_con_provider");
+			model.addAttribute("returnLink", "/provider/list");
+			return LIST;
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"),ex);
+			redirectAttrs.addFlashAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/list"));
+			return "redirect:/provider/list";
 		}
 	}
 

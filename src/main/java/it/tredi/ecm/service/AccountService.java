@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 
 public interface AccountService {
@@ -19,4 +20,5 @@ public interface AccountService {
 	public int countAllRefereeWithValutazioniNonDate();
 	public Set<String> getEmailByProfileEnum(ProfileEnum profileEnum);
 	public Long getProviderIdById(Long accountId);
+	public Account getAmministratoreProviderForProvider(Provider provider);
 }

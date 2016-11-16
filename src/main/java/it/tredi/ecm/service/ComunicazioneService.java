@@ -8,6 +8,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Provider;
 
 public interface ComunicazioneService {
 
@@ -32,5 +33,6 @@ public interface ComunicazioneService {
 	void chiudiComunicazioneById(Long id);
 	int countAllComunicazioniByAccountId(Long currentAccountId);
 	Set<Comunicazione> getAllComunicazioniByAccount(Account user);
+	Set<Comunicazione> getAllComunicazioniByProvider(Provider provider);
 
 }

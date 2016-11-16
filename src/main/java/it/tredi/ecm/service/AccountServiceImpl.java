@@ -19,6 +19,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Profile;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
@@ -32,7 +33,7 @@ public class AccountServiceImpl implements AccountService{
 	@Autowired private ProfileAndRoleService profileAndRoleService;
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private SpringTemplateEngine templateEngine;
-	
+
 	@Autowired
 	private WorkflowService workflowService;
 
@@ -139,7 +140,7 @@ public class AccountServiceImpl implements AccountService{
 	     context.setVariable("username", user.getUsername());
 	     context.setVariable("password", firstPassword);
 	     String message = templateEngine.process("creazioneAccount", context);
-	     
+
 	     emailService.send(ecmProperties.getEmailSegreteriaEcm(), user.getEmail(), "Creazione Account ECM", message, true);
 	}
 
@@ -149,7 +150,7 @@ public class AccountServiceImpl implements AccountService{
 	     context.setVariable("username", user.getUsername());
 	     context.setVariable("password", password);
 	     String message = templateEngine.process("resetPassword", context);
-	    
+
 	     emailService.send(ecmProperties.getEmailSegreteriaEcm(), user.getEmail(), "Cambio Password Account ECM", message, true);
 	}
 
@@ -159,7 +160,7 @@ public class AccountServiceImpl implements AccountService{
 	     context.setVariable("username", user.getUsername());
 	     context.setVariable("password", password);
 	     String message = templateEngine.process("cambioPassword", context);
-	    
+
 	     emailService.send(ecmProperties.getEmailSegreteriaEcm(), user.getEmail(), "Cambio Password Account ECM", message, true);
 	}
 
@@ -167,12 +168,12 @@ public class AccountServiceImpl implements AccountService{
 	public int countAllRefereeWithValutazioniNonDate() {
 		return accountRepository.countAllRefereeWithValutazioniNonDate();
 	}
-	
+
 	@Override
 	public Set<String> getEmailByProfileEnum(ProfileEnum profileEnum) {
 		LOGGER.debug("Recupero indirizzi email per : " + profileEnum);
 		Set<String> emailList = new HashSet<String>();
-		
+
 		Optional<Profile> profile = profileAndRoleService.getProfileByProfileEnum(profileEnum);
 		if(profile.isPresent()){
 			Set<Account> commissione = accountRepository.findAllByProfiles(profile.get());
@@ -181,14 +182,23 @@ public class AccountServiceImpl implements AccountService{
 		}
 		return emailList;
 	}
-	
+
 	@Override
 	public Long getProviderIdById(Long accountId) {
 		return accountRepository.getProviderIdById(accountId).orElse(null);
 	}
-	
+
 	@Override
 	public Set<Account> findAllByProviderId(Long providerId) {
 		return accountRepository.findAllByProviderId(providerId);
+	}
+
+	@Override
+	public Account getAmministratoreProviderForProvider(Provider provider) {
+		for(Account a : provider.getAccounts()) {
+			if(a.isProviderUserAdmin())
+				return a;
+		}
+		return null;
 	}
 }
