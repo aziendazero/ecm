@@ -35,9 +35,9 @@
 					<div th:if="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 				</div>
 				<!-- pulsante per aggiungere firma -->
-				<th:block th:if="${withFirma}">
+				<th:block th:if="${withFirma and editabile}">
 					<div class="col-xs-1">
-						<button type="button" onclick="submitFirma()" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+						<button type="button" th:onclick="|submitFirma('__${propertyName}__');|" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}" data-toggle="modal" data-target="#modalFrame"><i class="fa fa-pencil"></i></button>
 					</div>
 				</th:block>
 			</th:block>
@@ -80,7 +80,9 @@
 	</th:block>
 
 	<!-- wrapper senza idEditabili -->
-	<th:block th:unless="${__withIdEditabili__}">
+	<th:block th:unless="${__withIdEditabili__}" th:with="editabile=${mode == 'edit'},
+			valutabile=${mode == 'validate'},
+			showOnly=${mode == 'show'}">
 		<div th:id="__${propertyName}__-parent" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')} ? 'bad'">
 
 			<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.id}" />
@@ -98,75 +100,14 @@
 				<div th:if="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 			</div>
 			<!-- pulsante per aggiungere firma -->
-			<th:block th:if="${withFirma}">
+			<th:block th:if="${withFirma and editabile}">
 				<div class="col-xs-1">
-					<button type="button" onclick="submitFirma()" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+					<button type="button" th:onclick="|submitFirma('__${propertyName}__');|" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}" data-toggle="modal" data-target="#modalFrame"><i class="fa fa-pencil"></i></button>
 				</div>
 			</th:block>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${propertyName}__}"></div>
 		</div>
 	</th:block>
-	<script th:inline="javascript">
-	/*<![CDATA[*/
-		function setAllegatoExt(idInput) {
-			$(idInput).click();
-		}
-
-		function submitFirma() {
-				var oMyForm = $('#formFirma').attr('action', [[@{|/engineering/test/firma/invio|}]]);
-				oMyForm.submit();
-			}
-
-		function submitFileExt(element){
-			var tipoAllegato = $(element).attr("typefile");
-			var propertyName = $(element).attr("propertyName");
-			var fileId = $("#"+propertyName+"\\.id").attr('value');
-
-			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper?.tempPersonaEvento?.anagrafica  and __${wrapper}__ != providerForm  and __${wrapper}__ != relazioneAnnualeWrapper} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
-
-	 		var oMyForm = new FormData();
-            oMyForm.append("multiPartFile", $(element)[0].files[0]);
-
-            if(stato != 'INTEGRAZIONE')
-            	oMyForm.append("fileId", (!fileId) ? 0 : fileId );
-            else
-            	oMyForm.append("fileId", 0);
-            oMyForm.append("tipo",tipoAllegato);
-           	oMyForm.append([[${_csrf.parameterName}]],[[${_csrf.token}]]);
-
-            console.log('propertyName: ' + propertyName + ' - tipoAllegato: ' + tipoAllegato + ' - fileId: ' + fileId + ' - multiPartFile ' + $(element)[0].files[0].name);
-
-           	$.ajax({
-                  	url : [[@{/file/upload}]],
-                  	data : oMyForm,
-                  	type : "POST",
-                  	enctype: 'multipart/form-data',
-                  	processData: false,
-                  	contentType:false,
-                  	success : function(result) {
-                  		setFileExt(result, propertyName);
-                  	},
-                  	error : function(result){
-                  		sendNotifyStatic([[#{message.errore}]], [[#{message.errore_fileupload}]], "error");
-                  	}
-              	});
-		}
-
-		function setFileExt(response, propertyName){
-				if(response.id != null && response.id != 0) {
-					var prefixUrl = [[@{/file/}]];
-					$("#"+propertyName+"_label").text(response.nomeFile);
-					$("#"+propertyName+"_label").attr('href',prefixUrl + response.id);
-					$("#"+propertyName+"\\.id").attr('value', response.id);
-					$("#"+propertyName+"\\.nomeFile").attr('value', response.nomeFile);
-				}
-				else {
-					//$("#"+inputName+"_label").text([[#{label.nessun_file_selezionato}]]);
-					sendNotifyStatic([[#{message.errore}]], response, "error");
-				}
-		}
-		/*]]>*/
-	</script>
 </th:block>
 
 </body>

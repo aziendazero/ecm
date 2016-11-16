@@ -1,0 +1,108 @@
+<!--
+	fragment degli allegati
+	<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}', brochure, null, null, null, false, null, false)" ></th:block>
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+</head>
+<body>
+<th:block th:fragment="common">
+	<!-- Modale che contiene iframe per gestire il processo di frimaWeb -->
+	<div id="modalFrame" class="modal" tabindex="-1" role="dialog" >
+		<div role="document" style="margin: 30px auto; width: 520px;">
+			Modal content 
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<div class="modal-body">
+					<iframe id="firmaFrame" src="" class="frame_invisible"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Funzioni JS per da includere una volta per tutti i file -->
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		function setAllegatoExt(idInput) {
+			$(idInput).click();
+		}
+
+		function submitFirma(propertyName) {
+			//var propertyName = $(element).parent().parent().find('input[type=file]').attr("propertyName");
+			console.log('propertyName: ' + propertyName);
+			$("#firmaFrame").attr("src", [[@{|/engineering/test/firma/invio|}]] + '?idFile=' + $("#"+propertyName+"\\.id").val());
+		}
+
+		function submitFileExt(element){
+			var tipoAllegato = $(element).attr("typefile");
+			var propertyName = $(element).attr("propertyName");
+			var fileId = $("#"+propertyName+"\\.id").attr('value');
+
+			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper?.tempPersonaEvento?.anagrafica  and __${wrapper}__ != providerForm  and __${wrapper}__ != relazioneAnnualeWrapper and __${wrapper}__ != engineeringWrapper} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
+
+	 		var oMyForm = new FormData();
+            oMyForm.append("multiPartFile", $(element)[0].files[0]);
+
+            if(stato != 'INTEGRAZIONE')
+            	oMyForm.append("fileId", (!fileId) ? 0 : fileId );
+            else
+            	oMyForm.append("fileId", 0);
+            oMyForm.append("tipo",tipoAllegato);
+           	oMyForm.append([[${_csrf.parameterName}]],[[${_csrf.token}]]);
+
+            console.log('propertyName: ' + propertyName + ' - tipoAllegato: ' + tipoAllegato + ' - fileId: ' + fileId + ' - multiPartFile ' + $(element)[0].files[0].name);
+
+           	$.ajax({
+                  	url : [[@{/file/upload}]],
+                  	data : oMyForm,
+                  	type : "POST",
+                  	enctype: 'multipart/form-data',
+                  	processData: false,
+                  	contentType:false,
+                  	success : function(result) {
+                  		setFileExt(result, propertyName);
+                  	},
+                  	error : function(result){
+                  		sendNotifyStatic([[#{message.errore}]], [[#{message.errore_fileupload}]], "error");
+                  	}
+              	});
+		}
+
+		function setFileExt(response, propertyName){
+				if(response.id != null && response.id != 0) {
+					var prefixUrl = [[@{/file/}]];
+					$("#"+propertyName+"_label").text(response.nomeFile);
+					$("#"+propertyName+"_label").attr('href',prefixUrl + response.id);
+					$("#"+propertyName+"\\.id").attr('value', response.id);
+					$("#"+propertyName+"\\.nomeFile").attr('value', response.nomeFile);
+				}
+				else {
+					//$("#"+inputName+"_label").text([[#{label.nessun_file_selezionato}]]);
+					sendNotifyStatic([[#{message.errore}]], response, "error");
+				}
+		}
+		
+		function setFileExtForSignatureResponse(response){
+			if(response.id != null && response.id != 0) {
+				var prefixUrl = [[@{/file/}]];
+				var propertyName = $('body').find('input[type=file][typefile=' + response.tipo + ']').attr('propertyname');
+				console.log(propertyName);
+				$("#"+propertyName+"_label").text(response.nomeFile);
+				$("#"+propertyName+"_label").attr('href',prefixUrl + response.id);
+				$("#"+propertyName+"\\.id").attr('value', response.id);
+				$("#"+propertyName+"\\.nomeFile").attr('value', response.nomeFile);
+			}
+			else {
+				//$("#"+inputName+"_label").text([[#{label.nessun_file_selezionato}]]);
+				sendNotifyStatic([[#{message.errore}]], response, "error");
+			}
+		}
+		/*]]>*/
+	</script>
+</th:block>
+
+</body>
+</html>
