@@ -1,5 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.Embeddable;
 
@@ -11,18 +12,18 @@ import lombok.Setter;
 @Setter
 public class DatiEconomici {
 	private int fatturatoComplessivoAnnoUno = 0;
-	private Double fatturatoComplessivoValoreUno;
+	private BigDecimal fatturatoComplessivoValoreUno;
 	private int fatturatoComplessivoAnnoDue= 0;
-	private Double fatturatoComplessivoValoreDue;
+	private BigDecimal fatturatoComplessivoValoreDue;
 	private int fatturatoComplessivoAnnoTre= 0;
-	private Double fatturatoComplessivoValoreTre;
+	private BigDecimal fatturatoComplessivoValoreTre;
 
 	private int fatturatoFormazioneAnnoUno= 0;
-	private Double fatturatoFormazioneValoreUno;
+	private BigDecimal fatturatoFormazioneValoreUno;
 	private int fatturatoFormazioneAnnoDue= 0;
-	private Double fatturatoFormazioneValoreDue;
+	private BigDecimal fatturatoFormazioneValoreDue;
 	private int fatturatoFormazioneAnnoTre= 0;
-	private Double fatturatoFormazioneValoreTre;
+	private BigDecimal fatturatoFormazioneValoreTre;
 
 	public boolean hasFatturatoComplessivo(){
 		if(fatturatoComplessivoValoreUno == null &&

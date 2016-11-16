@@ -109,7 +109,7 @@
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.procedureFormative') : ''}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="procedure_formative_checkbox">
-								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.procedure_formative}">Procedure formative</span>
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.procedure_formative_tipologia}">Procedure formative</span>
 								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
@@ -401,12 +401,12 @@
 									<input
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"
 										class="form-control col-md-7 col-xs-12 optional" type="text" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}"
-										pattern="^\d+(\.\d*)?$" data-validate-length-range="0,50" />
+										pattern="numeric"/>
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="costi_complessivi_anno1_value">
-									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno, 1, 'POINT', 0, 'COMMA') : '--'}"></div>
 								</div>
 								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
 		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}" />
@@ -458,7 +458,7 @@
 									<input id="costi_complessivi_anno2_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"
 										class="form-control col-md-7 col-xs-12 optional" type="text"
-										pattern="^\d+(\.\d*)?$" data-validate-length-range="0,50" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}" />
+										pattern="^\d+$"  th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}" />
 								</div>
 							</th:block>
 							<th:block th:unless="${editabile}">
@@ -513,7 +513,7 @@
 									<input id="costi_formazione_anno1_value"
 										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"
 										class="form-control col-md-7 col-xs-12 optional" type="text"
-										pattern="^\d+(\.\d*)?$" data-validate-length-range="0,50" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}" />
+										pattern="^\d+$" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}" />
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
