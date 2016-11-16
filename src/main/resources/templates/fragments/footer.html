@@ -94,11 +94,15 @@
 		<script src="../static/clockpicker/js/clockpicker.js"
 				th:src="@{/clockpicker/js/clockpicker.js}"></script>
 
+		<!-- two side multiselect -->
+		<script src="../static/crlcu-multiselect/js/multiselect.js"
+				th:src="@{/crlcu-multiselect/js/multiselect.js}"></script>
+
 		<!-- spin.js loading spinner -->
 		<script
 			src="../static/spinJS/spin.js"
 			th:src="@{/spinJS/spin.js}"></script>
-			
+
 		<!-- initialize the validator.js  -->
 		<script th:inline="javascript">
 	        /*<![CDATA[*/
@@ -380,7 +384,7 @@
 				            ];
 				return array;
 			}
-			
+
 			function selezionaTuttiSi(){
 				$('input[value=true]').iCheck('check');
 			}

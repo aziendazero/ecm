@@ -85,53 +85,38 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	}
 
 	//controlla l'utente se segreteria o provider (gli unici a poter creare da 0 una comunicazine)
-	//e restituisce la lista di tutti i possibili destinatari, mappati
-	//per ruolo o nome del provider
+	//e restituisce la lista di tutti i possibili destinatari
 	@Override
 	public Map<String, Set<Account>> getAllDestinatariDisponibili(Long id) {
-		Map<String, Set<Account>> destinatariMap = new HashMap<String, Set<Account>>();
+		Map<String, Set<Account>> destinatariDisponibili = new HashMap<String, Set<Account>>();
 		Account richiedente = accountService.getUserById(id);
-		//caso segreteria invia a tutti
+		//caso segreteria invia a tutti (tranne ad altri segretari)
 		if(richiedente.isSegreteria()) {
-			//mappa tutti gli utenti (non viene gestito il caso dei doppioni, es: un utente sia referee che osservatore)
+			Set<Account> providerSet = new HashSet<Account>();
+			Set<Account> commissioneSet = new HashSet<Account>();
+			Set<Account> refereeSet = new HashSet<Account>();
+			Set<Account> osservatoriSet = new HashSet<Account>();
 			Set<Account> allUsers = accountService.getAllUsers();
-			Set<Account> setCommissione = new HashSet<Account>();
-			Set<Account> setOsservatori = new HashSet<Account>();
-			Set<Account> setProvider = new HashSet<Account>();
-			Set<Account> setReferee = new HashSet<Account>();
 			for(Account a : allUsers) {
-				//amministratori provider
-				if(a.isProviderUserAdmin()) {
-					setProvider.add(a);
+				if(!a.isSegreteria() && a.isProviderUserAdmin()) {
+					providerSet.add(a);
 				}
-				//refree
-				if(a.isReferee()) {
-					setReferee.add(a);
+				if(!a.isSegreteria() && a.isCommissioneEcm()) {
+					commissioneSet.add(a);
 				}
-				//commissione
-				if(a.isCommissioneEcm()) {
-					setCommissione.add(a);
+				if(!a.isSegreteria() && a.isReferee()) {
+					refereeSet.add(a);
 				}
-				//osservatore
-				if(a.isOsservatoreEcm()) {
-					setOsservatori.add(a);
+				if(!a.isSegreteria() && a.isOsservatoreEcm()) {
+					osservatoriSet.add(a);
 				}
 			}
-			if(!setCommissione.isEmpty())
-				destinatariMap.put("Commissione ECM", setCommissione);
-			if(!setOsservatori.isEmpty())
-				destinatariMap.put("Osservatori ECM", setOsservatori);
-			if(!setProvider.isEmpty())
-				destinatariMap.put("Provider", setProvider);
-			if(!setReferee.isEmpty())
-				destinatariMap.put("Referee ECM", setReferee);
+			destinatariDisponibili.put("Provider", providerSet);
+			destinatariDisponibili.put("Commissione ECM", commissioneSet);
+			destinatariDisponibili.put("Referee ECM", refereeSet);
+			destinatariDisponibili.put("Osservatori ECM", osservatoriSet);
 		}
-		//caso provider che possono inviare solo alla segreteria
-		else {
-			Set<Account> listaSegretari = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
-			destinatariMap.put("SegreteriaECM", listaSegretari);
-		}
-		return destinatariMap;
+		return destinatariDisponibili;
 	}
 
 	//salvataggio comunicazione, controllo mittente, se è provider aggiungo i segretari ai destinatari

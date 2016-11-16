@@ -1276,3 +1276,29 @@ li.listStyle-elenco > label{
 	color: white;
 	border-color: #d9534f;
 }
+
+.message-container {
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border: 2px solid #D6D6D6;
+	border-radius: 10px;
+	margin-bottom: 20px;
+}
+
+.optgroup-multiselect {
+	font-style: italic;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	color: #73879C;
+}
+
+.selectMulti {
+	min-height: 200px;
+}
+
+.btn-selectMulti {
+	margin-bottom: 15px;
+	margin-top: 10px;
+}

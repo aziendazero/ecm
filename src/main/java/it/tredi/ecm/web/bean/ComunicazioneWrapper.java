@@ -25,7 +25,7 @@ public class ComunicazioneWrapper {
 	}
 
 	private Comunicazione comunicazione;
-	private String destinatariJSON;
+	private Map<String, Set<Account>> destinatariDisponibili;
 	private ComunicazioneAmbitoEnum[] ambitoList;
 	private ComunicazioneTipologiaEnum[] tipologiaList;
 	private boolean canRespond;

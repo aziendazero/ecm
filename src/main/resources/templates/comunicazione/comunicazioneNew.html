@@ -31,14 +31,17 @@
 							<input type="hidden" th:field="${comunicazioneWrapper.tipologiaList}" />
 
 							<div class="header row">
-								<div class="header-comunicazione col-lg-6 col-md-6 col-sm-12 col-xs-12">
+								<div class="header-comunicazione col-lg-7 col-md-7 col-sm-12 col-xs-12">
 									<div class="mittente-container item form-group">
 										<div class="col-sm-2 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.from}"></label>
 										</div>
 										<div class="col-xs-12 col-sm-10">
-											<div class="fixed-value">
-												<div class="comunicazione-input" th:text="${comunicazioneWrapper.comunicazione.mittente.username} + ' &lt;' + ${comunicazioneWrapper.comunicazione.mittente.email} + '&gt;' "></div>
+											<div class="fixed-value" th:unless="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}"
+												th:text="${comunicazioneWrapper.comunicazione.mittente.getFullName()} + ' &lt;' + ${comunicazioneWrapper.comunicazione.mittente.email} + '&gt;'">
+											</div>
+											<div class="fixed-value" th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}"
+												th:text="#{label.segreteria_ecm} + ' &lt;' + #{label.segreteria_ecm_mail} + '&gt;' ">
 											</div>
 										</div>
 									</div>
@@ -49,7 +52,7 @@
 										</div>
 										<div class="col-xs-12 col-sm-10">
 											<select class="selectpicker" multiple="multiple"
-												data-width="100%" data-style="btn-info"
+												data-width="100%" data-style="btn-primary"
 												data-size="10" data-hide-disabled="false"
 												id="filterSelect" onchange="showHideDestinatari($(this).val())"
 												title="Nessun filtro">
@@ -61,18 +64,74 @@
 										</div>
 									</div>
 
-									<div class="destinatari-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.destinatari')} ? 'bad-remade'">
+									<th:block th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
+										<div class="providerFilter-container item form-group" style="display: none;">
+											<div class="col-sm-2 col-xs-2 text-right">
+												<label class="control-label" th:text="#{label.provider_filter}"></label>
+											</div>
+											<div class="col-xs-12 col-sm-10">
+												<div class="checkbox col-xs-6">
+													<label>
+														<input type="checkbox" class="flat" name="filtroProvider" value="A"/>
+														<span th:text="#{label.provider_gruppoA}"></span>
+													</label>
+												</div>
+												<div class="checkbox col-xs-6">
+													<label>
+														<input type="checkbox" class="flat" name="filtroProvider" value="B"/>
+														<span th:text="#{label.provider_gruppoB}"></span>
+													</label>
+												</div>
+												<div class="checkbox col-xs-6">
+													<label>
+														<input type="checkbox" class="flat" name="filtroProvider" value="ACCREDITATO_STANDARD"/>
+														<span th:text="#{label.provider_standard}"></span>
+													</label>
+												</div>
+												<div class="checkbox col-xs-6">
+													<label>
+														<input type="checkbox" class="flat" name="filtroProvider" value="ACCREDITATO_PROVVISORIAMENTE"/>
+														<span th:text="#{label.provider_provvisorio}"></span>
+													</label>
+												</div>
+											</div>
+										</div>
+									</th:block>
+
+									<div class="destinatari-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.destinatari')} ? 'bad'">
 										<div class="col-sm-2 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.to}"></label>
 										</div>
 										<div class="col-xs-12 col-sm-10">
-											<select th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}" id="destinatari" class="comunicazione-input select2_multiple" multiple="multiple"
-												data-width="100%"
-												th:field="${comunicazioneWrapper.comunicazione.destinatari}"
-												data-size="10" title="Seleziona destinatari..."
-												onchange="removeAlerts()"
-												th:remove="all-but-first">
-											</select>
+											<th:block th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
+												<div class="col-xs-5 no-padding">
+													<select name="from" id="optgroup" class="form-control selectMulti" size="9" multiple="multiple">
+														<optgroup class="optgroup-multiselect" th:each="gruppo, gindex : ${comunicazioneWrapper.destinatariDisponibili}" th:label="${gruppo.key}" th:unless="${#sets.isEmpty(gruppo.value)}">
+															<option class="option-multiselect" th:each="account, aindex : ${gruppo.value}"
+																th:value="${account.id}" th:text="${account.getFullName()}"
+																th:attr="gruppo=${account.provider?.gruppo},
+																tipo=${account.provider?.status}"></option>
+														</optgroup>
+													</select>
+												</div>
+												<div class="col-xs-2">
+													<button type="button" id="optgroup_rightAllOpt" class="btn btn-block btn-selectMulti">
+														<i class="glyphicon glyphicon-forward"></i>
+													</button>
+													<button type="button" id="optgroup_rightSelected" class="btn btn-block btn-selectMulti">
+														<i class="glyphicon glyphicon-chevron-right"></i>
+													</button>
+													<button type="button" id="optgroup_leftSelected" class="btn btn-block btn-selectMulti">
+														<i class="glyphicon glyphicon-chevron-left"></i>
+													</button>
+													<button type="button" id="optgroup_leftAllOpt" class="btn btn-block btn-selectMulti">
+														<i class="glyphicon glyphicon-backward"></i>
+													</button>
+												</div>
+												<div class="col-xs-5 no-padding">
+													<select th:field="${comunicazioneWrapper.comunicazione.destinatari}" name="to" id="optgroup_to" class="form-control selectMulti" size="9" multiple="multiple"></select>
+												</div>
+											</th:block>
 											<div class="fixed-value" th:unless="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}"
 												th:text="#{label.segreteria_ecm} + ' &lt;' + #{label.segreteria_ecm_mail} + '&gt;' ">
 											</div>
@@ -94,12 +153,12 @@
 									</div>
 								</div>
 
-								<div class="subheader-comunicazione col-lg-6 col-md-6 col-sm-12 col-xs-12">
+								<div class="subheader-comunicazione col-lg-5 col-md-5 col-sm-12 col-xs-12">
 									<div class="ambito-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.ambito')} ? 'bad'">
-										<div class="col-sm-5 col-xs-2 text-right">
+										<div class="col-sm-4 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.ambito}"></label>
 										</div>
-										<div class="col-xs-12 col-sm-7">
+										<div class="col-xs-12 col-sm-8">
 											<div class="no-padding">
 												<select
 													class="selectpicker"
@@ -121,10 +180,10 @@
 									</div>
 
 									<div class="tipologia-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.tipologia')} ? 'bad'">
-										<div class="col-sm-5 col-xs-2 text-right">
+										<div class="col-sm-4 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.tipologia}"></label>
 										</div>
-										<div class="col-xs-12 col-sm-7">
+										<div class="col-xs-12 col-sm-8">
 											<div class="no-padding">
 												<select
 													class="selectpicker"
@@ -168,12 +227,13 @@
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
-
+				var destinatariIds = [[${comunicazioneWrapper.comunicazione.destinatari}]];
+				var filtriProvider = []
 				$(document).ready(function() {
-					$(".select2_multiple").select2({
-				    	placeholder: "Seleziona destinatari",
-				    	allowClear: true
-				    });
+					$("#optgroup").multiselect({
+						keepRenderingSort: true,
+						ignoreDisabled: true
+					});
 
 					$(".tipologia-container").on("hidden.bs.select", function() {
 						$(this).removeClass('bad').find('div.alert').fadeOut(150, function() {
@@ -195,11 +255,27 @@
 						initTipologia();
 					}
 
-					showHideDestinatari(null);
+					//riseleziona i destinatari selezionati in caso di errore
+					if(destinatariIds != null) {
+						for(var i = 0; i < destinatariIds.length; i++) {
+							moveToRightOptions($('option[value="'+ destinatariIds[i].id +'"]'));
+						}
+					}
+
+					$('input[name="filtroProvider"]').on("ifChecked", function() {
+						filtriProvider.push(this.value);
+						applyFilters(filtriProvider);
+					})
+					$('input[name="filtroProvider"]').on("ifUnchecked", function() {
+						var filterValue = this.value
+						//rimuove elemento dalla lista
+						filtriProvider = $.grep(filtriProvider, function(value) {
+							return value != filterValue;
+						});
+						applyFilters(filtriProvider);
+					})
 
 				});
-
-				var allDestinatari = JSON.parse([[${comunicazioneWrapper.destinatariJSON}]]);
 
 				function removeAlerts() {
 					$(".destinatari-container").removeClass('bad-remade').find('div.alert').fadeOut(150, function() {
@@ -231,23 +307,120 @@
 					$("#tipologiaSelect").selectpicker("refresh");
 				}
 
-				//sistema la select degli account a cui inviare la comunicazione
-				function showHideDestinatari(values) {
-					if(values == null) {
-						values = ["Commissione ECM", "Osservatori ECM", "Provider", "Referee ECM"];
+				//seleziona le option con il plugin multiselect
+				function moveToRightOptions(options) {
+					options.each(function(index, option) {
+                        var $option = $(option);
+                        if ($option.is(':disabled')) {
+                            return true;
+                        }
+                        if ($option.parent().is('optgroup')) {
+                            var $leftGroup = $option.parent();
+                            var $rightGroup = $("#optgroup_to").find('optgroup[label="' + $leftGroup.prop('label') + '"]');
+                            if (!$rightGroup.length) {
+                                $rightGroup = $leftGroup.clone();
+                                $rightGroup.children().remove();
+                            }
+                            $option = $rightGroup.append($option);
+                            $leftGroup.removeIfEmpty();
+                        }
+                        $("#optgroup_to").move($option);
+					})
+				}
+
+				function showHideDestinatari(criteria) {
+					console.log(criteria);
+					hideAllOptgroups();
+					if(criteria == null) {
+						showAllOptgroups();
 					}
-					console.log(allDestinatari);
-					$("#destinatari").empty();
-					for(var i = 0 ; i < values.length ; i++) {
-						var optgroup = $("<optgroup label='" + values[i] + "'></optgroup>");
-						var filteredDestinatari = allDestinatari[values[i]];
-						for(var k = 0; k < filteredDestinatari.length; k++) {
-							var option = $("<option value='" + filteredDestinatari[k].id + "'>" + filteredDestinatari[k].fullName + ' &lt;'  + filteredDestinatari[k].email + '&gt;' + "</option>");
-							optgroup.append(option);
-						}
-						$("#destinatari").append(optgroup);
+					else {
+						$.each(criteria, function(index, group) {
+							var $optgroup = $("#optgroup").find('optgroup[label="'+ group +'"]');
+							$optgroup.show();
+							$optgroup.prop('disabled', false);
+							var $options = $optgroup.children();
+							$options.each(function(i, option) {
+								$(option).show().prop('disabled', false).removeClass("hidden");
+							})
+						})
+					}
+					enableDisableFilterProvider(criteria);
+				}
+
+				function hideAllOptgroups() {
+					$("#optgroup > optgroup").each(function(index, optgroup) {
+						var $optgroup = $(optgroup);
+						$optgroup.hide();
+						$optgroup.prop('disabled', true);
+						var $options = $optgroup.children();
+						$options.each(function(i, option) {
+							$(option).hide().prop('disabled', true).addClass("hidden");
+						})
+					})
+				}
+
+				function showAllOptgroups() {
+					$("#optgroup > optgroup").each(function(index, optgroup) {
+						var $optgroup = $(optgroup);
+						$optgroup.show();
+						$optgroup.prop('disabled', false);
+						var $options = $optgroup.children();
+						$options.each(function(i, option) {
+							$(option).show().prop('disabled', false).removeClass("hidden");
+						})
+					})
+				}
+
+				function enableDisableFilterProvider(criteria) {
+					if($.inArray("Provider", criteria) != -1) {
+						$(".providerFilter-container").slideDown("slow");
+						applyFilters(filtriProvider);
+					}
+					else {
+						$(".providerFilter-container").slideUp("slow");
+						$('input[name="filtroProvider"]').each(function(i, check) {
+							$(check).iCheck('uncheck');
+						})
 					}
 				}
+
+				function applyFilters(criteria) {
+					console.log(criteria);
+					hideAllProviders();
+					if(criteria.length == 0) {
+						showAllProviders();
+					}
+					else {
+						var $providers = $('#optgroup > optgroup[label="Provider"] > option');
+						$.each(criteria, function(index, filter) {
+							$providers.each(function(i, provider) {
+								var $provider = $(provider);
+								if($provider.attr("gruppo") == filter) {
+									$provider.show().prop("disabled", false).removeClass("hidden");
+								}
+								else if($provider.attr("tipo") == filter) {
+									$provider.show().prop("disabled", false).removeClass("hidden");
+								}
+							})
+						})
+					}
+				}
+
+				function hideAllProviders() {
+					var $providers = $('#optgroup > optgroup[label="Provider"] > option');
+					$providers.each(function(index, provider) {
+						$(provider).hide().prop("disabled", true).addClass("hidden");
+					})
+				}
+
+				function showAllProviders() {
+					var $providers = $('#optgroup > optgroup[label="Provider"] > option');
+					$providers.each(function(index, provider) {
+						$(provider).show().prop("disabled", false).removeClass("hidden");
+					})
+				}
+
 
 			/*]]>*/
 			</script>

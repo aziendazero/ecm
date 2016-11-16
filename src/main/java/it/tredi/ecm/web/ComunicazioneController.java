@@ -1,12 +1,11 @@
 package it.tredi.ecm.web;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,6 +24,7 @@ import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
 import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.service.ComunicazioneService;
+import it.tredi.ecm.service.SecurityAccessService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ComunicazioneWrapper;
 import it.tredi.ecm.web.bean.Message;
@@ -42,7 +41,7 @@ public class ComunicazioneController {
 
 	@Autowired private ComunicazioneService comunicazioneService;
 	@Autowired private ComunicazioneValidator comunicazioneValidator;
-	@Autowired private ObjectMapper jacksonObjectMapper;
+	@Autowired private SecurityAccessService securityAccessService;
 
 	@ModelAttribute("comunicazioneWrapper")
 	public ComunicazioneWrapper getComunicazioneWrapperPreRequest(@RequestParam(value="editId", required = false) Long id){
@@ -70,6 +69,7 @@ public class ComunicazioneController {
 			model.addAttribute("ultimiMessaggiNonLetti", comunicazioneService.getUltimi10MessaggiNonLetti(currentAccountId));
 			model.addAttribute("numeroMessaggiNonLetti", comunicazioneService.countAllMessaggiNonLetti(currentAccountId));
 			model.addAttribute("idUltimoMessaggioNonLetto", comunicazioneService.getIdUltimaComunicazioneRicevuta(currentAccountId));
+			model.addAttribute("canSendComunicazione", securityAccessService.canSendComunicazioni(Utils.getAuthenticatedUser()));
 			//TODO ultima comunicazione response
 			LOGGER.info(Utils.getLogMessage("VIEW: " + MAIN));
 			return MAIN;
@@ -82,7 +82,7 @@ public class ComunicazioneController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canSendComunicazioni(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canSendComunicazioni(principal)")
 	@RequestMapping("/comunicazione/new")
 	public String sendComunicazione(Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET: /comunicazione/new"));
@@ -98,7 +98,7 @@ public class ComunicazioneController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canSendComunicazioni(principal)") TODO
+	@PreAuthorize("@securityAccessServiceImpl.canSendComunicazioni(principal)")
 	@RequestMapping(value = "/comunicazione/send", method = RequestMethod.POST)
 	public String newComunicazione(@ModelAttribute("comunicazioneWrapper") ComunicazioneWrapper comunicazioneWrapper, BindingResult result,
 			Model model, RedirectAttributes redirectAttrs) {
@@ -109,8 +109,7 @@ public class ComunicazioneController {
 
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				String json = jacksonObjectMapper.writerWithView(JsonViewModel.ComunicazioniDestinatari.class).writeValueAsString(comunicazioneService.getAllDestinatariDisponibili(comunicazioneWrapper.getComunicazione().getMittente().getId()));
-				comunicazioneWrapper.setDestinatariJSON(json);
+				comunicazioneWrapper.setDestinatariDisponibili(comunicazioneService.getAllDestinatariDisponibili(comunicazioneWrapper.getComunicazione().getMittente().getId()));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + NEW));
 				return NEW;
 			}else{
@@ -159,7 +158,7 @@ public class ComunicazioneController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canSendComunicazioni(principal)") TODO
+//	@PreAuthorize("@securityAccessServiceImpl.canSendComunicazioniReply(principal)") TODO
 	@RequestMapping(value = "/comunicazione/{id}/reply", method = RequestMethod.POST)
 	public String replyComunicazione(@ModelAttribute("comunicazioneWrapper") ComunicazioneWrapper comunicazioneWrapper, @PathVariable Long id, BindingResult result,
 			Model model, RedirectAttributes redirectAttrs) {
@@ -251,8 +250,7 @@ public class ComunicazioneController {
 	private ComunicazioneWrapper prepareComunicazioneWrapperNew(Comunicazione comunicazione) throws JsonProcessingException {
 		LOGGER.info(Utils.getLogMessage("prepareComunicazioneWrapperNew() - entering"));
 		ComunicazioneWrapper wrapper = new ComunicazioneWrapper(comunicazione);
-		String json = jacksonObjectMapper.writerWithView(JsonViewModel.ComunicazioniDestinatari.class).writeValueAsString(comunicazioneService.getAllDestinatariDisponibili(comunicazione.getMittente().getId()));
-		wrapper.setDestinatariJSON(json);
+		wrapper.setDestinatariDisponibili(comunicazioneService.getAllDestinatariDisponibili(comunicazione.getMittente().getId()));
 		LOGGER.info(Utils.getLogMessage("prepareComunicazioneWrapperNew() - exiting"));
 		return wrapper;
 	}

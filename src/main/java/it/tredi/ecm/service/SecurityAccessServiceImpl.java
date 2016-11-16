@@ -142,7 +142,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 		return false;
 	}
-	
+
 	//Controlla se l'utente corrente può visualizzare la lista degli utenti di un dato provider
 	@Override
 	public boolean canShowAllProviderUser(CurrentUser currentUser, Long providerId) {
@@ -156,7 +156,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 		return false;
 	}
-	
+
 	//Controlla se l'utente corrente può inserire un nuovo utente di un dato provider
 	@Override
 	public boolean canProviderCreateUser(CurrentUser currentUser, Long providerId) {
@@ -170,7 +170,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 		return false;
 	}
-	
+
 
 	@Override
 	public boolean canShowUser(CurrentUser currentUser, Long userId) {
@@ -334,6 +334,13 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	@Override
 	public boolean canCreateEvento(CurrentUser currentUser, Long providerId) {
 		if (isProviderUser(currentUser.getAccount().getId(), providerId) || currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean canSendComunicazioni(CurrentUser currentUser) {
+		if (currentUser.isProvider() || currentUser.isSegreteria())
 			return true;
 		return false;
 	}

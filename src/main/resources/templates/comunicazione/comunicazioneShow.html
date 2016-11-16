@@ -96,8 +96,45 @@
 					<div class="x_content">
 						<div class="row">
 
+							<div class="view-response message-container"
+								th:unless="${#sets.isEmpty(comunicazioneWrapper.comunicazione.risposte)}"
+								th:each="risposta, row : ${comunicazioneWrapper.comunicazione.risposte}">
+
+								<!-- RISPOSTA -->
+								<div class="inbox-body">
+									<div class="mail_heading row">
+										<div class="col-xs-8">
+											<h4 th:text="'RE: ' + ${comunicazioneWrapper.comunicazione.oggetto}"></h4>
+										</div>
+										<div class="col-xs-4 text-right">
+											<p class="date" th:text="${#temporals.format(risposta.dataRisposta, 'HH:mm - dd/MM/yyyy')}"></p>
+										</div>
+									</div>
+									<div class="sender-info">
+										<div class="row">
+											<div class="col-xs-12">
+												<strong>Da: </strong>
+												<span th:text="${risposta.mittente.isSegreteria()} ? #{label.from_segreteria} : ${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></span>
+												<span th:text="${risposta.mittente.isSegreteria()} ? '&lt;' + #{label.segreteria_ecm_mail} + '&gt;' : '&lt;' + ${risposta.mittente.email} + '&gt;'"></span>
+											</div>
+										</div>
+									</div>
+									<div class="view-mail with-margin-top">
+										<pre class="risposta-messaggio" th:text="${risposta.messaggio}"></pre>
+									</div>
+									<div class="allegato-risposta">
+										<div th:if="${risposta.allegatoRisposta}">
+											<strong th:text="#{label.allegato_risposta}">Allegato: </strong>
+											<div>
+												<div class="value"><i class="fa fa-paperclip"> </i> <a th:text="${risposta.allegatoRisposta.nomeFile}" th:href="@{|/file/${risposta.allegatoRisposta.id}|}"></a></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
 							<!-- CONTENT MAIL -->
-							<div id="comunicazione-head">
+							<div id="comunicazione-head" class="message-container">
 								<div class="inbox-body">
 									<div class="mail_heading row">
 										<div class="col-xs-8">
@@ -110,17 +147,20 @@
 									<div class="sender-info">
 										<div class="row">
 											<div class="col-xs-12">
-												<strong th:text="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()} ? #{label.from_segreteria} : 'Da: ' + ${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></strong>
+												<strong>Da: </strong>
+												<span th:text="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()} ? #{label.segreteria_ecm} : ${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></span>
 												<span th:text="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()} ? '&lt;' + #{label.segreteria_ecm_mail} + '&gt;' : '&lt;' + ${comunicazioneWrapper.comunicazione.mittente.email} + '&gt;'"></span>
 												<br/>
 												<th:block th:unless="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
-													<strong th:text="#{label.to_segreteria}"></strong>
+													<strong>A: </strong>
+													<span th:text="#{label.segreteria_ecm}"></span>
 													<span th:text="'&lt;' + #{label.segreteria_ecm_mail} + '&gt;'"></span>
 												</th:block>
 												<th:block th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
 													<!--  un solo destinatario -->
 													<th:block th:if="${#lists.size(comunicazioneWrapper.comunicazione.destinatari) == 1}">
-														<strong th:text="'A: ' + ${comunicazioneWrapper.comunicazione.destinatari[0].getFullName()}"></strong>
+														<strong>A: </strong>
+														<span th:text="${comunicazioneWrapper.comunicazione.destinatari[0].getFullName()}"></span>
 														<span th:text="'&lt;' + ${comunicazioneWrapper.comunicazione.destinatari[0].email} + '&gt;'"></span>
 													</th:block>
 													<!--  destinatari multipli -->
@@ -129,7 +169,7 @@
 														<a onclick="toggleDestinatari()" class="sender-dropdown clickable"><i class="fa fa-chevron-down toggleIcon"></i></a>
 														<div class="destinatari" style="display: none">
 															<div class="with-margin-left" th:each="destinatario, row : ${comunicazioneWrapper.comunicazione.destinatari}">
-																<strong th:text="${destinatario.getFullName()}"></strong>
+																<span th:text="${destinatario.getFullName()}"></span>
 																<span th:text="'&lt;' + ${destinatario.email} + '&gt;'"></span>
 															</div>
 														</div>
@@ -159,43 +199,8 @@
 							</div>
 
 							<div class="divider-dashed with-margin-top"></div>
-							<div class="view-response with-margin-top"
-								th:unless="${#sets.isEmpty(comunicazioneWrapper.comunicazione.risposte)}"
-								th:each="risposta, row : ${comunicazioneWrapper.comunicazione.risposte}">
 
-								<!-- RISPOSTA -->
-								<div class="inbox-body">
-									<div class="mail_heading row">
-										<div class="col-xs-8">
-											<h4 th:text="'RE: ' + ${comunicazioneWrapper.comunicazione.oggetto}"></h4>
-										</div>
-										<div class="col-xs-4 text-right">
-											<p class="date" th:text="${#temporals.format(risposta.dataRisposta, 'HH:mm - dd/MM/yyyy')}"></p>
-										</div>
-									</div>
-									<div class="sender-info">
-										<div class="row">
-											<div class="col-xs-12">
-												<strong th:text="${risposta.mittente.isSegreteria()} ? #{label.from_segreteria} : ${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></strong>
-												<!-- <strong th:text="${risposta.mittente.isSegreteria()} ? #{label.from_segreteria} : #{label.from_provider(${risposta.mittente.username}, 'TODOproviderName')}"></strong> -->
-												<span th:text="${risposta.mittente.isSegreteria()} ? '&lt;' + #{label.segreteria_ecm_mail} + '&gt;' : '&lt;' + ${risposta.mittente.email} + '&gt;'"></span>
-											</div>
-										</div>
-									</div>
-									<div class="view-mail with-margin-top">
-										<pre class="risposta-messaggio" th:text="${risposta.messaggio}"></pre>
-									</div>
-									<div class="allegato-risposta">
-										<div th:if="${risposta.allegatoRisposta}">
-											<strong th:text="#{label.allegato_risposta}">Allegato: </strong>
-											<div>
-												<div class="value"><i class="fa fa-paperclip"> </i> <a th:text="${risposta.allegatoRisposta.nomeFile}" th:href="@{|/file/${risposta.allegatoRisposta.id}|}"></a></div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<strong class="view-response with-margin-top"
+							<strong class="view-response with-margin-top message-container"
 								th:if="${#sets.isEmpty(comunicazioneWrapper.comunicazione.risposte)}"
 								th:text="#{label.nessuna_risposta}">
 							</strong>

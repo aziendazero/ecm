@@ -44,4 +44,6 @@ public interface SecurityAccessService {
 	public boolean canShowAllProviderUser(CurrentUser currentUser, Long providerId);
 	boolean canProviderEditUser(CurrentUser currentUser, Long providerId, Long userId);
 	boolean canProviderCreateUser(CurrentUser currentUser, Long providerId);
+
+	public boolean canSendComunicazioni(CurrentUser currentUser);
 }

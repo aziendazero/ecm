@@ -82,6 +82,7 @@
 								</a>
 								<ul class="nav child_menu" style="display: none">
 									<li><a th:href="@{/accreditamento/valutazioneReferee/list}" th:text="#{label.lista_domande_da_valutare}">label.lista_domande_da_valutare</a></li>
+									<li><a th:href="@{/comunicazione/dashboard}" th:text="#{label.comunicazioni}"></a></li>
 								</ul>
 							</li>
 
@@ -92,6 +93,17 @@
 								</a>
 								<ul class="nav child_menu" style="display: none">
 									<li><a th:href="@{/seduta/list}" th:text="#{label.lista_sedute}">label.lista_sedute</a></li>
+									<li><a th:href="@{/comunicazione/dashboard}" th:text="#{label.comunicazioni}"></a></li>
+								</ul>
+							</li>
+
+							<li id="osservatori" th:if="${#authentication.principal.hasProfile('OSSERVATORE')}">
+								<a>
+									<i class="fa fa-edit"></i> <span th:text="#{label.osservatore_ecm}">label.osservatore_ecm</span>
+									<span class="fa fa-chevron-down"></span>
+								</a>
+								<ul class="nav child_menu" style="display: none">
+									<li><a th:href="@{/comunicazione/dashboard}" th:text="#{label.comunicazioni}"></a></li>
 								</ul>
 							</li>
 
