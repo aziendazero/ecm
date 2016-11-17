@@ -49,6 +49,7 @@ import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
+import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
@@ -98,6 +99,7 @@ public class EventoServiceImpl implements EventoService {
 	
 	@Autowired private ProviderService providerService;
 	@Autowired private FileValidator fileValidator;
+	@Autowired private PianoFormativoService pianoFormativoService;
 	
 	@Override
 	public Evento getEvento(Long id) {
@@ -116,12 +118,36 @@ public class EventoServiceImpl implements EventoService {
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		eventoRepository.save(evento);
 
+//		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
+//			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
+//			eventoPianoFormativo.setAttuato(true);
+//			eventoPianoFormativoRepository.save(eventoPianoFormativo);
+//		}
+
 		//se attuazione di evento del piano formativo aggiorna il flag
-		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
+		//se attuazione di evento del piano formativo con data fine all'anno successivo...l'evento viene inserito nel piano formativo dell'anno successivo
+		if(evento.isEventoDaPianoFormativo()){
 			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
-			eventoPianoFormativo.setAttuato(true);
+			
+			LocalDate dataFine = evento.getDataFine();
+			if(dataFine != null){
+				int annoPianoFormativo = dataFine.getYear();
+				PianoFormativo pf = pianoFormativoService.getPianoFormativoAnnualeForProvider(evento.getProvider().getId(), annoPianoFormativo);
+				if(pf == null){
+					pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
+				}
+				
+				
+				pf.addEvento(eventoPianoFormativo);
+				pianoFormativoService.save(pf);
+			}
+			
+			if(!evento.getEventoPianoFormativo().isAttuato()){
+				eventoPianoFormativo.setAttuato(true);
+			}
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
+		
 	}
 
 	@Override

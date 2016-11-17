@@ -6,6 +6,7 @@
 </head>
 <body>
 	<div layout:fragment="content">
+	
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -53,7 +54,9 @@
 													
 													<th:block th:if="${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}">
 														<a th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
-														<a th:text="#{label.elimina_tutti_eventi_da_pfa}" class="btn btn-danger with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/deleteAll|}"></a>
+														<!-- <a th:text="#{label.elimina_tutti_eventi_da_pfa}" class="btn btn-danger with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/deleteAll|}"></a> -->
+														
+														<button class="btn btn-danger with-margin-top" th:onclick="|confirmDeleteAllEventiPianoFormativoModal('${pianoFormativo.provider.id}','${pianoFormativo.id}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina_tutti_eventi_da_pfa}"> </span></button>
 														
 														<div class="divider"></div>
 														<!-- importazione eventi piano formativo -->
