@@ -143,6 +143,28 @@
 				</div>
 			</div>
 		</th:block>
+		
+		<!-- modal starts here -->
+		<div id="deleteModal" class="modal fade" role='dialog'>
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		                <h4 class="modal-title" th:text="#{label.elimina}">Delete </h4>
+		            </div>
+		            <div class="modal-body">
+		                <span id="deleteMsg"></span>
+		                		                
+		            </div>
+		            <div class="modal-footer">
+		                <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{label.annulla}">Cancel</button>
+						<span id='deleteButton'></span>
+		            </div>
+					
+		        </div>
+		      </div>
+		  </div>
+		<!-- Modal ends here -->
 
 		<div class="row">
 			<div class="col-xs-12">
@@ -226,8 +248,9 @@
 									<td>
 										<div class="button-container single">
 											<a class="btn btn-primary btn-table double" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}"><i class="fa fa-pencil"> </i> <span th:text="#{label.modifica}"> </span></a>
-											<a class="btn btn-danger btn-table double" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/delete|}"><i class="fa fa-trash"> </i> <span th:text="#{label.elimina}"> </span></a>
-											<a class="btn btn-success btn-table double" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
+											<!-- <a class="btn btn-danger btn-table double"  onclick="return confirm('Eliminare evento?')" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/delete|}"><i class="fa fa-trash"> </i> <span th:text="#{label.elimina}"> </span></a> -->
+											<button class="btn btn-danger btn-table double" th:onclick="|confirmDeleteModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina}"> </span></button>
+											<a class="btn btn-success btn-table double" th:if="${evento.canDoPagamento == true and evento.pagato == false}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
 											<a class="btn btn-warning btn-table double" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/rendiconto|}"><i class="fa fa-file-text"> </i> <span th:text="#{label.rendiconto}"> </span></a>
 										</div>
 									</td>
@@ -296,6 +319,22 @@
 					})
 
 				})
+				
+				function confirmDeleteModal(providerId,eventoId,tipo,codiceIdentificativo){
+					    $('#deleteModal').modal();
+					    
+					    var prefix = [[@{/provider/}]];
+					    var url = prefix + providerId + "/evento/" + eventoId + "/delete";
+					    
+					    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamnete l'evento " + codiceIdentificativo + " (" + tipo + ")?</h2>");
+						$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
+					}     
+			
+				function deleteData(eventoId){
+				  // do your stuffs with id
+				  $("#successMessage").html("Record With id "+id+" Deleted successfully!");
+				  $('#deleteModal').modal('hide'); // now close modal
+				}  
 
 			/*]]>*/
 			</script>
