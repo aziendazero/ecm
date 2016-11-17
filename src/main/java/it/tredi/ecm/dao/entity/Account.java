@@ -10,12 +10,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -25,14 +23,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name="account",
-indexes={ @Index(name="testIndex", columnList="username"),
-		@Index(columnList="id,password")}
-		)
+@Table(name="account")
+//@Table(name="account",
+//indexes={ @Index(name="testIndex", columnList="username"),
+//		@Index(columnList="id,password")}
+//		)
 @Getter
 @Setter
 public class Account extends BaseEntity{
 	private String username;
+	
 	private String password = "";
 	@JsonView(JsonViewModel.ComunicazioniDestinatari.class)
 	private String email;

@@ -1,0 +1,75 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="abarducci (generated)" id="1479309431348-87">
+        <addPrimaryKey columnNames="account_id, accreditamento_id" tableName="account_domande_non_valutate" constraintName="account_domande_non_valutatePK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-88">
+        <addPrimaryKey columnNames="account_id, profile_id" tableName="account_profile" constraintName="account_profilePK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-89">
+        <addPrimaryKey columnNames="comunicazione_id, account_id" tableName="comunicazione_destinatari" constraintName="comunicazione_destinatariPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-90">
+        <addPrimaryKey columnNames="dati_accreditamento_id, disciplina_id" tableName="dati_accreditamento_discipline_selezionate" constraintName="dati_accreditamento_discipline_selezionatePK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-91">
+        <addPrimaryKey columnNames="evento_id, disciplina_id" tableName="evento_discipline" constraintName="evento_disciplinePK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-92">
+        <addPrimaryKey columnNames="evento_id, disciplina_id" tableName="evento_piano_formativo_discipline" constraintName="evento_piano_formativo_disciplinePK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-93">
+        <addPrimaryKey columnNames="gruppo_crecm_id, valutatori_id" tableName="gruppo_crecm_valutatori" constraintName="gruppo_crecm_valutatoriPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-94">
+        <addPrimaryKey columnNames="persona_id, files_id" tableName="persona_files" constraintName="persona_filesPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-95">
+        <addPrimaryKey columnNames="piano_formativo_id, eventi_piano_formativo_id" tableName="piano_formativo_eventi_piano_formativo" constraintName="piano_formativo_eventi_piano_formativoPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-96">
+        <addPrimaryKey columnNames="profile_id, role_id" tableName="profile_role" constraintName="profile_rolePK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-97">
+        <addPrimaryKey columnNames="provider_id, files_id" tableName="provider_files" constraintName="provider_filesPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-98">
+        <addPrimaryKey columnNames="relazione_annuale_id, eventi_attuati_id" tableName="relazione_annuale_eventi_attuati" constraintName="relazione_annuale_eventi_attuatiPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-99">
+        <addPrimaryKey columnNames="relazione_annuale_id, eventipfa_id" tableName="relazione_annuale_eventipfa" constraintName="relazione_annuale_eventipfaPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-100">
+        <addPrimaryKey columnNames="relazione_annuale_id, riepilogo_discipline_key" tableName="relazione_annuale_riepilogo_discipline" constraintName="relazione_annuale_riepilogo_disciplinePK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-101">
+        <addPrimaryKey columnNames="relazione_annuale_id, riepilogo_obiettivi_key" tableName="relazione_annuale_riepilogo_obiettivi_nazionali" constraintName="relazione_annuale_riepilogo_obiettivi_nazionaliPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-102">
+        <addPrimaryKey columnNames="relazione_annuale_id, riepilogo_obiettivi_regionali_key" tableName="relazione_annuale_riepilogo_obiettivi_regionali" constraintName="relazione_annuale_riepilogo_obiettivi_regionaliPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-103">
+        <addPrimaryKey columnNames="relazione_annuale_id, riepilogo_professioni_key" tableName="relazione_annuale_riepilogo_professioni" constraintName="relazione_annuale_riepilogo_professioniPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-104">
+        <addPrimaryKey columnNames="riepilogo_fad_id, key_metodologia" tableName="riepilogo_fad" constraintName="riepilogo_fadPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-105">
+        <addPrimaryKey columnNames="riepilogo_res_id, key_metodologia" tableName="riepilogo_res" constraintName="riepilogo_resPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-106">
+        <addPrimaryKey columnNames="team_valutazione_id, componenti_segreteria_id" tableName="team_valutazione_componenti_segreteria" constraintName="team_valutazione_componenti_segreteriaPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-107">
+        <addPrimaryKey columnNames="valutazione_id, valutazioni_id" tableName="valutazione_valutazioni" constraintName="valutazione_valutazioniPK"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-108">
+        <addPrimaryKey columnNames="codice_comune" constraintName="comuniPK" tableName="comuni"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-109">
+        <addPrimaryKey columnNames="codice_provincia" constraintName="provincePK" tableName="province"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-110">
+        <addPrimaryKey columnNames="token" constraintName="tokenPK" tableName="token"/>
+    </changeSet>
+</databaseChangeLog>

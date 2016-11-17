@@ -52,148 +52,106 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 
 		if(accounts.isEmpty()){
 			/* ACCREDITAMENTO */
-			Role role_readAccreditamento = new Role();
-			role_readAccreditamento.setName(RoleEnum.ACCREDITAMENTO_SHOW.name());
-			role_readAccreditamento.setDescription("ACCREDITAMENTO (LETTURA)");
-			roleRepository.save(role_readAccreditamento);
-
-			Role role_writeAccreditamento = new Role();
-			role_writeAccreditamento.setName(RoleEnum.ACCREDITAMENTO_EDIT.name());
-			role_writeAccreditamento.setDescription("ACCREDITAMENTO (SCRITTURA)");
-			roleRepository.save(role_writeAccreditamento);
-
-			Role role_readAllAccreditamento = new Role();
-			role_readAllAccreditamento.setName(RoleEnum.ACCREDITAMENTO_SHOW_ALL.name());
-			role_readAllAccreditamento.setDescription("ACCREDITAMENTO (LETTURA TUTTI)");
-			roleRepository.save(role_readAllAccreditamento);
-
-			Role role_writeAllAccreditamento = new Role();
-			role_writeAllAccreditamento.setName(RoleEnum.ACCREDITAMENTO_EDIT_ALL.name());
-			role_writeAllAccreditamento.setDescription("ACCREDITAMENTO (SCRITTURA TUTTI)");
-			roleRepository.save(role_writeAllAccreditamento);
+//			Role role_readAccreditamento = new Role();
+//			role_readAccreditamento.setName(RoleEnum.ACCREDITAMENTO_SHOW.name());
+//			role_readAccreditamento.setDescription("ACCREDITAMENTO (LETTURA)");
+//			roleRepository.save(role_readAccreditamento);
+//
+//			Role role_writeAccreditamento = new Role();
+//			role_writeAccreditamento.setName(RoleEnum.ACCREDITAMENTO_EDIT.name());
+//			role_writeAccreditamento.setDescription("ACCREDITAMENTO (SCRITTURA)");
+//			roleRepository.save(role_writeAccreditamento);
+//
+//			Role role_readAllAccreditamento = new Role();
+//			role_readAllAccreditamento.setName(RoleEnum.ACCREDITAMENTO_SHOW_ALL.name());
+//			role_readAllAccreditamento.setDescription("ACCREDITAMENTO (LETTURA TUTTI)");
+//			roleRepository.save(role_readAllAccreditamento);
+//
+//			Role role_writeAllAccreditamento = new Role();
+//			role_writeAllAccreditamento.setName(RoleEnum.ACCREDITAMENTO_EDIT_ALL.name());
+//			role_writeAllAccreditamento.setDescription("ACCREDITAMENTO (SCRITTURA TUTTI)");
+//			roleRepository.save(role_writeAllAccreditamento);
 
 			/* PROVIDER */
-			Role role_readProvider = new Role();
-			role_readProvider.setName(RoleEnum.PROVIDER_SHOW.name());
-			role_readProvider.setDescription("PROVIDER (LETTURA)");
-			roleRepository.save(role_readProvider);
-
-			Role role_writeProvider = new Role();
-			role_writeProvider.setName(RoleEnum.PROVIDER_EDIT.name());
-			role_writeProvider.setDescription("PROVIDER (SCRITTURA)");
-			roleRepository.save(role_writeProvider);
-
-			Role role_readAllProvider = new Role();
-			role_readAllProvider.setName(RoleEnum.PROVIDER_SHOW_ALL.name());
-			role_readAllProvider.setDescription("PROVIDER (LETTURA TUTTI)");
-			roleRepository.save(role_readAllProvider);
-
-			Role role_writeAllProvider = new Role();
-			role_writeAllProvider.setName(RoleEnum.PROVIDER_EDIT_ALL.name());
-			role_writeAllProvider.setDescription("PROVIDER (SCRITTURA TUTTI)");
-			roleRepository.save(role_writeAllProvider);
+//			Role role_readProvider = new Role();
+//			role_readProvider.setName(RoleEnum.PROVIDER_SHOW.name());
+//			role_readProvider.setDescription("PROVIDER (LETTURA)");
+//			roleRepository.save(role_readProvider);
+//
+//			Role role_writeProvider = new Role();
+//			role_writeProvider.setName(RoleEnum.PROVIDER_EDIT.name());
+//			role_writeProvider.setDescription("PROVIDER (SCRITTURA)");
+//			roleRepository.save(role_writeProvider);
+//
+//			Role role_readAllProvider = new Role();
+//			role_readAllProvider.setName(RoleEnum.PROVIDER_SHOW_ALL.name());
+//			role_readAllProvider.setDescription("PROVIDER (LETTURA TUTTI)");
+//			roleRepository.save(role_readAllProvider);
+//
+//			Role role_writeAllProvider = new Role();
+//			role_writeAllProvider.setName(RoleEnum.PROVIDER_EDIT_ALL.name());
+//			role_writeAllProvider.setDescription("PROVIDER (SCRITTURA TUTTI)");
+//			roleRepository.save(role_writeAllProvider);
 			
 			//PROVIDER_USER_SHOW, PROVIDER_USER_EDIT, PROVIDER_USER_CREATE,
-			Role role_providerUserShow = new Role();
-			role_providerUserShow.setName(RoleEnum.PROVIDER_USER_SHOW.name());
-			role_providerUserShow.setDescription("ò");
-			roleRepository.save(role_providerUserShow);
-
-			Role role_providerUserEdit = new Role();
-			role_providerUserEdit.setName(RoleEnum.PROVIDER_USER_EDIT.name());
-			role_providerUserEdit.setDescription("PROVIDER (MODIFICA UTENTI DEL PROVIDER)");
-			roleRepository.save(role_providerUserEdit);
-
-			Role role_providerUserCreate = new Role();
-			role_providerUserCreate.setName(RoleEnum.PROVIDER_USER_CREATE.name());
-			role_providerUserCreate.setDescription("PROVIDER (CREAZIONE UTENTI DEL PROVIDER)");
-			roleRepository.save(role_providerUserCreate);
+//			Role role_providerUserShow = new Role();
+//			role_providerUserShow.setName(RoleEnum.PROVIDER_USER_SHOW.name());
+//			role_providerUserShow.setDescription("ò");
+//			roleRepository.save(role_providerUserShow);
+//
+//			Role role_providerUserEdit = new Role();
+//			role_providerUserEdit.setName(RoleEnum.PROVIDER_USER_EDIT.name());
+//			role_providerUserEdit.setDescription("PROVIDER (MODIFICA UTENTI DEL PROVIDER)");
+//			roleRepository.save(role_providerUserEdit);
+//
+//			Role role_providerUserCreate = new Role();
+//			role_providerUserCreate.setName(RoleEnum.PROVIDER_USER_CREATE.name());
+//			role_providerUserCreate.setDescription("PROVIDER (CREAZIONE UTENTI DEL PROVIDER)");
+//			roleRepository.save(role_providerUserCreate);
 
 			/* USER */
-			Role role_readUser = new Role();
-			role_readUser.setName(RoleEnum.USER_SHOW.name());
-			role_readUser.setDescription("UTENTI (LETTURA)");
-			roleRepository.save(role_readUser);
-
-			Role role_writeUser = new Role();
-			role_writeUser.setName(RoleEnum.USER_EDIT.name());
-			role_writeUser.setDescription("UTENTI (SCRITTURA)");
-			roleRepository.save(role_writeUser);
-
-			Role role_readAllUser = new Role();
-			role_readAllUser.setName(RoleEnum.USER_SHOW_ALL.name());
-			role_readAllUser.setDescription("UTENTI (LETTURA TUTTI)");
-			roleRepository.save(role_readAllUser);
-
-			Role role_writeAllUser = new Role();
-			role_writeAllUser.setName(RoleEnum.USER_EDIT_ALL.name());
-			role_writeAllUser.setDescription("UTENTI (SCRITTURA TUTTI)");
-			roleRepository.save(role_writeAllUser);
-
-			Role role_createUser = new Role();
-			role_createUser.setName(RoleEnum.USER_CREATE.name());
-			role_createUser.setDescription("UTENTI (CREAZIONE)");
-			roleRepository.save(role_createUser);
+//			Role role_readUser = new Role();
+//			role_readUser.setName(RoleEnum.USER_SHOW.name());
+//			role_readUser.setDescription("UTENTI (LETTURA)");
+//			roleRepository.save(role_readUser);
+//
+//			Role role_writeUser = new Role();
+//			role_writeUser.setName(RoleEnum.USER_EDIT.name());
+//			role_writeUser.setDescription("UTENTI (SCRITTURA)");
+//			roleRepository.save(role_writeUser);
+//
+//			Role role_readAllUser = new Role();
+//			role_readAllUser.setName(RoleEnum.USER_SHOW_ALL.name());
+//			role_readAllUser.setDescription("UTENTI (LETTURA TUTTI)");
+//			roleRepository.save(role_readAllUser);
+//
+//			Role role_writeAllUser = new Role();
+//			role_writeAllUser.setName(RoleEnum.USER_EDIT_ALL.name());
+//			role_writeAllUser.setDescription("UTENTI (SCRITTURA TUTTI)");
+//			roleRepository.save(role_writeAllUser);
+//
+//			Role role_createUser = new Role();
+//			role_createUser.setName(RoleEnum.USER_CREATE.name());
+//			role_createUser.setDescription("UTENTI (CREAZIONE)");
+//			roleRepository.save(role_createUser);
 
 			/* PROFILE PROVIDER */
-			Profile profile_provider = new Profile();
-			profile_provider.setProfileEnum(ProfileEnum.PROVIDER);
-			profile_provider.getRoles().add(role_readProvider);
-			profile_provider.getRoles().add(role_writeProvider);
-			profile_provider.getRoles().add(role_readAccreditamento);
-			profile_provider.getRoles().add(role_writeAccreditamento);
-			profileRepository.save(profile_provider);
+			Profile profile_provider = profileRepository.findOneByProfileEnum(ProfileEnum.PROVIDER).orElse(null);
 
 			/* PROFILE PROVIDERUSERADMIN */
-			Profile profile_providerUserAdmin = new Profile();
-			profile_providerUserAdmin.setProfileEnum(ProfileEnum.PROVIDERUSERADMIN);
-			profile_providerUserAdmin.getRoles().add(role_providerUserCreate);
-			profile_providerUserAdmin.getRoles().add(role_providerUserEdit);
-			profile_providerUserAdmin.getRoles().add(role_providerUserShow);
-			profileRepository.save(profile_providerUserAdmin);
+			Profile profile_providerUserAdmin = profileRepository.findOneByProfileEnum(ProfileEnum.PROVIDERUSERADMIN).orElse(null);
 
 			/* PROFILE SEGRETERIA */
-			Profile profile_admin = new Profile();
-			profile_admin.setProfileEnum(ProfileEnum.SEGRETERIA);
-
-			profile_admin.getRoles().add(role_readAllUser);
-			profile_admin.getRoles().add(role_writeAllUser);
-			profile_admin.getRoles().add(role_createUser);
-
-			profile_admin.getRoles().add(role_readAllProvider);
-			profile_admin.getRoles().add(role_writeAllProvider);
-
-			profile_admin.getRoles().add(role_readAllAccreditamento);
-			profile_admin.getRoles().add(role_writeAllAccreditamento);
-
-			profileRepository.save(profile_admin);
+			Profile profile_admin = profileRepository.findOneByProfileEnum(ProfileEnum.SEGRETERIA).orElse(null);
 
 			/* PROFILE REFEREE */
-			Profile profile_referee = new Profile();
-			profile_referee.setProfileEnum(ProfileEnum.REFEREE);
-
-			profile_referee.getRoles().add(role_readAllProvider);
-			profile_referee.getRoles().add(role_readAllAccreditamento);
-
-			profileRepository.save(profile_referee);
+			Profile profile_referee = profileRepository.findOneByProfileEnum(ProfileEnum.REFEREE).orElse(null);
 
 			/* PROFILE COMMISSIONE */
-			Profile profile_commissione = new Profile();
-			profile_commissione.setProfileEnum(ProfileEnum.COMMISSIONE);
-
-			profile_commissione.getRoles().add(role_readAllProvider);
-			profile_commissione.getRoles().add(role_readAllAccreditamento);
-
-			profileRepository.save(profile_commissione);
+			Profile profile_commissione = profileRepository.findOneByProfileEnum(ProfileEnum.COMMISSIONE).orElse(null);
 
 			/* PROFILE OSSERVATORE */
-			Profile profile_osservatore = new Profile();
-			profile_osservatore.setProfileEnum(ProfileEnum.OSSERVATORE);
-
-			profile_osservatore.getRoles().add(role_readAllProvider);
-			profile_osservatore.getRoles().add(role_readAllAccreditamento);
-
-			profileRepository.save(profile_osservatore);
+			Profile profile_osservatore = profileRepository.findOneByProfileEnum(ProfileEnum.OSSERVATORE).orElse(null);
 
 			Account provider = new Account();
 			provider.setUsername("provider");
