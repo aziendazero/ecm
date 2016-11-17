@@ -478,6 +478,17 @@ public class EventoPianoFormativoController {
 	}
 	
 	/*
+	 * ELIMINAZIONE DI TUTTI GLI EVENTI DAL PIANO FORMATIVO (accreditamento)
+	 * */
+	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/deleteAll")
+	public String removeAllEventoAccreditamento(@PathVariable Long accreditamentoId,@PathVariable Long providerId, @PathVariable Long pianoFormativoId,
+			Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll"));
+		return removeAllEventi(accreditamentoId,providerId, pianoFormativoId, redirectAttrs);
+	}
+	
+	/*
 	 * ELIMINAZIONE DI TUTTI GLI EVENTI DAL PIANO FORMATIVO (piano formativo)
 	 * */
 	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
@@ -485,10 +496,10 @@ public class EventoPianoFormativoController {
 	public String removeAllEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll"));
-		return removeAllEventi(providerId, pianoFormativoId, redirectAttrs);
+		return removeAllEventi(null,providerId, pianoFormativoId, redirectAttrs);
 	}
 	
-	private String removeAllEventi(Long providerId, Long pianoFormativoId, RedirectAttributes redirectAttrs){
+	private String removeAllEventi(Long accreditamentoId, Long providerId, Long pianoFormativoId, RedirectAttributes redirectAttrs){
 		try{
 			Set<Long> ids = new HashSet<Long>();
 			PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
@@ -498,12 +509,22 @@ public class EventoPianoFormativoController {
 			
 			pianoFormativo.getEventiPianoFormativo().clear();
 			pianoFormativoService.save(pianoFormativo);
-			for(Long id : ids)
+			for(Long id : ids){
 				eventoService.delete(id);
+				if(accreditamentoId != null)
+					fieldEditabileService.removeFieldEditabileForAccreditamento(accreditamentoId, id, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO);
+			}
 			
-			redirectAttrs.addFlashAttribute("accordion", pianoFormativo.getAnnoPianoFormativo());
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
-			return "redirect:/provider/" + providerId + "/pianoFormativo/list";
+			// caso fromAccreditamento
+			if (accreditamentoId != null) {
+				redirectAttrs.addFlashAttribute("currentTab","tab4");
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+				return "redirect:/accreditamento/{accreditamentoId}/edit";
+			}else{
+				redirectAttrs.addFlashAttribute("accordion", pianoFormativo.getAnnoPianoFormativo());
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
+				return "redirect:/provider/" + providerId + "/pianoFormativo/list";
+			}
 				
 		}catch(Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/deleteAll"),ex);

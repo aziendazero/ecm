@@ -432,8 +432,8 @@
 			function confirmDeleteEventoPianoFormativoModal(providerId,pianoFormativoId,eventoId,prefixUrl,tipo,codiceIdentificativo){
 			    $('#deleteModal').modal();
 			    
-			    var prefix = [[@{/provider/}]];
-			    var url = prefixUrl + prefix + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + eventoId + "/delete";
+			    var prefix = [[@{prefixUrl}]];
+			    var url = prefixUrl + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + eventoId + "/delete";
 			    
 			    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamnete l'evento " + codiceIdentificativo + " (" + tipo + ")?</h2>");
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
@@ -448,6 +448,16 @@
 			    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
 			} 
+			
+			function confirmDeleteAllEventiPianoFormativoAccreditamentoModal(providerId,pianoFormativoId,accreditamentoId){
+				 $('#deleteModal').modal();
+			    
+			    var prefix = [[@{/accreditamento/}]];
+			    var url = prefix + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll";
+			    
+			    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
+				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
+			}
 
 			/*]]>*/
 		</script>

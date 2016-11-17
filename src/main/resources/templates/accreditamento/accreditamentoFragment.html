@@ -785,6 +785,9 @@
 
 											<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and (#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL) or accreditamentoWrapper.canSegreteriaEdit)}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo.id}/evento/new|}"><i class="fa fa-calendar"> </i> <span th:text="#{label.aggiungi_evento}"></span></a>
 											<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and (!#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL) and !accreditamentoWrapper.canSegreteriaEdit)}" class="btn btn-primary with-margin-top disabled"><i class="fa fa-calendar"></i> <span th:text="#{label.aggiungi_evento}" ></span></a>
+										
+											<button class="btn btn-danger with-margin-top" th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and (#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL) or accreditamentoWrapper.canSegreteriaEdit)}" th:onclick="|confirmDeleteAllEventiPianoFormativoAccreditamentoModal('${accreditamentoWrapper.provider.id}','${accreditamentoWrapper.accreditamento.pianoFormativo.id}','${accreditamentoWrapper.accreditamento.id}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina_tutti_eventi_da_pfa}"> </span></button>	
+										
 										</div>
 									</div>
 								</div>
