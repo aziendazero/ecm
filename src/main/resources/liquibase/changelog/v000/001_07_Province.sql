@@ -1,0 +1,128 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+SET search_path = ecmdb, pg_catalog;
+
+--
+-- Data for Name: province; Type: TABLE DATA; Schema: ecmdb; Owner: ecm
+--
+
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('001', '010', 'TORINO', 'TO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('002', '010', 'VERCELLI', 'VC');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('003', '010', 'NOVARA', 'NO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('004', '010', 'CUNEO', 'CN');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('005', '010', 'ASTI', 'AT');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('006', '010', 'ALESSANDRIA', 'AL');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('096', '010', 'BIELLA', 'BI');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('103', '010', 'VERBANO-CUSIO-OSSOLA', 'VB');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('007', '020', 'VALLE D''AOSTA', 'AO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('012', '030', 'VARESE', 'VA');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('013', '030', 'COMO', 'CO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('014', '030', 'SONDRIO', 'SO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('015', '030', 'MILANO', 'MI');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('016', '030', 'BERGAMO', 'BG');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('017', '030', 'BRESCIA', 'BS');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('018', '030', 'PAVIA', 'PV');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('019', '030', 'CREMONA', 'CR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('020', '030', 'MANTOVA', 'MN');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('097', '030', 'LECCO', 'LC');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('098', '030', 'LODI', 'LO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('108', '030', 'MONZA E DELLA BRIANZA', 'MB');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('021', '041', 'BOLZANO', 'BZ');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('022', '042', 'TRENTO', 'TN');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('023', '050', 'VERONA', 'VR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('024', '050', 'VICENZA', 'VI');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('025', '050', 'BELLUNO', 'BL');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('026', '050', 'TREVISO', 'TV');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('027', '050', 'VENEZIA', 'VE');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('028', '050', 'PADOVA', 'PD');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('029', '050', 'ROVIGO', 'RO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('030', '060', 'UDINE', 'UD');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('031', '060', 'GORIZIA', 'GO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('032', '060', 'TRIESTE', 'TS');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('093', '060', 'PORDENONE', 'PN');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('008', '070', 'IMPERIA', 'IM');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('009', '070', 'SAVONA', 'SV');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('010', '070', 'GENOVA', 'GE');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('011', '070', 'LA SPEZIA', 'SP');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('033', '080', 'PIACENZA', 'PC');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('034', '080', 'PARMA', 'PR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('035', '080', 'REGGIO NELL''EMILIA', 'RE');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('036', '080', 'MODENA', 'MO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('037', '080', 'BOLOGNA', 'BO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('038', '080', 'FERRARA', 'FE');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('039', '080', 'RAVENNA', 'RA');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('040', '080', 'FORLÌ-CESENA', 'FC');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('099', '080', 'RIMINI', 'RN');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('045', '090', 'MASSA-CARRARA', 'MS');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('046', '090', 'LUCCA', 'LU');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('047', '090', 'PISTOIA', 'PT');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('048', '090', 'FIRENZE', 'FI');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('049', '090', 'LIVORNO', 'LI');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('050', '090', 'PISA', 'PI');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('051', '090', 'AREZZO', 'AR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('052', '090', 'SIENA', 'SI');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('053', '090', 'GROSSETO', 'GR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('100', '090', 'PRATO', 'PO');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('054', '100', 'PERUGIA', 'PG');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('055', '100', 'TERNI', 'TR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('041', '110', 'PESARO E URBINO', 'PU');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('042', '110', 'ANCONA', 'AN');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('043', '110', 'MACERATA', 'MC');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('044', '110', 'ASCOLI PICENO', 'AP');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('109', '110', 'FERMO', 'FM');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('056', '120', 'VITERBO', 'VT');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('057', '120', 'RIETI', 'RI');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('058', '120', 'ROMA', 'RM');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('059', '120', 'LATINA', 'LT');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('060', '120', 'FROSINONE', 'FR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('066', '130', 'L''AQUILA', 'AQ');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('067', '130', 'TERAMO', 'TE');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('068', '130', 'PESCARA', 'PE');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('069', '130', 'CHIETI', 'CH');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('070', '140', 'CAMPOBASSO', 'CB');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('094', '140', 'ISERNIA', 'IS');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('061', '150', 'CASERTA', 'CE');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('062', '150', 'BENEVENTO', 'BN');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('063', '150', 'NAPOLI', 'NA');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('064', '150', 'AVELLINO', 'AV');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('065', '150', 'SALERNO', 'SA');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('071', '160', 'FOGGIA', 'FG');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('072', '160', 'BARI', 'BA');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('073', '160', 'TARANTO', 'TA');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('074', '160', 'BRINDISI', 'BR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('075', '160', 'LECCE', 'LE');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('110', '160', 'BARLETTA-ANDRIA-TRANI', 'BT');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('076', '170', 'POTENZA', 'PZ');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('077', '170', 'MATERA', 'MT');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('078', '180', 'COSENZA', 'CS');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('079', '180', 'CATANZARO', 'CZ');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('080', '180', 'REGGIO DI CALABRIA', 'RC');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('101', '180', 'CROTONE', 'KR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('102', '180', 'VIBO VALENTIA', 'VV');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('081', '190', 'TRAPANI', 'TP');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('082', '190', 'PALERMO', 'PA');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('083', '190', 'MESSINA', 'ME');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('084', '190', 'AGRIGENTO', 'AG');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('085', '190', 'CALTANISSETTA', 'CL');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('086', '190', 'ENNA', 'EN');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('087', '190', 'CATANIA', 'CT');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('088', '190', 'RAGUSA', 'RG');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('089', '190', 'SIRACUSA', 'SR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('090', '200', 'SASSARI', 'SS');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('091', '200', 'NUORO', 'NU');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('092', '200', 'CAGLIARI', 'CA');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('095', '200', 'ORISTANO', 'OR');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('104', '200', 'OLBIA-TEMPIO', 'OT');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('105', '200', 'OGLIASTRA', 'OG');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('106', '200', 'MEDIO CAMPIDANO', 'VS');
+INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('107', '200', 'CARBONIA-IGLESIAS', 'CI');
+
