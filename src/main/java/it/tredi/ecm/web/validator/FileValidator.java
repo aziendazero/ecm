@@ -62,7 +62,7 @@ public class FileValidator {
 			String cfDelegatoLegaleRappresentante = providerService.getCodiceFiscaleDelegatoLegaleRappresentantePerVerificaFirmaDigitale(providerId);
 			
 			//se il cf della firma non appartiene al legale rappresentane o al delegato del legale rappresentante, allora non è valido
-			if(cfLegaleRappresentante.equalsIgnoreCase(verificaFirmaDigitale.getLastSignerCF()) || cfDelegatoLegaleRappresentante.equalsIgnoreCase(verificaFirmaDigitale.getLastSignerCF()))
+			if((!verificaFirmaDigitale.getLastSignerCF().isEmpty()) && (cfLegaleRappresentante.equalsIgnoreCase(verificaFirmaDigitale.getLastSignerCF()) || cfDelegatoLegaleRappresentante.equalsIgnoreCase(verificaFirmaDigitale.getLastSignerCF())))
 				return true;
 			
 			return false;

@@ -88,7 +88,7 @@
 			<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.nomeFile}" />
 
-			<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7" th:for="__${propertyName}__" th:unless="${__${wrapper}__ == eventoWrapper}">
+			<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7" th:for="__${propertyName}__" th:unless="${__${wrapper}__ == eventoWrapper or __${wrapper}__ == relazioneAnnualeWrapper}">
 				<i th:if="${__${wrapper}__ == comunicazioneWrapper}" class="fa fa-paperclip"></i>
 				<span th:text="#{label.__${propertyName}__}">label.tipoAllegato</span>
 			</label>
