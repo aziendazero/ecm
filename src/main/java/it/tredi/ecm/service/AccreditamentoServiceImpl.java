@@ -144,20 +144,28 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(Long providerId, AccreditamentoTipoEnum tipoDomanda) {
 		LOGGER.debug(Utils.getLogMessage("Recupero domande di accreditamento avviate per il provider " + providerId));
 		LOGGER.debug(Utils.getLogMessage("Ricerca domande di accreditamento di tipo: " + tipoDomanda.name() + "con data di scadenza posteriore a: " + LocalDate.now()));
-		return accreditamentoRepository.findByProviderIdAndTipoDomandaAndDataScadenzaAfter(providerId, tipoDomanda, LocalDate.now());
+		return accreditamentoRepository.findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(providerId, tipoDomanda, LocalDate.now());
 	}
 
 	/**
-	 * Restituisce l'unica domanda di accreditamento che ha una data di fine accreditamento "attiva" e che è in stato "APPROVATO"
+	 * Restituisce l'unica domanda di accreditamento che ha una data di fine accreditamento "attiva" e che è in stato "ACCREDITATO"
 	 * */
 	@Override
 	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId) throws AccreditamentoNotFoundException{
 		LOGGER.debug(Utils.getLogMessage("Recupero eventuale accreditamento attivo per il provider: " + providerId));
-		Accreditamento accreditamento = accreditamentoRepository.findOneByProviderIdAndStatoAndDataFineAccreditamentoAfter(providerId, AccreditamentoStatoEnum.ACCREDITATO, LocalDate.now());
-		if(accreditamento != null)
-			LOGGER.debug("Trovato accreditamento attivo: " + accreditamento.getId() + "  per il provider: " + providerId);
-		else
+		
+		Accreditamento accreditamento = null;
+		Set<Accreditamento> listaAccreditamentiAttivi = accreditamentoRepository.findAllByProviderIdAndStatoAndDataFineAccreditamentoAfterOrderByDataFineAccreditamentoAsc(providerId, AccreditamentoStatoEnum.ACCREDITATO, LocalDate.now());
+		
+		if(listaAccreditamentiAttivi != null && !listaAccreditamentiAttivi.isEmpty()){
+			LOGGER.info("Trovati " + listaAccreditamentiAttivi.size() + " accreditamenti attivi per il provider: " + providerId);
+			//prendo il primo (quello che sarà il primo a scadere)
+			accreditamento = listaAccreditamentiAttivi.iterator().next();
+			LOGGER.info("Selezionato come valido l'accreditamento: " + accreditamento.getId() + " valido fino al " + accreditamento.getDataFineAccreditamento());
+		}else{
 			throw new AccreditamentoNotFoundException("Nessun Accreditamento attivo trovato per il provider " + providerId);
+		}
+		
 		return accreditamento;
 	}
 
@@ -196,6 +204,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Procedimento Attivo"));
 				return false;
 			}
+			
+			if (accreditamento.isDomandaAttiva()){
+				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Domanda Attiva con scadenza " + accreditamento.getDataFineAccreditamento()));
+				return false;
+			}
+			
 			//TODO gestire la distinzione tra domanda inviata ma ancora non accreditata e domanda accreditata
 			//				if(accreditamento.isInviato())
 			//					return false;

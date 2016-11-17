@@ -223,6 +223,12 @@ public class Accreditamento extends BaseEntity{
 			return true;
 		return false;
 	}
+	
+	public boolean isDomandaAttiva(){
+		if(dataFineAccreditamento != null && (dataFineAccreditamento.isAfter(LocalDate.now()) || dataFineAccreditamento.isEqual(LocalDate.now())) )
+			return true;
+		return false;
+	}
 
 	public boolean hasPianoFormativo(){
 		return (pianoFormativo != null && !pianoFormativo.isNew());

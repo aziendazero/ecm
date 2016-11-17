@@ -42,6 +42,7 @@
 										<th th:text="#{label.accreditamento_invio}">Data invio</th>
 										<th th:text="#{label.accreditamento_valutazione_segreteria}">Datavalidazione</th>
 										<th th:text="#{label.accreditamento_scadenza}">Scadenza</th>
+										<th th:text="#{label.accreditamento_fine}">Fine accreditamento</th>
 									</th:block>
 									<th th:if="${mappaCarica != null}" th:text="#{label.lista_valutatori}">Lista Valutatori</th>
 									<th th:if="${#authentication.principal.isReferee() and mappaScadenze != null}" th:text="#{label.scadenza_valutazione}">scadenza</th>
@@ -64,6 +65,9 @@
 										<div th:if="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:text="#{label.da_prendere_in_carica}" class="danger"></div>
 									</td>
 									<td th:if="${#authentication.principal.isReferee() and mappaScadenze != null}" th:text="${#temporals.format(mappaScadenze.get(accreditamento.id), 'dd/MM/yyyy')}"></td>
+									<td>
+										<span th:text="${accreditamento.dataFineAccreditamento == null} ? '' : ${#temporals.format(accreditamento.dataFineAccreditamento, 'dd/MM/yyyy')}"></span>
+									</td>
 								</tr>
 							</tbody>
 						</table>
