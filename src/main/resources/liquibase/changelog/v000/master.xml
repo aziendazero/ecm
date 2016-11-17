@@ -12,5 +12,8 @@
     <include file="000_05_foreignKey.xml" relativeToChangelogFile="true"/>
     
     <include file="001_00_loaddata.xml" relativeToChangelogFile="true"/>
-
+    
+    <include file="002_20161117_163720_evento_dataScadenzaInvioRendicontazione.xml" relativeToChangelogFile="true"/>
+    
+    <include file="002_20161117_165101_modifica_colonna_sponsor_upload.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

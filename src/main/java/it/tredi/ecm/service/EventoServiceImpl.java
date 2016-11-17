@@ -1299,8 +1299,10 @@ public class EventoServiceImpl implements EventoService {
 
 		//flag e parti da settare a new o null
 		LOGGER.debug(Utils.getLogMessage("Azzeramento dei campi da ricalcolare"));
-		riedizione.setCanAttachSponsor(true);
-		riedizione.setCanDoPagamento(false);
+		//riedizione.setCanAttachSponsor(true);
+		//riedizione.setCanDoPagamento(false);
+		riedizione.setSponsorUploaded(false);
+		riedizione.setDataScadenzaInvioRendicontazione(null);
 		riedizione.setCanDoRendicontazione(false);
 		riedizione.setValidatorCheck(false);
 		riedizione.setReportPartecipantiXML(null);
