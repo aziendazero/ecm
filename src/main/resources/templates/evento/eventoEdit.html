@@ -548,7 +548,7 @@
 						"sClass": "center"
 					}]
 			    });
-			  	
+
 			    initAllCommon();
 			});
 
@@ -674,7 +674,8 @@
 					}
 				});
 				//decide se disabilitare/abilitare tutta la select
-				if (almenoUna) {
+				//decide se disabilitare/abilitare tutta la select
+				if (almenoUna && ($('#discipline').attr('data-editabile') === 'true')) {
 					$('#discipline').prop('disabled', false);
 				} else {
 					$('#discipline').prop('disabled', true);
@@ -1215,10 +1216,16 @@
 						<th th:text="#{label.qualifica}">Qualifica</th>
 						<th th:text="#{label.cv}">CV</th>
 						<th style="padding-right: 8px;">
-							<a id="lookup-responsabiliScientifici" class="btn btn-primary" onclick="openLookupPersona('responsabiliScientifici','base',true)" data-toggle="modal" data-target=".modal-lookup-persona">
+							<a th:unless="${isRiedizione}" id="lookup-responsabiliScientifici" class="btn btn-primary" onclick="openLookupPersona('responsabiliScientifici','base',true)" data-toggle="modal" data-target=".modal-lookup-persona">
 								<span><i class="fa fa-search"></i></span>
 							</a>
-							<a id="add-responsabiliScientifici" class="btn btn-success" onclick="openAddPersonaTo('responsabiliScientifici','base',false)" data-toggle="modal" data-target=".modal-add-persona">
+							<a th:unless="${isRiedizione}" id="add-responsabiliScientifici" class="btn btn-success" onclick="openAddPersonaTo('responsabiliScientifici','base',false)" data-toggle="modal" data-target=".modal-add-persona">
+								<span><i class="fa fa-plus"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" id="lookup-responsabiliScientifici" class="btn btn-primary disabled">
+								<span><i class="fa fa-search"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" id="add-responsabiliScientifici" class="btn btn-success disabled">
 								<span><i class="fa fa-plus"></i></span>
 							</a>
 						</th>
@@ -1237,10 +1244,16 @@
 							<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
 						</td>
 						<td>
-							<a onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+							<a th:unless="${isRiedizione}" onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-							<a onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
+							<a th:unless="${isRiedizione}" onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1287,10 +1300,10 @@
 							<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
 						</td>
 						<td>
-							<a onclick="modificaPersonaFrom('docenti',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+							<a onclick="modificaPersonaFrom('docenti',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-							<a onclick="removePersonaFrom('docenti',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
+							<a onclick="removePersonaFrom('docenti',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1313,10 +1326,16 @@
 						<th th:text="#{label.telefono}">Telefono</th>
 						<th th:text="#{label.cellulare}">Cellulare</th>
 						<th style="padding-right: 8px;">
-							<a id="lookup-responsabileSegreteria" class="btn btn-primary" onclick="openLookupPersona('responsabileSegreteria','Full',true)" data-toggle="modal" data-target=".modal-lookup-persona">
+							<a th:unless="${isRiedizione}" id="lookup-responsabileSegreteria" class="btn btn-primary" onclick="openLookupPersona('responsabileSegreteria','Full',true)" data-toggle="modal" data-target=".modal-lookup-persona">
 								<span><i class="fa fa-search"></i></span>
 							</a>
-							<a id="add-responsabileSegreteria" class="btn btn-success" onclick="openAddPersonaTo('responsabileSegreteria','Full',false)" data-toggle="modal" data-target=".modal-add-personaFull">
+							<a th:unless="${isRiedizione}" id="add-responsabileSegreteria" class="btn btn-success" onclick="openAddPersonaTo('responsabileSegreteria','Full',false)" data-toggle="modal" data-target=".modal-add-personaFull">
+								<span><i class="fa fa-plus"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" id="lookup-responsabileSegreteria" class="btn btn-primary disabled">
+								<span><i class="fa fa-search"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" id="add-responsabileSegreteria" class="btn btn-success disabled">
 								<span><i class="fa fa-plus"></i></span>
 							</a>
 						</th>
@@ -1332,10 +1351,16 @@
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.telefono}"></td>
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.cellulare}"></td>
 						<td>
-							<a onclick="modificaPersonaFrom('responsabileSegreteria',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+							<a th:unless="${isRiedizione}" onclick="modificaPersonaFrom('responsabileSegreteria',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-							<a onclick="removePersonaFrom('responsabileSegreteria',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
+							<a th:unless="${isRiedizione}" onclick="removePersonaFrom('responsabileSegreteria',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" class="btn btn-warning disabled btn-table single" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" class="btn btn-danger disabled btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1354,7 +1379,10 @@
 						<th th:text="#{label.nome_sponsor}">Nome dello Sponsor</th>
 						<th th:text="#{label.contratto}">Contratto</th>
 						<th style="padding-right: 8px;">
-							<a id="add-sponsor" class="btn btn-success" data-toggle="modal" data-target=".modal-add-sponsor">
+							<a th:unless="${isRiedizione}" id="add-sponsor" class="btn btn-success" data-toggle="modal" data-target=".modal-add-sponsor">
+								<span><i class="fa fa-plus"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" id="add-sponsor" class="btn btn-success disabled">
 								<span><i class="fa fa-plus"></i></span>
 							</a>
 						</th>
@@ -1371,7 +1399,10 @@
 							<span th:text="#{label.nessun_contratto}"></span>
 						</td>
 						<td>
-							<a onclick="removeSponsor(this)" class="btn btn-danger" th:text="#{label.elimina}">
+							<a th:unless="${isRiedizione}" onclick="removeSponsor(this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" class="btn btn-danger disabled btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1390,7 +1421,10 @@
 						<th th:text="#{label.nome_partner}">Nome del Partner</th>
 						<th th:text="#{label.contratto}">Contratto</th>
 						<th style="padding-right: 8px;">
-							<a id="add-partner" class="btn btn-success" data-toggle="modal" data-target=".modal-add-partner">
+							<a th:unless="${isRiedizione}" id="add-partner" class="btn btn-success" data-toggle="modal" data-target=".modal-add-partner">
+								<span><i class="fa fa-plus"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" id="add-partner" class="btn btn-success disabled">
 								<span><i class="fa fa-plus"></i></span>
 							</a>
 						</th>
@@ -1407,7 +1441,10 @@
 							<span th:text="#{label.nessun_contratto}"></span>
 						</td>
 						<td>
-							<a onclick="removePartner(this)" class="btn btn-danger" th:text="#{label.elimina}">
+							<a th:unless="${isRiedizione}" onclick="removePartner(this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+							<a th:if="${isRiedizione}" class="btn btn-danger disabled btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1529,13 +1566,22 @@
 										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
 										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 										<th>
-											<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a th:unless="${isRiedizione}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-plus"></i></span>
 											</a>
-											<a id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a th:unless="${isRiedizione}" id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-pause-circle-o"></i></span>
 											</a>
-											<a id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a th:unless="${isRiedizione}" id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<span><i class="fa fa-pencil"></i></span>
+											</a>
+											<a th:if="${isRiedizione}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
+												<span><i class="fa fa-plus"></i></span>
+											</a>
+											<a th:if="${isRiedizione}" id="add-attivitaPausa" class="btn btn-success disabled" th:title="#{label.inserisci_pausa}">
+												<span><i class="fa fa-pause-circle-o"></i></span>
+											</a>
+											<a th:if="${isRiedizione}" id="add-attivitaValutazioneApprendimento" class="btn btn-success disabled" th:title="#{label.inserisci_valutazione_apprendimento}">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
 										</th>
@@ -1555,10 +1601,13 @@
 										<!-- <td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td> -->
 										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita)}"></td>
 										<td>
-											<a onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+											<a onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
-											<a onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
+											<a th:unless="${isRiedizione}" onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+												<span><i class="fa fa-trash"></i></span>
+											</a>
+											<a th:if="${isRiedizione}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
 												<span><i class="fa fa-trash"></i></span>
 											</a>
 										</td>
