@@ -38,6 +38,7 @@ import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
@@ -48,10 +49,11 @@ public class EventoValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventoValidator.class);
 
 	@Autowired private EcmProperties ecmProperties;
+	@Autowired private FileValidator fileValidator;
 
 	private Set<String> risultatiAttesiUtilizzati;
 
-	public void validate(Object target, EventoWrapper wrapper, Errors errors, String prefix){
+	public void validate(Object target, EventoWrapper wrapper, Errors errors, String prefix) throws Exception{
 		Evento evento = (Evento) target;
 		validateCommon(evento, errors, prefix);
 
@@ -67,7 +69,7 @@ public class EventoValidator {
 	}
 
 	//validate delle parti in comune
-	private void validateCommon(Evento evento, Errors errors, String prefix) {
+	private void validateCommon(Evento evento, Errors errors, String prefix) throws Exception{
 
 		/* DESTINATARI EVENTO (campo obbligatorio)
 		 * checkbox -> almeno un valore selezionato
@@ -216,8 +218,13 @@ public class EventoValidator {
 				&& evento.getEventoSponsorizzato() == true
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
-				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null)
+				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
 			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
+		}
+		else{
+			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()));
+				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
+		}
 
 		/* AUTOCERTIFICAZIONE DI AUTORIZZAZIONE DEL MINISTERO
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
@@ -230,8 +237,13 @@ public class EventoValidator {
 				&& evento.getEventoSponsorizzato() == true
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null)
+				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null){
 			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
+		}
+		else{
+			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()));
+				errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
+		}
 
 		/* RADIO ALTRE FORME FINANZIAMENTO (campo obbligatorio)
 		 * radio
@@ -245,8 +257,12 @@ public class EventoValidator {
 		 * */
 		if(evento.getAltreFormeFinanziamento() != null
 				&& evento.getAltreFormeFinanziamento() == true
-				&& evento.getContrattiAccordiConvenzioni() == null)
+				&& evento.getContrattiAccordiConvenzioni() == null){
 			errors.rejectValue("contrattiAccordiConvenzioni", "error.empty");
+		}else{
+			if(!fileValidator.validateFirmaCF(evento.getContrattiAccordiConvenzioni(), evento.getProvider().getId()));
+				errors.rejectValue("contrattiAccordiConvenzioni", "error.codiceFiscale.firmatario");
+		}
 
 		/* AUTOCERTIFICAZIONE ASSENZA FINANZIAMENTI (facoltativo solo per i provider del gruppo A)
 		 * (campo obbligatorio se altreFormeFinanziamento == false)
@@ -255,8 +271,12 @@ public class EventoValidator {
 		if(!evento.getProvider().isGruppoA()){
 			if(evento.getAltreFormeFinanziamento() != null
 					&& evento.getAltreFormeFinanziamento() == false
-					&& evento.getAutocertificazioneAssenzaFinanziamenti() == null)
+					&& evento.getAutocertificazioneAssenzaFinanziamenti() == null){
 				errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.empty");
+			}else{
+				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaFinanziamenti(), evento.getProvider().getId()));
+					errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.codiceFiscale.firmatario");
+			}
 		}
 
 		/* RADIO EVENTO PARTNER (campo obbligatorio)
@@ -292,8 +312,12 @@ public class EventoValidator {
 		/* DICHIARAZIONE ASSENZA CONFLITTO DI INTERESSE (campo obbligatorio)
 		 * file allegato
 		 * */
-		if(evento.getDichiarazioneAssenzaConflittoInteresse() == null)
+		if(evento.getDichiarazioneAssenzaConflittoInteresse() == null){
 			errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.empty");
+		}else{
+			if(!fileValidator.validateFirmaCF(evento.getDichiarazioneAssenzaConflittoInteresse(), evento.getProvider().getId()));
+				errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.codiceFiscale.firmatario");
+		}
 
 		/* PROCEDURA VERIFICA QUALITÀ (campo obbligatorio)
 		 * spunta richiesta
@@ -307,9 +331,9 @@ public class EventoValidator {
 		if(evento.getAutorizzazionePrivacy() == null || evento.getAutorizzazionePrivacy() == false)
 			errors.rejectValue(prefix + "autorizzazionePrivacy", "error.empty");
 	}
-
+	
 	//validate RES
-	private void validateRES(EventoRES evento, EventoWrapper wrapper, Errors errors, String prefix) {
+	private void validateRES(EventoRES evento, EventoWrapper wrapper, Errors errors, String prefix) throws Exception {
 
 		/* SEDE (tutti campi obbligatori)
 		 * provincia da selezione, comune da selezione, almeno 1 char indirizzo, almeno 1 char luogo
@@ -567,6 +591,14 @@ public class EventoValidator {
 		 * */
 		if(evento.getVerificaRicaduteFormative() == null)
 			errors.rejectValue(prefix + "verificaRicaduteFormative", "error.empty");
+		
+		/* DOCUMENTO VERIICA RICADUTE FORMATIVE (campo FACOLTATIVO, MA SE C'E' CONTROLLO SULLA FIRMA DIGITALE)
+		 * file allegato
+		 * */
+		if(evento.getDocumentoVerificaRicaduteFormative() != null && !evento.getDocumentoVerificaRicaduteFormative().isNew()){
+			if(!fileValidator.validateFirmaCF(evento.getDocumentoVerificaRicaduteFormative(), evento.getProvider().getId()));
+				errors.rejectValue("documentoVerificaRicaduteFormative", "error.codiceFiscale.firmatario");
+		}
 
 	}
 
@@ -776,7 +808,7 @@ public class EventoValidator {
 	}
 
 	//validate FAD
-	private void validateFAD(EventoFAD evento, EventoWrapper wrapper, Errors errors, String prefix) {
+	private void validateFAD(EventoFAD evento, EventoWrapper wrapper, Errors errors, String prefix) throws Exception{
 
 		/* DATA FINE (campo obbligatorio)
 		 * la data di fine deve può essere compresa nello stesso anno solare della data di inizio
@@ -930,8 +962,12 @@ public class EventoValidator {
 		/* DOTAZIONE HARDWARE / SOFTWARE (campo obbligatorio)
 		 * file allegato
 		 * */
-		if(evento.getRequisitiHardwareSoftware() == null || evento.getRequisitiHardwareSoftware().isNew())
+		if(evento.getRequisitiHardwareSoftware() == null || evento.getRequisitiHardwareSoftware().isNew()){
 			errors.rejectValue("requisitiHardwareSoftware", "error.empty");
+		}else{
+			if(!fileValidator.validateFirmaCF(evento.getRequisitiHardwareSoftware(), evento.getProvider().getId()));
+				errors.rejectValue("requisitiHardwareSoftware", "error.codiceFiscale.firmatario");
+		}
 
 		/* ACCESSO PIATTAFORMA (serie di campi obbligatori)
 		 * 3 campi testuali

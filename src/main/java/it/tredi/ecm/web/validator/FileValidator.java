@@ -11,7 +11,10 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.ProviderServiceImpl;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
 
 @Component
@@ -20,10 +23,14 @@ public class FileValidator {
 
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private MessageSource messageSource;
-
-	public void validate(Object target, Errors errors, String prefix) {
-		//TODO
-		
+	@Autowired private ProviderService providerService;
+	
+	public void validate(Object target, Errors errors, String prefix, Long providerId) throws Exception{
+		validateData(target, errors, prefix);
+		validateFirma(target, errors, prefix, providerId);
+	}
+	
+	public void validateData(Object target, Errors errors, String prefix) {
 		LOGGER.info(Utils.getLogMessage("Validazione File"));
 		File file = (File)target;
 		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){
@@ -35,7 +42,35 @@ public class FileValidator {
 			}
 		}
 	}
-
+	
+	public void validateFirma(Object target, Errors errors, String prefix, Long providerId) throws Exception{
+		File file = (File)target;
+		if(!(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0)){
+			
+			//se il cf della firma non appartiene al legale rappresentane o al delegato del legale rappresentante, allora non è valido
+			if(!validateFirmaCF(file, providerId))
+				errors.rejectValue(prefix, "error.codiceFiscale.firmatario");
+		}
+	}
+	
+	public boolean validateFirmaCF(Object target, Long providerId) throws Exception{
+		File file = (File)target;
+		if(!(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0)){
+			
+			VerificaFirmaDigitale verificaFirmaDigitale = new VerificaFirmaDigitale(file.getNomeFile(), file.getData());
+			String cfLegaleRappresentante = providerService.getCodiceFiscaleLegaleRappresentantePerVerificaFirmaDigitale(providerId);
+			String cfDelegatoLegaleRappresentante = providerService.getCodiceFiscaleDelegatoLegaleRappresentantePerVerificaFirmaDigitale(providerId);
+			
+			//se il cf della firma non appartiene al legale rappresentane o al delegato del legale rappresentante, allora non è valido
+			if((!verificaFirmaDigitale.getLastSignerCF().isEmpty()) && (cfLegaleRappresentante.equalsIgnoreCase(verificaFirmaDigitale.getLastSignerCF()) || cfDelegatoLegaleRappresentante.equalsIgnoreCase(verificaFirmaDigitale.getLastSignerCF())))
+				return true;
+			
+			return false;
+		}
+		
+		return false;
+	}
+	
 	public String validate(Object target, String contentType) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione File AJAX Upload"));
 		File file = (File)target;
@@ -68,14 +103,14 @@ public class FileValidator {
 		return error;
 	}
 
-	public void validateWithCondition(Object target, Errors errors, String prefix, Boolean condition){
+	public void validateWithCondition(Object target, Errors errors, String prefix, Boolean condition, Long providerId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione File required su condizione"));
 		File file = (File)target;
 		if(condition == true)
-			validate(target, errors, prefix);
+			validate(target, errors, prefix, providerId);
 		else {
 			if(file != null && !file.getNomeFile().isEmpty())
-				validate(file, errors, prefix);
+				validate(file, errors, prefix, providerId);
 		}
 
 	}

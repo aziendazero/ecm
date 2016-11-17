@@ -22,15 +22,15 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 	@Autowired private FileValidator fileValidator;
 	@Autowired private AccreditamentoService accreditamentoService;
 
-	public void validate(Object target, Errors errors, String prefix, Set<File> files){
+	public void validate(Object target, Errors errors, String prefix, Set<File> files, Long providerId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione Allegati Accreditamento"));
 		AccreditamentoAllegatiWrapper wrapper = (AccreditamentoAllegatiWrapper) target;
-		validateFiles(files, errors, "", wrapper.getAccreditamentoId());
+		validateFiles(files, errors, "", wrapper.getAccreditamentoId(), providerId);
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void validateFiles(Object target, Errors errors, String prefix, Long accreditamentoId){
+	public void validateFiles(Object target, Errors errors, String prefix, Long accreditamentoId, Long providerId) throws Exception{
 		Set<File> files = null;
 		if(target != null)
 			files = (Set<File>) target;
@@ -43,6 +43,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 		File sistemaInformatico = null;
 		File pianoQualita = null;
 		File dichiarazioneLegale = null;
+		File dichiarazioneEsclusione = null;
 
 		for(File file : files){
 			if(file != null && !file.isNew()){
@@ -58,16 +59,21 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 					utilizzo = file;
 				else if(file.isSISTEMAINFORMATICO())
 					sistemaInformatico = file;
+				else if(file.isDICHIARAZIONEESCLUSIONE())
+					dichiarazioneEsclusione = file;
 			}
 		}
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 
-		fileValidator.validate(attoCostitutivo, errors, prefix + "attoCostitutivo");
-		fileValidator.validateWithCondition(esperienzaFormazione, errors, prefix + "esperienzaFormazione", accreditamento.getDatiAccreditamento().getDatiEconomici().hasFatturatoFormazione());
-		fileValidator.validate(utilizzo, errors, prefix + "utilizzo");
-		fileValidator.validate(sistemaInformatico, errors, prefix + "sistemaInformatico");
-		fileValidator.validate(pianoQualita, errors, prefix + "pianoQualita");
-		fileValidator.validate(dichiarazioneLegale, errors, prefix + "dichiarazioneLegale");
+		fileValidator.validate(attoCostitutivo, errors, prefix + "attoCostitutivo", providerId);
+		fileValidator.validateWithCondition(esperienzaFormazione, errors, prefix + "esperienzaFormazione", accreditamento.getDatiAccreditamento().getDatiEconomici().hasFatturatoFormazione(), providerId);
+		fileValidator.validate(utilizzo, errors, prefix + "utilizzo", providerId);
+		fileValidator.validate(sistemaInformatico, errors, prefix + "sistemaInformatico", providerId);
+		fileValidator.validate(pianoQualita, errors, prefix + "pianoQualita", providerId);
+		fileValidator.validate(dichiarazioneLegale, errors, prefix + "dichiarazioneLegale", providerId);
+		
+		if(dichiarazioneEsclusione != null && !dichiarazioneEsclusione.getNomeFile().isEmpty())
+			fileValidator.validateFirma(dichiarazioneEsclusione, errors, prefix + "dichiarazioneEsclusione", providerId);
 	}
 }

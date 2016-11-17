@@ -210,7 +210,7 @@ public class AccreditamentoAllegatiController {
 			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: AccreditamentoAllegatiSave:__AFTER SET__"));
 			integrazioneService.isManaged(wrapper.getProvider());
 
-			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles());
+			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles(), wrapper.getProvider().getId());
 
 			if(result.hasErrors()){
 				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));

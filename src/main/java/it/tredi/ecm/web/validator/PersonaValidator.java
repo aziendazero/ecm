@@ -23,10 +23,10 @@ public class PersonaValidator {
 	@Autowired private FileValidator fileValidator;
 	@Autowired private PersonaService personaService;
 
-	public void validate(Object target, Errors errors, String prefix, Set<File> files){
+	public void validate(Object target, Errors errors, String prefix, Set<File> files, Long providerId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione Persona"));
 		validatePersona(target, errors, prefix);
-		validateFiles(files, errors, "", ((Persona)target).getRuolo());
+		validateFiles(files, errors, "", ((Persona)target).getRuolo(), providerId);
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
@@ -84,7 +84,7 @@ public class PersonaValidator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void validateFiles(Object target, Errors errors, String prefix, Ruolo ruolo){
+	public void validateFiles(Object target, Errors errors, String prefix, Ruolo ruolo, Long providerId) throws Exception{
 		LOGGER.debug("VALIDAZIONE ALLEGATI");
 		Set<File> files = null;
 		if(target != null)
@@ -109,15 +109,15 @@ public class PersonaValidator {
 
 		if(ruolo.equals(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE)){
 			//l'unico che ha l'atto di delega
-			fileValidator.validate(delega, errors, prefix + "delega");
+			fileValidator.validate(delega, errors, prefix + "delega", providerId);
 		}
 
 		if(!ruolo.equals(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE)){
 			//solo il DLR NON ha l'atto di nomina
-			fileValidator.validate(attoNomina, errors, prefix + "attoNomina");
+			fileValidator.validate(attoNomina, errors, prefix + "attoNomina", providerId);
 		}
 
 		//tutti hanno il cv
-		fileValidator.validate(cv, errors, prefix + "cv");
+		fileValidator.validate(cv, errors, prefix + "cv", providerId);
 	}
 }

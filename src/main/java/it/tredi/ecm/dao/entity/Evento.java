@@ -159,15 +159,19 @@ public class Evento extends BaseEntity{
 
 	//false -> dopo 90gg
 	//true -> dopo fineEvento
-	private boolean canAttachSponsor = true;
+	//private boolean canAttachSponsor = true;
 	//true -> dopo fineEvento
 	//false -> dopo aver pagato
 	//false -> se passano i 90 gg e non ha fatto nulla
-	private boolean canDoPagamento = false;
+	private Boolean sponsorUploaded = false;
 	//true -> dopo pagamento (Provider B) and attachSponsor fatto
 	//true -> dopo fineEvento (Provider A) and attachSponsor fatto
 	//false -> dopo 90gg
-	private boolean canDoRendicontazione = false;
+	private Boolean canDoRendicontazione = false;
+	
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
+	@Column(name = "data_scadenza_invio_rendicontazione")//scadenza invio rendicontazione
+	LocalDate dataScadenzaInvioRendicontazione;
 
 	@Enumerated(EnumType.STRING)
 	private EventoStatoEnum stato;//vedi descrizione in EventoStatoEnum

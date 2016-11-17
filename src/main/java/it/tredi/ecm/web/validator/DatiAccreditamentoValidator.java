@@ -19,12 +19,12 @@ public class DatiAccreditamentoValidator {
 
 	@Autowired private FileValidator fileValidator;
 
-	public void validate(Object target, Errors errors, String prefix, Set<File> files){
+	public void validate(Object target, Errors errors, String prefix, Set<File> files, Long providerId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione DatiAccreditamento"));
 		DatiAccreditamento dati = (DatiAccreditamento) target;
 		validateDatiAccreditamento(target, errors, prefix);
-		validateFilesConCondizione(files, errors, "", dati);
-		validateFilesObbligatori(files, errors, "");
+		validateFilesConCondizione(files, errors, "", dati, providerId);
+		validateFilesObbligatori(files, errors, "", providerId);
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
@@ -67,7 +67,7 @@ public class DatiAccreditamentoValidator {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void validateFilesConCondizione(Object target, Errors errors, String prefix, DatiAccreditamento dati){
+	private void validateFilesConCondizione(Object target, Errors errors, String prefix, DatiAccreditamento dati, Long providerId) throws Exception{
 		LOGGER.debug("VALIDAZIONE ALLEGATI CON CONDIZIONE");
 		Set<File> files = null;
 		if(target != null)
@@ -82,11 +82,11 @@ public class DatiAccreditamentoValidator {
 					estrattoBilancioComplessivo = file;
 			}
 		}
-		fileValidator.validateWithCondition(estrattoBilancioComplessivo, errors, prefix + "estrattoBilancioComplessivo", dati.getDatiEconomici().hasFatturatoComplessivo());
+		fileValidator.validateWithCondition(estrattoBilancioComplessivo, errors, prefix + "estrattoBilancioComplessivo", dati.getDatiEconomici().hasFatturatoComplessivo(), providerId);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void validateFilesObbligatori(Object target, Errors errors, String prefix){
+	private void validateFilesObbligatori(Object target, Errors errors, String prefix, Long providerId) throws Exception{
 		LOGGER.debug("VALIDAZIONE ALLEGATI OBBLIGATORI");
 		Set<File> files = null;
 		if(target != null)
@@ -107,8 +107,8 @@ public class DatiAccreditamentoValidator {
 					estrattoBilancioFormazione = file;
 			}
 		}
-		fileValidator.validate(funzionigramma, errors, prefix + "funzionigramma");
-		fileValidator.validate(organigramma, errors, prefix + "organigramma");
-		fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione");
+		fileValidator.validate(funzionigramma, errors, prefix + "funzionigramma",providerId);
+		fileValidator.validate(organigramma, errors, prefix + "organigramma", providerId);
+		fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione", providerId);
 	}
 }

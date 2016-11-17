@@ -1,0 +1,1198 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="abarducci (generated)" id="1479309431348-2">
+        <createTable tableName="account">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="accountPK"/>
+            </column>
+            <column name="change_password" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="cognome" type="VARCHAR(255)"/>
+            <column name="data_scadenza_password" type="date"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="enabled" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_date" type="date"/>
+            <column name="locked" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="note" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="username_workflow" type="VARCHAR(255)"/>
+            <column name="valutazioni_non_date" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-3">
+        <createTable tableName="account_domande_non_valutate">
+            <column name="account_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accreditamento_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-4">
+        <createTable tableName="account_profile">
+            <column name="account_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-5">
+        <createTable tableName="accreditamento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="accreditamentoPK"/>
+            </column>
+            <column name="data_fine_accreditamento" type="date"/>
+            <column name="data_inizio_accreditamento" type="date"/>
+            <column name="data_inizio_conteggio" type="date"/>
+            <column name="data_ins_odg" type="date"/>
+            <column name="data_integrazione" type="date"/>
+            <column name="data_invio" type="date"/>
+            <column name="data_richiesta_integrazione" type="date"/>
+            <column name="data_scadenza" type="date"/>
+            <column name="data_valutazione_commissione" type="date"/>
+            <column name="data_valutazione_crecm" type="date"/>
+            <column name="durata_procedimento" type="INT"/>
+            <column name="giorni_integrazione" type="BIGINT"/>
+            <column name="giorni_preavviso_rigetto" type="BIGINT"/>
+            <column name="integrazione_eseguita_da_provider" type="BOOLEAN"/>
+            <column name="preavviso_rigetto_eseguito_da_provider" type="BOOLEAN"/>
+            <column name="stato" type="VARCHAR(255)"/>
+            <column name="tipo_domanda" type="VARCHAR(255)"/>
+            <column name="wf_data_avvio" type="date"/>
+            <column name="wf_process_definition_id" type="BIGINT"/>
+            <column name="wf_process_definition_name" type="VARCHAR(255)"/>
+            <column name="wf_process_definition_version" type="VARCHAR(255)"/>
+            <column name="wf_process_instance_id" type="BIGINT"/>
+            <column name="note_osservazioni_integrazione_id" type="BIGINT"/>
+            <column name="note_osservazioni_preavviso_rigetto_id" type="BIGINT"/>
+            <column name="dati_accreditamento_id" type="BIGINT"/>
+            <column name="decreto_accreditamento_id" type="BIGINT"/>
+            <column name="decreto_diniego_id" type="BIGINT"/>
+            <column name="gruppo_crecm_id" type="BIGINT"/>
+            <column name="piano_formativo_id" type="BIGINT"/>
+            <column name="provider_id" type="BIGINT"/>
+            <column name="richiesta_integrazione_id" type="BIGINT"/>
+            <column name="richiesta_preavviso_rigetto_id" type="BIGINT"/>
+            <column name="team_valutazione_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-6">
+        <createTable tableName="anagrafica">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="anagraficaPK"/>
+            </column>
+            <column name="cellulare" type="VARCHAR(255)"/>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="cognome" type="VARCHAR(255)"/>
+            <column name="dirty" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="pec" type="VARCHAR(255)"/>
+            <column name="straniero" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telefono" type="VARCHAR(255)"/>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-7">
+        <createTable tableName="anagrafica_evento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="anagrafica_eventoPK"/>
+            </column>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="cognome" type="VARCHAR(255)"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="straniero" type="BOOLEAN"/>
+            <column name="cv_id" type="BIGINT"/>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-8">
+        <createTable tableName="anagrafica_full_evento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="anagrafica_full_eventoPK"/>
+            </column>
+            <column name="cellulare" type="VARCHAR(255)"/>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="cognome" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="telefono" type="VARCHAR(255)"/>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-9">
+        <createTable tableName="azione_ruoli_eventofsc">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="azione_ruoli_eventofscPK"/>
+            </column>
+            <column name="azione" type="VARCHAR(255)"/>
+            <column name="obiettivo_formativo" type="VARCHAR(255)"/>
+            <column name="risultati_attesi" type="VARCHAR(255)"/>
+            <column name="tempo_dedicato" type="numeric(19, 2)"/>
+            <column name="fase_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-10">
+        <createTable tableName="azione_ruoli_eventofsc_metodi_di_lavoro">
+            <column name="azione_ruoli_eventofsc_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metodi_di_lavoro" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-11">
+        <createTable tableName="azione_ruoli_eventofsc_ruoli">
+            <column name="azione_ruoli_eventofsc_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ruolo" type="VARCHAR(255)"/>
+            <column name="tempo_dedicato" type="FLOAT4"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-12">
+        <createTable tableName="comuni">
+            <column name="codice_comune" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="codice_provincia" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-13">
+        <createTable tableName="comunicazione">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="comunicazionePK"/>
+            </column>
+            <column name="ambito" type="VARCHAR(255)"/>
+            <column name="chiusa" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data_creazione" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="data_ultima_modifica" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="messaggio" type="TEXT"/>
+            <column name="oggetto" type="VARCHAR(255)"/>
+            <column name="tipologia" type="VARCHAR(255)"/>
+            <column name="allegato_comunicazione_id" type="BIGINT"/>
+            <column name="mittente_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-14">
+        <createTable tableName="comunicazione_destinatari">
+            <column name="comunicazione_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-15">
+        <createTable tableName="comunicazione_response">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="comunicazione_responsePK"/>
+            </column>
+            <column name="data_risposta" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="messaggio" type="TEXT"/>
+            <column name="allegato_risposta_id" type="BIGINT"/>
+            <column name="comunicazione_id" type="BIGINT"/>
+            <column name="mittente_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-16">
+        <createTable tableName="comunicazione_utenti_che_devono_leggere">
+            <column name="comunicazione_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="utenti_che_devono_leggere" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-17">
+        <createTable tableName="dati_accreditamento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="dati_accreditamentoPK"/>
+            </column>
+            <column name="fatturato_complessivo_anno_due" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_complessivo_anno_tre" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_complessivo_anno_uno" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_complessivo_valore_due" type="numeric(19, 2)"/>
+            <column name="fatturato_complessivo_valore_tre" type="numeric(19, 2)"/>
+            <column name="fatturato_complessivo_valore_uno" type="numeric(19, 2)"/>
+            <column name="fatturato_formazione_anno_due" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_formazione_anno_tre" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_formazione_anno_uno" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fatturato_formazione_valore_due" type="numeric(19, 2)"/>
+            <column name="fatturato_formazione_valore_tre" type="numeric(19, 2)"/>
+            <column name="fatturato_formazione_valore_uno" type="numeric(19, 2)"/>
+            <column name="numero_dipendenti_formazione_altro" type="INT"/>
+            <column name="numero_dipendenti_formazione_tempo_indeterminato" type="INT"/>
+            <column name="professioni_accreditamento" type="VARCHAR(255)"/>
+            <column name="tipologia_accreditamento" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-18">
+        <createTable tableName="dati_accreditamento_discipline_selezionate">
+            <column name="dati_accreditamento_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="disciplina_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-19">
+        <createTable tableName="dati_accreditamento_procedure_formative">
+            <column name="dati_accreditamento_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="procedure_formative" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-20">
+        <createTable tableName="disciplina">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="disciplinaPK"/>
+            </column>
+            <column name="codice_cogeaps" type="VARCHAR(255)"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="professione_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-21">
+        <createTable tableName="evento">
+            <column name="evento_type" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="eventoPK"/>
+            </column>
+            <column name="altre_forme_finanziamento" type="BOOLEAN"/>
+            <column name="autorizzazione_privacy" type="BOOLEAN"/>
+            <column name="can_attach_sponsor" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="can_do_pagamento" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="can_do_rendicontazione" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="confermati_crediti" type="BOOLEAN"/>
+            <column name="contenuti_evento" type="INT"/>
+            <column name="costo" type="FLOAT8"/>
+            <column name="crediti" type="FLOAT4"/>
+            <column name="data_fine" type="date"/>
+            <column name="data_inizio" type="date"/>
+            <column name="data_scadenza_pagamento" type="date"/>
+            <column name="data_ultima_modifica" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="durata" type="FLOAT4"/>
+            <column name="edizione" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="evento_avvale_partner" type="BOOLEAN"/>
+            <column name="evento_sponsorizzato" type="BOOLEAN"/>
+            <column name="evento_sponsorizzato_da_aziende_alimenti_prima_infanzia" type="BOOLEAN"/>
+            <column name="lette_info_allegato_sponsor" type="BOOLEAN"/>
+            <column name="numero_partecipanti" type="INT"/>
+            <column name="pag_in_corso" type="BOOLEAN"/>
+            <column name="pagato" type="BOOLEAN"/>
+            <column name="anno_piano_formativo" type="INT"/>
+            <column name="prefix" type="VARCHAR(255)"/>
+            <column name="procedura_formativa" type="VARCHAR(255)"/>
+            <column name="procedura_verifica_qualita_percepita" type="BOOLEAN"/>
+            <column name="professioni_evento" type="VARCHAR(255)"/>
+            <column name="quota_partecipazione" type="numeric(19, 2)"/>
+            <column name="stato" type="VARCHAR(255)"/>
+            <column name="titolo" type="VARCHAR(255)"/>
+            <column name="validator_check" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="descrizione_progetto" type="VARCHAR(255)"/>
+            <column name="fasi_azioni_ruoli_json" type="VARCHAR(255)"/>
+            <column name="fasi_da_inserire" type="VARCHAR(255)"/>
+            <column name="indicatore_efficacia_formativa" type="VARCHAR(255)"/>
+            <column name="numero_tutor" type="INT"/>
+            <column name="ottenuto_comitato_etico" type="BOOLEAN"/>
+            <column name="comune" type="VARCHAR(255)"/>
+            <column name="indirizzo" type="VARCHAR(255)"/>
+            <column name="luogo" type="VARCHAR(255)"/>
+            <column name="provincia" type="VARCHAR(255)"/>
+            <column name="sperimentazione_clinica" type="BOOLEAN"/>
+            <column name="tipologia_evento_fsc" type="VARCHAR(255)"/>
+            <column name="tipologia_gruppo" type="VARCHAR(255)"/>
+            <column name="descrizione_verifica_ricadute_formative" type="VARCHAR(255)"/>
+            <column name="esiste_traduzione_simultanea" type="BOOLEAN"/>
+            <column name="lingua_straniera_utilizzata" type="VARCHAR(255)"/>
+            <column name="materiale_durevole_rilasciato_ai_pratecipanti" type="VARCHAR(255)"/>
+            <column name="razionale" type="VARCHAR(255)"/>
+            <column name="totale_ore_frontali" type="FLOAT4"/>
+            <column name="totale_ore_interattive" type="FLOAT4"/>
+            <column name="solo_lingua_italiana" type="BOOLEAN"/>
+            <column name="tipologia_evento_res" type="VARCHAR(255)"/>
+            <column name="titolo_convegno" type="VARCHAR(255)"/>
+            <column name="verifica_ricadute_formative" type="BOOLEAN"/>
+            <column name="workshop_seminari_ecm" type="BOOLEAN"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="supporto_svolto_da_esperto" type="BOOLEAN"/>
+            <column name="tipologia_evento" type="VARCHAR(255)"/>
+            <column name="url" type="VARCHAR(255)"/>
+            <column name="user_id" type="VARCHAR(255)"/>
+            <column name="accreditamento_id" type="BIGINT"/>
+            <column name="autocertificazione_assenza_aziende_alimenti_prima_infanzia_id" type="BIGINT"/>
+            <column name="autocertificazione_assenza_finanziamenti_id" type="BIGINT"/>
+            <column name="autocertificazione_autorizzazione_ministero_salute_id" type="BIGINT"/>
+            <column name="brochure_evento_id" type="BIGINT"/>
+            <column name="contratti_accordi_convenzioni_id" type="BIGINT"/>
+            <column name="dichiarazione_assenza_conflitto_interesse_id" type="BIGINT"/>
+            <column name="evento_padre_id" type="BIGINT"/>
+            <column name="evento_piano_formativo_id" type="BIGINT"/>
+            <column name="obiettivo_nazionale_id" type="BIGINT"/>
+            <column name="obiettivo_regionale_id" type="BIGINT"/>
+            <column name="provider_id" type="BIGINT"/>
+            <column name="report_partecipanticsv_id" type="BIGINT"/>
+            <column name="report_partecipantixml_id" type="BIGINT"/>
+            <column name="responsabile_segreteria_id" type="BIGINT"/>
+            <column name="documento_verifica_ricadute_formative_id" type="BIGINT"/>
+            <column name="requisiti_hardware_software_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-22">
+        <createTable tableName="evento_destinatari_evento">
+            <column name="evento_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destinatari_evento" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-23">
+        <createTable tableName="evento_discipline">
+            <column name="evento_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="disciplina_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-24">
+        <createTable tableName="evento_piano_formativo">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="evento_piano_formativoPK"/>
+            </column>
+            <column defaultValueBoolean="false" name="attuato" type="BOOLEAN"/>
+            <column name="edizione" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="anno_piano_formativo" type="INT"/>
+            <column name="prefix" type="VARCHAR(255)"/>
+            <column name="procedura_formativa" type="VARCHAR(255)"/>
+            <column name="professioni_evento" type="VARCHAR(255)"/>
+            <column name="titolo" type="VARCHAR(255)"/>
+            <column name="accreditamento_id" type="BIGINT"/>
+            <column name="obiettivo_nazionale_id" type="BIGINT"/>
+            <column name="obiettivo_regionale_id" type="BIGINT"/>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-25">
+        <createTable tableName="evento_piano_formativo_discipline">
+            <column name="evento_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="disciplina_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-26">
+        <createTable tableName="eventofad_obiettivi">
+            <column name="eventofad_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="obiettivi" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-27">
+        <createTable tableName="eventofad_programmafad">
+            <column name="eventofad_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="argomento" type="VARCHAR(255)"/>
+            <column name="docente_id" type="BIGINT"/>
+            <column name="metodologia_didattica" type="VARCHAR(255)"/>
+            <column name="obiettivo_formativo" type="VARCHAR(255)"/>
+            <column name="ore_attivita" type="FLOAT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="risultato_atteso" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-28">
+        <createTable tableName="eventofad_risultati_attesi">
+            <column name="eventofad_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="risultati_attesi" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-29">
+        <createTable tableName="eventofad_verifica_apprendimento">
+            <column name="eventofad_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verifica_apprendimento" type="VARCHAR(255)"/>
+            <column name="verifica_apprendimento_inner" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-30">
+        <createTable tableName="eventofsc_riepilogo_ruoli">
+            <column name="eventofsc_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="crediti" type="FLOAT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="numero_partecipanti" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ruolo" type="VARCHAR(255)"/>
+            <column name="tempo_dedicato" type="FLOAT4">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-31">
+        <createTable tableName="eventofsc_verifica_apprendimento">
+            <column name="eventofsc_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verifica_apprendimento" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-32">
+        <createTable tableName="eventofsc_verifica_presenza_partecipanti">
+            <column name="eventofsc_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verifica_presenza_partecipanti" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-33">
+        <createTable tableName="eventores_date_intermedie">
+            <column name="eventores_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_intermedie" type="date"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-34">
+        <createTable tableName="eventores_obiettivi">
+            <column name="eventores_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="obiettivi" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-35">
+        <createTable tableName="eventores_risultati_attesi">
+            <column name="eventores_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="risultati_attesi" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-36">
+        <createTable tableName="eventores_verifica_apprendimento">
+            <column name="eventores_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verifica_apprendimento" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-37">
+        <createTable tableName="eventores_verifica_presenza_partecipanti">
+            <column name="eventores_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verifica_presenza_partecipanti" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-38">
+        <createTable tableName="fase_azioni_ruoli_eventofsctypea">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="fase_azioni_ruoli_eventofsctypeaPK"/>
+            </column>
+            <column name="fase_di_lavoro" type="VARCHAR(255)"/>
+            <column name="evento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-39">
+        <createTable tableName="field_editabile_accreditamento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="field_editabile_accreditamentoPK"/>
+            </column>
+            <column name="id_field" type="VARCHAR(255)"/>
+            <column name="object_reference" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nota" type="VARCHAR(255)"/>
+            <column name="accreditamento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-40">
+        <createTable tableName="field_editabile_evento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="field_editabile_eventoPK"/>
+            </column>
+            <column name="id_field" type="VARCHAR(255)"/>
+            <column name="object_reference" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="evento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-41">
+        <createTable tableName="field_integrazione_accreditamento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="field_integrazione_accreditamentoPK"/>
+            </column>
+            <column name="id_field" type="VARCHAR(255)"/>
+            <column name="object_reference" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data_modifica" type="date"/>
+            <column name="modificato" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="new_value" type="BYTEA"/>
+            <column name="tipo_integrazione_enum" type="VARCHAR(255)"/>
+            <column name="accreditamento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-42">
+        <createTable tableName="field_valutazione_accreditamento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="field_valutazione_accreditamentoPK"/>
+            </column>
+            <column name="id_field" type="VARCHAR(255)"/>
+            <column name="object_reference" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="esito" type="BOOLEAN"/>
+            <column name="note" type="VARCHAR(255)"/>
+            <column name="accreditamento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-43">
+        <createTable tableName="file">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="filePK"/>
+            </column>
+            <column name="creato" type="date"/>
+            <column name="nome_file" type="VARCHAR(255)"/>
+            <column name="tipo" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-44">
+        <createTable tableName="file_data">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="file_dataPK"/>
+            </column>
+            <column name="data" type="BYTEA"/>
+            <column name="file_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-45">
+        <createTable tableName="gruppo_crecm">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="gruppo_crecmPK"/>
+            </column>
+            <column name="nome" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-46">
+        <createTable tableName="gruppo_crecm_valutatori">
+            <column name="gruppo_crecm_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valutatori_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-47">
+        <createTable tableName="obiettivo">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="obiettivoPK"/>
+            </column>
+            <column name="categoria" type="VARCHAR(255)"/>
+            <column name="codice_cogeaps" type="VARCHAR(255)"/>
+            <column name="nazionale" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nome" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-48">
+        <createTable tableName="pag_dovuti_log">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pag_dovuti_logPK"/>
+            </column>
+            <column name="data_richiesta" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="esito" type="VARCHAR(255)"/>
+            <column name="fault_code" type="VARCHAR(255)"/>
+            <column name="fault_description" type="TEXT"/>
+            <column name="fault_string" type="VARCHAR(255)"/>
+            <column name="id_session" type="VARCHAR(255)"/>
+            <column name="pagamento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-49">
+        <createTable tableName="pag_pagati_log">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pag_pagati_logPK"/>
+            </column>
+            <column name="codice_esito" type="VARCHAR(255)"/>
+            <column name="data_esito" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="data_esito_singolo_pagamento" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="data_richiesta" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="esito_singolo_pagamento" type="VARCHAR(255)"/>
+            <column name="fault_code" type="VARCHAR(255)"/>
+            <column name="fault_description" type="TEXT"/>
+            <column name="fault_string" type="VARCHAR(255)"/>
+            <column name="id_session" type="VARCHAR(255)"/>
+            <column name="identificativo_univoco_riscosse" type="VARCHAR(255)"/>
+            <column name="importo_totale_pagato" type="FLOAT8"/>
+            <column name="pagamento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-50">
+        <createTable tableName="pagamento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pagamentoPK"/>
+            </column>
+            <column name="anagrafica" type="VARCHAR(255)"/>
+            <column name="cap" type="VARCHAR(255)"/>
+            <column name="causale" type="VARCHAR(255)"/>
+            <column name="civico" type="VARCHAR(255)"/>
+            <column name="codice_esito" type="VARCHAR(255)"/>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="commissione_carico_pa" type="FLOAT8"/>
+            <column name="data_esito" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="data_esito_singolo_pagamento" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="data_invio" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="data_pagamento" type="date"/>
+            <column name="data_scadenza_pagamento" type="date"/>
+            <column name="dati_specifici_riscossione" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="esito_singolo_pagamento" type="VARCHAR(255)"/>
+            <column name="id_session" type="VARCHAR(255)"/>
+            <column name="identificativo_univoco_dovuto" type="VARCHAR(255)"/>
+            <column name="identificativo_univoco_riscosse" type="VARCHAR(255)"/>
+            <column name="importo" type="FLOAT8"/>
+            <column name="importo_totale_pagato" type="FLOAT8"/>
+            <column name="indirizzo" type="VARCHAR(255)"/>
+            <column name="localita" type="VARCHAR(255)"/>
+            <column name="nazione" type="VARCHAR(255)"/>
+            <column name="partita_iva" type="VARCHAR(255)"/>
+            <column name="provincia" type="VARCHAR(255)"/>
+            <column name="tipo_versamento" type="VARCHAR(255)"/>
+            <column name="fk_evento" type="BIGINT"/>
+            <column name="fk_quota_annuale" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-51">
+        <createTable tableName="partner">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="partnerPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="partner_file_id" type="BIGINT"/>
+            <column name="evento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-52">
+        <createTable tableName="persona">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="personaPK"/>
+            </column>
+            <column name="coordinatore_comitato_scientifico" type="BOOLEAN"/>
+            <column name="dirty" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="incarico" type="VARCHAR(255)"/>
+            <column name="ruolo" type="VARCHAR(255)"/>
+            <column name="anagrafica_id" type="BIGINT"/>
+            <column name="professione_id" type="BIGINT"/>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-53">
+        <createTable tableName="persona_evento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="persona_eventoPK"/>
+            </column>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="cognome" type="VARCHAR(255)"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="straniero" type="BOOLEAN"/>
+            <column name="qualifica" type="VARCHAR(255)"/>
+            <column name="ruolo" type="VARCHAR(255)"/>
+            <column name="titolare" type="VARCHAR(255)"/>
+            <column name="cv_id" type="BIGINT"/>
+            <column name="docente_id" type="BIGINT"/>
+            <column name="responsabile_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-54">
+        <createTable tableName="persona_files">
+            <column name="persona_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="files_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-55">
+        <createTable tableName="persona_full_evento">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="persona_full_eventoPK"/>
+            </column>
+            <column name="cellulare" type="VARCHAR(255)"/>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="cognome" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="telefono" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-56">
+        <createTable tableName="piano_formativo">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="piano_formativoPK"/>
+            </column>
+            <column name="anno_piano_formativo" type="INT"/>
+            <column name="data_fine_modifica" type="date"/>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-57">
+        <createTable tableName="piano_formativo_eventi_piano_formativo">
+            <column name="piano_formativo_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eventi_piano_formativo_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-58">
+        <createTable tableName="professione">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="professionePK"/>
+            </column>
+            <column name="codice_cogeaps" type="VARCHAR(255)"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="sanitaria" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-59">
+        <createTable tableName="profile">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="profilePK"/>
+            </column>
+            <column name="profile_enum" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-60">
+        <createTable tableName="profile_role">
+            <column name="profile_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-61">
+        <createTable tableName="programma_giornalierores">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="programma_giornalieroresPK"/>
+            </column>
+            <column name="giorno" type="date"/>
+            <column name="comune" type="VARCHAR(255)"/>
+            <column name="indirizzo" type="VARCHAR(255)"/>
+            <column name="luogo" type="VARCHAR(255)"/>
+            <column name="provincia" type="VARCHAR(255)"/>
+            <column name="evento_res_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-62">
+        <createTable tableName="programma_giornalierores_programma">
+            <column name="programma_giornalierores_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pausa" type="VARCHAR(255)"/>
+            <column name="valutazione_apprendimento" type="VARCHAR(255)"/>
+            <column name="argomento" type="VARCHAR(255)"/>
+            <column name="docente_id" type="BIGINT"/>
+            <column name="metodologia_didattica" type="VARCHAR(255)"/>
+            <column name="minuti_attivita" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="obiettivo_formativo" type="VARCHAR(255)"/>
+            <column name="orario_fine" type="TIME WITHOUT TIME ZONE"/>
+            <column name="orario_inizio" type="TIME WITHOUT TIME ZONE"/>
+            <column name="ore_attivita" type="FLOAT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="risultato_atteso" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-63">
+        <createTable tableName="provider">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="providerPK"/>
+            </column>
+            <column name="can_insert_accreditamento_standard" type="BOOLEAN"/>
+            <column name="can_insert_evento" type="BOOLEAN"/>
+            <column name="can_insert_piano_formativo" type="BOOLEAN"/>
+            <column name="can_insert_relazione_annuale" type="BOOLEAN"/>
+            <column name="codice_cogeaps" type="VARCHAR(255)"/>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="denominazione_legale" type="VARCHAR(255)"/>
+            <column name="email_struttura" type="VARCHAR(255)"/>
+            <column name="gruppo" type="VARCHAR(255)"/>
+            <column name="has_partitaiva" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="natura_organizzazione" type="VARCHAR(255)"/>
+            <column name="no_profit" type="BOOLEAN"/>
+            <column name="partita_iva" type="VARCHAR(255)"/>
+            <column name="ragione_sociale" type="VARCHAR(255)"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="tipo_organizzatore" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-64">
+        <createTable tableName="provider_files">
+            <column name="provider_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="files_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-65">
+        <createTable tableName="province">
+            <column name="codice_provincia" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="codice_regione" type="VARCHAR(255)"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="sigla" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-66">
+        <createTable tableName="quota_annuale">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="quota_annualePK"/>
+            </column>
+            <column name="anno_riferimento" type="INT"/>
+            <column name="pag_in_corso" type="BOOLEAN"/>
+            <column name="pagato" type="BOOLEAN"/>
+            <column name="primo_anno" type="BOOLEAN"/>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-67">
+        <createTable tableName="relazione_annuale">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="relazione_annualePK"/>
+            </column>
+            <column name="altri_finanziamenti" type="numeric(19, 2)"/>
+            <column name="anno_riferimento" type="INT"/>
+            <column name="costi_totali_eventi" type="numeric(19, 2)"/>
+            <column name="data_fine_modifca" type="date"/>
+            <column name="eventi_definitivi_manuali" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eventi_definitivipfa" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eventi_inseritipfa" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="numero_partecipanti_no_crediti" type="INT"/>
+            <column name="quote_di_partecipazione" type="numeric(19, 2)"/>
+            <column name="rapporto_attuazione" type="numeric(19, 2)"/>
+            <column name="rapporto_costi_entrate" type="numeric(19, 2)"/>
+            <column name="rapporto_obiettivi_regionali" type="numeric(19, 2)"/>
+            <column name="ricavi_da_sponsor" type="numeric(19, 2)"/>
+            <column name="totale_eventi_definitivi_con_riedizioni" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="totale_eventi_definitivi_no_riedizioni" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_id" type="BIGINT"/>
+            <column name="relazione_finale_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-68">
+        <createTable tableName="relazione_annuale_eventi_attuati">
+            <column name="relazione_annuale_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eventi_attuati_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-69">
+        <createTable tableName="relazione_annuale_eventipfa">
+            <column name="relazione_annuale_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eventipfa_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-70">
+        <createTable tableName="relazione_annuale_riepilogo_discipline">
+            <column name="relazione_annuale_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="INT"/>
+            <column name="riepilogo_discipline_key" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-71">
+        <createTable tableName="relazione_annuale_riepilogo_obiettivi_nazionali">
+            <column name="relazione_annuale_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="INT"/>
+            <column name="riepilogo_obiettivi_key" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-72">
+        <createTable tableName="relazione_annuale_riepilogo_obiettivi_regionali">
+            <column name="relazione_annuale_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="INT"/>
+            <column name="riepilogo_obiettivi_regionali_key" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-73">
+        <createTable tableName="relazione_annuale_riepilogo_professioni">
+            <column name="relazione_annuale_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="INT"/>
+            <column name="riepilogo_professioni_key" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-74">
+        <createTable tableName="rendicontazione_inviata">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="rendicontazione_inviataPK"/>
+            </column>
+            <column name="data_invio" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="file_name" type="VARCHAR(255)"/>
+            <column name="response" type="TEXT"/>
+            <column name="result" type="VARCHAR(255)"/>
+            <column name="stato" type="VARCHAR(255)"/>
+            <column name="account_invio_id" type="BIGINT"/>
+            <column name="evento_id" type="BIGINT"/>
+            <column name="file_rendicontazione_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-75">
+        <createTable tableName="riepilogo_fad">
+            <column name="riepilogo_fad_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="FLOAT4"/>
+            <column name="key_metodologia" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-76">
+        <createTable tableName="riepilogo_res">
+            <column name="riepilogo_res_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="FLOAT4"/>
+            <column name="key_metodologia" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-77">
+        <createTable tableName="role">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="rolePK"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-78">
+        <createTable tableName="sede">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="sedePK"/>
+            </column>
+            <column name="altro_telefono" type="VARCHAR(255)"/>
+            <column name="cap" type="VARCHAR(255)"/>
+            <column name="comune" type="VARCHAR(255)"/>
+            <column name="dirty" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="fax" type="VARCHAR(255)"/>
+            <column name="indirizzo" type="VARCHAR(255)"/>
+            <column name="provincia" type="VARCHAR(255)"/>
+            <column name="sede_legale" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sede_operativa" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telefono" type="VARCHAR(255)"/>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-79">
+        <createTable tableName="seduta">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="sedutaPK"/>
+            </column>
+            <column name="data" type="date"/>
+            <column name="locked" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="numero_verbale" type="VARCHAR(255)"/>
+            <column name="ora" type="TIME WITHOUT TIME ZONE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-80">
+        <createTable tableName="sponsor">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="sponsorPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="sponsor_file_id" type="BIGINT"/>
+            <column name="evento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-81">
+        <createTable tableName="team_valutazione">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="team_valutazionePK"/>
+            </column>
+            <column name="componente_osservatorio_regionale_id" type="BIGINT"/>
+            <column name="responsabile_informatico_id" type="BIGINT"/>
+            <column name="team_leader_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-82">
+        <createTable tableName="team_valutazione_componenti_segreteria">
+            <column name="team_valutazione_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="componenti_segreteria_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-83">
+        <createTable tableName="token">
+            <column name="token" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-84">
+        <createTable tableName="valutazione">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="valutazionePK"/>
+            </column>
+            <column name="dataora_scadenza_possibilita_valutazione" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="data_valutazione" type="date"/>
+            <column name="tipo_valutazione" type="VARCHAR(255)"/>
+            <column name="valutazione_complessiva" type="VARCHAR(255)"/>
+            <column name="account_id" type="BIGINT"/>
+            <column name="accreditamento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-85">
+        <createTable tableName="valutazione_commissione">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="valutazione_commissionePK"/>
+            </column>
+            <column name="oggetto_discussione" type="VARCHAR(255)"/>
+            <column name="stato" type="VARCHAR(255)"/>
+            <column name="valutazione_commissione" type="VARCHAR(255)"/>
+            <column name="accreditamento_id" type="BIGINT"/>
+            <column name="seduta_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-86">
+        <createTable tableName="valutazione_valutazioni">
+            <column name="valutazione_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valutazioni_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

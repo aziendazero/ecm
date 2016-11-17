@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="abarducci (generated)" id="1479309431348-111">
+        <addUniqueConstraint columnNames="eventipfa_id" constraintName="UK_2h9vgueq7vc0e13wkxwneqg98" tableName="relazione_annuale_eventipfa"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-112">
+        <addUniqueConstraint columnNames="componenti_segreteria_id" constraintName="UK_6iwrffw48qf74n4orvpjq4r8n" tableName="team_valutazione_componenti_segreteria"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-113">
+        <addUniqueConstraint columnNames="eventi_attuati_id" constraintName="UK_8cbgmd8nwomqmwcx8vfm7u3lw" tableName="relazione_annuale_eventi_attuati"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-114">
+        <addUniqueConstraint columnNames="valutatori_id" constraintName="UK_bj9p3udv9pjs3j6q0wyg0bc3b" tableName="gruppo_crecm_valutatori"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1479309431348-115">
+        <addUniqueConstraint columnNames="valutazioni_id" constraintName="UK_gj7459cba1dsorqj2c54ukfua" tableName="valutazione_valutazioni"/>
+    </changeSet>
+</databaseChangeLog>

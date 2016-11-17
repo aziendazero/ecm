@@ -28,6 +28,7 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.validator.FileValidator;
@@ -105,6 +106,7 @@ public class FileController {
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /file/upload"), ex);
 		}
+		
 		return file;
 	}
 

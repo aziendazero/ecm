@@ -50,6 +50,7 @@ import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
+import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
@@ -77,9 +78,11 @@ import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
+import it.tredi.ecm.web.validator.FileValidator;
 
 @Service
 public class EventoServiceImpl implements EventoService {
@@ -97,6 +100,11 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
 	@Autowired private FileService fileService;
 	@Autowired private CogeapsWsRestClient cogeapsWsRestClient;
+	
+	@Autowired private ProviderService providerService;
+	@Autowired private FileValidator fileValidator;
+	@Autowired private PianoFormativoService pianoFormativoService;
+	
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -114,12 +122,36 @@ public class EventoServiceImpl implements EventoService {
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		eventoRepository.save(evento);
 
+//		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
+//			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
+//			eventoPianoFormativo.setAttuato(true);
+//			eventoPianoFormativoRepository.save(eventoPianoFormativo);
+//		}
+
 		//se attuazione di evento del piano formativo aggiorna il flag
-		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
+		//se attuazione di evento del piano formativo con data fine all'anno successivo...l'evento viene inserito nel piano formativo dell'anno successivo
+		if(evento.isEventoDaPianoFormativo()){
 			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
-			eventoPianoFormativo.setAttuato(true);
+			
+			LocalDate dataFine = evento.getDataFine();
+			if(dataFine != null){
+				int annoPianoFormativo = dataFine.getYear();
+				PianoFormativo pf = pianoFormativoService.getPianoFormativoAnnualeForProvider(evento.getProvider().getId(), annoPianoFormativo);
+				if(pf == null){
+					pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
+				}
+				
+				
+				pf.addEvento(eventoPianoFormativo);
+				pianoFormativoService.save(pf);
+			}
+			
+			if(!evento.getEventoPianoFormativo().isAttuato()){
+				eventoPianoFormativo.setAttuato(true);
+			}
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
+		
 	}
 
 	@Override
@@ -380,6 +412,11 @@ public class EventoServiceImpl implements EventoService {
 			if (!reportFileName.trim().toUpperCase().endsWith(".P7M")) { //file non firmato -> invio non concesso
 				throw new Exception("error.file_non_firmato");
 			}
+			
+			//il file deve essere firmato digitalmente e con un certificato appartenente al Legale Rappresentante o al suo Delegato
+			boolean validateCFFirma = fileValidator.validateFirmaCF(evento.getReportPartecipantiXML(), evento.getProvider().getId());
+			if(!validateCFFirma)
+				throw new Exception("error.codiceFiscale.firmatario");
 
 			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(reportFileName, evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
 
@@ -1286,8 +1323,10 @@ public class EventoServiceImpl implements EventoService {
 
 		//flag e parti da settare a new o null
 		LOGGER.debug(Utils.getLogMessage("Azzeramento dei campi da ricalcolare"));
-		riedizione.setCanAttachSponsor(true);
-		riedizione.setCanDoPagamento(false);
+		//riedizione.setCanAttachSponsor(true);
+		//riedizione.setCanDoPagamento(false);
+		riedizione.setSponsorUploaded(false);
+		riedizione.setDataScadenzaInvioRendicontazione(null);
 		riedizione.setCanDoRendicontazione(false);
 		riedizione.setValidatorCheck(false);
 		riedizione.setReportPartecipantiXML(null);

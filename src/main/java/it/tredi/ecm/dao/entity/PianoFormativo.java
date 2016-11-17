@@ -32,11 +32,13 @@ public class PianoFormativo extends BaseEntity{
 
 	public void addEvento(EventoPianoFormativo evento){
 		this.getEventiPianoFormativo().add(evento);
-		if(evento.getPianoFormativo() != null){
-			if(evento.getPianoFormativo().intValue() < this.annoPianoFormativo.intValue())
-				evento.setPianoFormativo(this.annoPianoFormativo);
-		}else
-			evento.setPianoFormativo(this.annoPianoFormativo);
+		evento.setPianoFormativo(this.annoPianoFormativo);
+		
+//		if(evento.getPianoFormativo() != null){
+//			if(evento.getPianoFormativo().intValue() < this.annoPianoFormativo.intValue())
+//				evento.setPianoFormativo(this.annoPianoFormativo);
+//		}else
+//			evento.setPianoFormativo(this.annoPianoFormativo);
 	}
 	
 	public void removeEvento(long eventoId){

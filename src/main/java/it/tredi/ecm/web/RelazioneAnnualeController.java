@@ -150,7 +150,7 @@ public class RelazioneAnnualeController {
 				wrapper.getRelazioneAnnuale().setRelazioneFinale(fileService.getFile(wrapper.getRelazioneFinale().getId()));
 			}
 			
-			relazioneAnnualeValidator.validate(wrapper.getRelazioneAnnuale(), result, "relazioneAnnuale.");
+			relazioneAnnualeValidator.validate(wrapper.getRelazioneAnnuale(), result, "relazioneAnnuale.", providerId);
 			
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));

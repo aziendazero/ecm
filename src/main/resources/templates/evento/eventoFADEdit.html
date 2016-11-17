@@ -836,7 +836,7 @@
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, requisitiHardwareSoftware, null, null, null, false, null, true)" ></th:block> -->
-										<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_REQUISITI_HARDWARE_SOFTWARE}', requisitiHardwareSoftware, null, null, null, false, 'edit', true)" ></th:block>
+										<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_REQUISITI_HARDWARE_SOFTWARE}', requisitiHardwareSoftware, null, null, null, true, 'edit', true)" ></th:block>
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'requisitiHardwareSoftware')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('requisitiHardwareSoftware')}__}"></div>
 								</div>
@@ -1118,7 +1118,7 @@
 									</div>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block> -->
-										<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, false, 'edit', false)" ></th:block>
+										<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, true, 'edit', false)" ></th:block>
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'dichiarazioneAssenzaConflittoInteresse')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('dichiarazioneAssenzaConflittoInteresse')}__}"></div>
 								</div>
@@ -1193,6 +1193,10 @@
 				});
 
 				function initAll(){
+					
+					$("#add-attivitaFAD-modal").draggable({
+					    handle: ".modal-header"
+					}); 
 
 					$('input.flat').iCheck({
 			            checkboxClass: 'icheckbox_flat-green',
