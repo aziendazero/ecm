@@ -1,0 +1,102 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="abarducci" id="01">
+    	<comment>Dati professione</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_01_Professione.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>    
+    </changeSet>
+
+    <changeSet author="abarducci" id="02">
+    	<comment>Dati Disciplina</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_02_Disciplina.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>    
+    </changeSet>
+
+    <changeSet author="abarducci" id="03">
+    	<comment>Dati Obiettivi</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_03_Obiettivo.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>    
+    </changeSet>
+
+    <changeSet author="abarducci" id="04">
+    	<comment>Dati Profile</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_04_Profile.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>    
+    </changeSet>
+
+    <changeSet author="abarducci" id="05">
+    	<comment>Dati Role</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_05_Role.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>    
+    </changeSet>
+
+    <changeSet author="abarducci" id="06">
+    	<comment>Dati profile_role</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_06_profile_role.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>    
+    </changeSet>
+
+    <changeSet author="abarducci" id="07">
+    	<comment>Dati Province</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_07_Province.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>    
+    </changeSet>
+
+    <changeSet author="abarducci" id="08">
+    	<comment>Dati Comuni</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_08_Comuni.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>    
+    </changeSet>
+
+    <changeSet author="abarducci" id="09">
+    	<comment>Dati Comuni</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_09_SetSequence.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>    
+    </changeSet>
+</databaseChangeLog>
