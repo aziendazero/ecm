@@ -320,6 +320,38 @@ public class Evento extends BaseEntity{
 			setDataScadenzaPagamento(dataFine.plusDays(90));
 	}
 	
+	public boolean canEdit(){
+		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.VALIDATO)
+			return true;
+		
+		if(stato == EventoStatoEnum.CANCELLATO)
+			return false;
+		
+		if(stato == EventoStatoEnum.RAPPORTATO)
+			return false;
+		
+		return false;
+	}
+	
+	/*
+	*	1) evento terminato
+	*	2) sponsor non ancora caricati
+	*	3) siamo ancora entro i 90 gg dalla fine dell'evento  
+	*	4) passati i 90 gg -> non è più possibile caricare gli sponsor
+	*/
+	public boolean canDoUploadSponsor(){
+		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
+			return false;
+		
+		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
+			if(dataScadenzaInvioRendicontazione != null && (sponsorUploaded == null || !sponsorUploaded.booleanValue()) && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	
 	/*
 	*	1) evento terminato
 	*	2) evento non è stato già pagato
@@ -327,6 +359,9 @@ public class Evento extends BaseEntity{
 	*	4) passati i 90 gg -> non è più possibile pagare
 	*/
 	public boolean canDoPagamento(){
+		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
+			return false;
+		
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
 			if(pagato != null && !pagato.booleanValue() && dataScadenzaPagamento != null && !LocalDate.now().isAfter(dataScadenzaPagamento))
 				return true;
@@ -339,6 +374,9 @@ public class Evento extends BaseEntity{
 	 * Il tasto appare solo a evento terminato
 	 * */
 	public boolean canDoRendicontazione(){
+		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
+			return false;
+		
 		if(dataFine != null && LocalDate.now().isAfter(dataFine))
 			return true;
 		
@@ -353,6 +391,9 @@ public class Evento extends BaseEntity{
 	*
 	*/
 	public boolean canDoInviaACogeaps(){
+		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
+			return false;
+		
 		//TODO deve pagare prima di poter rendicontare???
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
 			if(dataScadenzaInvioRendicontazione != null && sponsorUploaded != null && sponsorUploaded.booleanValue() && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione))

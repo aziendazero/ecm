@@ -358,14 +358,20 @@ public class EventoController {
 		}
 	}
 
-	//TODO	@PreAuthorize("@securityAccessServiceImpl.canDeleteEvento(principal, #providerId")
+		//TODO	@PreAuthorize("@securityAccessServiceImpl.canDeleteEvento(principal, #providerId")
 		@RequestMapping("/provider/{providerId}/evento/{eventoId}/delete")
 		public String deleteEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
 				Model model, RedirectAttributes redirectAttrs) {
 			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/delete"));
 			try {
 				//delete dell'evento
-				eventoService.delete(eventoId);
+				Evento evento = eventoService.getEvento(eventoId);
+				if(evento.getStato() == EventoStatoEnum.BOZZA){
+					eventoService.delete(eventoId);
+				}else{
+					evento.setStato(EventoStatoEnum.CANCELLATO);
+					eventoService.save(evento);
+				}
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_elimitato", "success"));
 				return "redirect:/provider/{providerId}/evento/list";
 			}
