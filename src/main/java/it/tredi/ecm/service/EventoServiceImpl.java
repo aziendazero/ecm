@@ -57,6 +57,7 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
+import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
@@ -293,7 +294,7 @@ public class EventoServiceImpl implements EventoService {
 
 			retrieveProgrammaAndAddJoin(eventoWrapper);
 		}
-		
+
 		//valuto se salvare i crediti proposti o quelli calcolati dal sistema
 		if(evento.getConfermatiCrediti().booleanValue()){
 			evento.setCrediti(eventoWrapper.getCreditiProposti());
@@ -1234,6 +1235,11 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		//parte in comune
+		LOGGER.debug(Utils.getLogMessage("Clonazione destinatari"));
+		Set<DestinatariEventoEnum> destinatariEvento = new HashSet<DestinatariEventoEnum>();
+		destinatariEvento.addAll(Arrays.asList(riedizione.getDestinatariEvento().toArray(new DestinatariEventoEnum[riedizione.getDestinatariEvento().size()])));
+		riedizione.setDestinatariEvento(destinatariEvento);
+
 		LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio Responsabili"));
 		for(PersonaEvento r : riedizione.getResponsabili()) {
 			LOGGER.debug(Utils.getLogMessage("Clonazione Responsabile: " + r.getId()));
@@ -1315,13 +1321,13 @@ public class EventoServiceImpl implements EventoService {
 		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStatoNot(providerId, leftDate, rightDate, EventoStatoEnum.BOZZA);
 	}
-	
+
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
 		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalse(providerId, LocalDate.now(), LocalDate.now().plusDays(30));
 	}
-	
+
 	@Override
 	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
 		Set<Evento> listaEventi = getEventiForProviderIdInScadenzaDiPagamento(providerId);
@@ -1329,13 +1335,13 @@ public class EventoServiceImpl implements EventoService {
 			return listaEventi.size();
 		return 0;
 	}
-	
+
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId) {
 		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(providerId, LocalDate.now());
 	}
-	
+
 	@Override
 	public int countEventiForProviderIdPagamentoScaduti(Long providerId) {
 		Set<Evento> listaEventi = getEventiForProviderIdPagamentoScaduti(providerId);
