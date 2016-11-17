@@ -313,7 +313,7 @@ public class PersonaController {
 				integrazioneService.isManaged(personaWrapper.getPersona());
 			}
 
-			personaValidator.validate(personaWrapper.getPersona(), result, "persona.", personaWrapper.getFiles());
+			personaValidator.validate(personaWrapper.getPersona(), result, "persona.", personaWrapper.getFiles(), providerId);
 
 			try{
 				if(result.hasErrors()){

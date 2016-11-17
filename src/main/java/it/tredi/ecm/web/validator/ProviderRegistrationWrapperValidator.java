@@ -34,7 +34,8 @@ public class ProviderRegistrationWrapperValidator{
 //			errors.rejectValue("delegato", "error.empty");
 
 		if(providerForm.isDelegato()) {
-			fileValidator.validate(providerForm.getDelega(), errors, "delega");
+			//TODO se viene riabilitato questo file -> recuperare il codice fiscale da passare al filevalidator per la verifica sulla firma digitale
+			fileValidator.validateData(providerForm.getDelega(), errors, "delega");
 		}
 
 		Utils.logDebugErrorFields(LOGGER, errors);

@@ -32,6 +32,6 @@ public class EngineeringValidator {
 					fileDaFirmare = file;
 		}
 
-		fileValidator.validate(fileDaFirmare, errors, prefix + "fileDaFirmare");
+		fileValidator.validateData(fileDaFirmare, errors, prefix + "fileDaFirmare");
 	}
 }

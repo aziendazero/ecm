@@ -73,9 +73,11 @@ import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
+import it.tredi.ecm.web.validator.FileValidator;
 
 @Service
 public class EventoServiceImpl implements EventoService {
@@ -93,6 +95,10 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
 	@Autowired private FileService fileService;
 	@Autowired private CogeapsWsRestClient cogeapsWsRestClient;
+	
+	@Autowired private ProviderService providerService;
+	@Autowired private FileValidator fileValidator;
+	
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -376,6 +382,11 @@ public class EventoServiceImpl implements EventoService {
 			if (!reportFileName.trim().toUpperCase().endsWith(".P7M")) { //file non firmato -> invio non concesso
 				throw new Exception("error.file_non_firmato");
 			}
+			
+			//il file deve essere firmato digitalmente e con un certificato appartenente al Legale Rappresentante o al suo Delegato
+			boolean validateCFFirma = fileValidator.validateFirmaCF(evento.getReportPartecipantiXML(), evento.getProvider().getId());
+			if(!validateCFFirma)
+				throw new Exception("error.codiceFiscale.firmatario");
 
 			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(reportFileName, evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
 

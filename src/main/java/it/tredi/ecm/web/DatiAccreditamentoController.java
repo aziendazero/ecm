@@ -246,7 +246,7 @@ public class DatiAccreditamentoController {
 			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: DatiAccreditamentoSave:__AFTER SET__"));
 			//integrazioneService.isManaged(wrapper.getDatiAccreditamento());
 
-			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles());
+			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles(), wrapper.getProvider().getId());
 
 			if(result.hasErrors()){
 				LOGGER.debug(Utils.getLogMessage("Validazione Fallita"));

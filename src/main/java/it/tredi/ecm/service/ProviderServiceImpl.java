@@ -242,4 +242,30 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setCanInsertEvento(true);
 		save(provider);
 	}
+	
+	@Override
+	public String getCodiceFiscaleLegaleRappresentantePerVerificaFirmaDigitale(Long providerId) {
+		LOGGER.debug("Recupero CodiceFiscale Legale Rappresentante per verifica firma digitale del Provider: " + providerId);
+
+		Persona persona = personaService.getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE, providerId);
+		if(persona != null && persona.getAnagrafica() != null){
+			return persona.getAnagrafica().getCodiceFiscale();
+		}
+		
+		LOGGER.debug("Legale Rappresentante non presente per il Provider: " + providerId);
+		return "";
+	}
+	
+	@Override
+	public String getCodiceFiscaleDelegatoLegaleRappresentantePerVerificaFirmaDigitale(Long providerId) {
+		LOGGER.debug("Recupero CodiceFiscale Delegato Legale Rappresentante per verifica firma digitale del Provider: " + providerId);
+
+		Persona persona = personaService.getPersonaByRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, providerId);
+		if(persona != null && persona.getAnagrafica() != null){
+			return persona.getAnagrafica().getCodiceFiscale();
+		}
+		
+		LOGGER.debug("Delegato Legale Rappresentante non presente per il Provider: " + providerId);
+		return "";
+	}
 }

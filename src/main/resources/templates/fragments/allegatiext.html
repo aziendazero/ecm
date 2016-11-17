@@ -27,7 +27,7 @@
 				<span class="small" style="display: block;" th:unless="${note == null}" th:text="${note}">messaggio aggiuntivo</span>
 			</label>
 			<th:block th:if="${editabile}">
-				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+				<div class="col-lg-4 col-md-7 col-sm-7 col-xs-12">
 					<input type="file" accept="application/pdf" onchange="submitFileExt(this)" th:id="__${propertyName}__" th:attr="typefile=__${tipoAllegato}__, propertyName=__${propertyName}__" th:name="__${propertyName}___multipart" th:required="${required}"
 						style="display: none;" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}"/>
 					<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegatoExt('#__${propertyName}__');|" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}" />
