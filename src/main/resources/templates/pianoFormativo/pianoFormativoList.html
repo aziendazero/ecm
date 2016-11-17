@@ -60,7 +60,7 @@
 														
 														<div class="divider"></div>
 														
-														<th:block th:unless="${#lists.isEmpty(pianoFormativo.eventiPianoFormativo)}">
+														<th:block th:if="${#lists.isEmpty(pianoFormativo.eventiPianoFormativo)}">
 															<!-- importazione eventi piano formativo -->
 															<form class="form-horizontal form-label-left" th:action="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/importaEventiDaCSV|}"
 																	method="post" enctype="multipart/form-data" novalidate="novalidate">

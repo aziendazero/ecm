@@ -40,6 +40,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
+import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
@@ -58,6 +59,7 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
+import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
@@ -68,6 +70,8 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
+import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
@@ -276,7 +280,7 @@ public class EventoServiceImpl implements EventoService {
 			//retrieveProgrammaAndAddJoin(eventoWrapper);
 
 			//Documento Verifica Ricadute Formative
-			if (eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
+			if (eventoWrapper.getDocumentoVerificaRicaduteFormative() != null && eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				eventoRES.setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
 			}
 		}else if(evento instanceof EventoFSC){
@@ -308,7 +312,7 @@ public class EventoServiceImpl implements EventoService {
 			((EventoFAD) evento).setRisultatiAttesi(risultatiAttesi);
 
 			//Requisiti Hardware Software
-			if (eventoWrapper.getRequisitiHardwareSoftware().getId() != null) {
+			if (eventoWrapper.getRequisitiHardwareSoftware() != null && eventoWrapper.getRequisitiHardwareSoftware().getId() != null) {
 				((EventoFAD) evento).setRequisitiHardwareSoftware(eventoWrapper.getRequisitiHardwareSoftware());
 			}
 
@@ -325,7 +329,7 @@ public class EventoServiceImpl implements EventoService {
 
 			retrieveProgrammaAndAddJoin(eventoWrapper);
 		}
-		
+
 		//valuto se salvare i crediti proposti o quelli calcolati dal sistema
 		if(evento.getConfermatiCrediti().booleanValue()){
 			evento.setCrediti(eventoWrapper.getCreditiProposti());
@@ -364,32 +368,32 @@ public class EventoServiceImpl implements EventoService {
 		evento.setPartners(attachedSetPartner);
 
 		//brochure
-		if (eventoWrapper.getBrochure().getId() != null) {
+		if (eventoWrapper.getBrochure() != null && eventoWrapper.getBrochure().getId() != null) {
 			evento.setBrochureEvento(eventoWrapper.getBrochure());
 		}
 
 		//Autocertificazione Assenza Finanziamenti
-		if (eventoWrapper.getAutocertificazioneAssenzaFinanziamenti().getId() != null) {
+		if (eventoWrapper.getAutocertificazioneAssenzaFinanziamenti() != null && eventoWrapper.getAutocertificazioneAssenzaFinanziamenti().getId() != null) {
 			evento.setAutocertificazioneAssenzaFinanziamenti(eventoWrapper.getAutocertificazioneAssenzaFinanziamenti());
 		}
 
 		//Contratti Accordi Convenzioni
-		if (eventoWrapper.getContrattiAccordiConvenzioni().getId() != null) {
+		if (eventoWrapper.getContrattiAccordiConvenzioni() != null && eventoWrapper.getContrattiAccordiConvenzioni().getId() != null) {
 			evento.setContrattiAccordiConvenzioni(eventoWrapper.getContrattiAccordiConvenzioni());
 		}
 
 		//Dichiarazione Assenza Conflitto Interesse
-		if (eventoWrapper.getDichiarazioneAssenzaConflittoInteresse().getId() != null) {
+		if (eventoWrapper.getDichiarazioneAssenzaConflittoInteresse() != null && eventoWrapper.getDichiarazioneAssenzaConflittoInteresse().getId() != null) {
 			evento.setDichiarazioneAssenzaConflittoInteresse(eventoWrapper.getDichiarazioneAssenzaConflittoInteresse());
 		}
 
 		//Autocertificazione Assenza Aziende Alimenti Prima Infanzia
-		if (eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia().getId() != null) {
+		if (eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null && eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia().getId() != null) {
 			evento.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia());
 		}
 
 		//Autocertificazione Autorizzazione Ministero Salute
-		if (eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute().getId() != null) {
+		if (eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute() != null && eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute().getId() != null) {
 			evento.setAutocertificazioneAutorizzazioneMinisteroSalute(eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute());
 		}
 
@@ -1181,7 +1185,7 @@ public class EventoServiceImpl implements EventoService {
 				LOGGER.debug(Utils.getLogMessage("Docente clonato salvato: " + d.getId()));
 			}
 
-			((EventoFAD) riedizione).setConfermatiCrediti(null);
+//			((EventoFAD) riedizione).setConfermatiCrediti(null);
 
 			((EventoFAD) riedizione).setRequisitiHardwareSoftware(fileService.copyFile(((EventoFAD) riedizione).getRequisitiHardwareSoftware()));
 
@@ -1226,7 +1230,17 @@ public class EventoServiceImpl implements EventoService {
 			}
 			((EventoRES) riedizione).setProgramma(programmaRES);
 
-			((EventoRES) riedizione).setConfermatiCrediti(null);
+//			((EventoRES) riedizione).setConfermatiCrediti(null);
+
+			LOGGER.debug(Utils.getLogMessage("Clonazione verifica apprendimento"));
+			Set<VerificaApprendimentoRESEnum> verificaApprendimento = new HashSet<VerificaApprendimentoRESEnum>();
+			verificaApprendimento.addAll(Arrays.asList(((EventoRES) riedizione).getVerificaApprendimento().toArray(new VerificaApprendimentoRESEnum[((EventoRES) riedizione).getVerificaApprendimento().size()])));
+			((EventoRES) riedizione).setVerificaApprendimento(verificaApprendimento);
+
+			LOGGER.debug(Utils.getLogMessage("Clonazione verifica presenza partecipanti"));
+			Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti = new HashSet<VerificaPresenzaPartecipantiEnum>();
+			verificaPresenzaPartecipanti.addAll(Arrays.asList(((EventoRES) riedizione).getVerificaPresenzaPartecipanti().toArray(new VerificaPresenzaPartecipantiEnum[((EventoRES) riedizione).getVerificaPresenzaPartecipanti().size()])));
+			((EventoRES) riedizione).setVerificaPresenzaPartecipanti(verificaPresenzaPartecipanti);
 
 			((EventoRES) riedizione).setDocumentoVerificaRicaduteFormative(fileService.copyFile(((EventoRES) riedizione).getDocumentoVerificaRicaduteFormative()));
 
@@ -1238,7 +1252,7 @@ public class EventoServiceImpl implements EventoService {
 
 			LOGGER.debug(Utils.getLogMessage("Procedura di clonazione EventoFSC - start"));
 
-			((EventoFSC) riedizione).setOttenutoComitatoEtico(null);
+//			((EventoFSC) riedizione).setOttenutoComitatoEtico(null);
 
 			//solito giro strano per non fare agitare hibernate, stavolta doppio.. sigh
 			LOGGER.debug(Utils.getLogMessage("Clonazione Fasi Azioni Ruoli FSC"));
@@ -1271,6 +1285,16 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		//parte in comune
+		LOGGER.debug(Utils.getLogMessage("Clonazione destinatari"));
+		Set<DestinatariEventoEnum> destinatariEvento = new HashSet<DestinatariEventoEnum>();
+		destinatariEvento.addAll(Arrays.asList(riedizione.getDestinatariEvento().toArray(new DestinatariEventoEnum[riedizione.getDestinatariEvento().size()])));
+		riedizione.setDestinatariEvento(destinatariEvento);
+
+		LOGGER.debug(Utils.getLogMessage("Clonazione discipline"));
+		Set<Disciplina> discipline = new HashSet<Disciplina>();
+		discipline.addAll(Arrays.asList(riedizione.getDiscipline().toArray(new Disciplina[riedizione.getDiscipline().size()])));
+		riedizione.setDiscipline(discipline);
+
 		LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio Responsabili"));
 		for(PersonaEvento r : riedizione.getResponsabili()) {
 			LOGGER.debug(Utils.getLogMessage("Clonazione Responsabile: " + r.getId()));
@@ -1354,13 +1378,13 @@ public class EventoServiceImpl implements EventoService {
 		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
 		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStatoNot(providerId, leftDate, rightDate, EventoStatoEnum.BOZZA);
 	}
-	
+
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
 		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalse(providerId, LocalDate.now(), LocalDate.now().plusDays(30));
 	}
-	
+
 	@Override
 	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
 		Set<Evento> listaEventi = getEventiForProviderIdInScadenzaDiPagamento(providerId);
@@ -1368,13 +1392,13 @@ public class EventoServiceImpl implements EventoService {
 			return listaEventi.size();
 		return 0;
 	}
-	
+
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId) {
 		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(providerId, LocalDate.now());
 	}
-	
+
 	@Override
 	public int countEventiForProviderIdPagamentoScaduti(Long providerId) {
 		Set<Evento> listaEventi = getEventiForProviderIdPagamentoScaduti(providerId);

@@ -204,6 +204,12 @@ table.datatable-responsive-eventi-riedizione thead .sorting_asc:after {
 	color: #fff;
 }
 
+.disabled-addon {
+	cursor: not-allowed !important;
+	color: #fff;
+	opacity: 0.45;
+}
+
 .label-disabled {
 	cursor: not-allowed !important;
 }
@@ -1308,4 +1314,4 @@ li.listStyle-elenco > label{
 	    border: 0 none;
 	    width: 100%;
 	    height: 620px;
-	} 
+	}
