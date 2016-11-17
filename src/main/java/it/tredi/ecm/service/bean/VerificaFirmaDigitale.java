@@ -33,6 +33,8 @@ import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.security.PdfPKCS7;
 
+import it.tredi.ecm.dao.entity.File;
+
 /**
  * Classe di utility per la verifica della firma digitale su un file.
  * All'interno della classe e' stato incluso anche il codice di verifica tramite
@@ -62,6 +64,15 @@ public class VerificaFirmaDigitale {
 		this.content = fileContent;
 
 		sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss z"); // TODO potrebbe essere caricato da file di properties
+	}
+	
+	public VerificaFirmaDigitale(File file) {
+		if(file != null){
+			this.fileName = file.getNomeFile();
+			this.content = file.getData();
+	
+			sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss z"); // TODO potrebbe essere caricato da file di properties
+		}
 	}
 
 	/**

@@ -1118,7 +1118,7 @@
 											</div>
 										</div>
 										<!-- ALLEGATO VERIFICA RICADUTE FORMATIVE -->
-										<div class="item form-group">
+										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'documentoVerificaRicaduteFormative')} ? 'bad'">
 											<div class="col-xs-1"></div>
 											<label class="control-label col-md-3 col-sm-3 col-xs-11">
 												<span th:text="#{label.documento_verifica_ricadute_formative}">Documento di verifica delle ricadute formative</span>
@@ -1127,6 +1127,7 @@
 												<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, documentoVerificaRicaduteFormative, null, null, null, true, null, false)" ></th:block> -->
 												<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_VERIFICA_RICADUTE_FORMATIVE}', documentoVerificaRicaduteFormative, null, null, null, true, 'edit', false)" ></th:block>
 											</div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'documentoVerificaRicaduteFormative')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('documentoVerificaRicaduteFormative')}__}"></div>
 										</div>
 									</div>
 
@@ -1370,7 +1371,7 @@
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block> -->
-											<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, false, 'edit', false)" ></th:block>
+											<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, true, 'edit', false)" ></th:block>
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'dichiarazioneAssenzaConflittoInteresse')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('dichiarazioneAssenzaConflittoInteresse')}__}"></div>
 									</div>
