@@ -1145,7 +1145,7 @@ public class EventoServiceImpl implements EventoService {
 				LOGGER.debug(Utils.getLogMessage("Docente clonato salvato: " + d.getId()));
 			}
 
-			((EventoFAD) riedizione).setConfermatiCrediti(null);
+//			((EventoFAD) riedizione).setConfermatiCrediti(null);
 
 			((EventoFAD) riedizione).setRequisitiHardwareSoftware(fileService.copyFile(((EventoFAD) riedizione).getRequisitiHardwareSoftware()));
 
@@ -1190,7 +1190,7 @@ public class EventoServiceImpl implements EventoService {
 			}
 			((EventoRES) riedizione).setProgramma(programmaRES);
 
-			((EventoRES) riedizione).setConfermatiCrediti(null);
+//			((EventoRES) riedizione).setConfermatiCrediti(null);
 
 			((EventoRES) riedizione).setDocumentoVerificaRicaduteFormative(fileService.copyFile(((EventoRES) riedizione).getDocumentoVerificaRicaduteFormative()));
 
@@ -1202,7 +1202,7 @@ public class EventoServiceImpl implements EventoService {
 
 			LOGGER.debug(Utils.getLogMessage("Procedura di clonazione EventoFSC - start"));
 
-			((EventoFSC) riedizione).setOttenutoComitatoEtico(null);
+//			((EventoFSC) riedizione).setOttenutoComitatoEtico(null);
 
 			//solito giro strano per non fare agitare hibernate, stavolta doppio.. sigh
 			LOGGER.debug(Utils.getLogMessage("Clonazione Fasi Azioni Ruoli FSC"));
