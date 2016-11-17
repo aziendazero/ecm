@@ -444,6 +444,7 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
+	@Transactional
 	public void statoElaborazioneCogeaps(Long id) throws Exception {
 		Evento evento = getEvento(id);
 		try {
@@ -468,8 +469,11 @@ public class EventoServiceImpl implements EventoService {
 				ultimaRendicontazioneInviata.setResponse(cogeapsStatoElaborazioneResponse.getResponse());
 				if (cogeapsStatoElaborazioneResponse.getErrCode() != 0 || cogeapsStatoElaborazioneResponse.getCodiceErroreBloccante() != 0)
 					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.ERROR);
-				else
+				else{
 					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.SUCCESS);
+					evento.setStato(EventoStatoEnum.RAPPORTATO);
+					save(evento);
+				}
 				ultimaRendicontazioneInviata.setStato(RendicontazioneInviataStatoEnum.COMPLETED);
 				rendicontazioneInviataService.save(ultimaRendicontazioneInviata);
 			}

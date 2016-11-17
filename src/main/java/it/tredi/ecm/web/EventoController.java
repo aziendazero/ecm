@@ -305,6 +305,7 @@ public class EventoController {
 			}else{
 				evento.setStato(EventoStatoEnum.VALIDATO);
 				evento.setValidatorCheck(true);
+				evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 				eventoService.save(evento);
 				LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 			}

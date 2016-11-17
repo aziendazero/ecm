@@ -12,7 +12,7 @@
 					<div class="x_title x_menu">
 						<h2 th:text="#{label.evento_to_cogeaps_title}">Evento</h2>
 						<div class="pull-right buttons-header">
-							<a class="btn btn-success pull-right" th:text="#{label.invia_al_cogeaps}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/rendiconto/inviaACogeaps|}"></a>
+							<a class="btn btn-success pull-right" th:if="${eventoWrapper.evento.canDoInviaACogeaps()}" th:text="#{label.invia_al_cogeaps}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/rendiconto/inviaACogeaps|}"></a>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
 						</div>
 						<div class="clearfix"></div>
@@ -22,19 +22,9 @@
 		</div>
 
 		<div class="row">
-			<div class="col-lg-6 col-xs-12">
-				<div class="x_panel">
-					<div class="x_title">
-						<h2 th:text="#{label.riepilogo_evento(${eventoWrapper.evento.getCodiceIdentificativo()})}">Evento</h2>
-						<div class="clearfix"></div>
-					</div>
-
-					<th:block th:include="evento/eventoShow :: eventoShow"></th:block>
-
-				</div>
-			</div>
-			<div class="col-lg-6 col-xs-12">
-				<div class="x_panel">
+			
+			<div class="col-lg-12 col-xs-12">
+				<div class="x_panel" th:if="${eventoWrapper.evento.canDoInviaACogeaps()}">
 					<div class="x_title">
 						<h2 th:text="#{label.inserimento_rendicontazione}"></h2>
 						<div class="clearfix"></div>
@@ -233,6 +223,18 @@
 					</div>					
 				</div>				
 				
+			</div>
+			
+			<div class="col-lg-12 col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.riepilogo_evento(${eventoWrapper.evento.getCodiceIdentificativo()})}">Evento</h2>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="evento/eventoShow :: eventoShow"></th:block>
+
+				</div>
 			</div>
 		</div>
 		<script th:inline="javascript">

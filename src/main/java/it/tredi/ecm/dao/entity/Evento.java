@@ -35,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
@@ -316,6 +318,48 @@ public class Evento extends BaseEntity{
 
 		if(dataFine != null)
 			setDataScadenzaPagamento(dataFine.plusDays(90));
+	}
+	
+	/*
+	*	1) evento terminato
+	*	2) evento non è stato già pagato
+	*	3) siamo ancora entro i 90 gg dalla fine dell'evento  
+	*	4) passati i 90 gg -> non è più possibile pagare
+	*/
+	public boolean canDoPagamento(){
+		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
+			if(pagato != null && !pagato.booleanValue() && dataScadenzaPagamento != null && !LocalDate.now().isAfter(dataScadenzaPagamento))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	/*
+	 * Il tasto appare solo a evento terminato
+	 * */
+	public boolean canDoRendicontazione(){
+		if(dataFine != null && LocalDate.now().isAfter(dataFine))
+			return true;
+		
+		return false;
+	}
+	
+	/*	Per inviare al cogeaps:
+	*	1) evento terminato
+	*	2) tutti gli allegati dello sponsor sono stati caricati
+	*	3) siamo ancora entro i 90 gg dalla fine dell'evento 
+	*	4) passati i 90 gg -> non è più possibile inviare al cogeaps
+	*
+	*/
+	public boolean canDoInviaACogeaps(){
+		//TODO deve pagare prima di poter rendicontare???
+		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
+			if(dataScadenzaInvioRendicontazione != null && sponsorUploaded != null && sponsorUploaded.booleanValue() && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione))
+				return true;
+		}
+		
+		return false;
 	}
 
 	@Override
