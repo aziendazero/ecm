@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -20,6 +21,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
@@ -51,6 +53,7 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
+import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
@@ -82,6 +85,7 @@ import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
+import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.validator.FileValidator;
 
 @Service
@@ -1409,5 +1413,190 @@ public class EventoServiceImpl implements EventoService {
 		if(listaEventi != null)
 			return listaEventi.size();
 		return 0;
+	}
+	
+	@Override
+	public List<Evento> cerca(RicercaEventoWrapper wrapper) {
+		
+		String query = "";
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		Set<String> querytipologiaOR = new HashSet<String>();
+		
+		if(!wrapper.getDenominazioneLegale().isEmpty()){
+			//devo fare il join con la tabella provider
+			query ="SELECT e FROM Evento e JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
+			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
+		}else{
+			//posso cercare direttamente su evento
+			query ="SELECT e FROM Evento e";
+			
+			//PROVIDER ID
+			if(wrapper.getProviderId() != null){
+				query = AND(query, "e.provider.id = :providerId");
+				params.put("providerId", wrapper.getProviderId());
+			}
+			
+			if(wrapper.getTipologieSelezionate() != null && !wrapper.getTipologieSelezionate().isEmpty()){
+				query = AND(query, "e.proceduraFormativa IN :tipologieSelezionate");
+				params.put("tipologieSelezionate", wrapper.getTipologieSelezionate());
+
+				if(wrapper.getTipologieRES() != null && !wrapper.getTipologieRES().isEmpty()){
+					querytipologiaOR.add("(evento.type = RES AND e.tipologiaEvento IN :tipologieRES)");
+					params.put("tipologieRES", wrapper.getTipologieRES());
+				}
+				
+				if(wrapper.getTipologieFSC() != null && !wrapper.getTipologieFSC().isEmpty()){
+					querytipologiaOR.add("(TYPE(e) = EventoFSC AND e.tipologiaEvento IN :tipologieFSC)");
+					params.put("tipologieFSC", wrapper.getTipologieFSC());
+				}
+				
+				if(wrapper.getTipologieFAD() != null && !wrapper.getTipologieFAD().isEmpty()){
+					querytipologiaOR.add("(TYPE(e) = EventoFAD AND e.tipologiaEvento IN :tipologieFAD)");
+					params.put("tipologieFAD", wrapper.getTipologieFAD());
+				}
+				
+				if(!querytipologiaOR.isEmpty()){
+					query += " AND (";
+					Iterator<String> it = querytipologiaOR.iterator(); 
+					query += it.next();
+					while(it.hasNext())
+						query += " OR " + it.next();
+					query += ")";
+				}
+			}
+			
+			//STATO EVENTO
+			if(wrapper.getStatiSelezionati() != null && !wrapper.getStatiSelezionati().isEmpty()){
+				query = AND(query, "e.stato IN :statiSelezionati");
+				params.put("statiSelezionati", wrapper.getStatiSelezionati());
+			}
+			
+			//EVENTO ID
+			if(wrapper.getEventoId() != null){
+				query = AND(query, "e.id = :eventoId");
+				params.put("eventoId", wrapper.getEventoId());
+			}
+			
+			//TITOLO EVENTO
+			if(!wrapper.getTitoloEvento().isEmpty()){
+				query = AND(query, "UPPER(e.titolo) LIKE :titoloEvento");
+				params.put("titoloEvento", "%" + wrapper.getTitoloEvento().toUpperCase() + "%");
+			}
+			
+			//OBIETTIVI NAZIONALI
+			if(wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty()){
+				query = AND(query, "e.obiettivoNazionale IN :obiettiviNazionaliSelezionati");
+				params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionati());
+			}
+			
+			//OBIETTIVI REGIONALI
+			if(wrapper.getObiettiviRegionaliSelezionati() != null && !wrapper.getObiettiviRegionaliSelezionati().isEmpty()){
+				query = AND(query, "e.obiettivoRegionale IN :obiettiviRegionaleSelezionati");
+				params.put("obiettiviRegionaliSelezionati", wrapper.getObiettiviRegionaliSelezionati());
+			}
+
+			//PROFESSIONI SELEZIONATE
+			if(wrapper.getProfessioniSelezionate() != null && !wrapper.getProfessioniSelezionate().isEmpty()){
+				Set<Professione> professioniFromDiscipline = new HashSet<Professione>();
+				if(wrapper.getDisciplineSelezionate() != null){
+					for(Disciplina d : wrapper.getDisciplineSelezionate())
+						professioniFromDiscipline.add(d.getProfessione());
+				}
+
+				//vedo se ci sono professioni selezionate senza alcuna disciplina specificata
+				wrapper.getProfessioniSelezionate().removeAll(professioniFromDiscipline);
+				if(!wrapper.getProfessioniSelezionate().isEmpty()){
+					for(Disciplina d : wrapper.getDisciplineList()){
+						if(wrapper.getProfessioniSelezionate().contains(d.getProfessione()))
+							wrapper.getDisciplineSelezionate().add(d);
+					}
+				}
+			}
+			
+			//DISCIPLINE SELEZIONATE
+			if(wrapper.getDisciplineSelezionate() != null && !wrapper.getDisciplineSelezionate().isEmpty()){
+				query = AND(query, "e.discipline IN :disciplineSelezionate");
+				params.put("disciplineSelezionate", wrapper.getDisciplineSelezionate());
+			}
+			
+			//NUMERO CREDITI
+			if(wrapper.getCrediti() != null && wrapper.getCrediti().floatValue() > 0){
+				query = AND(query, "e.crediti = :crediti");
+				params.put("crediti", wrapper.getCrediti().floatValue());
+			}
+			
+			//PROVINCIA
+			if(wrapper.getProvincia() != null && !wrapper.getProvincia().isEmpty()){
+				query = AND(query, "e.sedeEvento.provincia = :provincia");
+				params.put("provincia", wrapper.getProvincia());
+			}
+			
+			//COMUNE
+			if(wrapper.getComune() != null && !wrapper.getComune().isEmpty()){
+				query = AND(query, "e.sedeEvento.comune = :comune");
+				params.put("comune", wrapper.getComune());
+			}
+			
+			//LUOGO
+			if(wrapper.getLuogo() != null && !wrapper.getLuogo().isEmpty()){
+				query = AND(query, "e.sedeEvento.luogo = :luogo");
+				params.put("luogo", wrapper.getLuogo());
+			}
+			
+			//DATA INZIO
+			if(wrapper.getDataInizioStart() != null){
+				query = AND(query, "e.dataInizio >= :dataInizioStart");
+				params.put("dataInizioStart", wrapper.getDataInizioStart());
+			} 
+			
+			if(wrapper.getDataInizioEnd() != null){
+				query = AND(query, "e.dataInizio <= :dataInizioEnd");
+				params.put("dataInizioEnd", wrapper.getDataInizioEnd());
+			} 
+			
+
+			//DATA FINE
+			if(wrapper.getDataFineStart() != null){
+				query = AND(query, "e.dataFine >= :dataFineStart");
+				params.put("dataFineStart", wrapper.getDataFineStart());
+			} 
+			
+			if(wrapper.getDataFineEnd() != null){
+				query = AND(query, "e.dataFine <= :dataFineEnd");
+				params.put("dataFineEnd", wrapper.getDataFineEnd());
+			} 
+			
+			//DATA PAGAMENTO
+			if(wrapper.getDataScadenzaPagamentoStart() != null){
+				query = AND(query, "e.dataScadenzaPagamento >= :dataScadenzaPagamentoStart");
+				params.put("dataScadenzaPagamentoStart", wrapper.getDataScadenzaPagamentoStart());
+			} 
+			
+			if(wrapper.getDataScadenzaPagamentoEnd() != null){
+				query = AND(query, "e.dataScadenzaPagamento <= :dataScadenzaPagamentoEnd");
+				params.put("dataScadenzaPagamentoEnd", wrapper.getDataScadenzaPagamentoEnd());
+			} 
+		}
+		
+		LOGGER.info(Utils.getLogMessage("Cerca Evento: " + query));
+		Query q = entityManager.createQuery(query, Evento.class);
+
+		Iterator<Entry<String, Object>> iterator = params.entrySet().iterator();
+		while(iterator.hasNext()){
+			Map.Entry<String, Object> pairs = iterator.next();
+			q.setParameter(pairs.getKey(), pairs.getValue());
+			LOGGER.info(Utils.getLogMessage(pairs.getKey() + ": " + pairs.getValue()));
+		}
+		
+		List<Evento> result = q.getResultList(); 
+		
+		return result;
+	}
+	
+	private String AND(String query, String criteria){
+		if(query.contains("WHERE"))
+			return query+= " AND " + criteria;
+		else
+			return query+= " WHERE " + criteria;
 	}
 }

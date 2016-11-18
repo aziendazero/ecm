@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.ricerca_evento}"></h2>
+						<div class="pull-right buttons-header">
+							<div class="dropdown pull-right">
+  								<a class="btn btn-primary" th:href="${returnLink}" th:text="#{label.indietro}"></a>
+  								<a class="btn btn-success" th:text="#{label.cerca}" onclick="submitCerca()"></a>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+				<th:block th:fragment="ricercaEvento">
+			
+					<div class="x_content">
+			
+						<form id="formRicercaEvento" class="form-horizontal form-label-left form-evento"
+							th:action="@{|/evento/ricerca|}"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+							
+								<!-- ID PROVIDER -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="providerId">
+										<span th:text="${'ID '} + #{label.provider}">Provider</span>
+									</label>
+			
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="providerId">
+										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.providerId}" />
+									</div>
+								</div>
+								
+								<!-- DENOMINAZIONE LEGALE PROVIDER -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
+										<span th:text="#{label.denominazione_legale} + ${' '}  + #{label.provider}">Provider</span>
+									</label>
+			
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneLegale">
+										<input type="text" class="form-control" th:field="${ricercaEventoWrapper.denominazioneLegale}" />
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
+								
+								<h2 th:text="#{label.info_evento}"></h2>
+								
+								<!-- TIPO EVENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia">
+										<span th:text="#{label.tipologia_evento}">Destinatari dell'Evento</span>
+									</label>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="statoEvento">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="flat tipologia-RES" th:field="${ricercaEventoWrapper.tipologieSelezionate}" th:value="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).RES}"/>
+												<span th:text="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).RES.name()}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								
+								<!-- TIPOLOGIA DELL'EVENTO RES-->
+								<div class="item form-group select-tipologia-RES" style="display: none">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia_evento">
+										<span th:text="#{label.tipologia_evento}">Tipologia di Evento</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="tipologia-RES" 
+											multiple="multiple"
+											class="selectpicker"
+											th:field="${ricercaEventoWrapper.tipologieRES}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona una tipologia RES...">
+											<option
+												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).values()}"
+												th:value="${tipologia}"
+												th:text="${tipologia.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="statoEvento">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="flat tipologia-FSC" th:field="${ricercaEventoWrapper.tipologieSelezionate}" th:value="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FSC}"/>
+												<span th:text="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FSC.name()}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								
+								<!-- TIPOLOGIA DELL'EVENTO FSC -->
+								<div class="item form-group select-tipologia-FSC" style="display: none">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaEvento">
+										<span th:text="#{label.tipologia_evento}">Tipologia dell'evento</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="tipologia-FSC"
+											multiple="multiple"
+											class="selectpicker required"
+											required="required"
+											th:field="${ricercaEventoWrapper.tipologieFSC}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona una tipologia FSC...">
+											<option
+												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).values()}"
+												th:value="${tipologia}"
+												th:text="${tipologia.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="statoEvento">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="flat tipologia-FAD" th:field="${ricercaEventoWrapper.tipologieSelezionate}" th:value="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}"/>
+												<span th:text="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD.name()}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								
+								<!-- TIPOLOGIA DELL'EVENTO FAD-->
+								<div class="item form-group select-tipologia-FAD" style="display: none">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia_evento">
+										<span th:text="#{label.tipologia_evento}">Tipologia di Evento</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="tipologia-FAD"
+											multiple="multiple"
+											class="selectpicker"
+											th:field="${ricercaEventoWrapper.tipologieFAD}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											onchange="updateObiettivoFormativo(this.value)"
+											title="Seleziona una tipologia FAD...">
+											<option
+												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).values()}"
+												th:value="${tipologia}"
+												th:text="${tipologia.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
+								
+								<!-- STATO EVENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="destinatari">
+										<span th:text="#{label.stato}">Destinatari dell'Evento</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="statoEvento">
+										<div class="checkbox" th:each="stato, row : ${T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).values()}">
+											<label th:class="${isRiedizione} ? 'label-disabled' :  ''">
+												<input type="checkbox" class="flat stati" th:field="${ricercaEventoWrapper.statiSelezionati}" th:value="${stato}"/>
+												<span th:text="${stato.nome}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								
+								<!-- ID EVENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="eventoId">
+										<span th:text="${'ID '} + #{label.evento}">Evento</span>
+									</label>
+			
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="eventoId">
+										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.eventoId}" />
+									</div>
+								</div>
+								
+								<!-- TITOLO EVENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="titoloEvento">
+										<span th:text="#{label.titolo} + ${' '} + #{label.evento}">Provider</span>
+									</label>
+			
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="titoloEvento">
+										<input type="text" class="form-control" th:field="${ricercaEventoWrapper.titoloEvento}" />
+									</div>
+								</div>
+								
+								
+			
+								<!-- OBIETTIVO NAZIONALE -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivoNazionale">
+										<span th:text="#{label.obiettivo_strategico_nazionale}">Obiettivo Strategico Nazionale</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<select id="obiettivoNazionale"
+											multiple="multiple" class="selectpicker"
+											th:field="${ricercaEventoWrapper.obiettiviNazionaliSelezionati}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un obiettivo...">
+											<optgroup class="optgroup-primary"
+												th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
+												th:label="${categoriaObiettivoNazionale.nome}"
+												th:remove="all-but-first">
+												<option
+													th:each="obiettivoNazionale, row: ${ricercaEventoWrapper.obiettiviNazionaliList}"
+													th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
+													th:value="${obiettivoNazionale.id}"
+													th:text="${obiettivoNazionale.nome}">
+												</option>
+											</optgroup>
+										</select>
+									</div>
+								</div>
+			
+								<!-- OBIETTIVO REGIONALE -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivorRegionale">
+										<span th:text="#{label.obiettivo_strategico_regionale}">Obiettivo Strategico Regionale</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="obiettivoRegionale"
+											multiple="multiple" class="selectpicker"
+											th:field="${ricercaEventoWrapper.obiettiviRegionaliSelezionati}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un obiettivo...">
+											<option
+												th:each="obiettivoRegionale, row: ${ricercaEventoWrapper.obiettiviRegionaliList}"
+												th:value="${obiettivoRegionale.id}"
+												th:text="${obiettivoRegionale.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+			
+								<!-- PROFESSIONI/DISCIPLINE -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.professioni}">Professioni</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
+										<select id="professioni" class="selectpicker multi"
+											multiple="multiple" data-width="100%"
+											data-style="btn-primary" data-actions-box="true"
+											data-size="10" title="Seleziona una professione..."
+											onchange="abilitaDiscipline(this)"
+											data-selected-text-format="count" th:remove="all-but-first">
+											<option th:each="professione, row: ${ricercaEventoWrapper.professioniList}"
+												th:value="${professione.id}" th:text="${professione.nome}"
+												th:field="${ricercaEventoWrapper.professioniSelezionate}"></option>
+										</select>
+									</div>
+								</div>
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.discipline}">Discipline</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="discipline" class="selectpicker multi"
+											th:field="${ricercaEventoWrapper.disciplineSelezionate}"
+											multiple="multiple" data-width="100%"
+											data-style="btn-success" data-actions-box="true"
+											data-size="10" data-hide-disabled="true"
+											title="Seleziona una disciplina..." disabled="disabled"
+											data-selected-text-format="count" th:remove="all-but-first">
+											<optgroup class="optgroup-success" disabled="disabled"
+												th:each="professione, row: ${ricercaEventoWrapper.professioniList}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
+												th:label="${professione.nome}" th:remove="all-but-first">
+												<option th:each="disciplina, row: ${ricercaEventoWrapper.disciplineList}"
+													th:if="${disciplina.professione == professione}"
+													th:value="${disciplina.id}" th:text="${disciplina.nome}"></option>
+											</optgroup>
+										</select>
+									</div>
+								</div>
+								
+								<!-- NUMERO CREDITI -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="numeroCrediti">
+										<span th:text="#{label.crediti}">Evento</span>
+									</label>
+			
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="numeroCrediti">
+										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.crediti}" />
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
+								
+								<!-- PROVINCIA -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="provincia">
+										<span th:text="#{label.provincia}">Provincia</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="provincia"
+											class="selectpicker"
+											th:field="${ricercaEventoWrapper.provincia}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona una provincia...">
+											<option
+												th:value="${ricercaEventoWrapper.provincia}"
+												th:text="${ricercaEventoWrapper.provincia}">
+											</option>
+										</select>
+									</div>
+								</div>
+								
+								<!-- COMUNE -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="comune">
+										<span th:text="#{label.comune}">Comune</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="comune"
+											class="selectpicker"
+											th:field="${ricercaEventoWrapper.comune}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											th:disabled="${ricercaEventoWrapper.comune == null}"
+											title="Seleziona un comune...">
+											<option th:value="${ricercaEventoWrapper.comune}"
+												th:text="${ricercaEventoWrapper.comune}"/>
+										</select>
+									</div>
+								</div>
+								
+								<!-- LUOGO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="luogo">
+										<span th:text="#{label.luogo}">Provider</span>
+									</label>
+			
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="luogo">
+										<input type="text" class="form-control" th:field="${ricercaEventoWrapper.luogo}" />
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataInizio">
+										<h2 th:text="#{label.data_inizio}">Data inizio</h2>
+									</label>
+								</div>
+								<!-- START - DATA INIZIO -->
+								<div class="item form-group">
+									<label class="control-label col-sm-2 col-xs-11" for="dataInizio">
+										<span th:text="#{label.da}">Data inizio</span>
+									</label>
+									<div class="col-sm-4 col-xs-12 input-group datapick">
+										<input type="text" id="dataInizioStart" class="form-control"
+											name="data" th:field="${ricercaEventoWrapper.dataInizioStart}" />
+										<span class="input-group-addon" id="dataInizioStartButton" onclick="$('#dataInizioStart').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+									<label class="control-label col-sm-2 col-xs-11" for="dataInizio">
+										<span th:text="#{label.a}">Data inizio</span>
+									</label>
+									<div class="col-sm-4 col-xs-12 input-group datapick">
+										<input type="text" id="dataInizioEnd" class="form-control"
+											name="data" th:field="${ricercaEventoWrapper.dataInizioEnd}" />
+										<span class="input-group-addon" id="dataInizioEndButton" onclick="$('#dataInizioEnd').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataInizio">
+										<h2 th:text="#{label.data_fine}">Data fine</h2>
+									</label>
+								</div>
+								
+								<!-- START - DATA FINE -->
+								<div class="item form-group">
+									<label class="control-label col-sm-2 col-xs-11" for="dataFine">
+										<span th:text="#{label.da}">Da</span>
+									</label>
+									<div class="col-sm-4 col-xs-12 input-group datapick">
+										<input type="text" id="dataFineStart" class="form-control"
+											name="data" th:field="${ricercaEventoWrapper.dataFineStart}" />
+										<span class="input-group-addon" id="dataFineStartButton" onclick="$('#dataFineStart').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+									<label class="control-label col-sm-2 col-xs-11" for="dataFine">
+										<span th:text="#{label.a}">A</span>
+									</label>
+									<div class="col-sm-4 col-xs-12 input-group datapick">
+										<input type="text" id="dataFineEnd" class="form-control"
+											name="data" th:field="${ricercaEventoWrapper.dataFineEnd}" />
+										<span class="input-group-addon" id="dataFineEndButton" onclick="$('#dataFineEnd').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
+								
+								<!-- DATA SCADENZA PAGAMENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataInizio">
+										<h2 th:text="#{label.data_scadenza_pagamento}">Data inizio</h2>
+									</label>
+								</div>
+								<div class="item form-group">
+									<label class="control-label col-sm-2 col-xs-11" for="dataInizio">
+										<span th:text="#{label.da}">Data inizio</span>
+									</label>
+									<div class="col-sm-4 col-xs-12 input-group datapick">
+										<input type="text" id="dataScadenzaPagamentoStart" class="form-control"
+											name="data" th:field="${ricercaEventoWrapper.dataScadenzaPagamentoStart}" />
+										<span class="input-group-addon" id="dataScadenzaPagamentoStartButton" onclick="$('#dataScadenzaPagamentoStart').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+									<label class="control-label col-sm-2 col-xs-11" for="dataInizio">
+										<span th:text="#{label.a}">Data inizio</span>
+									</label>
+									<div class="col-sm-4 col-xs-12 input-group datapick">
+										<input type="text" id="dataScadenzaPagamentoEnd" class="form-control"
+											name="data" th:field="${ricercaEventoWrapper.dataScadenzaPagamentoEnd}" />
+										<span class="input-group-addon" id="dataScadenzaPagamentoEndButton" onclick="$('#dataScadenzaPagamentoEnd').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+								</div>
+								
+							<input id="submitButton" type="submit" style="display: none;" />
+			
+						</form>
+			
+						<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
+						<script th:inline="javascript">
+						/*<![CDATA[*/
+						     var days;
+							 var months;    
+						           
+						    $(document).ready(function() {
+								//init selecpicker
+							    $('select').selectpicker({
+									selectAllText : 'Seleziona tutti',
+									deselectAllText : 'Deseleziona tutti',
+									countSelectedText : '{0} selezionate'
+								});
+								
+							    days = getDayNamesShort();
+								months = getMonthNames();
+
+								$('#dataInizioStart').daterangepicker({
+							        singleDatePicker: true,
+							        autoApply: true,
+							        autoUpdateInput: true,
+							        format: "DD/MM/YYYY",
+							        locale: {
+								        daysOfWeek: days,
+						                monthNames: months,
+							        }
+							    })
+
+							    $('#dataInizioEnd').daterangepicker({
+							        singleDatePicker: true,
+							        autoApply: true,
+							        autoUpdateInput: true,
+							        format: "DD/MM/YYYY",
+							        locale: {
+								        daysOfWeek: days,
+						                monthNames: months,
+							        }
+							    })
+							    
+							    $('#dataFineStart').daterangepicker({
+							        singleDatePicker: true,
+							        autoApply: true,
+							        autoUpdateInput: true,
+							        minDate: $('#dataInizio').val(),
+							        format: "DD/MM/YYYY",
+							        locale: {
+								        daysOfWeek: days,
+						                monthNames: months,
+							        }
+							    })
+
+							    $('#dataFineEnd').daterangepicker({
+							        singleDatePicker: true,
+							        autoApply: true,
+							        autoUpdateInput: true,
+							        minDate: $('#dataInizio').val(),
+							        format: "DD/MM/YYYY",
+							        locale: {
+								        daysOfWeek: days,
+						                monthNames: months,
+							        }
+							    })
+							    
+							       $('#dataScadenzaPagamentoStart').daterangepicker({
+							        singleDatePicker: true,
+							        autoApply: true,
+							        autoUpdateInput: true,
+							        minDate: $('#dataInizio').val(),
+							        format: "DD/MM/YYYY",
+							        locale: {
+								        daysOfWeek: days,
+						                monthNames: months,
+							        }
+							    })
+
+							    $('#dataScadenzaPagamentoEnd').daterangepicker({
+							        singleDatePicker: true,
+							        autoApply: true,
+							        autoUpdateInput: true,
+							        minDate: $('#dataInizio').val(),
+							        format: "DD/MM/YYYY",
+							        locale: {
+								        daysOfWeek: days,
+						                monthNames: months,
+							        }
+							    })
+								
+							    if($("#professioni")[0]) {
+									abilitaDiscipline($("#professioni")[0]);
+								}
+								
+								initProvinciaComune('provincia', 'comune');
+								
+								//gestione evento iCheck su check tipologiaEvento RES
+								$(".tipologia-RES").on("ifChecked", function() {
+									mostraNascondiTipologia(true,'RES');
+								});
+								
+								$(".tipologia-RES").on("ifUnchecked", function() {
+									mostraNascondiTipologia(false,'RES');
+								});
+								
+								//gestione evento iCheck su check tipologiaEvento FSC
+								$(".tipologia-FSC").on("ifChecked", function() {
+									mostraNascondiTipologia(true,'FSC');
+								});
+								
+								//gestione evento iCheck su check tipologiaEvento FSC
+								$(".tipologia-FSC").on("ifUnchecked", function() {
+									mostraNascondiTipologia(false,'FSC');
+								});
+								
+								//gestione evento iCheck su check tipologiaEvento FAD
+								$(".tipologia-FAD").on("ifChecked", function() {
+									mostraNascondiTipologia(true,'FAD');
+								});
+								
+								//gestione evento iCheck su check tipologiaEvento FAD
+								$(".tipologia-FAD").on("ifUnchecked", function() {
+									mostraNascondiTipologia(false,'FAD');
+								});
+
+							});       
+						           
+							function submitCerca(){
+								$("#submitButton").click();
+							}
+							
+							//funzione per l'abilita / disabilita le discipline selezionabili in base alle professioni
+							function abilitaDiscipline(professioni) {
+								//flag per capire se c'è almeno una professione
+								var almenoUna = false;
+								$.each(professioni.options, function(index, item) {
+									//toglie la parte relativa al codice della professione
+									prof = item.text;
+									//abilita/disabilita tutte le discipline delle professioni selezionate/deselezionate
+									if (item.selected) {
+										$('optgroup[label="' + prof + '"]').prop(
+												'disabled', false);
+										almenoUna = true;
+									} else {
+										$('optgroup[label="' + prof + '"]').prop(
+												'disabled', true);
+									}
+								});
+								//decide se disabilitare/abilitare tutta la select
+								//decide se disabilitare/abilitare tutta la select
+								if (almenoUna) {
+									$('#discipline').prop('disabled', false);
+								} else {
+									$('#discipline').prop('disabled', true);
+								}
+								//refresh della view
+								$('#discipline').selectpicker('refresh');
+							}
+							
+							function mostraNascondiTipologia(value,tipo) {
+								if(value == true) {
+									$(".select-tipologia-" + tipo).slideDown("slow");
+								}
+								else {
+									$(".select-tipologia-" + tipo).slideUp("slow");
+									$.each($("#tipologia-" + tipo),function(){
+										$(this).selectpicker('val','');
+									});
+								}
+							}
+						/*]]>*/
+						</script>
+			
+			
+					</div>
+			
+				</th:block>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

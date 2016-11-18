@@ -6,8 +6,8 @@ import lombok.Getter;
 public enum EventoStatoEnum {
 	BOZZA (1, "Attesa di validazione"),
 	VALIDATO (2, "Accreditato"),
-	PAGATO (3, "Pagato"), //solo PROVIDER GRUPPO B -> non utilizzato per stato degli eventi
-	CONTRIBUTO_NON_PREVISTO (4, "Contributo non previsto"), //solo PROVIDER GRUPPO A -> non utilizzato per stato degli eventi
+//	PAGATO (3, "Pagato"), //solo PROVIDER GRUPPO B -> non utilizzato per stato degli eventi
+//	CONTRIBUTO_NON_PREVISTO (4, "Contributo non previsto"), //solo PROVIDER GRUPPO A -> non utilizzato per stato degli eventi
 	RAPPORTATO (5, "Trasmissione di un report XML"),
 	CANCELLATO (6, "Cancellato");
 	

@@ -77,16 +77,19 @@ import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AnagraficaEventoService;
 import it.tredi.ecm.service.AnagraficaFullEventoService;
+import it.tredi.ecm.service.DisciplinaService;
 import it.tredi.ecm.service.EngineeringService;
 import it.tredi.ecm.service.EventoPianoFormativoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ObiettivoService;
+import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.validator.EventoValidator;
 import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
 
@@ -110,6 +113,9 @@ public class EventoController {
 	@Autowired private EventoValidator eventoValidator;
 
 	@Autowired private EngineeringService engineeringService;
+	
+	@Autowired private ProfessioneService professioneService;
+	@Autowired private DisciplinaService disciplinaService;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -118,6 +124,7 @@ public class EventoController {
 	private final String EDITRES = "evento/eventoRESEdit";
 	private final String EDITFSC = "evento/eventoFSCEdit";
 	private final String EDITFAD = "evento/eventoFADEdit";
+	private final String RICERCA = "ricerca/ricercaEvento";
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -1250,5 +1257,52 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
-
+	
+	@RequestMapping("/evento/ricerca")
+	public String ricercaEvento(Model model,RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /evento/ricerca"));
+		try {
+			RicercaEventoWrapper wrapper = prepareRicercaEventoWrapper();
+			model.addAttribute("ricercaEventoWrapper", wrapper);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + RICERCA));
+			return RICERCA;
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /evento/ricerca"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/evento/ricerca", method = RequestMethod.POST)
+	public String executeRicercaEvento(@ModelAttribute("ricercaEventoWrapper") RicercaEventoWrapper wrapper,
+									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
+		LOGGER.info(Utils.getLogMessage("POST /ricerca/evento"));
+		try {
+			
+			CurrentUser currentUser = Utils.getAuthenticatedUser();
+			
+			List<Evento> listaEventi = new ArrayList<Evento>();
+			
+			//todo query a service per riempire la lista
+			listaEventi = eventoService.cerca(wrapper);
+			model.addAttribute("eventoList", listaEventi);
+			model.addAttribute("canCreateEvento", false);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
+			return LIST;
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /evento/ricerca"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/evento/ricerca";
+		}
+	}
+	
+	private RicercaEventoWrapper prepareRicercaEventoWrapper(){
+		RicercaEventoWrapper wrapper = new RicercaEventoWrapper();
+		wrapper.setProfessioniList(professioneService.getAllProfessioni());
+		wrapper.setDisciplineList(disciplinaService.getAllDiscipline());
+		wrapper.setObiettiviNazionaliList(obiettivoService.getObiettiviNazionali());
+		wrapper.setObiettiviRegionaliList(obiettivoService.getObiettiviRegionali());
+		return wrapper;
+	}
 }
