@@ -241,7 +241,6 @@
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneProvider">
 												<span th:text="#{label.denominazione_legale_provider}">Denominazione Legale del Provider</span>
 											</label>
-
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneProvider">
 												<div class="value-edit" th:text="${eventoWrapper.evento.provider.denominazioneLegale}"></div>
 											</div>
@@ -255,7 +254,6 @@
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="idProvider">
 												<span th:text="#{label.id_provider}">Id del Provider</span>
 											</label>
-
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="idProvider">
 												<div class="value-edit" th:text="${eventoWrapper.evento.provider.id}"></div>
 											</div>
@@ -269,7 +267,6 @@
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="proceduraFormativa">
 												<span th:text="#{label.procedure_formative_tipologia}">Id del Provider</span>
 											</label>
-
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="proceduraFormativa">
 												<div class="value-edit" th:text="${eventoWrapper.evento.proceduraFormativa}"></div>
 											</div>
@@ -286,7 +283,6 @@
 												<span th:text="#{label.destinatari_evento}">Destinatari dell'Evento</span>
 												<span class="required">*</span>
 											</label>
-
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="destinatari">
 												<div class="checkbox" th:each="destinatario, row : ${T(it.tredi.ecm.dao.enumlist.DestinatariEventoEnum).values()}">
 													<label th:class="${isRiedizione} ? 'label-disabled' :  ''">
@@ -309,7 +305,6 @@
 												<span th:text="#{label.evento_contiene_questi_contenuti}">L'evento formativo prevedere i seguenti contenuti?</span>
 												<span class="required">*</span>
 											</label>
-
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
 												<div class="radio" th:each="contenuto, row : ${T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).values()}">
 													<label th:class="${isRiedizione} ? 'label-disabled' :  ''">
@@ -332,7 +327,6 @@
 												<span th:text="#{label.titolo}">Titolo</span>
 												<span class="required">*</span>
 											</label>
-
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="titolo">
 												<textarea class="required" maxlength="3000" id="title" rows="3" name="titolo"
 													style="resize: none;" th:field="${eventoWrapper.evento.titolo}" th:disabled="${isRiedizione}">
@@ -945,7 +939,7 @@
 												<span class="value-edit" th:text="${eventoWrapper.creditiProposti}"></span>
 												<span class="checkbox">
 												<label th:class="${isRiedizione} ? 'label-disabled' : ''">
-													<input type="checkbox" class="flat crediti-conferma" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" th:disabled="${isRiedizione}" th:attr="data-editabile=${!isRiedizione}" />
+													<input type="checkbox" class="flat crediti-conferma" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" th:disabled="${isRiedizione}" />
 													<span th:text="#{label.conferma_crediti_proposti_dal_sistema}"></span>
 												</label>
 												</span>
@@ -962,7 +956,7 @@
 												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
-												<input type="text" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" th:disabled="${isRiedizione}" />
+												<input type="text" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" th:disabled="${isRiedizione}" th:attr="data-editabile=${!isRiedizione}" />
 											</div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.crediti')}__}"></div>
 										</div>
@@ -1500,7 +1494,7 @@
 
 					$("#add-attivitaRES-modal").draggable({
 					    handle: ".modal-content"
-					}); 
+					});
 
 					$('input.flat').iCheck({
 			            checkboxClass: 'icheckbox_flat-green',
@@ -1788,18 +1782,15 @@
 				//funzione che abilita o disabilita il campo per inserire i crediti formativi manualmente
 				//se l'utente accetta o meno i crediti proposti
 				function abilitaDisabilitaCreditiInseritiUtente(value) {
-					if(value) {
-						if($(".crediti-conferma").attr("data-editabile") === 'true') {
+					if($(".crediti-proposti").attr("data-editabile") === 'true') {
+						if(value) {
 							$(".crediti-proposti").val('');
 							$(".crediti-proposti").prop("disabled", true);
 						}
-					}
-					else {
-						if($(".crediti-conferma").attr("data-editabile") === 'true') {
+						else {
 							$(".crediti-proposti").prop("disabled", false);
 						}
 					}
-
 				}
 
 				//funzione che aggiunge un risultato atteso

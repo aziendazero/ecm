@@ -1457,238 +1457,159 @@
 	<!-- VISUALIZZAZIONE programmaEventoRES -->
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaRES">
-			<div id="attivitaRES">
-				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12"
-						th:each="data , status : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
-						th:if="${data.value.programma.giorno!=null
-							and
-							(
-								data.value.tipoData!=T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).FINE
-								or
-								(
-								data.value.tipoData==T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).FINE
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+				isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+				<div id="attivitaRES">
+					<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12"
+							th:each="data , status : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
+							th:if="${data.value.programma.giorno!=null
 								and
-								not data.value.programma.giorno.equals(eventoWrapper.evento.dataInizio)
-								)
-							)  }">
-					<div class="item form-group">
-						<label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span th:text="#{label.programma_del}" class="text-uppercase">Programma del</span>
-						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<label class="control-label" th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno}"> </label>
-						</div>
-						<input type="hidden" th:value="${data.key}" />
-					</div>
-					<div class="item form-group">
-						<label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span th:text="#{label.sede}" class="text-uppercase">SEDE</span>
-						</label>
-						<div class="col-xs-1">
-							<div th:attr="data-original-title=#{label.info_sede_programmaRES}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
-						</div>
-					</div>
-					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')} ? 'bad'">
-						<label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span th:text="#{label.provincia}">Provincia</span>
-							<span class="required">*</span>
-						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<select th:attr="data-programma-provincia=__${data.key}__, id=provprog__${data.key}__"
-								class="selectpicker required provincia"
-								th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"
-								data-width="100%" data-style="btn-primary"
-								data-actions-box="true" data-size="10"
-								data-hide-disabled="false"
-								title="Seleziona una provincia...">
-								<option th:value="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"
-									th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"/>
-							</select>
-						</div>
-						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.provincia')}__}"></div>
-					</div>
-
-					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.comune')} ? 'bad'">
-						<label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span th:text="#{label.comune}">Comune</span>
-							<span class="required">*</span>
-						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-                        	<select th:attr="data-programma-comune=__${data.key}__, id=comprog__${data.key}__"
-								class="selectpicker required comune"
-								th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"
-								data-width="100%" data-style="btn-primary"
-								data-actions-box="true" data-size="10"
-								data-hide-disabled="false"
-								onchange="sendAjaxRequestCAP()"
-								title="Seleziona un comune...">
-								<option th:value="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"
-									th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"/>
-							</select>
-						</div>
-						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.comune')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.comune')}__}"></div>
-					</div>
-					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.indirizzo')} ? 'bad'">
-						<label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span th:text="#{label.indirizzo}">Indirizzo</span>
-							<span class="required">*</span>
-						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-indirizzo=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.indirizzo}" />
-						</div>
-						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.indirizzo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.indirizzo')}__}"></div>
-					</div>
-					<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')} ? 'bad'">
-						<label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span th:text="#{label.luogo}">Luogo</span>
-							<span class="required">*</span>
-						</label>
-						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<input type="text" th:attr="data-programma-luogo=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.luogo}" />
-						</div>
-						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.luogo')}__}"></div>
-					</div>
-					<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad'">
-						<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
-						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.programma')}__}"></div>
-						<div class="item form-group" style="clear:both; padding:2px;"></div>
-						<div th:attr="data-programma-id=__${data.key}__" class="item form-group" style="clear:both">
-							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
-								th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad-table'">
-								<thead>
-									<tr>
-										<th th:text="#{label.orario_inizio}">ORARIO INIZIO</th>
-										<th th:text="#{label.orario_fine}">ORARIO FINE</th>
-										<th th:text="#{label.argomento}">ARGOMENTO</th>
-										<th th:text="#{label.docente}">Docente</th>
-										<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
-										<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
-										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
-										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
-										<th>
-											<a th:unless="${isRiedizione}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
-												<span><i class="fa fa-plus"></i></span>
-											</a>
-											<a th:unless="${isRiedizione}" id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
-												<span><i class="fa fa-pause-circle-o"></i></span>
-											</a>
-											<a th:unless="${isRiedizione}" id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
-												<span><i class="fa fa-pencil"></i></span>
-											</a>
-											<a th:if="${isRiedizione}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
-												<span><i class="fa fa-plus"></i></span>
-											</a>
-											<a th:if="${isRiedizione}" id="add-attivitaPausa" class="btn btn-success disabled" th:title="#{label.inserisci_pausa}">
-												<span><i class="fa fa-pause-circle-o"></i></span>
-											</a>
-											<a th:if="${isRiedizione}" id="add-attivitaValutazioneApprendimento" class="btn btn-success disabled" th:title="#{label.inserisci_valutazione_apprendimento}">
-												<span><i class="fa fa-pencil"></i></span>
-											</a>
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr th:attr="data-row-id=${__${status2.index}__}, data-extra-type=${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].getExtraType()}"
-										th:each="attivita , status2 : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma}"
-										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma['+__${status2.index}__+']')} ? 'bad-row'">
-										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioInizio}"></td>
-										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioFine}"></td>
-										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].argomento}"></td>
-										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].docente?.anagrafica?.cognome}"></td>
-										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].risultatoAtteso}"></td>
-										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].obiettivoFormativo?.nome}"></td>
-										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].metodologiaDidattica?.nome}"></td>
-										<!-- <td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td> -->
-										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita)}"></td>
-										<td>
-											<a onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaRES">
-												<span><i class="fa fa-pencil"></i></span>
-											</a>
-											<a th:unless="${isRiedizione}" onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
-												<span><i class="fa fa-trash"></i></span>
-											</a>
-											<a th:if="${isRiedizione}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
-												<span><i class="fa fa-trash"></i></span>
-											</a>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-							<div class="divider-dashed"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</th:block>
-
-	<th:block style="display:none">
-		<div class="col-xs-12" th:fragment="attivitaFSC">
-			<div id="attivitaFSC">
-				<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}"  th:with="fase=${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro}">
-
-					<th:block th:if="${(eventoWrapper.evento.tipologiaEvento != T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO) or T(it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum).faseAbilitata(eventoWrapper.evento.fasiDaInserire,fase)}">
-
+								(
+									data.value.tipoData!=T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).FINE
+									or
+									(
+									data.value.tipoData==T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).FINE
+									and
+									not data.value.programma.giorno.equals(eventoWrapper.evento.dataInizio)
+									)
+								)  }">
 						<div class="item form-group">
-							<th:block th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}">
-								<label class="control-label col-xs-2">
-									<span th:text="#{label.fase}" class="text-uppercase">Fase</span>
-								</label>
-								<div class="col-xs-10" >
-									<label class="control-label text-uppercase" th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro.nome}"> </label>
-								</div>
-							</th:block>
+							<label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span th:text="#{label.programma_del}" class="text-uppercase">Programma del</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+								<label class="control-label" th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno}"> </label>
+							</div>
+							<input type="hidden" th:value="${data.key}" />
+						</div>
+						<div class="item form-group">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span th:text="#{label.sede}" class="text-uppercase">SEDE</span>
+							</label>
+							<div class="col-xs-1">
+								<div th:attr="data-original-title=#{label.info_sede_programmaRES}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+							</div>
+						</div>
+						<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')} ? 'bad'">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span th:text="#{label.provincia}">Provincia</span>
+								<span class="required">*</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+								<select th:attr="data-programma-provincia=__${data.key}__, id=provprog__${data.key}__"
+									class="selectpicker required provincia"
+									th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"
+									data-width="100%" data-style="btn-primary"
+									data-actions-box="true" data-size="10"
+									data-hide-disabled="false"
+									title="Seleziona una provincia...">
+									<option th:value="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"
+										th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"/>
+								</select>
+							</div>
+							<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.provincia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.provincia')}__}"></div>
 						</div>
 
-						<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFSC['+__${status.index}__+'].azioniRuoli')} ? 'bad'">
-							<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azioni} + '/' + #{label.ruoli}">Azioni / Ruoli</label>
-							<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fasi}">Fasi</label>
-							<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFSC['+__${status.index}__+'].azioniRuoli')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('programmaEventoFSC['+status.index+'].azioniRuoli')}__}"></div>
+						<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.comune')} ? 'bad'">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span th:text="#{label.comune}">Comune</span>
+								<span class="required">*</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+	                        	<select th:attr="data-programma-comune=__${data.key}__, id=comprog__${data.key}__"
+									class="selectpicker required comune"
+									th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"
+									data-width="100%" data-style="btn-primary"
+									data-actions-box="true" data-size="10"
+									data-hide-disabled="false"
+									onchange="sendAjaxRequestCAP()"
+									title="Seleziona un comune...">
+									<option th:value="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"
+										th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"/>
+								</select>
+							</div>
+							<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.comune')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.comune')}__}"></div>
+						</div>
+						<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.indirizzo')} ? 'bad'">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span th:text="#{label.indirizzo}">Indirizzo</span>
+								<span class="required">*</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+								<input type="text" th:attr="data-programma-indirizzo=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.indirizzo}" />
+							</div>
+							<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.indirizzo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.indirizzo')}__}"></div>
+						</div>
+						<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')} ? 'bad'">
+							<label class="control-label col-md-3 col-sm-3 col-xs-11">
+								<span th:text="#{label.luogo}">Luogo</span>
+								<span class="required">*</span>
+							</label>
+							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
+								<input type="text" th:attr="data-programma-luogo=__${data.key}__" class="form-control" th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.luogo}" />
+							</div>
+							<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.luogo')}__}"></div>
+						</div>
+						<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad'">
+							<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
+							<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.programma')}__}"></div>
 							<div class="item form-group" style="clear:both; padding:2px;"></div>
-							<div th:attr="data-fase-id=__${status.index}__" class="item form-group" style="clear:both">
-								<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
-									th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFSC['+__${status.index}__+'].azioniRuoli')} ? 'bad-table'">
+							<div th:attr="data-programma-id=__${data.key}__" class="item form-group" style="clear:both">
+								<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+									th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad-table'">
 									<thead>
 										<tr>
-											<th th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azione}">AZIONE</th>
-											<th th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fase}">FASE</th>
-											<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
-											<th th:text="#{label.risultati_attesi}">RISULTATAO ATTESO</th>
-											<th th:text="#{label.metodi_di_lavoro}">METODO DI LAVORO</th>
-											<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
+											<th th:text="#{label.orario_inizio}">ORARIO INIZIO</th>
+											<th th:text="#{label.orario_fine}">ORARIO FINE</th>
+											<th th:text="#{label.argomento}">ARGOMENTO</th>
+											<th th:text="#{label.docente}">Docente</th>
+											<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
+											<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
+											<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
+											<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 											<th>
-												<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
+												<a th:unless="${isRiedizione}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-plus"></i></span>
+												</a>
+												<a th:unless="${isRiedizione}" id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+													<span><i class="fa fa-pause-circle-o"></i></span>
+												</a>
+												<a th:unless="${isRiedizione}" id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+													<span><i class="fa fa-pencil"></i></span>
+												</a>
+												<a th:if="${isRiedizione}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
+													<span><i class="fa fa-plus"></i></span>
+												</a>
+												<a th:if="${isRiedizione}" id="add-attivitaPausa" class="btn btn-success disabled" th:title="#{label.inserisci_pausa}">
+													<span><i class="fa fa-pause-circle-o"></i></span>
+												</a>
+												<a th:if="${isRiedizione}" id="add-attivitaValutazioneApprendimento" class="btn btn-success disabled" th:title="#{label.inserisci_valutazione_apprendimento}">
+													<span><i class="fa fa-pencil"></i></span>
 												</a>
 											</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr th:attr="data-row-id=${__${status2.index}__}"
-											th:each="attivita , status2 : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli}"
-											th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFSC['+__${status.index}__+'].azioniRuoli['+__${status2.index}__+']')} ? 'bad-row'">
-											<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].azione}"></td>
-											<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].obiettivoFormativo?.nome}"></td>
-											<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].risultatiAttesi}"></td>
+										<tr th:attr="data-row-id=${__${status2.index}__}, data-extra-type=${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].getExtraType()}"
+											th:each="attivita , status2 : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma}"
+											th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma['+__${status2.index}__+']')} ? 'bad-row'">
+											<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioInizio}"></td>
+											<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioFine}"></td>
+											<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].argomento}"></td>
+											<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].docente?.anagrafica?.cognome}"></td>
+											<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].risultatoAtteso}"></td>
+											<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].obiettivoFormativo?.nome}"></td>
+											<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].metodologiaDidattica?.nome}"></td>
+											<!-- <td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td> -->
+											<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita)}"></td>
 											<td>
-												<ul>
-													<li th:each="metodo, m : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].metodiDiLavoro}">
-											 			<span th:text="${metodo.nome}"></span>
-											 		</li>
-												</ul>
-											 </td>
-											<td>
-												<ul>
-													<li th:each="ruoloFSC, r : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].ruoli}">
-											 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.ruolo.nome} + ${ruoloFSC.tempoDedicato != null ? ' (' + ruoloFSC.tempoDedicato + 'h)' : ''}"></span>
-											 		</li>
-												</ul>
-											 </td>
-											<td>
-												<a onclick="modificaAttivitaFrom('attivitaFSC',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+												<a onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-pencil"></i></span>
 												</a>
-												<a onclick="removeAttivitaFrom('attivitaFSC',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
+												<a th:unless="${isRiedizione}" onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+													<span><i class="fa fa-trash"></i></span>
+												</a>
+												<a th:if="${isRiedizione}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
 													<span><i class="fa fa-trash"></i></span>
 												</a>
 											</td>
@@ -1698,70 +1619,167 @@
 								<div class="divider-dashed"></div>
 							</div>
 						</div>
-
-					</th:block>
-
+					</div>
 				</div>
-			</div>
+			</th:block>
+		</div>
+	</th:block>
+
+	<th:block style="display:none">
+		<div class="col-xs-12" th:fragment="attivitaFSC">
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+				isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+				<div id="attivitaFSC">
+					<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}"  th:with="fase=${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro}">
+
+						<th:block th:if="${(eventoWrapper.evento.tipologiaEvento != T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO) or T(it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum).faseAbilitata(eventoWrapper.evento.fasiDaInserire,fase)}">
+
+							<div class="item form-group">
+								<th:block th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}">
+									<label class="control-label col-xs-2">
+										<span th:text="#{label.fase}" class="text-uppercase">Fase</span>
+									</label>
+									<div class="col-xs-10" >
+										<label class="control-label text-uppercase" th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro.nome}"> </label>
+									</div>
+								</th:block>
+							</div>
+
+							<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFSC['+__${status.index}__+'].azioniRuoli')} ? 'bad'">
+								<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azioni} + '/' + #{label.ruoli}">Azioni / Ruoli</label>
+								<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fasi}">Fasi</label>
+								<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFSC['+__${status.index}__+'].azioniRuoli')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('programmaEventoFSC['+status.index+'].azioniRuoli')}__}"></div>
+								<div class="item form-group" style="clear:both; padding:2px;"></div>
+								<div th:attr="data-fase-id=__${status.index}__" class="item form-group" style="clear:both">
+									<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFSC['+__${status.index}__+'].azioniRuoli')} ? 'bad-table'">
+										<thead>
+											<tr>
+												<th th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azione}">AZIONE</th>
+												<th th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fase}">FASE</th>
+												<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
+												<th th:text="#{label.risultati_attesi}">RISULTATAO ATTESO</th>
+												<th th:text="#{label.metodi_di_lavoro}">METODO DI LAVORO</th>
+												<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
+												<th>
+													<a th:unless="${isRiedizione}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
+														<span><i class="fa fa-plus"></i></span>
+													</a>
+													<a th:if="${isRiedizione}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
+														<span><i class="fa fa-plus"></i></span>
+													</a>
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:attr="data-row-id=${__${status2.index}__}"
+												th:each="attivita , status2 : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli}"
+												th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFSC['+__${status.index}__+'].azioniRuoli['+__${status2.index}__+']')} ? 'bad-row'">
+												<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].azione}"></td>
+												<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].obiettivoFormativo?.nome}"></td>
+												<td th:text="${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].risultatiAttesi}"></td>
+												<td>
+													<ul>
+														<li th:each="metodo, m : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].metodiDiLavoro}">
+												 			<span th:text="${metodo.nome}"></span>
+												 		</li>
+													</ul>
+												 </td>
+												<td>
+													<ul>
+														<li th:each="ruoloFSC, r : ${eventoWrapper.programmaEventoFSC[__${status.index}__].azioniRuoli[__${status2.index}__].ruoli}">
+												 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.ruolo.nome} + ${ruoloFSC.tempoDedicato != null ? ' (' + ruoloFSC.tempoDedicato + 'h)' : ''}"></span>
+												 		</li>
+													</ul>
+												 </td>
+												<td>
+													<a th:unless="${isRiedizione}" onclick="modificaAttivitaFrom('attivitaFSC',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
+														<span><i class="fa fa-pencil"></i></span>
+													</a>
+													<a th:unless="${isRiedizione}" onclick="removeAttivitaFrom('attivitaFSC',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+														<span><i class="fa fa-trash"></i></span>
+													</a>
+													<a th:if="${isRiedizione}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+														<span><i class="fa fa-pencil"></i></span>
+													</a>
+													<a th:if="${isRiedizione}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+														<span><i class="fa fa-trash"></i></span>
+													</a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="divider-dashed"></div>
+								</div>
+							</div>
+
+						</th:block>
+
+					</div>
+				</div>
+			</th:block>
 		</div>
 	</th:block>
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaFAD">
-			<div id="attivitaFAD" th:if="${eventoWrapper.programmaEventoFAD != null}">
-				<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad'">
-					<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
-					<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.programmaFAD')}__}"></div>
-					<div class="item form-group" style="clear:both; padding:2px;"></div>
-					<div data-programma-id="0" class="item form-group" style="clear:both">
-						<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
-							th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad-table'">
-							<thead>
-								<tr>
-									<th th:text="#{label.argomento}">ARGOMENTO</th>
-									<th th:text="#{label.docente_tutor}">Docente / Tutor</th>
-									<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
-									<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
-									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
-									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
-									<th>
-										<a th:unless="${isRiedizione}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" onclick="openAddAttivitaTo('attivitaFAD')" data-toggle="modal" data-target=".modal-add-attivitaFAD">
-											<span><i class="fa fa-plus"></i></span>
-										</a>
-										<a th:if="${isRiedizione}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
-											<span><i class="fa fa-plus"></i></span>
-										</a>
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:attr="data-row-id=${__${row.index}__}"
-									th:each="attivita , row : ${eventoWrapper.programmaEventoFAD}"
-									th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFAD['+__${row.index}__+']')} ? 'bad-row'">
-									<td th:text="${attivita.argomento}"></td>
-									<td th:text="${attivita.docente?.anagrafica?.cognome}"></td>
-									<td th:text="${attivita.risultatoAtteso}"></td>
-									<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
-									<td th:text="${attivita.metodologiaDidattica?.nome}"></td>
-									<td th:text="${attivita.oreAttivita}"></td>
-									<td>
-										<a onclick="modificaAttivitaFrom('attivitaFAD',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaFAD">
-											<span><i class="fa fa-pencil"></i></span>
-										</a>
-										<a th:unless="${isRiedizione}" onclick="removeAttivitaFrom('attivitaFAD',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
-											<span><i class="fa fa-trash"></i></span>
-										</a>
-										<a th:if="${isRiedizione}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
-											<span><i class="fa fa-trash"></i></span>
-										</a>
-									</td>
-								</tr>
-							</tbody>
-						</table>
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+				isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+				<div id="attivitaFAD" th:if="${eventoWrapper.programmaEventoFAD != null}">
+					<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad'">
+						<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
+						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.programmaFAD')}__}"></div>
+						<div class="item form-group" style="clear:both; padding:2px;"></div>
+						<div data-programma-id="0" class="item form-group" style="clear:both">
+							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+								th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad-table'">
+								<thead>
+									<tr>
+										<th th:text="#{label.argomento}">ARGOMENTO</th>
+										<th th:text="#{label.docente_tutor}">Docente / Tutor</th>
+										<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
+										<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
+										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
+										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
+										<th>
+											<a th:unless="${isRiedizione}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" onclick="openAddAttivitaTo('attivitaFAD')" data-toggle="modal" data-target=".modal-add-attivitaFAD">
+												<span><i class="fa fa-plus"></i></span>
+											</a>
+											<a th:if="${isRiedizione}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
+												<span><i class="fa fa-plus"></i></span>
+											</a>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:attr="data-row-id=${__${row.index}__}"
+										th:each="attivita , row : ${eventoWrapper.programmaEventoFAD}"
+										th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFAD['+__${row.index}__+']')} ? 'bad-row'">
+										<td th:text="${attivita.argomento}"></td>
+										<td th:text="${attivita.docente?.anagrafica?.cognome}"></td>
+										<td th:text="${attivita.risultatoAtteso}"></td>
+										<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
+										<td th:text="${attivita.metodologiaDidattica?.nome}"></td>
+										<td th:text="${attivita.oreAttivita}"></td>
+										<td>
+											<a onclick="modificaAttivitaFrom('attivitaFAD',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaFAD">
+												<span><i class="fa fa-pencil"></i></span>
+											</a>
+											<a th:unless="${isRiedizione}" onclick="removeAttivitaFrom('attivitaFAD',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+												<span><i class="fa fa-trash"></i></span>
+											</a>
+											<a th:if="${isRiedizione}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+												<span><i class="fa fa-trash"></i></span>
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="divider-dashed"></div>
 					</div>
-					<div class="divider-dashed"></div>
 				</div>
-			</div>
+			</th:block>
 		</div>
 	</th:block>
 

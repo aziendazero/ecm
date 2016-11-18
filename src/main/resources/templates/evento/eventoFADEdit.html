@@ -1161,7 +1161,7 @@
 											<span th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
 											<span class="required">*</span>
 										</label>
-										<div class="model-link">
+										<div th:unless="${isRiedizione}" class="model-link">
 											<i class="fa fa-file-text"></i>
 											<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
 										</div>

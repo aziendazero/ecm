@@ -70,6 +70,7 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
@@ -78,7 +79,6 @@ import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
-import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -100,11 +100,11 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
 	@Autowired private FileService fileService;
 	@Autowired private CogeapsWsRestClient cogeapsWsRestClient;
-	
+
 	@Autowired private ProviderService providerService;
 	@Autowired private FileValidator fileValidator;
 	@Autowired private PianoFormativoService pianoFormativoService;
-	
+
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -132,7 +132,7 @@ public class EventoServiceImpl implements EventoService {
 		//se attuazione di evento del piano formativo con data fine all'anno successivo...l'evento viene inserito nel piano formativo dell'anno successivo
 		if(evento.isEventoDaPianoFormativo()){
 			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
-			
+
 			LocalDate dataFine = evento.getDataFine();
 			if(dataFine != null){
 				int annoPianoFormativo = dataFine.getYear();
@@ -140,18 +140,18 @@ public class EventoServiceImpl implements EventoService {
 				if(pf == null){
 					pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
 				}
-				
-				
+
+
 				pf.addEvento(eventoPianoFormativo);
 				pianoFormativoService.save(pf);
 			}
-			
+
 			if(!evento.getEventoPianoFormativo().isAttuato()){
 				eventoPianoFormativo.setAttuato(true);
 			}
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
-		
+
 	}
 
 	@Override
@@ -412,7 +412,7 @@ public class EventoServiceImpl implements EventoService {
 			if (!reportFileName.trim().toUpperCase().endsWith(".P7M")) { //file non firmato -> invio non concesso
 				throw new Exception("error.file_non_firmato");
 			}
-			
+
 			//il file deve essere firmato digitalmente e con un certificato appartenente al Legale Rappresentante o al suo Delegato
 			boolean validateCFFirma = fileValidator.validateFirmaCF(evento.getReportPartecipantiXML(), evento.getProvider().getId());
 			if(!validateCFFirma)
@@ -1283,6 +1283,16 @@ public class EventoServiceImpl implements EventoService {
 				fasiAzioniRuoli.add(far);
 			}
 			((EventoFSC) riedizione).setFasiAzioniRuoli(fasiAzioniRuoli);
+
+			LOGGER.debug(Utils.getLogMessage("Clonazione verifica apprendimento"));
+			Set<VerificaApprendimentoFSCEnum> verificaApprendimento = new HashSet<VerificaApprendimentoFSCEnum>();
+			verificaApprendimento.addAll(Arrays.asList(((EventoFSC) riedizione).getVerificaApprendimento().toArray(new VerificaApprendimentoFSCEnum[((EventoFSC) riedizione).getVerificaApprendimento().size()])));
+			((EventoFSC) riedizione).setVerificaApprendimento(verificaApprendimento);
+
+			LOGGER.debug(Utils.getLogMessage("Clonazione verifica presenza partecipanti"));
+			Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti = new HashSet<VerificaPresenzaPartecipantiEnum>();
+			verificaPresenzaPartecipanti.addAll(Arrays.asList(((EventoFSC) riedizione).getVerificaPresenzaPartecipanti().toArray(new VerificaPresenzaPartecipantiEnum[((EventoFSC) riedizione).getVerificaPresenzaPartecipanti().size()])));
+			((EventoFSC) riedizione).setVerificaPresenzaPartecipanti(verificaPresenzaPartecipanti);
 
 			//ricalcolato
 			((EventoFSC) riedizione).setRiepilogoRuoli(new ArrayList<RiepilogoRuoliFSC>());
