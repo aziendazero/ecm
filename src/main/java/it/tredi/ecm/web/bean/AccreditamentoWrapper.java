@@ -139,6 +139,9 @@ public class AccreditamentoWrapper {
 	//File allegati integrazione
 	private File noteOsservazioniIntegrazione;
 	private File noteOsservazioniPreavvisoRigetto;
+	
+	//File import pianoFormativo da csv
+	private File importEventiDaCsvFile;
 
 	public AccreditamentoWrapper(){};
 	public AccreditamentoWrapper(Accreditamento accreditamento){

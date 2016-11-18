@@ -31,6 +31,7 @@ import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PianoFormativoWrapper;
@@ -204,7 +205,7 @@ public class PianoFormativoController {
 		return anniDisponibiliList;
 	}
 	
-	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
+	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
 	@RequestMapping(value = "/provider/{providerId}/pianoFormativo/{pianoFormativoId}/importaEventiDaCSV", method = RequestMethod.POST)
 	public String importaEventiDaCSV(@PathVariable Long providerId,
 			@PathVariable Long pianoFormativoId, @ModelAttribute("pianoFormativoWrapper") PianoFormativoWrapper wrapper, BindingResult result,
@@ -235,13 +236,48 @@ public class PianoFormativoController {
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/importaEventiDaCSV"), ex);
 				if (ex instanceof EcmException) //errore gestito
-	//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
 					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
 				else
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/importaEventiDaCSV"));
 			return "redirect:/provider/{providerId}/pianoFormativo/list?accordion=" + pianoFormativoService.getPianoFormativo(pianoFormativoId).getAnnoPianoFormativo();
 		}
+	}
+	
+	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/importaEventiDaCSV", method = RequestMethod.POST)
+	public String importaEventiDaCSVAccreditamnto(@PathVariable Long accreditamentoId, @PathVariable Long providerId,
+			@PathVariable Long pianoFormativoId, @ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
+			Model model, RedirectAttributes redirectAttrs) {
+		try{
+			LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/importaEventiDaCSV"));
+			
+			if(wrapper.getImportEventiDaCsvFile().getId() == null)
+				redirectAttrs.addFlashAttribute("message", new Message("message.warning", "message.inserire_il_rendiconto", "alert"));
+			else {
+				File file = wrapper.getImportEventiDaCsvFile();
+				if(file != null && !file.isNew()){
+					LOGGER.info(Utils.getLogMessage("Ricevuto File id: " + file.getId() + " da importare"));
+					String fileName = file.getNomeFile().trim().toUpperCase();
+					if (fileName.endsWith(".CSV")) {
+						wrapper.setImportEventiDaCsvFile(fileService.getFile(file.getId()));
+						pianoFormativoService.importaEventiDaCSV(pianoFormativoId, wrapper.getImportEventiDaCsvFile());
+						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
+					}
+					else {
+						redirectAttrs.addFlashAttribute("message", new Message("message.errore", "error.formatNonAcceptedXML", "error"));
+					}
+				}
+			}
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/importaEventiDaCSV"), ex);
+				if (ex instanceof EcmException) //errore gestito
+					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
+			}
+		redirectAttrs.addFlashAttribute("currentTab","tab4");
+		LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+		return "redirect:/accreditamento/{accreditamentoId}/edit";
 	}
 
 }
