@@ -1725,7 +1725,10 @@
 									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
 									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 									<th>
-										<a id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" onclick="openAddAttivitaTo('attivitaFAD')" data-toggle="modal" data-target=".modal-add-attivitaFAD">
+										<a th:unless="${isRiedizione}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" onclick="openAddAttivitaTo('attivitaFAD')" data-toggle="modal" data-target=".modal-add-attivitaFAD">
+											<span><i class="fa fa-plus"></i></span>
+										</a>
+										<a th:if="${isRiedizione}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
 											<span><i class="fa fa-plus"></i></span>
 										</a>
 									</th>
@@ -1742,10 +1745,13 @@
 									<td th:text="${attivita.metodologiaDidattica?.nome}"></td>
 									<td th:text="${attivita.oreAttivita}"></td>
 									<td>
-										<a onclick="modificaAttivitaFrom('attivitaFAD',this)" class="btn btn-warning col-xs-12" th:text="#{label.modifica}">
+										<a onclick="modificaAttivitaFrom('attivitaFAD',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaFAD">
 											<span><i class="fa fa-pencil"></i></span>
 										</a>
-										<a onclick="removeAttivitaFrom('attivitaFAD',this)" class="btn btn-danger col-xs-12" th:text="#{label.elimina}">
+										<a th:unless="${isRiedizione}" onclick="removeAttivitaFrom('attivitaFAD',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+											<span><i class="fa fa-trash"></i></span>
+										</a>
+										<a th:if="${isRiedizione}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
 											<span><i class="fa fa-trash"></i></span>
 										</a>
 									</td>
