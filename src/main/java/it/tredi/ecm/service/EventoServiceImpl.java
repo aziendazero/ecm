@@ -79,6 +79,7 @@ import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -104,6 +105,8 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private ProviderService providerService;
 	@Autowired private FileValidator fileValidator;
 	@Autowired private PianoFormativoService pianoFormativoService;
+
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -1419,5 +1422,67 @@ public class EventoServiceImpl implements EventoService {
 		if(listaEventi != null)
 			return listaEventi.size();
 		return 0;
+	}
+
+	/* Funzione che calcola i limiti temporali di editabilità dell'evento */
+	/* Editabile solo Docente */
+	@Override
+	public boolean isEditSemiBloccato(Evento evento) {
+		if(evento.getStato() != EventoStatoEnum.BOZZA) {
+			//riedizione
+			if(evento.isRiedizione()) {
+				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniPrimaBloccoEditRiedizione())))
+					return true;
+				else
+					return false;
+			}
+			//evento del Provider tipo A
+			else if(evento.getProvider().isGruppoA()) {
+				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniPrimaBloccoEditGruppoA())))
+					return true;
+				else
+					return false;
+			}
+			//evento del Provider tipo B
+			else if(evento.getProvider().isGruppoB()) {
+				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniPrimaBloccoEditGruppoB())))
+					return true;
+				else
+					return false;
+			}
+			return false;
+		}
+		else return false;
+	}
+
+	/* Evento iniziato e completamente bloccato */
+	@Override
+	public boolean isEventoIniziato(Evento evento) {
+		if(evento.getStato() != EventoStatoEnum.BOZZA) {
+			if(LocalDate.now().isEqual(evento.getDataInizio()) || LocalDate.now().isAfter(evento.getDataInizio()))
+				return true;
+			else
+				return false;
+		}
+		else return false;
+	}
+
+	/* Possibilità di posticipare data */
+	@Override
+	public boolean canEditDataInizio(Evento evento) {
+		if(evento.getStato() != EventoStatoEnum.BOZZA) {
+			if(evento.isRiedizione() || evento.getProvider().isGruppoA()) {
+				return true;
+			}
+			//gruppo B
+			else {
+				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniMinEventoProviderB())))
+					return false;
+				else
+					return true;
+			}
+		}
+		else
+			return true;
 	}
 }
