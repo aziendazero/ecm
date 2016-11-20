@@ -540,7 +540,7 @@ public class EventoController {
 		//editabilità
 		eventoWrapper.setEditSemiBloccato(eventoService.isEditSemiBloccato(evento));
 		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
-		eventoWrapper.setDataInizioEditabile(eventoService.canEditDataInizio(evento));
+		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
 		return eventoWrapper;
 	}
 
@@ -617,7 +617,7 @@ public class EventoController {
 		//editabilità
 		eventoWrapper.setEditSemiBloccato(eventoService.isEditSemiBloccato(evento));
 		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
-		eventoWrapper.setDataInizioEditabile(eventoService.canEditDataInizio(evento));
+		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRiedizione(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;
 	}
