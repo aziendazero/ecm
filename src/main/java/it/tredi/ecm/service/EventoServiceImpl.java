@@ -1467,22 +1467,22 @@ public class EventoServiceImpl implements EventoService {
 		else return false;
 	}
 
-	/* Possibilità di posticipare data */
+	/* Ritorna un booleano per il blocco della modifica della data di inizio */
 	@Override
-	public boolean canEditDataInizio(Evento evento) {
+	public boolean hasDataInizioRestrictions(Evento evento) {
 		if(evento.getStato() != EventoStatoEnum.BOZZA) {
 			if(evento.isRiedizione() || evento.getProvider().isGruppoA()) {
-				return true;
+				return false;
 			}
 			//gruppo B
 			else {
 				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniMinEventoProviderB())))
-					return false;
-				else
 					return true;
+				else
+					return false;
 			}
 		}
 		else
-			return true;
+			return false;
 	}
 }

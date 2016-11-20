@@ -119,7 +119,7 @@ public class EventoWrapper {
 	//gestione editabilita dell'Evento
 	private boolean editSemiBloccato = false;
 	private boolean eventoIniziato = false;
-	private boolean dataInizioEditabile = true;
+	private boolean hasDataInizioRestrictions = false;
 
 	public List<FaseAzioniRuoliEventoFSCTypeA> getProgrammaEventoFSC(){
 		if(evento != null && evento instanceof EventoFSC){

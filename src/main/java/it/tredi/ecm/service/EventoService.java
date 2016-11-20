@@ -51,5 +51,5 @@ public interface EventoService {
 
 	public boolean isEditSemiBloccato(Evento evento);
 	public boolean isEventoIniziato(Evento evento);
-	public boolean canEditDataInizio(Evento evento);
+	public boolean hasDataInizioRestrictions(Evento evento);
 }
