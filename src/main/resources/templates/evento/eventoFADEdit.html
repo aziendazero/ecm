@@ -25,7 +25,10 @@
 								novalidate="novalidate">
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+										isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
+										isEventoIniziato=${eventoWrapper.eventoIniziato},
+										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
 
 									<!-- ARGOMENTO -->
 									<div id="container-argomento" class="item form-group">
@@ -34,7 +37,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<textarea class="form-control" th:field="*{argomento}" th:disabled="${isRiedizione}"></textarea>
+											<textarea class="form-control" th:field="*{argomento}" th:disabled="${isRiedizione or isEditSemiBloccato}"></textarea>
 										</div>
 									</div>
 
@@ -52,7 +55,7 @@
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
-												title="Seleziona un docente...">
+												title="Seleziona un docente..." th:disabled="${isEventoIniziato}">
 												<option
 													th:each="docente, row: ${eventoWrapper.docenti}"
 													th:value="${docente.id}"
@@ -76,7 +79,7 @@
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
-												title="Seleziona un risultato atteso..." th:disabled="${isRiedizione}">
+												title="Seleziona un risultato atteso..." th:disabled="${isRiedizione or isEditSemiBloccato}">
 												<option
 													th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
 													th:value="${risultato.value}"
@@ -84,7 +87,6 @@
 													th:text="${risultato.value}">Risultato
 												</option>
 											</select>
-
 										</div>
 									</div>
 
@@ -103,7 +105,7 @@
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
 												onchange="updateMetodologieDidattiche(this)"
-												title="Seleziona un obiettivo..." th:disabled="${isRiedizione}">
+												title="Seleziona un obiettivo..." th:disabled="${isRiedizione or isEditSemiBloccato}">
 												<option
 													th:each="obiettivoFormativo, row: ${T(it.tredi.ecm.dao.enumlist.ObiettiviFormativiFADEnum).values()}"
 													th:value="${obiettivoFormativo}"
@@ -127,7 +129,7 @@
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
-												title="Seleziona una Metodologia Didattica" th:disabled="${isRiedizione}">
+												title="Seleziona una Metodologia Didattica" th:disabled="${isRiedizione or isEditSemiBloccato}">
 												<option
 													th:each="metodologiaDidattica, row: ${T(it.tredi.ecm.dao.enumlist.MetodologiaDidatticaFADEnum).values()}"
 													th:value="${metodologiaDidattica}"
@@ -144,7 +146,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata">
-											<input type="text" pattern="numeric" class="form-control" th:field="*{oreAttivita}" th:disabled="${isRiedizione}" />
+											<input type="text" pattern="numeric" class="form-control" th:field="*{oreAttivita}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 										</div>
 									</div>
 
@@ -198,7 +200,10 @@
 							<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+										isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
+										isEventoIniziato=${eventoWrapper.eventoIniziato},
+										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
 
 									<!-- TODO rimuovere -->
 	<!-- 								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
@@ -259,8 +264,8 @@
 
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="destinatari">
 											<div class="checkbox" th:each="destinatario, row : ${T(it.tredi.ecm.dao.enumlist.DestinatariEventoEnum).values()}">
-												<label th:class="${isRiedizione} ? 'label-disabled' :  ''">
-													<input type="checkbox" class="flat destinatario" th:field="${eventoWrapper.evento.destinatariEvento}" th:value="${destinatario}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' :  ''">
+													<input type="checkbox" class="flat destinatario" th:field="${eventoWrapper.evento.destinatariEvento}" th:value="${destinatario}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="${destinatario.nome}"></span>
 												</label>
 											</div>
@@ -282,8 +287,8 @@
 
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="contenuti">
 											<div class="radio" th:each="contenuto, row : ${T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).values()}">
-												<label th:class="${isRiedizione} ? 'label-disabled' :  ''">
-													<input type="radio" class="flat contenuto" th:field="${eventoWrapper.evento.contenutiEvento}" th:value="${contenuto}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' :  ''">
+													<input type="radio" class="flat contenuto" th:field="${eventoWrapper.evento.contenutiEvento}" th:value="${contenuto}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="${contenuto.nome}"></span>
 												</label>
 											</div>
@@ -305,9 +310,9 @@
 
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="titolo">
 											<textarea class="required" maxlength="3000" id="title" rows="3" name="titolo"
-												style="resize: none;" th:field="${eventoWrapper.evento.titolo}" th:disabled="${isRiedizione}">
+												style="resize: none;" th:field="${eventoWrapper.evento.titolo}" th:disabled="${isRiedizione or isEditSemiBloccato}">
 											</textarea>
-											<div id="counter" th:unless="${isRiedizione}"></div>
+											<div id="counter" th:unless="${isRiedizione or isEditSemiBloccato}"></div>
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.titolo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.titolo')}__}"></div>
 									</div>
@@ -325,8 +330,11 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 											<input type="text" id="dataInizio" class="form-control"
-												name="data" th:field="${eventoWrapper.evento.dataInizio}" />
-											<span class="input-group-addon" id="dataInizio" onclick="$('#dataInizio').click()">
+												name="data" th:field="${eventoWrapper.evento.dataInizio}" th:disabled="${hasDataInizioRestrictions or isEditSemiBloccato}" />
+											<span th:unless="${hasDataInizioRestrictions or isEditSemiBloccato}"  class="input-group-addon" id="dataInizio" onclick="$('#dataInizio').click()">
+					 							<i class="glyphicon glyphicon-calendar"></i>
+											</span>
+											<span th:if="${hasDataInizioRestrictions or isEditSemiBloccato}" class="input-group-addon disabled-addon" id="dataInizio">
 					 							<i class="glyphicon glyphicon-calendar"></i>
 											</span>
 										</div>
@@ -344,8 +352,11 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 											<input type="text" id="dataFine" class="form-control"
-												name="data" th:field="${eventoWrapper.evento.dataFine}" />
-											<span class="input-group-addon" id="dataFineButton" onclick="$('#dataFine').click()">
+												name="data" th:field="${eventoWrapper.evento.dataFine}" th:disabled="${isEditSemiBloccato}" />
+											<span th:unless="${isEditSemiBloccato}" class="input-group-addon" id="dataFineButton" onclick="$('#dataFine').click()">
+					 							<i class="glyphicon glyphicon-calendar"></i>
+											</span>
+											<span th:if="${isEditSemiBloccato}" class="input-group-addon disabled-addon" id="dataFineButton">
 					 							<i class="glyphicon glyphicon-calendar"></i>
 											</span>
 										</div>
@@ -368,7 +379,7 @@
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
-												title="Seleziona un obiettivo..." th:disabled="${isRiedizione or isFromPianoFormativo}">
+												title="Seleziona un obiettivo..." th:disabled="${isRiedizione or isFromPianoFormativo or isEditSemiBloccato}">
 												<optgroup class="optgroup-primary"
 													th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
 													th:label="${categoriaObiettivoNazionale.nome}"
@@ -404,7 +415,7 @@
 												data-width="100%" data-style="btn-primary"
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
-												title="Seleziona un obiettivo..." th:disabled="${isRiedizione}">
+												title="Seleziona un obiettivo..." th:disabled="${isRiedizione or isEditSemiBloccato}">
 												<option
 													th:each="obiettivoRegionale, row: ${eventoWrapper.obiettiviRegionali}"
 													th:value="${obiettivoRegionale.id}"
@@ -430,7 +441,7 @@
 													data-style="btn-primary" data-actions-box="true"
 													data-size="10" title="Seleziona una professione..."
 													onchange="abilitaDiscipline(this)"
-													data-selected-text-format="count" th:remove="all-but-first" th:disabled="${isRiedizione}">
+													data-selected-text-format="count" th:remove="all-but-first" th:disabled="${isRiedizione or isEditSemiBloccato}">
 													<option th:each="professione, row: ${eventoWrapper.professioneList}"
 														th:value="${professione.id}" th:text="${professione.nome}"
 														th:field="${eventoWrapper.evento.professioniSelezionate}"></option>
@@ -451,7 +462,7 @@
 													data-style="btn-success" data-actions-box="true"
 													data-size="10" data-hide-disabled="true"
 													title="Seleziona una disciplina..." disabled="disabled"
-													th:attr="data-editabile=${!isRiedizione}"
+													th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}"
 													data-selected-text-format="count" th:remove="all-but-first">
 													<optgroup class="optgroup-success" disabled="disabled"
 														th:each="professione, row: ${eventoWrapper.professioneList}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
@@ -475,7 +486,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="partecipantiPrevisti">
-											<input type="text" pattern="numeric" class="form-control" th:field="${eventoWrapper.evento.numeroPartecipanti}" th:disabled="${isRiedizione}" />
+											<input type="text" pattern="numeric" class="form-control" th:field="${eventoWrapper.evento.numeroPartecipanti}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipanti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.numeroPartecipanti')}__}"></div>
 									</div>
@@ -498,7 +509,7 @@
 												data-actions-box="true" data-size="10"
 												data-hide-disabled="false"
 												onchange="updateObiettivoFormativo(this.value)"
-												title="Seleziona una tipologia..." th:disabled="${isRiedizione}">
+												title="Seleziona una tipologia..." th:disabled="${isRiedizione or isEditSemiBloccato}">
 												<option
 													th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).values()}"
 													th:value="${tipologia}"
@@ -565,11 +576,12 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<input type="text" class="form-control" th:field="${eventoWrapper.evento.razionale}" th:disabled="${isRiedizione}" />
+											<input type="text" class="form-control" th:field="${eventoWrapper.evento.razionale}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.razionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.razionale')}__}"></div>
 									</div>
 
+									<!--  RISULTATI ATTESI -->
 									<div class="item form-group">
 										<label class="control-label col-xs-1">
 											<span>17</span>
@@ -584,20 +596,26 @@
 											th:class="${row.last ? 'nextRisultatoAtteso item form-group' : 'prevRisultatoAtteso item form-group'}"
 											th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
 											th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[__${risultato.key}__]') or #maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.risultatiAttesi')} ? 'bad'">
-											<div class='col-md-4 col-sm-4 col-xs-12'></div>
-											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
-												<input type="hidden" th:value="${risultato.key}" />
-												<input type="text" class="form-control risultatoPicker"
-													th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" th:disabled="${isRiedizione}" />
-												<span th:unless="${isRiedizione}" class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}" th:classappend="${row.last ? 'add' : 'remove'}">
-													<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
-												</span>
-												<span th:if="${isRiedizione}" class="input-group-addon disabled-addon" th:classappend="${row.last ? 'add' : 'remove'}">
-													<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
-												</span>
-											</div>
-											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[__${risultato.key}__]')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('risultatiAttesiMapTemp['+risultato.key+']')}__}"></div>
-											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.risultatiAttesi')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.risultatiAttesi')}__}"></div>
+											<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+												isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+												isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
+												isEventoIniziato=${eventoWrapper.eventoIniziato},
+												hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+												<div class='col-md-4 col-sm-4 col-xs-12'></div>
+												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
+													<input type="hidden" th:value="${risultato.key}" />
+													<input type="text" class="form-control risultatoPicker"
+														th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+													<span th:unless="${isRiedizione or isEditSemiBloccato}" class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}" th:classappend="${row.last ? 'add' : 'remove'}">
+														<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
+													</span>
+													<span th:if="${isRiedizione or isEditSemiBloccato}" class="input-group-addon disabled-addon" th:classappend="${row.last ? 'add' : 'remove'}">
+														<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
+													</span>
+												</div>
+												<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[__${risultato.key}__]')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('risultatiAttesiMapTemp['+risultato.key+']')}__}"></div>
+												<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.risultatiAttesi')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.risultatiAttesi')}__}"></div>
+											</th:block>
 										</div>
 									</div>
 
@@ -609,7 +627,10 @@
 							<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+										isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
+										isEventoIniziato=${eventoWrapper.eventoIniziato},
+										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
 
 									<!-- PROGRAMMA EVENTO -->
 	<!-- 								METTERE QUA IL PROGRAMMA -->
@@ -628,8 +649,8 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, brochure, null, null, null, false, null, false)" ></th:block> -->
-											<th:block th:unless="${isRiedizione}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_BROCHURE_EVENTO}', brochure, null, null, null, false, 'edit', false)" ></th:block>
-											<th:block th:if="${isRiedizione}">
+											<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_BROCHURE_EVENTO}', brochure, null, null, null, false, 'edit', false)" ></th:block>
+											<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 												<div class="value-edit" th:if="${eventoWrapper.evento.brochureEvento != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.brochureEvento.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.brochureEvento.id}|}"></a></div>
 												<div class="value-edit danger" th:unless="${eventoWrapper.evento.brochureEvento != null}" th:text="#{label.allegato_non_inserito}"></div>
 											</th:block>
@@ -643,7 +664,10 @@
 							<div class="col-xs-12 section-index" id="section-3" th:fragment="section-3">
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+										isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
+										isEventoIniziato=${eventoWrapper.eventoIniziato},
+										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
 
 									<!-- VERIFICA APPRENDIMENTO PARTECIPANTI -->
 									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')} ? 'bad'">
@@ -656,16 +680,16 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 											<div class="checkbox verificaApprendimentoCheck" th:each="modalitaCheck, row : ${T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoFADEnum).values()}">
-												<label th:class="${isRiedizione} ? 'label-disabled' : ''">
-													<input type="checkbox" class="flat check-verifica" th:attr="data-enum=${modalitaCheck}" th:field="${eventoWrapper.mappaVerificaApprendimento[__${modalitaCheck}__].verificaApprendimento}" th:value="${modalitaCheck}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="checkbox" class="flat check-verifica" th:attr="data-enum=${modalitaCheck}" th:field="${eventoWrapper.mappaVerificaApprendimento[__${modalitaCheck}__].verificaApprendimento}" th:value="${modalitaCheck}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="${modalitaCheck.nome}"></span>
 												</label>
 												<div class="col-xs-offset-1" th:classappend="${'radio'+modalitaCheck}" style="display: none;">
 													<div class="radio verificaApprendimentoRadio" th:each="modalitaRadio, row2 : ${T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoInnerFADEnum).values()}"
 														th:unless="${(modalitaCheck == T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoFADEnum).ESAME_ORALE and (modalitaRadio != T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoInnerFADEnum).SVOLTO_IN_PRESENZA and modalitaRadio != T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoInnerFADEnum).ESEGUITO_ON_LINE))} or
 																	${(modalitaCheck == T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoFADEnum).ESAME_PRATICO and modalitaRadio != T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoInnerFADEnum).SVOLTO_IN_PRESENZA)}">
-														<label th:class="${isRiedizione} ? 'label-disabled' : ''">
-															<input type="radio" class="flat" th:field="${eventoWrapper.mappaVerificaApprendimento[__${modalitaCheck}__].verificaApprendimentoInner}" th:value="${modalitaRadio}"  th:disabled="${isRiedizione}" />
+														<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+															<input type="radio" class="flat" th:field="${eventoWrapper.mappaVerificaApprendimento[__${modalitaCheck}__].verificaApprendimentoInner}" th:value="${modalitaRadio}"  th:disabled="${isRiedizione or isEditSemiBloccato}" />
 															<span th:text="${modalitaRadio.nome}"></span>
 														</label>
 													</div>
@@ -747,14 +771,14 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<div class="radio">
-												<label th:class="${isRiedizione} ? 'label-disabled' : ''">
-													<input type="radio" class="flat supporto" th:field="${eventoWrapper.evento.supportoSvoltoDaEsperto}" th:value="${true}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="radio" class="flat supporto" th:field="${eventoWrapper.evento.supportoSvoltoDaEsperto}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="#{label.sì}">Sì</span>
 												</label>
 											</div>
 											<div class="radio">
-												<label th:class="${isRiedizione} ? 'label-disabled' : ''">
-													<input type="radio" class="flat supporto" th:field="${eventoWrapper.evento.supportoSvoltoDaEsperto}" th:value="${false}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="radio" class="flat supporto" th:field="${eventoWrapper.evento.supportoSvoltoDaEsperto}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="#{label.no}">No</span>
 												</label>
 											</div>
@@ -774,8 +798,8 @@
 										<div class="col-xs-5" id="creditiFormativi">
 											<span class="value-edit" th:text="${eventoWrapper.creditiProposti}"></span>
 											<span class="checkbox">
-											<label th:class="${isRiedizione} ? 'label-disabled' : ''">
-												<input type="checkbox" class="flat crediti-conferma" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" th:disabled="${isRiedizione}"/>
+											<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+												<input type="checkbox" class="flat crediti-conferma" th:field="${eventoWrapper.evento.confermatiCrediti}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}"/>
 												<span th:text="#{label.conferma_crediti_proposti_dal_sistema}"></span>
 											</label>
 											</span>
@@ -792,7 +816,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
-											<input type="text" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" th:disabled="${isRiedizione}" th:attr="data-editabile=${!isRiedizione}"/>
+											<input type="text" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" th:disabled="${isRiedizione or isEditSemiBloccato}" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}"/>
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.crediti')}__}"></div>
 									</div>
@@ -829,7 +853,7 @@
 											<span th:text="#{label.tipo_materiale_rilasciato}">Tipo materiale durevole rilasciato ai partecipanti</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="tipoMateriale">
-											<input type="text" class="form-control" th:field="${eventoWrapper.evento.materialeDurevoleRilasciatoAiPratecipanti}" th:disabled="${isRiedizione}" />
+											<input type="text" class="form-control" th:field="${eventoWrapper.evento.materialeDurevoleRilasciatoAiPratecipanti}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 										</div>
 									</div>
 
@@ -843,7 +867,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="quota">
-											<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" th:disabled="${isRiedizione}" />
+											<input type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.quotaPartecipazione')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.quotaPartecipazione')}__}"></div>
 									</div>
@@ -861,8 +885,8 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, requisitiHardwareSoftware, null, null, null, false, null, true)" ></th:block> -->
-											<th:block th:unless="${isRiedizione}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_REQUISITI_HARDWARE_SOFTWARE}', requisitiHardwareSoftware, null, null, null, true, 'edit', true)" ></th:block>
-											<th:block th:if="${isRiedizione}">
+											<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_REQUISITI_HARDWARE_SOFTWARE}', requisitiHardwareSoftware, null, null, null, true, 'edit', true)" ></th:block>
+											<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 												<div class="value-edit" th:if="${eventoWrapper.evento.requisitiHardwareSoftware != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.requisitiHardwareSoftware.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.requisitiHardwareSoftware.id}|}"></a></div>
 												<div class="value-edit danger" th:unless="${eventoWrapper.evento.requisitiHardwareSoftware != null}" th:text="#{label.allegato_non_inserito}"></div>
 											</th:block>
@@ -886,7 +910,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-											<input type="text" class="form-control optional" th:field="${eventoWrapper.evento.userId}" th:disabled="${isRiedizione}" />
+											<input type="text" class="form-control optional" th:field="${eventoWrapper.evento.userId}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.userId')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.userId')}__}"></div>
 									</div>
@@ -897,7 +921,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-											<input type="text" class="form-control optional" th:field="${eventoWrapper.evento.password}" th:disabled="${isRiedizione}" />
+											<input type="text" class="form-control optional" th:field="${eventoWrapper.evento.password}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.password')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.password')}__}"></div>
 									</div>
@@ -908,7 +932,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-											<input type="text" pattern="site" class="form-control optional" th:field="${eventoWrapper.evento.url}" th:disabled="${isRiedizione}" />
+											<input type="text" pattern="site" class="form-control optional" th:field="${eventoWrapper.evento.url}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.url')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.url')}__}"></div>
 									</div>
@@ -925,14 +949,14 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 											<div class="radio">
-												<label th:class="${isRiedizione} ? 'label-disabled' : ''">
-													<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${true}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="#{label.sì}">Sì</span>
 												</label>
 											</div>
 											<div class="radio">
-												<label th:class="${isRiedizione} ? 'label-disabled' : ''">
-													<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${false}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="radio" class="flat sponsor" th:field="${eventoWrapper.evento.eventoSponsorizzato}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="#{label.no}">No</span>
 												</label>
 											</div>
@@ -944,8 +968,8 @@
 											<div class="control-label col-md-4 col-sm-4 col-xs-12"></div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<div class="checkbox">
-													<label>
-														<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.letteInfoAllegatoSponsor}" th:value="${true}" />
+													<label class="${isEditSemiBloccato} ? 'label-disabled' : ''">
+														<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.letteInfoAllegatoSponsor}" th:value="${true}" th:disabled="${isEditSemiBloccato}" />
 														<span th:text="#{label.info_sponsor_evento}"></span>
 														<span class="required">*</span>
 													</label>
@@ -971,14 +995,14 @@
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<div class="radio">
-													<label th:class="${isRiedizione} ? 'label-disabled' : ''" >
-														<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${true}" th:disabled="${isRiedizione}" />
+													<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
+														<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 														<span th:text="#{label.sì}">Sì</span>
 													</label>
 												</div>
 												<div class="radio">
-													<label th:class="${isRiedizione} ? 'label-disabled' : ''" >
-														<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${false}" th:disabled="${isRiedizione}" />
+													<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
+														<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 														<span th:text="#{label.no}">No</span>
 													</label>
 												</div>
@@ -993,14 +1017,14 @@
 													<span th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
 													<span class="required">*</span>
 												</label>
-												<div th:unless="${isRiedizione}" class="model-link">
+												<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
 													<i class="fa fa-file-text"></i>
 													<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="todo"></a>
 												</div>
 												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 													<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block> -->
-													<th:block th:unless="${isRiedizione}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE}', autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, 'edit', false)" ></th:block>
-													<th:block th:if="${isRiedizione}">
+													<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE}', autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, 'edit', false)" ></th:block>
+													<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 														<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.id}|}"></a></div>
 														<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}" th:text="#{label.allegato_non_inserito}"></div>
 													</th:block>
@@ -1016,14 +1040,14 @@
 													<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti_sponsor}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
 													<span class="required">*</span>
 												</label>
-												<div th:unless="${isRiedizione}" class="model-link">
+												<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
 													<i class="fa fa-file-text"></i>
 													<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
 												</div>
 												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 													<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block> -->
-													<th:block th:unless="${isRiedizione}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA}', autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, 'edit', false)" ></th:block>
-													<th:block th:if="${isRiedizione}">
+													<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA}', autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, 'edit', false)" ></th:block>
+													<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 														<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>
 														<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.allegato_non_inserito}"></div>
 													</th:block>
@@ -1047,14 +1071,14 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<div class="radio">
-												<label th:class="${isRiedizione} ? 'label-disabled' : ''" >
-													<input type="radio" class="flat finanziamento" th:field="${eventoWrapper.evento.altreFormeFinanziamento}" th:value="${true}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
+													<input type="radio" class="flat finanziamento" th:field="${eventoWrapper.evento.altreFormeFinanziamento}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="#{label.sì}">Sì</span>
 												</label>
 											</div>
 											<div class="radio">
-												<label th:class="${isRiedizione} ? 'label-disabled' : ''" >
-													<input type="radio" class="flat finanziamento" th:field="${eventoWrapper.evento.altreFormeFinanziamento}" th:value="${false}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
+													<input type="radio" class="flat finanziamento" th:field="${eventoWrapper.evento.altreFormeFinanziamento}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="#{label.no}">No</span>
 												</label>
 											</div>
@@ -1069,14 +1093,14 @@
 												<span th:text="#{label.allegato_contratti_accordi_convenzioni}">Allegato Contratti Accordi Convenzioni</span>
 												<span class="required">*</span>
 											</label>
-											<div th:unless="${isRiedizione}" class="model-link">
+											<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
 												<i class="fa fa-file-text"></i>
 												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/MOD._SPONSORIZZAZIONE_PROVIDER-SPONSOR.pdf"></a>
 											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, contrattiAccordiConvenzioni, null, null, null, true, null, false)" ></th:block> -->
-												<th:block th:unless="${isRiedizione}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTI_ACCORDI_CONVENZIONI}', contrattiAccordiConvenzioni, null, null, null, true, 'edit', false)" ></th:block>
-												<th:block th:if="${isRiedizione}">
+												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTI_ACCORDI_CONVENZIONI}', contrattiAccordiConvenzioni, null, null, null, true, 'edit', false)" ></th:block>
+												<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 													<div class="value-edit" th:if="${eventoWrapper.evento.contrattiAccordiConvenzioni != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.contrattiAccordiConvenzioni.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.contrattiAccordiConvenzioni.id}|}"></a></div>
 													<div class="value-edit danger" th:unless="${eventoWrapper.evento.contrattiAccordiConvenzioni != null}" th:text="#{label.allegato_non_inserito}"></div>
 												</th:block>
@@ -1092,14 +1116,14 @@
 												<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Allegato autocertificazione assenza finanziamenti</span>
 												<span th:unless="${eventoWrapper.evento.provider.isGruppoA()}" class="required">*</span>
 											</label>
-											<div th:unless="${isRiedizione}" class="model-link">
+											<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
 												<i class="fa fa-file-text"></i>
 												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/Veneto/modello%20assenza%20finanziamenti%20Regione.pdf"></a>
 											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block> -->
-												<th:block th:unless="${isRiedizione}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_FINANZIAMENTI}', autocertificazioneAssenzaFinanziamenti, null, null, null, true, 'edit', false)" ></th:block>
-												<th:block th:if="${isRiedizione}">
+												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_FINANZIAMENTI}', autocertificazioneAssenzaFinanziamenti, null, null, null, true, 'edit', false)" ></th:block>
+												<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 													<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti.id}|}"></a></div>
 													<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti != null}" th:text="#{label.allegato_non_inserito}"></div>
 												</th:block>
@@ -1122,14 +1146,14 @@
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 											<div class="radio">
-												<label th:class="${isRiedizione} ? 'label-disabled' : ''" >
-													<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${true}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
+													<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="#{label.sì}">Sì</span>
 												</label>
 											</div>
 											<div class="radio">
-												<label th:class="${isRiedizione} ? 'label-disabled' : ''" >
-													<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${false}" th:disabled="${isRiedizione}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
+													<input type="radio" class="flat partner" th:field="${eventoWrapper.evento.eventoAvvalePartner}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 													<span th:text="#{label.no}">No</span>
 												</label>
 											</div>
@@ -1161,14 +1185,14 @@
 											<span th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
 											<span class="required">*</span>
 										</label>
-										<div th:unless="${isRiedizione}" class="model-link">
+										<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
 											<i class="fa fa-file-text"></i>
 											<a class="autocertificazione_modello" th:text="#{label.esempio_modello}" href="todo"></a>
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block> -->
-											<th:block th:unless="${isRiedizione}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, false, 'edit', false)" ></th:block>
-											<th:block th:if="${isRiedizione}">
+											<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, false, 'edit', false)" ></th:block>
+											<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 												<div class="value-edit" th:if="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.id}|}"></a></div>
 												<div class="value-edit danger" th:unless="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}" th:text="#{label.allegato_non_inserito}"></div>
 											</th:block>
@@ -1187,8 +1211,8 @@
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<div class="checkbox">
-												<label>
-													<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.proceduraVerificaQualitaPercepita}" th:value="${true}" />
+												<label class="${isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.proceduraVerificaQualitaPercepita}" th:value="${true}" th:disabled="${isEditSemiBloccato}" />
 													<span th:text="#{label.procedura_verifica_qualita}">E’ prevista una procedura di verifica della qualità percepita</span>
 													<span class="required">*</span>
 												</label>
@@ -1208,8 +1232,8 @@
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<div class="checkbox">
-												<label>
-													<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.autorizzazionePrivacy}" th:value="${true}" />
+												<label class="${isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.autorizzazionePrivacy}" th:value="${true}" th:disabled="${isEditSemiBloccato}" />
 													<span th:text="#{label.autorizzazione_privacy}"></span>
 													<span class="required">*</span>
 												</label>
