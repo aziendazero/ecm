@@ -206,7 +206,6 @@ table.datatable-responsive-eventi-riedizione thead .sorting_asc:after {
 
 .disabled-addon {
 	cursor: not-allowed !important;
-	color: #fff;
 	opacity: 0.45;
 }
 
@@ -366,6 +365,8 @@ textarea {
 
 textarea[disabled] {
 	cursor: not-allowed;
+	background: #eee;
+    border-color: #ccc;
 }
 
 .note-text {
