@@ -59,9 +59,11 @@ function changeProvincia(idProvincia, idComune, mantieniComune){
 			//console.log(option);
 			$(keyCom).append(option);
 		}
-		$(keyCom).prop("disabled", false);
+		if($(keyCom).attr("data-editabile") !== 'false') {
+			$(keyCom).prop("disabled", false);
+		}
 		$(keyCom).selectpicker('refresh');
 	} else {
 		alert('Attenzione elenco dei comuni non trovato per la provincia: ' + provinciaSel + ' contattare l\'amministrazione.');
-	}	
+	}
 }
