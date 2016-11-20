@@ -50,7 +50,7 @@ import lombok.Setter;
 })
 public class Provider extends BaseEntity{
 	/*	ACCOUNTS DEL PROVIDER	*/
-	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE })	
+	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE })
 	Set<Account> accounts;
 
 	/*	INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE	*/
@@ -61,7 +61,7 @@ public class Provider extends BaseEntity{
 	private String partitaIva;
 	private String codiceFiscale;
 	private String emailStruttura;
-	
+
 	public Long getCodiceIdentificativoUnivoco(){
 		return this.getId();
 	}
@@ -127,7 +127,7 @@ public class Provider extends BaseEntity{
 
 //	@OneToMany(mappedBy = "provider")
 //	private Set<QuotaAnnuale> pagamenti = new HashSet<QuotaAnnuale>();
-	
+
 	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;
 
@@ -173,9 +173,15 @@ public class Provider extends BaseEntity{
 		Provider entitapiatta = (Provider) o;
 		return Objects.equals(id, entitapiatta.id);
 	}
-	
+
 	public boolean isGruppoA(){
 		if(tipoOrganizzatore != null && tipoOrganizzatore.getGruppo().equalsIgnoreCase("A"))
+			return true;
+		return false;
+	}
+
+	public boolean isGruppoB(){
+		if(tipoOrganizzatore != null && tipoOrganizzatore.getGruppo().equalsIgnoreCase("B"))
 			return true;
 		return false;
 	}
