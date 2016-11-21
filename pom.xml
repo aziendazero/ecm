@@ -284,9 +284,34 @@
 		<!-- esempio di profilo da utilizzare per le build di produzione o ambienti 
 			di test per evitare di copiare le properties di altri ambienti -->
 		<profile>
-			<id>prod</id>
+			<id>regione-prod</id>
 			<properties>
-				<spring.profile>prod</spring.profile>
+				<spring.profile>regione-prod</spring.profile>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<excludes>
+							<exclude>application*.properties</exclude>
+						</excludes>
+						<filtering>false</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>application.properties</include>
+							<include>application-${spring.profile}.properties</include>
+						</includes>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>regione-test</id>
+			<properties>
+				<spring.profile>regione-test</spring.profile>
 			</properties>
 			<build>
 				<resources>
