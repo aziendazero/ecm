@@ -17,7 +17,7 @@
     
     <include file="002_20161117_165101_modifica_colonna_sponsor_upload.xml" relativeToChangelogFile="true"/>
     
-    <include file="003_00_20161118_105800_loaddata.xml" relativeToChangelogFile="true"/>
-    
     <include file="002_20161121_103000_rinomina_colonna_tipologia_evento_fad.xml" relativeToChangelogFile="true"/>
+    
+    <include file="003_00_20161118_105800_loaddata.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

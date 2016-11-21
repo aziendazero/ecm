@@ -1447,12 +1447,12 @@ public class EventoServiceImpl implements EventoService {
 			
 			//PROVIDER ID
 			if(wrapper.getCampoIdProvider() != null){
-				query = AND(query, "e.provider.id = :providerId");
+				query = Utils.QUERY_AND(query, "e.provider.id = :providerId");
 				params.put("providerId", wrapper.getCampoIdProvider());
 			}
 			
 			if(wrapper.getTipologieSelezionate() != null && !wrapper.getTipologieSelezionate().isEmpty()){
-				query = AND(query, "e.proceduraFormativa IN :tipologieSelezionate");
+				query = Utils.QUERY_AND(query, "e.proceduraFormativa IN :tipologieSelezionate");
 				params.put("tipologieSelezionate", wrapper.getTipologieSelezionate());
 
 				if(wrapper.getTipologieRES() != null && !wrapper.getTipologieRES().isEmpty()){
@@ -1491,31 +1491,31 @@ public class EventoServiceImpl implements EventoService {
 			
 			//STATO EVENTO
 			if(wrapper.getStatiSelezionati() != null && !wrapper.getStatiSelezionati().isEmpty()){
-				query = AND(query, "e.stato IN :statiSelezionati");
+				query = Utils.QUERY_AND(query, "e.stato IN :statiSelezionati");
 				params.put("statiSelezionati", wrapper.getStatiSelezionati());
 			}
 			
 			//EVENTO ID
 			if(wrapper.getCampoIdEvento() != null){
-				query = AND(query, "e.id = :eventoId");
+				query = Utils.QUERY_AND(query, "e.id = :eventoId");
 				params.put("eventoId", wrapper.getCampoIdEvento());
 			}
 			
 			//TITOLO EVENTO
 			if(!wrapper.getTitoloEvento().isEmpty()){
-				query = AND(query, "UPPER(e.titolo) LIKE :titoloEvento");
+				query = Utils.QUERY_AND(query, "UPPER(e.titolo) LIKE :titoloEvento");
 				params.put("titoloEvento", "%" + wrapper.getTitoloEvento().toUpperCase() + "%");
 			}
 			
 			//OBIETTIVI NAZIONALI
 			if(wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty()){
-				query = AND(query, "e.obiettivoNazionale IN :obiettiviNazionaliSelezionati");
+				query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN :obiettiviNazionaliSelezionati");
 				params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionati());
 			}
 			
 			//OBIETTIVI REGIONALI
 			if(wrapper.getObiettiviRegionaliSelezionati() != null && !wrapper.getObiettiviRegionaliSelezionati().isEmpty()){
-				query = AND(query, "e.obiettivoRegionale IN :obiettiviRegionaleSelezionati");
+				query = Utils.QUERY_AND(query, "e.obiettivoRegionale IN :obiettiviRegionaleSelezionati");
 				params.put("obiettiviRegionaliSelezionati", wrapper.getObiettiviRegionaliSelezionati());
 			}
 
@@ -1539,65 +1539,65 @@ public class EventoServiceImpl implements EventoService {
 			
 			//DISCIPLINE SELEZIONATE
 			if(wrapper.getDisciplineSelezionate() != null && !wrapper.getDisciplineSelezionate().isEmpty()){
-				query = AND(query, "e.discipline IN :disciplineSelezionate");
+				query = Utils.QUERY_AND(query, "e.discipline IN :disciplineSelezionate");
 				params.put("disciplineSelezionate", wrapper.getDisciplineSelezionate());
 			}
 			
 			//NUMERO CREDITI
 			if(wrapper.getCrediti() != null && wrapper.getCrediti().floatValue() > 0){
-				query = AND(query, "e.crediti = :crediti");
+				query = Utils.QUERY_AND(query, "e.crediti = :crediti");
 				params.put("crediti", wrapper.getCrediti().floatValue());
 			}
 			
 			//PROVINCIA
 			if(wrapper.getProvincia() != null && !wrapper.getProvincia().isEmpty()){
-				query = AND(query, "e.sedeEvento.provincia = :provincia");
+				query = Utils.QUERY_AND(query, "e.sedeEvento.provincia = :provincia");
 				params.put("provincia", wrapper.getProvincia());
 			}
 			
 			//COMUNE
 			if(wrapper.getComune() != null && !wrapper.getComune().isEmpty()){
-				query = AND(query, "e.sedeEvento.comune = :comune");
+				query = Utils.QUERY_AND(query, "e.sedeEvento.comune = :comune");
 				params.put("comune", wrapper.getComune());
 			}
 			
 			//LUOGO
 			if(wrapper.getLuogo() != null && !wrapper.getLuogo().isEmpty()){
-				query = AND(query, "e.sedeEvento.luogo = :luogo");
+				query = Utils.QUERY_AND(query, "e.sedeEvento.luogo = :luogo");
 				params.put("luogo", wrapper.getLuogo());
 			}
 			
 			//DATA INZIO
 			if(wrapper.getDataInizioStart() != null){
-				query = AND(query, "e.dataInizio >= :dataInizioStart");
+				query = Utils.QUERY_AND(query, "e.dataInizio >= :dataInizioStart");
 				params.put("dataInizioStart", wrapper.getDataInizioStart());
 			} 
 			
 			if(wrapper.getDataInizioEnd() != null){
-				query = AND(query, "e.dataInizio <= :dataInizioEnd");
+				query = Utils.QUERY_AND(query, "e.dataInizio <= :dataInizioEnd");
 				params.put("dataInizioEnd", wrapper.getDataInizioEnd());
 			} 
 			
 
 			//DATA FINE
 			if(wrapper.getDataFineStart() != null){
-				query = AND(query, "e.dataFine >= :dataFineStart");
+				query = Utils.QUERY_AND(query, "e.dataFine >= :dataFineStart");
 				params.put("dataFineStart", wrapper.getDataFineStart());
 			} 
 			
 			if(wrapper.getDataFineEnd() != null){
-				query = AND(query, "e.dataFine <= :dataFineEnd");
+				query = Utils.QUERY_AND(query, "e.dataFine <= :dataFineEnd");
 				params.put("dataFineEnd", wrapper.getDataFineEnd());
 			} 
 			
 			//DATA PAGAMENTO
 			if(wrapper.getDataScadenzaPagamentoStart() != null){
-				query = AND(query, "e.dataScadenzaPagamento >= :dataScadenzaPagamentoStart");
+				query = Utils.QUERY_AND(query, "e.dataScadenzaPagamento >= :dataScadenzaPagamentoStart");
 				params.put("dataScadenzaPagamentoStart", wrapper.getDataScadenzaPagamentoStart());
 			} 
 			
 			if(wrapper.getDataScadenzaPagamentoEnd() != null){
-				query = AND(query, "e.dataScadenzaPagamento <= :dataScadenzaPagamentoEnd");
+				query = Utils.QUERY_AND(query, "e.dataScadenzaPagamento <= :dataScadenzaPagamentoEnd");
 				params.put("dataScadenzaPagamentoEnd", wrapper.getDataScadenzaPagamentoEnd());
 			} 
 		}
@@ -1615,13 +1615,6 @@ public class EventoServiceImpl implements EventoService {
 		List<Evento> result = q.getResultList(); 
 		
 		return result;
-	}
-	
-	private String AND(String query, String criteria){
-		if(query.contains("WHERE"))
-			return query+= " AND " + criteria;
-		else
-			return query+= " WHERE " + criteria;
 	}
 
 	/* Funzione che calcola i limiti temporali di editabilità dell'evento */

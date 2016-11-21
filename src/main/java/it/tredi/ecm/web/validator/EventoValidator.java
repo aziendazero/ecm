@@ -37,6 +37,7 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
@@ -50,6 +51,7 @@ public class EventoValidator {
 
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private FileValidator fileValidator;
+	@Autowired private FileService fileService;
 
 	private Set<String> risultatiAttesiUtilizzati;
 
@@ -1043,7 +1045,9 @@ public class EventoValidator {
 
 	//validate Partner
 	private boolean validatePartner(Partner partner, Long providerId) throws Exception {
-
+		if(partner.getPartnerFile() != null && !partner.getPartnerFile().isNew())
+			partner.setPartnerFile(fileService.getFile(partner.getPartnerFile().getId()));
+	
 		if(partner.getName() == null || partner.getName().isEmpty())
 			return true;
 		if(partner.getPartnerFile() == null || partner.getPartnerFile().isNew())

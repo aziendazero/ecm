@@ -3,9 +3,15 @@ package it.tredi.ecm.service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,21 +23,23 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.ComunicazioneRepository;
 import it.tredi.ecm.dao.repository.ComunicazioneResponseRepository;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.RicercaComunicazioneWrapper;
 
 @Service
 public class ComunicazioneServiceImpl implements ComunicazioneService {
 	private static Logger LOGGER = LoggerFactory.getLogger(ComunicazioneServiceImpl.class);
 
 	@Autowired private AccountService accountService;
-	@Autowired private ProviderService providerService;
 	@Autowired private ComunicazioneRepository comunicazioneRepository;
 	@Autowired private ComunicazioneResponseRepository comunicazioneResponseRepository;
+	@PersistenceContext EntityManager entityManager;
 
 	@Override
 	public Comunicazione getComunicazioneById(Long id) {
@@ -230,5 +238,59 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		if(adminProvider != null)
 			return comunicazioneRepository.findAllComunicazioneByUser(adminProvider);
 		return null;
+	}
+	
+	@Override
+	public List<Comunicazione> cerca(RicercaComunicazioneWrapper wrapper) {
+		String query = "";
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		new HashSet<String>();
+		
+		query ="SELECT c FROM Comunicazione c";
+		
+		//OGGETTO
+		if(wrapper.getOggetto() != null && !wrapper.getOggetto().isEmpty()){
+			query = Utils.QUERY_AND(query, "UPPER(c.oggetto) LIKE :oggetto");
+			params.put("oggetto", "%" + wrapper.getOggetto().toUpperCase() + "%");
+		}
+		
+		
+		//AMBITO
+		if(wrapper.getAmbitiSelezionati() != null){
+			query = Utils.QUERY_AND(query, "c.ambito IN :ambitiSelezionati");
+			params.put("ambitiSelezionati", wrapper.getAmbitiSelezionati());
+		}
+		
+		//TIPOLOGIA
+		if(wrapper.getTipologieSelezionate() != null){
+			query = Utils.QUERY_AND(query, "c.tipologia = :tipologieSelezionate");
+			params.put("tipologieSelezionate", wrapper.getTipologieSelezionate());
+		}
+		
+		//DATA CREAZIONE
+		if(wrapper.getDataCreazioneStart() != null){
+			query = Utils.QUERY_AND(query, "c.dataCreazione >= :dataCreazioneStart");
+			params.put("dataCreazioneStart", wrapper.getDataCreazioneStart());
+		} 
+		
+		if(wrapper.getDataCreazioneEnd() != null){
+			query = Utils.QUERY_AND(query, "c.dataCreazione <= :dataCreazioneEnd");
+			params.put("dataCreazioneEnd", wrapper.getDataCreazioneEnd());
+		} 
+
+		
+		LOGGER.info(Utils.getLogMessage("Cerca Comunicazione: " + query));
+		Query q = entityManager.createQuery(query, Evento.class);
+
+		Iterator<Entry<String, Object>> iterator = params.entrySet().iterator();
+		while(iterator.hasNext()){
+			Map.Entry<String, Object> pairs = iterator.next();
+			q.setParameter(pairs.getKey(), pairs.getValue());
+			LOGGER.info(Utils.getLogMessage(pairs.getKey() + ": " + pairs.getValue()));
+		}
+		
+		List<Comunicazione> result = q.getResultList(); 
+		
+		return result;
 	}
 }

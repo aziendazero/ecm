@@ -1,6 +1,11 @@
 package it.tredi.ecm.web;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,13 +26,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.ComunicazioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SecurityAccessService;
+import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ComunicazioneWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.RicercaComunicazioneWrapper;
+import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.validator.ComunicazioneValidator;
 
 @Controller
@@ -38,6 +47,7 @@ public class ComunicazioneController {
 	private final String NEW = "comunicazione/comunicazioneNew";
 	private final String SHOW = "comunicazione/comunicazioneShow";
 	private final String LIST = "comunicazione/comunicazioneList";
+	private final String RICERCA = "ricerca/ricercaComunicazione";
 
 	@Autowired private ComunicazioneService comunicazioneService;
 	@Autowired private ComunicazioneValidator comunicazioneValidator;
@@ -233,6 +243,10 @@ public class ComunicazioneController {
 					listaComunicazioni = comunicazioneService.getAllComunicazioniNonLetteByAccount(Utils.getAuthenticatedUser().getAccount());
 					tipologiaLista = "label.non_ancora_lette";
 					break;
+				case "cerca":
+					listaComunicazioni = (Set<Comunicazione>) model.asMap().get("comunicazioneList");
+					tipologiaLista = "label.esito_ricerca";
+					break;
 				default: throw new Exception("Tipologia non riconosciuta");
 			}
 			model.addAttribute("listaComunicazioni", listaComunicazioni);
@@ -297,6 +311,47 @@ public class ComunicazioneController {
 		model.addAttribute("comunicazioneWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
+	}
+	
+	@RequestMapping("/comunicazione/ricerca")
+	public String ricercaComunicazione(Model model,RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /comunicazione/ricerca"));
+		try {
+			RicercaComunicazioneWrapper wrapper = prepareRicercaComunicazioneWrapper();
+			model.addAttribute("ricercaComunicazioneWrapper", wrapper);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + RICERCA));
+			return RICERCA;
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /comunicazione/ricerca"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/comunicazione/ricerca", method = RequestMethod.POST)
+	public String executeRicercaComunicazione(@ModelAttribute("ricercaComunicazioneWrapper") RicercaComunicazioneWrapper wrapper,
+									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
+		LOGGER.info(Utils.getLogMessage("POST /comunicazione/ricerca"));
+		try {
+
+			Set<Comunicazione> listaComunicazione = new HashSet<>();
+			listaComunicazione.addAll(comunicazioneService.cerca(wrapper));
+			
+			redirectAttrs.addFlashAttribute("comunicazioneList", listaComunicazione);
+	
+			return "redirect:/comunicazione/all/list";
+			
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /comunicazione/ricerca"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/evento/ricerca";
+		}
+	}
+	
+	private RicercaComunicazioneWrapper prepareRicercaComunicazioneWrapper(){
+		RicercaComunicazioneWrapper wrapper = new RicercaComunicazioneWrapper();
+		return wrapper;
 	}
 }
 
