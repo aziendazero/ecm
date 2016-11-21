@@ -290,7 +290,7 @@ public class EventoServiceImpl implements EventoService {
 
 			//Documento Verifica Ricadute Formative
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative() != null && eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
-				eventoRES.setDocumentoVerificaRicaduteFormative(eventoWrapper.getDocumentoVerificaRicaduteFormative());
+				eventoRES.setDocumentoVerificaRicaduteFormative(fileService.getFile(eventoWrapper.getDocumentoVerificaRicaduteFormative().getId()));
 			}
 		}else if(evento instanceof EventoFSC){
 			retrieveProgrammaAndAddJoin(eventoWrapper);
@@ -322,7 +322,7 @@ public class EventoServiceImpl implements EventoService {
 
 			//Requisiti Hardware Software
 			if (eventoWrapper.getRequisitiHardwareSoftware() != null && eventoWrapper.getRequisitiHardwareSoftware().getId() != null) {
-				((EventoFAD) evento).setRequisitiHardwareSoftware(eventoWrapper.getRequisitiHardwareSoftware());
+				((EventoFAD) evento).setRequisitiHardwareSoftware(fileService.getFile(eventoWrapper.getRequisitiHardwareSoftware().getId()));
 			}
 
 			//Mappa verifica apprendimento
@@ -378,17 +378,17 @@ public class EventoServiceImpl implements EventoService {
 
 		//brochure
 		if (eventoWrapper.getBrochure() != null && eventoWrapper.getBrochure().getId() != null) {
-			evento.setBrochureEvento(eventoWrapper.getBrochure());
+			evento.setBrochureEvento(fileService.getFile(eventoWrapper.getBrochure().getId()));
 		}
 
 		//Autocertificazione Assenza Finanziamenti
 		if (eventoWrapper.getAutocertificazioneAssenzaFinanziamenti() != null && eventoWrapper.getAutocertificazioneAssenzaFinanziamenti().getId() != null) {
-			evento.setAutocertificazioneAssenzaFinanziamenti(eventoWrapper.getAutocertificazioneAssenzaFinanziamenti());
+			evento.setAutocertificazioneAssenzaFinanziamenti(fileService.getFile(eventoWrapper.getAutocertificazioneAssenzaFinanziamenti().getId()));
 		}
 
 		//Contratti Accordi Convenzioni
 		if (eventoWrapper.getContrattiAccordiConvenzioni() != null && eventoWrapper.getContrattiAccordiConvenzioni().getId() != null) {
-			evento.setContrattiAccordiConvenzioni(eventoWrapper.getContrattiAccordiConvenzioni());
+			evento.setContrattiAccordiConvenzioni(fileService.getFile(eventoWrapper.getContrattiAccordiConvenzioni().getId()));
 		}
 
 		//Dichiarazione Assenza Conflitto Interesse
@@ -398,7 +398,7 @@ public class EventoServiceImpl implements EventoService {
 
 		//Autocertificazione Assenza Aziende Alimenti Prima Infanzia
 		if (eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null && eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia().getId() != null) {
-			evento.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia());
+			evento.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(fileService.getFile(eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia().getId()));
 		}
 
 		//Autocertificazione Autorizzazione Ministero Salute
@@ -1437,7 +1437,7 @@ public class EventoServiceImpl implements EventoService {
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		Set<String> querytipologiaOR = new HashSet<String>();
 		
-		if(!wrapper.getDenominazioneLegale().isEmpty()){
+		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
 			//devo fare il join con la tabella provider
 			query ="SELECT e FROM Evento e JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
 			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
