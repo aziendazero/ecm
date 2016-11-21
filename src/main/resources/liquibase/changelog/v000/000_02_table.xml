@@ -274,7 +274,7 @@
             <column name="dati_accreditamento_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="procedure_formative" type="INT"/>
+            <column name="procedure_formative" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="abarducci (generated)" id="1479309431348-20">
@@ -307,7 +307,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="confermati_crediti" type="BOOLEAN"/>
-            <column name="contenuti_evento" type="INT"/>
+            <column name="contenuti_evento" type="VARCHAR(255)"/>
             <column name="costo" type="FLOAT8"/>
             <column name="crediti" type="FLOAT4"/>
             <column name="data_fine" type="date"/>
@@ -390,7 +390,7 @@
             <column name="evento_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="destinatari_evento" type="INT"/>
+            <column name="destinatari_evento" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="abarducci (generated)" id="1479309431348-23">
@@ -438,7 +438,7 @@
             <column name="eventofad_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="obiettivi" type="INT"/>
+            <column name="obiettivi" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="abarducci (generated)" id="1479309431348-27">
@@ -495,7 +495,7 @@
             <column name="eventofsc_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="verifica_apprendimento" type="INT"/>
+            <column name="verifica_apprendimento" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="abarducci (generated)" id="1479309431348-32">
@@ -503,7 +503,7 @@
             <column name="eventofsc_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="verifica_presenza_partecipanti" type="INT"/>
+            <column name="verifica_presenza_partecipanti" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="abarducci (generated)" id="1479309431348-33">
@@ -519,7 +519,7 @@
             <column name="eventores_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="obiettivi" type="INT"/>
+            <column name="obiettivi" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="abarducci (generated)" id="1479309431348-35">
@@ -535,7 +535,7 @@
             <column name="eventores_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="verifica_apprendimento" type="INT"/>
+            <column name="verifica_apprendimento" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="abarducci (generated)" id="1479309431348-37">
@@ -543,7 +543,7 @@
             <column name="eventores_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="verifica_presenza_partecipanti" type="INT"/>
+            <column name="verifica_presenza_partecipanti" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="abarducci (generated)" id="1479309431348-38">
@@ -1060,7 +1060,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="FLOAT4"/>
-            <column name="key_metodologia" type="INT">
+            <column name="key_metodologia" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -1071,7 +1071,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="FLOAT4"/>
-            <column name="key_metodologia" type="INT">
+            <column name="key_metodologia" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -22,7 +24,7 @@ public class DatiAccreditamento extends BaseEntity {
 	/*** INFO RELATIVE ALLA RICHIESTA ***/
 	private String tipologiaAccreditamento;
 	@ElementCollection
-	//TODO perchè salva l'id con inizializzazione da 0????
+	@Enumerated(EnumType.STRING)
 	private Set<ProceduraFormativa> procedureFormative = new HashSet<ProceduraFormativa>();
 	private String professioniAccreditamento;
 
