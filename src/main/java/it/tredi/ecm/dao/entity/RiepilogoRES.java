@@ -9,8 +9,11 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyEnumerated;
 
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
@@ -24,10 +27,12 @@ import lombok.Setter;
 public class RiepilogoRES {
 
 	@ElementCollection
+	@Enumerated(EnumType.STRING)
 	private Set<ObiettiviFormativiRESEnum> obiettivi = new HashSet<ObiettiviFormativiRESEnum>();
 	
 	@ElementCollection
 	@MapKeyColumn(name="key_metodologia")
+	@MapKeyEnumerated(EnumType.STRING)
     @Column(name="value")
 	@CollectionTable(name="riepilogo_RES", joinColumns=@JoinColumn(name="riepilogo_res_id"))
 	private Map<MetodologiaDidatticaRESEnum, Float> metodologie = new HashMap<MetodologiaDidatticaRESEnum, Float>();
