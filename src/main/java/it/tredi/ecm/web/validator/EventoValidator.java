@@ -170,7 +170,7 @@ public class EventoValidator {
 			if(evento.getLetteInfoAllegatoSponsor() == null || evento.getLetteInfoAllegatoSponsor() == false)
 				errors.rejectValue(prefix + "letteInfoAllegatoSponsor", "error.empty");
 		}
-		
+
 		/* SPONSOR (campo obbligatorio)
 		 * campo complesso ripetibile di tipo Sponsor
 		 * deve avere tutti i campi inseriti
@@ -298,7 +298,7 @@ public class EventoValidator {
 			int counter = 0;
 			boolean atLeastOneErrorPartner = false;
 			for(Partner p : evento.getPartners()) {
-				boolean hasError = validatePartner(p);
+				boolean hasError = validatePartner(p, evento.getProvider().getId());
 				if(hasError) {
 					errors.rejectValue("partners["+counter+"]", "");
 					atLeastOneErrorPartner = true;
@@ -331,7 +331,7 @@ public class EventoValidator {
 		if(evento.getAutorizzazionePrivacy() == null || evento.getAutorizzazionePrivacy() == false)
 			errors.rejectValue(prefix + "autorizzazionePrivacy", "error.empty");
 	}
-	
+
 	//validate RES
 	private void validateRES(EventoRES evento, EventoWrapper wrapper, Errors errors, String prefix) throws Exception {
 
@@ -591,7 +591,7 @@ public class EventoValidator {
 		 * */
 		if(evento.getVerificaRicaduteFormative() == null)
 			errors.rejectValue(prefix + "verificaRicaduteFormative", "error.empty");
-		
+
 		/* DOCUMENTO VERIICA RICADUTE FORMATIVE (campo FACOLTATIVO, MA SE C'E' CONTROLLO SULLA FIRMA DIGITALE)
 		 * file allegato
 		 * */
@@ -1042,11 +1042,13 @@ public class EventoValidator {
 	}
 
 	//validate Partner
-	private boolean validatePartner(Partner partner) {
+	private boolean validatePartner(Partner partner, Long providerId) throws Exception {
 
 		if(partner.getName() == null || partner.getName().isEmpty())
 			return true;
 		if(partner.getPartnerFile() == null || partner.getPartnerFile().isNew())
+			return true;
+		if(!fileValidator.validateFirmaCF(partner.getPartnerFile(), providerId))
 			return true;
 
 		return false;
@@ -1168,12 +1170,12 @@ public class EventoValidator {
 			boolean atLeastOneErrorAzione = false;
 			boolean atLeastOneTutor = false;
 			boolean atLeastOnePartecipante = false;
-			
+
 			Map<RuoloFSCEnum, Float> checkOrePartecipante = new HashMap<RuoloFSCEnum, Float>();
-			
+
 			for(AzioneRuoliEventoFSC aref : faseAzioniRuoli.getAzioniRuoli()) {
 				boolean[] validationResults = validateAzioneRuoliFSC(aref, tipologiaEvento);
-				
+
 				//sommo tutte le ore dei partecipanti per verificare che abbia almeno 2 ore non frazionabili
 				if(tipologiaEvento == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE){
 					for(RuoloOreFSC r : aref.getRuoli()) {
@@ -1187,7 +1189,7 @@ public class EventoValidator {
 						}
 					}
 				}
-				
+
 				//hasErrors
 				if(validationResults[0]) {
 					errors.rejectValue(prefix + "azioniRuoli["+counter+"]", "");
@@ -1201,7 +1203,7 @@ public class EventoValidator {
 				}
 				counter++;
 			}
-			
+
 			//cerco se ci sono partecipanti con meno di 2 ore
 			if(checkOrePartecipante != null){
 				Iterator<Entry<RuoloFSCEnum,Float>> iterator = checkOrePartecipante.entrySet().iterator();
@@ -1212,7 +1214,7 @@ public class EventoValidator {
 						atLeastOneErrorAzione = true;
 				 }
 			}
-			
+
 			if(atLeastOneErrorAzione)
 				errors.rejectValue(prefix + "azioniRuoli", "error.campi_con_errori_azione_ruoli"+tipologiaEvento);
 			else if(!atLeastOnePartecipante || (!atLeastOneTutor && tipologiaEvento == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO)) {
