@@ -228,7 +228,11 @@ public class Evento extends BaseEntity{
 	}
 
 	@ElementCollection
+	@Enumerated(EnumType.STRING)
 	private Set<DestinatariEventoEnum> destinatariEvento = new HashSet<DestinatariEventoEnum>();
+	
+	@Column(name = "contenuti_evento")
+	@Enumerated(EnumType.STRING)
 	private ContenutiEventoEnum contenutiEvento;
 
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
