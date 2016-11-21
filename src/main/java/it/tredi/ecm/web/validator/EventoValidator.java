@@ -1468,5 +1468,4 @@ public class EventoValidator {
 
 		return false;
 	}
-
 }
