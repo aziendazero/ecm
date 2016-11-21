@@ -22,7 +22,7 @@ import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.WorkflowService;
 
 @Component
-@org.springframework.context.annotation.Profile({"demo","simone","abarducci", "tom"})
+@org.springframework.context.annotation.Profile({"demo","simone","abarducci", "tom", "joe19"})
 public class AccountLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AccountLoader.class);
@@ -92,7 +92,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 //			role_writeAllProvider.setName(RoleEnum.PROVIDER_EDIT_ALL.name());
 //			role_writeAllProvider.setDescription("PROVIDER (SCRITTURA TUTTI)");
 //			roleRepository.save(role_writeAllProvider);
-			
+
 			//PROVIDER_USER_SHOW, PROVIDER_USER_EDIT, PROVIDER_USER_CREATE,
 //			Role role_providerUserShow = new Role();
 //			role_providerUserShow.setName(RoleEnum.PROVIDER_USER_SHOW.name());
@@ -164,7 +164,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			provider.setLocked(false);
 			provider.getProfiles().add(profile_provider);
 			provider.getProfiles().add(profile_providerUserAdmin);
-			provider.setDataScadenzaPassword(LocalDate.now());
+			provider.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
 
 			try {
 				//accountService.save(provider);
@@ -186,7 +186,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			admin.setNome("Tizio");
 			admin.setCognome("Caio");
 			admin.getProfiles().add(profile_admin);
-			admin.setDataScadenzaPassword(LocalDate.now());
+			admin.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
 
 			try {
 				//accountService.save(admin);

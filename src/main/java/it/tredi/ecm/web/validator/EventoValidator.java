@@ -691,7 +691,7 @@ public class EventoValidator {
 		 * devono avere tutti i campi inseriti
 		 * */
 		if(evento.getFasiAzioniRuoli() == null || evento.getFasiAzioniRuoli().isEmpty())
-			errors.rejectValue(prefix + "fasiAzioniRuoli", "error.empty");
+			errors.rejectValue(prefix + "fasiAzioniRuoli", "error.selezionare_tipologia_inserimento_programma");
 		else {
 			int counter = 0;
 			boolean atLeastOnePartecipante = false;
@@ -725,7 +725,7 @@ public class EventoValidator {
 				}
 			}
 			if(!atLeastOnePartecipante || (!atLeastOneTutor && evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO))
-				errors.rejectValue(prefix + "fasiAzioniRuoli", "error.partecipante_tutor_non_inserito" + evento.getTipologiaEventoFSC());
+				errors.rejectValue(prefix + "fasiAzioniRuoli", "error.vincolo_partecipanti_tutor" + evento.getTipologiaEventoFSC());
 		}
 
 		/* TABELLA RIEPILOGO FSC
@@ -1316,7 +1316,7 @@ public class EventoValidator {
 				}
 				//caso particolare (qua le fasi sono come le azioni per le altre tipologie,
 				//quindi controllo che nella riga ci sia almeno 1 ruolo Partecipante)
-				if(numCoordinatori > 1 || !hasPartecipante)
+				if(numCoordinatori > 1)
 					return new boolean[] {true, hasPartecipante, hasTutor};
 
 			break;

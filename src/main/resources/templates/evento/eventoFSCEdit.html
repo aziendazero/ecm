@@ -785,6 +785,11 @@
 
 								</th:block>
 
+								<!-- errori partecipanti/tutor -->
+								<h2 th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.fasiAzioniRuoli')}"
+									class="col-xs-12 alert alert-danger with-margin-top text-center"
+									th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.fasiAzioniRuoli')}__}"></h2>
+
 								<!-- FASI AZIONI RUOLI -->
 								<div class="item form-group">
 									<label class="col-xs-12">
@@ -1371,11 +1376,11 @@
 				});
 
 				function initAll(){
-					
+
 					$("#add-attivitaFSC-modal").draggable({
 						handle: ".modal-content"
-					}); 
-					
+					});
+
 					$('input.flat').iCheck({
 			            checkboxClass: 'icheckbox_flat-green',
 			            radioClass: 'iradio_flat-green'
@@ -1401,7 +1406,7 @@
 					updateRuoliCoinvolti();
 
 					abilitaDisabilitaCreditiInseritiUtente($(".crediti-conferma").iCheck('update')[0].checked);
-					
+
 					$(".crediti-conferma").on("ifChecked", function() {
 						abilitaDisabilitaCreditiInseritiUtente(true);
 					})
@@ -1503,7 +1508,7 @@
 						}
 					}
 				}
-				
+
 				//funzione che abilita o disabilita il campo per inserire i crediti formativi manualmente
 				//se l'utente accetta o meno i crediti proposti
 				function abilitaDisabilitaCreditiInseritiUtente(value) {

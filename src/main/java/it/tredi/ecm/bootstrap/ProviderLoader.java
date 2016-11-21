@@ -34,7 +34,7 @@ import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
 
 @Component
-@org.springframework.context.annotation.Profile({"simone","abarducci", "tom"})
+@org.springframework.context.annotation.Profile({"simone","abarducci", "tom", "joe19"})
 public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ProviderLoader.class);
 
@@ -110,7 +110,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			provider.addSede(sedeLegale);
 			legale.getAnagrafica().setTelefono("123456");
 			providerRepository.save(provider);
-			
+
 			account.setProvider(provider);
 			account.setNome("Amministratore");
 			account.setCognome("Provider");
