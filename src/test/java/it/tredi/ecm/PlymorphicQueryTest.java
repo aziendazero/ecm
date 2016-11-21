@@ -35,6 +35,7 @@ import it.tredi.ecm.utils.Utils;
 @ActiveProfiles("dev")
 @WithUserDetails("LBENEDETTI")
 @Rollback(false)
+@Ignore
 public class PlymorphicQueryTest {
 
 	@Autowired private EventoService eventoService;
