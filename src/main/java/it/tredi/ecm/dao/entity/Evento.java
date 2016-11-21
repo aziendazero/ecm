@@ -313,9 +313,10 @@ public class Evento extends BaseEntity{
 			}
 
 			//ridotto di 1/3
-			if(altreFormeFinanziamento != null && !altreFormeFinanziamento.booleanValue()){
+			if((eventoSponsorizzato != null && !eventoSponsorizzato.booleanValue()) && (altreFormeFinanziamento != null && !altreFormeFinanziamento.booleanValue())){
 				 costo = Utils.getRoundedDoubleValue((costo*2)/3, 2);
 			}
+			
 		}else{
 			throw new Exception("provider non classificato correttamente");
 		}

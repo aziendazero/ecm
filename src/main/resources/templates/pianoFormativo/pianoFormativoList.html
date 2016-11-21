@@ -13,11 +13,12 @@
 					<div class="x_title">
 						<h2 th:text="#{label.lista_piani_formativi}"></h2>
 						<div class="pull-right buttons-header">
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
-							<button type="button" onclick="openPianoFormativoNew()" class="btn btn-primary pull-right"
+							<button type="button" onclick="openPianoFormativoNew()" class="btn btn-success pull-right"
 									th:if="${canInsertPianoFormativo}"
 									data-toggle="modal" data-target=".modal-pianoFormativoNew"
 									th:text="#{label.nuovo_piano_formativo}">label.nuovo_piano_formativo</button>
+							<a class="btn btn-primary pull-right" th:if="${#authentication.principal.hasProfile('PROVIDER')}" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+							<a class="btn btn-primary pull-right" th:unless="${#authentication.principal.hasProfile('PROVIDER')}" th:text="#{label.indietro}" th:href="@{|/provider/list|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>

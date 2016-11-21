@@ -34,7 +34,7 @@ public class PagamentoController {
 	
 	private final String LIST = "provider/pagamentoList";
 	
-	@RequestMapping("/provider/pagamento/list")
+	@RequestMapping("/provider/contributoAnnuale/list")
 	public String getListPagamentiForCurrentProvider(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/pagamento/list"));
 		try {
@@ -52,7 +52,7 @@ public class PagamentoController {
 	}
 	
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
-	@RequestMapping("/provider/{id}/pagamento/list")
+	@RequestMapping("/provider/{id}/contributoAnnuale/list")
 	public String getListPagamenti(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {

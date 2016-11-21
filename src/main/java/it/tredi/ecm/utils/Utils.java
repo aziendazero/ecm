@@ -226,4 +226,11 @@ public class Utils {
 		int minuti = (int) ((durata*60) % 60);
 		return ore + ":" + minuti;
 	}
+	
+	public static String QUERY_AND(String query, String criteria){
+		if(query.contains("WHERE"))
+			return query+= " AND " + criteria;
+		else
+			return query+= " WHERE " + criteria;
+	}
 }

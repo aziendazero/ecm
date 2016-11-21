@@ -14,7 +14,9 @@
 						<h2 th:text="#{label.lista_relazioni_annuali}">Lista delle Relazioni Annuali</h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
-								<a class="btn btn-primary pull-right" th:if="${canInsertRelazioneAnnuale}" th:text="#{label.inserisci_relazione_annuale}" th:href="@{|/provider/${providerId}/relazioneAnnuale/insert|}"></a>
+								<a class="btn btn-success pull-right" th:if="${canInsertRelazioneAnnuale}" th:text="#{label.inserisci_relazione_annuale}" th:href="@{|/provider/${providerId}/relazioneAnnuale/insert|}"></a>
+								<a class="btn btn-primary pull-right" th:if="${#authentication.principal.hasProfile('PROVIDER')}" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+								<a class="btn btn-primary pull-right" th:unless="${#authentication.principal.hasProfile('PROVIDER')}" th:text="#{label.indietro}" th:href="@{|/provider/list|}"></a>
 							</div>
 						</div>
 						<div class="clearfix"></div>
