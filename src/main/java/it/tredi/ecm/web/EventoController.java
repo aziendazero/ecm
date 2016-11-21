@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
@@ -152,7 +154,10 @@ public class EventoController {
 	public String getListEventi(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
-			model.addAttribute("eventoList", eventoService.getAllEventi());
+			
+			if(model.asMap().get("eventoList") == null)
+				model.addAttribute("eventoList", eventoService.getAllEventi());
+			
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 			return LIST;
 		}
@@ -189,15 +194,13 @@ public class EventoController {
 	public String getListEventiProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
 		try {
-			String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
-			model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
-			model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
-			model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
-			model.addAttribute("denominazioneProvider", denominazioneProvider);
-			model.addAttribute("providerId", providerId);
-			model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
-			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
-			return LIST;
+			
+			if(model.asMap().get("eventoList") == null){
+				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
+			}
+			
+			return goToList(model, providerId);
+			
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),ex);
@@ -207,6 +210,17 @@ public class EventoController {
 		}
 	}
 
+	private String goToList(Model model, Long providerId){
+		String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
+		model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
+		model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
+		model.addAttribute("denominazioneProvider", denominazioneProvider);
+		model.addAttribute("providerId", providerId);
+		model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
+		LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
+		return LIST;
+	}
+	
 	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
 	@RequestMapping(value= "/provider/{providerId}/evento/new", method = RequestMethod.POST)
 	public String createNewEvento(@RequestParam(name = "proceduraFormativa", required = false) ProceduraFormativa proceduraFormativa,
@@ -1259,10 +1273,18 @@ public class EventoController {
 	}
 	
 	@RequestMapping("/evento/ricerca")
-	public String ricercaEvento(Model model,RedirectAttributes redirectAttrs){
+	public String ricercaEventoGlobale(Model model,RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /evento/ricerca"));
 		try {
 			RicercaEventoWrapper wrapper = prepareRicercaEventoWrapper();
+			
+			CurrentUser currentUser = Utils.getAuthenticatedUser();
+			if(currentUser.isProvider()){
+				wrapper.setProviderId(currentUser.getAccount().getProvider().getId());
+			}else{
+				wrapper.setProviderId(null);
+			}
+			
 			model.addAttribute("ricercaEventoWrapper", wrapper);
 			LOGGER.info(Utils.getLogMessage("VIEW: " + RICERCA));
 			return RICERCA;
@@ -1279,17 +1301,27 @@ public class EventoController {
 									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
 		LOGGER.info(Utils.getLogMessage("POST /ricerca/evento"));
 		try {
+
+			String returnRedirect = "";
 			
-			CurrentUser currentUser = Utils.getAuthenticatedUser();
+			if(wrapper.getProviderId() != null){
+				wrapper.setCampoIdProvider(wrapper.getProviderId());
+				returnRedirect = "redirect:/provider/" + wrapper.getProviderId() + "/evento/list";
+			}else{
+				returnRedirect = "redirect:/evento/list";
+			}
 			
 			List<Evento> listaEventi = new ArrayList<Evento>();
-			
-			//todo query a service per riempire la lista
 			listaEventi = eventoService.cerca(wrapper);
-			model.addAttribute("eventoList", listaEventi);
-			model.addAttribute("canCreateEvento", false);
-			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
-			return LIST;
+			
+			redirectAttrs.addFlashAttribute("eventoList", listaEventi);
+			
+//			model.addAttribute("eventoList", listaEventi);
+	
+			return returnRedirect;
+//			
+//			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
+//			return LIST;
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /evento/ricerca"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));

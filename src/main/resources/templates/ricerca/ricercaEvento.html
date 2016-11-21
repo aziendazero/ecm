@@ -13,7 +13,8 @@
 						<h2 th:text="#{label.ricerca_evento}"></h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
-  								<a class="btn btn-primary" th:href="${returnLink}" th:text="#{label.indietro}"></a>
+  								<a class="btn btn-primary" th:if="${ricercaEventoWrapper.providerId != null}" th:href="@{|/provider/${ricercaEventoWrapper.providerId}/evento/list|}" th:text="#{label.indietro}"></a>
+  								<a class="btn btn-primary" th:unless="${ricercaEventoWrapper.providerId != null}" th:href="@{/evento/list}" th:text="#{label.indietro}"></a>
   								<a class="btn btn-success" th:text="#{label.cerca}" onclick="submitCerca()"></a>
 							</div>
 						</div>
@@ -29,30 +30,35 @@
 							method="post" enctype="multipart/form-data"
 							novalidate="novalidate">
 							
-								<!-- ID PROVIDER -->
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="providerId">
-										<span th:text="${'ID '} + #{label.provider}">Provider</span>
-									</label>
-			
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="providerId">
-										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.providerId}" />
+							<input type="hidden" th:field="${ricercaEventoWrapper.providerId}" />
+								
+								
+								<th:block th:if="${ricercaEventoWrapper.providerId == null}">
+									<!-- ID PROVIDER -->
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="providerId">
+											<span th:text="${'ID '} + #{label.provider}">Provider</span>
+										</label>
+				
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="providerId">
+											<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.campoIdProvider}" />
+										</div>
 									</div>
-								</div>
 								
-								<!-- DENOMINAZIONE LEGALE PROVIDER -->
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
-										<span th:text="#{label.denominazione_legale} + ${' '}  + #{label.provider}">Provider</span>
-									</label>
-			
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneLegale">
-										<input type="text" class="form-control" th:field="${ricercaEventoWrapper.denominazioneLegale}" />
+									<!-- DENOMINAZIONE LEGALE PROVIDER -->
+									<div class="item form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
+											<span th:text="#{label.denominazione_legale} + ${' '}  + #{label.provider}">Provider</span>
+										</label>
+				
+										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneLegale">
+											<input type="text" class="form-control" th:field="${ricercaEventoWrapper.denominazioneLegale}" />
+										</div>
 									</div>
-								</div>
-								
-								<div class="divider-dashed"></div>
-								
+									
+									<div class="divider-dashed"></div>
+								</th:block>		
+						
 								<h2 th:text="#{label.info_evento}"></h2>
 								
 								<!-- TIPO EVENTO -->
@@ -196,7 +202,7 @@
 									</label>
 			
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="eventoId">
-										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.eventoId}" />
+										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.campoIdEvento}" />
 									</div>
 								</div>
 								

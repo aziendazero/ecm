@@ -23,9 +23,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RicercaEventoWrapper {
-	private Long providerId;
+	private Long campoIdProvider;
 	private String denominazioneLegale;
-	private Long eventoId;
+	private Long campoIdEvento;
 	private String titoloEvento;
 	
 	private Set<Obiettivo> obiettiviNazionaliSelezionati;
@@ -64,6 +64,9 @@ public class RicercaEventoWrapper {
 	private Set<Obiettivo> obiettiviRegionaliList;
 	private Set<Professione> professioniList;
 	private Set<Disciplina> disciplineList;
+	
+	//campo non di ricerca ma il solito id che mettiamo in hidden per gestire il form
+	private Long providerId;
 	
 	
 }

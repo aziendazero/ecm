@@ -118,15 +118,15 @@ public class EventoWrapper {
 
 	public List<FaseAzioniRuoliEventoFSCTypeA> getProgrammaEventoFSC(){
 		if(evento != null && evento instanceof EventoFSC){
-			if(((EventoFSC)evento).getTipologiaEvento() != null){
-				return possibiliProgrammiFSC.get(((EventoFSC)evento).getTipologiaEvento());
+			if(((EventoFSC)evento).getTipologiaEventoFSC() != null){
+				return possibiliProgrammiFSC.get(((EventoFSC)evento).getTipologiaEventoFSC());
 			}
 		}
 		return null;
 	}
 
 	public List<DettaglioAttivitaFAD> getProgrammaEventoFAD(){
-		if(evento != null && (evento instanceof EventoFAD) && ((EventoFAD)evento).getTipologiaEvento() != null){
+		if(evento != null && (evento instanceof EventoFAD) && ((EventoFAD)evento).getTipologiaEventoFAD() != null){
 			return programmaEventoFAD;
 		}
 		return null;
@@ -134,16 +134,16 @@ public class EventoWrapper {
 
 	public void setProgrammaEventoFSC(List<FaseAzioniRuoliEventoFSCTypeA> programmaFSC){
 		if(evento != null && evento instanceof EventoFSC){
-			if(((EventoFSC)evento).getTipologiaEvento() != null){
-				possibiliProgrammiFSC.put(((EventoFSC)evento).getTipologiaEvento(), programmaFSC);
+			if(((EventoFSC)evento).getTipologiaEventoFSC() != null){
+				possibiliProgrammiFSC.put(((EventoFSC)evento).getTipologiaEventoFSC(), programmaFSC);
 			}
 		}
 	}
 
 	public Map<RuoloFSCEnum,RiepilogoRuoliFSC> getRiepilogoRuoliFSC(){
 		if(evento != null && evento instanceof EventoFSC){
-			if(((EventoFSC)evento).getTipologiaEvento() != null){
-				return possibiliRiepilogoRuoliFSC.get(((EventoFSC)evento).getTipologiaEvento());
+			if(((EventoFSC)evento).getTipologiaEventoFSC() != null){
+				return possibiliRiepilogoRuoliFSC.get(((EventoFSC)evento).getTipologiaEventoFSC());
 			}
 		}
 		return null;
@@ -151,8 +151,8 @@ public class EventoWrapper {
 
 	public void setRiepilogoRuoliFSC(Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
 		if(evento != null && evento instanceof EventoFSC){
-			if(((EventoFSC)evento).getTipologiaEvento() != null){
-				possibiliRiepilogoRuoliFSC.put(((EventoFSC)evento).getTipologiaEvento(), riepilogoRuoliFSC);
+			if(((EventoFSC)evento).getTipologiaEventoFSC() != null){
+				possibiliRiepilogoRuoliFSC.put(((EventoFSC)evento).getTipologiaEventoFSC(), riepilogoRuoliFSC);
 			}
 		}
 	}
