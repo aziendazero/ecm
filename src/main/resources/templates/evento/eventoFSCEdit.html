@@ -25,10 +25,10 @@
 									novalidate="novalidate">
 
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-										isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-										isEventoIniziato=${eventoWrapper.eventoIniziato},
-										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 									<!-- AZIONE -->
 									<div id="container-azione" class="item form-group">
@@ -259,10 +259,10 @@
 <!-- 								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-									isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-									isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-									isEventoIniziato=${eventoWrapper.eventoIniziato},
-									hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- DENOMINAZIONE LEGALE PROVIDER -->
 								<div class="item form-group">
@@ -743,10 +743,10 @@
 							<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-									isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-									isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-									isEventoIniziato=${eventoWrapper.eventoIniziato},
-									hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- DESCRIZIONE DEL PROGETTO -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.descrizioneProgetto')} ? 'bad'">
@@ -826,10 +826,10 @@
 							<div class="col-xs-12 section-index" id="section-3" th:fragment="section-3">
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-									isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-									isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-									isEventoIniziato=${eventoWrapper.eventoIniziato},
-									hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- RUOLI COINVOLTI -->
 								<div class="item form-group">

@@ -27,10 +27,10 @@
 									novalidate="novalidate">
 
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-										isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-										isEventoIniziato=${eventoWrapper.eventoIniziato},
-										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- ORARIO INIZO-->
 										<div class="item form-group">
@@ -231,10 +231,10 @@
 								<div class="col-xs-12 section-index" id="section-1" th:fragment="section-1">
 
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-										isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-										isEventoIniziato=${eventoWrapper.eventoIniziato},
-										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- TODO rimuovere -->
 	<!-- 									<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
@@ -494,10 +494,10 @@
 												th:if="${data.value.tipoData==T(it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum).INTERMEDIA}"
 												th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+ __${data.key}__ +']')} ? 'bad'">
 												<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-													isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-													isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-													isEventoIniziato=${eventoWrapper.eventoIniziato},
-													hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+														isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+														isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+														hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 													<div class='col-md-4 col-sm-4 col-xs-12'></div>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 														<input type="hidden" th:value="${data.key}" />
@@ -792,10 +792,10 @@
 												th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
 												th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'risultatiAttesiMapTemp[__${risultato.key}__]') or #maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.risultatiAttesi')} ? 'bad'">
 												<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-													isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-													isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-													isEventoIniziato=${eventoWrapper.eventoIniziato},
-													hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+														isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+														isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+														hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 													<div class='col-md-4 col-sm-4 col-xs-12'></div>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
 														<input type="hidden" th:value="${risultato.key}" />
@@ -822,10 +822,10 @@
 								<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
 
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-										isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-										isEventoIniziato=${eventoWrapper.eventoIniziato},
-										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- PROGRAMMA EVENTO -->
 										<div class='programmaEvento item form-group' id="programma">
@@ -859,10 +859,10 @@
 								<div class="col-xs-12 section-index" id="section-3" th:fragment="section-3">
 
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
-										isEditSemiBloccato=${eventoWrapper.editSemiBloccato},
-										isEventoIniziato=${eventoWrapper.eventoIniziato},
-										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions}">
+											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- VERIFICA APPRENDIMENTO PARTECIPANTI -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')} ? 'bad'">
@@ -1591,6 +1591,13 @@
 
 					//init per provincia e comune della sede
 					initProvinciaComune('provincia', 'comune');
+
+					//init selectpicker di tutte le provincie comune dei programmi
+					$.each($(".selectpicker.comune"), function(i, selectpicker) {
+						$sel = $(selectpicker);
+						initProvinciaComune('provprog' + $sel.data("programma-provincia"), 'comprog' + $sel.data("programma-provincia"));
+					})
+
 				}
 
 				//eventLister cambio tab
@@ -2010,6 +2017,7 @@
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaRES').serialize())
 						.done(function(data) {
 						  	$('#'+target).html(data);
+						  	reInitComponents();
 						  	closeModaleAddAttivitaTo();
 						  })
 					  	.fail(function() {
@@ -2044,7 +2052,7 @@
 					$.get(url).done(function(data) {
 						$('#container-' + target).html(data);
 						reInitModaleAddAttivita();
-						$('#add-attivita').click();
+// 						$('#add-attivita').click();
 						openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento);
 					  })
 				  	.fail(function() {
