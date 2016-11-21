@@ -58,9 +58,11 @@ public class EventoRES extends Evento{
 	private List<ProgrammaGiornalieroRES> programma = new ArrayList<ProgrammaGiornalieroRES>();
 
 	@ElementCollection
+	@Enumerated(EnumType.STRING)
 	private Set<VerificaApprendimentoRESEnum> verificaApprendimento;
 
 	@ElementCollection
+	@Enumerated(EnumType.STRING)
 	private Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti;
 
 	private String materialeDurevoleRilasciatoAiPratecipanti;

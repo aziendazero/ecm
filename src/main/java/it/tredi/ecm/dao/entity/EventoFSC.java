@@ -46,9 +46,11 @@ public class EventoFSC extends Evento{
 	private String descrizioneProgetto;
 
 	@ElementCollection
+	@Enumerated(EnumType.STRING)
 	private Set<VerificaApprendimentoFSCEnum> verificaApprendimento;
 
 	@ElementCollection
+	@Enumerated(EnumType.STRING)
 	private Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti;
 
 	private String indicatoreEfficaciaFormativa;
