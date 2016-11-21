@@ -301,6 +301,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="can_do_pagamento" type="BOOLEAN"/>
+            
             <column name="can_do_rendicontazione" type="BOOLEAN"/>
             <column name="confermati_crediti" type="BOOLEAN"/>
             <column name="contenuti_evento" type="VARCHAR(255)"/>
