@@ -197,7 +197,7 @@
 											<span th:text="#{label.tempo_dedicato}">Tempo Dedicato</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
-											<input type="number" pattern="numeric" th:step="${eventoWrapper.evento.tipologiaEvento == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO ? 2 : 1}" class="form-control"
+											<input type="number" pattern="numeric" th:step="${eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO ? 2 : 1}" class="form-control"
 												th:field="${eventoWrapper.tempRuoloOreFSC.tempoDedicato}" />
 										</div>
 									</div>
@@ -604,11 +604,11 @@
 
 								<!-- BLOCCO TIPOLOGIA DI EVENTO -->
 								<!-- TIPOLOGIA DELL'EVENTO -->
-								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEvento')} ? 'bad'">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEventoFSC')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>16</span>
 									</label>
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaEvento">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaEventoFSC">
 										<span th:text="#{label.tipologia_evento}">Tipologia dell'evento</span>
 										<span class="required">*</span>
 									</label>
@@ -616,7 +616,7 @@
 										<select id="tipologiaEventoId"
 											class="selectpicker required"
 											required="required"
-											th:field="${eventoWrapper.evento.tipologiaEvento}"
+											th:field="${eventoWrapper.evento.tipologiaEventoFSC}"
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
@@ -629,9 +629,9 @@
 											</option>
 										</select>
 									</div>
-									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEvento')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.tipologiaEvento')}__}"></div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEventoFSC')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.tipologiaEventoFSC')}__}"></div>
 								</div>
-								<!-- Tipologia di gruppo (attivo se selezionato tipologiaEvento=GRUPPI_DI_MIGLIORAMENTO) -->
+								<!-- Tipologia di gruppo (attivo se selezionato tipologiaEventoFSC=GRUPPI_DI_MIGLIORAMENTO) -->
 								<div class="item form-group tipologiaGruppo" style="display: none;" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaGruppo')} ? 'bad'">
 									<div class="col-xs-1"></div>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -655,7 +655,7 @@
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaGruppo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.tipologiaGruppo')}__}"></div>
 								</div>
-								<!-- Sperimentazione clinica (attivo se tipologiaEvento=ATTIVITA_DI_RICERCA) -->
+								<!-- Sperimentazione clinica (attivo se tipologiaEventoFSC=ATTIVITA_DI_RICERCA) -->
 								<div class="item form-group sperimentazioneClinica" style="display: none;" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sperimentazioneClinica')} ? 'bad'">
 									<div class="col-xs-1"></div>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -733,7 +733,7 @@
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.descrizioneProgetto')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.descrizioneProgetto')}__}"></div>
 								</div>
 
-								<th:block th:if="${eventoWrapper.evento.tipologiaEvento == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO}">
+								<th:block th:if="${eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO}">
 
 									<!-- SELEZIONE FASI DA INSERIRE -->
 									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.fasiDaInserire')} ? 'bad'">
@@ -826,7 +826,7 @@
 												</tbody>
 											</table>
 										</div>
-										<div class="col-xs-1" th:if="${eventoWrapper.evento.tipologiaEvento == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).TRAINING_INDIVIDUALIZZATO}">
+										<div class="col-xs-1" th:if="${eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).TRAINING_INDIVIDUALIZZATO}">
 											<div th:attr="data-original-title=#{label.info_tooltip_numero_partecipanti_fsc}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
 										</div>
 									</div>

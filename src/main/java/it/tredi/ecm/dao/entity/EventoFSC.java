@@ -33,7 +33,7 @@ public class EventoFSC extends Evento{
 
 	@Enumerated(EnumType.STRING)
 	@Column(name="tipologia_evento_fsc")
-	private TipologiaEventoFSCEnum tipologiaEvento;
+	private TipologiaEventoFSCEnum tipologiaEventoFSC;
 	@Enumerated(EnumType.STRING)
 	private TipologiaGruppoFSCEnum tipologiaGruppo;
 

@@ -321,6 +321,7 @@ public class Evento extends BaseEntity{
 	}
 	
 	public boolean canEdit(){
+		//TODO VALIDATO fino ad una certa data
 		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.VALIDATO)
 			return true;
 		

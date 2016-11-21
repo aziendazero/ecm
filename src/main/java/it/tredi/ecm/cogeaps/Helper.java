@@ -42,10 +42,10 @@ public class Helper {
 		dbEventoDataMap.put("num_part", Integer.toString(evento.getNumeroPartecipanti()));
 		String cod_tipologia_form = "-1";
 		if (evento instanceof EventoFSC) { //FSC
-			cod_tipologia_form = Integer.toString(((EventoFSC)evento).getTipologiaEvento().getId());
+			cod_tipologia_form = Integer.toString(((EventoFSC)evento).getTipologiaEventoFSC().getId());
 		}
 		else if (evento instanceof EventoRES) { //RES
-			cod_tipologia_form = Integer.toString(((EventoRES)evento).getTipologiaEvento().getId());
+			cod_tipologia_form = Integer.toString(((EventoRES)evento).getTipologiaEventoRES().getId());
 		}
 		else if (evento instanceof EventoFAD) { //FAD
 			cod_tipologia_form = ((EventoFAD)evento).getSupportoSvoltoDaEsperto()? "11" : "10";

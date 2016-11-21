@@ -388,14 +388,14 @@ public class EventoValidator {
 		/* TIPOLOGIA EVENTO (campo obbligatorio)
 		 * selectpicker (influenza altri campi, ma il controllo su questo campo è banale)
 		 * */
-		if(evento.getTipologiaEvento() == null)
-			errors.rejectValue(prefix + "tipologiaEvento", "error.empty");
+		if(evento.getTipologiaEventoRES() == null)
+			errors.rejectValue(prefix + "tipologiaEventoRES", "error.empty");
 
 		/* WORKSHOP/SEMINARI (campo obbligatorio se TIPOLOGIA EVENTO == CONVEGNO_CONGRESSO)
 		 * radio
 		 * */
-		if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
+		if(evento.getTipologiaEventoRES() != null
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
 				&& evento.getWorkshopSeminariEcm() == null)
 			errors.rejectValue(prefix + "workshopSeminariEcm", "error.empty");
 
@@ -403,8 +403,8 @@ public class EventoValidator {
 		 * campo testuale libero
 		 * almeno 1 char
 		 * */
-		if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
+		if(evento.getTipologiaEventoRES() != null
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
 				&& (evento.getTitoloConvegno() == null || evento.getTitoloConvegno().isEmpty()))
 			errors.rejectValue(prefix + "titoloConvegno", "error.empty");
 
@@ -416,16 +416,16 @@ public class EventoValidator {
 		 * */
 		if(evento.getNumeroPartecipanti() == null)
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.empty");
-		else if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
+		else if(evento.getTipologiaEventoRES() != null
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
 				&& evento.getNumeroPartecipanti() < ecmProperties.getNumeroMinimoPartecipantiConvegnoCongressoRES())
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.pochi_partecipanti200");
-		else if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
+		else if(evento.getTipologiaEventoRES() != null
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiWorkshopSeminarioRES())
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti100");
-		else if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO
+		else if(evento.getTipologiaEventoRES() != null
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiCorsoAggiornamentoRES())
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti200");
 
@@ -477,7 +477,7 @@ public class EventoValidator {
 						break;
 					}
 				}
-				validateProgrammaRES(pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEvento());
+				validateProgrammaRES(pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEventoRES());
 			}
 		}
 
@@ -490,7 +490,7 @@ public class EventoValidator {
 		 * devono essere presenti nel set precedentemente settato durante il ciclo del programma
 		 * controllo solo se tipologiaEvento != CONVEGNO_CONGRESSO
 		 * */
-		if(evento.getTipologiaEvento() != null && evento.getTipologiaEvento() != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
+		if(evento.getTipologiaEventoRES() != null && evento.getTipologiaEventoRES() != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
 			if(evento.getRisultatiAttesi() == null || evento.getRisultatiAttesi().isEmpty())
 				errors.rejectValue(prefix + "risultatiAttesi", "error.empty");
 			else{
@@ -513,8 +513,8 @@ public class EventoValidator {
 		/* BROCHURE EVENTO (campo obbligatorio se TIPOLOGIA EVENTO == CONVEGNO_CONGRESSO o WORKSHOP_SEMINARIO)
 		 * file allegato
 		 * */
-		if((evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
-				|| evento.getTipologiaEvento() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO)
+		if((evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
+				|| evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO)
 				&& evento.getBrochureEvento() == null)
 			errors.rejectValue("brochure", "error.empty");
 
@@ -526,11 +526,11 @@ public class EventoValidator {
 		 * */
 		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty())
 			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
-		else if (evento.getTipologiaEvento() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
+		else if (evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
 				&& (!evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE)
 				|| evento.getVerificaApprendimento().size() > 1))
 			errors.rejectValue(prefix + "verificaApprendimento", "error.solo_autocertificazione_selezionabile");
-		else if ((evento.getTipologiaEvento() != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO)
+		else if ((evento.getTipologiaEventoRES() != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO)
 				&& evento.getVerificaApprendimento().contains(VerificaApprendimentoRESEnum.AUTOCERTFICAZIONE))
 			errors.rejectValue(prefix + "verificaApprendimento",  "error.autocertificazione_non_selezionabile");
 
@@ -638,30 +638,30 @@ public class EventoValidator {
 		/* TIPOLOGIA EVENTO (campo obbligatorio)
 		 * selectpicker (influenza altri campi, ma il controllo su questo campo è banale)
 		 * */
-		if(evento.getTipologiaEvento() == null)
-			errors.rejectValue(prefix + "tipologiaEvento", "error.empty");
+		if(evento.getTipologiaEventoFSC() == null)
+			errors.rejectValue(prefix + "tipologiaEventoFSC", "error.empty");
 
 		/* TIPOLOGIA GRUPPO (campo obbligatorio se tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO)
 		 * selectpicker
 		 * */
-		if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
+		if(evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
 				&& evento.getTipologiaGruppo() == null)
 			errors.rejectValue(prefix + "tipologiaGruppo", "error.empty");
 
 		/* SPERIMENTAZIONE CLINICA (campo obbligatorio se tipologiaEvento == ATTIVITA_DI_RICERCA)
 		 * radio
 		 * */
-		if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA
+		if(evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA
 				&& evento.getSperimentazioneClinica() == null)
 			errors.rejectValue(prefix + "sperimentazioneClinica", "error.empty");
 
 		/* OTTENUTO PARERE ETICO (campo obbligatorio se tipologiaEvento == ATTIVITA_DI_RICERCA && sperimentazioneClinica == true)
 		 * spunta richiesta
 		 * */
-		if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA
+		if(evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA
 				&& evento.getSperimentazioneClinica() != null
 				&& evento.getSperimentazioneClinica() == true
 				&& (evento.getOttenutoComitatoEtico() == null
@@ -679,8 +679,8 @@ public class EventoValidator {
 		 * radio
 		 * gestione perticolare per tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO
 		 * */
-		if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+		if(evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
 				&& evento.getFasiDaInserire() == null)
 			errors.rejectValue(prefix + "fasiDaInserire", "error.empty");
 
@@ -697,12 +697,12 @@ public class EventoValidator {
 
 			//gestione particolare tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO
 			//eseguo i controlli solo alle fasiDaInserire specificate da fasiDaInserire
-			if(evento.getTipologiaEvento() != null
-					&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+			if(evento.getTipologiaEventoFSC() != null
+					&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
 					&& evento.getFasiDaInserire() != null) {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
 					if(evento.getFasiDaInserire().getFasiAbilitate().contains(far.getFaseDiLavoro()))
-						validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEvento());
+						validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
 					counter++;
 				}
 			}
@@ -710,7 +710,7 @@ public class EventoValidator {
 			//gestione di default
 			else {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
-					validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEvento());
+					validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
 					counter++;
 				}
 			}
@@ -726,7 +726,7 @@ public class EventoValidator {
 			boolean atLeastOneErrorTabella = false;
 			for(RiepilogoRuoliFSC rrf : evento.getRiepilogoRuoli()) {
 				if(rrf.getRuolo() != null) {
-					boolean hasError = validateTabellaRuoliFSC(rrf, evento.getTipologiaEvento());
+					boolean hasError = validateTabellaRuoliFSC(rrf, evento.getTipologiaEventoFSC());
 					if(hasError) {
 						errors.rejectValue("riepilogoRuoliFSC["+rrf.getRuolo()+"]", "");
 						atLeastOneErrorTabella = true;
@@ -734,7 +734,7 @@ public class EventoValidator {
 				}
 			}
 			if(atLeastOneErrorTabella)
-				errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEvento());
+				errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC());
 		}
 
 		/* NUMERO PARTECIPANTI (campo obbligatorio)
@@ -745,18 +745,18 @@ public class EventoValidator {
 		 * */
 		if(evento.getNumeroPartecipanti() == null)
 			errors.rejectValue(prefix + "riepilogoRuoli", "error.empty");
-		else if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
+		else if(evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiGruppiMiglioramentoFSC())
-			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEvento());
-		else if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC());
+		else if(evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiAuditClinicoFSC())
-			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEvento());
-		else if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC());
+		else if(evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
 				&& evento.getNumeroPartecipanti() > (evento.getNumeroTutor() * 5))
-			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEvento());
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC());
 
 		/* DURATA COMPLESSIVA (autocompilato)
 		 * controlli di sicurezza:
@@ -764,14 +764,14 @@ public class EventoValidator {
 		 * - la durata totale dell'evento deve essere di più di 8 ore per GRUPPI_DI_MIGLIORAMENTO
 		 * - la durata totale dell'evento deve essere di più di 8 ore per PROGETTI_DI_MIGLIORAMENTO
 		 * */
-		if(evento.getTipologiaEvento() != null) {
-			if(evento.getTipologiaEvento() == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE
+		if(evento.getTipologiaEventoFSC() != null) {
+			if(evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE
 				&& evento.getDurata() < ecmProperties.getDurataMinimaAuditClinicoFSC())
 			errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
-			else if(evento.getTipologiaEvento() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
+			else if(evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
 					&& evento.getDurata() < ecmProperties.getDurataMinimaGruppiMiglioramentoFSC())
 				errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
-			else if(evento.getTipologiaEvento() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+			else if(evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
 					&& evento.getDurata() < ecmProperties.getDurataMinimaProgettiMiglioramentoFSC())
 				errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
 		}
@@ -793,8 +793,8 @@ public class EventoValidator {
 		 * campo testuale
 		 * almeno 1 char
 		 * */
-		if(evento.getTipologiaEvento() != null
-				&& evento.getTipologiaEvento() ==  TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+		if(evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() ==  TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
 				&& (evento.getIndicatoreEfficaciaFormativa() == null
 				|| evento.getIndicatoreEfficaciaFormativa().isEmpty()))
 			errors.rejectValue(prefix + "indicatoreEfficaciaFormativa", "error.empty");
@@ -832,8 +832,8 @@ public class EventoValidator {
 		/* TIPOLOGIA EVENTO (campo obbligatorio)
 		 * selectpicker
 		 * */
-		if(evento.getTipologiaEvento() == null)
-			errors.rejectValue(prefix + "tipologiaEvento", "error.empty");
+		if(evento.getTipologiaEventoFAD() == null)
+			errors.rejectValue(prefix + "tipologiaEventoFAD", "error.empty");
 
 		/* DOCENTI/RELATORI/TUTOR (serie di campi obbligatori)
 		 * ripetibile complesso di classe PersonaEvento

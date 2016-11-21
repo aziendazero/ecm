@@ -1627,7 +1627,7 @@
 			<div id="attivitaFSC">
 				<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}"  th:with="fase=${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro}">
 
-					<th:block th:if="${(eventoWrapper.evento.tipologiaEvento != T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO) or T(it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum).faseAbilitata(eventoWrapper.evento.fasiDaInserire,fase)}">
+					<th:block th:if="${(eventoWrapper.evento.tipologiaEventoFSC != T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO) or T(it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum).faseAbilitata(eventoWrapper.evento.fasiDaInserire,fase)}">
 
 						<div class="item form-group">
 							<th:block th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}">

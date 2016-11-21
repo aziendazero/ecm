@@ -66,6 +66,7 @@ import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
+import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
@@ -388,7 +389,7 @@ public class EventoServiceImpl implements EventoService {
 
 		//Dichiarazione Assenza Conflitto Interesse
 		if (eventoWrapper.getDichiarazioneAssenzaConflittoInteresse() != null && eventoWrapper.getDichiarazioneAssenzaConflittoInteresse().getId() != null) {
-			evento.setDichiarazioneAssenzaConflittoInteresse(eventoWrapper.getDichiarazioneAssenzaConflittoInteresse());
+			evento.setDichiarazioneAssenzaConflittoInteresse(fileService.getFile(eventoWrapper.getDichiarazioneAssenzaConflittoInteresse().getId()));
 		}
 
 		//Autocertificazione Assenza Aziende Alimenti Prima Infanzia
@@ -398,7 +399,7 @@ public class EventoServiceImpl implements EventoService {
 
 		//Autocertificazione Autorizzazione Ministero Salute
 		if (eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute() != null && eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute().getId() != null) {
-			evento.setAutocertificazioneAutorizzazioneMinisteroSalute(eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute());
+			evento.setAutocertificazioneAutorizzazioneMinisteroSalute(fileService.getFile(eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute().getId()));
 		}
 
 		return evento;
@@ -754,13 +755,13 @@ public class EventoServiceImpl implements EventoService {
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			EventoRES evento = ((EventoRES)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEvento(), evento.getDurata(), eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES());
+			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEventoRES(), evento.getDurata(), eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES());
 			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
 			return crediti;
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			EventoFSC evento = ((EventoFSC)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoFSC(evento.getTipologiaEvento(), eventoWrapper);
+			crediti = calcoloCreditiFormativiEventoFSC(evento.getTipologiaEventoFSC(), eventoWrapper);
 			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FSC"));
 			return crediti;
@@ -1431,9 +1432,9 @@ public class EventoServiceImpl implements EventoService {
 			query ="SELECT e FROM Evento e";
 			
 			//PROVIDER ID
-			if(wrapper.getProviderId() != null){
+			if(wrapper.getCampoIdProvider() != null){
 				query = AND(query, "e.provider.id = :providerId");
-				params.put("providerId", wrapper.getProviderId());
+				params.put("providerId", wrapper.getCampoIdProvider());
 			}
 			
 			if(wrapper.getTipologieSelezionate() != null && !wrapper.getTipologieSelezionate().isEmpty()){
@@ -1441,18 +1442,27 @@ public class EventoServiceImpl implements EventoService {
 				params.put("tipologieSelezionate", wrapper.getTipologieSelezionate());
 
 				if(wrapper.getTipologieRES() != null && !wrapper.getTipologieRES().isEmpty()){
-					querytipologiaOR.add("(evento.type = RES AND e.tipologiaEvento IN :tipologieRES)");
+					querytipologiaOR.add("e.tipologiaEventoRES IN :tipologieRES");
 					params.put("tipologieRES", wrapper.getTipologieRES());
+				}else{
+					if(wrapper.getTipologieSelezionate().contains(ProceduraFormativa.RES))
+						querytipologiaOR.add("Type(e) = EventoRES");
 				}
 				
 				if(wrapper.getTipologieFSC() != null && !wrapper.getTipologieFSC().isEmpty()){
-					querytipologiaOR.add("(TYPE(e) = EventoFSC AND e.tipologiaEvento IN :tipologieFSC)");
+					querytipologiaOR.add("e.tipologiaEventoFSC IN :tipologieFSC");
 					params.put("tipologieFSC", wrapper.getTipologieFSC());
+				}else{
+					if(wrapper.getTipologieSelezionate().contains(ProceduraFormativa.FSC))
+						querytipologiaOR.add("Type(e) = EventoFSC");
 				}
 				
 				if(wrapper.getTipologieFAD() != null && !wrapper.getTipologieFAD().isEmpty()){
-					querytipologiaOR.add("(TYPE(e) = EventoFAD AND e.tipologiaEvento IN :tipologieFAD)");
+					querytipologiaOR.add("e.tipologiaEventoFAD IN :tipologieFAD)");
 					params.put("tipologieFAD", wrapper.getTipologieFAD());
+				}else{
+					if(wrapper.getTipologieSelezionate().contains(ProceduraFormativa.FAD))
+						querytipologiaOR.add("Type(e) = EventoFAD");
 				}
 				
 				if(!querytipologiaOR.isEmpty()){
@@ -1472,9 +1482,9 @@ public class EventoServiceImpl implements EventoService {
 			}
 			
 			//EVENTO ID
-			if(wrapper.getEventoId() != null){
+			if(wrapper.getCampoIdEvento() != null){
 				query = AND(query, "e.id = :eventoId");
-				params.put("eventoId", wrapper.getEventoId());
+				params.put("eventoId", wrapper.getCampoIdEvento());
 			}
 			
 			//TITOLO EVENTO

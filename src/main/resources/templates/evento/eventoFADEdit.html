@@ -473,7 +473,7 @@
 								</div>
 
 								<!-- TIPOLOGIA DELL'EVENTO -->
-								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEvento')} ? 'bad'">
+								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEventoFAD')} ? 'bad'">
 									<label class="control-label col-xs-1">
 										<span>13</span>
 									</label>
@@ -485,7 +485,7 @@
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<select id="tipologia_evento"
 											class="selectpicker"
-											th:field="${eventoWrapper.evento.tipologiaEvento}"
+											th:field="${eventoWrapper.evento.tipologiaEventoFAD}"
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
@@ -498,7 +498,7 @@
 											</option>
 										</select>
 									</div>
-									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEvento')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.tipologiaEvento')}__}"></div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.tipologiaEventoFAD')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.tipologiaEventoFAD')}__}"></div>
 								</div>
 
 								<!-- RESPONSABILI -->

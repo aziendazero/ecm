@@ -39,7 +39,8 @@ public class EventoRES extends Evento{
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tipologia_evento_res")
-	private TipologiaEventoRESEnum tipologiaEvento;
+	private TipologiaEventoRESEnum tipologiaEventoRES;
+	
 	private Boolean workshopSeminariEcm;
 	private String titoloConvegno;
 
