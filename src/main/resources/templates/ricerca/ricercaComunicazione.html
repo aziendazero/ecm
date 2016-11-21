@@ -41,7 +41,7 @@
 								</div>
 								
 								<!-- Ambito Comunicazione -->
-								<div class="item form-group select-ambito-comunicazione" style="display: none">
+								<div class="item form-group select-ambito-comunicazione">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ambito">
 										<span th:text="#{label.ambito}">ambito</span>
 									</label>
@@ -56,7 +56,7 @@
 											data-hide-disabled="false"
 											title="Seleziona un ambito...">
 											<option
-												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.ComunicazioneAmbitoEnum).values()}"
+												th:each="ambito, row: ${T(it.tredi.ecm.dao.enumlist.ComunicazioneAmbitoEnum).values()}"
 												th:value="${ambito}"
 												th:text="${ambito.nome}">
 											</option>
@@ -65,7 +65,7 @@
 								</div>
 								
 								<!-- Tipologia Comunicazione -->
-								<div class="item form-group select-tipologia-comunicazione" style="display: none">
+								<div class="item form-group select-tipologia-comunicazione">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia">
 										<span th:text="#{label.tipologia}">tipologia</span>
 									</label>

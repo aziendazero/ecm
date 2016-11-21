@@ -17,7 +17,7 @@
 									th:href="@{/comunicazione/new}"
 									th:text="#{label.componi}">Componi</a>
 							<a th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" class="btn btn-success pull-right"
-									th:href="@{/comunicazione/cerca}"
+									th:href="@{/comunicazione/ricerca}"
 									th:text="#{label.cerca}">Cerca</a>
 							<a class="btn btn-primary pull-right"
 									th:href="@{/home}"

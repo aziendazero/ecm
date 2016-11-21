@@ -280,7 +280,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 
 		
 		LOGGER.info(Utils.getLogMessage("Cerca Comunicazione: " + query));
-		Query q = entityManager.createQuery(query, Evento.class);
+		Query q = entityManager.createQuery(query, Comunicazione.class);
 
 		Iterator<Entry<String, Object>> iterator = params.entrySet().iterator();
 		while(iterator.hasNext()){

@@ -244,7 +244,7 @@ public class ComunicazioneController {
 					tipologiaLista = "label.non_ancora_lette";
 					break;
 				case "cerca":
-					listaComunicazioni = (Set<Comunicazione>) model.asMap().get("comunicazioneList");
+					listaComunicazioni = (Set<Comunicazione>) model.asMap().get("listaComunicazioni");
 					tipologiaLista = "label.esito_ricerca";
 					break;
 				default: throw new Exception("Tipologia non riconosciuta");
@@ -335,17 +335,17 @@ public class ComunicazioneController {
 		LOGGER.info(Utils.getLogMessage("POST /comunicazione/ricerca"));
 		try {
 
-			Set<Comunicazione> listaComunicazione = new HashSet<>();
-			listaComunicazione.addAll(comunicazioneService.cerca(wrapper));
+			Set<Comunicazione> listaComunicazioni = new HashSet<>();
+			listaComunicazioni.addAll(comunicazioneService.cerca(wrapper));
 			
-			redirectAttrs.addFlashAttribute("comunicazioneList", listaComunicazione);
+			redirectAttrs.addFlashAttribute("listaComunicazioni", listaComunicazioni);
 	
-			return "redirect:/comunicazione/all/list";
+			return "redirect:/comunicazione/cerca/list";
 			
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /comunicazione/ricerca"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/evento/ricerca";
+			return "redirect:/comunicazione/ricerca";
 		}
 	}
 	
