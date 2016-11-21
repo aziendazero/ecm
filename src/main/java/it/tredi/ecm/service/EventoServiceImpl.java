@@ -74,6 +74,7 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
@@ -83,6 +84,7 @@ import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -110,6 +112,8 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private FileValidator fileValidator;
 	@Autowired private PianoFormativoService pianoFormativoService;
 	
+	@Autowired private EcmProperties ecmProperties;
+
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -1289,6 +1293,16 @@ public class EventoServiceImpl implements EventoService {
 			}
 			((EventoFSC) riedizione).setFasiAzioniRuoli(fasiAzioniRuoli);
 
+			LOGGER.debug(Utils.getLogMessage("Clonazione verifica apprendimento"));
+			Set<VerificaApprendimentoFSCEnum> verificaApprendimento = new HashSet<VerificaApprendimentoFSCEnum>();
+			verificaApprendimento.addAll(Arrays.asList(((EventoFSC) riedizione).getVerificaApprendimento().toArray(new VerificaApprendimentoFSCEnum[((EventoFSC) riedizione).getVerificaApprendimento().size()])));
+			((EventoFSC) riedizione).setVerificaApprendimento(verificaApprendimento);
+
+			LOGGER.debug(Utils.getLogMessage("Clonazione verifica presenza partecipanti"));
+			Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti = new HashSet<VerificaPresenzaPartecipantiEnum>();
+			verificaPresenzaPartecipanti.addAll(Arrays.asList(((EventoFSC) riedizione).getVerificaPresenzaPartecipanti().toArray(new VerificaPresenzaPartecipantiEnum[((EventoFSC) riedizione).getVerificaPresenzaPartecipanti().size()])));
+			((EventoFSC) riedizione).setVerificaPresenzaPartecipanti(verificaPresenzaPartecipanti);
+
 			//ricalcolato
 			((EventoFSC) riedizione).setRiepilogoRuoli(new ArrayList<RiepilogoRuoliFSC>());
 		}
@@ -1608,5 +1622,67 @@ public class EventoServiceImpl implements EventoService {
 			return query+= " AND " + criteria;
 		else
 			return query+= " WHERE " + criteria;
+	}
+
+	/* Funzione che calcola i limiti temporali di editabilità dell'evento */
+	/* Editabile solo Docente */
+	@Override
+	public boolean isEditSemiBloccato(Evento evento) {
+		if(evento.getStato() != EventoStatoEnum.BOZZA) {
+			//riedizione
+			if(evento.isRiedizione()) {
+				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniPrimaBloccoEditRiedizione())))
+					return true;
+				else
+					return false;
+			}
+			//evento del Provider tipo A
+			else if(evento.getProvider().isGruppoA()) {
+				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniPrimaBloccoEditGruppoA())))
+					return true;
+				else
+					return false;
+			}
+			//evento del Provider tipo B
+			else if(evento.getProvider().isGruppoB()) {
+				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniPrimaBloccoEditGruppoB())))
+					return true;
+				else
+					return false;
+			}
+			return false;
+		}
+		else return false;
+	}
+
+	/* Evento iniziato e completamente bloccato */
+	@Override
+	public boolean isEventoIniziato(Evento evento) {
+		if(evento.getStato() != EventoStatoEnum.BOZZA) {
+			if(LocalDate.now().isEqual(evento.getDataInizio()) || LocalDate.now().isAfter(evento.getDataInizio()))
+				return true;
+			else
+				return false;
+		}
+		else return false;
+	}
+
+	/* Ritorna un booleano per il blocco della modifica della data di inizio */
+	@Override
+	public boolean hasDataInizioRestrictions(Evento evento) {
+		if(evento.getStato() != EventoStatoEnum.BOZZA) {
+			if(evento.isRiedizione() || evento.getProvider().isGruppoA()) {
+				return false;
+			}
+			//gruppo B
+			else {
+				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniMinEventoProviderB())))
+					return true;
+				else
+					return false;
+			}
+		}
+		else
+			return false;
 	}
 }

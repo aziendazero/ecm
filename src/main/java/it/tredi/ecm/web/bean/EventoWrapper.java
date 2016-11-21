@@ -116,6 +116,11 @@ public class EventoWrapper {
 	/* GESTIONE ERRORI VALIDAZIONE */
 	private Map<String, String> mappaErroriValidazione = new HashMap<String, String>();
 
+	//gestione editabilita dell'Evento
+	private boolean editSemiBloccato = false;
+	private boolean eventoIniziato = false;
+	private boolean hasDataInizioRestrictions = false;
+
 	public List<FaseAzioniRuoliEventoFSCTypeA> getProgrammaEventoFSC(){
 		if(evento != null && evento instanceof EventoFSC){
 			if(((EventoFSC)evento).getTipologiaEventoFSC() != null){
@@ -311,5 +316,4 @@ public class EventoWrapper {
 			this.eventoRESDateProgrammiGiornalieriWrapper = new EventoRESDateProgrammiGiornalieriWrapper((EventoRES)evento);
 		this.evento = evento;
 	}
-
 }

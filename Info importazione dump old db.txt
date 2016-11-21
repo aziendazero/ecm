@@ -1,0 +1,25 @@
+NUOVO DUMP
+1) Creazione del db con Laco procedure
+2) Export del dump in formato plain senza le tabelle:
+profile
+role
+profile_role
+obiettivo
+professione
+disciplina
+province
+comuni
+3) cancellazione dello schema ecmdb dal database di destinazione di sviluppo
+4) creazione dello schema ecmdb con assegnazione del owner ecmdb nello stesso db del punto 3)
+5) avvio della applicazione da eclpse in modo che vengano create tutte le tabelle con i dati delle tabelle:
+profile
+role
+profile_role
+obiettivo
+professione
+disciplina
+province
+comuni
+6) importazione del plain dump del punto 2)
+7) impostazione del hibernate_sequence
+8) esportazione del db ottenuto in formtao common

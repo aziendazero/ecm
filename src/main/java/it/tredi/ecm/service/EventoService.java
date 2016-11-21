@@ -51,4 +51,8 @@ public interface EventoService {
 	public int countEventiForProviderIdPagamentoScaduti(Long providerId);
 	
 	public List<Evento> cerca(RicercaEventoWrapper wrapper);
+
+	public boolean isEditSemiBloccato(Evento evento);
+	public boolean isEventoIniziato(Evento evento);
+	public boolean hasDataInizioRestrictions(Evento evento);
 }

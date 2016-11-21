@@ -62,6 +62,12 @@ public class EcmAppConfiguration {
 	private long durataMinimaGruppiMiglioramentoFSC = 8L;
 	@Value("${durata.minima.progetti.miglioramento.fsc}")
 	private long durataMinimaProgettiMiglioramentoFSC = 8L;
+	@Value("${giorni.prima.blocco.edit.riedizione}")
+	private int giorniPrimaBloccoEditRiedizione = 4;
+	@Value("${giorni.prima.blocco.edit.gruppoA}")
+	private int giorniPrimaBloccoEditGruppoA = 4;
+	@Value("${giorni.prima.blocco.edit.gruppoB}")
+	private int giorniPrimaBloccoEditGruppoB = 10;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -90,6 +96,9 @@ public class EcmAppConfiguration {
 		ecmProperties.setDurataMinimaAuditClinicoFSC(durataMinimaAuditClinicoFSC);
 		ecmProperties.setDurataMinimaGruppiMiglioramentoFSC(durataMinimaGruppiMiglioramentoFSC);
 		ecmProperties.setDurataMinimaProgettiMiglioramentoFSC(durataMinimaProgettiMiglioramentoFSC);
+		ecmProperties.setGiorniPrimaBloccoEditRiedizione(giorniPrimaBloccoEditRiedizione);
+		ecmProperties.setGiorniPrimaBloccoEditGruppoA(giorniPrimaBloccoEditGruppoA);
+		ecmProperties.setGiorniPrimaBloccoEditGruppoB(giorniPrimaBloccoEditGruppoB);
 		return ecmProperties;
 	}
 }

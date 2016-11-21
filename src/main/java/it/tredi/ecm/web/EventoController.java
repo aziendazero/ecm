@@ -288,13 +288,7 @@ public class EventoController {
 			//salvataggio temporaneo senza validatore (in stato di bozza)
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
-
-			//se stato non è mai stato salvato -> BOZZA
-			if(evento.getStato() == null)
-				evento.setStato(EventoStatoEnum.BOZZA);
-
 			eventoService.save(evento);
-
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato_in_bozza_success", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
 			return "redirect:/provider/{providerId}/evento/list";
@@ -350,7 +344,8 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/edit"));
 		try {
 			//edit dell'evento
-			EventoWrapper wrapper = prepareEventoWrapperEdit(eventoService.getEvento(eventoId), true);
+			Evento evento = eventoService.getEvento(eventoId);
+			EventoWrapper wrapper = prepareEventoWrapperEdit(evento, true);
 			return goToEdit(model, wrapper);
 		}
 		catch (Exception ex) {
@@ -547,10 +542,10 @@ public class EventoController {
 		evento.setProvider(providerService.getProvider(providerId));
 		evento.setAccreditamento(accreditamentoService.getAccreditamentoAttivoForProvider(providerId));
 		evento.setProceduraFormativa(proceduraFormativa);
+		evento.setStato(EventoStatoEnum.BOZZA);
 		eventoWrapper.setEvento(evento);
 		eventoWrapper.initProgrammi();
 //		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
-
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
 	}
@@ -563,6 +558,10 @@ public class EventoController {
 		if(reloadWrapperFromDB)
 			eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - exiting"));
+		//editabilità
+		eventoWrapper.setEditSemiBloccato(eventoService.isEditSemiBloccato(evento));
+		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
+		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
 		return eventoWrapper;
 	}
 
@@ -620,6 +619,7 @@ public class EventoController {
 			default: evento = new Evento(); break;
 		}
 		evento.setFromEventoPianoFormativo(eventoPianoFormativo);
+		evento.setStato(EventoStatoEnum.BOZZA);
 		eventoWrapper.setEvento(evento);
 		eventoWrapper.initProgrammi();
 //		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
@@ -629,14 +629,17 @@ public class EventoController {
 	}
 
 	private EventoWrapper prepareEventoWrapperRiedizione(Evento evento, long providerId) throws AccreditamentoNotFoundException, Exception {
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperAttuazione(" + evento.getId() + ") - entering"));
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRiedizione(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), providerId);
 		Evento riedizioneEvento = eventoService.prepareRiedizioneEvento(evento);
 		eventoWrapper.setEvento(riedizioneEvento);
 		eventoWrapper.initProgrammi();
 		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
-
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperAttuazione(" + evento.getId() + ") - exiting"));
+		//editabilità
+		eventoWrapper.setEditSemiBloccato(eventoService.isEditSemiBloccato(evento));
+		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
+		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRiedizione(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;
 	}
 
@@ -935,7 +938,7 @@ public class EventoController {
 					if(extraType != null){
 						attivitaRES.setExtraType(extraType);
 					}
-					 
+
 					eventoWrapper.setTempAttivitaRES(new DettaglioAttivitaRES());
 				}else if(target.equalsIgnoreCase("attivitaFSC")){
 					AzioneRuoliEventoFSC azioniRuoli = SerializationUtils.clone(eventoWrapper.getTempAttivitaFSC());
@@ -1245,17 +1248,17 @@ public class EventoController {
 			RedirectAttributes redirectAttrs) throws Exception {
 		LOGGER.info(Utils.getLogMessage("GET /provider/eventi/" + search + "/list"));
 		try {
-			
+
 			Set<Evento> listaEventi = new HashSet<Evento>();
 			CurrentUser currentUser = Utils.getAuthenticatedUser();
-			
+
 			switch(search){
 				case SCADENZA_PAGAMENTO : 	listaEventi = eventoService.getEventiForProviderIdInScadenzaDiPagamento(currentUser.getAccount().getProvider().getId());
 											break;
-				
+
 				case NON_RAPPORTATI : listaEventi = eventoService.getEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId());
 										break;
-				
+
 				default: break;
 			}
 

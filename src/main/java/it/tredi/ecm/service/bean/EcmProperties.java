@@ -30,4 +30,7 @@ public class EcmProperties {
 	private long durataMinimaAuditClinicoFSC;
 	private long durataMinimaGruppiMiglioramentoFSC;
 	private long durataMinimaProgettiMiglioramentoFSC;
+	private int giorniPrimaBloccoEditRiedizione;
+	private int giorniPrimaBloccoEditGruppoA;
+	private int giorniPrimaBloccoEditGruppoB;
 }
