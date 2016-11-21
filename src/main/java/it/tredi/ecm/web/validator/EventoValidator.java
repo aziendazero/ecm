@@ -694,26 +694,38 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "fasiAzioniRuoli", "error.empty");
 		else {
 			int counter = 0;
-
+			boolean atLeastOnePartecipante = false;
+			boolean atLeastOneTutor = false;
 			//gestione particolare tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO
 			//eseguo i controlli solo alle fasiDaInserire specificate da fasiDaInserire
 			if(evento.getTipologiaEventoFSC() != null
 					&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
 					&& evento.getFasiDaInserire() != null) {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
-					if(evento.getFasiDaInserire().getFasiAbilitate().contains(far.getFaseDiLavoro()))
-						validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
+					//validazione solo se la fase è abilitata
+					if(evento.getFasiDaInserire().getFasiAbilitate().contains(far.getFaseDiLavoro())) {
+						boolean[] validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
+						if(validationResults[0])
+							atLeastOnePartecipante = true;
+						if(validationResults[1])
+							atLeastOneTutor = true;
+					}
 					counter++;
 				}
 			}
-
 			//gestione di default
 			else {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
-					validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
+					boolean[] validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
+					if(validationResults[0])
+						atLeastOnePartecipante = true;
+					if(validationResults[1])
+						atLeastOneTutor = true;
 					counter++;
 				}
 			}
+			if(!atLeastOnePartecipante || (!atLeastOneTutor && evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO))
+				errors.rejectValue(prefix + "fasiAzioniRuoli", "error.partecipante_tutor_non_inserito" + evento.getTipologiaEventoFSC());
 		}
 
 		/* TABELLA RIEPILOGO FSC
@@ -1157,19 +1169,22 @@ public class EventoValidator {
 	}
 
 	//validate FasiAzioniRuoliFSC
-	private void validateFasiAzioniRuoliFSC(FaseAzioniRuoliEventoFSCTypeA faseAzioniRuoli, Errors errors, String prefix, TipologiaEventoFSCEnum tipologiaEvento) {
+	//ritorna se ha trovato almeno 1 partecipante e almeno 1 tutor per fase
+	private boolean[] validateFasiAzioniRuoliFSC(FaseAzioniRuoliEventoFSCTypeA faseAzioniRuoli, Errors errors, String prefix, TipologiaEventoFSCEnum tipologiaEvento) {
 
 		//fase di lavoro (gratis, non viene inserita dall'utente, ma generata
 		//automaticamente dal sistema
 
 		//azioniRuoli (almeno 1 azione per fase)
-		if(faseAzioniRuoli.getAzioniRuoli() == null || faseAzioniRuoli.getAzioniRuoli().isEmpty())
+		if(faseAzioniRuoli.getAzioniRuoli() == null || faseAzioniRuoli.getAzioniRuoli().isEmpty()) {
 			errors.rejectValue(prefix + "azioniRuoli", "error.empty");
+			return new boolean[] {false, false};
+		}
 		else {
 			int counter = 0;
 			boolean atLeastOneErrorAzione = false;
-			boolean atLeastOneTutor = false;
 			boolean atLeastOnePartecipante = false;
+			boolean atLeastOneTutor = false;
 
 			Map<RuoloFSCEnum, Float> checkOrePartecipante = new HashMap<RuoloFSCEnum, Float>();
 
@@ -1217,9 +1232,7 @@ public class EventoValidator {
 
 			if(atLeastOneErrorAzione)
 				errors.rejectValue(prefix + "azioniRuoli", "error.campi_con_errori_azione_ruoli"+tipologiaEvento);
-			else if(!atLeastOnePartecipante || (!atLeastOneTutor && tipologiaEvento == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO)) {
-				errors.rejectValue(prefix + "azioniRuoli", "error.vincolo_partecipanti_tutor"+tipologiaEvento);
-			}
+			return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
 		}
 	}
 
