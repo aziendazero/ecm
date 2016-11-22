@@ -223,6 +223,9 @@
 								<input type="hidden" th:field="${eventoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('evento.obiettivoNazionale')}__].id}" />
 		                    </th:block>
 							<div th:if="${#fields.hasErrors('eventoWrapper.evento.obiettivoNazionale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${eventoWrapper.evento.obiettivoNazionale}"></div>
+							<div class="col-xs-1">
+								<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+							</div>
 						</div>
 
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>

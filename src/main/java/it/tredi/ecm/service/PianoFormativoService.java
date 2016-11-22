@@ -16,7 +16,8 @@ public interface PianoFormativoService {
 	public PianoFormativo getPianoFormativoAnnualeForProvider(Long providerId, Integer annoPianoFormativo);
 	public boolean isPianoModificabile(Long pianoFormativoId);
 	public Set<Long> getAllPianiFormativiIdInAccreditamentoForProvider(Long providerId);
-	public void importaEventiDaCSV(Long pianoFormativoId, File importEventiDaCsvFile) throws Exception;
+
+	public void importaEventiDaCSV(Long pianoFormativoId, File importEventiDaCsvFile, Long accreditamentoId) throws Exception;
 	
 	public void removeEventoFrom(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception;
 	public void addEventoTo(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception;

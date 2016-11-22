@@ -223,7 +223,7 @@ public class PianoFormativoController {
 					String fileName = file.getNomeFile().trim().toUpperCase();
 					if (fileName.endsWith(".CSV")) {
 						wrapper.setImportEventiDaCsvFile(fileService.getFile(file.getId()));
-						pianoFormativoService.importaEventiDaCSV(pianoFormativoId, wrapper.getImportEventiDaCsvFile());
+						pianoFormativoService.importaEventiDaCSV(pianoFormativoId, wrapper.getImportEventiDaCsvFile(), null);
 						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
 					}
 					else {
@@ -261,7 +261,7 @@ public class PianoFormativoController {
 					String fileName = file.getNomeFile().trim().toUpperCase();
 					if (fileName.endsWith(".CSV")) {
 						wrapper.setImportEventiDaCsvFile(fileService.getFile(file.getId()));
-						pianoFormativoService.importaEventiDaCSV(pianoFormativoId, wrapper.getImportEventiDaCsvFile());
+						pianoFormativoService.importaEventiDaCSV(pianoFormativoId, wrapper.getImportEventiDaCsvFile(),accreditamentoId);
 						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.xml_evento_validation_ok", "success"));
 					}
 					else {

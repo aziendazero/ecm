@@ -2,6 +2,7 @@ package it.tredi.ecm.service.bean;
 
 import java.security.MessageDigest;
 import java.security.Principal;
+import java.security.Security;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,6 +26,7 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.Store;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -82,7 +84,7 @@ public class VerificaFirmaDigitale {
 	 */
 	public Element check() throws Exception {
 		// registrazione di BouncyCastle come provider (chiamata necessaria per non ottenere errori in fase di verifica)
-		//Security.addProvider(new BouncyCastleProvider()); // TODO e' necessario aggiungere questa istruzione?
+		Security.addProvider(new BouncyCastleProvider());
 		
 		Element verificaFirmaElement = DocumentHelper.createElement("verificaFirma");
 		verificaFirmaElement.addAttribute("fileName", fileName);
