@@ -1,6 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,10 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-
-import it.tredi.ecm.dao.entity.Account;
-import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
@@ -46,7 +41,6 @@ import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
-import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
@@ -60,8 +54,6 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
-import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
-import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.EventoSearchEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
@@ -1320,12 +1312,7 @@ public class EventoController {
 
 			redirectAttrs.addFlashAttribute("eventoList", listaEventi);
 
-//			model.addAttribute("eventoList", listaEventi);
-
 			return returnRedirect;
-//
-//			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
-//			return LIST;
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /evento/ricerca"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));

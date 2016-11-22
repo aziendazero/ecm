@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -244,16 +245,26 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	public List<Comunicazione> cerca(RicercaComunicazioneWrapper wrapper) {
 		String query = "";
 		HashMap<String, Object> params = new HashMap<String, Object>();
-		new HashSet<String>();
 		
-		query ="SELECT c FROM Comunicazione c";
+		query ="SELECT c FROM Comunicazione c JOIN c.destinatari d";
+		
+		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
+			//devo fare il join con la tabella provider
+			query = Utils.QUERY_AND(query,"UPPER(d.provider.denominazioneLegale) LIKE :denominazioneLegale");
+			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
+		}
+		
+		//PROVIDER ID
+		if(wrapper.getCampoIdProvider() != null){
+			query = Utils.QUERY_AND(query, "d.provider.id = :providerId");
+			params.put("providerId", wrapper.getCampoIdProvider());
+		}
 		
 		//OGGETTO
 		if(wrapper.getOggetto() != null && !wrapper.getOggetto().isEmpty()){
 			query = Utils.QUERY_AND(query, "UPPER(c.oggetto) LIKE :oggetto");
 			params.put("oggetto", "%" + wrapper.getOggetto().toUpperCase() + "%");
 		}
-		
 		
 		//AMBITO
 		if(wrapper.getAmbitiSelezionati() != null){
@@ -280,6 +291,8 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 
 		
 		LOGGER.info(Utils.getLogMessage("Cerca Comunicazione: " + query));
+		
+		//EntityGraph<?> graph = entityManager.getEntityGraph("graph.comunicazione.forRicerca");
 		Query q = entityManager.createQuery(query, Comunicazione.class);
 
 		Iterator<Entry<String, Object>> iterator = params.entrySet().iterator();
@@ -289,7 +302,8 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			LOGGER.info(Utils.getLogMessage(pairs.getKey() + ": " + pairs.getValue()));
 		}
 		
-		List<Comunicazione> result = q.getResultList(); 
+//		List<Comunicazione> result = q.setHint("javax.persistence.fetchgraph", graph).getResultList();
+		List<Comunicazione> result = q.getResultList();
 		
 		return result;
 	}

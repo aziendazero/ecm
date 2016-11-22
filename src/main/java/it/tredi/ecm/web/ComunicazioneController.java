@@ -1,8 +1,6 @@
 package it.tredi.ecm.web;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +24,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
-import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.ComunicazioneService;
 import it.tredi.ecm.service.ProviderService;
@@ -36,7 +33,6 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ComunicazioneWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RicercaComunicazioneWrapper;
-import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.validator.ComunicazioneValidator;
 
 @Controller
@@ -267,10 +263,18 @@ public class ComunicazioneController {
 		LOGGER.info(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"));
 		try {
 			Provider provider = providerService.getProvider(providerId);
-			Set<Comunicazione> listaComunicazioni = comunicazioneService.getAllComunicazioniByProvider(provider);
-			model.addAttribute("listaComunicazioni", listaComunicazioni);
+			
+			if(model.asMap().get("listaComunicazioni") == null){
+				model.addAttribute("listaComunicazioni", comunicazioneService.getAllComunicazioniByProvider(provider));
+			}
+
 			model.addAttribute("tipologiaLista", "label.comunicazioni_con_provider");
-			model.addAttribute("returnLink", "/provider/list");
+			
+			if(Utils.getAuthenticatedUser().isSegreteria())
+				model.addAttribute("returnLink", "/provider/list");
+			else
+				model.addAttribute("returnLink", "/home");
+				
 			return LIST;
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"),ex);
@@ -318,6 +322,14 @@ public class ComunicazioneController {
 		LOGGER.info(Utils.getLogMessage("POST /comunicazione/ricerca"));
 		try {
 			RicercaComunicazioneWrapper wrapper = prepareRicercaComunicazioneWrapper();
+			
+			CurrentUser currentUser = Utils.getAuthenticatedUser();
+			if(currentUser.isProvider()){
+				wrapper.setProviderId(currentUser.getAccount().getProvider().getId());
+			}else{
+				wrapper.setProviderId(null);
+			}
+			
 			model.addAttribute("ricercaComunicazioneWrapper", wrapper);
 			LOGGER.info(Utils.getLogMessage("VIEW: " + RICERCA));
 			return RICERCA;
@@ -335,13 +347,22 @@ public class ComunicazioneController {
 		LOGGER.info(Utils.getLogMessage("POST /comunicazione/ricerca"));
 		try {
 
+			String returnRedirect = "";
+			
+			if(wrapper.getProviderId() != null){
+				wrapper.setCampoIdProvider(wrapper.getProviderId());
+				returnRedirect = "redirect:/provider/" + wrapper.getProviderId() + "/comunicazione/list";
+			}else{
+				returnRedirect = "redirect:/comunicazione/cerca/list";
+			}
+			
+			
 			Set<Comunicazione> listaComunicazioni = new HashSet<>();
 			listaComunicazioni.addAll(comunicazioneService.cerca(wrapper));
 			
 			redirectAttrs.addFlashAttribute("listaComunicazioni", listaComunicazioni);
 	
-			return "redirect:/comunicazione/cerca/list";
-			
+			return returnRedirect;
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /comunicazione/ricerca"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));

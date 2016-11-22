@@ -1444,6 +1444,7 @@ public class EventoServiceImpl implements EventoService {
 		}else{
 			//posso cercare direttamente su evento
 			query ="SELECT e FROM Evento e";
+		}
 
 			//PROVIDER ID
 			if(wrapper.getCampoIdProvider() != null){
@@ -1451,6 +1452,7 @@ public class EventoServiceImpl implements EventoService {
 				params.put("providerId", wrapper.getCampoIdProvider());
 			}
 
+			//TIPOLOGIA EVENTO
 			if(wrapper.getTipologieSelezionate() != null && !wrapper.getTipologieSelezionate().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.proceduraFormativa IN :tipologieSelezionate");
 				params.put("tipologieSelezionate", wrapper.getTipologieSelezionate());
@@ -1600,7 +1602,6 @@ public class EventoServiceImpl implements EventoService {
 				query = Utils.QUERY_AND(query, "e.dataScadenzaPagamento <= :dataScadenzaPagamentoEnd");
 				params.put("dataScadenzaPagamentoEnd", wrapper.getDataScadenzaPagamentoEnd());
 			}
-		}
 
 		LOGGER.info(Utils.getLogMessage("Cerca Evento: " + query));
 		Query q = entityManager.createQuery(query, Evento.class);

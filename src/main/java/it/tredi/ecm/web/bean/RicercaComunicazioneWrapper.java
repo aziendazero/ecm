@@ -13,6 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RicercaComunicazioneWrapper {
+	private Long campoIdProvider;
+	private String denominazioneLegale;
 	private String oggetto;
 	
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
@@ -22,4 +24,6 @@ public class RicercaComunicazioneWrapper {
 	
 	private Set<ComunicazioneAmbitoEnum> ambitiSelezionati;
 	private Set<ComunicazioneTipologiaEnum> tipologieSelezionate;
+	
+	private Long providerId;
 }

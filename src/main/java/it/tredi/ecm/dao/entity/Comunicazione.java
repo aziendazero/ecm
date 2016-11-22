@@ -10,9 +10,14 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -26,6 +31,21 @@ import lombok.Setter;
 @Table(name="comunicazione")
 @Getter
 @Setter
+//@NamedEntityGraphs({
+//
+//	@NamedEntityGraph(name="graph.comunicazione.forRicerca",
+//			attributeNodes = {@NamedAttributeNode("id"),
+//					@NamedAttributeNode(value="destinatari", subgraph="accountFull")},
+//			subgraphs = {@NamedSubgraph(name="accountFull", attributeNodes={
+//					@NamedAttributeNode("id"),
+//					@NamedAttributeNode("nome"),
+//					@NamedAttributeNode("cognome"),
+//					@NamedAttributeNode("email")
+//			})
+//			}
+//	)
+//	
+//})
 public class Comunicazione extends BaseEntity{
 
 	public Comunicazione(){}
@@ -35,7 +55,7 @@ public class Comunicazione extends BaseEntity{
 
 	@OneToOne
 	private Account mittente;
-	@ManyToMany(cascade= CascadeType.REMOVE)
+	@ManyToMany(cascade= CascadeType.REMOVE, fetch=FetchType.EAGER)
 	@JoinTable(name="comunicazione_destinatari",
 				joinColumns={@JoinColumn(name="comunicazione_id")},
 				inverseJoinColumns={@JoinColumn(name="account_id")}
