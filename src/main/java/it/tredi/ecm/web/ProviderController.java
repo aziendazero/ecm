@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
@@ -47,11 +49,14 @@ import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
+import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.ResponseUsername;
+import it.tredi.ecm.web.bean.RicercaAccreditamentoWrapper;
+import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
@@ -64,6 +69,7 @@ public class ProviderController {
 	private final String SHOW = "provider/providerShow";
 	private final String VALIDATE = "provider/providerValidate";
 	private final String ENABLEFIELD = "provider/providerEnableField";
+	private final String RICERCA = "ricerca/ricercaProvider";
 
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
@@ -514,4 +520,48 @@ public class ProviderController {
 		return providerWrapper;
 	}
 
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
+	@RequestMapping("/provider/ricerca")
+	public String ricercaProviderGlobale(Model model,RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /provider/ricerca"));
+		try {
+			RicercaAccreditamentoWrapper wrapper = prepareRicercaAccreditamentoWrapper();
+
+			model.addAttribute("ricercaAccreditamentoWrapper", wrapper);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + RICERCA));
+			return RICERCA;
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/ricerca"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/ricerca", method = RequestMethod.POST)
+	public String executeRicercaProvider(@ModelAttribute("ricercaAccreditamentoWrapper") RicercaAccreditamentoWrapper wrapper,
+									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
+		LOGGER.info(Utils.getLogMessage("POST /provider/ricerca"));
+		try {
+
+			String returnRedirect = "redirect:/provider/list";
+			
+			Set<Provider> listaProvider = new HashSet<Provider>();
+			listaProvider = accreditamentoService.cerca(wrapper);
+			
+			redirectAttrs.addFlashAttribute("listaProvider", listaProvider);
+			
+			return returnRedirect;
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/ricerca"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/evento/ricerca";
+		}
+	}
+	
+	private RicercaAccreditamentoWrapper prepareRicercaAccreditamentoWrapper(){
+		RicercaAccreditamentoWrapper wrapper = new RicercaAccreditamentoWrapper();
+		return wrapper;
+	}
+	
 }
