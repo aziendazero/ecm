@@ -112,10 +112,16 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 	
 	@Override
 	@Transactional
-	public void importaEventiDaCSV(Long pianoFormativoId, File importEventiDaCsvFile) throws Exception {
+	public void importaEventiDaCSV(Long pianoFormativoId, File importEventiDaCsvFile, Long accreditamentoId) throws Exception {
 		try {
 			PianoFormativo pianoFormativo = getPianoFormativo(pianoFormativoId);
-			Accreditamento accreditamento = accreditamentoService.getAccreditamentoAttivoForProvider(pianoFormativo.getProvider().getId());
+			Accreditamento accreditamento = null;
+			if(accreditamentoId != null){
+				accreditamento = accreditamentoService.getAccreditamentoAttivoForProvider(pianoFormativo.getProvider().getId());
+			}else{
+				accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			}
+			
 			byte []csv = importEventiDaCsvFile.getData();
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withDelimiter(';').withFirstRecordAsHeader().parse(new StringReader(new String(csv, CSV_REPORT_ENCODING)));
 			for (CSVRecord record : records) { //per ogni evento (riga del CSV) -> creo EventoPianoFormativo
