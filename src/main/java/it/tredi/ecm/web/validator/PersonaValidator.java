@@ -26,8 +26,7 @@ public class PersonaValidator {
 	public void validate(Object target, Errors errors, String prefix, Set<File> files, Long providerId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione Persona"));
 		validatePersona(target, errors, prefix);
-		//TODO SOLO PER I TEST
-		//validateFiles(files, errors, "", ((Persona)target).getRuolo(), providerId);
+		validateFiles(files, errors, "", ((Persona)target).getRuolo(), providerId);
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
