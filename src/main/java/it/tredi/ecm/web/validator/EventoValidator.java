@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.omg.CORBA.TRANSACTION_MODE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1481,45 +1482,82 @@ public class EventoValidator {
 
 		//tipologiaEvento == TRAINING_INDIVIDUALIZZATO || ATTIVITA_DI_RICERCA nessun controllo
 
-
 		if(tipologiaEvento != null)
 			switch(tipologiaEvento) {
 
 				//tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO
 				// - massimo 25 partecipanti per ruolo
 				// - impegno complessivo minimo 8 ore totali per tutti i ruoli
+				// - massimo un coordinatore
 				case GRUPPI_DI_MIGLIORAMENTO:
 
 					if(riepilogoRuoli.getNumeroPartecipanti() > 25)
 						return true;
 					if(riepilogoRuoli.getTempoDedicato() < 8f)
 						return true;
+					if(riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
+							&& riepilogoRuoli.getNumeroPartecipanti() > 1)
+						return true;
 
 				break;
 
 				//tipologiaEvento == PROGETTI DI MIGLIORAMENTO
 				// - impegno complessivo minimo 8 ore totali per ruolo PARTECIPANTE
+				// - massimo un coordinatore
 				case PROGETTI_DI_MIGLIORAMENTO:
 
 					if(riepilogoRuoli.getRuolo() != null
-						&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE
-						&& riepilogoRuoli.getTempoDedicato() < 8f)
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE
+							&& riepilogoRuoli.getTempoDedicato() < 8f)
+						return true;
+					if(riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
+							&& riepilogoRuoli.getNumeroPartecipanti() > 1)
+						return true;
+					if(riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.RESPONSABILE
+							&& riepilogoRuoli.getNumeroPartecipanti() > 1)
 						return true;
 
 				break;
 
 				//tipologiaEvento == AUDIT_CLINICO_ASSISTENZIALE
 				// - impegno complessivo minimo di 10 ore totali per ruolo PARTECIPANTE
+				// - massimo un coordinatore
 				case AUDIT_CLINICO_ASSISTENZIALE:
 
 					if(riepilogoRuoli.getRuolo() != null
-						&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE
-						&& riepilogoRuoli.getTempoDedicato() < 10f)
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE
+							&& riepilogoRuoli.getTempoDedicato() < 10f)
+						return true;
+					if(riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
+							&& riepilogoRuoli.getNumeroPartecipanti() > 1)
 						return true;
 
 				break;
 
-				default:
+				//tipologiaEvento == TRAINING_INDIVIDUALIZZATO
+				// - massimo un coordinatore
+				case TRAINING_INDIVIDUALIZZATO:
+
+					if(riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
+							&& riepilogoRuoli.getNumeroPartecipanti() > 1)
+						return true;
+
+				break;
+
+				//tipologiaEvento == ATTIVITA_DI_RICERCA
+				// - massimo un coordinatore
+				case ATTIVITA_DI_RICERCA:
+
+					if(riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
+							&& riepilogoRuoli.getNumeroPartecipanti() > 1)
+						return true;
+
 				break;
 
 			}
