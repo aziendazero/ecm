@@ -2,10 +2,12 @@ package it.tredi.ecm.web.bean;
 
 import java.time.LocalDate;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -21,21 +23,21 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 	private Long index = 0L;
 	private Long dataInizioKey = null;
 	private Long dataFineKey = null;
-	private Set<LocalDate> pgLocalDate = new HashSet<LocalDate>();
-	
+	private List<LocalDate> pgLocalDate = new ArrayList<LocalDate>();
+
 	public EventoRESDateProgrammiGiornalieriWrapper(EventoRES eventoRES) {
 		this.eventoRES = eventoRES;
 		this.sedeUltimoAggiornamento = new SedeEvento();
 		if(eventoRES.getSedeEvento() != null) {
 			this.sedeUltimoAggiornamento.copiaDati(eventoRES.getSedeEvento());
 		}
-		//yengo i programmi giornalieri solo se esistono fra le date INIZIO FINE o INTERMEDIE
+		//tengo i programmi giornalieri solo se esistono fra le date INIZIO FINE o INTERMEDIE
 		for(ProgrammaGiornalieroRES pg : this.eventoRES.getProgramma()) {
 			//Quelle senza giorno non vengono considerate, in realta' non dovrebbero neppure venire salvate su db
 			if(pg.getGiorno() != null) {
 				//Aggiungo solo se non gia' aggiunta
-				if(pgLocalDate.contains(pg.getGiorno()))
-					continue;
+//				if(pgLocalDate.contains(pg.getGiorno()))
+//					continue;
 				if(this.eventoRES.getDataInizio() != null && pg.getGiorno().compareTo(this.eventoRES.getDataInizio()) == 0) {
 					//DATAINIZIO
 					index++;
@@ -80,25 +82,25 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 				}
 			}
 		}
-		
+
 		if(programmiGiornalieriMap.size()  == 2) {
 			//Ci sono solo datainizio e data fine aggiungo una data intermedia null
 			addProgrammaGiornalieroIntermedio(null);
 		}
-		
+
 		refreshSortedProgrammiGiornalieriMap();
 	}
-	
+
 	private void refreshSortedProgrammiGiornalieriMap() {
 		sortedProgrammiGiornalieriMap = new LinkedHashMap<Long, EventoRESProgrammaGiornalieroWrapper>();
 		for(Map.Entry<Long, EventoRESProgrammaGiornalieroWrapper> kv : programmiGiornalieriMap) {
 			sortedProgrammiGiornalieriMap.put(kv.getKey(), kv.getValue());
 		}
 	}
-	
+
 	//LinkedHashMap mantiene l'ordine dell'inserimento
 	private Map<Long, EventoRESProgrammaGiornalieroWrapper> sortedProgrammiGiornalieriMap = new LinkedHashMap<Long, EventoRESProgrammaGiornalieroWrapper>();
-	
+
 	//Mantengo internamente un Set ordinato rispetto a tipoData e giorno
 	private SortedSet<Map.Entry<Long, EventoRESProgrammaGiornalieroWrapper>> programmiGiornalieriMap = new TreeSet<Map.Entry<Long, EventoRESProgrammaGiornalieroWrapper>>(
             new Comparator<Map.Entry<Long, EventoRESProgrammaGiornalieroWrapper>>() {
@@ -131,7 +133,10 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
                 					return -1;
                 				} else {
                 					//Entrambe != null
-                					return e1.getValue().getProgramma().getGiorno().compareTo(e2.getValue().getProgramma().getGiorno());
+                					if(e1.getValue().getProgramma().getGiorno().compareTo(e2.getValue().getProgramma().getGiorno()) == 0)
+                						return e1.getKey().compareTo(e2.getKey());
+                					else
+                						return e1.getValue().getProgramma().getGiorno().compareTo(e2.getValue().getProgramma().getGiorno());
                 				}
                 			}
                 		}
@@ -147,13 +152,13 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 	public void setSortedProgrammiGiornalieriMap(Map<Long, EventoRESProgrammaGiornalieroWrapper> sortedProgrammiGiornalieriMap) {
 		this.sortedProgrammiGiornalieriMap = sortedProgrammiGiornalieriMap;
 	}
-	
+
 	public void addProgrammaGiornalieroIntermedio(LocalDate dataInt) {
 		ProgrammaGiornalieroRES pgAdd = new ProgrammaGiornalieroRES();
 		pgAdd.setGiorno(dataInt);
 		index++;
 		programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.INTERMEDIA, pgAdd)));
-		pgLocalDate.add(dataInt);	
+		pgLocalDate.add(dataInt);
 		refreshSortedProgrammiGiornalieriMap();
 	}
 
@@ -165,12 +170,12 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 		}
 		refreshSortedProgrammiGiornalieriMap();
 	}
-	
+
 	//Da chiamare per aggiornare i dati di data inizio e fine che sull'interfaccia non sono mappati ai programmi
 	public void aggiornaDati() {
 		sortedProgrammiGiornalieriMap.get(dataInizioKey).getProgramma().setGiorno(eventoRES.getDataInizio());
 		sortedProgrammiGiornalieriMap.get(dataFineKey).getProgramma().setGiorno(eventoRES.getDataFine());
-		
+
 		if(!SedeEvento.compare(this.sedeUltimoAggiornamento, this.eventoRES.getSedeEvento())) {
 			//la sede è cambiata rispetto all'originale
 			for(EventoRESProgrammaGiornalieroWrapper eventoProgrGiorWrap : sortedProgrammiGiornalieriMap.values()){
@@ -184,7 +189,7 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 			//
 			this.sedeUltimoAggiornamento.copiaDati(this.eventoRES.getSedeEvento());
 		}
-		
+
 		/*
 		//Controllo se un dato è stato inserito nella sede
 		if(!SedeEvento.isEmpty(this.eventoRES.getSedeEvento())) {
@@ -199,15 +204,15 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 			}
 		}
 		*/
-			
+
 		refreshSortedProgrammiGiornalieriMap();
 	}
-	
+
 	//Metodo che riporta i dati dal wrapper all'evento
 	public void updateEventoRES() {
 		//Aggiorno nel caso le date inizio e fine siano state modificate
 		aggiornaDati();
-		Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
+		List<LocalDate> dateIntermedie = new ArrayList<LocalDate>();
 		Set<Long> oldIdProgrammaAncoraPresenti = new HashSet<Long>();
 		//Potrebbe essere gia' stata eseguita questa operazione quindi in eventoRES.getProgramma() potrei avere gia' dei programmi nuovi inseriti lil elimino e riesegup
 		Iterator<ProgrammaGiornalieroRES> i = eventoRES.getProgramma().iterator();
@@ -216,7 +221,7 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 			if(prg.isNew()) {
 				i.remove();
 			}
-		}	
+		}
 		for(EventoRESProgrammaGiornalieroWrapper evpgw : this.getSortedProgrammiGiornalieriMap().values()) {
 			if(evpgw.getProgramma().getGiorno() == null) {
 				//quelli non nuovi vanno eliminati se hanno la data null
@@ -242,30 +247,30 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 		//per i programmi restano da sistemare eventuali programmi presenti prima ma che ora sono stati cancellati
 		//eventuali doppioni, per giorno
 		//eventuali programmi con giorno non piu' impostato
-		i = eventoRES.getProgramma().iterator();
-		Set<LocalDate> dateDistinct = new HashSet<LocalDate>();
-		while (i.hasNext()) {
-			ProgrammaGiornalieroRES prg = i.next();
-			if(!prg.isNew() && (!oldIdProgrammaAncoraPresenti.contains(prg.getId()) || prg.getGiorno() == null)) {
-				i.remove();
-			} else {
-				if(dateDistinct.contains(prg.getGiorno())) {
-					i.remove();
-				} else {
-					dateDistinct.add(prg.getGiorno());
-				}
-			}
-		}
-		
+//		i = eventoRES.getProgramma().iterator();
+//		Set<LocalDate> dateDistinct = new HashSet<LocalDate>();
+//		while (i.hasNext()) {
+//			ProgrammaGiornalieroRES prg = i.next();
+//			if(!prg.isNew() && (!oldIdProgrammaAncoraPresenti.contains(prg.getId()) || prg.getGiorno() == null)) {
+//				i.remove();
+//			} else {
+//				if(dateDistinct.contains(prg.getGiorno())) {
+//					i.remove();
+//				} else {
+//					dateDistinct.add(prg.getGiorno());
+//				}
+//			}
+//		}
+
 	}
-	
+
 	/*
 	Comparator<Long, EventoRESProgrammaGiornalieroWrapper> EventoRESProgrammaGiornalieroWrapperComparator = new Comparator() {
 	}<Long<Long, EventoRESProgrammaGiornalieroWrapper>() {
         @Override public int compare(String s1, String s2) {
             return s1.substring(1, 2).compareTo(s2.substring(1, 2));
-        }           
-    };				
+        }
+    };
     */
 	/*
 	static <K,V extends Comparable<? super V>>
@@ -281,5 +286,5 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 	    sortedEntries.addAll(map.entrySet());
 	    return sortedEntries;
 	}
-	*/	
+	*/
 }

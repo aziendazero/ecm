@@ -115,7 +115,7 @@ public class EventoController {
 	@Autowired private EventoValidator eventoValidator;
 
 	@Autowired private EngineeringService engineeringService;
-	
+
 	@Autowired private ProfessioneService professioneService;
 	@Autowired private DisciplinaService disciplinaService;
 
@@ -154,10 +154,10 @@ public class EventoController {
 	public String getListEventi(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
-			
+
 			if(model.asMap().get("eventoList") == null)
 				model.addAttribute("eventoList", eventoService.getAllEventi());
-			
+
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 			return LIST;
 		}
@@ -194,13 +194,13 @@ public class EventoController {
 	public String getListEventiProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
 		try {
-			
+
 			if(model.asMap().get("eventoList") == null){
 				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
 			}
-			
+
 			return goToList(model, providerId);
-			
+
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),ex);
@@ -220,7 +220,7 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 		return LIST;
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
 	@RequestMapping(value= "/provider/{providerId}/evento/new", method = RequestMethod.POST)
 	public String createNewEvento(@RequestParam(name = "proceduraFormativa", required = false) ProceduraFormativa proceduraFormativa,
@@ -309,6 +309,7 @@ public class EventoController {
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 
+			//validator
 			eventoValidator.validate(evento, eventoWrapper, result, "evento.");
 
 			if(result.hasErrors()){
@@ -1274,20 +1275,20 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping("/evento/ricerca")
 	public String ricercaEventoGlobale(Model model,RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /evento/ricerca"));
 		try {
 			RicercaEventoWrapper wrapper = prepareRicercaEventoWrapper();
-			
+
 			CurrentUser currentUser = Utils.getAuthenticatedUser();
 			if(currentUser.isProvider()){
 				wrapper.setProviderId(currentUser.getAccount().getProvider().getId());
 			}else{
 				wrapper.setProviderId(null);
 			}
-			
+
 			model.addAttribute("ricercaEventoWrapper", wrapper);
 			LOGGER.info(Utils.getLogMessage("VIEW: " + RICERCA));
 			return RICERCA;
@@ -1298,7 +1299,7 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping(value = "/evento/ricerca", method = RequestMethod.POST)
 	public String executeRicercaEvento(@ModelAttribute("ricercaEventoWrapper") RicercaEventoWrapper wrapper,
 									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
@@ -1306,23 +1307,23 @@ public class EventoController {
 		try {
 
 			String returnRedirect = "";
-			
+
 			if(wrapper.getProviderId() != null){
 				wrapper.setCampoIdProvider(wrapper.getProviderId());
 				returnRedirect = "redirect:/provider/" + wrapper.getProviderId() + "/evento/list";
 			}else{
 				returnRedirect = "redirect:/evento/list";
 			}
-			
+
 			List<Evento> listaEventi = new ArrayList<Evento>();
 			listaEventi = eventoService.cerca(wrapper);
-			
+
 			redirectAttrs.addFlashAttribute("eventoList", listaEventi);
-			
+
 //			model.addAttribute("eventoList", listaEventi);
-	
+
 			return returnRedirect;
-//			
+//
 //			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 //			return LIST;
 		}catch (Exception ex) {
@@ -1331,7 +1332,7 @@ public class EventoController {
 			return "redirect:/evento/ricerca";
 		}
 	}
-	
+
 	private RicercaEventoWrapper prepareRicercaEventoWrapper(){
 		RicercaEventoWrapper wrapper = new RicercaEventoWrapper();
 		wrapper.setProfessioniList(professioneService.getAllProfessioni());

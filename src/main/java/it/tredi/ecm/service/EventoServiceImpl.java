@@ -107,11 +107,11 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private RendicontazioneInviataService rendicontazioneInviataService;
 	@Autowired private FileService fileService;
 	@Autowired private CogeapsWsRestClient cogeapsWsRestClient;
-	
+
 	@Autowired private ProviderService providerService;
 	@Autowired private FileValidator fileValidator;
 	@Autowired private PianoFormativoService pianoFormativoService;
-	
+
 	@Autowired private EcmProperties ecmProperties;
 
 	@Override
@@ -141,7 +141,7 @@ public class EventoServiceImpl implements EventoService {
 		//se attuazione di evento del piano formativo con data fine all'anno successivo...l'evento viene inserito nel piano formativo dell'anno successivo
 		if(evento.isEventoDaPianoFormativo()){
 			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
-			
+
 			LocalDate dataFine = evento.getDataFine();
 			if(dataFine != null){
 				int annoPianoFormativo = dataFine.getYear();
@@ -149,18 +149,18 @@ public class EventoServiceImpl implements EventoService {
 				if(pf == null){
 					pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
 				}
-				
-				
+
+
 				pf.addEvento(eventoPianoFormativo);
 				pianoFormativoService.save(pf);
 			}
-			
+
 			if(!evento.getEventoPianoFormativo().isAttuato()){
 				eventoPianoFormativo.setAttuato(true);
 			}
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
-		
+
 	}
 
 	@Override
@@ -421,7 +421,7 @@ public class EventoServiceImpl implements EventoService {
 			if (!reportFileName.trim().toUpperCase().endsWith(".P7M")) { //file non firmato -> invio non concesso
 				throw new Exception("error.file_non_firmato");
 			}
-			
+
 			//il file deve essere firmato digitalmente e con un certificato appartenente al Legale Rappresentante o al suo Delegato
 			boolean validateCFFirma = fileValidator.validateFirmaCF(evento.getReportPartecipantiXML(), evento.getProvider().getId());
 			if(!validateCFFirma)
@@ -1074,12 +1074,12 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	@Transactional
 	public Evento prepareRiedizioneEvento(Evento eventoPadre) throws Exception {
-		Evento eventoPadreTemp = eventoPadre;
 		int edizione = getLastEdizioneEventoByPrefix(eventoPadre.getPrefix()) + 1;
+		long eventoPadreId = eventoPadre.getId();
 		Evento riedizione = detachEvento(eventoPadre);
 		cloneDetachedEvento(riedizione);
 		riedizione.setEdizione(edizione);
-		riedizione.setEventoPadre(eventoPadreTemp);
+		riedizione.setEventoPadre(getEvento(eventoPadreId));
 		return riedizione;
 	}
 
@@ -1429,14 +1429,14 @@ public class EventoServiceImpl implements EventoService {
 			return listaEventi.size();
 		return 0;
 	}
-	
+
 	@Override
 	public List<Evento> cerca(RicercaEventoWrapper wrapper) {
-		
+
 		String query = "";
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		Set<String> querytipologiaOR = new HashSet<String>();
-		
+
 		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
 			//devo fare il join con la tabella provider
 			query ="SELECT e FROM Evento e JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
@@ -1444,13 +1444,13 @@ public class EventoServiceImpl implements EventoService {
 		}else{
 			//posso cercare direttamente su evento
 			query ="SELECT e FROM Evento e";
-			
+
 			//PROVIDER ID
 			if(wrapper.getCampoIdProvider() != null){
 				query = Utils.QUERY_AND(query, "e.provider.id = :providerId");
 				params.put("providerId", wrapper.getCampoIdProvider());
 			}
-			
+
 			if(wrapper.getTipologieSelezionate() != null && !wrapper.getTipologieSelezionate().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.proceduraFormativa IN :tipologieSelezionate");
 				params.put("tipologieSelezionate", wrapper.getTipologieSelezionate());
@@ -1462,7 +1462,7 @@ public class EventoServiceImpl implements EventoService {
 					if(wrapper.getTipologieSelezionate().contains(ProceduraFormativa.RES))
 						querytipologiaOR.add("Type(e) = EventoRES");
 				}
-				
+
 				if(wrapper.getTipologieFSC() != null && !wrapper.getTipologieFSC().isEmpty()){
 					querytipologiaOR.add("e.tipologiaEventoFSC IN :tipologieFSC");
 					params.put("tipologieFSC", wrapper.getTipologieFSC());
@@ -1470,7 +1470,7 @@ public class EventoServiceImpl implements EventoService {
 					if(wrapper.getTipologieSelezionate().contains(ProceduraFormativa.FSC))
 						querytipologiaOR.add("Type(e) = EventoFSC");
 				}
-				
+
 				if(wrapper.getTipologieFAD() != null && !wrapper.getTipologieFAD().isEmpty()){
 					querytipologiaOR.add("e.tipologiaEventoFAD IN :tipologieFAD)");
 					params.put("tipologieFAD", wrapper.getTipologieFAD());
@@ -1478,41 +1478,41 @@ public class EventoServiceImpl implements EventoService {
 					if(wrapper.getTipologieSelezionate().contains(ProceduraFormativa.FAD))
 						querytipologiaOR.add("Type(e) = EventoFAD");
 				}
-				
+
 				if(!querytipologiaOR.isEmpty()){
 					query += " AND (";
-					Iterator<String> it = querytipologiaOR.iterator(); 
+					Iterator<String> it = querytipologiaOR.iterator();
 					query += it.next();
 					while(it.hasNext())
 						query += " OR " + it.next();
 					query += ")";
 				}
 			}
-			
+
 			//STATO EVENTO
 			if(wrapper.getStatiSelezionati() != null && !wrapper.getStatiSelezionati().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.stato IN :statiSelezionati");
 				params.put("statiSelezionati", wrapper.getStatiSelezionati());
 			}
-			
+
 			//EVENTO ID
 			if(wrapper.getCampoIdEvento() != null){
 				query = Utils.QUERY_AND(query, "e.id = :eventoId");
 				params.put("eventoId", wrapper.getCampoIdEvento());
 			}
-			
+
 			//TITOLO EVENTO
 			if(!wrapper.getTitoloEvento().isEmpty()){
 				query = Utils.QUERY_AND(query, "UPPER(e.titolo) LIKE :titoloEvento");
 				params.put("titoloEvento", "%" + wrapper.getTitoloEvento().toUpperCase() + "%");
 			}
-			
+
 			//OBIETTIVI NAZIONALI
 			if(wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN :obiettiviNazionaliSelezionati");
 				params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionati());
 			}
-			
+
 			//OBIETTIVI REGIONALI
 			if(wrapper.getObiettiviRegionaliSelezionati() != null && !wrapper.getObiettiviRegionaliSelezionati().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.obiettivoRegionale IN :obiettiviRegionaleSelezionati");
@@ -1536,72 +1536,72 @@ public class EventoServiceImpl implements EventoService {
 					}
 				}
 			}
-			
+
 			//DISCIPLINE SELEZIONATE
 			if(wrapper.getDisciplineSelezionate() != null && !wrapper.getDisciplineSelezionate().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.discipline IN :disciplineSelezionate");
 				params.put("disciplineSelezionate", wrapper.getDisciplineSelezionate());
 			}
-			
+
 			//NUMERO CREDITI
 			if(wrapper.getCrediti() != null && wrapper.getCrediti().floatValue() > 0){
 				query = Utils.QUERY_AND(query, "e.crediti = :crediti");
 				params.put("crediti", wrapper.getCrediti().floatValue());
 			}
-			
+
 			//PROVINCIA
 			if(wrapper.getProvincia() != null && !wrapper.getProvincia().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.sedeEvento.provincia = :provincia");
 				params.put("provincia", wrapper.getProvincia());
 			}
-			
+
 			//COMUNE
 			if(wrapper.getComune() != null && !wrapper.getComune().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.sedeEvento.comune = :comune");
 				params.put("comune", wrapper.getComune());
 			}
-			
+
 			//LUOGO
 			if(wrapper.getLuogo() != null && !wrapper.getLuogo().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.sedeEvento.luogo = :luogo");
 				params.put("luogo", wrapper.getLuogo());
 			}
-			
+
 			//DATA INZIO
 			if(wrapper.getDataInizioStart() != null){
 				query = Utils.QUERY_AND(query, "e.dataInizio >= :dataInizioStart");
 				params.put("dataInizioStart", wrapper.getDataInizioStart());
-			} 
-			
+			}
+
 			if(wrapper.getDataInizioEnd() != null){
 				query = Utils.QUERY_AND(query, "e.dataInizio <= :dataInizioEnd");
 				params.put("dataInizioEnd", wrapper.getDataInizioEnd());
-			} 
-			
+			}
+
 
 			//DATA FINE
 			if(wrapper.getDataFineStart() != null){
 				query = Utils.QUERY_AND(query, "e.dataFine >= :dataFineStart");
 				params.put("dataFineStart", wrapper.getDataFineStart());
-			} 
-			
+			}
+
 			if(wrapper.getDataFineEnd() != null){
 				query = Utils.QUERY_AND(query, "e.dataFine <= :dataFineEnd");
 				params.put("dataFineEnd", wrapper.getDataFineEnd());
-			} 
-			
+			}
+
 			//DATA PAGAMENTO
 			if(wrapper.getDataScadenzaPagamentoStart() != null){
 				query = Utils.QUERY_AND(query, "e.dataScadenzaPagamento >= :dataScadenzaPagamentoStart");
 				params.put("dataScadenzaPagamentoStart", wrapper.getDataScadenzaPagamentoStart());
-			} 
-			
+			}
+
 			if(wrapper.getDataScadenzaPagamentoEnd() != null){
 				query = Utils.QUERY_AND(query, "e.dataScadenzaPagamento <= :dataScadenzaPagamentoEnd");
 				params.put("dataScadenzaPagamentoEnd", wrapper.getDataScadenzaPagamentoEnd());
-			} 
+			}
 		}
-		
+
 		LOGGER.info(Utils.getLogMessage("Cerca Evento: " + query));
 		Query q = entityManager.createQuery(query, Evento.class);
 
@@ -1611,9 +1611,9 @@ public class EventoServiceImpl implements EventoService {
 			q.setParameter(pairs.getKey(), pairs.getValue());
 			LOGGER.info(Utils.getLogMessage(pairs.getKey() + ": " + pairs.getValue()));
 		}
-		
-		List<Evento> result = q.getResultList(); 
-		
+
+		List<Evento> result = q.getResultList();
+
 		return result;
 	}
 

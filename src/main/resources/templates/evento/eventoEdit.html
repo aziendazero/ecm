@@ -425,8 +425,16 @@
 								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
 									<!-- <li><a><label class="in-dropdown" for="submitButton" th:text="#{label.salva_modifiche}"></label></a></li> -->
-									<li><a th:text="#{label.salva_bozza}" onclick="submitSave()"></a></li>
-									<li><a th:text="#{label.conferma_evento}" onclick="submitValidate()"></a></li>
+									<li th:unless="${eventoWrapper.evento.isRiedizione()
+										or eventoWrapper.evento.stato != T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).BOZZA}">
+										<a th:text="#{label.salva_bozza}" onclick="submitSave()"></a>
+									</li>
+									<li th:if="${eventoWrapper.evento.stato == T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).BOZZA}">
+										<a th:text="#{label.conferma_evento}" onclick="submitValidate()"></a>
+									</li>
+									<li th:unless="${eventoWrapper.evento.stato == T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).BOZZA}">
+										<a th:text="#{label.conferma_modifiche_evento}" onclick="submitValidate()"></a>
+									</li>
 								</ul>
 							</div>
 						</div>
@@ -1648,10 +1656,10 @@
 										<!-- <td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td> -->
 										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita)}"></td>
 										<td>
-												<a th:unless="${isEventoIniziato or (isEditSemiBloccato and (attivita.isPausa() or attivita.isValutazioneApprendimento()))}" onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento()))}" onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-pencil"></i></span>
 												</a>
-												<a th:if="${isEventoIniziato or (isEditSemiBloccato and (attivita.isPausa() or attivita.isValutazioneApprendimento()))}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+												<a th:if="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento()))}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
 												<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">

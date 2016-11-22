@@ -1,12 +1,14 @@
 package it.tredi.ecm.web.validator;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +33,16 @@ import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
+import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
+import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.bean.EcmProperties;
-import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
@@ -52,6 +55,7 @@ public class EventoValidator {
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private FileValidator fileValidator;
 	@Autowired private FileService fileService;
+	@Autowired private EventoService eventoService;
 
 	private Set<String> risultatiAttesiUtilizzati;
 
@@ -93,17 +97,47 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "titolo", "error.empty");
 
 		/* DATA INIZIO (campo obbligatorio)
-		 * un evento può essere inserito fino a 15 giorni dalla data di inizio per il gruppo A, 30 per il gruppo B
+		 * un evento può essere inserito fino a 15 giorni dalla data di inizio per il gruppo A, 30 per il gruppo B, 10 se riedizione
+		 * controllo effettutato solo da BOZZA a VALIDATO
+		 * -------------------
+		 * un evento non può essere anticipato e non gli può essere cambiato il numero di date
+		 * controllo effettutato solo da VALIDATO a VALIDATO
 		 * */
-		int minGiorni;
-		if(evento.getProvider().getTipoOrganizzatore().getGruppo().equals("A"))
-			minGiorni = ecmProperties.getGiorniMinEventoProviderA();
-		else minGiorni = ecmProperties.getGiorniMinEventoProviderB();
+		if(evento.getStato() == EventoStatoEnum.BOZZA) {
+			int minGiorni;
+			if(evento.getProvider().getTipoOrganizzatore().getGruppo().equals("A"))
+				minGiorni = ecmProperties.getGiorniMinEventoProviderA();
+			else minGiorni = ecmProperties.getGiorniMinEventoProviderB();
+			if(evento.isRiedizione())
+				minGiorni = ecmProperties.getGiorniMinEventoRiedizione();
 
-		if(evento.getDataInizio() == null)
-			errors.rejectValue(prefix + "dataInizio", "error.empty");
-		else if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)))
-			errors.rejectValue(prefix + "dataInizio", "error.data_inizio_non_valida");
+			if(evento.getDataInizio() == null)
+				errors.rejectValue(prefix + "dataInizio", "error.empty");
+			else if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)))
+				errors.rejectValue(prefix + "dataInizio", "error.data_inizio_non_valida");
+		}
+		else {
+			//impedisce anticipazioni di date di eventi validati e un cambio di numero di date confrontando con l'evento
+			//sul DB non ancora modificato
+			Evento eventoDaDB = eventoService.getEvento(evento.getId());
+			if(evento.getDataInizio().isBefore(eventoDaDB.getDataInizio()))
+				errors.rejectValue(prefix + "dataInizio", "error.anticipazione_data_non_possibile");
+			else if(evento instanceof EventoRES) {
+				//numero date da rispettare
+				//data inizio fine uguali
+				if(eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
+						&& !evento.getDataFine().isEqual(evento.getDataInizio())) {
+					errors.rejectValue(prefix + "dataInizio", "error.date_non_separabili");
+					errors.rejectValue(prefix + "dataFine", "error.date_non_separabili");
+				}
+				//data inizio fine non uguali
+				else if (!eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
+						&& evento.getDataFine().isEqual(evento.getDataInizio())) {
+					errors.rejectValue(prefix + "dataInizio", "error.date_non_unificabili");
+					errors.rejectValue(prefix + "dataFine", "error.date_non_unificabili");
+				}
+			}
+		}
 
 		/* OBIETTIVO FORMATIVO NAZIONALE (campo obbligatorio)
 		 * selectpicker
@@ -368,24 +402,64 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_res_non_valida");
 
 		/* DATE INTERMEDIE (campo opzionale)
-		 * le date intermedie devono essere comprese tra quella di inizio e quella di fine
+		 * le date intermedie devono essere strettamente comprese tra quella di inizio e quella di fine
+		 * non possono essere ripetute
+		 * -------------
+		 * per quanto riguarda la riedizione, il padre e il rieditato devono evere lo stesso numero di date intermedie
 		 * */
 		if(evento.getDataInizio() != null && evento.getDataFine() != null) {
 			for (LocalDate ld : evento.getDateIntermedie()) {
-				if(ld.isAfter(evento.getDataFine()) || ld.isBefore(evento.getDataInizio())) {
-					//ciclo alla ricerca di questa data per farmi dare la chiave nella mappa
-					Long key = -1L;
+				if(ld.isAfter(evento.getDataFine()) || ld.isEqual(evento.getDataFine()) || ld.isBefore(evento.getDataInizio()) || ld.isEqual(evento.getDataInizio())) {
+					//ciclo alla ricerca di questa data per farmi dare le chiavi nella mappa
+					Set<Long> keys = new HashSet<Long>();
 					for(Entry<Long, EventoRESProgrammaGiornalieroWrapper> entry : wrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().entrySet()) {
 						if(entry.getValue().getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.INTERMEDIA
 								&& entry.getValue().getProgramma().getGiorno() != null && entry.getValue().getProgramma().getGiorno().isEqual(ld)) {
-							key = entry.getKey();
-							break;
+							keys.add(entry.getKey());
 						}
 					}
-					errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + key + "]", "error.data_intermedia_res_non_valida");
+					//genero gli errori
+					for(Long l : keys)
+						errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + l + "]", "error.data_intermedia_res_non_valida");
 				}
 			}
 		}
+		//controllo ripetizioni
+		if(evento.getDateIntermedie() != null && !evento.getDateIntermedie().isEmpty()) {
+			Set<LocalDate> duplicates = new HashSet<LocalDate>();
+			duplicates = evento.getDateIntermedie().stream().filter(ld -> Collections.frequency(evento.getDateIntermedie(), ld) > 1).collect(Collectors.toSet());
+			for(LocalDate ld : duplicates) {
+				//ciclo alla ricerca di questa data per farmi dare le chiavi nella mappa
+				Set<Long> keys = new HashSet<Long>();
+				for(Entry<Long, EventoRESProgrammaGiornalieroWrapper> entry : wrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().entrySet()) {
+					if(entry.getValue().getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.INTERMEDIA
+							&& entry.getValue().getProgramma().getGiorno() != null && entry.getValue().getProgramma().getGiorno().isEqual(ld)) {
+						keys.add(entry.getKey());
+					}
+				}
+				//genero gli errori
+				for(Long l : keys)
+					errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + l + "]", "error.data_intermedia_ripetuta");
+			}
+		}
+		//controllo riedizione con evento padre
+		if(evento.isRiedizione()) {
+			Evento eventoPadre = eventoService.getEvento(evento.getEventoPadre().getId());
+			if(evento.getDateIntermedie().size() != ((EventoRES) eventoPadre).getDateIntermedie().size()) {
+				//cerco le date che sono state annullate
+				Set<Long> keys = new HashSet<Long>();
+				for(Entry<Long, EventoRESProgrammaGiornalieroWrapper> entry : wrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().entrySet()) {
+					if(entry.getValue().getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.INTERMEDIA
+							&& entry.getValue().getProgramma().getGiorno() == null) {
+						keys.add(entry.getKey());
+					}
+				}
+				//genero gli errori
+				for(Long l : keys)
+					errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + l + "]", "error.data_intermedia_annullata");
+			}
+		}
+
 
 		/* TIPOLOGIA EVENTO (campo obbligatorio)
 		 * selectpicker (influenza altri campi, ma il controllo su questo campo è banale)
@@ -1059,7 +1133,7 @@ public class EventoValidator {
 	private boolean validatePartner(Partner partner, Long providerId) throws Exception {
 		if(partner.getPartnerFile() != null && !partner.getPartnerFile().isNew())
 			partner.setPartnerFile(fileService.getFile(partner.getPartnerFile().getId()));
-	
+
 		if(partner.getName() == null || partner.getName().isEmpty())
 			return true;
 		if(partner.getPartnerFile() == null || partner.getPartnerFile().isNew())
@@ -1481,4 +1555,5 @@ public class EventoValidator {
 
 		return false;
 	}
+
 }

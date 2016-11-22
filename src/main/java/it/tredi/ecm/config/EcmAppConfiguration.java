@@ -38,6 +38,8 @@ public class EcmAppConfiguration {
 	private int giorniMinEventoProviderA = 15;
 	@Value("${giorni.min.evento.provider.B}")
 	private int giorniMinEventoProviderB = 30;
+	@Value("${giorni.min.evento.riedizione}")
+	private int giorniMinEventoRiedizione = 10;
 	@Value("${numero.massimo.responsabili.evento}")
 	private int numeroMassimoResponsabiliEvento = 3;
 	@Value("${giorni.max.evento.fsc}")
@@ -84,6 +86,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setFileRootPath(fileRootPath);
 		ecmProperties.setGiorniMinEventoProviderA(giorniMinEventoProviderA);
 		ecmProperties.setGiorniMinEventoProviderB(giorniMinEventoProviderB);
+		ecmProperties.setGiorniMinEventoRiedizione(giorniMinEventoRiedizione);
 		ecmProperties.setNumeroMassimoResponsabiliEvento(numeroMassimoResponsabiliEvento);
 		ecmProperties.setGiorniMaxEventoFSC(giorniMaxEventoFSC);
 		ecmProperties.setGiorniMaxEventoFAD(giorniMaxEventoFAD);
