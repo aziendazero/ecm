@@ -35,7 +35,7 @@ public class File extends BaseEntity{
 //	@JsonView(JsonViewModel.Integrazione.class)
 //	@JsonIgnore
 //	private byte[] data;
-	
+
 	@JsonView(JsonViewModel.Integrazione.class)
 	@JsonIgnore
 	@Column(name = "creato")
@@ -44,7 +44,7 @@ public class File extends BaseEntity{
 	@JsonView(JsonViewModel.Integrazione.class)
 	@Enumerated(EnumType.STRING)
 	private FileEnum tipo;
-	
+
 	public File(){
 		this.tipo = null;
 		this.nomeFile = "";
@@ -60,27 +60,27 @@ public class File extends BaseEntity{
 	public void setId(Long id){
 		this.id = id;
 	}
-	
+
 	@JsonView(JsonViewModel.Integrazione.class)
 	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="file_id")
 	private List<FileData> fileData;
-	
+
 	@JsonIgnore public void setData(byte[] dataArray){
 		if(fileData == null || fileData.isEmpty()){
-			fileData = new ArrayList<FileData>();	
+			fileData = new ArrayList<FileData>();
 			fileData.add(new FileData());
 		}
 		fileData.get(0).setData(dataArray);
 	}
-	
+
 	@JsonIgnore	public byte[] getData(){
 		if(this.getFileData() != null && !fileData.isEmpty())
 			return fileData.get(0).getData();
 		return new byte[0];
 	}
-	
+
 	@JsonIgnore	public boolean isCV(){
 		return this.tipo.equals(FileEnum.FILE_CV);
 	}
@@ -129,7 +129,7 @@ public class File extends BaseEntity{
 	@JsonIgnore public boolean isEVENTIPIANOFORMATIVO() {
 		return this.tipo.equals(FileEnum.FILE_EVENTI_PIANO_FORMATIVO);
 	}
-	
+
 	//ENGINEERING TEST FILE
 	@JsonIgnore	public boolean isFILEDAFIRMARE(){
 		return this.tipo.equals(FileEnum.FILE_DA_FIRMARE);
@@ -157,16 +157,17 @@ public class File extends BaseEntity{
 			return true;
 		return true;
 	}
- 
+
 	@Override
 	@JsonIgnore
 	public Object clone() throws CloneNotSupportedException {
 		File cloned = (File) super.clone();
-		
+
 		cloned.setId(null);
 		cloned.setFileData(null);
+		cloned.setDataCreazione(this.getDataCreazione());
 		cloned.setData(this.getData());
-		
+
 		return cloned;
 	}
 }

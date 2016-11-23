@@ -1228,6 +1228,7 @@
 						<th th:text="#{label.cf}">CF</th>
 						<th th:text="#{label.qualifica}">Qualifica</th>
 						<th th:text="#{label.cv}">CV</th>
+						<th th:text="#{label.stato_cv}">CV</th>
 						<th style="padding-right: 8px;">
 								<a th:unless="${isRiedizione or isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary" onclick="openLookupPersona('responsabiliScientifici','base',true)" data-toggle="modal" data-target=".modal-lookup-persona">
 								<span><i class="fa fa-search"></i></span>
@@ -1255,6 +1256,12 @@
 						<td>
 							<a th:if="${persona.anagrafica.cv?.id}" th:text="${persona.anagrafica?.cv.nomeFile}" th:href="@{|/file/${persona.anagrafica.cv.id}|}"></a>
 							<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
+						</td>
+						<td>
+							<th:block th:if="${persona.anagrafica.cv?.id}">
+								<span th:if="${#temporals.createToday().minusYears(1).isAfter(persona.anagrafica?.cv.dataCreazione)}" th:text="#{label.cv_non_aggiornato}" class="orange"></span>
+								<span th:unless="${#temporals.createToday().minusYears(1).isAfter(persona.anagrafica?.cv.dataCreazione)}" th:text="#{label.cv_aggiornato}" class="green"></span>
+							</th:block>
 						</td>
 						<td>
 								<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
@@ -1294,6 +1301,7 @@
 						<th th:text="#{label.ruolo}">Ruolo</th>
 						<th th:text="#{label.titolare} + '/' + #{label.sostituto}">Titolare/Sostituto</th>
 						<th th:text="#{label.cv}">CV</th>
+						<th th:text="#{label.stato_cv}">CV</th>
 						<th style="padding-right: 8px;">
 								<a th:unless="${isEventoIniziato}" id="lookup-docenti" class="btn btn-primary" onclick="openLookupPersona('docenti','base',true)" data-toggle="modal" data-target=".modal-lookup-persona">
 									<span><i class="fa fa-search"></i></span>
@@ -1323,6 +1331,12 @@
 						<td>
 							<a th:if="${persona.anagrafica.cv?.id}" th:text="${persona.anagrafica?.cv.nomeFile}" th:href="@{|/file/${persona.anagrafica.cv.id}|}"></a>
 							<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
+						</td>
+						<td>
+							<th:block th:if="${persona.anagrafica.cv?.id}">
+								<span th:if="${#temporals.createToday().minusYears(1).isAfter(persona.anagrafica?.cv.dataCreazione)}" th:text="#{label.cv_non_aggiornato}" class="orange"></span>
+								<span th:unless="${#temporals.createToday().minusYears(1).isAfter(persona.anagrafica?.cv.dataCreazione)}" th:text="#{label.cv_aggiornato}" class="green"></span>
+							</th:block>
 						</td>
 						<td>
 								<a th:unless="${isEventoIniziato}" onclick="modificaPersonaFrom('docenti',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
