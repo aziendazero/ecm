@@ -34,6 +34,7 @@ import javax.persistence.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
@@ -170,7 +171,7 @@ public class Evento extends BaseEntity{
 	//true -> dopo fineEvento (Provider A) and attachSponsor fatto
 	//false -> dopo 90gg
 	private Boolean canDoRendicontazione = false;
-	
+
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_scadenza_invio_rendicontazione")//scadenza invio rendicontazione
 	LocalDate dataScadenzaInvioRendicontazione;
@@ -230,7 +231,7 @@ public class Evento extends BaseEntity{
 	@ElementCollection
 	@Enumerated(EnumType.STRING)
 	private Set<DestinatariEventoEnum> destinatariEvento = new HashSet<DestinatariEventoEnum>();
-	
+
 	@Column(name = "contenuti_evento")
 	@Enumerated(EnumType.STRING)
 	private ContenutiEventoEnum contenutiEvento;
@@ -248,7 +249,7 @@ public class Evento extends BaseEntity{
 
 	@Column(name = "data_ultima_modifica")//data ultima_modifica
 	private LocalDateTime dataUltimaModifica;
-	
+
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="responsabile_id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
@@ -262,11 +263,12 @@ public class Evento extends BaseEntity{
 	protected Float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
 	private Boolean confermatiCrediti;
-	
+
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="responsabile_segreteria_id")
 	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();
 
+	@NumberFormat(pattern = "0.00")
 	private BigDecimal quotaPartecipazione;
 
 	private Boolean eventoSponsorizzato;
@@ -316,7 +318,7 @@ public class Evento extends BaseEntity{
 			if((eventoSponsorizzato != null && !eventoSponsorizzato.booleanValue()) && (altreFormeFinanziamento != null && !altreFormeFinanziamento.booleanValue())){
 				 costo = Utils.getRoundedDoubleValue((costo*2)/3, 2);
 			}
-			
+
 		}else{
 			throw new Exception("provider non classificato correttamente");
 		}
@@ -324,88 +326,88 @@ public class Evento extends BaseEntity{
 		if(dataFine != null)
 			setDataScadenzaPagamento(dataFine.plusDays(90));
 	}
-	
+
 	public boolean canEdit(){
 		//TODO VALIDATO fino ad una certa data
 		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.VALIDATO)
 			return true;
-		
+
 		if(stato == EventoStatoEnum.CANCELLATO)
 			return false;
-		
+
 		if(stato == EventoStatoEnum.RAPPORTATO)
 			return false;
-		
+
 		return false;
 	}
-	
+
 	/*
 	*	1) evento terminato
 	*	2) sponsor non ancora caricati
-	*	3) siamo ancora entro i 90 gg dalla fine dell'evento  
+	*	3) siamo ancora entro i 90 gg dalla fine dell'evento
 	*	4) passati i 90 gg -> non è più possibile caricare gli sponsor
 	*/
 	public boolean canDoUploadSponsor(){
 		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
 			return false;
-		
+
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
 			if(dataScadenzaInvioRendicontazione != null && (sponsorUploaded == null || !sponsorUploaded.booleanValue()) && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione))
 				return true;
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	/*
 	*	1) evento terminato
 	*	2) evento non è stato già pagato
-	*	3) siamo ancora entro i 90 gg dalla fine dell'evento  
+	*	3) siamo ancora entro i 90 gg dalla fine dell'evento
 	*	4) passati i 90 gg -> non è più possibile pagare
 	*/
 	public boolean canDoPagamento(){
 		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
 			return false;
-		
+
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
 			if(pagato != null && !pagato.booleanValue() && dataScadenzaPagamento != null && !LocalDate.now().isAfter(dataScadenzaPagamento))
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/*
 	 * Il tasto appare solo a evento terminato
 	 * */
 	public boolean canDoRendicontazione(){
 		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
 			return false;
-		
+
 		if(dataFine != null && LocalDate.now().isAfter(dataFine))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	/*	Per inviare al cogeaps:
 	*	1) evento terminato
 	*	2) tutti gli allegati dello sponsor sono stati caricati
-	*	3) siamo ancora entro i 90 gg dalla fine dell'evento 
+	*	3) siamo ancora entro i 90 gg dalla fine dell'evento
 	*	4) passati i 90 gg -> non è più possibile inviare al cogeaps
 	*
 	*/
 	public boolean canDoInviaACogeaps(){
 		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
 			return false;
-		
+
 		//TODO deve pagare prima di poter rendicontare???
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
 			if(dataScadenzaInvioRendicontazione != null && sponsorUploaded != null && sponsorUploaded.booleanValue() && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione))
 				return true;
 		}
-		
+
 		return false;
 	}
 
