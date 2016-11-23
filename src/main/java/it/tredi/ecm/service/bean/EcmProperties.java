@@ -18,6 +18,7 @@ public class EcmProperties {
 	private String fileRootPath;
 	private int giorniMinEventoProviderA;
 	private int giorniMinEventoProviderB;
+	private int giorniMinEventoRiedizione;
 	private int numeroMassimoResponsabiliEvento;
 	private int giorniMaxEventoFSC;
 	private long giorniMaxEventoFAD;

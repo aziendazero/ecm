@@ -35,12 +35,12 @@ public class EventoRES extends Evento{
 
 	//comprese tra dataInizio e dataFine
 	@ElementCollection
-	private Set<LocalDate> dateIntermedie = new HashSet<LocalDate>();
+	private List<LocalDate> dateIntermedie = new ArrayList<LocalDate>();
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tipologia_evento_res")
 	private TipologiaEventoRESEnum tipologiaEventoRES;
-	
+
 	private Boolean workshopSeminariEcm;
 	private String titoloConvegno;
 

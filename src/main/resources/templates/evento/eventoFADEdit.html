@@ -37,7 +37,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-											<textarea class="form-control" th:field="*{argomento}" th:disabled="${isRiedizione or isEditSemiBloccato}"></textarea>
+										<textarea class="form-control" th:field="*{argomento}" th:disabled="${isRiedizione or isEditSemiBloccato}"></textarea>
 									</div>
 								</div>
 
@@ -310,7 +310,7 @@
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="titolo">
-										<textarea class="required" maxlength="3000" id="title" rows="3" name="titolo"
+										<textarea class="required form-control" maxlength="3000" id="title" rows="3" name="titolo"
 												style="resize: none;" th:field="${eventoWrapper.evento.titolo}" th:disabled="${isRiedizione or isEditSemiBloccato}">
 										</textarea>
 											<div id="counter" th:unless="${isRiedizione or isEditSemiBloccato}"></div>
