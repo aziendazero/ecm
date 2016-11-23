@@ -44,7 +44,7 @@ import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
-import it.tredi.ecm.web.bean.RicercaAccreditamentoWrapper;
+import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 
 @Service
 public class AccreditamentoServiceImpl implements AccreditamentoService {
@@ -1037,9 +1037,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			if(accreditamento.isProvvisorio()) {
 			provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
 				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(4));
+				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			} else {
 				provider.setStatus(ProviderStatoEnum.ACCREDITATO_STANDARD);
 				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(2));
+				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			}
 			save(accreditamento);
 		}
@@ -1072,11 +1074,5 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public Set<Accreditamento> getAllDomandeNonValutateByRefereeId(Long refereeId) {
 		LOGGER.debug(Utils.getLogMessage("Ricerco tutte le utime domande non valutate consecutivamente dal referee id: " + refereeId));
 		return accountRepository.getAllDomandeNonValutateByRefereeId(refereeId);
-	}
-	
-	@Override
-	public Set<Provider> cerca(RicercaAccreditamentoWrapper wrapper) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

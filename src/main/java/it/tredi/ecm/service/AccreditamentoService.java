@@ -12,7 +12,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.bean.CurrentUser;
-import it.tredi.ecm.web.bean.RicercaAccreditamentoWrapper;
+import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 
 public interface AccreditamentoService{
 	public boolean canProviderCreateAccreditamento(Long providerId,AccreditamentoTipoEnum tipoTomanda);
@@ -91,6 +91,4 @@ public interface AccreditamentoService{
 
 	public void saveFileNoteOsservazioni(Long fileId, Long accreditamentoId);
 	public Set<Accreditamento> getAllDomandeNonValutateByRefereeId(Long refereeId);
-	
-	public Set<Provider> cerca(RicercaAccreditamentoWrapper wrapper) throws Exception;
 }

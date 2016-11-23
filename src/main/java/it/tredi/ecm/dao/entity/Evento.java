@@ -41,6 +41,7 @@ import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -326,9 +327,17 @@ public class Evento extends BaseEntity{
 	}
 	
 	public boolean canEdit(){
-		//TODO VALIDATO fino ad una certa data
-		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.VALIDATO)
+		if(stato == EventoStatoEnum.BOZZA)
 			return true;
+		
+		if(stato == EventoStatoEnum.VALIDATO){
+			if(dataFine != null && dataFine.isBefore(LocalDate.now())){
+				return true;
+			}else{
+				return false;
+			}
+		}
+			
 		
 		if(stato == EventoStatoEnum.CANCELLATO)
 			return false;

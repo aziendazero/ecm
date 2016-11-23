@@ -55,7 +55,7 @@ import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.ResponseUsername;
-import it.tredi.ecm.web.bean.RicercaAccreditamentoWrapper;
+import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
@@ -368,7 +368,10 @@ public class ProviderController {
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /provider/list"));
 		try {
-			model.addAttribute("providerList", providerService.getAll());
+			
+			if(model.asMap().get("providerList") == null) 
+				model.addAttribute("providerList", providerService.getAll());
+			
 			LOGGER.info(Utils.getLogMessage("VIEW: /provider/providerList"));
 			return "provider/providerList";
 		}catch (Exception ex) {
@@ -525,9 +528,8 @@ public class ProviderController {
 	public String ricercaProviderGlobale(Model model,RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/ricerca"));
 		try {
-			RicercaAccreditamentoWrapper wrapper = prepareRicercaAccreditamentoWrapper();
-
-			model.addAttribute("ricercaAccreditamentoWrapper", wrapper);
+			RicercaProviderWrapper wrapper = prepareRicercaProviderWrapper();
+			model.addAttribute("ricercaProviderWrapper", wrapper);
 			LOGGER.info(Utils.getLogMessage("VIEW: " + RICERCA));
 			return RICERCA;
 		}catch (Exception ex) {
@@ -539,7 +541,7 @@ public class ProviderController {
 	}
 	
 	@RequestMapping(value = "/provider/ricerca", method = RequestMethod.POST)
-	public String executeRicercaProvider(@ModelAttribute("ricercaAccreditamentoWrapper") RicercaAccreditamentoWrapper wrapper,
+	public String executeRicercaProvider(@ModelAttribute("ricercaProviderWrapper") RicercaProviderWrapper wrapper,
 									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
 		LOGGER.info(Utils.getLogMessage("POST /provider/ricerca"));
 		try {
@@ -547,20 +549,20 @@ public class ProviderController {
 			String returnRedirect = "redirect:/provider/list";
 			
 			Set<Provider> listaProvider = new HashSet<Provider>();
-			listaProvider = accreditamentoService.cerca(wrapper);
+			listaProvider.addAll(providerService.cerca(wrapper));
 			
-			redirectAttrs.addFlashAttribute("listaProvider", listaProvider);
+			redirectAttrs.addFlashAttribute("providerList", listaProvider);
 			
 			return returnRedirect;
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/ricerca"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			return "redirect:/evento/ricerca";
+			return "redirect:/provider/ricerca";
 		}
 	}
 	
-	private RicercaAccreditamentoWrapper prepareRicercaAccreditamentoWrapper(){
-		RicercaAccreditamentoWrapper wrapper = new RicercaAccreditamentoWrapper();
+	private RicercaProviderWrapper prepareRicercaProviderWrapper(){
+		RicercaProviderWrapper wrapper = new RicercaProviderWrapper();
 		return wrapper;
 	}
 	

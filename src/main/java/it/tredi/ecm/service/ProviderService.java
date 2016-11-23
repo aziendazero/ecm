@@ -1,10 +1,12 @@
 package it.tredi.ecm.service;
 
+import java.util.List;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
+import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 
 public interface ProviderService {
 	public Provider getProvider();
@@ -33,4 +35,6 @@ public interface ProviderService {
 	
 	public String getCodiceFiscaleLegaleRappresentantePerVerificaFirmaDigitale(Long providerId);
 	public String getCodiceFiscaleDelegatoLegaleRappresentantePerVerificaFirmaDigitale(Long providerId);
+	
+	public List<Provider> cerca(RicercaProviderWrapper wrapper) throws Exception;
 }

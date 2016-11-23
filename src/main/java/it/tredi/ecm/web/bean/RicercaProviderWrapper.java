@@ -14,20 +14,24 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RicercaAccreditamentoWrapper {
+public class RicercaProviderWrapper {
+	/* Info relative al provider*/
 	private Long campoIdProvider;
 	private String denominazioneLegale;
-	private Set<TipoOrganizzatore> tipologieSelezionate;
-	private Set<ProceduraFormativa> procedureSelezionate;
+	private Set<TipoOrganizzatore> TipoOrganizzatoreSelezionati;
+	
+	/* Info relative alla sede legale provider */
+	private Set<String> provinciaSelezionate;
+	
+	/* Info relative all'accreditamento del provider */
+	private Set<ProceduraFormativa> proceduraFormativaSelezionate;
 	private Set<AccreditamentoTipoEnum> accreditamentoTipoSelezionati;
 	private Set<AccreditamentoStatoEnum> accreditamentoStatoSelezionati;
-	private Set<String> provnceSelezionate;
-	
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
-	private LocalDate dataScadenzaAccreditamentoStart;
+	private LocalDate dataFineAccreditamentoStart;
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
-	private LocalDate dataScadenzaAccreditamentoEnd;
+	private LocalDate dataFineAccreditamentoEnd;	
 	
-	//campo non di ricerca ma il solito id che mettiamo in hidden per gestire il form
-	private Long providerId;
+	/* Info relative al pagamento del provider */
+	private Boolean pagato;
 }
