@@ -57,7 +57,7 @@ public class RelazioneAnnuale extends BaseEntity{
 
 	private int totaleEventiDefinitiviNoRiedizioni = 0;// totale numero di eventi rendicontati nell'anno precedente (eventiDefinitiviPFA + eventiDefinitiviManuali)
 	private int totaleEventiDefinitiviConRiedizioni = 0;// totale numero di eventi rendicontati nell'anno precedente incluso le riedizioni (eventiRendicontati.size() + eventiRendicontati_Riedizione.size())
-	private BigDecimal rapportoAttuazione = new BigDecimal(0);;//eventiDefinitiviPFA/eventiInseritiPFA
+	private BigDecimal rapportoAttuazione = new BigDecimal(0);//eventiDefinitiviPFA/eventiInseritiPFA
 
 	private Integer numeroPartecipantiNoCrediti;
 	@NumberFormat(pattern = "0.00")

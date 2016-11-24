@@ -58,7 +58,7 @@ public class RiepilogoRuoliFSC {
 	public void setTempoDedicato(float t){
 		this.tempoDedicato = Utils.getRoundedFloatValue(t, 2);
 	}
-	
+
 	public void addTempo(float tempo){
 		this.tempoDedicato += tempo;
 	}
