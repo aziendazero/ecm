@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Anagrafica;
+import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.service.AnagraficaService;
 import it.tredi.ecm.utils.Utils;
 
@@ -18,8 +19,8 @@ public class AnagraficaValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnagraficaValidator.class);
 	private static final String PATTERN_CODICE_FISCALE = "[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]";
 
-	@Autowired
-	private AnagraficaService anagraficaService;
+	@Autowired private AnagraficaService anagraficaService;
+	@Autowired private FileValidator fileValidator;
 
 	public void validateBase(Object target, Errors errors, String prefix, Long providerId){
 		LOGGER.info(Utils.getLogMessage("Validazione Anagrafica Base"));
@@ -63,6 +64,24 @@ public class AnagraficaValidator {
 		Anagrafica anagrafica = (Anagrafica)target;
 		if(anagrafica.getPec() == null || anagrafica.getPec().isEmpty())
 			errors.rejectValue(prefix + "pec", "error.empty");
+	}
+
+	public void validateAnagraficaEvento(Object target, Errors errors, String prefix, Long providerId) throws Exception{
+		LOGGER.info(Utils.getLogMessage("Validazione AnagraficaEvento Base"));
+		AnagraficaEvento anagraficaEvento = (AnagraficaEvento) target;
+
+		if(anagraficaEvento == null)
+			anagraficaEvento = new AnagraficaEvento();
+		if(anagraficaEvento.getAnagrafica().getCognome() == null || anagraficaEvento.getAnagrafica().getCognome().isEmpty())
+			errors.rejectValue(prefix + "cognome", "error.empty");
+		if(anagraficaEvento.getAnagrafica().getNome() == null || anagraficaEvento.getAnagrafica().getNome().isEmpty())
+			errors.rejectValue(prefix + "nome", "error.empty");
+		if(anagraficaEvento.getAnagrafica().getCodiceFiscale() == null || anagraficaEvento.getAnagrafica().getCodiceFiscale().isEmpty()){
+			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
+		}
+
+		if(!fileValidator.validateFirmaCF(anagraficaEvento.getAnagrafica().getCv(), providerId))
+			errors.rejectValue(prefix + "cv", "error.codiceFiscale.firmatario");
 	}
 
 }

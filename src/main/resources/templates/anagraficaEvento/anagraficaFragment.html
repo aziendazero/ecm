@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<th:block th:fragment="anagrafica(mode,type)">
+		<th:block th:with="editabile=${mode == 'edit'},
+							showOnly=${mode == 'show'},
+							full=${type}">
+			<!-- ogni parte non in comune sarà gestita in maniera appropriata -->
+			<div class="x_content">
+				<!-- rimuove il tag form se la anagrafica NON è editabile -->
+				<div class="form-horizontal form-label-left" th:remove="${showOnly} ? none : tag">
+
+						<form th:remove="${!showOnly} ? none : tag" id="formAnagrafica" class="form-horizontal form-label-left"
+							th:action="@{|/provider/${anagraficaEventoWrapper.providerId}/anagraficaEvento/save|}"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+
+						<!-- gli input hidden non sono necessari se NON editabile -->
+						<th:block th:unless="${showOnly}">
+							<input type="hidden" name="editId" th:value="${anagraficaEventoWrapper.anagraficaEvento.id}" />
+							<input type="hidden" th:field="${anagraficaEventoWrapper.providerId}" />
+							<input type="hidden" th:field="${anagraficaEventoWrapper.full}" />
+						</th:block>
+
+						<th:block th:if="${editabile}">
+							<!-- COGNOME -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.cognome')} ? 'bad'">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12"
+									for="cognome_anagrafica"><span th:text="#{label.cognome}">Cognome</span> <span	class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="cognome_anagrafica"	name="cognome_anagrafica"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cognome}" />
+								</div>
+								<div th:if="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.cognome')}" class="alert" th:errors="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cognome}"></div>
+							</div>
+
+							<!-- NOME -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.nome')} ? 'bad'">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12"
+									for="nome_anagrafica"><span th:text="#{label.nome}">nome</span> <span	class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="nome_anagrafica"	name="nome_anagrafica"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.nome}" />
+								</div>
+								<div th:if="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.nome')}" class="alert" th:errors="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.nome}"></div>
+							</div>
+
+							<!-- CODICE FISCALE -->
+							<div class="item form-group" th:classappend="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.codiceFiscale')} ? 'bad'">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12"
+									for="codiceFiscale_anagrafica"><span th:text="#{label.codice_fiscale}">codice_fiscale</span> <span	class="required">*</span></label>
+								<div class="col-md-4 col-sm-4 col-xs-12">
+									<input id="codiceFiscale_anagrafica" name="codiceFiscale_anagrafica" disabled="disabled"
+										required="required"	class="form-control col-md-7 col-xs-12"
+										type="text" th:field="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.codiceFiscale}" />
+								</div>
+								<div th:if="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.codiceFiscale')}" class="alert" th:errors="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.codiceFiscale}"></div>
+							</div>
+
+
+							<th:block th:unless="${full}">
+								<!-- CHECKBOX FLAG STRANIERO -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12"
+										for="isStraniero_anagrafica"><span th:text="#{label.cf_straniero}">Ha un codice fiscale non italiano</span></label>
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<div class="checkbox">
+											<input id="isStraniero_anagrafica" name="isStraniero_anagrafica"
+												class="flat" type="checkbox" th:field="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.straniero}" />
+										</div>
+									</div>
+								</div>
+
+								<!-- cv -->
+								<th:block th:include="fragments/allegatiext :: allegatiext(anagraficaEventoWrapper.anagraficaEvento.anagrafica,false,'*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}',cv, null,null,null,true,${mode},true)" />
+							</th:block>
+
+							<th:block th:if="${full}">
+								<!-- EMAIL -->
+								<div class="item form-group" th:classappend="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.email')} ? 'bad'">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12"
+										for="email_anagrafica"><span th:text="#{label.email}">email</span> <span	class="required">*</span></label>
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="email_anagrafica"	name="email_anagrafica"
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="email" th:field="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.email}" />
+									</div>
+									<div th:if="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.email')}" class="alert" th:errors="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.email}"></div>
+								</div>
+
+								<!-- TELEFONO -->
+								<div class="item form-group" th:classappend="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.telefono')} ? 'bad'">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12"
+										for="telefono_anagrafica"><span th:text="#{label.telefono}">telefono</span> <span	class="required">*</span></label>
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="telefono_anagrafica"	name="telefono_anagrafica"
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="tel" th:field="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.telefono}" />
+									</div>
+									<div th:if="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.telefono')}" class="alert" th:errors="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.telefono}"></div>
+								</div>
+
+								<!-- CELLULARE -->
+								<div class="item form-group" th:classappend="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.cellulare')} ? 'bad'">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12"
+										for="cellulare_anagrafica"><span th:text="#{label.cellulare}">cellulare</span> <span	class="required">*</span></label>
+									<div class="col-md-4 col-sm-4 col-xs-12">
+										<input id="cellulare_anagrafica"	name="cellulare_anagrafica"
+											required="required"	class="form-control col-md-7 col-xs-12"
+											type="tel" th:field="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cellulare}" />
+									</div>
+									<div th:if="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.cellulare')}" class="alert" th:errors="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cellulare}"></div>
+								</div>
+							</th:block>
+						</th:block>
+
+						<th:block th:if="${showOnly}">
+							<!-- COGNOME -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.cognome}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cognome}"></div>
+								</div>
+							</div>
+
+							<!-- NOME -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.nome}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.nome}"></div>
+								</div>
+							</div>
+
+							<!-- CODICE FISCALE -->
+							<div class="item form-group">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span class="label-show" th:text="#{label.codice_fiscale}">Cognome</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.codiceFiscale}"></div>
+								</div>
+							</div>
+
+
+							<th:block th:unless="${full}">
+								<!-- straniero -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span class="label-show" th:text="#{label.straniero}">Straniero</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="value" th:text="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.straniero ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+									</div>
+								</div>
+
+								<!-- CV -->
+								<div class="item form-group">
+									<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span class="label-show" th:text="#{label.cv}">CV</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="value" th:if="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cv != null}"><i class="fa fa-download"> </i> <a th:text="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cv.nomeFile}" th:href="@{|/file/${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cv.id}|}"></a></div>
+										<div class="value danger" th:unless="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cv != null}" th:text="#{label.allegato_non_inserito}"></div>
+									</div>
+								</div>
+							</th:block>
+
+							<th:block th:if="${full}">
+								<!-- email -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span class="label-show" th:text="#{label.email}">Cognome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<div class="value" th:text="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.email}"></div>
+									</div>
+								</div>
+
+								<!-- TELEFONO -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span class="label-show" th:text="#{label.telefono}">Cognome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<div class="value" th:text="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.telefono}"></div>
+									</div>
+								</div>
+
+								<!-- cellulare -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span class="label-show" th:text="#{label.cellulare}">Cognome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<div class="value" th:text="${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cellulare}"></div>
+									</div>
+								</div>
+							</th:block>
+
+						</th:block>
+
+						<input id="submitButton" type="submit" style="display: none;" />
+
+					</form>
+				</div>
+			</div>
+		</th:block>
+	</th:block>
+</body>
+</html>

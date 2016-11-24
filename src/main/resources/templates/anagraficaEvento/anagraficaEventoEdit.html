@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.modifica_dati_anagrafici(${anagraficaEventoWrapper.anagraficaEvento.anagrafica.nome}, ${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cognome})}">Modifica dati anagrafici di Tizio Caio</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-success pull-right" th:text="#{label.salva}" th:onclick="|submit(${anagraficaEventoWrapper.full})|"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${anagraficaEventoWrapper.anagraficaEvento.provider.id}/anagraficaEvento/list|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<th:block th:include="anagraficaEvento/anagraficaFragment :: anagrafica('edit', ${anagraficaEventoWrapper.full})"></th:block>
+				</div>
+			</div>
+		</div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+				function submit(full){
+					var url = [[@{|/provider/${anagraficaEventoWrapper.anagraficaEvento.provider.id}|}]]
+					if(full == true){
+						url = url + "/anagraficaFullEvento/save";
+					}else{
+						url = url + "/anagraficaEvento/save";
+					}
+
+					$('#formAnagrafica').attr('action',url);
+					$("#submitButton").click();
+				}
+		/*]]>*/
+		</script>
+	</div>
+</body>
+</html>

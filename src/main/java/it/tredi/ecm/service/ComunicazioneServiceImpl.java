@@ -240,59 +240,57 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			return comunicazioneRepository.findAllComunicazioneByUser(adminProvider);
 		return null;
 	}
-	
+
 	@Override
 	public List<Comunicazione> cerca(RicercaComunicazioneWrapper wrapper) {
 		String query = "";
 		HashMap<String, Object> params = new HashMap<String, Object>();
-		
+
 		query ="SELECT c FROM Comunicazione c JOIN c.destinatari d";
-		
+
 		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
 			//devo fare il join con la tabella provider
 			query = Utils.QUERY_AND(query,"UPPER(d.provider.denominazioneLegale) LIKE :denominazioneLegale");
 			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
 		}
-		
+
 		//PROVIDER ID
 		if(wrapper.getCampoIdProvider() != null){
 			query = Utils.QUERY_AND(query, "d.provider.id = :providerId");
 			params.put("providerId", wrapper.getCampoIdProvider());
 		}
-		
+
 		//OGGETTO
 		if(wrapper.getOggetto() != null && !wrapper.getOggetto().isEmpty()){
 			query = Utils.QUERY_AND(query, "UPPER(c.oggetto) LIKE :oggetto");
 			params.put("oggetto", "%" + wrapper.getOggetto().toUpperCase() + "%");
 		}
-		
+
 		//AMBITO
 		if(wrapper.getAmbitiSelezionati() != null){
 			query = Utils.QUERY_AND(query, "c.ambito IN :ambitiSelezionati");
 			params.put("ambitiSelezionati", wrapper.getAmbitiSelezionati());
 		}
-		
+
 		//TIPOLOGIA
 		if(wrapper.getTipologieSelezionate() != null){
 			query = Utils.QUERY_AND(query, "c.tipologia = :tipologieSelezionate");
 			params.put("tipologieSelezionate", wrapper.getTipologieSelezionate());
 		}
-		
+
 		//DATA CREAZIONE
 		if(wrapper.getDataCreazioneStart() != null){
 			query = Utils.QUERY_AND(query, "c.dataCreazione >= :dataCreazioneStart");
 			params.put("dataCreazioneStart", wrapper.getDataCreazioneStart());
-		} 
-		
+		}
+
 		if(wrapper.getDataCreazioneEnd() != null){
 			query = Utils.QUERY_AND(query, "c.dataCreazione <= :dataCreazioneEnd");
 			params.put("dataCreazioneEnd", wrapper.getDataCreazioneEnd());
-		} 
+		}
 
-		
+
 		LOGGER.info(Utils.getLogMessage("Cerca Comunicazione: " + query));
-		
-		//EntityGraph<?> graph = entityManager.getEntityGraph("graph.comunicazione.forRicerca");
 		Query q = entityManager.createQuery(query, Comunicazione.class);
 
 		Iterator<Entry<String, Object>> iterator = params.entrySet().iterator();
@@ -301,10 +299,9 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			q.setParameter(pairs.getKey(), pairs.getValue());
 			LOGGER.info(Utils.getLogMessage(pairs.getKey() + ": " + pairs.getValue()));
 		}
-		
-//		List<Comunicazione> result = q.setHint("javax.persistence.fetchgraph", graph).getResultList();
+
 		List<Comunicazione> result = q.getResultList();
-		
+
 		return result;
 	}
 }
