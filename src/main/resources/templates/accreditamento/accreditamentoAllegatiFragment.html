@@ -41,10 +41,6 @@
 						<h2 th:if="${accreditamentoAllegatiWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
 
 						<!-- allegato 1 (atto costitutivo e statuto) -->
-						<div th:if="${editabile}" class="model-link" id="esempio_attoCostitutivo">
-							<i class="fa fa-file-text"></i>
-							<a id="attoCostitutivo_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/2.criteri_per_assegnazione_crediti_e_fsc.pdf"></a>
-						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, attoCostitutivo,  ${!showOnly ? 'attoCostitutivo' : null}, null, null, true, ${mode}, true)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ATTO_COSTITUTIVO}', attoCostitutivo,  ${!showOnly ? 'attoCostitutivo' : null}, null, null, true, ${mode}, true)" ></th:block>
 
@@ -52,26 +48,18 @@
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_dichiarazioneEsclusione">
 							<i class="fa fa-file-text"></i>
-							<a id="dichiarazioneEsclusione_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/15.dichiarazione_esclusione_del_conflitto_di%20interessi_per_oggetto_sociale.pdf"></a>
+							<a id="dichiarazioneEsclusione_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/15.dichiarazione_esclusione_del_conflitto_di%20interessi_per_oggetto_sociale.pdf"></a>
 						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneEsclusione,  ${!showOnly ? 'dichiarazioneEsclusione' : null}, null, null, true, ${mode}, false)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ESCLUSIONE}', dichiarazioneEsclusione,  ${!showOnly ? 'dichiarazioneEsclusione' : null}, null, null, true, ${mode}, false)" ></th:block>
 
 						<!-- allegato 2 (esperienza formazione in ambito sanitario) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
-						<div th:if="${editabile}" class="model-link" id="esempio_esperienzaFormazione">
-							<i class="fa fa-file-text"></i>
-							<a id="esperienzaFormazione_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/2.criteri_per_assegnazione_crediti_e_fsc.pdf"></a>
-						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${!showOnly ? 'esperienzaFormazione' : null}, null, ${editabile ? #messages.msg('label.required_fatturato_personale_sanitario') : null}, true, ${mode}, false)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ESPERIENZA_FORMAZIONE}', esperienzaFormazione,  ${!showOnly ? 'esperienzaFormazione' : null}, null, ${editabile ? #messages.msg('label.required_fatturato_personale_sanitario') : null}, true, ${mode}, false)" ></th:block>
 
 						<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
-						<div th:if="${editabile}" class="model-link" id="esempio_utilizzo">
-							<i class="fa fa-file-text"></i>
-							<a id="utilizzo_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/2.criteri_per_assegnazione_crediti_e_fsc.pdf"></a>
-						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, utilizzo,  ${!showOnly ? 'utilizzo' : null}, null, null, true, ${mode}, true)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_UTILIZZO}', utilizzo,  ${!showOnly ? 'utilizzo' : null}, null, null, true, ${mode}, true)" ></th:block>
 
@@ -79,17 +67,13 @@
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_sistemaInformatico">
 							<i class="fa fa-file-text"></i>
-							<a id="sistemaInformatico_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/9.sistemi_informatici.pdf"></a>
+							<a id="sistemaInformatico_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/9.sistemi_informatici.pdf"></a>
 						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, sistemaInformatico,  ${!showOnly ? 'sistemaInformatico' : null}, null, null, true, ${mode}, true)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_SISTEMA_INFORMATICO}', sistemaInformatico,  ${!showOnly ? 'sistemaInformatico' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<!-- allegato 5 (piano di qualità) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
-						<div th:if="${editabile}" class="model-link" id="esempio_pianoQualita">
-							<i class="fa fa-file-text"></i>
-							<a id="pianoQualita_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/2.criteri_per_assegnazione_crediti_e_fsc.pdf"></a>
-						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, pianoQualita,  ${!showOnly ? 'pianoQualita' : null}, null, null, true, ${mode}, true)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_PIANO_QUALITA}', pianoQualita,  ${!showOnly ? 'pianoQualita' : null}, null, null, true, ${mode}, true)" ></th:block>
 
@@ -97,7 +81,7 @@
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_dichiarazioneLegale">
 							<i class="fa fa-file-text"></i>
-							<a id="dichiarazioneLegale_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/DICHIARAZIONE%20LEGALE%20RAPPRESENTANTE%20rev%202015.pdf"></a>
+							<a id="dichiarazioneLegale_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/DICHIARAZIONE%20LEGALE%20RAPPRESENTANTE%20rev%202015.pdf"></a>
 						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneLegale,  ${!showOnly ? 'dichiarazioneLegale' : null}, null, null, true, ${mode}, true)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_LEGALE}', dichiarazioneLegale,  ${!showOnly ? 'dichiarazioneLegale' : null}, null, null, true, ${mode}, true)" ></th:block>

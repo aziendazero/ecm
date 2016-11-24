@@ -45,7 +45,7 @@ import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 public class ProviderServiceImpl implements ProviderService {
 
 	private final Logger LOGGER = Logger.getLogger(ProviderService.class);
-	
+
 	private final String AMMINISTRATORE_PROVIDER_ACCOUNT_NOME = "Amministratore";
 	private final String AMMINISTRATORE_PROVIDER_ACCOUNT_COGNOME = "Provider";
 
@@ -210,14 +210,14 @@ public class ProviderServiceImpl implements ProviderService {
 	public boolean canInsertEvento(Long providerId) {
 		return providerRepository.canInsertEvento(providerId);
 	}
-	
+
 	@Override
 	public boolean canInsertRelazioneAnnuale(Long providerId) {
 		int annoRiferimento = LocalDate.now().getYear();
 		if(!LocalDate.now().isAfter(LocalDate.of(annoRiferimento, 3, 31)))
 			return true;
 		else{
-			Boolean b = providerRepository.canInsertRelazioneAnnuale(providerId); 
+			Boolean b = providerRepository.canInsertRelazioneAnnuale(providerId);
 			return (b != null) ? b.booleanValue() : false;
 		}
 	}
@@ -231,14 +231,14 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 		return result;
 	}
-	
+
 	@Override
 	@Transactional
 	public void saveFromIntegrazione(Provider provider) {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio Provider da Integrazione"));
 		save(provider);
 	}
-	
+
 	@Override
 	public void bloccaFunzionalitaForPagamento(Long providerId) {
 		LOGGER.debug("Blocco canInsertPianoFormativo e canInsertEventi per Provider: " + providerId);
@@ -256,7 +256,7 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setCanInsertEvento(true);
 		save(provider);
 	}
-	
+
 	@Override
 	public String getCodiceFiscaleLegaleRappresentantePerVerificaFirmaDigitale(Long providerId) {
 		LOGGER.debug("Recupero CodiceFiscale Legale Rappresentante per verifica firma digitale del Provider: " + providerId);
@@ -265,11 +265,11 @@ public class ProviderServiceImpl implements ProviderService {
 		if(persona != null && persona.getAnagrafica() != null){
 			return persona.getAnagrafica().getCodiceFiscale();
 		}
-		
+
 		LOGGER.debug("Legale Rappresentante non presente per il Provider: " + providerId);
 		return "";
 	}
-	
+
 	@Override
 	public String getCodiceFiscaleDelegatoLegaleRappresentantePerVerificaFirmaDigitale(Long providerId) {
 		LOGGER.debug("Recupero CodiceFiscale Delegato Legale Rappresentante per verifica firma digitale del Provider: " + providerId);
@@ -278,89 +278,95 @@ public class ProviderServiceImpl implements ProviderService {
 		if(persona != null && persona.getAnagrafica() != null){
 			return persona.getAnagrafica().getCodiceFiscale();
 		}
-		
+
 		LOGGER.debug("Delegato Legale Rappresentante non presente per il Provider: " + providerId);
 		return "";
 	}
-	
+
+	/*
+	 * Per la ricerca dei provider in realta si fanno ricerche anche su accreditamenti, sede, quotaAnnuale
+	 *
+	 * Alla fine si individuano gli id dei provider e si restituiscono SOLO quelli in comune a tutte le ricerche
+	 *
+	 * */
 	@Override
 	public List<Provider> cerca(RicercaProviderWrapper wrapper) throws Exception {
 		String query = "";
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		query ="SELECT p FROM Provider p";
-		
+
 		/* INFO RELATIVE AI PROVIDER */
 		//PROVIDER ID
 		if(wrapper.getCampoIdProvider() != null){
 			query = Utils.QUERY_AND(query, "p.id = :providerId");
 			params.put("providerId", wrapper.getCampoIdProvider());
 		}
-		
+
 		//DENOMINAZIONE LEGALE
 		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
 			query = Utils.QUERY_AND(query, "UPPER(p.denominazioneLegale) LIKE :denominazioneLegale");
 			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
 		}
-		
+
 		//TIPO ORGANIZZATORE
 		if(wrapper.getTipoOrganizzatoreSelezionati() != null && !wrapper.getTipoOrganizzatoreSelezionati().isEmpty()){
 			query = Utils.QUERY_AND(query, "p.tipoOrganizzatore IN :tipoOrganizzatoreSelezionati");
 			params.put("tipoOrganizzatoreSelezionati", wrapper.getTipoOrganizzatoreSelezionati());
 		}
-		
+
 		/* INFO RELATIVE ALL'ACCREDITAMENTO */
 		String query_accreditamento ="";
-		HashMap<String, Object> query_accreditamento_params = new HashMap<String, Object>();	
-		
-		if( (wrapper.getProceduraFormativaSelezionate() != null && !wrapper.getProceduraFormativaSelezionate().isEmpty()) ||  
+		HashMap<String, Object> query_accreditamento_params = new HashMap<String, Object>();
+
+		if( (wrapper.getProceduraFormativaSelezionate() != null && !wrapper.getProceduraFormativaSelezionate().isEmpty()) ||
 			(wrapper.getAccreditamentoTipoSelezionati() != null && !wrapper.getAccreditamentoTipoSelezionati().isEmpty()) ||
 			(wrapper.getAccreditamentoStatoSelezionati() != null && !wrapper.getAccreditamentoStatoSelezionati().isEmpty()) ||
-			(wrapper.getDataFineAccreditamentoStart() != null) || 
+			(wrapper.getDataFineAccreditamentoStart() != null) ||
 			(wrapper.getDataFineAccreditamentoEnd() != null)	)
 		{
 			query_accreditamento = "SELECT a.provider FROM Accreditamento a JOIN a.datiAccreditamento d JOIN d.procedureFormative pF";
-			
+
 			//PROCEDURA FORMATIVA
 			if(wrapper.getProceduraFormativaSelezionate() != null && !wrapper.getProceduraFormativaSelezionate().isEmpty()){
 				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "pF IN (:procedureFormativeSelezionate)");
 				//query_accreditamento = Utils.QUERY_AND(query_accreditamento, "d.id IN (SELECT dati.id FROM DatiAccreditamento dati JOIN dati.procedureFormative pF WHERE pF IN :procedureFormativeSelezionate)");
 				query_accreditamento_params.put("procedureFormativeSelezionate", wrapper.getProceduraFormativaSelezionate());
 			}
-			
+
 			//TIPO ACCREDITAMENTO
 			if(wrapper.getAccreditamentoTipoSelezionati() != null && !wrapper.getAccreditamentoTipoSelezionati().isEmpty()){
 				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "a.tipoDomanda IN :accreditamentoTipoSelezionati");
 				query_accreditamento_params.put("accreditamentoTipoSelezionati", wrapper.getAccreditamentoTipoSelezionati());
 			}
-			
+
 			//STATO ACCREDITAMENTO
 			if(wrapper.getAccreditamentoStatoSelezionati() != null && !wrapper.getAccreditamentoStatoSelezionati().isEmpty()){
 				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "a.stato IN :accreditamentoStatoSelezionati");
 				query_accreditamento_params.put("accreditamentoStatoSelezionati", wrapper.getAccreditamentoStatoSelezionati());
 			}
-			
+
 			//DATA ACCREDITAMENTO
 			if(wrapper.getDataFineAccreditamentoStart() != null){
 				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "a.dataFineAccreditamento >= :dataFineAccreditamentoStart");
 				query_accreditamento_params.put("dataFineAccreditamentoStart", wrapper.getDataFineAccreditamentoStart());
-			} 
-			
+			}
+
 			if(wrapper.getDataFineAccreditamentoEnd() != null){
 				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "a.dataFineAccreditamento <= :dataFineAccreditamentoEnd");
 				query_accreditamento_params.put("dataFineAccreditamentoEnd", wrapper.getDataFineAccreditamentoEnd());
-			} 
+			}
 		}
-		
+
 		/* INFO RELATIVE ALLE SEDI */
 		String query_sede ="";
-		HashMap<String, Object> query_sede_params = new HashMap<String, Object>();	
-		
+		HashMap<String, Object> query_sede_params = new HashMap<String, Object>();
+
 		if(wrapper.getProvinciaSelezionate() != null && !wrapper.getProvinciaSelezionate().isEmpty()){
 			query_sede = "SELECT s.provider from Sede s JOIN s.provider WHERE s.sedeLegale = true";
 			query_sede = Utils.QUERY_AND(query_sede,"s.provincia IN :provinciaSelezionate");
 			query_sede_params.put("provinciaSelezionate", wrapper.getProvinciaSelezionate());
 		}
-		
+
 		/* INFO RELATIVE AL PAGAMENTO */
 		String query_quota_annuale ="";
 		HashMap<String, Object> query_quota_annuale_params = new HashMap<String, Object>();
@@ -370,45 +376,45 @@ public class ProviderServiceImpl implements ProviderService {
 			query_quota_annuale = Utils.QUERY_AND(query_quota_annuale, "q.pagato = :pagato");
 			query_quota_annuale_params.put("pagato",wrapper.getPagato().booleanValue());
 		}
-		
-		
+
+
 		LOGGER.info(Utils.getLogMessage("Cerca Provider: " + query));
 		List<Provider> result = executeQuery(query, params, Provider.class);
-		
+
 		List<Provider> resultFromAccreditamento = new ArrayList<Provider>();
 		List<Provider> resultFromSede = new ArrayList<Provider>();
 		List<Provider> resultFromQuotaAnnuale = new ArrayList<Provider>();
-		
+
 		if(!query_accreditamento.isEmpty()){
 			LOGGER.info(Utils.getLogMessage("Cerca Provider: " + query_accreditamento));
 			resultFromAccreditamento = executeQuery(query_accreditamento, query_accreditamento_params, Provider.class);
 		}
-		
+
 		if(!query_sede.isEmpty()){
 			LOGGER.info(Utils.getLogMessage("Cerca Provider: " + query_sede));
 			resultFromSede = executeQuery(query_sede, query_sede_params, Provider.class);
 		}
-		
+
 		if(!query_quota_annuale.isEmpty()){
 			LOGGER.info(Utils.getLogMessage("Cerca Provider: " + query_quota_annuale));
 			resultFromQuotaAnnuale = executeQuery(query_quota_annuale, query_quota_annuale_params, Provider.class);
 		}
-		
+
 		if(!query_accreditamento.isEmpty())
 			result.retainAll(resultFromAccreditamento);
-		
+
 		if(!query_sede.isEmpty())
 			result.retainAll(resultFromSede);
-		
+
 		if(!query_quota_annuale.isEmpty())
 			result.retainAll(resultFromQuotaAnnuale);
-		
+
 		return result;
 	}
-	
+
 	private <T extends BaseEntity> List<T> executeQuery(String query, HashMap<String,Object> params, Class<T> className){
 		List<T> result = new ArrayList<T>();
-		
+
 		Query q = entityManager.createQuery(query, className);
 		Iterator<Entry<String, Object>> iterator = params.entrySet().iterator();
 		while(iterator.hasNext()){
@@ -416,10 +422,10 @@ public class ProviderServiceImpl implements ProviderService {
 			q.setParameter(pairs.getKey(), pairs.getValue());
 			LOGGER.info(Utils.getLogMessage(pairs.getKey() + ": " + pairs.getValue()));
 		}
-		
+
 		System.out.println(q.getMaxResults());
-		
+
 		return q.getResultList();
 	}
-	
+
 }

@@ -519,6 +519,11 @@
 						<!--   ALLEGATO 1 (ATTO DI NOMINA)   -->
 						<div th:unless="${personaWrapper.persona.delegatoLegaleRappresentante}">
 							<div th:if="${editabile}" class="divider-dashed"></div>
+
+							<div th:if="${editabile}" class="model-link" id="atto_nomina_esempio_link">
+								<i class="fa fa-file-text"></i>
+								<a id="atto_nomina_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/8.Atto_di_nomina.pdf"></a>
+							</div>
 							<!-- <th:block th:include="fragments/allegati :: allegati(personaWrapper, true, attoNomina, ${showOnly ? null : 'attoNomina'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)" ></th:block> -->
 							<th:block th:include="fragments/allegatiext :: allegatiext(personaWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ATTO_NOMINA}', attoNomina, ${showOnly ? null : 'attoNomina'}, ${personaWrapper.ruolo}, null, true, ${mode}, true)" ></th:block>
 						</div>

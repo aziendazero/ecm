@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.anagrafiche_evento}">Anagrafiche evento</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.docenti_relatori_tutor} + ' / ' + #{label.responsabili_scientifici}">Docenti/Relatori/Tutor/Responsabili Scientifici</h2>
+						<div class="clearfix"></div>
+					</div>
+
+					<!-- tabella di tutte le anagrafiche relative agli eventi del provider corrente -->
+					<div class="x-content">
+						<table id="tabella-modale" class="datatable-responsive-search-anagrafica-evento table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
+									<th th:text="#{label.nome}">Nome</th>
+									<th th:text="#{label.cognome}">Cognome</th>
+									<th th:text="#{label.azioni}">Azioni</th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="anagraficaEvento, row : ${anagraficaEventoList}">
+									<td><a th:text="${anagraficaEvento.anagrafica.codiceFiscale}" th:href="@{|/provider/${anagraficaEvento.provider.id}/anagraficaEvento/${anagraficaEvento.id}/show|}">Codice fiscale</a></td>
+									<td th:text="${anagraficaEvento.anagrafica.nome}">Cognome</td>
+									<td th:text="${anagraficaEvento.anagrafica.cognome}">Cognome</td>
+									<td>
+										<a class="btn btn-success" th:text="#{label.modifica}" th:href="@{|/provider/${anagraficaEvento.provider.id}/anagraficaEvento/${anagraficaEvento.id}/edit|}"></a>
+									</td>
+								</tr>
+
+							</tbody>
+						</table>
+
+						<div class="divider"></div>
+
+					</div>
+				</div>
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.responsabile_segreteria_organizzativa}">Responsabile segreteria organizzativa</h2>
+						<div class="clearfix"></div>
+					</div>
+
+					<!-- tabella di tutte le anagrafiche relative agli eventi del provider corrente -->
+					<div class="x-content">
+
+						<!-- tabella di tutte le anagrafiche relative agli eventi del provider corrente -->
+						<table id="tabella-modale" class="datatable-responsive-search-anagrafica-evento table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
+									<th th:text="#{label.nome}">Nome</th>
+									<th th:text="#{label.cognome}">Cognome</th>
+									<th th:text="#{label.azioni}">Azioni</th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="anagraficaFullEvento, row : ${anagraficaFullEventoList}">
+									<td><a th:text="${anagraficaFullEvento.anagrafica.codiceFiscale}" th:href="@{|/provider/${anagraficaFullEvento.provider.id}/anagraficaFullEvento/${anagraficaFullEvento.id}/show|}">Codice fiscale</a></td>
+									<td th:text="${anagraficaFullEvento.anagrafica.nome}">Cognome</td>
+									<td th:text="${anagraficaFullEvento.anagrafica.cognome}">Cognome</td>
+									<td>
+										<a class="btn btn-success" th:text="#{label.modifica}" th:href="@{|/provider/${anagraficaFullEvento.provider.id}/anagraficaFullEvento/${anagraficaFullEvento.id}/edit|}"></a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<script th:inline="javascript">
+						/*<![CDATA[*/
+						$(document).ready(function() {
+							$(".datatable-responsive-search-anagrafica-evento").DataTable({
+
+								"columnDefs": [
+												{"targets": [ 3 ], "width": "1px" }
+							                  ]
+							});
+						})
+						/*]]>*/
+						</script>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -22,7 +22,7 @@
 		</div>
 
 		<div class="row">
-			
+
 			<div class="col-lg-12 col-xs-12">
 				<div class="x_panel" th:if="${eventoWrapper.evento.canDoInviaACogeaps()}">
 					<div class="x_title">
@@ -44,7 +44,7 @@
 
 							<div class="model-link" id="esempio_rendicontazione">
 								<i class="fa fa-file-text"></i>
-								<a id="rendicontazione_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/15.dichiarazione_esclusione_del_conflitto_di%20interessi_per_oggetto_sociale.pdf"></a>
+								<a id="rendicontazione_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/15.dichiarazione_esclusione_del_conflitto_di%20interessi_per_oggetto_sociale.pdf"></a>
 							</div>
 							<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, reportPartecipanti, null, null, null, false, 'edit', false)" ></th:block> -->
 							<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_REPORT_PARTECIPANTI}', reportPartecipanti, null, null, null, false, 'edit', false)" ></th:block>
@@ -100,7 +100,7 @@
 					</div>
 
 				</div>
-				
+
 				<!-- ultima rendicontazione inviata -->
 				<div class="x_panel">
 					<div class="x_title">
@@ -116,7 +116,7 @@
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 									<div class="value"><span th:text="${#temporals.format(eventoWrapper.evento.ultimaRendicontazioneInviata.dataInvio, 'dd/MM/yyyy HH:mm')}" /></div>
 								</div>
-							</div>						
+							</div>
 							<div class="item form-group with-margin-top" th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.accountInvio}">
 								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
 									<span th:text="#{label.utente}"></span>
@@ -124,14 +124,14 @@
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 									<div class="value"><span th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.accountInvio.fullName}"/></div>
 								</div>
-							</div>								
+							</div>
 							<div class="item form-group with-margin-top" th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato}">
 								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
 									<span th:text="#{label.stato}"></span>
 								</label>
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 									<div class="value"><span th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato.nome}"/>
-										<a th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum).PENDING}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/rendiconto/statoElaborazioneCogeaps|}" class="link-collapse" th:title="#{label.aggiorna}"><i class="fa table-icon fa-refresh"></i></a>									
+										<a th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.stato == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum).PENDING}" th:href="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/rendiconto/statoElaborazioneCogeaps|}" class="link-collapse" th:title="#{label.aggiorna}"><i class="fa table-icon fa-refresh"></i></a>
 									</div>
 								</div>
 							</div>
@@ -146,7 +146,7 @@
 										<i th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.result == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum).ERROR}" class="fa fa-list-alt" id="statoElaborazioneErroreBloccante"></i>
 									</div>
 								</div>
-							</div>							
+							</div>
 							<div class="item form-group with-margin-top" th:if="${eventoWrapper.evento.ultimaRendicontazioneInviata.fileRendicontazione}">
 								<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7">
 									<span th:text="#{label.reportPartecipantiXML}"></span>
@@ -154,17 +154,17 @@
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 									<div class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.ultimaRendicontazioneInviata.fileRendicontazione.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.ultimaRendicontazioneInviata.fileRendicontazione.id}|}"></a></div>
 								</div>
-							</div>										
+							</div>
 						</div>
 						<div class="item form-group with-margin-top" th:if="${#lists.size(eventoWrapper.evento.inviiRendicontazione)>1}">
 							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-7"></div>
 							<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 								<button class="btn btn-primary" th:text="#{label.mostra_invii_precedenti}" data-toggle="modal" data-target=".modal-rendicontazioniPrecedenti"></button>
 							</div>
-						</div>						
+						</div>
 						<div th:unless="${eventoWrapper.evento.ultimaRendicontazioneInviata}" class="value" th:text="#{label.nessuna_rendicontazione_inviata}"></div>
 					</div>
-					
+
 					<!-- modale rendicontazioni precedenti  -->
 					<div id="rendicontazioniPrecedenti-modal" class="modal fade modal-rendicontazioniPrecedenti" data-model-index="1" role="dialog">
 						<div class="modal-dialog modal-lg">
@@ -185,7 +185,7 @@
 												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 													<div class="value"><span th:text="${#temporals.format(rendicontazione.dataInvio, 'dd/MM/yyyy HH:mm')}" /></div>
 												</div>
-											</div>		
+											</div>
 											<div class="row with-margin-top" th:if="${rendicontazione.accountInvio}">
 												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
 													<span class="label-show" th:text="#{label.utente}"></span>
@@ -205,7 +205,7 @@
 														<i th:if="${rendicontazione.result == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum).ERROR}" class="fa fa-list-alt" th:id="${'statoElaborazioneErroreBloccante-' + row.index}"></i>
 													</div>
 												</div>
-											</div>							
+											</div>
 											<div class="row with-margin-top">
 												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
 													<span class="label-show" th:text="#{label.reportPartecipantiXML}"></span>
@@ -214,17 +214,17 @@
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${rendicontazione.fileRendicontazione.nomeFile}" th:href="@{|/file/${rendicontazione.fileRendicontazione.id}|}"></a></div>
 												</div>
 											</div>
-											<div class="divider"></div>		
+											<div class="divider"></div>
 										</div>
-									</div>		
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>					
-				</div>				
-				
+					</div>
+				</div>
+
 			</div>
-			
+
 			<div class="col-lg-12 col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
@@ -268,22 +268,22 @@
 				        }
 
 					});
-					
+
 					//json cogeaps stato elaborazione response (ultimo invio)
 					if (typeof($('#statoElaborazioneJsonResponse').val()) != 'undefined') {
 					    var obj = $.parseJSON($('#statoElaborazioneJsonResponse').val());
-					    $('#statoElaborazioneErroreBloccante').prop('title', obj.messaggioErroreBloccante);						
+					    $('#statoElaborazioneErroreBloccante').prop('title', obj.messaggioErroreBloccante);
 					}
-					
+
 					//json cogeaps stato elaborazione response (invii precedenti)
-					var numinviiPrecedenti = [[${#lists.size(eventoWrapper.evento.inviiRendicontazione)}]];					
+					var numinviiPrecedenti = [[${#lists.size(eventoWrapper.evento.inviiRendicontazione)}]];
 					for (var i=0; i<numinviiPrecedenti; i++) {
 						if (typeof($('#statoElaborazioneJsonResponse-' + i).val()) != 'undefined') {
 						    var obj = $.parseJSON($('#statoElaborazioneJsonResponse-' + i).val());
-						    $('#statoElaborazioneErroreBloccante-' + i).prop('title', obj.messaggioErroreBloccante);					
-						}							
+						    $('#statoElaborazioneErroreBloccante-' + i).prop('title', obj.messaggioErroreBloccante);
+						}
 					}
-					
+
 				})
 
 				function spinCog() {

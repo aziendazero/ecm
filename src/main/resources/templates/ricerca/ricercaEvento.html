@@ -23,52 +23,52 @@
 					</div>
 
 				<th:block th:fragment="ricercaEvento">
-			
+
 					<div class="x_content">
-			
+
 						<form id="formRicercaEvento" class="form-horizontal form-label-left form-evento"
 							th:action="@{|/evento/ricerca|}"
 							method="post" enctype="multipart/form-data"
 							novalidate="novalidate">
-							
+
 							<input type="hidden" th:field="${ricercaEventoWrapper.providerId}" />
-								
-								
+
+
 								<th:block th:if="${ricercaEventoWrapper.providerId == null}">
 									<!-- ID PROVIDER -->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="providerId">
 											<span th:text="${'ID '} + #{label.provider}">Provider</span>
 										</label>
-				
+
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="providerId">
 											<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.campoIdProvider}" />
 										</div>
 									</div>
-								
+
 									<!-- DENOMINAZIONE LEGALE PROVIDER -->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
 											<span th:text="#{label.denominazione_legale} + ${' '}  + #{label.provider}">Provider</span>
 										</label>
-				
+
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneLegale">
 											<input type="text" class="form-control" th:field="${ricercaEventoWrapper.denominazioneLegale}" />
 										</div>
 									</div>
-									
+
 									<div class="divider-dashed"></div>
-								</th:block>		
-						
+								</th:block>
+
 								<h2 th:text="#{label.info_evento}"></h2>
-								
+
 								<!-- TIPO EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia">
 										<span th:text="#{label.tipologia_evento}">Destinatari dell'Evento</span>
 									</label>
 								</div>
-								
+
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia"></label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="statoEvento">
@@ -80,7 +80,7 @@
 										</div>
 									</div>
 								</div>
-								
+
 								<!-- TIPOLOGIA DELL'EVENTO RES-->
 								<div class="item form-group select-tipologia-RES" style="display: none">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia_evento">
@@ -88,7 +88,7 @@
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<select id="tipologia-RES" 
+										<select id="tipologia-RES"
 											multiple="multiple"
 											class="selectpicker"
 											th:field="${ricercaEventoWrapper.tipologieRES}"
@@ -104,7 +104,7 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia"></label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="statoEvento">
@@ -116,7 +116,7 @@
 										</div>
 									</div>
 								</div>
-								
+
 								<!-- TIPOLOGIA DELL'EVENTO FSC -->
 								<div class="item form-group select-tipologia-FSC" style="display: none">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologiaEvento">
@@ -140,7 +140,7 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia"></label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="statoEvento">
@@ -152,7 +152,7 @@
 										</div>
 									</div>
 								</div>
-								
+
 								<!-- TIPOLOGIA DELL'EVENTO FAD-->
 								<div class="item form-group select-tipologia-FAD" style="display: none">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia_evento">
@@ -177,9 +177,9 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<div class="divider-dashed"></div>
-								
+
 								<!-- STATO EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="destinatari">
@@ -195,31 +195,31 @@
 										</div>
 									</div>
 								</div>
-								
+
 								<!-- ID EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="eventoId">
 										<span th:text="${'ID '} + #{label.evento}">Evento</span>
 									</label>
-			
+
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="eventoId">
 										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.campoIdEvento}" />
 									</div>
 								</div>
-								
+
 								<!-- TITOLO EVENTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="titoloEvento">
 										<span th:text="#{label.titolo} + ${' '} + #{label.evento}">Provider</span>
 									</label>
-			
+
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="titoloEvento">
 										<input type="text" class="form-control" th:field="${ricercaEventoWrapper.titoloEvento}" />
 									</div>
 								</div>
-								
-								
-			
+
+
+
 								<!-- OBIETTIVO NAZIONALE -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivoNazionale">
@@ -247,7 +247,7 @@
 										</select>
 									</div>
 								</div>
-			
+
 								<!-- OBIETTIVO REGIONALE -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivorRegionale">
@@ -269,7 +269,7 @@
 										</select>
 									</div>
 								</div>
-			
+
 								<!-- PROFESSIONI/DISCIPLINE -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -310,20 +310,20 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<!-- NUMERO CREDITI -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="numeroCrediti">
 										<span th:text="#{label.crediti}">Evento</span>
 									</label>
-			
+
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="numeroCrediti">
 										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaEventoWrapper.crediti}" />
 									</div>
 								</div>
-								
+
 								<div class="divider-dashed"></div>
-								
+
 								<!-- PROVINCIA -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="provincia">
@@ -344,7 +344,7 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<!-- COMUNE -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="comune">
@@ -365,20 +365,20 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<!-- LUOGO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="luogo">
 										<span th:text="#{label.luogo}">Provider</span>
 									</label>
-			
+
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="luogo">
 										<input type="text" class="form-control" th:field="${ricercaEventoWrapper.luogo}" />
 									</div>
 								</div>
-								
+
 								<div class="divider-dashed"></div>
-								
+
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataInizio">
 										<h2 th:text="#{label.data_inizio}">Data inizio</h2>
@@ -407,15 +407,15 @@
 										</span>
 									</div>
 								</div>
-								
+
 								<div class="divider-dashed"></div>
-								
+
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataInizio">
 										<h2 th:text="#{label.data_fine}">Data fine</h2>
 									</label>
 								</div>
-								
+
 								<!-- START - DATA FINE -->
 								<div class="item form-group">
 									<label class="control-label col-sm-2 col-xs-11" for="dataFine">
@@ -439,9 +439,9 @@
 										</span>
 									</div>
 								</div>
-								
+
 								<div class="divider-dashed"></div>
-								
+
 								<!-- DATA SCADENZA PAGAMENTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataInizio">
@@ -470,17 +470,17 @@
 										</span>
 									</div>
 								</div>
-								
+
 							<input id="submitButton" type="submit" style="display: none;" />
-			
+
 						</form>
-			
+
 						<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
 						<script th:inline="javascript">
 						/*<![CDATA[*/
 						     var days;
-							 var months;    
-						           
+							 var months;
+
 						    $(document).ready(function() {
 								//init selecpicker
 							    $('select').selectpicker({
@@ -488,7 +488,7 @@
 									deselectAllText : 'Deseleziona tutti',
 									countSelectedText : '{0} selezionate'
 								});
-								
+
 							    days = getDayNamesShort();
 								months = getMonthNames();
 
@@ -513,7 +513,7 @@
 						                monthNames: months,
 							        }
 							    })
-							    
+
 							    $('#dataFineStart').daterangepicker({
 							        singleDatePicker: true,
 							        autoApply: true,
@@ -537,7 +537,7 @@
 						                monthNames: months,
 							        }
 							    })
-							    
+
 							       $('#dataScadenzaPagamentoStart').daterangepicker({
 							        singleDatePicker: true,
 							        autoApply: true,
@@ -561,48 +561,48 @@
 						                monthNames: months,
 							        }
 							    })
-								
+
 							    if($("#professioni")[0]) {
 									abilitaDiscipline($("#professioni")[0]);
 								}
-								
+
 								initProvinciaComune('provincia', 'comune');
-								
+
 								//gestione evento iCheck su check tipologiaEvento RES
 								$(".tipologia-RES").on("ifChecked", function() {
 									mostraNascondiTipologia(true,'RES');
 								});
-								
+
 								$(".tipologia-RES").on("ifUnchecked", function() {
 									mostraNascondiTipologia(false,'RES');
 								});
-								
+
 								//gestione evento iCheck su check tipologiaEvento FSC
 								$(".tipologia-FSC").on("ifChecked", function() {
 									mostraNascondiTipologia(true,'FSC');
 								});
-								
+
 								//gestione evento iCheck su check tipologiaEvento FSC
 								$(".tipologia-FSC").on("ifUnchecked", function() {
 									mostraNascondiTipologia(false,'FSC');
 								});
-								
+
 								//gestione evento iCheck su check tipologiaEvento FAD
 								$(".tipologia-FAD").on("ifChecked", function() {
 									mostraNascondiTipologia(true,'FAD');
 								});
-								
+
 								//gestione evento iCheck su check tipologiaEvento FAD
 								$(".tipologia-FAD").on("ifUnchecked", function() {
 									mostraNascondiTipologia(false,'FAD');
 								});
 
-							});       
-						           
+							});
+
 							function submitCerca(){
 								$("#submitButton").click();
 							}
-							
+
 							//funzione per l'abilita / disabilita le discipline selezionabili in base alle professioni
 							function abilitaDiscipline(professioni) {
 								//flag per capire se c'è almeno una professione
@@ -630,7 +630,7 @@
 								//refresh della view
 								$('#discipline').selectpicker('refresh');
 							}
-							
+
 							function mostraNascondiTipologia(value,tipo) {
 								if(value == true) {
 									$(".select-tipologia-" + tipo).slideDown("slow");
@@ -642,46 +642,44 @@
 									});
 								}
 							}
-							
+
 							function pulisci(){
 								$('#providerId input').val('');
 								$('#denominazioneLegale input').val('');
 								$('input[type="checkbox"]').removeAttr('checked').iCheck('update');
 								$('#eventoId input').val('');
 								$('#titoloEvento input').val('');
-								
+
 								$('#tipologia-RES').selectpicker('val','');
 								$('#tipologia-FSC').selectpicker('val','');
 								$('#tipologia-FAD').selectpicker('val','');
-								
+
 								$('#obiettivoNazionale').selectpicker('val','');
 								$('#obiettivoRegionale').selectpicker('val','');
 								$('#professioni').selectpicker('val','');
 								$('#discipline').selectpicker('val','');
-								
+
 								$('#numeroCrediti input').val('');
-								
+
 								$('#provincia').selectpicker('val','');
 								$('#comune').selectpicker('val','');
-								
+
 								$('#luogo input').val('');
-								
+
 								$('#dataInizioStart').val('');
 								$('#dataInizioEnd').val('');
-								
+
 								$('#dataFineStart').val('');
 								$('#dataFineEnd').val('');
-								
+
 								$('#dataScadenzaPagamentoStart').val('');
 								$('#dataScadenzaPagamentoEnd').val('');
 							}
-							
+
 						/*]]>*/
 						</script>
-			
-			
 					</div>
-			
+
 				</th:block>
 			</div>
 		</div>
