@@ -13,13 +13,13 @@
 		            </div>
 		            <div class="modal-body">
 		                <span id="deleteMsg"></span>
-		                		                
+
 		            </div>
 		            <div class="modal-footer">
 		                <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{label.annulla}">Cancel</button>
 						<span id='deleteButton'></span>
 		            </div>
-					
+
 		        </div>
 		      </div>
 		  </div>
@@ -32,8 +32,10 @@
 		<a href="#0" class="cd-top"></a>
 
 		<!-- Bootstrap -->
-		<script src="../static/gentella/js/bootstrap.min.js"
-				th:src="@{/gentella/js/bootstrap.min.js}"></script>
+<!-- 		<script src="../static/gentella/js/bootstrap.min.js" -->
+<!-- 				th:src="@{/gentella/js/bootstrap.min.js}"></script> -->
+		<script src="../static/bootstrap/js/bootstrap.js"
+				th:src="@{/bootstrap/js/bootstrap.js}"></script>
 		<!-- pace page loader -->
 		<script src="../static/gentella/js/pace/pace.min.js"
 				th:src="@{/gentella/js/pace/pace.min.js}"></script>
@@ -88,7 +90,7 @@
 		<script
 			src="../static/bootstrapSelect/js/bootstrapSelect.js"
 			th:src="@{/bootstrapSelect/js/bootstrapSelect.js}"></script>
-			
+
 		<!-- select2 -->
 		<script src="../static/gentella/js/select/select2.full.js"
 				th:src="@{/gentella/js/select/select2.full.js}"></script>
@@ -124,15 +126,15 @@
 			src="../static/spinJS/spin.js"
 			th:src="@{/spinJS/spin.js}"></script>
 
-		<!-- gestione allegati e firmaWeb -->	
-		<th:block 
+		<!-- gestione allegati e firmaWeb -->
+		<th:block
 			th:include="fragments/common-allegatiext :: common">
 		</th:block>
-		
+
 		<!-- jquery ui per modale draggable -->
 		<script src="../static/js/draggable/jquery-ui.js"
 				th:src="@{/js/draggable/jquery-ui.js}"></script>
-			
+
 		<!-- initialize the validator.js  -->
 		<script th:inline="javascript">
 	        /*<![CDATA[*/
@@ -418,43 +420,43 @@
 			function selezionaTuttiSi(){
 				$('input[value=true]').iCheck('check');
 			}
-			
+
 			function confirmDeleteEventoModal(providerId,eventoId,tipo,codiceIdentificativo){
 			    $('#deleteModal').modal();
-			    
+
 			    var prefix = [[@{/provider/}]];
 			    var url = prefix + providerId + "/evento/" + eventoId + "/delete";
-			    
+
 			    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamnete l'evento " + codiceIdentificativo + " (" + tipo + ")?</h2>");
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
-			} 
-			
+			}
+
 			function confirmDeleteEventoPianoFormativoModal(providerId,pianoFormativoId,eventoId,prefixUrl,tipo,codiceIdentificativo){
 			    $('#deleteModal').modal();
-			    
+
 			    var prefix = [[@{prefixUrl}]];
 			    var url = prefixUrl + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + eventoId + "/delete";
-			    
+
 			    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamnete l'evento " + codiceIdentificativo + " (" + tipo + ")?</h2>");
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
-			} 
-			
+			}
+
 			function confirmDeleteAllEventiPianoFormativoModal(providerId,pianoFormativoId){
 			    $('#deleteModal').modal();
-			    
+
 			    var prefix = [[@{/provider/}]];
 			    var url = prefix + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll";
-			    
+
 			    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
-			} 
-			
+			}
+
 			function confirmDeleteAllEventiPianoFormativoAccreditamentoModal(providerId,pianoFormativoId,accreditamentoId){
 				 $('#deleteModal').modal();
-			    
+
 			    var prefix = [[@{/accreditamento/}]];
 			    var url = prefix + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll";
-			    
+
 			    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
 			}
