@@ -6,7 +6,7 @@
 </head>
 <body>
 	<div layout:fragment="content">
-	
+
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -50,29 +50,29 @@
 											<div th:id="${'collapse'+pianoFormativo.annoPianoFormativo}" class="panel-collapse collapse"
 												role="tabpanel" th:attr="aria-labelledby=${'heading'+pianoFormativo.annoPianoFormativo}">
 												<div class="panel-body">
-												
+
 													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)} ? 'edit' : 'show', true, null)"></th:block>
-													
+
 													<th:block th:if="${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}">
 														<a th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
 														<!-- <a th:text="#{label.elimina_tutti_eventi_da_pfa}" class="btn btn-danger with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/deleteAll|}"></a> -->
-														
+
 														<button class="btn btn-danger with-margin-top" th:onclick="|confirmDeleteAllEventiPianoFormativoModal('${pianoFormativo.provider.id}','${pianoFormativo.id}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina_tutti_eventi_da_pfa}"> </span></button>
-														
+
 														<div class="divider"></div>
-														
+
 														<th:block th:if="${#lists.isEmpty(pianoFormativo.eventiPianoFormativo)}">
 															<!-- importazione eventi piano formativo -->
 															<form class="form-horizontal form-label-left" th:action="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/importaEventiDaCSV|}"
 																	method="post" enctype="multipart/form-data" novalidate="novalidate">
 																<div class="model-link" id="esempio_importEventi">
 																	<i class="fa fa-file-text"></i>
-																	<a id="importEventi_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/15.dichiarazione_esclusione_del_conflitto_di%20interessi_per_oggetto_sociale.pdf"></a>
+																	<a id="importEventi_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/15.dichiarazione_esclusione_del_conflitto_di%20interessi_per_oggetto_sociale.pdf"></a>
 																</div>
-																
+
 																<!-- <th:block th:include="fragments/allegati :: allegati(pianoFormativoWrapper, false, importEventiDaCsvFile, null, null, null, false, null, false)" ></th:block> -->
 																<th:block th:include="fragments/allegatiext :: allegatiext(pianoFormativoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_EVENTI_PIANO_FORMATIVO}', importEventiDaCsvFile, null, null, null, false, null, false)" ></th:block>
-																
+
 																<div class="item form-group with-margin-top">
 																	<div class="col-xs-5"></div>
 																	<div class="col-xs-2 text-center">
@@ -82,7 +82,7 @@
 															</form>
 														</th:block>
 													</th:block>
-													
+
 												</div>
 											</div>
 										</div>
@@ -218,7 +218,7 @@
 					});
 
 				}
-				
+
 				function spinCog() {
 					$(".fa-cog").addClass("fa-spin");
 				}

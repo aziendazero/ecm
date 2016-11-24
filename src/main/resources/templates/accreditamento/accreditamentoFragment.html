@@ -785,23 +785,23 @@
 
 											<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and (#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL) or accreditamentoWrapper.canSegreteriaEdit)}" class="btn btn-primary with-margin-top" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo.id}/evento/new|}"><i class="fa fa-calendar"> </i> <span th:text="#{label.aggiungi_evento}"></span></a>
 											<a th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and (!#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL) and !accreditamentoWrapper.canSegreteriaEdit)}" class="btn btn-primary with-margin-top disabled"><i class="fa fa-calendar"></i> <span th:text="#{label.aggiungi_evento}" ></span></a>
-										
-											<button class="btn btn-danger with-margin-top" th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and (#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL) or accreditamentoWrapper.canSegreteriaEdit)}" th:onclick="|confirmDeleteAllEventiPianoFormativoAccreditamentoModal('${accreditamentoWrapper.provider.id}','${accreditamentoWrapper.accreditamento.pianoFormativo.id}','${accreditamentoWrapper.accreditamento.id}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina_tutti_eventi_da_pfa}"> </span></button>	
-										
+
+											<button class="btn btn-danger with-margin-top" th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and (#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL) or accreditamentoWrapper.canSegreteriaEdit)}" th:onclick="|confirmDeleteAllEventiPianoFormativoAccreditamentoModal('${accreditamentoWrapper.provider.id}','${accreditamentoWrapper.accreditamento.pianoFormativo.id}','${accreditamentoWrapper.accreditamento.id}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina_tutti_eventi_da_pfa}"> </span></button>
+
 											<div class="divider"></div>
-														
+
 											<th:block th:if="${accreditamentoWrapper.canInsertEventoInPianoFormativo and editabile and (#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'FULL'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).EVENTO_PIANO_FORMATIVO__FULL) or accreditamentoWrapper.canSegreteriaEdit) and accreditamentoWrapper.accreditamento.pianoFormativo != NULL and #lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventiPianoFormativo)}">
 												<!-- importazione eventi piano formativo -->
 												<form class="form-horizontal form-label-left" th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.accreditamento.provider.id}/pianoFormativo/${accreditamentoWrapper.accreditamento.pianoFormativo.id}/importaEventiDaCSV|}"
 														method="post" enctype="multipart/form-data" novalidate="novalidate">
 													<div class="model-link" id="esempio_importEventi">
 														<i class="fa fa-file-text"></i>
-														<a id="importEventi_esempio_link" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/15.dichiarazione_esclusione_del_conflitto_di%20interessi_per_oggetto_sociale.pdf"></a>
+														<a id="importEventi_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="http://ecm.veneto.agenas.it/documenti/15.dichiarazione_esclusione_del_conflitto_di%20interessi_per_oggetto_sociale.pdf"></a>
 													</div>
-													
+
 													<!-- <th:block th:include="fragments/allegati :: allegati(pianoFormativoWrapper, false, importEventiDaCsvFile, null, null, null, false, null, false)" ></th:block> -->
 													<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_EVENTI_PIANO_FORMATIVO}', importEventiDaCsvFile, null, null, null, false, null, false)" ></th:block>
-													
+
 													<div class="item form-group with-margin-top">
 														<div class="col-xs-5"></div>
 														<div class="col-xs-2 text-center">
@@ -810,7 +810,7 @@
 													</div>
 												</form>
 											</th:block>
-										
+
 										</div>
 									</div>
 								</div>
