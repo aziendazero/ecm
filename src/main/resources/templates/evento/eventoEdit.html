@@ -1706,23 +1706,29 @@
 										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
 										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 										<th>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-plus"></i></span>
 											</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-pause-circle-o"></i></span>
 											</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
+											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success" th:title="#{label.inserisci_registrazione_partecipanti}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'REGISTRAZIONE PARTECIPANTI\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<span><i class="fa fa-group"></i></span>
+											</a>
+											<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
 												<span><i class="fa fa-plus"></i></span>
 											</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success disabled" th:title="#{label.inserisci_pausa}">
+											<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success disabled" th:title="#{label.inserisci_pausa}">
 												<span><i class="fa fa-pause-circle-o"></i></span>
 											</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success disabled" th:title="#{label.inserisci_valutazione_apprendimento}">
+											<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success disabled" th:title="#{label.inserisci_valutazione_apprendimento}">
 												<span><i class="fa fa-pencil"></i></span>
+											</a>
+											<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success disabled" th:title="#{label.inserisci_registrazione_partecipanti}">
+												<span><i class="fa fa-group"></i></span>
 											</a>
 										</th>
 									</tr>
@@ -1741,16 +1747,16 @@
 										<!-- <td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td> -->
 										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita)}"></td>
 										<td>
-												<a th:unless="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento()))}" onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaRES">
-													<span><i class="fa fa-pencil"></i></span>
-												</a>
-												<a th:if="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento()))}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+											<a th:unless="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento() or attivita.isRegistrazionePartecipanti()))}" onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+											<a th:if="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento() or attivita.isRegistrazionePartecipanti()))}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+												<span><i class="fa fa-pencil"></i></span>
+											</a>
+											<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 												<span><i class="fa fa-trash"></i></span>
 											</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+											<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
 												<span><i class="fa fa-trash"></i></span>
 											</a>
 										</td>

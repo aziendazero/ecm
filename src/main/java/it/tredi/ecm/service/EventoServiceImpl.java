@@ -679,7 +679,7 @@ public class EventoServiceImpl implements EventoService {
 		if(programma != null){
 			for(EventoRESProgrammaGiornalieroWrapper progrGior : programma){
 				for(DettaglioAttivitaRES dett : progrGior.getProgramma().getProgramma()){
-					if(!dett.isPausa() && !dett.isValutazioneApprendimento())
+					if(!dett.isExtraType())
 						durata += dett.getOreAttivita();
 				}
 			}

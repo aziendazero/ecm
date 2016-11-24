@@ -19,6 +19,7 @@
 							<h4 id="container-titleNoPausa" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 							<h4 id="container-titlePausa" class="modal-title" th:text="#{label.inserisci_pausa}">Inserisci pausa</h4>
 							<h4 id="container-titleValutazioneApprendimento" class="modal-title" th:text="#{label.inserisci_valutazione_apprendimento}">Inserisci pausa</h4>
+							<h4 id="container-titleRegistrazionePartecipanti" class="modal-title" th:text="#{label.inserisci_registrazione_partecipanti}">Inserisci pausa</h4>
 						</div>
 						<div class="modal-body" id="container-attivitaRES">
 							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
@@ -1959,16 +1960,23 @@
 						$('#addAttivitaTo_indirizzo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.indirizzo").val(indirizzoVal);
 						$('#addAttivitaTo_luogo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.luogo").val(luogoVal);
 
-						if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO'){
+						if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO' || extraType == 'REGISTRAZIONE PARTECIPANTI'){
 							$("#container-titleNoPausa").hide();
 
 							if(extraType == 'PAUSA'){
 								$("#container-titlePausa").show();
 								$("#container-titleValutazioneApprendimento").hide();
+								$("#container-titleRegistrazionePartecipanti").hide();
 							}
-							else{
+							else if (extraType == 'VALUTAZIONE APPRENDIMENTO'){
 								$("#container-titleValutazioneApprendimento").show();
 								$("#container-titlePausa").hide();
+								$("#container-titleRegistrazionePartecipanti").hide();
+							}
+							else {
+								$("#container-titleRegistrazionePartecipanti").show();
+								$("#container-titlePausa").hide();
+								$("#container-titleValutazioneApprendimento").hide();
 							}
 							$("#container-argomento").hide();
 							$("#container-docente").hide();
@@ -1978,6 +1986,7 @@
 						}else{
 							$("#container-titlePausa").hide();
 							$("#container-titleValutazioneApprendimento").hide();
+							$("#container-titleRegistrazionePartecipanti").hide();
 							$("#container-titleNoPausa").show();
 							$("#container-argomento").show();
 							$("#container-docente").show();
