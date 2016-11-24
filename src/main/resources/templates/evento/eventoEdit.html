@@ -344,7 +344,7 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+						<button type="button" onclick="closeModaleAddSponsor()" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 						<label for="targetTableSponsor" class="btn btn-success pull-right" onclick="sendAjaxAddSponsorTo()" th:text="#{label.invia}">Invia</label>
 					</div>
 				</div>
@@ -395,7 +395,7 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+						<button type="button" onclick="closeModaleAddPartner()" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 						<label for="targetTablePartner" class="btn btn-success pull-right" onclick="sendAjaxAddPartnerTo()" th:text="#{label.invia}">Invia</label>
 					</div>
 				</div>
@@ -977,7 +977,7 @@
 				$("#anagraficaBase_qualifica").val('');
 				$("#cv\\.id").val('');
 				$("#cv\\.nomeFile").val('');
-				$("#cv_label").text('').attr('href','');
+				$("#cv_label").text('').text([[#{label.nessun_file_selezionato}]]).removeAttr('href');
 				$("#add-persona-modal .selectpicker").selectpicker('val','');
 				$('#add-persona-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
 				$('#add-persona-modal input[type="radio"]').removeAttr('checked').iCheck('update');
@@ -1002,7 +1002,7 @@
 				$("#add-sponsor-modal form")[0].reset();
 				$("#sponsorFile\\.id").val('');
 				$("#sponsorFile\\.nomeFile").val('');
-				$("#sponsorFile_label").text('').attr('href','');
+				$("#sponsorFile_label").text([[#{label.nessun_file_selezionato}]]).removeAttr('href');
 			}
 
 			//chiude la modale di inserimento di uno partner svuotandone i contenuti
@@ -1011,7 +1011,7 @@
 				$("#add-partner-modal form")[0].reset();
 				$("#partnerFile\\.id").val('');
 				$("#partnerFile\\.nomeFile").val('');
-				$("#partnerFile_label").text('').attr('href','');
+				$("#partnerFile_label").text([[#{label.nessun_file_selezionato}]]).removeAttr('href');
 			}
 
 			//reinit dei widget complessi nella modale add persona
@@ -1706,13 +1706,13 @@
 										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
 										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 										<th>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-plus"></i></span>
 											</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-pause-circle-o"></i></span>
 											</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\')'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
 												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
@@ -1806,7 +1806,7 @@
 											<th th:text="#{label.metodi_di_lavoro}">METODO DI LAVORO</th>
 											<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
 											<th>
-													<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
+													<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__,undefined,true)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
 														<span><i class="fa fa-plus"></i></span>
 													</a>
 													<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
@@ -1889,7 +1889,7 @@
 									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
 									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 									<th>
-											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" onclick="openAddAttivitaTo('attivitaFAD')" data-toggle="modal" data-target=".modal-add-attivitaFAD">
+											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" onclick="openAddAttivitaTo('attivitaFAD',undefined,true)" data-toggle="modal" data-target=".modal-add-attivitaFAD">
 												<span><i class="fa fa-plus"></i></span>
 											</a>
 											<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">

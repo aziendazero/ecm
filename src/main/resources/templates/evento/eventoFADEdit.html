@@ -161,7 +161,7 @@
 							</form>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+							<button type="button" onclick="closeModaleAddAttivitaTo()" class="btn btn-primary" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 							<label for="targetTable" class="btn btn-success pull-right" onclick="sendAjaxAddAttivitaToProgramma()" th:text="#{label.invia}">Invia</label>
 						</div>
 					</div>
@@ -1403,9 +1403,23 @@
 				}
 
 				/********************* PROGRAMMA GIORNALIERO ****************************/
-				function openAddAttivitaTo(target,modificaElemento){
-					$('#targetTableAttivitaFAD').val(target);
-					$('#modificaElementoAttivitaFAD').val(modificaElemento);
+				function openAddAttivitaTo(target,modificaElemento,clean){
+					if(clean) {
+						var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/resettaAttivita/|}]] + target;
+						$.get(url).done(function(data) {
+							$('#container-' + target).html(data);
+							reInitModaleAddAttivita();
+							$("#add-attivitaFAD-modal").modal("show");
+							openAddAttivitaTo(target,modificaElemento,false);
+						})
+					  	.fail(function() {
+					    	alert( "error" );
+					 	})
+					}
+					else {
+						$('#targetTableAttivitaFAD').val(target);
+						$('#modificaElementoAttivitaFAD').val(modificaElemento);
+					}
 				}
 
 				function closeModaleAddAttivitaTo(){
@@ -1460,7 +1474,7 @@
 					$.get(url).done(function(data) {
 						$('#container-' + target).html(data);
 						reInitModaleAddAttivita();
-						openAddAttivitaTo(target,modificaElemento);
+						openAddAttivitaTo(target,modificaElemento,false);
 					  })
 				  	.fail(function() {
 				    	alert( "error" );
