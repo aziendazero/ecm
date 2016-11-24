@@ -25,6 +25,7 @@ import it.tredi.ecm.utils.Utils;
 public class AnagraficaValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnagraficaValidator.class);
 	private static final String PATTERN_CODICE_FISCALE = "[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]";
+	private static final String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
 	@Autowired private AnagraficaService anagraficaService;
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
@@ -44,6 +45,8 @@ public class AnagraficaValidator {
 			errors.rejectValue(prefix + "telefono", "error.empty");
 		if(anagrafica.getEmail() == null || anagrafica.getEmail().isEmpty())
 			errors.rejectValue(prefix + "email", "error.empty");
+		else if(!Pattern.matches(PATTERN_EMAIL, anagrafica.getEmail()))
+			errors.rejectValue(prefix + "email", "error.invalid");
 
 		if(anagrafica.getCodiceFiscale() == null || anagrafica.getCodiceFiscale().isEmpty()){
 			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
@@ -73,6 +76,8 @@ public class AnagraficaValidator {
 		Anagrafica anagrafica = (Anagrafica)target;
 		if(anagrafica.getPec() == null || anagrafica.getPec().isEmpty())
 			errors.rejectValue(prefix + "pec", "error.empty");
+		else if(!Pattern.matches(PATTERN_EMAIL, anagrafica.getPec()))
+			errors.rejectValue(prefix + "pec", "error.invalid");
 	}
 
 	//validator anagrafica docenti/tutor e responsabili evento (Gestione Anagrafiche Ruoli Evento)
@@ -111,6 +116,8 @@ public class AnagraficaValidator {
 			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
 		if(anagraficaEvento.getAnagrafica().getEmail() == null || anagraficaEvento.getAnagrafica().getEmail().isEmpty())
 			errors.rejectValue(prefix + "email", "error.empty");
+		else if(!Pattern.matches(PATTERN_EMAIL, anagraficaEvento.getAnagrafica().getEmail()))
+			errors.rejectValue(prefix + "email", "error.invalid");
 		if(anagraficaEvento.getAnagrafica().getTelefono() == null || anagraficaEvento.getAnagrafica().getTelefono().isEmpty())
 			errors.rejectValue(prefix + "telefono", "error.empty");
 		if(anagraficaEvento.getAnagrafica().getCellulare() == null || anagraficaEvento.getAnagrafica().getCellulare().isEmpty())
@@ -153,6 +160,8 @@ public class AnagraficaValidator {
 			errMap.put(prefix + "codice_fiscale", "error.cf_duplicated");
 		if(anagrafica.getEmail() == null || anagrafica.getEmail().isEmpty())
 			errMap.put(prefix + "email", "error.empty");
+		else if(!Pattern.matches(PATTERN_EMAIL, anagrafica.getEmail()))
+			errMap.put(prefix + "email", "error.invalid");
 		if(anagrafica.getTelefono() == null || anagrafica.getTelefono().isEmpty())
 			errMap.put(prefix + "telefono", "error.empty");
 		if(anagrafica.getCellulare() == null || anagrafica.getCellulare().isEmpty())

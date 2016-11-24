@@ -19,6 +19,7 @@
 							<h4 id="container-titleNoPausa" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 							<h4 id="container-titlePausa" class="modal-title" th:text="#{label.inserisci_pausa}">Inserisci pausa</h4>
 							<h4 id="container-titleValutazioneApprendimento" class="modal-title" th:text="#{label.inserisci_valutazione_apprendimento}">Inserisci pausa</h4>
+							<h4 id="container-titleRegistrazionePartecipanti" class="modal-title" th:text="#{label.inserisci_registrazione_partecipanti}">Inserisci pausa</h4>
 						</div>
 						<div class="modal-body" id="container-attivitaRES">
 							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
@@ -189,7 +190,7 @@
 								</form>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-primary" onclick="closeModaleAddPersona()" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+								<button type="button" class="btn btn-primary" onclick="closeModaleAddAttivitaTo()" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 								<label for="targetTable" class="btn btn-success pull-right" onclick="sendAjaxAddAttivitaToProgramma()" th:text="#{label.invia}">Invia</label>
 							</div>
 						</div>
@@ -1930,65 +1931,87 @@
 				};
 
 	/********************* PROGRAMMA GIORNALIERO ****************************/
-				function openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento){
-					$('#targetTableAttivitaRES').val(target);
-					$('#addAttivitaTo').val(programmaIndex);
-					$('#extraType').val(extraType);
-					$('#modificaElementoAttivitaRES').val(modificaElemento);
+				function openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento,clean){
+					if(clean) {
+						var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/resettaAttivita/|}]] + target;
+						$.get(url).done(function(data) {
+							$('#container-' + target).html(data);
+							reInitModaleAddAttivita();
+							$("#add-attivitaRES-modal").modal("show");
+							openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento,false);
+						})
+					  	.fail(function() {
+					    	alert( "error" );
+					 	})
+					}
+					else {
+						$('#targetTableAttivitaRES').val(target);
+						$('#addAttivitaTo').val(programmaIndex);
+						$('#extraType').val(extraType);
+						$('#modificaElementoAttivitaRES').val(modificaElemento);
 
-					var provinciaVal = $("[data-programma-provincia='" + programmaIndex + "']").val();
-					var comuneVal = $("[data-programma-comune='" + programmaIndex + "']").val();
-					var indirizzoVal = $("[data-programma-indirizzo='" + programmaIndex + "']").val();
-					var luogoVal = $("[data-programma-luogo='" + programmaIndex + "']").val();
+						var provinciaVal = $("[data-programma-provincia='" + programmaIndex + "']").val();
+						var comuneVal = $("[data-programma-comune='" + programmaIndex + "']").val();
+						var indirizzoVal = $("[data-programma-indirizzo='" + programmaIndex + "']").val();
+						var luogoVal = $("[data-programma-luogo='" + programmaIndex + "']").val();
 
-					$('#addAttivitaTo_provincia').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.provincia").val(provinciaVal);
-					$('#addAttivitaTo_comune').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.comune").val(comuneVal);
-					$('#addAttivitaTo_indirizzo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.indirizzo").val(indirizzoVal);
-					$('#addAttivitaTo_luogo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.luogo").val(luogoVal);
+						$('#addAttivitaTo_provincia').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.provincia").val(provinciaVal);
+						$('#addAttivitaTo_comune').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.comune").val(comuneVal);
+						$('#addAttivitaTo_indirizzo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.indirizzo").val(indirizzoVal);
+						$('#addAttivitaTo_luogo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.luogo").val(luogoVal);
 
-					if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO'){
-						$("#container-titleNoPausa").hide();
+						if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO' || extraType == 'REGISTRAZIONE PARTECIPANTI'){
+							$("#container-titleNoPausa").hide();
 
-						if(extraType == 'PAUSA'){
-							$("#container-titlePausa").show();
-							$("#container-titleValutazioneApprendimento").hide();
-						}
-						else{
-							$("#container-titleValutazioneApprendimento").show();
-							$("#container-titlePausa").hide();
-						}
-						$("#container-argomento").hide();
-						$("#container-docente").hide();
-						$("#container-risultatoAtteso").hide();
-						$("#container-obiettivoFormativo").hide();
-						$("#container-metodologiaDidattica").hide();
-					}else{
-						$("#container-titlePausa").hide();
-						$("#container-titleValutazioneApprendimento").hide();
-						$("#container-titleNoPausa").show();
-						$("#container-argomento").show();
-						$("#container-docente").show();
-						$("#container-risultatoAtteso").show();
-						$("#container-obiettivoFormativo").show();
-						$("#container-metodologiaDidattica").show();
-
-						var tipologiaEvento = $('#tipologia_evento').val();
-						var selectObiettiviFormativi = '#addAttivitaRES-obiettiviFormativi';
-
-						if(tipologiaEvento == 'CONVEGNO_CONGRESSO'){
+							if(extraType == 'PAUSA'){
+								$("#container-titlePausa").show();
+								$("#container-titleValutazioneApprendimento").hide();
+								$("#container-titleRegistrazionePartecipanti").hide();
+							}
+							else if (extraType == 'VALUTAZIONE APPRENDIMENTO'){
+								$("#container-titleValutazioneApprendimento").show();
+								$("#container-titlePausa").hide();
+								$("#container-titleRegistrazionePartecipanti").hide();
+							}
+							else {
+								$("#container-titleRegistrazionePartecipanti").show();
+								$("#container-titlePausa").hide();
+								$("#container-titleValutazioneApprendimento").hide();
+							}
+							$("#container-argomento").hide();
+							$("#container-docente").hide();
 							$("#container-risultatoAtteso").hide();
-							$.each($(selectObiettiviFormativi + " option"), function() {
-								if($(this).attr("value") != 'OBV1')
-								$(this).hide();
-							});
-							$(selectObiettiviFormativi).selectpicker('refresh');
+							$("#container-obiettivoFormativo").hide();
+							$("#container-metodologiaDidattica").hide();
 						}else{
-							$.each($(selectObiettiviFormativi + " option"), function() {
-								$(this).show();
-							});
-							$(selectObiettiviFormativi).selectpicker('refresh');
-						}
+							$("#container-titlePausa").hide();
+							$("#container-titleValutazioneApprendimento").hide();
+							$("#container-titleRegistrazionePartecipanti").hide();
+							$("#container-titleNoPausa").show();
+							$("#container-argomento").show();
+							$("#container-docente").show();
+							$("#container-risultatoAtteso").show();
+							$("#container-obiettivoFormativo").show();
+							$("#container-metodologiaDidattica").show();
 
+							var tipologiaEvento = $('#tipologia_evento').val();
+							var selectObiettiviFormativi = '#addAttivitaRES-obiettiviFormativi';
+
+							if(tipologiaEvento == 'CONVEGNO_CONGRESSO'){
+								$("#container-risultatoAtteso").hide();
+								$.each($(selectObiettiviFormativi + " option"), function() {
+									if($(this).attr("value") != 'OBV1')
+									$(this).hide();
+								});
+								$(selectObiettiviFormativi).selectpicker('refresh');
+							}else{
+								$.each($(selectObiettiviFormativi + " option"), function() {
+									$(this).show();
+								});
+								$(selectObiettiviFormativi).selectpicker('refresh');
+							}
+
+						}
 					}
 				}
 
@@ -2052,7 +2075,7 @@
 						$('#container-' + target).html(data);
 						reInitModaleAddAttivita();
 // 						$('#add-attivita').click();
-						openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento);
+						openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento,false);
 					  })
 				  	.fail(function() {
 				    	alert( "error" );

@@ -1211,7 +1211,7 @@ public class EventoValidator {
 					errors.rejectValue(prefix + "programma["+counter+"]", "");
 					atLeastOneErrorDettaglioAttivita = true;
 				}
-				if(!dar.isPausa() && !dar.isValutazioneApprendimento())
+				if(!dar.isExtraType())
 					atLeastOneAttivita = true;
 				counter++;
 			}
@@ -1240,7 +1240,7 @@ public class EventoValidator {
 			return true;
 
 		//controlli per non pausa [ 2) ]
-		if(!dettaglio.isPausa() && !dettaglio.isValutazioneApprendimento()) {
+		if(!dettaglio.isExtraType()) {
 			if(dettaglio.getArgomento() == null || dettaglio.getArgomento().isEmpty())
 				return true;
 			if(dettaglio.getDocente() == null)

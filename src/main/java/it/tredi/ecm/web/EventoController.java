@@ -343,6 +343,8 @@ public class EventoController {
 		try {
 			//edit dell'evento
 			Evento evento = eventoService.getEvento(eventoId);
+			if(evento instanceof EventoFSC)
+				((EventoFSC) evento).getFasiAzioniRuoli().size(); //workarounda pure Barduz
 			EventoWrapper wrapper = prepareEventoWrapperEdit(evento, true);
 			return goToEdit(model, wrapper);
 		}
@@ -1257,6 +1259,31 @@ public class EventoController {
 				return EDITFSC + " :: #addAttivitaFSC";
 			}else if(target.equalsIgnoreCase("attivitaFAD")){
 				DettaglioAttivitaFAD attivitaFAD = eventoWrapper.getProgrammaEventoFAD().get(elementoIndex);
+				eventoWrapper.setTempAttivitaFAD(attivitaFAD);
+				return EDITFAD + " :: #addAttivitaFAD";
+			}
+			return "redirect:/home";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
+		}
+	}
+
+	@RequestMapping(value = "/provider/{providerId}/evento/resettaAttivita/{target}", method=RequestMethod.GET)
+	public String resettaAttivita(@PathVariable("target") String target,
+			@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			if(target.equalsIgnoreCase("attivitaRES")){
+				DettaglioAttivitaRES attivita = new DettaglioAttivitaRES();
+				eventoWrapper.setTempAttivitaRES(attivita);
+				return EDITRES + " :: #addAttivitaRES";
+			}else if(target.equalsIgnoreCase("attivitaFSC")){
+				AzioneRuoliEventoFSC azione = new AzioneRuoliEventoFSC();
+				eventoWrapper.setTempAttivitaFSC(azione);
+				return EDITFSC + " :: #addAttivitaFSC";
+			}else if(target.equalsIgnoreCase("attivitaFAD")){
+				DettaglioAttivitaFAD attivitaFAD = new DettaglioAttivitaFAD();
 				eventoWrapper.setTempAttivitaFAD(attivitaFAD);
 				return EDITFAD + " :: #addAttivitaFAD";
 			}
