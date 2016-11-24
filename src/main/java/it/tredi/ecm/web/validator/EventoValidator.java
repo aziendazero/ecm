@@ -259,7 +259,15 @@ public class EventoValidator {
 				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
 			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
 		}
-		else{
+
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
+				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
+		{
 			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()))
 				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
 		}
@@ -278,10 +286,19 @@ public class EventoValidator {
 				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null){
 			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
 		}
-		else{
-			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
-				errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
+
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() != null)
+		{
+				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
+					errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
 		}
+
 
 		/* RADIO ALTRE FORME FINANZIAMENTO (campo obbligatorio)
 		 * radio
@@ -297,7 +314,12 @@ public class EventoValidator {
 				&& evento.getAltreFormeFinanziamento() == true
 				&& evento.getContrattiAccordiConvenzioni() == null){
 			errors.rejectValue("contrattiAccordiConvenzioni", "error.empty");
-		}else{
+		}
+
+		if(evento.getAltreFormeFinanziamento() != null
+				&& evento.getAltreFormeFinanziamento() == true
+				&& evento.getContrattiAccordiConvenzioni() != null)
+		{
 			if(!fileValidator.validateFirmaCF(evento.getContrattiAccordiConvenzioni(), evento.getProvider().getId()))
 				errors.rejectValue("contrattiAccordiConvenzioni", "error.codiceFiscale.firmatario");
 		}
@@ -311,7 +333,12 @@ public class EventoValidator {
 					&& evento.getAltreFormeFinanziamento() == false
 					&& evento.getAutocertificazioneAssenzaFinanziamenti() == null){
 				errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.empty");
-			}else{
+			}
+
+			if(evento.getAltreFormeFinanziamento() != null
+					&& evento.getAltreFormeFinanziamento() == false
+					&& evento.getAutocertificazioneAssenzaFinanziamenti() != null)
+			{
 				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaFinanziamenti(), evento.getProvider().getId()))
 					errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.codiceFiscale.firmatario");
 			}

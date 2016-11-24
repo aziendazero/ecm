@@ -109,19 +109,19 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		LOGGER.debug(Utils.getLogMessage("Recupero id di piani formativi dentro Accreditamento per Provider: " + providerId));
 		return pianoFormativoRepository.findAllByProviderIdInAccreditamento(providerId);
 	}
-	
+
 	@Override
 	@Transactional
 	public void importaEventiDaCSV(Long pianoFormativoId, File importEventiDaCsvFile, Long accreditamentoId) throws Exception {
 		try {
 			PianoFormativo pianoFormativo = getPianoFormativo(pianoFormativoId);
 			Accreditamento accreditamento = null;
-			if(accreditamentoId != null){
+			if(accreditamentoId == null){
 				accreditamento = accreditamentoService.getAccreditamentoAttivoForProvider(pianoFormativo.getProvider().getId());
 			}else{
 				accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 			}
-			
+
 			byte []csv = importEventiDaCsvFile.getData();
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withDelimiter(';').withFirstRecordAsHeader().parse(new StringReader(new String(csv, CSV_REPORT_ENCODING)));
 			for (CSVRecord record : records) { //per ogni evento (riga del CSV) -> creo EventoPianoFormativo
@@ -136,7 +136,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 				evento.setProvider(pianoFormativo.getProvider());
 				evento.setAccreditamento(accreditamento);
 				for (Disciplina disciplina: getEventoDisciplineFromCSVRow(record, accreditamento.getDatiAccreditamento())) {
-					evento.getDiscipline().add(disciplina);	
+					evento.getDiscipline().add(disciplina);
 				}
 				eventoPianoFormativoService.save(evento);
 				pianoFormativo.addEvento(evento);
@@ -161,17 +161,17 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 			throw new Exception("Tipo di formazione non compatibile con i dati di accreditamento: " + procedura_formativa);
 		return proceduraFormativa;
 	}
-	
+
 	private String getEventoTitoloFromCSVRow(CSVRecord record) throws Exception {
 		String titolo = record.get(1);
 		return titolo;
 	}
-	
+
 	private String getEventoGeneraleSettorialeFromCVSRow(CSVRecord record) throws Exception {
 		String cod_prof_disciplina = record.get(4);
 		return (cod_prof_disciplina.length() == 0)? "Generale" : "Settoriale";
 	}
-	
+
 	private Obiettivo getEventoObiettivoNazionaleFromCVSRow(CSVRecord record) throws Exception {
 		String obiettivo_nazionale = record.get(2);
 		Obiettivo obiettivo = obiettivoService.findOneByCodiceCogeaps(obiettivo_nazionale.trim(), true);
@@ -179,7 +179,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 			throw new Exception("Obiettivo nazionale non valido: " + obiettivo_nazionale);
 		return obiettivo;
 	}
-	
+
 	private Obiettivo getEventoObiettivoRegionaleFromCVSRow(CSVRecord record) throws Exception {
 		String obiettivo_regionale = record.get(3);
 		Obiettivo obiettivo = obiettivoService.findOneByCodiceCogeaps(obiettivo_regionale.trim(), false);
@@ -187,11 +187,11 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 			throw new Exception("Obiettivo regionale non valido: " + obiettivo_regionale);
 		return obiettivo;
 	}
-	
+
 	private Set<Disciplina> getEventoDisciplineFromCSVRow(CSVRecord record, DatiAccreditamento datiAccreditamento) throws Exception {
 		String cod_prof_disciplina = record.get(4);
 		cod_prof_disciplina = cod_prof_disciplina.trim();
-		
+
 		if (cod_prof_disciplina.length() == 0) { //generale -> prendo tutte le professioni (in realta tutte le discipline compatibili con i dati di accreditamento)
 			return datiAccreditamento.getDiscipline();
 		}
@@ -199,16 +199,16 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 
 			Set<Disciplina> disciplineAccreditamento = datiAccreditamento.getDiscipline(); //lista delle discipline per le quali si è accreditati
 			Set<Professione> professioniAccreditamento = getProfessioniAccreditamentoByDiscipline(disciplineAccreditamento); //lista delle professioni per le quali si è abilitati
-			
+
 			Set<Disciplina> disciplineRet = new HashSet<Disciplina>();
 			for (String professione_disciplina:cod_prof_disciplina.split(":")) { //per ogni sequenza di professioni.discipline
 			    String []professione_disciplina_arr = professione_disciplina.split("\\.");
 			    String professioneCodCog = professione_disciplina_arr[0];
-			    
+
 			    Professione professione = getProfessioneAccreditamentoByCodCog(professioneCodCog, professioniAccreditamento);
 			    if (professione == null)
 			    	throw new Exception("Professione non compatibile con i dati di accreditamento: " + professioneCodCog);
-			    
+
 			    if (professione_disciplina_arr.length == 1) { //se è stata specificata solo la professione -> si prendono tutte le discipline per le quali si è accreditati (che afferiscono a quella professione)
 			    	disciplineRet.addAll(filterDisciplineAccreditamentoByProfessione(professione, disciplineAccreditamento));
 			    }
@@ -221,22 +221,22 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 				    	if (!disciplina.getProfessione().getCodiceCogeaps().equals(professioneCodCog))
 				    		throw new Exception("Disciplina non compatibile con la professione indicata. Disciplina: " + disciplinaCodGoc + " Professione: " + professioneCodCog);
 				    	disciplineRet.add(disciplina);
-				    }			    	
+				    }
 			    }
 
 			}
 			return disciplineRet;
 		}
 	}
-	
+
 	private Set<Professione> getProfessioniAccreditamentoByDiscipline(Set<Disciplina> disciplineAccreditamento) {
 		Set<Professione> professioniAccreditamento = new HashSet<Professione>();
 		for (Disciplina disciplina:disciplineAccreditamento)
 			if (!professioniAccreditamento.contains(disciplina.getProfessione()))
-				professioniAccreditamento.add(disciplina.getProfessione());		
+				professioniAccreditamento.add(disciplina.getProfessione());
 		return professioniAccreditamento;
 	}
-	
+
 	private Professione getProfessioneAccreditamentoByCodCog(String professioneCodCog, Set<Professione> professioniAccreditamento) {
 		for (Professione professione:professioniAccreditamento) {
 			if (professione.getCodiceCogeaps().equals(professioneCodCog))
@@ -244,7 +244,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		}
 		return null;
 	}
-	
+
 	private Set<Disciplina> filterDisciplineAccreditamentoByProfessione(Professione professione, Set <Disciplina>disciplineAccreditamento) {
 		Set<Disciplina> disciplineRet = new HashSet<Disciplina>();
 		for (Disciplina disciplina:disciplineAccreditamento)
@@ -260,7 +260,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		}
 		return null;
 	}
-	
+
 	@Override
 	@Transactional
 	public void addEventoTo(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception {
@@ -269,12 +269,12 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		if(pfa == null){ new Exception("Piano Formativo non trovato"); }
 		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormatvioId);
 		if(epf == null){ new Exception("EventoPianoFormativo non trovato"); }
-		
+
 		pfa.addEvento(epf);
 		save(pfa);
 		eventoPianoFormativoService.save(epf);
 	}
-	
+
 	@Override
 	@Transactional
 	public void removeEventoFrom(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception{
@@ -283,11 +283,11 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		if(pfa == null){ new Exception("Piano Formativo non trovato"); }
 		pfa.removeEvento(eventoPianoFormatvioId);
 		save(pfa);
-		
+
 		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormatvioId);
 		if(epf == null){ new Exception("EventoPianoFormativo non trovato"); }
 		epf.setPianoFormativo(null);
 		eventoPianoFormativoService.save(epf);
 	}
-	
+
 }
