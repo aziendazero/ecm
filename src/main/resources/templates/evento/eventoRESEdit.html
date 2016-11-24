@@ -115,7 +115,7 @@
 													<option
 														th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
 														th:value="${risultato.value}"
-														th:unless="${risultato.value == null}"
+														th:unless="${risultato.value == null or risultato.value.isEmpty()}"
 														th:text="${risultato.value}">Risultato
 													</option>
 												</select>
@@ -1845,7 +1845,6 @@
 					  	$('#' + target).html(data);
 					  	//risale al valore della input
 					  	var value = $(caller).prev().val();
-					  	substituteAllToSelectAttivitaRES("addAttivitaRES-risultatiAttesi", "risultatoPicker");
 					  	reInitComponents();
 					  })
 				  	.fail(function() {
@@ -2060,12 +2059,12 @@
 				 	 })
 				}
 
-				function addToSelectAttivitaRES(target, value){
-					var option = '<option value = "' + value + '">' + value + "</option>";
-					$('#' + target).append(option);
-					$('#' + target).prop("disabled", false);
-					$('#' + target).selectpicker('refresh');
-				}
+// 				function addToSelectAttivitaRES(target, value){
+// 					var option = '<option value = "' + value + '">' + value + "</option>";
+// 					$('#' + target).append(option);
+// 					$('#' + target).prop("disabled", false);
+// 					$('#' + target).selectpicker('refresh');
+// 				}
 
 				function removeFromSelectAttivitaRES(target, value){
 					$('#' + target +" option[value='" + value + "']").remove();
@@ -2129,7 +2128,7 @@
 						case '1': 	reInitDataTable('docenti');
 									reInitDataTable('responsabiliScientifici');
 									break;
-						case '2':  	//TODO
+						case '2':  	substituteAllToSelectAttivitaRES("addAttivitaRES-risultatiAttesi", "risultatoPicker");
 									break;
 						case '3':	reInitDataTable('responsabileSegreteria');
 									reInitDataTable('sponsors');

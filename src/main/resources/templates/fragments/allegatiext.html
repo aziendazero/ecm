@@ -27,7 +27,7 @@
 				<span class="small" style="display: block;" th:unless="${note == null}" th:text="${note}">messaggio aggiuntivo</span>
 			</label>
 			<th:block th:if="${editabile}">
-				<div class="col-lg-4 col-md-7 col-sm-7 col-xs-12">
+				<div class="col-lg-4 col-md-7 col-sm-7 col-xs-11">
 					<input type="file" accept="application/pdf" onchange="submitFileExt(this)" th:id="__${propertyName}__" th:attr="typefile=__${tipoAllegato}__, propertyName=__${propertyName}__" th:name="__${propertyName}___multipart" th:required="${required}"
 						style="display: none;" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}"/>
 					<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegatoExt('#__${propertyName}__');|" th:disabled="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}" />
@@ -92,17 +92,17 @@
 				<i th:if="${__${wrapper}__ == comunicazioneWrapper}" class="fa fa-paperclip"></i>
 				<span th:text="#{label.__${propertyName}__}">label.tipoAllegato</span>
 			</label>
-			<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11" th:classappend="${__${wrapper}__ == eventoWrapper} ? 'no-padding'">
+			<div class="allegato" th:classappend="${__${wrapper}__ == eventoWrapper} ? 'no-padding col-xs-11'">
 				<input type="file" onchange="submitFileExt(this)" th:id="__${propertyName}__" th:attr="typefile=__${tipoAllegato}__, propertyName=__${propertyName}__" th:name="__${propertyName}___multipart" required="required"
 					style="display: none;" />
-				<input type="button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegatoExt('#__${propertyName}__');|" />
+				<input type="button" th:id="file_+__${propertyName}__+_button" class="pull-left allegato-btn btn btn-success" th:value="#{label.scegli_file}" th:onclick="|setAllegatoExt('#__${propertyName}__');|" />
 				<div th:unless="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div>
 				<div th:if="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 			</div>
 			<!-- pulsante per aggiungere firma -->
 			<th:block th:if="${withFirma and editabile}">
 				<div class="col-xs-1">
-					<button type="button" th:onclick="|submitFirma('__${propertyName}__');|" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}" data-toggle="modal" data-target="#modalFrame"><i class="fa fa-pencil"></i></button>
+					<button th:id="firma_+__${propertyName}__" type="button" th:onclick="|submitFirma('__${propertyName}__');|" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}" data-toggle="modal" data-target="#modalFrame"><i class="fa fa-pencil"></i></button>
 				</div>
 			</th:block>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${propertyName}__}"></div>
