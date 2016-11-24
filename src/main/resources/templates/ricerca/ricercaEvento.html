@@ -15,6 +15,7 @@
 							<div class="dropdown pull-right">
   								<a class="btn btn-primary" th:if="${ricercaEventoWrapper.providerId != null}" th:href="@{|/provider/${ricercaEventoWrapper.providerId}/evento/list|}" th:text="#{label.indietro}"></a>
   								<a class="btn btn-primary" th:unless="${ricercaEventoWrapper.providerId != null}" th:href="@{/evento/list}" th:text="#{label.indietro}"></a>
+								<a class="btn btn-primary" th:text="#{label.pulisci}" onclick="pulisci()"></a>
   								<a class="btn btn-success" th:text="#{label.cerca}" onclick="submitCerca()"></a>
 							</div>
 						</div>
@@ -641,6 +642,40 @@
 									});
 								}
 							}
+							
+							function pulisci(){
+								$('#providerId input').val('');
+								$('#denominazioneLegale input').val('');
+								$('input[type="checkbox"]').removeAttr('checked').iCheck('update');
+								$('#eventoId input').val('');
+								$('#titoloEvento input').val('');
+								
+								$('#tipologia-RES').selectpicker('val','');
+								$('#tipologia-FSC').selectpicker('val','');
+								$('#tipologia-FAD').selectpicker('val','');
+								
+								$('#obiettivoNazionale').selectpicker('val','');
+								$('#obiettivoRegionale').selectpicker('val','');
+								$('#professioni').selectpicker('val','');
+								$('#discipline').selectpicker('val','');
+								
+								$('#numeroCrediti input').val('');
+								
+								$('#provincia').selectpicker('val','');
+								$('#comune').selectpicker('val','');
+								
+								$('#luogo input').val('');
+								
+								$('#dataInizioStart').val('');
+								$('#dataInizioEnd').val('');
+								
+								$('#dataFineStart').val('');
+								$('#dataFineEnd').val('');
+								
+								$('#dataScadenzaPagamentoStart').val('');
+								$('#dataScadenzaPagamentoEnd').val('');
+							}
+							
 						/*]]>*/
 						</script>
 			

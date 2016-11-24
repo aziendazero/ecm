@@ -11,30 +11,45 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.provider_lista}">Lista dei provider</h2>
+						<a class="btn btn-success pull-right" th:text="#{label.cerca}" th:href="@{/provider/ricerca}"></a>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
 						<table th:unless="${#lists.isEmpty(providerList)}" id="datatable-provider" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
+									<th th:text="#{label.id}">Id</th>
 									<th th:text="#{label.denominazione_legale}">Denominazione legale</th>
 									<th th:text="#{label.tipoOrganizzatore_nome}"></th>
 									<th th:text="#{label.status}">Status del provider</th>
+									
 									<th th:text="#{label.caninsert_piano_formativo}">Inserimento Piano Formativo</th>
 									<th th:text="#{label.caninsert_eventi}">Inserimento Eventi</th>
 									<th th:text="#{label.caninsert_domanda_accreditamento_standard}">Inserimento Domanda Accreditamento Standard</th>
+									
+									<!-- <th th:text="#{label.permessi}">Permessi</th> -->
+									
 									<th th:text="#{label.azioni}">Azioni</th>
 								</tr>
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(providerList)}" th:remove="all-but-first">
 								<tr th:each="provider : ${providerList}" th:class="${provider.gruppo == 'A'} ? 'whiteBGround' : 'yellowBGround'">
-									<td><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/accreditamento/list|}">3d informatica</a></td>
+									<td th:text="${provider.id}"></td>
+									<td class="text-full-length"><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/accreditamento/list|}">3d informatica</a></td>
 									<td th:text="${provider.tipoOrganizzatore.nome}">informatica</td>
 									<td th:text="${provider.status.nome}">stato</td>
+									
 									<td th:text="${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}">abilitato/non abilitato</td>
-									<td th:text="${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard ? 'green' : 'red'}">abilitato/non abilitato</td>
-									<td>
+									<td th:text="${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard ? 'green' : 'red'}">abilitato/non abilitato</td> 
+									
+									<!-- <td class="text-full-length">
+										<div th:text="#{label.caninsert_piano_formativo} + ' ' + ${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}"></div>
+										<div th:text="#{label.caninsert_eventi} + ' ' + ${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}"></div>
+										<div th:text="#{label.caninsert_domanda_accreditamento_standard} + ' ' + ${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard ? 'green' : 'red'}"></div>		
+									</td> -->
+									
+									<td class="text-full-length">
 										<a th:href="@{|/provider/${provider.id}/comunicazione/list|}" class="btn btn-primary min-icon-width" th:title="#{label.comunicazioni_provider}"><i class="fa fa-comments"> </i></a>
 										<a th:href="@{|/provider/${provider.id}/evento/list|}" class="btn btn-primary min-icon-width" th:title="#{label.eventi_provider}"><i class="fa fa-pencil-square-o"> </i></a>
 										<a th:href="@{|/provider/${provider.id}/pianoFormativo/list|}" class="btn btn-primary min-icon-width" th:title="#{label.pfa_provider}"><i class="fa fa-calendar-o"> </i></a>
@@ -56,13 +71,7 @@
 			/*<![CDATA[*/
 
 				$(document).ready(function() {
-					$("#datatable-provider").DataTable({
-						"columnDefs": [ {
-							"targets": 6,
-							"width": "1px",
-							"sClass": "center"
-						} ],
-					});
+					$("#datatable-provider").DataTable();
 				})
 
 			/*]]>*/

@@ -15,6 +15,7 @@
 							<div class="dropdown pull-right">
 								<a class="btn btn-primary" th:if="${ricercaComunicazioneWrapper.providerId != null}" th:href="@{|/provider/${ricercaComunicazioneWrapper.providerId}/comunicazione/list|}" th:text="#{label.indietro}"></a>
   								<a class="btn btn-primary" th:unless="${ricercaComunicazioneWrapper.providerId != null}" th:href="@{/comunicazione/all/list}" th:text="#{label.indietro}"></a>
+  								<a class="btn btn-primary" th:text="#{label.pulisci}" onclick="pulisci()"></a>
   								<a class="btn btn-success" th:text="#{label.cerca}" onclick="submitCerca()"></a>
 							</div>
 						</div>
@@ -191,6 +192,18 @@
 						           
 							function submitCerca(){
 								$("#submitButton").click();
+							}
+							
+							function pulisci(){
+								$('#providerId input').val('');
+								$('#denominazioneLegale input').val('');
+								$('#oggetto input').val('');
+								
+								$('#ambito').selectpicker('val','');
+								$('#tipologia').selectpicker('val','');
+								
+								$('#dataCreazioneStart').val('');
+								$('#dataCreazioneEnd').val('');
 							}
 							
 						/*]]>*/

@@ -44,6 +44,7 @@ import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 
 @Service
 public class AccreditamentoServiceImpl implements AccreditamentoService {
@@ -1036,9 +1037,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			if(accreditamento.isProvvisorio()) {
 			provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
 				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(4));
+				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			} else {
 				provider.setStatus(ProviderStatoEnum.ACCREDITATO_STANDARD);
 				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(2));
+				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			}
 			save(accreditamento);
 		}

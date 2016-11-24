@@ -22,7 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
@@ -35,12 +37,13 @@ import it.tredi.ecm.utils.Utils;
 @ActiveProfiles("dev")
 @WithUserDetails("LBENEDETTI")
 @Rollback(false)
-@Ignore
+//@Ignore
 public class PlymorphicQueryTest {
 
 	@Autowired private EventoService eventoService;
 	@PersistenceContext EntityManager entityManager;
 	
+	@Ignore
 	@Test
 	@Transactional
 	public void query() throws Exception {
@@ -60,6 +63,25 @@ public class PlymorphicQueryTest {
 		//q.setParameter("titoloConvegno", "titoloTest");
 
 		List<Evento> result = q.getResultList(); 
+		
+		System.out.println(result.size());
+	}
+	
+	@Test
+	@Transactional
+	public void queryNew() throws Exception {
+		
+		Set<ProceduraFormativa> pF = new HashSet<ProceduraFormativa>();
+		
+		pF.addAll(Arrays.asList(ProceduraFormativa.values()));
+		
+		String query = "SELECT dati FROM DatiAccreditamento dati JOIN dati.procedureFormative pF WHERE pF IN :procedureFormativeSelezionate";
+
+		Query q = entityManager.createQuery(query, DatiAccreditamento.class);
+		q.setParameter("procedureFormativeSelezionate", pF);
+		//q.setParameter("titoloConvegno", "titoloTest");
+
+		List<DatiAccreditamento> result = q.getResultList(); 
 		
 		System.out.println(result.size());
 	}

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.cerca_provider}"></h2>
+						<div class="pull-right buttons-header">
+							<div class="dropdown pull-right">
+  								<a class="btn btn-primary" th:href="@{/provider/list}" th:text="#{label.indietro}"></a>
+  								<a class="btn btn-primary" th:text="#{label.pulisci}" onclick="pulisci()"></a>
+  								<a class="btn btn-success" th:text="#{label.cerca}" onclick="submitCerca()"></a>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+				<th:block th:fragment="ricercaProvider">
+			
+					<div class="x_content">
+			
+						<form id="formRicercaEvento" class="form-horizontal form-label-left form-evento"
+							th:action="@{|/provider/ricerca|}"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+							
+								<!-- ID PROVIDER -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="providerId">
+										<span th:text="${'ID '} + #{label.provider}">Provider</span>
+									</label>
+			
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="providerId">
+										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaProviderWrapper.campoIdProvider}" />
+									</div>
+								</div>
+							
+								<!-- DENOMINAZIONE LEGALE PROVIDER -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
+										<span th:text="#{label.denominazione_legale} + ${' '}  + #{label.provider}">Provider</span>
+									</label>
+			
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneLegale">
+										<input type="text" class="form-control" th:field="${ricercaProviderWrapper.denominazioneLegale}" />
+									</div>
+								</div>
+								
+								<!-- TIPO EVENTO -->
+								<div class="item form-group select-tipoOrganizzatore">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoOrganizzatore">
+										<span th:text="#{label.tipo_organizzatore}">Tipologia di Evento</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="tipoOrganizzatore" 
+											multiple="multiple"
+											class="selectpicker"
+											th:field="${ricercaProviderWrapper.TipoOrganizzatoreSelezionati}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un tipo organizzatore...">
+											<option
+												th:each="tipo, row: ${T(it.tredi.ecm.dao.enumlist.TipoOrganizzatore).values()}"
+												th:value="${tipo}"
+												th:text="${tipo.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+								
+								<!-- PROVINCIA  -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="provincia">
+										<span th:text="#{label.provincia}">Provincia</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="provincia"
+											multiple="multiple" class="selectpicker"
+											th:field="${ricercaProviderWrapper.provinciaSelezionate}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona una provincia...">
+											<option
+												th:value="${ricercaProviderWrapper.provinciaSelezionate}"
+												th:text="${ricercaProviderWrapper.provinciaSelezionate}">
+											</option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataFineAccreditamento">
+										<h2 th:text="#{label.info_accreditamento}"></h2>
+									</label>
+								</div>
+								
+								<!-- PROCEDURA FORMATIVA -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="proceduraFormativa">
+										<span th:text="#{label.tipologia}">Tipologia</span>
+									</label>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="proceduraFormativa">
+										<div class="checkbox" th:each="tipologia, row : ${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).values()}">
+											<label>
+												<input type="checkbox" class="flat tipologia" th:field="${ricercaProviderWrapper.proceduraFormativaSelezionate}" th:value="${tipologia}"/>
+												<span th:text="${tipologia.name()}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								
+								<!-- TIPO ACCREDITAMENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoAccreditamento">
+										<span th:text="#{label.tipo_accreditamento}">tipoAccreditamento</span>
+									</label>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoAccreditamento"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipoAccreditamento">
+										<div class="checkbox" th:each="tipoDomanda, row : ${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).values()}">
+											<label>
+												<input type="checkbox" class="flat tipoDomanda" th:field="${ricercaProviderWrapper.accreditamentoTipoSelezionati}" th:value="${tipoDomanda}"/>
+												<span th:text="${tipoDomanda.name()}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								
+								<!-- STATO ACCREDITAMENTO -->
+								<div class="item form-group select-statoAccreditamento">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="statoAccreditamento">
+										<span th:text="#{label.stato_accreditamento}">statoAccreditamento</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="statoAccreditamento" 
+											multiple="multiple"
+											class="selectpicker"
+											th:field="${ricercaProviderWrapper.accreditamentoStatoSelezionati}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona uno Stato...">
+											<option
+												th:each="stato, row: ${T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).values()}"
+												th:value="${stato}"
+												th:text="${stato.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
+								
+								<!-- DATA FINE ACCREDITAMENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataFineAccreditamento">
+										<h2 th:text="#{label.data_fine_accreditamento}">Data Fine Accreditamento</h2>
+									</label>
+								</div>
+								<div class="item form-group">
+									<label class="control-label col-sm-2 col-xs-11" for="dataFineAccreditamento">
+										<span th:text="#{label.da}">Data inizio</span>
+									</label>
+									<div class="col-sm-4 col-xs-12 input-group datapick">
+										<input type="text" id="dataFineAccreditamentoStart" class="form-control"
+											name="data" th:field="${ricercaProviderWrapper.dataFineAccreditamentoStart}" />
+										<span class="input-group-addon" id="dataFineAccreditamentoStartButton" onclick="$('#dataFineAccreditamentoStart').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+									<label class="control-label col-sm-2 col-xs-11" for="dataFineAccreditamentoEnd">
+										<span th:text="#{label.a}">Data inizio</span>
+									</label>
+									<div class="col-sm-4 col-xs-12 input-group datapick">
+										<input type="text" id="dataFineAccreditamentoEnd" class="form-control"
+											name="data" th:field="${ricercaProviderWrapper.dataFineAccreditamentoEnd}" />
+										<span class="input-group-addon" id="dataFineAccreditamentoEndButton" onclick="$('#dataFineAccreditamentoEnd').click()">
+				 							<i class="glyphicon glyphicon-calendar"></i>
+										</span>
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
+									
+								<!-- PAGAMENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataFineAccreditamento">
+										<h2 th:text="#{label.contributo_annuale}"></h2>
+									</label>
+								</div>
+								
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="quotaAnnuale"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="quotaAnnuale">
+										<div class="checkbox">
+											<label>
+												<input type="radio" class="flat quotaAnnuale" th:field="${ricercaProviderWrapper.pagato}" th:value="${true}"/>
+												<span th:text="#{label.pagato}"></span>
+											</label>
+											<label>
+												<input type="radio" class="flat quotaAnnuale" th:field="${ricercaProviderWrapper.pagato}" th:value="${false}"/>
+												<span th:text="#{label.non_pagato}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								
+							<input id="submitButton" type="submit" style="display: none;" />
+			
+						</form>
+			
+						<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
+						<script th:inline="javascript">
+						/*<![CDATA[*/
+						     var days;
+							 var months;    
+						           
+						    $(document).ready(function() {
+								//init selecpicker
+							    $('select').selectpicker({
+									selectAllText : 'Seleziona tutti',
+									deselectAllText : 'Deseleziona tutti',
+									countSelectedText : '{0} selezionate'
+								});
+								
+							    days = getDayNamesShort();
+								months = getMonthNames();
+
+								$('#dataFineAccreditamentoStart').daterangepicker({
+							        singleDatePicker: true,
+							        autoApply: true,
+							        autoUpdateInput: true,
+							        format: "DD/MM/YYYY",
+							        locale: {
+								        daysOfWeek: days,
+						                monthNames: months,
+							        }
+							    })
+
+							    $('#dataFineAccreditamentoEnd').daterangepicker({
+							        singleDatePicker: true,
+							        autoApply: true,
+							        autoUpdateInput: true,
+							        format: "DD/MM/YYYY",
+							        locale: {
+								        daysOfWeek: days,
+						                monthNames: months,
+							        }
+							    })
+							    
+								
+								initProvinciaComune('provincia', 'comune');
+
+							});       
+						           
+							function submitCerca(){
+								$("#submitButton").click();
+							}
+							
+							function pulisci(){
+								$('#providerId input').val('');
+								$('#denominazioneLegale input').val('');
+								$('#tipoOrganizzatore').selectpicker('val','');
+								$('#provincia').selectpicker('val','');
+								$('input[type="checkbox"]').removeAttr('checked').iCheck('update');
+								$('#statoAccreditamento').selectpicker('val','');
+								$('#dataFineAccreditamentoStart').val('')
+								$('#dataFineAccreditamentoEnd').val('')
+								$('input[type="radio"]').removeAttr('checked').iCheck('update');
+							}
+							
+						/*]]>*/
+						</script>
+			
+			
+					</div>
+			
+				</th:block>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

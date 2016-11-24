@@ -260,7 +260,7 @@ public class EventoValidator {
 			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
 		}
 		else{
-			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()));
+			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()))
 				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
 		}
 
@@ -279,7 +279,7 @@ public class EventoValidator {
 			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
 		}
 		else{
-			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()));
+			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
 				errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
 		}
 
@@ -298,7 +298,7 @@ public class EventoValidator {
 				&& evento.getContrattiAccordiConvenzioni() == null){
 			errors.rejectValue("contrattiAccordiConvenzioni", "error.empty");
 		}else{
-			if(!fileValidator.validateFirmaCF(evento.getContrattiAccordiConvenzioni(), evento.getProvider().getId()));
+			if(!fileValidator.validateFirmaCF(evento.getContrattiAccordiConvenzioni(), evento.getProvider().getId()))
 				errors.rejectValue("contrattiAccordiConvenzioni", "error.codiceFiscale.firmatario");
 		}
 
@@ -312,7 +312,7 @@ public class EventoValidator {
 					&& evento.getAutocertificazioneAssenzaFinanziamenti() == null){
 				errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.empty");
 			}else{
-				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaFinanziamenti(), evento.getProvider().getId()));
+				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaFinanziamenti(), evento.getProvider().getId()))
 					errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.codiceFiscale.firmatario");
 			}
 		}
@@ -353,7 +353,7 @@ public class EventoValidator {
 		if(evento.getDichiarazioneAssenzaConflittoInteresse() == null){
 			errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.empty");
 		}else{
-			if(!fileValidator.validateFirmaCF(evento.getDichiarazioneAssenzaConflittoInteresse(), evento.getProvider().getId()));
+			if(!fileValidator.validateFirmaCF(evento.getDichiarazioneAssenzaConflittoInteresse(), evento.getProvider().getId()))
 				errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.codiceFiscale.firmatario");
 		}
 
@@ -674,7 +674,7 @@ public class EventoValidator {
 		 * file allegato
 		 * */
 		if(evento.getDocumentoVerificaRicaduteFormative() != null && !evento.getDocumentoVerificaRicaduteFormative().isNew()){
-			if(!fileValidator.validateFirmaCF(evento.getDocumentoVerificaRicaduteFormative(), evento.getProvider().getId()));
+			if(!fileValidator.validateFirmaCF(evento.getDocumentoVerificaRicaduteFormative(), evento.getProvider().getId()))
 				errors.rejectValue("documentoVerificaRicaduteFormative", "error.codiceFiscale.firmatario");
 		}
 
@@ -1055,7 +1055,7 @@ public class EventoValidator {
 		if(evento.getRequisitiHardwareSoftware() == null || evento.getRequisitiHardwareSoftware().isNew()){
 			errors.rejectValue("requisitiHardwareSoftware", "error.empty");
 		}else{
-			if(!fileValidator.validateFirmaCF(evento.getRequisitiHardwareSoftware(), evento.getProvider().getId()));
+			if(!fileValidator.validateFirmaCF(evento.getRequisitiHardwareSoftware(), evento.getProvider().getId()))
 				errors.rejectValue("requisitiHardwareSoftware", "error.codiceFiscale.firmatario");
 		}
 

@@ -2,9 +2,18 @@ package it.tredi.ecm.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
@@ -12,6 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.BaseEntity;
+import it.tredi.ecm.dao.entity.Comunicazione;
+import it.tredi.ecm.dao.entity.Field;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Persona;
@@ -27,6 +39,7 @@ import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 
 @Service
 public class ProviderServiceImpl implements ProviderService {
@@ -41,6 +54,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Autowired private ProfileAndRoleService profileAndRoleService;
 	@Autowired private AccountService accountService;
 	@Autowired private FileService fileService;
+	@PersistenceContext EntityManager entityManager;
 
 	@Override
 	public Provider getProvider() {
@@ -268,4 +282,144 @@ public class ProviderServiceImpl implements ProviderService {
 		LOGGER.debug("Delegato Legale Rappresentante non presente per il Provider: " + providerId);
 		return "";
 	}
+	
+	@Override
+	public List<Provider> cerca(RicercaProviderWrapper wrapper) throws Exception {
+		String query = "";
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		query ="SELECT p FROM Provider p";
+		
+		/* INFO RELATIVE AI PROVIDER */
+		//PROVIDER ID
+		if(wrapper.getCampoIdProvider() != null){
+			query = Utils.QUERY_AND(query, "p.id = :providerId");
+			params.put("providerId", wrapper.getCampoIdProvider());
+		}
+		
+		//DENOMINAZIONE LEGALE
+		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
+			query = Utils.QUERY_AND(query, "UPPER(p.denominazioneLegale) LIKE :denominazioneLegale");
+			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
+		}
+		
+		//TIPO ORGANIZZATORE
+		if(wrapper.getTipoOrganizzatoreSelezionati() != null && !wrapper.getTipoOrganizzatoreSelezionati().isEmpty()){
+			query = Utils.QUERY_AND(query, "p.tipoOrganizzatore IN :tipoOrganizzatoreSelezionati");
+			params.put("tipoOrganizzatoreSelezionati", wrapper.getTipoOrganizzatoreSelezionati());
+		}
+		
+		/* INFO RELATIVE ALL'ACCREDITAMENTO */
+		String query_accreditamento ="";
+		HashMap<String, Object> query_accreditamento_params = new HashMap<String, Object>();	
+		
+		if( (wrapper.getProceduraFormativaSelezionate() != null && !wrapper.getProceduraFormativaSelezionate().isEmpty()) ||  
+			(wrapper.getAccreditamentoTipoSelezionati() != null && !wrapper.getAccreditamentoTipoSelezionati().isEmpty()) ||
+			(wrapper.getAccreditamentoStatoSelezionati() != null && !wrapper.getAccreditamentoStatoSelezionati().isEmpty()) ||
+			(wrapper.getDataFineAccreditamentoStart() != null) || 
+			(wrapper.getDataFineAccreditamentoEnd() != null)	)
+		{
+			query_accreditamento = "SELECT a.provider FROM Accreditamento a JOIN a.datiAccreditamento d JOIN d.procedureFormative pF";
+			
+			//PROCEDURA FORMATIVA
+			if(wrapper.getProceduraFormativaSelezionate() != null && !wrapper.getProceduraFormativaSelezionate().isEmpty()){
+				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "pF IN (:procedureFormativeSelezionate)");
+				//query_accreditamento = Utils.QUERY_AND(query_accreditamento, "d.id IN (SELECT dati.id FROM DatiAccreditamento dati JOIN dati.procedureFormative pF WHERE pF IN :procedureFormativeSelezionate)");
+				query_accreditamento_params.put("procedureFormativeSelezionate", wrapper.getProceduraFormativaSelezionate());
+			}
+			
+			//TIPO ACCREDITAMENTO
+			if(wrapper.getAccreditamentoTipoSelezionati() != null && !wrapper.getAccreditamentoTipoSelezionati().isEmpty()){
+				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "a.tipoDomanda IN :accreditamentoTipoSelezionati");
+				query_accreditamento_params.put("accreditamentoTipoSelezionati", wrapper.getAccreditamentoTipoSelezionati());
+			}
+			
+			//STATO ACCREDITAMENTO
+			if(wrapper.getAccreditamentoStatoSelezionati() != null && !wrapper.getAccreditamentoStatoSelezionati().isEmpty()){
+				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "a.stato IN :accreditamentoStatoSelezionati");
+				query_accreditamento_params.put("accreditamentoStatoSelezionati", wrapper.getAccreditamentoStatoSelezionati());
+			}
+			
+			//DATA ACCREDITAMENTO
+			if(wrapper.getDataFineAccreditamentoStart() != null){
+				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "a.dataFineAccreditamento >= :dataFineAccreditamentoStart");
+				query_accreditamento_params.put("dataFineAccreditamentoStart", wrapper.getDataFineAccreditamentoStart());
+			} 
+			
+			if(wrapper.getDataFineAccreditamentoEnd() != null){
+				query_accreditamento = Utils.QUERY_AND(query_accreditamento, "a.dataFineAccreditamento <= :dataFineAccreditamentoEnd");
+				query_accreditamento_params.put("dataFineAccreditamentoEnd", wrapper.getDataFineAccreditamentoEnd());
+			} 
+		}
+		
+		/* INFO RELATIVE ALLE SEDI */
+		String query_sede ="";
+		HashMap<String, Object> query_sede_params = new HashMap<String, Object>();	
+		
+		if(wrapper.getProvinciaSelezionate() != null && !wrapper.getProvinciaSelezionate().isEmpty()){
+			query_sede = "SELECT s.provider from Sede s JOIN s.provider WHERE s.sedeLegale = true";
+			query_sede = Utils.QUERY_AND(query_sede,"s.provincia IN :provinciaSelezionate");
+			query_sede_params.put("provinciaSelezionate", wrapper.getProvinciaSelezionate());
+		}
+		
+		/* INFO RELATIVE AL PAGAMENTO */
+		String query_quota_annuale ="";
+		HashMap<String, Object> query_quota_annuale_params = new HashMap<String, Object>();
+
+		if(wrapper.getPagato() != null){
+			query_quota_annuale = "SELECT p FROM QuotaAnnuale q JOIN q.provider p";
+			query_quota_annuale = Utils.QUERY_AND(query_quota_annuale, "q.pagato = :pagato");
+			query_quota_annuale_params.put("pagato",wrapper.getPagato().booleanValue());
+		}
+		
+		
+		LOGGER.info(Utils.getLogMessage("Cerca Provider: " + query));
+		List<Provider> result = executeQuery(query, params, Provider.class);
+		
+		List<Provider> resultFromAccreditamento = new ArrayList<Provider>();
+		List<Provider> resultFromSede = new ArrayList<Provider>();
+		List<Provider> resultFromQuotaAnnuale = new ArrayList<Provider>();
+		
+		if(!query_accreditamento.isEmpty()){
+			LOGGER.info(Utils.getLogMessage("Cerca Provider: " + query_accreditamento));
+			resultFromAccreditamento = executeQuery(query_accreditamento, query_accreditamento_params, Provider.class);
+		}
+		
+		if(!query_sede.isEmpty()){
+			LOGGER.info(Utils.getLogMessage("Cerca Provider: " + query_sede));
+			resultFromSede = executeQuery(query_sede, query_sede_params, Provider.class);
+		}
+		
+		if(!query_quota_annuale.isEmpty()){
+			LOGGER.info(Utils.getLogMessage("Cerca Provider: " + query_quota_annuale));
+			resultFromQuotaAnnuale = executeQuery(query_quota_annuale, query_quota_annuale_params, Provider.class);
+		}
+		
+		if(!query_accreditamento.isEmpty())
+			result.retainAll(resultFromAccreditamento);
+		
+		if(!query_sede.isEmpty())
+			result.retainAll(resultFromSede);
+		
+		if(!query_quota_annuale.isEmpty())
+			result.retainAll(resultFromQuotaAnnuale);
+		
+		return result;
+	}
+	
+	private <T extends BaseEntity> List<T> executeQuery(String query, HashMap<String,Object> params, Class<T> className){
+		List<T> result = new ArrayList<T>();
+		
+		Query q = entityManager.createQuery(query, className);
+		Iterator<Entry<String, Object>> iterator = params.entrySet().iterator();
+		while(iterator.hasNext()){
+			Map.Entry<String, Object> pairs = iterator.next();
+			q.setParameter(pairs.getKey(), pairs.getValue());
+			LOGGER.info(Utils.getLogMessage(pairs.getKey() + ": " + pairs.getValue()));
+		}
+		
+		System.out.println(q.getMaxResults());
+		
+		return q.getResultList();
+	}
+	
 }

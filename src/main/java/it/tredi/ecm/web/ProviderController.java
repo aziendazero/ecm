@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
@@ -47,11 +49,14 @@ import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
+import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.ResponseUsername;
+import it.tredi.ecm.web.bean.RicercaProviderWrapper;
+import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
@@ -64,6 +69,7 @@ public class ProviderController {
 	private final String SHOW = "provider/providerShow";
 	private final String VALIDATE = "provider/providerValidate";
 	private final String ENABLEFIELD = "provider/providerEnableField";
+	private final String RICERCA = "ricerca/ricercaProvider";
 
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
@@ -362,7 +368,10 @@ public class ProviderController {
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /provider/list"));
 		try {
-			model.addAttribute("providerList", providerService.getAll());
+			
+			if(model.asMap().get("providerList") == null) 
+				model.addAttribute("providerList", providerService.getAll());
+			
 			LOGGER.info(Utils.getLogMessage("VIEW: /provider/providerList"));
 			return "provider/providerList";
 		}catch (Exception ex) {
@@ -514,4 +523,47 @@ public class ProviderController {
 		return providerWrapper;
 	}
 
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
+	@RequestMapping("/provider/ricerca")
+	public String ricercaProviderGlobale(Model model,RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /provider/ricerca"));
+		try {
+			RicercaProviderWrapper wrapper = prepareRicercaProviderWrapper();
+			model.addAttribute("ricercaProviderWrapper", wrapper);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + RICERCA));
+			return RICERCA;
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/ricerca"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+	
+	@RequestMapping(value = "/provider/ricerca", method = RequestMethod.POST)
+	public String executeRicercaProvider(@ModelAttribute("ricercaProviderWrapper") RicercaProviderWrapper wrapper,
+									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
+		LOGGER.info(Utils.getLogMessage("POST /provider/ricerca"));
+		try {
+
+			String returnRedirect = "redirect:/provider/list";
+			
+			Set<Provider> listaProvider = new HashSet<Provider>();
+			listaProvider.addAll(providerService.cerca(wrapper));
+			
+			redirectAttrs.addFlashAttribute("providerList", listaProvider);
+			
+			return returnRedirect;
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/ricerca"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/provider/ricerca";
+		}
+	}
+	
+	private RicercaProviderWrapper prepareRicercaProviderWrapper(){
+		RicercaProviderWrapper wrapper = new RicercaProviderWrapper();
+		return wrapper;
+	}
+	
 }
