@@ -22,4 +22,3 @@ $('.dropdown-toggle').click(function(e) {
 	}, this), 0);
 });
 
-
