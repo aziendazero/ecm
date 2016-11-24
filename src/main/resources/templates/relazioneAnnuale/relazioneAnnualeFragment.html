@@ -38,7 +38,7 @@
 									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.eventiInseritiPFA}"></div>
 								</div>
 							</div>
-							
+
 							<!-- numero di eventi rendicontati come attuazione di eventi del PFA dell'anno precedente -->
 							<div class="item form-group">
 								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
@@ -48,7 +48,7 @@
 									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.eventiDefinitiviPFA}"></div>
 								</div>
 							</div>
-							
+
 							<!-- numero di eventi manuali rendicontati nell'anno precedente -->
 							<div class="item form-group">
 								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
@@ -58,7 +58,7 @@
 									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.eventiDefinitiviManuali}"></div>
 								</div>
 							</div>
-							
+
 							<!-- totale eventi rendicontati nell'anno precedente -->
 							<div class="item form-group">
 								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
@@ -68,7 +68,7 @@
 									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.totaleEventiDefinitiviNoRiedizioni}"></div>
 								</div>
 							</div>
-							
+
 							<!-- totale eventi rendicontati nell'anno precedente (incluso riedizioni) -->
 							<div class="item form-group">
 								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
@@ -78,7 +78,7 @@
 									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.totaleEventiDefinitiviConRiedizioni}"></div>
 								</div>
 							</div>
-							
+
 							<!-- rapportoAttuazione -->
 							<div class="item form-group">
 								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
@@ -88,10 +88,10 @@
 									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoAttuazione + ' %'}"></div>
 								</div>
 							</div>
-	
+
 							<div class="divider"></div>
 						</th:block>
-						
+
 						<th:block th:if="${showOnly}">
 							<h3 th:text="#{label.resoconto}">Resoconto</h3>
 							<!-- Riepilogo -->
@@ -109,7 +109,7 @@
 		 							</div>
 			 					</div>
 			 				</div>
-			 				
+
 			 				<div class="item form-group">
 			 					<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 			 						<span class="label-show" th:text="#{label.resoconto_discipline}">Tipologia di obiettivi formativi</span>
@@ -124,7 +124,7 @@
 		 							</div>
 			 					</div>
 			 				</div>
-			 				
+
 			 				<div class="item form-group">
 			 					<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 			 						<span class="label-show" th:text="#{label.resoconto_obiettivi}">Tipologia di obiettivi formativi</span>
@@ -139,7 +139,7 @@
 		 							</div>
 			 					</div>
 			 				</div>
-			 				
+
 			 				<div class="item form-group">
 			 					<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
 			 						<span class="label-show" th:text="#{label.resoconto_obiettivi_regionali}">Tipologia di obiettivi formativi</span>
@@ -154,7 +154,7 @@
 		 							</div>
 			 					</div>
 			 				</div>
-							
+
 							<!-- rapportoObiettiviRegionali -->
 							<div class="item form-group">
 								<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
@@ -164,7 +164,7 @@
 									<div class="value" th:classappend="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali &lt; 30} ? 'danger'" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.rapportoObiettiviRegionali + ' %'}"></div>
 								</div>
 							</div>
-							
+
 							<th:block th:if="${showOnly}">
 								<!-- numero partecipanti/tutor/docenti che hanno acquisito i crediti -->
 								<div class="item form-group">
@@ -177,10 +177,10 @@
 									</div>
 								</div>
 							</th:block>
-							
+
 							<div class="divider"></div>
 						</th:block>
-						
+
 						<h3 th:text="#{label.resoconto_economico}">Resoconto Economico</h3>
 						<!-- numeroPartecipantiNoCrediti -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti')} ? 'bad'">
@@ -202,7 +202,7 @@
 							</th:block>
 							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiNoCrediti}"></div>
 						</div>
-						
+
 						<!-- costiTotaliEventi -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" th:classappend="${showOnly} ? 'col-sm-offset-1'">
@@ -218,12 +218,12 @@
 							</th:block>
 							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi}"></div>
+									<div class="value" th:text="${#numbers.formatDecimal(relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi, 1, 'POINT', 2, 'COMMA')}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.costiTotaliEventi}"></div>
 						</div>
-						
+
 						<!-- ricaviDaSponsor -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" th:classappend="${showOnly} ? 'col-sm-offset-1'">
@@ -239,12 +239,12 @@
 							</th:block>
 							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor}"></div>
+									<div class="value" th:text="${#numbers.formatDecimal(relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor, 1, 'POINT', 2, 'COMMA')}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.ricaviDaSponsor}"></div>
 						</div>
-						
+
 						<!-- altriFinanziamenti -->
 						<div class="item form-group" th:classappend="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti')} ? 'bad'">
 							<label class="control-label col-md-4 col-sm-4 col-xs-12" th:classappend="${showOnly} ? 'col-sm-offset-1'">
@@ -260,7 +260,7 @@
 							</th:block>
 							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti}"></div>
+									<div class="value" th:text="${#numbers.formatDecimal(relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti, 1, 'POINT', 2, 'COMMA')}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.altriFinanziamenti}"></div>
@@ -281,12 +281,12 @@
 							</th:block>
 							<th:block th:if="${showOnly}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione}"></div>
+									<div class="value" th:text="${#numbers.formatDecimal(relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione, 1, 'POINT', 2, 'COMMA')}"></div>
 								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione')}" class="alert col-xs-12" th:errors="${relazioneAnnualeWrapper.relazioneAnnuale.quoteDiPartecipazione}"></div>
 						</div>
-						
+
 						<th:block th:if="${showOnly}">
 							<!-- rapportoCostiEntrate -->
 							<div class="item form-group">
@@ -298,9 +298,9 @@
 								</div>
 							</div>
 						</th:block>
-						
+
 						<div class="divider-dashed"></div>
-						
+
 						<h3 th:text="#{label.relazioneFinale}">Relazione Finale</h3>
 						<!--   ALLEGATO (RELAZIONE FINALE)   -->
 						<th:block th:if="${editabile}">
@@ -327,7 +327,7 @@
 								</div>
 							</div>
 						</th:block>
-				
+
 						<input id="submitButton" type="submit" style="display: none;" />
 
 					</form>

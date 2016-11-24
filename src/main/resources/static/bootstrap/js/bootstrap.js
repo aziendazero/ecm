@@ -1,3 +1,10 @@
+/* variable for multiple modals
+ * Copyright Thomas Iommi (professional workarounder)
+ * Licensed under the MIT license
+ */
+var modalCounter = 0;
+
+
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -971,6 +978,7 @@ if (typeof jQuery === 'undefined') {
     this.checkScrollbar()
     this.setScrollbar()
     this.$body.addClass('modal-open')
+    modalCounter++; //patch Thomas multiple modals
 
     this.escape()
     this.resize()
@@ -1078,7 +1086,10 @@ if (typeof jQuery === 'undefined') {
     var that = this
     this.$element.hide()
     this.backdrop(function () {
-      that.$body.removeClass('modal-open')
+      modalCounter--;  //patch Thomas multiple modals)
+      if(modalCounter == 0) {
+        that.$body.removeClass('modal-open')
+      } // end patch
       that.resetAdjustments()
       that.resetScrollbar()
       that.$element.trigger('hidden.bs.modal')
@@ -1175,13 +1186,17 @@ if (typeof jQuery === 'undefined') {
   }
 
   Modal.prototype.setScrollbar = function () {
-    var bodyPad = parseInt((this.$body.css('padding-right') || 0), 10)
-    this.originalBodyPad = document.body.style.paddingRight || ''
-    if (this.bodyIsOverflowing) this.$body.css('padding-right', bodyPad + this.scrollbarWidth)
+	if(modalCounter == 0) { //patch
+	    var bodyPad = parseInt((this.$body.css('padding-right') || 0), 10)
+	    this.originalBodyPad = document.body.style.paddingRight || ''
+	    if (this.bodyIsOverflowing) this.$body.css('padding-right', bodyPad + this.scrollbarWidth)
+	}
   }
 
   Modal.prototype.resetScrollbar = function () {
-    this.$body.css('padding-right', this.originalBodyPad)
+	  if(modalCounter == 0) { //patch
+		  this.$body.css('padding-right', parseInt((this.$body.css('padding-right') || 0), 10) - this.scrollbarWidth)
+	  }
   }
 
   Modal.prototype.measureScrollbar = function () { // thx walsh

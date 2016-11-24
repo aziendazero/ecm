@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<th:block th:fragment="fragmentError">
+
+	 	<div class="container">
+			<div class='hasErrorAjax' th:id='|errore[${row.index}]|' th:each='error, row : ${errorsAjaxWrapper.mappaErrori}'>
+				<span class='keyErrore' th:text='${error.key}'></span>
+				<span class='valueErrore' th:text='#{__${error.value}__}'></span>
+			</div>
+		</div>
+
+	</th:block>
+</body>
+</html>

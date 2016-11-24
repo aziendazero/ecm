@@ -115,7 +115,7 @@
 													<option
 														th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
 														th:value="${risultato.value}"
-														th:unless="${risultato.value == null}"
+														th:unless="${risultato.value == null or risultato.value.isEmpty()}"
 														th:text="${risultato.value}">Risultato
 													</option>
 												</select>
@@ -1040,7 +1040,7 @@
 												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="quota">
-												<input th:disabled="${isRiedizione or isEditSemiBloccato}" type="text" pattern="numeric" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" />
+												<input th:disabled="${isRiedizione or isEditSemiBloccato}" type="text" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" />
 											</div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.quotaPartecipazione')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.quotaPartecipazione')}__}"></div>
 										</div>
@@ -1845,7 +1845,6 @@
 					  	$('#' + target).html(data);
 					  	//risale al valore della input
 					  	var value = $(caller).prev().val();
-					  	substituteAllToSelectAttivitaRES("addAttivitaRES-risultatiAttesi", "risultatoPicker");
 					  	reInitComponents();
 					  })
 				  	.fail(function() {
@@ -1994,7 +1993,7 @@
 				}
 
 				function closeModaleAddAttivitaTo(){
-					$("#add-attivitaRES-modal .close").click();
+					$("#add-attivitaRES-modal").modal("hide");
 					$("#add-attivitaRES-modal form")[0].reset();
 
 					$('#tempAttivitaRES\\.orarioInizio').val('');
@@ -2060,12 +2059,12 @@
 				 	 })
 				}
 
-				function addToSelectAttivitaRES(target, value){
-					var option = '<option value = "' + value + '">' + value + "</option>";
-					$('#' + target).append(option);
-					$('#' + target).prop("disabled", false);
-					$('#' + target).selectpicker('refresh');
-				}
+// 				function addToSelectAttivitaRES(target, value){
+// 					var option = '<option value = "' + value + '">' + value + "</option>";
+// 					$('#' + target).append(option);
+// 					$('#' + target).prop("disabled", false);
+// 					$('#' + target).selectpicker('refresh');
+// 				}
 
 				function removeFromSelectAttivitaRES(target, value){
 					$('#' + target +" option[value='" + value + "']").remove();
@@ -2129,7 +2128,7 @@
 						case '1': 	reInitDataTable('docenti');
 									reInitDataTable('responsabiliScientifici');
 									break;
-						case '2':  	//TODO
+						case '2':  	substituteAllToSelectAttivitaRES("addAttivitaRES-risultatiAttesi", "risultatoPicker");
 									break;
 						case '3':	reInitDataTable('responsabileSegreteria');
 									reInitDataTable('sponsors');
