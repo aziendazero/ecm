@@ -8,12 +8,21 @@
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-xs-12">
+
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.docenti_relatori_tutor} + ' / ' + #{label.responsabili_scientifici}">Docenti/Relatori/Tutor/Responsabili Scientifici</h2>
+						<h2 th:text="#{label.anagrafiche_evento}">Anagrafiche evento</h2>
 						<div class="pull-right buttons-header">
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
 						</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.docenti_relatori_tutor} + ' / ' + #{label.responsabili_scientifici}">Docenti/Relatori/Tutor/Responsabili Scientifici</h2>
 						<div class="clearfix"></div>
 					</div>
 
@@ -49,9 +58,6 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.responsabile_segreteria_organizzativa}">Responsabile segreteria organizzativa</h2>
-						<div class="pull-right buttons-header">
-							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
-						</div>
 						<div class="clearfix"></div>
 					</div>
 

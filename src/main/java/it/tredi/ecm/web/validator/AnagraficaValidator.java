@@ -1,5 +1,7 @@
 package it.tredi.ecm.web.validator;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -12,6 +14,7 @@ import org.springframework.validation.Errors;
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
+import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
 import it.tredi.ecm.dao.entity.AnagraficaFullEventoBase;
 import it.tredi.ecm.service.AnagraficaEventoService;
 import it.tredi.ecm.service.AnagraficaFullEventoService;
@@ -72,6 +75,8 @@ public class AnagraficaValidator {
 			errors.rejectValue(prefix + "pec", "error.empty");
 	}
 
+	//validator anagrafica docenti/tutor e responsabili evento (Gestione Anagrafiche Ruoli Evento)
+	//non controllo univocità del cf perchè non è modificabile
 	public void validateAnagraficaEvento(Object target, Errors errors, String prefix, Long providerId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione AnagraficaEvento Base"));
 		AnagraficaEvento anagraficaEvento = (AnagraficaEvento) target;
@@ -90,7 +95,29 @@ public class AnagraficaValidator {
 			errors.rejectValue(prefix + "cv", "error.codiceFiscale.firmatario");
 	}
 
-	//validator anagrafica docenti/tutor e responsabili evento (modale)
+	//validator anagrafica docenti/tutor e responsabili evento (Gestione Anagrafiche Ruoli Evento)
+	//non controllo univocità del cf perchè non è modificabile
+	public void validateAnagraficaFullEvento(Object target, Errors errors, String prefix, Long providerId) throws Exception{
+		LOGGER.info(Utils.getLogMessage("Validazione AnagraficaEvento Base"));
+		AnagraficaFullEvento anagraficaEvento = (AnagraficaFullEvento) target;
+
+		if(anagraficaEvento == null)
+			anagraficaEvento = new AnagraficaFullEvento();
+		if(anagraficaEvento.getAnagrafica().getCognome() == null || anagraficaEvento.getAnagrafica().getCognome().isEmpty())
+			errors.rejectValue(prefix + "cognome", "error.empty");
+		if(anagraficaEvento.getAnagrafica().getNome() == null || anagraficaEvento.getAnagrafica().getNome().isEmpty())
+			errors.rejectValue(prefix + "nome", "error.empty");
+		if(anagraficaEvento.getAnagrafica().getCodiceFiscale() == null || anagraficaEvento.getAnagrafica().getCodiceFiscale().isEmpty())
+			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
+		if(anagraficaEvento.getAnagrafica().getEmail() == null || anagraficaEvento.getAnagrafica().getEmail().isEmpty())
+			errors.rejectValue(prefix + "email", "error.empty");
+		if(anagraficaEvento.getAnagrafica().getTelefono() == null || anagraficaEvento.getAnagrafica().getTelefono().isEmpty())
+			errors.rejectValue(prefix + "telefono", "error.empty");
+		if(anagraficaEvento.getAnagrafica().getCellulare() == null || anagraficaEvento.getAnagrafica().getCellulare().isEmpty())
+			errors.rejectValue(prefix + "cellulare", "error.empty");
+	}
+
+	//validator anagrafica responsabile di segreteria evento (modale)
 	public Map<String, String> validateAnagraficaBaseEvento(AnagraficaEventoBase anagrafica, Long providerId, String prefix) throws Exception {
 		Map<String, String> errMap = new HashMap<String, String>();
 		if(anagrafica.getNome() == null || anagrafica.getNome().isEmpty())

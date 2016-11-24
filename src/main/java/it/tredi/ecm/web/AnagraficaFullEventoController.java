@@ -23,6 +23,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AnagraficaFullEventoWrapper;
 import it.tredi.ecm.web.bean.AnagraficaWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.validator.AnagraficaValidator;
 
 @Controller
 public class AnagraficaFullEventoController {
@@ -33,6 +34,7 @@ public class AnagraficaFullEventoController {
 
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
 	@Autowired private ProviderService providerService;
+	@Autowired private AnagraficaValidator anagraficaValidator;
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -78,7 +80,7 @@ public class AnagraficaFullEventoController {
 									@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/{providerId}/anagraficaFullEvento/save"));
 		try {
-			//anagraficaFullValidator.validateBase(wrapper.getAnagrafica(), result, "anagrafica.", providerId);
+			anagraficaValidator.validateAnagraficaFullEvento(wrapper.getAnagraficaEvento(), result, "anagraficaEvento.anagrafica.", providerId);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
