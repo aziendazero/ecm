@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -81,9 +82,11 @@ import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.ErrorsAjaxWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
+import it.tredi.ecm.web.validator.AnagraficaValidator;
 import it.tredi.ecm.web.validator.EventoValidator;
 import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
 
@@ -98,6 +101,7 @@ public class EventoController {
 	@Autowired private ObiettivoService obiettivoService;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private FileService fileService;
+	@Autowired private AnagraficaValidator anagraficaValidator;
 
 	@Autowired private AnagraficaEventoService anagraficaEventoService;
 	@Autowired private AnagraficaFullEventoService anagraficaFullEventoService;
@@ -119,6 +123,7 @@ public class EventoController {
 	private final String EDITFSC = "evento/eventoFSCEdit";
 	private final String EDITFAD = "evento/eventoFADEdit";
 	private final String RICERCA = "ricerca/ricercaEvento";
+	private final String ERROR = "fragments/errorsAjax";
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -697,27 +702,44 @@ public class EventoController {
 		try{
 			if(modificaElemento == null || modificaElemento.isEmpty()){
 				//INSERIMENTO NUOVA PERSONA
-
-				//TODO da fare solo se rispetta il validator
 				AnagraficaEventoBase anagraficaBase = eventoWrapper.getTempPersonaEvento().getAnagrafica();
+				Long providerId = eventoWrapper.getEvento().getProvider().getId();
+
+				//inserimento file in anagrafica
+				if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew()) {
+					File cv = fileService.getFile(eventoWrapper.getCv().getId());
+					cv.getData();
+					if(fromLookUp != null && Boolean.valueOf(fromLookUp)){
+						File f = (File) cv.clone();
+						fileService.save(f);
+						anagraficaBase.setCv(f);
+					}else{
+						anagraficaBase.setCv(cv);
+					}
+				}
+
 				//check se non esiste -> si registra l'anagrafica per il provider
-				if(anagraficaBase != null && !anagraficaBase.getCodiceFiscale().isEmpty()){
-					if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaBase.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
-						if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew()){
-							File cv = fileService.getFile(eventoWrapper.getCv().getId());
-							cv.getData();
-							if(fromLookUp != null && Boolean.valueOf(fromLookUp)){
-								File f = (File) cv.clone();
-								fileService.save(f);
-								anagraficaBase.setCv(f);
-							}else{
-								anagraficaBase.setCv(cv);
-							}
+				if(anagraficaBase != null) {
+					//init gestione errori
+					ErrorsAjaxWrapper errWrapper = new ErrorsAjaxWrapper();
+					Map<String, String> errMap = new HashMap<String, String>();
+					if(!Boolean.valueOf(fromLookUp)) {
+						//validator
+						errMap = anagraficaValidator.validateAnagraficaBaseEvento(anagraficaBase, providerId, "anagraficaBase_");
+					}
+					if(!errMap.isEmpty()) {
+						errWrapper.setMappaErrori(errMap);
+						model.addAttribute("errorsAjaxWrapper", errWrapper);
+						return ERROR + " :: fragmentError";
+					}
+					else {
+						//salva solo se non duplicato
+						if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaBase.getCodiceFiscale(), providerId) == null) {
+							AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
+							anagraficaEventoToSave.setAnagrafica(anagraficaBase);
+							anagraficaEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
+							anagraficaEventoService.save(anagraficaEventoToSave);
 						}
-						AnagraficaEvento anagraficaEventoToSave = new AnagraficaEvento();
-						anagraficaEventoToSave.setAnagrafica(anagraficaBase);
-						anagraficaEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
-						anagraficaEventoService.save(anagraficaEventoToSave);
 					}
 				}
 
@@ -725,27 +747,23 @@ public class EventoController {
 				if(target.equalsIgnoreCase("responsabiliScientifici")){
 					//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in in AddAttivitaRES (select si basa su id della entity)
 					//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
-
-					File cv = p.getAnagrafica().getCv();
-					if(cv != null) {
-						cv.getData();
-						File f = (File) cv.clone();
+					File cvAnagrafica = p.getAnagrafica().getCv();
+					if(cvAnagrafica != null) {
+						cvAnagrafica.getData();
+						File f = (File) cvAnagrafica.clone();
 						fileService.save(f);
 						p.getAnagrafica().setCv(f);
 					}
-
 					personaEventoRepository.save(p);
 					eventoWrapper.getResponsabiliScientifici().add(p);
 				}else if(target.equalsIgnoreCase("docenti")){
-
-					File cv = p.getAnagrafica().getCv();
-					if(cv != null) {
-						cv.getData();
-						File f = (File) cv.clone();
+					File cvAnagrafica = p.getAnagrafica().getCv();
+					if(cvAnagrafica != null) {
+						cvAnagrafica.getData();
+						File f = (File) cvAnagrafica.clone();
 						fileService.save(f);
 						p.getAnagrafica().setCv(f);
 					}
-
 					personaEventoRepository.save(p);
 					eventoWrapper.getDocenti().add(p);
 				}
@@ -771,24 +789,38 @@ public class EventoController {
 
 	@RequestMapping(value = "/provider/{providerId}/evento/addPersonaFullTo", method=RequestMethod.POST, params={"addPersonaFullTo"})
 	public String addPersonaFullTo(@RequestParam("addPersonaFullTo") String target,
+									@RequestParam("fromLookUpFull") String fromLookUpFull,
 									@RequestParam(name = "modificaElementoFull",required=false) String modificaElemento,
-										@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+									@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			if(modificaElemento == null || modificaElemento.isEmpty()){
 				//INSERIMENTO NUOVA PERSONA
-
-				//TODO da fare solo se rispetta il validator
+				//validator
 				AnagraficaFullEventoBase anagraficaFull = eventoWrapper.getTempPersonaFullEvento().getAnagrafica();
-				//check se non esiste -> si registra l'anagrafica per il provider
-				if(anagraficaFull != null && !anagraficaFull.getCodiceFiscale().isEmpty()){
-					if(anagraficaFullEventoService.getAnagraficaFullEventoByCodiceFiscaleForProvider(anagraficaFull.getCodiceFiscale(), eventoWrapper.getEvento().getProvider().getId()) == null){
-						AnagraficaFullEvento anagraficaFullEventoToSave = new AnagraficaFullEvento();
-						anagraficaFullEventoToSave.setAnagrafica(anagraficaFull);
-						anagraficaFullEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
-						anagraficaFullEventoService.save(anagraficaFullEventoToSave);
+				Long providerId = eventoWrapper.getEvento().getProvider().getId();
+				if(anagraficaFull != null) {
+					//init gestione errori
+					ErrorsAjaxWrapper errWrapper = new ErrorsAjaxWrapper();
+					Map<String, String> errMap = new HashMap<String, String>();
+					if(!Boolean.valueOf(fromLookUpFull)) {
+						//validator
+						errMap = anagraficaValidator.validateAnagraficaFullEvento(anagraficaFull, providerId, "anagraficaFull_");
+					}
+					if(!errMap.isEmpty()) {
+						errWrapper.setMappaErrori(errMap);
+						model.addAttribute("errorsAjaxWrapper", errWrapper);
+						return ERROR + " :: fragmentError";
+					}
+					else {
+						//salva solo se non duplicato
+						if(anagraficaFullEventoService.getAnagraficaFullEventoByCodiceFiscaleForProvider(anagraficaFull.getCodiceFiscale(), providerId) == null) {
+							AnagraficaFullEvento anagraficaFullEventoToSave = new AnagraficaFullEvento();
+							anagraficaFullEventoToSave.setAnagrafica(anagraficaFull);
+							anagraficaFullEventoToSave.setProvider(eventoWrapper.getEvento().getProvider());
+							anagraficaFullEventoService.save(anagraficaFullEventoToSave);
+						}
 					}
 				}
-
 				//PersonaFullEvento p = (PersonaFullEvento) Utils.copy(eventoWrapper.getTempPersonaFullEvento());
 				PersonaFullEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaFullEvento());
 				if(target.equalsIgnoreCase("responsabileSegreteria")){
@@ -798,7 +830,6 @@ public class EventoController {
 				//MODIFICA
 				eventoWrapper.getEvento().setResponsabileSegreteria(eventoWrapper.getTempPersonaFullEvento());
 			}
-
 			eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento());
 			return EDIT + " :: " + target;
 		}catch (Exception ex){
@@ -902,6 +933,26 @@ public class EventoController {
 				PersonaEvento p = new PersonaEvento(anagraficaEventoService.getAnagraficaEvento(angraficaEventoId));
 				eventoWrapper.setTempPersonaEvento(p);
 				eventoWrapper.setCv(p.getAnagrafica().getCv());
+				return EDIT + " :: #addPersonaTo";
+			}
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
+		}
+	}
+
+	@RequestMapping(value = "/provider/{providerId}/evento/setNewAnagraficaEvento/{type}", method=RequestMethod.GET)
+	public String newPersona(@PathVariable("type") String type,
+			@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+		try{
+			if(type.equalsIgnoreCase("Full")){
+				eventoWrapper.setTempPersonaFullEvento(new PersonaFullEvento());
+				return EDIT + " :: #addPersonaFullTo";
+			}else{
+				PersonaEvento p = new PersonaEvento();
+				eventoWrapper.setTempPersonaEvento(p);
+				eventoWrapper.setCv(new File());
 				return EDIT + " :: #addPersonaTo";
 			}
 		}catch (Exception ex){

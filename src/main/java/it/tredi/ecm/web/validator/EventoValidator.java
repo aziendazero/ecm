@@ -121,7 +121,8 @@ public class EventoValidator {
 			//impedisce anticipazioni di date di eventi validati e un cambio di numero di date confrontando con l'evento
 			//sul DB non ancora modificato
 			Evento eventoDaDB = eventoService.getEvento(evento.getId());
-			if(evento.getDataInizio().isBefore(eventoDaDB.getDataInizio()))
+			//la segreteria solo può anticipare la data di un evento
+			if(evento.getDataInizio().isBefore(eventoDaDB.getDataInizio()) && !Utils.getAuthenticatedUser().isSegreteria())
 				errors.rejectValue(prefix + "dataInizio", "error.anticipazione_data_non_possibile");
 			else if(evento instanceof EventoRES) {
 				//numero date da rispettare

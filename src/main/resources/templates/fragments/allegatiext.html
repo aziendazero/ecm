@@ -83,7 +83,7 @@
 	<th:block th:unless="${__withIdEditabili__}" th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
 			showOnly=${mode == 'show'}">
-		<div th:id="__${propertyName}__-parent" class="item form-group" th:classappend="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')} ? 'bad'">
+		<div th:id="__${propertyName}__-parent">
 
 			<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.nomeFile}" />

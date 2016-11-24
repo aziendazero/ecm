@@ -1614,7 +1614,7 @@
 
 				/*parametrizzabile passando solo FSC*/
 			 	function closeModaleAddAttivitaTo(){
-					$("#add-attivitaFSC-modal .close").click();
+					$("#add-attivitaFSC-modal").modal("hide");
 					$("#add-attivitaFSC-modal form")[0].reset();
 
 					$.each($("#add-attivitaFSC-modal .selectpicker"),function(){
@@ -1744,7 +1744,7 @@
 				}
 
 				function closeModaleAddRuoloOreFSCTo(){
-					$("#add-ruoloOreFSC-modal .close").click();
+					$("#add-ruoloOreFSC-modal").modal("hide");
 					$("#add-ruoloOreFSC-modal form")[0].reset();
 					$("#add-ruoloOreFSC-modal .selectpicker").selectpicker('val','')
 				}
