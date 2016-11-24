@@ -116,6 +116,8 @@ public class AnagraficaValidator {
 			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
 		if(anagraficaEvento.getAnagrafica().getEmail() == null || anagraficaEvento.getAnagrafica().getEmail().isEmpty())
 			errors.rejectValue(prefix + "email", "error.empty");
+		else if(!Pattern.matches(PATTERN_EMAIL, anagraficaEvento.getAnagrafica().getEmail()))
+			errors.rejectValue(prefix + "email", "error.invalid");
 		if(anagraficaEvento.getAnagrafica().getTelefono() == null || anagraficaEvento.getAnagrafica().getTelefono().isEmpty())
 			errors.rejectValue(prefix + "telefono", "error.empty");
 		if(anagraficaEvento.getAnagrafica().getCellulare() == null || anagraficaEvento.getAnagrafica().getCellulare().isEmpty())
