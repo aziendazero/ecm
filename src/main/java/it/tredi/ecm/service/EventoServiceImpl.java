@@ -1679,4 +1679,19 @@ public class EventoServiceImpl implements EventoService {
 		else
 			return false;
 	}
+
+	@Override
+	public Sponsor getSponsorById(Long sponsorId) {
+		LOGGER.debug("Recupero sponsor: " + sponsorId);
+		return sponsorRepository.findOne(sponsorId);
+	}
+
+	@Override
+	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId) {
+		Evento evento = getEvento(eventoId);
+		sponsor.setSponsorFile(sponsorFile);
+		sponsorRepository.save(sponsor);
+		//TODO check se tutti gli sponsor in evento hanno il contratto e setta flag
+
+	}
 }

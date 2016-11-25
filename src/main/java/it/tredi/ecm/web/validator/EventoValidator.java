@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.omg.CORBA.TRANSACTION_MODE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,7 @@ import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
@@ -1629,6 +1629,17 @@ public class EventoValidator {
 		}
 
 		return false;
+	}
+
+	public Map<String, String> validateContrattoSponsor(File sponsorFile, Long providerId, String prefix) throws Exception {
+		Map<String, String> errMap = new HashMap<String, String>();
+
+		if(sponsorFile == null || sponsorFile.isNew())
+			errMap.put("file_"+prefix+"_button", "error.empty");
+		else if(!fileValidator.validateFirmaCF(sponsorFile, providerId))
+			errMap.put("file_"+prefix+"_button", "error.codiceFiscale.firmatario");
+
+		return errMap;
 	}
 
 }
