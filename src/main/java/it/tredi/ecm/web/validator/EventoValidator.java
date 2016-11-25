@@ -1290,6 +1290,7 @@ public class EventoValidator {
 		else {
 			int counter = 0;
 			boolean atLeastOneErrorAzione = false;
+			boolean errorePartecipanteAudit = false;
 			boolean atLeastOnePartecipante = false;
 			boolean atLeastOneTutor = false;
 
@@ -1333,12 +1334,16 @@ public class EventoValidator {
 				while (iterator.hasNext()) {
 					Map.Entry<RuoloFSCEnum,Float> pairs = iterator.next();
 					if(pairs.getValue() < 2)
-						atLeastOneErrorAzione = true;
+						errorePartecipanteAudit = true;
+					else if((pairs.getValue() % 2) != 0f)
+						errorePartecipanteAudit = true;
 				 }
 			}
 
 			if(atLeastOneErrorAzione)
 				errors.rejectValue(prefix + "azioniRuoli", "error.campi_con_errori_azione_ruoli"+tipologiaEvento);
+			else if(errorePartecipanteAudit)
+				errors.rejectValue(prefix + "azioniRuoli", "error.partecipanti_AUDIT_ore");
 			return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
 		}
 	}
@@ -1489,6 +1494,8 @@ public class EventoValidator {
 						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 //							if(r.getTempoDedicato() < 2)
 //								return new boolean[] {true, hasPartecipante, hasTutor};
+//							else if((r.getTempoDedicato() % 2) != 0f)
+//								return new boolean[] {true, hasPartecipante, hasTutor};
 							hasPartecipante = true;
 						}
 					}
@@ -1515,13 +1522,15 @@ public class EventoValidator {
 
 				//tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO
 				// - massimo 25 partecipanti per ruolo
-				// - impegno complessivo minimo 8 ore totali per tutti i ruoli
+				// - impegno complessivo minimo 8 ore totali per tutti i ruoli tranne ruolo COORDINATORE
 				// - massimo un coordinatore
 				case GRUPPI_DI_MIGLIORAMENTO:
 
 					if(riepilogoRuoli.getNumeroPartecipanti() > 25)
 						return true;
-					if(riepilogoRuoli.getTempoDedicato() < 8f)
+					if(riepilogoRuoli.getTempoDedicato() < 8f
+							&& riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() != RuoloFSCBaseEnum.COORDINATORE)
 						return true;
 					if(riepilogoRuoli.getRuolo() != null
 							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
