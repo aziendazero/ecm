@@ -52,9 +52,9 @@
 								<td th:if="${editabile}">
 									<span style="white-space: nowrap">
 										<!-- <a th:if="${!evento.new and __${pianoFormativo}__.pianoModificabile and editabileFull}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/delete|}" class="btn btn-table double btn-danger"><span class="fa fa-trash"></span> <span th:text="#{label.elimina}"></span></a> -->
-										
-										<button th:if="${!evento.new and __${pianoFormativo}__.pianoModificabile and editabileFull}" class="btn btn-danger btn-table double" th:onclick="|confirmDeleteEventoPianoFormativoModal('${__${pianoFormativo}__.provider.id}','${__${pianoFormativo}__.id}','${evento.id}','${prefixURL}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina}"> </span></button>
-										
+
+										<button th:if="${!evento.new and __${pianoFormativo}__.pianoModificabile and editabileFull}" class="btn btn-danger btn-table double" th:onclick="|confirmDeleteEventoPianoFormativoModal('${__${pianoFormativo}__.provider.id}','${__${pianoFormativo}__.id}','${evento.id}','@{|${prefixURL}|}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina}"> </span></button>
+
 										<a th:if="${evento.new or !__${pianoFormativo}__.pianoModificabile or !editabileFull}" class="btn btn-table double btn-danger disabled"><span class="fa fa-trash"></span> <span th:text="#{label.elimina}"></span></a>
 										<a th:if="${!evento.new and idEditabili != null and !#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(idEditabili, evento.id,'EVENTO_PIANO_FORMATIVO'))}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>
 										<a th:if="${!evento.new and idEditabili == null and editabileFull}" th:href="@{|${prefixURL}/provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/edit|}" class="btn btn-primary btn-table double"><span class="fa fa-pencil"></span> <span th:text="#{label.modifica}">Modifica</span></a>

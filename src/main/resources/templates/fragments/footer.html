@@ -436,7 +436,6 @@
 			function confirmDeleteEventoPianoFormativoModal(providerId,pianoFormativoId,eventoId,prefixUrl,tipo,codiceIdentificativo){
 			    $('#deleteModal').modal();
 
-			    var prefix = [[@{prefixUrl}]];
 			    var url = prefixUrl + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + eventoId + "/delete";
 
 			    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamnete l'evento " + codiceIdentificativo + " (" + tipo + ")?</h2>");

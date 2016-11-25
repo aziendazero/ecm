@@ -1186,7 +1186,7 @@
 			//modale di lookup della persona
 			function openLookupPersona(target,type){
 				var table = $('#tabella-modale').DataTable();
-				table.clear();
+				table.clear().draw();
 				var startUrl = [[@{|/provider/${eventoWrapper.evento.provider.id}/|}]];
 				urlGet =  type == 'Full' ? startUrl + "anagraficaFullEventoList" : startUrl + "anagraficaEventoList";
 				$.get( urlGet, function(data){
