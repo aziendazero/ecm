@@ -471,6 +471,29 @@
 									</div>
 								</div>
 
+								<!-- PAGAMENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataFineAccreditamento">
+										<h2 th:text="#{label.stato_pagamento}"></h2>
+									</label>
+								</div>
+
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="pagamento"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="pagamento">
+										<div class="checkbox">
+											<label>
+												<input type="radio" class="flat pagamento" th:field="${ricercaEventoWrapper.pagato}" th:value="${true}"/>
+												<span th:text="#{label.pagato}"></span>
+											</label>
+											<label>
+												<input type="radio" class="flat pagamento" th:field="${ricercaEventoWrapper.pagato}" th:value="${false}"/>
+												<span th:text="#{label.non_pagato}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+
 							<input id="submitButton" type="submit" style="display: none;" />
 
 						</form>
