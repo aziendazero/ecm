@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.anagrafe_regionale_crediti}">Anagrafe Regionale Crediti</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<!-- tabella di tutte le anagrafiche relative agli eventi del provider corrente -->
+					<div class="x-content">
+						<table id="tabella-modale" class="datatable-responsive-search-anagrafe-regionale table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.seleziona_anno_riferimento}">Codice fiscale</th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="anno, row : ${annoList}">
+									<td><a th:text="${anno}" th:href="@{|/anagrafeRegionaleCrediti/${annoList[__${row.index}__]}/list|}">Codice fiscale</a></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<div class="divider"></div>
+
+					</div>
+				</div>
+
+				<script th:inline="javascript">
+				/*<![CDATA[*/
+				$(document).ready(function() {
+					$(".datatable-responsive-search-anagrafe-regionale").DataTable();
+				})
+				/*]]>*/
+				</script>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

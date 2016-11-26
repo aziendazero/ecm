@@ -87,7 +87,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 	/** Permette tutti i tipi di pagamento. Si può modificare se necessario impedire certe forme di pagamento (vedi documentazione) */
 	public static final String TIPO_VERSAMENTO_ALL = "ALL";
-	public static String ENDPOINT_PAGAMENTI = ""; 
+	public static String ENDPOINT_PAGAMENTI = "";
 
 	// costanti
 	public static final String ENTE_NON_VALIDO = "PAA_ENTE_NON_VALIDO"; // codice IPA Ente non valido o password errata
@@ -217,7 +217,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setEmail(soggetto.getEmailStruttura());
 		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
 		p.setCausale(CAUSALE_PAGAMENTO_EVENTO + " - " + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo());
-		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
+		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione());
 
 		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.
 		String iud = StringUtils.rightPad(engineeringProperties.getServizio() + fmt.get().format(new Date()), 35, "0");
@@ -236,7 +236,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 		PaaSILInviaDovutiRisposta response = port.get().paaSILInviaDovuti(dovuti, header);
 
-		p.setIdSession(response.getIdSession());		
+		p.setIdSession(response.getIdSession());
 		e = p.getEvento();
 		e.setPagInCorso(true);
 
@@ -261,7 +261,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 	}
 
 	private String prepareDatiPagamentoPerQuotaAnnuale(Pagamento p, QuotaAnnuale quotaAnnuale, String causale, String backURL) throws Exception{
-		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione()); 
+		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione());
 
 		String iud = StringUtils.rightPad(engineeringProperties.getServizio() + fmt.get().format(new Date()), 35, "0");
 		LOGGER.info("IUD: " + iud);
@@ -277,7 +277,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 		PaaSILInviaDovutiRisposta response = port.get().paaSILInviaDovuti(dovuti, header);
 
-		p.setIdSession(response.getIdSession());		
+		p.setIdSession(response.getIdSession());
 		quotaAnnuale.setPagInCorso(true);
 
 		PagDovutiLog log = new PagDovutiLog();
@@ -304,9 +304,9 @@ public class EngineeringServiceImpl implements EngineeringService {
 	 * @param p l'oggetto Pagamento con le informazioni sul pagamento da effettuare
 	 * @param backUrl l'url verso cui redirigere al termine o all'annullamento del pagamento.
 	 * @return l'input per la chiamata al WS dei pagamenti
-	 * @throws JAXBException 
-	 * @throws TransformerException 
-	 * @throws IOException 
+	 * @throws JAXBException
+	 * @throws TransformerException
+	 * @throws IOException
 	 */
 	private PaaSILInviaDovuti createPagamentoMessage(Pagamento p, String backUrl, String tipoDovuto) throws TransformerException, JAXBException, IOException {
 		CtDatiSingoloVersamentoDovuti versamento = new CtDatiSingoloVersamentoDovuti();
@@ -339,7 +339,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		CtDovuti ctDovuti = new CtDovuti();
 		ctDovuti.setDatiVersamento(datiVersamento);
 		ctDovuti.setSoggettoPagatore(soggettoPagatore);
-		ctDovuti.setVersioneOggetto(VERSIONE); 
+		ctDovuti.setVersioneOggetto(VERSIONE);
 
 
 		PaaSILInviaDovuti dovuti = new PaaSILInviaDovuti();
@@ -453,7 +453,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 	 * */
 	public void esitoPagamentiQuoteAnnuali() throws Exception {
 		Set<Pagamento> pagamenti = quotaAnnualeService.getPagamentiProviderDaVerificare();
-		
+
 		Holder<FaultBean> fault;
 		Holder<DataHandler> pagati;
 
@@ -501,7 +501,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 						//Se si riferisce al pagamento della prima quota per iscrizione -> abilito le funzionalita'
 						if(quotaAnnuale.getPrimoAnno() != null && quotaAnnuale.getPrimoAnno().booleanValue())
 							providerService.abilitaFunzionalitaAfterPagamento(quotaAnnuale.getProvider().getId());
-						
+
 					} else {
 						quotaAnnuale.setPagato(false);
 					}
@@ -513,7 +513,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 					p.setIdentificativoUnivocoRiscosse(item.getIdentificativoUnivocoRiscossione());
 					p.setImportoTotalePagato(item.getSingoloImportoPagato().doubleValue());
 					p.setDataPagamento(item.getDataEsitoSingoloPagamento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-					
+
 					// informazioni ridondanti in caso qualcuno dovesse ripetere il pagamento posso risalire allo storico.
 					log.setDataEsitoSingoloPagamento(item.getDataEsitoSingoloPagamento().getTime());
 					log.setEsitoSingoloPagamento(item.getEsitoSingoloPagamento());
@@ -549,7 +549,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 	public File saveFileFirmato(String xml) throws Exception {
 		LOGGER.debug("Salvataggio file firmato");
-		
+
 		xml = java.net.URLDecoder.decode(xml, "UTF-8");
 		LOGGER.debug(xml);
 
@@ -558,9 +558,9 @@ public class EngineeringServiceImpl implements EngineeringService {
 		Document doc = builder.parse(new InputSource(new StringReader(xml)));
 		XPathFactory xPathfactory = XPathFactory.newInstance();
 		XPath xpath = xPathfactory.newXPath();
-		String urlSignedBytes = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/@urlSignedBytes").evaluate(doc);  
-		String name = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/@name").evaluate(doc);  
-		String idString = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/INFORMAZIONI").evaluate(doc);  
+		String urlSignedBytes = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/@urlSignedBytes").evaluate(doc);
+		String name = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/@name").evaluate(doc);
+		String idString = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/INFORMAZIONI").evaluate(doc);
 
 		File file = fileService.getFile(Long.parseLong(idString));
 
@@ -578,7 +578,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		}
 
 		return file;
-		
+
 	}
 
 }

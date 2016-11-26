@@ -172,8 +172,22 @@
 										<span class="label-show" th:text="#{label.numero_partecipanti_acquisito_crediti}">Cognome</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-										<!-- TODO export da xml-->
-										<!-- <div class="value" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.numeroPartecipantiConCrediti}"></div> -->
+										<div class="value-edit">
+				 							<ul>
+												<li class="listStyle-elenco" th:each="partecipante, row : ${relazioneAnnualeWrapper.relazioneAnnuale.riepilogoAnagrafeAventeCrediti}">
+													<label th:text="${partecipante.key + ' - ' + partecipante.value}"></label>
+												</li>
+				 							</ul>
+		 								</div>
+									</div>
+								</div>
+								<!-- numero professioni che hanno acquisito i crediti -->
+								<div class="item form-group">
+									<label class="control-label col-sm-offset-1 col-md-4 col-sm-4 col-xs-12">
+										<span class="label-show" th:text="#{label.numero_professioni_acquisito_crediti}">Cognome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<div class="value-edit" th:text="${relazioneAnnualeWrapper.relazioneAnnuale.professioniAventeCrediti}"></div>
 									</div>
 								</div>
 							</th:block>

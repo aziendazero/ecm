@@ -304,6 +304,23 @@ public class Evento extends BaseEntity{
 
 	private Boolean autorizzazionePrivacy;
 
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="evento", orphanRemoval=true)
+	private Set<AnagrafeRegionaleCrediti> anagrafeRegionaleCrediti = new HashSet<AnagrafeRegionaleCrediti>();
+
+	public void setAnagrafeRegionaleCrediti(Set<AnagrafeRegionaleCrediti> items){
+		if(anagrafeRegionaleCrediti == null)
+			anagrafeRegionaleCrediti = new HashSet<AnagrafeRegionaleCrediti>();
+
+		for(AnagrafeRegionaleCrediti a : items){
+			a.setEvento(this);
+		}
+
+		if(items != null){
+			anagrafeRegionaleCrediti.clear();
+			anagrafeRegionaleCrediti.addAll(items);
+		}
+	}
+
 	public void calcolaCosto() throws Exception{
 		if(provider.isGruppoA()){
 			costo = 0.00;
@@ -331,7 +348,7 @@ public class Evento extends BaseEntity{
 	public boolean canEdit(){
 		if(stato == EventoStatoEnum.BOZZA)
 			return true;
-		
+
 		if(stato == EventoStatoEnum.VALIDATO){
 			if(dataFine != null && dataFine.isBefore(LocalDate.now())){
 				return true;
@@ -339,8 +356,8 @@ public class Evento extends BaseEntity{
 				return false;
 			}
 		}
-			
-		
+
+
 		if(stato == EventoStatoEnum.CANCELLATO)
 			return false;
 

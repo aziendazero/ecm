@@ -344,4 +344,11 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 			return true;
 		return false;
 	}
+
+	@Override
+	public boolean canShowAnagrafeRegionale(CurrentUser currentUser) {
+		if (currentUser.isSegreteria())
+			return true;
+		return false;
+	}
 }

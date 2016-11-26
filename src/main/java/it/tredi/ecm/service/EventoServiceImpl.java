@@ -39,6 +39,7 @@ import it.tredi.ecm.cogeaps.Helper;
 import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.AnagrafeRegionaleCrediti;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
@@ -111,6 +112,8 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private ProviderService providerService;
 	@Autowired private FileValidator fileValidator;
 	@Autowired private PianoFormativoService pianoFormativoService;
+
+	@Autowired private AnagrafeRegionaleCreditiService anagrafeRegionaleCreditiService;
 
 	@Autowired private EcmProperties ecmProperties;
 
@@ -481,6 +484,7 @@ public class EventoServiceImpl implements EventoService {
 				else{
 					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.SUCCESS);
 					evento.setStato(EventoStatoEnum.RAPPORTATO);
+					evento.setAnagrafeRegionaleCrediti(XmlReportValidator.extractAnagrafeRegionaleCreditiPartecipantiFromXml(ultimaRendicontazioneInviata.getFileName(), ultimaRendicontazioneInviata.getFileRendicontazione().getData()));//extract info AnagrafeRegionaleCrediti
 					save(evento);
 				}
 				ultimaRendicontazioneInviata.setStato(RendicontazioneInviataStatoEnum.COMPLETED);
@@ -1357,6 +1361,7 @@ public class EventoServiceImpl implements EventoService {
 		riedizione.setEventoPianoFormativo(null);
 		riedizione.setDataScadenzaPagamento(null);
 		riedizione.setInviiRendicontazione(new HashSet<RendicontazioneInviata>());
+		riedizione.setAnagrafeRegionaleCrediti(new HashSet<AnagrafeRegionaleCrediti>());
 		riedizione.setPagato(null);
 		riedizione.setPagInCorso(null);
 		riedizione.setProceduraVerificaQualitaPercepita(null);
@@ -1601,6 +1606,12 @@ public class EventoServiceImpl implements EventoService {
 			if(wrapper.getDataScadenzaPagamentoEnd() != null){
 				query = Utils.QUERY_AND(query, "e.dataScadenzaPagamento <= :dataScadenzaPagamentoEnd");
 				params.put("dataScadenzaPagamentoEnd", wrapper.getDataScadenzaPagamentoEnd());
+			}
+
+			//STATO PAGAMENTO
+			if(wrapper.getPagato() != null){
+				query = Utils.QUERY_AND(query, "e.pagato = :pagato");
+				params.put("pagato", wrapper.getPagato().booleanValue());
 			}
 
 		LOGGER.info(Utils.getLogMessage("Cerca Evento: " + query));

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<databaseChangeLog 
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
-	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <include file="000_01_sequence.xml" relativeToChangelogFile="true"/>
@@ -10,14 +10,18 @@
     <include file="000_03_primaryKey.xml" relativeToChangelogFile="true"/>
     <include file="000_04_unique.xml" relativeToChangelogFile="true"/>
     <include file="000_05_foreignKey.xml" relativeToChangelogFile="true"/>
-    
+
     <include file="001_00_loaddata.xml" relativeToChangelogFile="true"/>
-    
+
     <include file="002_20161117_163720_evento_dataScadenzaInvioRendicontazione.xml" relativeToChangelogFile="true"/>
-    
+
     <include file="002_20161117_165101_modifica_colonna_sponsor_upload.xml" relativeToChangelogFile="true"/>
-    
+
     <include file="002_20161121_103000_rinomina_colonna_tipologia_evento_fad.xml" relativeToChangelogFile="true"/>
-    
+
     <include file="003_00_20161118_105800_loaddata.xml" relativeToChangelogFile="true"/>
+
+    <include file="004_1_20161125_creazione_anagrafe_regionale_crediti.xml" relativeToChangelogFile="true"/>
+
+	<include file="004_2_20161125_relazione_annuale_riepilogo_anagrafe_professioni_aventi_crediti.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

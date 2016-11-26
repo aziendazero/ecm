@@ -22,7 +22,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
-import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,11 +44,11 @@ public class RelazioneAnnuale extends BaseEntity{
 	private Set<Evento> eventiAttuati = new HashSet<Evento>();
 
 	@Transient
-	private Set<Evento> eventiRendicontati = new HashSet<Evento>();
+	private Set<Evento> eventiRendicontati = new HashSet<Evento>();//EventoStatoEnum.RAPPORTATO && !isRiedizione()
 	@Transient
-	private Set<Evento> eventiAnnullati = new HashSet<Evento>();
+	private Set<Evento> eventiAnnullati = new HashSet<Evento>();//EventoStatoEnum.CANCELLATO
 	@Transient
-	private Set<Evento> eventiRendicontati_Riedizione = new HashSet<Evento>();
+	private Set<Evento> eventiRendicontati_Riedizione = new HashSet<Evento>();//EventoStatoEnum.RAPPORTATO && isRiedizione()
 
 	private int eventiInseritiPFA = 0;//numero di eventi inseriti nel PFA dell'anno precedente
 	private int eventiDefinitiviPFA = 0;//numero di eventi rendicontati come attuazione di eventi del PFA dell'anno precedente
@@ -96,6 +95,14 @@ public class RelazioneAnnuale extends BaseEntity{
 	private Map<Obiettivo, Integer> riepilogoObiettiviRegionali = new HashMap<Obiettivo, Integer>();
 
 	private BigDecimal rapportoObiettiviRegionali =  new BigDecimal(0);//(# eventi con ObiettiviRegionali / # totale di eventi)
+
+	@ElementCollection
+	@MapKeyColumn(name="key_ruolo_anagrafe")
+	@Column(name="value")
+	@CollectionTable(name="relazione_annuale_riepilogo_anagrafe_avente_crediti", joinColumns=@JoinColumn(name="relazione_annuale_id"))
+	private Map<String,Integer> riepilogoAnagrafeAventeCrediti = new HashMap<String,Integer>();//lista di professionisti che hanno conseguito crediti nell anno di riferimento
+
+	private int professioniAventeCrediti = 0;//numero di professioni che hanno ricevuto crediti
 
 	@OneToOne
 	private File relazioneFinale;

@@ -23,6 +23,8 @@ public class Helper {
 
 	public final static String CODICE_ENTE_ACCREDITANTE = "050";
 	public final static String []EVENTO_XML_ATTRIBUTES = {"cod_evento", "cod_edi", "cod_org", "cod_accr", "data_ini", "data_fine", "ore", "crediti", "tipo_form", "tipo_eve", "cod_obi", "num_part", "cod_tipologia_form"};
+	public final static String []PARTECIPANTE_XML_ATTRIBUTES = {"cod_fisc", "cognome", "nome", "ruolo", "cred_acq", "data_acq"};//solo quelli che servono per salvare le info anagrafe regionali crediti
+	public final static String PARTECIPANTE_DATA_FORMAT = "yyyy-MM-dd";
 
 	//TODO - gestire eccezioni
 
