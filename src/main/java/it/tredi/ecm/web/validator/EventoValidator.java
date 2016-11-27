@@ -1636,8 +1636,8 @@ public class EventoValidator {
 
 		if(sponsorFile == null || sponsorFile.isNew())
 			errMap.put("file_"+prefix+"_button", "error.empty");
-//		else if(!fileValidator.validateFirmaCF(sponsorFile, providerId))
-//			errMap.put("file_"+prefix+"_button", "error.codiceFiscale.firmatario");
+		else if(!fileValidator.validateFirmaCF(sponsorFile, providerId))
+			errMap.put("file_"+prefix+"_button", "error.codiceFiscale.firmatario");
 
 		return errMap;
 	}
