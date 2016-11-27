@@ -510,12 +510,12 @@ public class EventoController {
 		@RequestMapping("/provider/{providerId}/evento/{eventoId}/allegaContrattiSponsor")
 		public String allegaContrattiSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
 			try{
-				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/allegaSponsor"));
+				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/allegaContrattiSponsor"));
 				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				return goToAllegaSponsor(model, prepareSponsorWrapper(providerId, eventoService.getEvento(eventoId)));
 			}
 			catch (Exception ex) {
-				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/allegaSponsor"),ex);
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/allegaContrattiSponsor"),ex);
 				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
 				return "redirect:/provider/" + providerId + "/evento/list";
@@ -524,9 +524,11 @@ public class EventoController {
 
 		//salva allegato contratto sponsor e ritorna info da aggiornare sulla tabella o errori da far visualizzare
 		//TODO	@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
-		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/sponsor/{sponsorId}/contratto/save", method = RequestMethod.POST)
+		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/sponsor/{sponsorId}/saveContratto", method = RequestMethod.POST)
 		public String salvaContrattoSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, @PathVariable Long sponsorId,
-				@RequestParam("modeModalSponsor") String modeModalSponsor, @ModelAttribute("sponsorWrapper") SponsorWrapper wrapper, Model model, RedirectAttributes redirectAttrs) {
+				@RequestParam(name = "idModalSponsor", required=false) Long idModalSponsor,
+				@RequestParam(name = "modeModalSponsor") String modeModalSponsor,
+				@ModelAttribute ("sponsorWrapper") SponsorWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
 			try{
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/sponsor/" + sponsorId + "/contratto/save"));
 				Map<String, String> errMap = eventoValidator.validateContrattoSponsor(wrapper.getSponsorFile(), providerId, "sponsorFile");
@@ -538,13 +540,30 @@ public class EventoController {
 				}
 				else {
 					Sponsor sponsor = eventoService.getSponsorById(sponsorId);
-					eventoService.saveAndCheckContrattoSponsorEvento(wrapper.getSponsorFile(), sponsor, eventoId);
+					eventoService.saveAndCheckContrattoSponsorEvento(wrapper.getSponsorFile(), sponsor, eventoId, modeModalSponsor);
 					model.addAttribute("sponsor", sponsor);
-					return SPONSOR + ":: allegatoContrattoSponsorTable[" + sponsorId + "]";
+					return SPONSOR + ":: allegatoContrattoSponsorTable";
 				}
 			}
 			catch (Exception ex) {
 				LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/sponsor/" + sponsorId + "/contratto/save"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				return "redirect:/provider/"+ providerId + "/evento/" + eventoId + "/allegaContrattiSponsor";
+			}
+		}
+
+		@RequestMapping("/provider/{providerId}/evento/{eventoId}/sponsor/{sponsorId}/loadModaleSponsor")
+		public String caricaModaleSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, @PathVariable Long sponsorId,
+				@ModelAttribute ("sponsorWrapper") SponsorWrapper wrapper, Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/sponsor/" + sponsorId + "/loadModaleSponsor"));
+				Sponsor sponsor = eventoService.getSponsorById(sponsorId);
+				wrapper.setSponsorFile(sponsor.getSponsorFile());
+				model.addAttribute("sponsorWrapper", wrapper);
+				return SPONSOR + ":: allegatoContrattoSponsorModal";
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/sponsor/" + sponsorId + "/loadModaleSponsor"),ex);
 				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				return "redirect:/provider/"+ providerId + "/evento/" + eventoId + "/allegaContrattiSponsor";
 			}

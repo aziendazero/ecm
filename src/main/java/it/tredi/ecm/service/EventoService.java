@@ -57,5 +57,5 @@ public interface EventoService {
 	public boolean isEventoIniziato(Evento evento);
 	public boolean hasDataInizioRestrictions(Evento evento);
 	public Sponsor getSponsorById(Long sponsorId);
-	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId);
+	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode);
 }

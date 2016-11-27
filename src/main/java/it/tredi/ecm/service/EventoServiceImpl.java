@@ -1687,11 +1687,22 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
-	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId) {
+	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode) {
 		Evento evento = getEvento(eventoId);
+		if(mode == "edit") {
+			fileService.deleteById(sponsor.getSponsorFile().getId());
+		}
 		sponsor.setSponsorFile(sponsorFile);
 		sponsorRepository.save(sponsor);
-		//TODO check se tutti gli sponsor in evento hanno il contratto e setta flag
-
+		//check se sono stati inseriti tutti i Contratti sponsor
+		boolean allSponsorsOk = true;
+		for(Sponsor s : evento.getSponsors()) {
+			if(s.getSponsorFile() == null || s.getSponsorFile().isNew())
+				allSponsorsOk = false;
+		}
+		if(allSponsorsOk) {
+			evento.setSponsorUploaded(true);
+			save(evento);
+		}
 	}
 }
