@@ -436,7 +436,7 @@
 			function confirmDeleteEventoPianoFormativoModal(providerId,pianoFormativoId,eventoId,prefixUrl,tipo,codiceIdentificativo){
 			    $('#deleteModal').modal();
 
-			    var url = prefixUrl + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + eventoId + "/delete";
+			    var url = prefixUrl + "provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + eventoId + "/delete";
 
 			    $('#deleteMsg').html("<h2>Si desidera eliminare definitivamente l'evento " + codiceIdentificativo + " (" + tipo + ")?</h2>");
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
