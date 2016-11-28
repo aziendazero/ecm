@@ -52,7 +52,10 @@
 								<tr th:each="accreditamento : ${accreditamentoList}">
 									<td><a th:href="@{|/accreditamento/${accreditamento.id}/show|}" th:text="${accreditamento.tipoDomanda.nome}">Provvisorio/Standard</a></td>
 									<td th:text="${accreditamento.provider.denominazioneLegale}">Provvisorio/Standard</td>
-									<td th:text="${accreditamento.provider.partitaIva != null and !#strings.isEmpty(accreditamento.provider.partitaIva) ? accreditamento.provider.codiceFiscale + ' (' + accreditamento.provider.partitaIva +')' : accreditamento.provider.codiceFiscale}">RTFEWE03543534 o IVA4353425345321</td>
+									<td>
+										<span th:if="${accreditamento.provider.codiceFiscale != null and !#strings.isEmpty(accreditamento.provider.codiceFiscale)}" th:text="${accreditamento.provider.codiceFiscale}"></span>
+										<span th:if="${accreditamento.provider.partitaIva != null and !#strings.isEmpty(accreditamento.provider.partitaIva)}" th:text="${'(' + accreditamento.provider.partitaIva + ')'}"></span>
+									</td>
 									<td th:text="${accreditamento.provider.gruppo}">informatica</td>
 									<td th:text="${accreditamento.stato.nome}">Accettata</td>
 									<th:block th:unless="${#authentication.principal.hasProfile('REFEREE')}">

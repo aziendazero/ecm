@@ -38,22 +38,22 @@ public class Persona extends BaseEntity{
 	@JoinColumn(name = "anagrafica_id")
 	@ManyToOne(cascade = {CascadeType.PERSIST , CascadeType.MERGE})
 	private Anagrafica anagrafica = new Anagrafica();
-	
+
 	@JsonView(JsonViewModel.Integrazione.class)
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;
-	
+
 	@JsonView(JsonViewModel.Integrazione.class)
 	@Enumerated(EnumType.STRING)
 	private Ruolo ruolo;
-	
+
 	@JsonView(JsonViewModel.Integrazione.class)
 	private String incarico = "";
-	
+
 	@JsonView(JsonViewModel.Integrazione.class)
 	@OneToOne
 	private Professione professione;
-	
+
 	@JsonView(JsonViewModel.Integrazione.class)
 	private Boolean coordinatoreComitatoScientifico;
 
@@ -64,7 +64,7 @@ public class Persona extends BaseEntity{
 				inverseJoinColumns={@JoinColumn(name="files_id")}
 	)
 	Set<File> files = new HashSet<File>();
-	
+
 	//se true significa che non è stato ancora validato dalla segreteria
 	@JsonView(JsonViewModel.Integrazione.class)
 	private boolean dirty = false;
@@ -86,7 +86,7 @@ public class Persona extends BaseEntity{
 		}
 		this.getFiles().add(file);
 	}
-	
+
 	/***	CHECK RUOLO DELLA PERSONA	***/
 	public boolean isResponsabileSegreteria(){
 		return ruolo == Ruolo.RESPONSABILE_SEGRETERIA;
@@ -127,7 +127,7 @@ public class Persona extends BaseEntity{
 		Persona entitapiatta = (Persona) o;
 		return Objects.equals(id, entitapiatta.id);
 	}
-	
+
 	@Override
 	public Persona clone() throws CloneNotSupportedException {
 		Persona cloned = (Persona) super.clone();

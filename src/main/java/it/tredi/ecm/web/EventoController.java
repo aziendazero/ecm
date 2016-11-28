@@ -531,6 +531,11 @@ public class EventoController {
 				@ModelAttribute ("sponsorWrapper") SponsorWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
 			try{
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/sponsor/" + sponsorId + "/contratto/save"));
+
+				File f = wrapper.getSponsorFile();
+				if(f!= null && !f.isNew())
+					wrapper.setSponsorFile(fileService.getFile(f.getId()));
+
 				Map<String, String> errMap = eventoValidator.validateContrattoSponsor(wrapper.getSponsorFile(), providerId, "sponsorFile");
 				if(!errMap.isEmpty()) {
 					ErrorsAjaxWrapper errWrapper = new ErrorsAjaxWrapper();

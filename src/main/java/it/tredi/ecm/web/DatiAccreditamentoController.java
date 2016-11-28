@@ -406,14 +406,15 @@ public class DatiAccreditamentoController {
 			wrapper.setProvider(accreditamento.getProvider());
 		}else{
 			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
-			wrapper.setFiles(wrapper.getProvider().getFiles());
+			if(!reloadByEditId)
+				wrapper.setFiles(wrapper.getProvider().getFiles());
 		}
 
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 
-		if(!wrapper.getDatiAccreditamento().isNew()){
+		if(!reloadByEditId && !wrapper.getDatiAccreditamento().isNew()){
 			wrapper.setFiles(wrapper.getProvider().getFiles());
 		}
 

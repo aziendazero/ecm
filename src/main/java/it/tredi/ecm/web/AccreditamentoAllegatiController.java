@@ -362,7 +362,8 @@ public class AccreditamentoAllegatiController {
 		}
 
 		//set dei files sul wrapper, per allinearmi nel caso ci fossero dei fieldIntegrazione relativi a files
-		wrapper.setFiles(wrapper.getProvider().getFiles());
+		if(!reloadByEditId)
+			wrapper.setFiles(wrapper.getProvider().getFiles());
 
 		LOGGER.debug(Utils.getLogMessage("__EXITING PREPAREWRAPPER__"));
 		integrazioneService.isManaged(wrapper.getProvider());
