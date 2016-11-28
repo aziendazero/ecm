@@ -1689,8 +1689,11 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode) {
 		Evento evento = getEvento(eventoId);
-		if(mode == "edit") {
-			fileService.deleteById(sponsor.getSponsorFile().getId());
+		if(mode.equals("edit")) {
+			Long fileId = sponsor.getSponsorFile().getId();
+			sponsor.setSponsorFile(null);
+			sponsorRepository.save(sponsor);
+			fileService.deleteById(fileId);
 		}
 		sponsor.setSponsorFile(sponsorFile);
 		sponsorRepository.save(sponsor);

@@ -46,4 +46,6 @@ public interface SecurityAccessService {
 	boolean canProviderCreateUser(CurrentUser currentUser, Long providerId);
 
 	public boolean canSendComunicazioni(CurrentUser currentUser);
+
+	public boolean canAllegaSponsorEvento(CurrentUser currentUser, Long eventoId);
 }

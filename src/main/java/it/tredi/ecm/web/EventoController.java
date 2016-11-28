@@ -506,7 +506,7 @@ public class EventoController {
 		}
 
 		//goto inserimento allegati contratti sponsor
-		//TODO	@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
+		@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
 		@RequestMapping("/provider/{providerId}/evento/{eventoId}/allegaContrattiSponsor")
 		public String allegaContrattiSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
 			try{
@@ -523,7 +523,7 @@ public class EventoController {
 		}
 
 		//salva allegato contratto sponsor e ritorna info da aggiornare sulla tabella o errori da far visualizzare
-		//TODO	@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
+		@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
 		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/sponsor/{sponsorId}/saveContratto", method = RequestMethod.POST)
 		public String salvaContrattoSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, @PathVariable Long sponsorId,
 				@RequestParam(name = "idModalSponsor", required=false) Long idModalSponsor,
@@ -552,6 +552,7 @@ public class EventoController {
 			}
 		}
 
+		@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
 		@RequestMapping("/provider/{providerId}/evento/{eventoId}/sponsor/{sponsorId}/loadModaleSponsor")
 		public String caricaModaleSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, @PathVariable Long sponsorId,
 				@ModelAttribute ("sponsorWrapper") SponsorWrapper wrapper, Model model, RedirectAttributes redirectAttrs) {

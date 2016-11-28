@@ -5,11 +5,11 @@
 </head>
 <body>
 <th:block th:fragment="allegati_old(wrapper, withIdEditabili, tipoAllegato, fieldKey, fieldRuolo, note, withFirma, mode, required)">
-	
+
 	<div class="row">
 		<div id="modalFrame" class="modal" tabindex="-1" role="dialog" >
 			<div role="document" style="margin: 30px auto; width: 520px;">
-				<!-- Modal content--> 
+				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -21,7 +21,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- wrapper con idEditabili -->
 	<th:block th:if="${__withIdEditabili__}" th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
