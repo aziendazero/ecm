@@ -28,20 +28,27 @@
 
 					<!-- tabella di tutte le anagrafiche relative agli eventi del provider corrente -->
 					<div class="x-content">
-						<table id="tabella-modale" class="datatable-responsive-search-anagrafica-evento table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<table id="tabella-modale" class="datatable-responsive-search-anagrafica-evento-docenti table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
 									<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
-									<th th:text="#{label.nome}">Nome</th>
 									<th th:text="#{label.cognome}">Cognome</th>
+									<th th:text="#{label.nome}">Nome</th>
+									<th th:text="#{label.stato_cv}">Cognome</th>
 									<th th:text="#{label.azioni}">Azioni</th>
 								</tr>
 							</thead>
 							<tbody th:remove="all-but-first">
 								<tr th:each="anagraficaEvento, row : ${anagraficaEventoList}">
 									<td><a th:text="${anagraficaEvento.anagrafica.codiceFiscale}" th:href="@{|/provider/${anagraficaEvento.provider.id}/anagraficaEvento/${anagraficaEvento.id}/show|}">Codice fiscale</a></td>
-									<td th:text="${anagraficaEvento.anagrafica.nome}">Cognome</td>
 									<td th:text="${anagraficaEvento.anagrafica.cognome}">Cognome</td>
+										<td th:text="${anagraficaEvento.anagrafica.nome}">Nome</td>
+									<td>
+										<th:block th:if="${anagraficaEvento.anagrafica.cv?.id}">
+											<span th:if="${#temporals.createToday().minusYears(1).isAfter(anagraficaEvento.anagrafica?.cv.dataCreazione)}" th:text="#{label.cv_non_aggiornato}" class="orange"></span>
+											<span th:unless="${#temporals.createToday().minusYears(1).isAfter(anagraficaEvento.anagrafica?.cv.dataCreazione)}" th:text="#{label.cv_aggiornato}" class="green"></span>
+										</th:block>
+									</td>
 									<td>
 										<a class="btn btn-success" th:text="#{label.modifica}" th:href="@{|/provider/${anagraficaEvento.provider.id}/anagraficaEvento/${anagraficaEvento.id}/edit|}"></a>
 									</td>
@@ -69,16 +76,16 @@
 							<thead>
 								<tr>
 									<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
-									<th th:text="#{label.nome}">Nome</th>
 									<th th:text="#{label.cognome}">Cognome</th>
+									<th th:text="#{label.nome}">Nome</th>
 									<th th:text="#{label.azioni}">Azioni</th>
 								</tr>
 							</thead>
 							<tbody th:remove="all-but-first">
 								<tr th:each="anagraficaFullEvento, row : ${anagraficaFullEventoList}">
 									<td><a th:text="${anagraficaFullEvento.anagrafica.codiceFiscale}" th:href="@{|/provider/${anagraficaFullEvento.provider.id}/anagraficaFullEvento/${anagraficaFullEvento.id}/show|}">Codice fiscale</a></td>
-									<td th:text="${anagraficaFullEvento.anagrafica.nome}">Cognome</td>
 									<td th:text="${anagraficaFullEvento.anagrafica.cognome}">Cognome</td>
+									<td th:text="${anagraficaFullEvento.anagrafica.nome}">Nome</td>
 									<td>
 										<a class="btn btn-success" th:text="#{label.modifica}" th:href="@{|/provider/${anagraficaFullEvento.provider.id}/anagraficaFullEvento/${anagraficaFullEvento.id}/edit|}"></a>
 									</td>
@@ -89,6 +96,12 @@
 						<script th:inline="javascript">
 						/*<![CDATA[*/
 						$(document).ready(function() {
+							$(".datatable-responsive-search-anagrafica-evento-docenti").DataTable({
+
+								"columnDefs": [
+												{"targets": [ 4 ], "width": "1px" }
+							                  ]
+							});
 							$(".datatable-responsive-search-anagrafica-evento").DataTable({
 
 								"columnDefs": [
