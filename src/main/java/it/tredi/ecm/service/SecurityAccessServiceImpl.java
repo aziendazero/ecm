@@ -17,6 +17,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private WorkflowService workflowService;
 	@Autowired private AccountService accountService;
+	@Autowired private EventoService eventoService;
 
 	/**		PROVIDER	**/
 	@Override
@@ -348,6 +349,18 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	@Override
 	public boolean canShowAnagrafeRegionale(CurrentUser currentUser) {
 		if (currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean canAllegaSponsorEvento(CurrentUser currentUser, Long eventoId) {
+		if(currentUser.isSegreteria())
+			return true;
+		Evento evento = eventoService.getEvento(eventoId);
+		if(currentUser.isProvider()
+				&& currentUser.getAccount().getProvider().equals(evento.getProvider())
+				&& evento.canDoUploadSponsor())
 			return true;
 		return false;
 	}

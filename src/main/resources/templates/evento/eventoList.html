@@ -143,7 +143,7 @@
 				</div>
 			</div>
 		</th:block>
-		
+
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -196,14 +196,14 @@
 									<td th:text="${evento.edizione}"></td>
 									<td th:text="${evento.proceduraFormativa.name()}"></td>
 									<td th:text="${evento.titolo}"></td>
-									
+
 									<td th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
 										<span></span>
 									</td>
 									<td th:unless="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
 										<span th:text="${evento.sedeEvento?.luogo}"></span>
 									</td>
-									
+
 									<td th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></td>
 									<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
 							<!-- 		<td>
@@ -222,16 +222,17 @@
 									<td th:text="${evento.durata}"></td>
 									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
 									<td th:unless="${evento.pagato}">
-										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>	
+										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>
 										<span th:unless="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.da_pagare}"></span>
 									</td>
 									<td th:text="${evento.dataScadenzaPagamento == null} ? '' : ${#temporals.format(evento.dataScadenzaPagamento, 'dd/MM/yyyy')}"></td>
 									<td>
 										<div class="button-container single">
 											<a class="btn btn-primary btn-table double" th:if="${evento.canEdit()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}"><i class="fa fa-pencil"> </i> <span th:text="#{label.modifica}"> </span></a>
-										<button class="btn btn-danger btn-table double" th:if="${evento.canEdit()}" th:onclick="|confirmDeleteEventoModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina}"> </span></button>
+											<button class="btn btn-danger btn-table double" th:if="${evento.canEdit()}" th:onclick="|confirmDeleteEventoModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina}"> </span></button>
 											<a class="btn btn-success btn-table double" th:if="${evento.canDoPagamento()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
 											<a class="btn btn-warning btn-table double" th:if="${evento.canDoRendicontazione()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/rendiconto|}"><i class="fa fa-file-text"> </i> <span th:text="#{label.rendiconto}"> </span></a>
+											<a class="btn btn-primary btn-table single" th:if="${evento.canDoUploadSponsor()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/allegaContrattiSponsor|}"><i class="fa fa-file"> </i> <span th:text="#{label.allega_contratti_sponsor}"> </span></a>
 										</div>
 									</td>
 								</tr>

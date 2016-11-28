@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -86,6 +85,7 @@ import it.tredi.ecm.web.bean.ErrorsAjaxWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
+import it.tredi.ecm.web.bean.SponsorWrapper;
 import it.tredi.ecm.web.validator.AnagraficaValidator;
 import it.tredi.ecm.web.validator.EventoValidator;
 import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
@@ -124,6 +124,7 @@ public class EventoController {
 	private final String EDITFAD = "evento/eventoFADEdit";
 	private final String RICERCA = "ricerca/ricercaEvento";
 	private final String ERROR = "fragments/errorsAjax";
+	private final String SPONSOR = "evento/allegaContrattiSponsor";
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -504,6 +505,72 @@ public class EventoController {
 			}
 		}
 
+		//goto inserimento allegati contratti sponsor
+		@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
+		@RequestMapping("/provider/{providerId}/evento/{eventoId}/allegaContrattiSponsor")
+		public String allegaContrattiSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/allegaContrattiSponsor"));
+				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
+				return goToAllegaSponsor(model, prepareSponsorWrapper(providerId, eventoService.getEvento(eventoId)));
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/allegaContrattiSponsor"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
+				return "redirect:/provider/" + providerId + "/evento/list";
+			}
+		}
+
+		//salva allegato contratto sponsor e ritorna info da aggiornare sulla tabella o errori da far visualizzare
+		@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
+		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/sponsor/{sponsorId}/saveContratto", method = RequestMethod.POST)
+		public String salvaContrattoSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, @PathVariable Long sponsorId,
+				@RequestParam(name = "idModalSponsor", required=false) Long idModalSponsor,
+				@RequestParam(name = "modeModalSponsor") String modeModalSponsor,
+				@ModelAttribute ("sponsorWrapper") SponsorWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/sponsor/" + sponsorId + "/contratto/save"));
+				Map<String, String> errMap = eventoValidator.validateContrattoSponsor(wrapper.getSponsorFile(), providerId, "sponsorFile");
+				if(!errMap.isEmpty()) {
+					ErrorsAjaxWrapper errWrapper = new ErrorsAjaxWrapper();
+					errWrapper.setMappaErrori(errMap);
+					model.addAttribute("errorsAjaxWrapper", errWrapper);
+					return ERROR + " :: fragmentError";
+				}
+				else {
+					Sponsor sponsor = eventoService.getSponsorById(sponsorId);
+					eventoService.saveAndCheckContrattoSponsorEvento(wrapper.getSponsorFile(), sponsor, eventoId, modeModalSponsor);
+					model.addAttribute("sponsor", sponsor);
+					return SPONSOR + ":: allegatoContrattoSponsorTable";
+				}
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/sponsor/" + sponsorId + "/contratto/save"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				return "redirect:/provider/"+ providerId + "/evento/" + eventoId + "/allegaContrattiSponsor";
+			}
+		}
+
+		@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
+		@RequestMapping("/provider/{providerId}/evento/{eventoId}/sponsor/{sponsorId}/loadModaleSponsor")
+		public String caricaModaleSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, @PathVariable Long sponsorId,
+				@ModelAttribute ("sponsorWrapper") SponsorWrapper wrapper, Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/sponsor/" + sponsorId + "/loadModaleSponsor"));
+				Sponsor sponsor = eventoService.getSponsorById(sponsorId);
+				wrapper.setSponsorFile(sponsor.getSponsorFile());
+				model.addAttribute("sponsorWrapper", wrapper);
+				return SPONSOR + ":: allegatoContrattoSponsorModal";
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/sponsor/" + sponsorId + "/loadModaleSponsor"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				return "redirect:/provider/"+ providerId + "/evento/" + eventoId + "/allegaContrattiSponsor";
+			}
+		}
+
+
 //	//metodo per chiamate AJAX sulle date ripetibili
 //	@RequestMapping("/add/dataIntermedia")
 //	public String addDataIntermedia(@RequestParam (name="dataIntermedia", required = false) LocalDate dataIntermedia, Model model) {
@@ -643,6 +710,15 @@ public class EventoController {
 		return eventoWrapper;
 	}
 
+	private SponsorWrapper prepareSponsorWrapper(Long providerId, Evento evento) {
+		SponsorWrapper wrapper = new SponsorWrapper();
+		wrapper.setSponsorList(evento.getSponsors());
+		wrapper.setProviderId(providerId);
+		wrapper.setDenominazioneProvider(providerService.getProvider(providerId).getDenominazioneLegale());
+		wrapper.setEventoId(evento.getId());
+		return wrapper;
+	}
+
 	private String goToNew(Model model, EventoWrapper eventoWrapper) {
 		model.addAttribute("eventoWrapper", eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
@@ -665,6 +741,12 @@ public class EventoController {
 		model.addAttribute("eventoWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + RENDICONTO));
 		return RENDICONTO;
+	}
+
+	private String goToAllegaSponsor(Model model, SponsorWrapper wrapper) {
+		model.addAttribute("sponsorWrapper", wrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: " + SPONSOR));
+		return SPONSOR;
 	}
 
 	private Map<String, String> prepareMappaErroriValutazione(BindingResult result){

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+
+		<div id="inserimento-allegato-modal" class="modal fade modal-inserimento-allegato" data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" onclick="closeModalContrattoSponsor()" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="titleModalSponsor">Inserimento dell'allegato Contratto per lo Sponsor:</h4>
+					</div>
+					<div class="modal-body">
+
+						<form id="formModalSponsor" class="form-horizontal"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+
+							<div class="item form-group">
+								<div id="allegatoModal">
+									<th:block th:fragment="allegatoContrattoSponsorModal">
+										<th:block th:include="fragments/allegatiext :: allegatiext(sponsorWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTO_SPONSOR}', sponsorFile, null, null, null, true, 'edit', true)" ></th:block>
+									</th:block>
+								</div>
+							</div>
+
+							<input id="modeSponsor" type="text" name="modeModalSponsor" style="display: none;" />
+							<input id="idSponsor" type="text" name="idModalSponsor" style="display: none;" />
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+						</form>
+
+					</div>
+					<div class="modal-footer">
+						<label onclick="sendAjaxContrattoSponsor()" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
+						<button type="button" class="btn btn-primary pull-right" onclick="closeModalContrattoSponsor()" th:text="#{label.chiudi}">Chiudi</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.lista_sponsor_provider_evento(${sponsorWrapper.denominazioneProvider}, ${#numbers.formatInteger(sponsorWrapper.eventoId,0)})}">Lista Sponsor del Provider () per l'evento id: </h2>
+						<div class="pull-right buttons-header">
+							<div class="dropdown pull-right">
+								<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|${returnLink}|}"></a>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<div th:if="${#lists.isEmpty(sponsorWrapper.sponsorList)}">
+							<h2 class="col-xs-12 text-center">
+								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_sponsor_list}">Non ci sono sponsor!</i>
+							</h2>
+						</div>
+
+						<table th:unless="${#lists.isEmpty(sponsorWrapper.sponsorList)}" class="datatable-responsive-sponsor-allega table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.nome_sponsor}"></th>
+									<th th:text="#{label.contratto_sponsor}"></th>
+									<th th:text="#{label.azioni}"></th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="sponsor, row : ${sponsorWrapper.sponsorList}" th:id="contrattoSponsor__${sponsor.id}__">
+									<th:block  th:fragment="allegatoContrattoSponsorTable">
+										<td th:text="${sponsor.name}"></td>
+										<td>
+											<a th:if="${sponsor.sponsorFile != null}" th:href="@{|/file/${sponsor.sponsorFile.id}|}" th:text="${sponsor.sponsorFile.nomeFile}"></a>
+											<div th:unless="${sponsor.sponsorFile != null}" th:text="#{label.contratto_da_inserire}" class="danger"></div>
+										</td>
+										<td>
+											<a th:unless="${sponsor.sponsorFile != null}" class="btn btn-table btn-success" th:onclick="'openModalContrattoSponsor(' + ${sponsor.id} + ', \'' + ${sponsor.name} + '\', \'new\')'" th:text="#{label.inserisci_contratto}"></a>
+											<a th:if="${sponsor.sponsorFile != null}" class="btn btn-table btn-primary" th:onclick="'openModalContrattoSponsor(' + ${sponsor.id} + ', \'' + ${sponsor.name} + '\', \'edit\')'" th:text="#{label.modifica_contratto}"></a>
+										</td>
+									</th:block>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+
+		var table;
+
+		$(document).ready(function() {
+
+			table = $(".datatable-responsive-sponsor-allega").DataTable({
+				"bFilter" : false,
+				"bInfo" : false,
+				"bPaginate" : false,
+				"order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+				"columnDefs": [ {
+					"targets": 2,
+					"width": "1px",
+					"sClass": "center",
+					"orderable": false
+				} ]
+			});
+
+		})
+
+		function openModalContrattoSponsor(id, nomeSponsor, mode) {
+			$("#modeSponsor").val(mode);
+			$("#idSponsor").val(id);
+			var urlPost = [[@{|/provider/${providerId}/evento/${eventoId}/sponsor/|}]] + id + '/saveContratto';
+			$("#formModalSponsor").attr("action", urlPost);
+			var title = [[#{label.inserimento_contratto_sponsor}]] + nomeSponsor;
+			$("#titleModalSponsor").text(title);
+			if(mode == "edit") {
+				var urlGet = [[@{|/provider/${providerId}/evento/${eventoId}/sponsor/|}]] + id + '/loadModaleSponsor';
+				$.get(urlGet)
+					.done(function(data) {
+						$("#allegatoModal").html(data);
+					})
+					.fail(function(error) {
+				    	alert( "error get file edit" );
+				  		console.log(error);
+					});
+			}
+			$("#inserimento-allegato-modal").modal("show");
+		}
+
+		function closeModalContrattoSponsor() {
+			$("#sponsorFile\\.id").val('');
+			$("#sponsorFile\\.nomeFile").val('');
+			$("#sponsorFile_label").text('').text([[#{label.nessun_file_selezionato}]]).removeAttr('href');
+			$("#sponsorFile").val('');
+			$("#formModalSponsor").removeAttr("action");
+			$("#inserimento-allegato-modal").modal("hide");
+			$(".alert").remove();
+			$(".item").removeClass("bad");
+		}
+
+		function sendAjaxContrattoSponsor(id) {
+			var id = $("#idSponsor").val();
+			$.post($("#formModalSponsor").attr("action"), $("#formModalSponsor").serialize())
+				.done(function(data) {
+					//errore validazione
+					if($(data).find(".hasErrorAjax").length) {
+						$.each($(data).find(".hasErrorAjax"), function(i, errorDiv) {
+							var error = [$(errorDiv).find(".keyErrore").text(), $(errorDiv).find(".valueErrore").text()];
+							addErrorModal("#"+error[0], error[1]);
+						})
+					}
+					else {
+					  	$('#contrattoSponsor'+id).html(data);
+					  	table.draw();
+					  	closeModalContrattoSponsor();
+					}
+				})
+			  	.fail(function(error) {
+			    	alert( "error submit form" );
+			  		console.log(error);
+				});
+		}
+
+		function addErrorModal(target, msg) {
+			var $messageAlert = $("<div class='alert'></div>");
+			$messageAlert.text(msg);
+			var $item = $(target).closest(".item")
+			$item.find(".alert").remove();
+				$item.append($messageAlert);
+			$item.addClass("bad");
+		}
+
+
+		/*]]>*/
+		</script>
+	</div>
+</body>
+</html>

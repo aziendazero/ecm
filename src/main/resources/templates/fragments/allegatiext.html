@@ -95,6 +95,7 @@
 			<label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-7" th:for="__${propertyName}__" th:unless="${__${wrapper}__ == eventoWrapper or __${wrapper}__ == relazioneAnnualeWrapper}">
 				<i th:if="${__${wrapper}__ == comunicazioneWrapper}" class="fa fa-paperclip"></i>
 				<span th:text="#{label.__${propertyName}__}">label.tipoAllegato</span>
+				<span th:if="${note == null and editabile and required}" class="required">*</span>
 			</label>
 			<div class="allegato" th:classappend="${__${wrapper}__ == eventoWrapper} ? 'no-padding col-xs-11'">
 				<input type="file" onchange="submitFileExt(this)" th:id="__${propertyName}__" th:attr="typefile=__${tipoAllegato}__, propertyName=__${propertyName}__" th:name="__${propertyName}___multipart" required="required"
