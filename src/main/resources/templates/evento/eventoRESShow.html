@@ -230,24 +230,24 @@
 						</div>
 					</div>
 					<!-- WORKSHOP/SEMINARI (attivo se selezionato convegno/congresso) -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.tipologiaEventoRES == 'CONVEGNO_CONGRESSO'}">
+					<div class="item form-group" th:if="${eventoWrapper.evento.tipologiaEventoRES == T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).CONVEGNO_CONGRESSO}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.workshop_radio_text}"></span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.workshopSeminariEcm and !strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="${eventoWrapper.evento.workshopSeminariEcm} ? #{label.sì} : #{label.no}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.workshopSeminariEcm and !strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="#{label.dato_non_inseriti}"></div>
+							<div class="value" th:if="${eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="${eventoWrapper.evento.workshopSeminariEcm} ? #{label.sì} : #{label.no}"></div>
+							<div class="value danger" th:unless="${eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="#{label.dato_non_inseriti}"></div>
 
 						</div>
 					</div>
 					<!-- TITOLO CONVEGNO (attivo se selezionato workshop/seminario) -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.tipologiaEventoRES == 'WORKSHOP_SEMINARIO'}">
+					<div class="item form-group" th:if="${eventoWrapper.evento.tipologiaEventoRES == T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).WORKSHOP_SEMINARIO}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.titolo_convegno}"></span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.titoloConvegno != null and !strings.isEmpty(eventoWrapper.evento.titoloConvegno)}" th:text="${eventoWrapper.evento.titoloConvegno}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.titoloConvegno != null and !strings.isEmpty(eventoWrapper.evento.titoloConvegno)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapper.evento.titoloConvegno != null and !#strings.isEmpty(eventoWrapper.evento.titoloConvegno)}" th:text="${eventoWrapper.evento.titoloConvegno}"></div>
+							<div class="value danger" th:unless="${eventoWrapper.evento.titoloConvegno != null and !#strings.isEmpty(eventoWrapper.evento.titoloConvegno)}" th:text="#{label.dato_non_inserito}"></div>
 							</div>
 					</div>
 

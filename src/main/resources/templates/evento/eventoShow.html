@@ -14,6 +14,7 @@
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
   								<a class="btn btn-primary" th:href="@{|/provider/${eventoWrapper.providerId}/evento/list|}" th:text="#{label.indietro}"></a>
+  								<a class="btn btn-primary" th:href="@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/pdf|}" th:text="#{label.esporta_pdf}"></a>
 							</div>
 						</div>
 						<div class="clearfix"></div>
@@ -73,7 +74,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaRES">
 			<div id="attivitaRES">
@@ -99,7 +100,7 @@
 							<label class="control-label" th:text="${programmaGiornaliero.sede.provincia}" ></label>
 						</div>
 					</div>
-	
+
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.comune}">Comune</span>
@@ -108,7 +109,7 @@
 							<label class="control-label" th:text="${programmaGiornaliero.sede.comune}" ></label>
 						</div>
 					</div>
-	
+
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.indirizzo}">Indirizzo</span>
@@ -117,7 +118,7 @@
 							<label class="control-label" th:text="${programmaGiornaliero.sede.indirizzo}" ></label>
 						</div>
 					</div>
-	
+
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span th:text="#{label.luogo}">Luogo</span>
@@ -126,7 +127,7 @@
 							<label class="control-label" th:text="${programmaGiornaliero.sede.luogo}" ></label>
 						</div>
 					</div>
-	
+
 					<div class="col-xs-12">
 						<label th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
 						<div th:attr="data-programma-id=__${status.index}__">
@@ -163,14 +164,14 @@
 			</div>
 		</div>
 	</th:block>
-	
+
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaFSC">
 			<div id="attivitaFSC">
 				<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="faseCorrente , status : ${eventoWrapper.evento.fasiAzioniRuoli}"  th:with="fase=${eventoWrapper.evento.fasiAzioniRuoli[__${status.index}__].faseDiLavoro}">
-					
+
 					<th:block th:if="${ (eventoWrapper.evento.tipologiaEventoFSC != T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).PROGETTI_DI_MIGLIORAMENTO) or T(it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum).faseAbilitata(eventoWrapper.evento.fasiDaInserire,fase)}">
-					
+
 						<div class="item form-group">
 							<th:block th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}">
 								<label class="control-label col-xs-2">
@@ -181,7 +182,7 @@
 								</div>
 							</th:block>
 						</div>
-	
+
 						<div class="col-xs-12">
 							<label th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azioni} + '/' + #{label.ruoli}">Azioni / Ruoli</label>
 							<label th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fasi}">Fasi</label>
@@ -224,14 +225,14 @@
 								<div class="divider-dashed"></div>
 							</div>
 						</div>
-						
+
 					</th:block>
-					
+
 				</div>
 			</div>
 		</div>
 	</th:block>
-	
+
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaFAD">
 			<div id="attivitaFAD" th:if="${eventoWrapper.evento.programmaFAD != null}">
@@ -264,6 +265,6 @@
 			</div>
 		</div>
 	</th:block>
-	
+
 </body>
 </html>
