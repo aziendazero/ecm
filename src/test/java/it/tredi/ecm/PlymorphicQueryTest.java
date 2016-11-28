@@ -37,52 +37,52 @@ import it.tredi.ecm.utils.Utils;
 @ActiveProfiles("dev")
 @WithUserDetails("LBENEDETTI")
 @Rollback(false)
-//@Ignore
+@Ignore
 public class PlymorphicQueryTest {
 
 	@Autowired private EventoService eventoService;
 	@PersistenceContext EntityManager entityManager;
-	
+
 	@Ignore
 	@Test
 	@Transactional
 	public void query() throws Exception {
-		
+
 		Set<TipologiaEventoRESEnum> tipologieRES = new HashSet<TipologiaEventoRESEnum>();
 		Set<TipologiaEventoFSCEnum> tipologieFSC = new HashSet<TipologiaEventoFSCEnum>();
 		Set<TipologiaEventoFADEnum> tipologieFAD = new HashSet<TipologiaEventoFADEnum>();
-		
+
 		tipologieRES.addAll(Arrays.asList(TipologiaEventoRESEnum.values()));
 		tipologieFSC.addAll(Arrays.asList(TipologiaEventoFSCEnum.values()));
 		tipologieFAD.addAll(Arrays.asList(TipologiaEventoFADEnum.values()));
-		
+
 		String query = "SELECT e FROM Evento e WHERE e.tipologiaEventoRES IN :tipologieRES";
 
 		Query q = entityManager.createQuery(query, Evento.class);
 		q.setParameter("tipologieRES", tipologieRES);
 		//q.setParameter("titoloConvegno", "titoloTest");
 
-		List<Evento> result = q.getResultList(); 
-		
+		List<Evento> result = q.getResultList();
+
 		System.out.println(result.size());
 	}
-	
+
 	@Test
 	@Transactional
 	public void queryNew() throws Exception {
-		
+
 		Set<ProceduraFormativa> pF = new HashSet<ProceduraFormativa>();
-		
+
 		pF.addAll(Arrays.asList(ProceduraFormativa.values()));
-		
+
 		String query = "SELECT dati FROM DatiAccreditamento dati JOIN dati.procedureFormative pF WHERE pF IN :procedureFormativeSelezionate";
 
 		Query q = entityManager.createQuery(query, DatiAccreditamento.class);
 		q.setParameter("procedureFormativeSelezionate", pF);
 		//q.setParameter("titoloConvegno", "titoloTest");
 
-		List<DatiAccreditamento> result = q.getResultList(); 
-		
+		List<DatiAccreditamento> result = q.getResultList();
+
 		System.out.println(result.size());
 	}
 }
