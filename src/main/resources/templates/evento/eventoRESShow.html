@@ -236,7 +236,7 @@
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value" th:if="${eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="${eventoWrapper.evento.workshopSeminariEcm} ? #{label.sì} : #{label.no}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="#{label.dato_non_inseriti}"></div>
+							<div class="value danger" th:unless="${eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="#{label.dato_non_inserito}"></div>
 
 						</div>
 					</div>
