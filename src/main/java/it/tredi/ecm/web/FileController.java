@@ -106,7 +106,7 @@ public class FileController {
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /file/upload"), ex);
 		}
-		
+
 		return file;
 	}
 
