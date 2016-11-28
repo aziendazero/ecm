@@ -89,7 +89,7 @@ public class AnagraficaFullEventoController {
 				anagraficaFullEventoService.save(wrapper.getAnagraficaEvento());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.anagrafica_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/anagraficaEvento/list"));
-				return "redirect:/provider/" + providerId + "anagraficaEvento/list";
+				return "redirect:/provider/" + providerId + "/anagraficaEvento/list";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /provider/{providerId}/anagraficaFullEvento/save"),ex);
