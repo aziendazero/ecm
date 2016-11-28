@@ -1,5 +1,11 @@
 package it.tredi.ecm.web;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
@@ -19,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -77,6 +85,7 @@ import it.tredi.ecm.service.EventoPianoFormativoService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ObiettivoService;
+import it.tredi.ecm.service.PdfEventoService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.CurrentUser;
@@ -110,6 +119,8 @@ public class EventoController {
 
 	@Autowired private ProfessioneService professioneService;
 	@Autowired private DisciplinaService disciplinaService;
+
+	@Autowired private PdfEventoService pdfEventoService;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -366,6 +377,65 @@ public class EventoController {
 			return "redirect:/provider/{providerId}/evento/list";
 		}
 	}
+
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowEvento(principal, #providerId")
+	@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/pdf", method = RequestMethod.GET)
+	public void pdfEvento(@PathVariable Long providerId, @PathVariable Long eventoId
+			, HttpServletResponse response, Model model) throws IOException {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/pdf"));
+		try {
+			if(eventoId == null){
+				model.addAttribute("message",new Message("A","B","C"));
+			}
+			else{
+				//pdf dell'evento
+				EventoWrapper wrapper = prepareEventoWrapperShow(eventoService.getEvento(eventoId));
+
+				//response.setContentType(mimeType);
+
+				/* "Content-Disposition : inline" will show viewable types [like images/text/pdf/anything viewable by browser] right on browser
+		            while others(zip e.g) will be directly downloaded [may provide save as popup, based on your browser setting.]*/
+				response.setHeader("Content-Disposition", String.format("attachment; filename=\"Evento " + wrapper.getEvento().getProceduraFormativa() + " " + wrapper.getEvento().getCodiceIdentificativo() +".pdf\""));
+				/* "Content-Disposition : attachment" will be directly download, may provide save as popup, based on your browser setting*/
+				//response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+
+				/*
+				//1) Con file
+				File file = pdfEventoService.creaPdfEvento(wrapper);
+				if(file == null){
+					throw new FileNotFoundException();
+				}
+				response.setContentLength((int)file.getData().length);
+				InputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(file.getData()));
+				//Copy bytes from source to destination(outputstream in this example), closes both streams.
+				FileCopyUtils.copy(inputStream, response.getOutputStream());
+				*/
+
+				//2) scrivendo direttamente nel response.getOutputStream()
+				//pdfEventoService.creaPdfEvento(wrapper, response.getOutputStream());
+
+				//3) con ByteArrayOutputStream
+				ByteArrayOutputStream pdfOutputStream = pdfEventoService.creaOutputStreamPdfEvento(wrapper);
+				response.setContentLength(pdfOutputStream.size());
+				response.getOutputStream().write(pdfOutputStream.toByteArray());
+
+			}
+
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/pdf"),ex);
+			//redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			//LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			//return "redirect:/provider/{providerId}/evento/list";
+
+			model.addAttribute("message",new Message("Errore","Impossibile creare il pdf","Errore creazione pdf evento " + eventoId));
+		}
+
+	}
+
+
+
+
 
 		//TODO	@PreAuthorize("@securityAccessServiceImpl.canDeleteEvento(principal, #providerId")
 		@RequestMapping("/provider/{providerId}/evento/{eventoId}/delete")

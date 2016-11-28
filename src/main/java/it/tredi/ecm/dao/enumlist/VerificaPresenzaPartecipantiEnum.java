@@ -3,11 +3,11 @@ package it.tredi.ecm.dao.enumlist;
 import lombok.Getter;
 
 @Getter
-public enum VerificaPresenzaPartecipantiEnum {
-	
+public enum VerificaPresenzaPartecipantiEnum implements INomeEnum {
+
 	FIRMA_PRESENZA(1,"Firma di presenza"),
 	RILEVAZIONE_ELETTRONICA(2,"Rilevazione elettronica di presenza");
-	
+
 	private int id;
 	private String nome;
 
