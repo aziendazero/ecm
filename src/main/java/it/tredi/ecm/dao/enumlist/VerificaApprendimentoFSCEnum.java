@@ -3,7 +3,7 @@ package it.tredi.ecm.dao.enumlist;
 import lombok.Getter;
 
 @Getter
-public enum VerificaApprendimentoFSCEnum {
+public enum VerificaApprendimentoFSCEnum implements INomeEnum {
 
 	QUESTIONARIO(1,"Questionario"),
 	ESAME_ORALE(2,"Esame orale"),

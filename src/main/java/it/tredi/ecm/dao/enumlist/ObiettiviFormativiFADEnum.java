@@ -7,7 +7,7 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public enum ObiettiviFormativiFADEnum {
+public enum ObiettiviFormativiFADEnum implements INomeEnum {
 	OBV1_1(1,"Acquisire conoscenze teoriche e/o pratiche",Arrays.asList(MetodologiaDidatticaFADEnum._1,MetodologiaDidatticaFADEnum._2,MetodologiaDidatticaFADEnum._3,MetodologiaDidatticaFADEnum._4,MetodologiaDidatticaFADEnum._5,MetodologiaDidatticaFADEnum._6,MetodologiaDidatticaFADEnum._7,MetodologiaDidatticaFADEnum._8,MetodologiaDidatticaFADEnum._9,MetodologiaDidatticaFADEnum._10)),
 	OBV2_1(2,"Acquisire abilità nell'uso di strumenti, di tecniche e di metodologie",Arrays.asList(MetodologiaDidatticaFADEnum._11,MetodologiaDidatticaFADEnum._12)),
 	OBV3_1(3,"Acquisire abilità comunicative e relazionali",Arrays.asList(MetodologiaDidatticaFADEnum._13,MetodologiaDidatticaFADEnum._14)),

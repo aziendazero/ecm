@@ -24,4 +24,7 @@
     <include file="004_1_20161125_creazione_anagrafe_regionale_crediti.xml" relativeToChangelogFile="true"/>
 
 	<include file="004_2_20161125_relazione_annuale_riepilogo_anagrafe_professioni_aventi_crediti.xml" relativeToChangelogFile="true"/>
+
+	<include file="005_20161128_add_column_storicizzato.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
