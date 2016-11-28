@@ -930,11 +930,9 @@
 						console.log('fromLookUpFull:' + fromLookup);
 						if(fromLookup) {
 							$('#anagraficaFull_codice_fiscale').prop("disabled", true);
-							console.log("bloccato")
 						}
 						else {
 							$('#anagraficaFull_codice_fiscale').prop("disabled", false);
-							console.log("sbloccato")
 						}
 					}else{
 						$('#targetTable').val(target);
@@ -953,11 +951,13 @@
 						}
 						if(fromLookup) {
 							$('#anagraficaBase_codice_fiscale').prop("disabled", true);
+							$('#anagraficaBase_straniero').iCheck("disable");
 							$('#file_cv_button').prop("disabled", true);
 							$('#firma_cv').prop("disabled", true);
 						}
 						else {
 							$('#anagraficaBase_codice_fiscale').prop("disabled", false);
+							$('#anagraficaFull_straniero').iCheck("enable");
 							$('#file_cv_button').prop("disabled", false);
 							$('#firma_cv').prop("disabled", false);
 						}

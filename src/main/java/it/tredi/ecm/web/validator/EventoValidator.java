@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.omg.CORBA.TRANSACTION_MODE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,7 @@ import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
@@ -1290,6 +1290,7 @@ public class EventoValidator {
 		else {
 			int counter = 0;
 			boolean atLeastOneErrorAzione = false;
+			boolean errorePartecipanteAudit = false;
 			boolean atLeastOnePartecipante = false;
 			boolean atLeastOneTutor = false;
 
@@ -1333,12 +1334,16 @@ public class EventoValidator {
 				while (iterator.hasNext()) {
 					Map.Entry<RuoloFSCEnum,Float> pairs = iterator.next();
 					if(pairs.getValue() < 2)
-						atLeastOneErrorAzione = true;
+						errorePartecipanteAudit = true;
+					else if((pairs.getValue() % 2) != 0f)
+						errorePartecipanteAudit = true;
 				 }
 			}
 
 			if(atLeastOneErrorAzione)
 				errors.rejectValue(prefix + "azioniRuoli", "error.campi_con_errori_azione_ruoli"+tipologiaEvento);
+			else if(errorePartecipanteAudit)
+				errors.rejectValue(prefix + "azioniRuoli", "error.partecipanti_AUDIT_ore");
 			return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
 		}
 	}
@@ -1489,6 +1494,8 @@ public class EventoValidator {
 						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 //							if(r.getTempoDedicato() < 2)
 //								return new boolean[] {true, hasPartecipante, hasTutor};
+//							else if((r.getTempoDedicato() % 2) != 0f)
+//								return new boolean[] {true, hasPartecipante, hasTutor};
 							hasPartecipante = true;
 						}
 					}
@@ -1515,13 +1522,15 @@ public class EventoValidator {
 
 				//tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO
 				// - massimo 25 partecipanti per ruolo
-				// - impegno complessivo minimo 8 ore totali per tutti i ruoli
+				// - impegno complessivo minimo 8 ore totali per tutti i ruoli tranne ruolo COORDINATORE
 				// - massimo un coordinatore
 				case GRUPPI_DI_MIGLIORAMENTO:
 
 					if(riepilogoRuoli.getNumeroPartecipanti() > 25)
 						return true;
-					if(riepilogoRuoli.getTempoDedicato() < 8f)
+					if(riepilogoRuoli.getTempoDedicato() < 8f
+							&& riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() != RuoloFSCBaseEnum.COORDINATORE)
 						return true;
 					if(riepilogoRuoli.getRuolo() != null
 							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
@@ -1620,6 +1629,17 @@ public class EventoValidator {
 		}
 
 		return false;
+	}
+
+	public Map<String, String> validateContrattoSponsor(File sponsorFile, Long providerId, String prefix) throws Exception {
+		Map<String, String> errMap = new HashMap<String, String>();
+
+		if(sponsorFile == null || sponsorFile.isNew())
+			errMap.put("file_"+prefix+"_button", "error.empty");
+//		else if(!fileValidator.validateFirmaCF(sponsorFile, providerId))
+//			errMap.put("file_"+prefix+"_button", "error.codiceFiscale.firmatario");
+
+		return errMap;
 	}
 
 }

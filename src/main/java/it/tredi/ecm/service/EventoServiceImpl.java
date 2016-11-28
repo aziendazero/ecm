@@ -1690,4 +1690,33 @@ public class EventoServiceImpl implements EventoService {
 		else
 			return false;
 	}
+
+	@Override
+	public Sponsor getSponsorById(Long sponsorId) {
+		LOGGER.debug("Recupero sponsor: " + sponsorId);
+		return sponsorRepository.findOne(sponsorId);
+	}
+
+	@Override
+	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode) {
+		Evento evento = getEvento(eventoId);
+		if(mode.equals("edit")) {
+			Long fileId = sponsor.getSponsorFile().getId();
+			sponsor.setSponsorFile(null);
+			sponsorRepository.save(sponsor);
+			fileService.deleteById(fileId);
+		}
+		sponsor.setSponsorFile(sponsorFile);
+		sponsorRepository.save(sponsor);
+		//check se sono stati inseriti tutti i Contratti sponsor
+		boolean allSponsorsOk = true;
+		for(Sponsor s : evento.getSponsors()) {
+			if(s.getSponsorFile() == null || s.getSponsorFile().isNew())
+				allSponsorsOk = false;
+		}
+		if(allSponsorsOk) {
+			evento.setSponsorUploaded(true);
+			save(evento);
+		}
+	}
 }

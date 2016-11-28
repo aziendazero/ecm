@@ -6,6 +6,7 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 
@@ -44,15 +45,17 @@ public interface EventoService {
 	// detacha e clona l'Evento Padre da rieditare
 //	public <T> void detachEvento(T obj) throws Exception;
 	public Evento detachEvento(Evento evento) throws Exception;
-	
+
 	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId);
 	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId);
 	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId);
 	public int countEventiForProviderIdPagamentoScaduti(Long providerId);
-	
+
 	public List<Evento> cerca(RicercaEventoWrapper wrapper);
 
 	public boolean isEditSemiBloccato(Evento evento);
 	public boolean isEventoIniziato(Evento evento);
 	public boolean hasDataInizioRestrictions(Evento evento);
+	public Sponsor getSponsorById(Long sponsorId);
+	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode);
 }

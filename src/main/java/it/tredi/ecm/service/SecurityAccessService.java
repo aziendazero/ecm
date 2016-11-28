@@ -48,4 +48,6 @@ public interface SecurityAccessService {
 	public boolean canSendComunicazioni(CurrentUser currentUser);
 
 	public boolean canShowAnagrafeRegionale(CurrentUser currentUser);
+
+	public boolean canAllegaSponsorEvento(CurrentUser currentUser, Long eventoId);
 }
