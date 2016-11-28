@@ -1291,7 +1291,7 @@
 									</div>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block> -->
-											<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, false, 'edit', false)" ></th:block>
+											<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, true, 'edit', false)" ></th:block>
 											<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 												<div class="value-edit" th:if="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.id}|}"></a></div>
 												<div class="value-edit danger" th:unless="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}" th:text="#{label.allegato_non_inserito}"></div>
