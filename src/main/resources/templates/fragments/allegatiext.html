@@ -34,10 +34,14 @@
 					<div th:unless="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div>
 					<div th:if="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 				</div>
-				<!-- pulsante per aggiungere firma -->
-				<th:block th:if="${withFirma and editabile}">
-					<div class="col-xs-1">
-						<button type="button" th:onclick="|submitFirma('__${propertyName}__');|" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}" data-toggle="modal" data-target="#modalFrame"><i class="fa fa-pencil"></i></button>
+				<th:block th:if="${(!required and !__${wrapper}__.__${propertyName}__.new) or withFirma}">
+					<div class="col-xs-2 btn-group">
+						<button th:onclick="|rimuoviFile('__${propertyName}__')|" type="button" th:if="${!required and !__${wrapper}__.__${propertyName}__.new}" class="btn btn-danger">
+							<i class="fa fa-trash"></i>
+						</button>
+						<button th:onclick="|submitFirma('__${propertyName}__');|" type="button" th:if="${withFirma}" class="btn btn-primary">
+							<i class="fa fa-pencil"></i>
+						</button>
 					</div>
 				</th:block>
 			</th:block>
@@ -99,10 +103,16 @@
 				<div th:unless="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div>
 				<div th:if="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 			</div>
-			<!-- pulsante per aggiungere firma -->
-			<th:block th:if="${withFirma and editabile}">
-				<div class="col-xs-1">
-					<button th:id="firma_+__${propertyName}__" type="button" th:onclick="|submitFirma('__${propertyName}__');|" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}" data-toggle="modal" data-target="#modalFrame"><i class="fa fa-pencil"></i></button>
+			<th:block th:if="${editabile and ( (!required and !__${wrapper}__.__${propertyName}__.new) or withFirma )}">
+				<div class="col-xs-2 btn-group">
+					<!-- pulsante per rimuovi file -->
+					<button th:onclick="|rimuoviFile('__${propertyName}__')|" type="button" th:if="${!required and !__${wrapper}__.__${propertyName}__.new}" class="btn btn-danger">
+						<i class="fa fa-trash"></i>
+					</button>
+					<!-- pulsante per aggiungere firma -->
+					<button th:onclick="|submitFirma('__${propertyName}__');|" type="button" th:if="${withFirma}" class="btn btn-primary">
+						<i class="fa fa-pencil"></i>
+					</button>
 				</div>
 			</th:block>
 			<div th:if="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${__${wrapper}__.__${propertyName}__}"></div>

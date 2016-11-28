@@ -11,7 +11,7 @@
 	<!-- Modale che contiene iframe per gestire il processo di frimaWeb -->
 	<div id="modalFrame" class="modal" tabindex="-1" role="dialog" >
 		<div role="document" style="margin: 30px auto; width: 520px;">
-			Modal content 
+			Modal content
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -34,6 +34,13 @@
 			//var propertyName = $(element).parent().parent().find('input[type=file]').attr("propertyName");
 			console.log('propertyName: ' + propertyName);
 			$("#firmaFrame").attr("src", [[@{|/engineering/firma/invio|}]] + '?idFile=' + $("#"+propertyName+"\\.id").val());
+		}
+
+		function rimuoviFile(propertyName){
+			$("#"+propertyName+"\\.id").val('');
+			$("#"+propertyName+"\\.nomeFile").val('');
+			$("#"+propertyName+"\\_label").text([[#{label.nessun_file_selezionato}]]).removeAttr('href');
+			$("#"+propertyName).val('');
 		}
 
 		function submitFileExt(element){
@@ -84,7 +91,7 @@
 					sendNotifyStatic([[#{message.errore}]], response, "error");
 				}
 		}
-		
+
 		function setFileExtForSignatureResponse(response){
 			if(response.id != null && response.id != 0) {
 				var prefixUrl = [[@{/file/}]];
