@@ -35,6 +35,8 @@ public class Valutazione extends BaseEntity{
 	private Set<FieldValutazioneAccreditamento> valutazioni = new HashSet<FieldValutazioneAccreditamento>();
 	private String valutazioneComplessiva;
 
+	private Boolean storicizzato = false;
+
 	@Column(name="dataora_scadenza_possibilita_valutazione")
 	private LocalDateTime dataOraScadenzaPossibilitaValutazione = null;
 
