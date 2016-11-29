@@ -1,8 +1,10 @@
 package it.tredi.ecm.web;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
+import org.elasticsearch.common.mustache.Iteration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.BaseEntity;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.Obiettivo;
@@ -476,7 +479,7 @@ public class EventoPianoFormativoController {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/" + id + "/delete"));
 		return removeEvento(null, providerId, pianoFormativoId, id, redirectAttrs);
 	}
-	
+
 	/*
 	 * ELIMINAZIONE DI TUTTI GLI EVENTI DAL PIANO FORMATIVO (accreditamento)
 	 * */
@@ -487,7 +490,7 @@ public class EventoPianoFormativoController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll"));
 		return removeAllEventi(accreditamentoId,providerId, pianoFormativoId, redirectAttrs);
 	}
-	
+
 	/*
 	 * ELIMINAZIONE DI TUTTI GLI EVENTI DAL PIANO FORMATIVO (piano formativo)
 	 * */
@@ -498,23 +501,33 @@ public class EventoPianoFormativoController {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll"));
 		return removeAllEventi(null,providerId, pianoFormativoId, redirectAttrs);
 	}
-	
+
 	private String removeAllEventi(Long accreditamentoId, Long providerId, Long pianoFormativoId, RedirectAttributes redirectAttrs){
 		try{
 			Set<Long> ids = new HashSet<Long>();
 			PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
-			for(EventoPianoFormativo e : pianoFormativo.getEventiPianoFormativo()){
-				ids.add(e.getId());
+
+			//TODO non permettere l'eliminazione degli eventi attuati
+			Iterator<EventoPianoFormativo> it = pianoFormativo.getEventiPianoFormativo().iterator();
+			while(it.hasNext()){
+				EventoPianoFormativo epf = it.next();
+				if(!epf.isAttuato()){
+					ids.add(epf.getId());
+					it.remove();
+				}
 			}
-			
-			pianoFormativo.getEventiPianoFormativo().clear();
+
+//			for(EventoPianoFormativo e : pianoFormativo.getEventiPianoFormativo()){
+//				ids.add(e.getId());
+//			}
+//			pianoFormativo.getEventiPianoFormativo().clear();
 			pianoFormativoService.save(pianoFormativo);
 			for(Long id : ids){
 				eventoService.delete(id);
 				if(accreditamentoId != null)
 					fieldEditabileService.removeFieldEditabileForAccreditamento(accreditamentoId, id, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO);
 			}
-			
+
 			// caso fromAccreditamento
 			if (accreditamentoId != null) {
 				redirectAttrs.addFlashAttribute("currentTab","tab4");
@@ -525,7 +538,7 @@ public class EventoPianoFormativoController {
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/pianoFormativo/list"));
 				return "redirect:/provider/" + providerId + "/pianoFormativo/list";
 			}
-				
+
 		}catch(Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/deleteAll"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -533,13 +546,13 @@ public class EventoPianoFormativoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	private String removeEvento(Long accreditamentoId, Long providerId, Long pianoFormativoId, Long eventoId, RedirectAttributes redirectAttrs) {
 		try{
 			PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
 //			pianoFormativo.removeEvento(eventoId);
 //			pianoFormativoService.save(pianoFormativo);
-			
+
 			pianoFormativoService.removeEventoFrom(eventoId, pianoFormativoId);
 			eventoService.delete(eventoId);
 			// caso fromAccreditamento

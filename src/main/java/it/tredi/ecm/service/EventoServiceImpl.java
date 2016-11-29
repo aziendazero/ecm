@@ -145,22 +145,30 @@ public class EventoServiceImpl implements EventoService {
 		if(evento.isEventoDaPianoFormativo()){
 			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
 
-			LocalDate dataFine = evento.getDataFine();
-			if(dataFine != null){
-				int annoPianoFormativo = dataFine.getYear();
-				PianoFormativo pf = pianoFormativoService.getPianoFormativoAnnualeForProvider(evento.getProvider().getId(), annoPianoFormativo);
-				if(pf == null){
-					pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
+			if(evento.getStato() == EventoStatoEnum.CANCELLATO){
+				//TODO al momento non lo faccio....poi lo chiederenno loro...da tenere presente che....se settiamo a flase il flag..l'evento piano formativo sarà eli
+				//bisgna gestire tutti i cascade corretti -> eventoPianoFormativo è presente in più piani formativi e nell'evento che lo ha attuato
+
+				//se annullo un evento che è stato attuato da piano formativo...rimuovo il flag in modo tale da poter rieditare l'evento
+				//eventoPianoFormativo.setAttuato(false);
+			}else{
+				LocalDate dataFine = evento.getDataFine();
+				if(dataFine != null){
+					int annoPianoFormativo = dataFine.getYear();
+					PianoFormativo pf = pianoFormativoService.getPianoFormativoAnnualeForProvider(evento.getProvider().getId(), annoPianoFormativo);
+					if(pf == null){
+						pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
+					}
+
+					pf.addEvento(eventoPianoFormativo);
+					pianoFormativoService.save(pf);
 				}
 
-
-				pf.addEvento(eventoPianoFormativo);
-				pianoFormativoService.save(pf);
+				if(!evento.getEventoPianoFormativo().isAttuato()){
+					eventoPianoFormativo.setAttuato(true);
+				}
 			}
 
-			if(!evento.getEventoPianoFormativo().isAttuato()){
-				eventoPianoFormativo.setAttuato(true);
-			}
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
 
@@ -408,6 +416,10 @@ public class EventoServiceImpl implements EventoService {
 		if (eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute() != null && eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute().getId() != null) {
 			evento.setAutocertificazioneAutorizzazioneMinisteroSalute(fileService.getFile(eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute().getId()));
 		}
+
+		//non  deve essere possibile caricare gli allegati degli sponsor
+		if(evento.getEventoSponsorizzato() != null && !evento.getEventoSponsorizzato().booleanValue())
+			evento.setSponsorUploaded(true);
 
 		return evento;
 	}
@@ -1163,6 +1175,12 @@ public class EventoServiceImpl implements EventoService {
 			entityManager.detach(p);
 		}
 
+		LOGGER.debug(Utils.getLogMessage("Detach Anagrafe Regionale Crediti"));
+		for(AnagrafeRegionaleCrediti a : eventoPadre.getAnagrafeRegionaleCrediti()) {
+			LOGGER.debug(Utils.getLogMessage("Detach Anagrafe Regionale Crediti: " + a.getId()));
+			entityManager.detach(a);
+		}
+
 		LOGGER.debug(Utils.getLogMessage("Detach Responsabile Segreteria"));
 		entityManager.detach(eventoPadre.getResponsabileSegreteria());
 
@@ -1361,7 +1379,7 @@ public class EventoServiceImpl implements EventoService {
 		riedizione.setEventoPianoFormativo(null);
 		riedizione.setDataScadenzaPagamento(null);
 		riedizione.setInviiRendicontazione(new HashSet<RendicontazioneInviata>());
-		riedizione.setAnagrafeRegionaleCrediti(new HashSet<AnagrafeRegionaleCrediti>());
+		riedizione.getAnagrafeRegionaleCrediti().clear();
 		riedizione.setPagato(null);
 		riedizione.setPagInCorso(null);
 		riedizione.setProceduraVerificaQualitaPercepita(null);
