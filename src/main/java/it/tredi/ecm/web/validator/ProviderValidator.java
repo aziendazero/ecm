@@ -22,7 +22,7 @@ public class ProviderValidator {
 			errors.rejectValue(prefix + "denominazioneLegale", "error.empty");
 		if(providerForm.getTipoOrganizzatore() == null || providerForm.getTipoOrganizzatore().getNome().isEmpty())
 			errors.rejectValue(prefix + "tipoOrganizzatore", "error.empty");
-		if(providerForm.getEmailStruttura().isEmpty())
+		if(providerForm.getEmailStruttura() != null && providerForm.getEmailStruttura().isEmpty())
 			errors.rejectValue(prefix + "emailStruttura", "error.empty");
 	}
 

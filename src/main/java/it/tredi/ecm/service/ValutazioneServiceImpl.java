@@ -1,11 +1,16 @@
 package it.tredi.ecm.service;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -15,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
+import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -36,6 +43,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private AccountService accountService;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private EcmProperties ecmProperties;
+	@PersistenceContext EntityManager entityManager;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -52,15 +60,21 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 	@Override
+	public void saveAndFlush(Valutazione valutazione) {
+		LOGGER.debug(Utils.getLogMessage("Salvataggio Valutazione + flush"));
+		valutazioneRepository.saveAndFlush(valutazione);
+	}
+
+	@Override
 	public void delete(Valutazione valutazione) {
 		LOGGER.debug(Utils.getLogMessage("Eliminazione Valutazione id: " + valutazione.getId()));
 		valutazioneRepository.delete(valutazione);
 	}
 
 	@Override
-	public Valutazione getValutazioneByAccreditamentoIdAndAccountId(Long accreditamentoId, Long accountId) {
+	public Valutazione getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(Long accreditamentoId, Long accountId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Valutazione per l'accreditamento " + accreditamentoId + " eseguita dall'utente " + accountId));
-		Valutazione valutazione = valutazioneRepository.findOneByAccreditamentoIdAndAccountId(accreditamentoId, accountId);
+		Valutazione valutazione = valutazioneRepository.findOneByAccreditamentoIdAndAccountIdAndStoricizzatoFalse(accreditamentoId, accountId);
 		return valutazione;
 	}
 
@@ -195,17 +209,61 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le valutazioni per il referee: " + accountId));
 		return valutazioneRepository.findAllByAccountId(accountId);
 	}
-	
+
 	@Override
 	public Map<Long,LocalDateTime> getScadenzaValutazioneByValutatoreId(Long accountId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero le date di scadenza per il referee: " + accountId));
-		
+
 		Map<Long, LocalDateTime> mappaScadenze = new HashMap<Long, LocalDateTime>();
-		
+
 		Set<Valutazione> valutazioni = getAllValutazioniForAccount(accountId);
 		for(Valutazione v :  valutazioni){
 			mappaScadenze.put(v.getAccreditamento().getId(), v.getDataOraScadenzaPossibilitaValutazione());
 		}
 		return mappaScadenze;
+	}
+
+	@Override
+	public Valutazione detachValutazione(Valutazione valutazione) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("DETACH valutazione id: " + valutazione.getId()));
+
+		Utils.touchFirstLevelOfEverything(valutazione);
+
+		LOGGER.debug(Utils.getLogMessage("DETACH field valutazione"));
+		for(FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
+			LOGGER.debug(Utils.getLogMessage("DETACH field valutazione id: " + fva.getId()));
+			entityManager.detach(fva);
+		}
+
+		entityManager.detach(valutazione);
+
+		return valutazione;
+	}
+
+	@Override
+	public void cloneDetachedValutazione(Valutazione valStoricizzata) {
+
+		LOGGER.debug(Utils.getLogMessage("Procedura di clonazione valutazione - start"));
+
+		LOGGER.debug(Utils.getLogMessage("Clonazione field valutazione"));
+		Set<FieldValutazioneAccreditamento> valutazioniInStorico = new HashSet<FieldValutazioneAccreditamento>();
+		for(FieldValutazioneAccreditamento fva : valStoricizzata.getValutazioni()) {
+			LOGGER.debug(Utils.getLogMessage("Clonazione field valutazione id: " + fva.getId()));
+			fva.setId(null);
+			fieldValutazioneAccreditamentoService.save(fva);
+			valutazioniInStorico.add(fva);
+		}
+		valStoricizzata.setValutazioni(valutazioniInStorico);
+		valStoricizzata.setId(null);
+
+		LOGGER.debug(Utils.getLogMessage("Procedura di detach e clonazione valutazione - success"));
+	}
+
+	@Override
+	public void copiaInStorico(Valutazione valutazione) throws Exception {
+		Valutazione valStoricizzata = detachValutazione(valutazione);
+		cloneDetachedValutazione(valStoricizzata);
+		valStoricizzata.setStoricizzato(true);
+		save(valStoricizzata);
 	}
 }

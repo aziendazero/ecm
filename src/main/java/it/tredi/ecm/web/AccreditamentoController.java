@@ -292,7 +292,7 @@ public class AccreditamentoController {
 	//passo il wrapper che contiene solo la valutazione complessiva e la lista dei referee selezionati
 	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper) throws Exception{
 		//carico la valutazione dell'utente corrente
-		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento, valutazione, wrapper);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		model.addAttribute("refereeList", accountService.getUserByProfileEnum(ProfileEnum.REFEREE));

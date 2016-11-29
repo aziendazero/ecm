@@ -161,7 +161,7 @@ public class ProviderController {
 				usernames.add(account.getUsernameWorkflow());
 			}
 		}
-		
+
 		responseUsername.setUserNames(usernames);
 		ResponseState responseState = new ResponseState(false, "Elenco usernames");
 		ObjectMapper objMapper = new ObjectMapper();
@@ -326,7 +326,7 @@ public class ProviderController {
 					v.setIdField(k);
 					v.setAccreditamento(accreditamento);
 				});
-				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(providerWrapper.getMappa()));
 				valutazione.getValutazioni().addAll(values);
 				valutazioneService.save(valutazione);
@@ -368,10 +368,10 @@ public class ProviderController {
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET: /provider/list"));
 		try {
-			
-			if(model.asMap().get("providerList") == null) 
+
+			if(model.asMap().get("providerList") == null)
 				model.addAttribute("providerList", providerService.getAll());
-			
+
 			LOGGER.info(Utils.getLogMessage("VIEW: /provider/providerList"));
 			return "provider/providerList";
 		}catch (Exception ex) {
@@ -492,7 +492,7 @@ public class ProviderController {
 		providerWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
 
 		//carico la valutazione per l'utente corrente
-		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 		if(valutazione != null) {
 			mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), subset);
@@ -539,7 +539,7 @@ public class ProviderController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping(value = "/provider/ricerca", method = RequestMethod.POST)
 	public String executeRicercaProvider(@ModelAttribute("ricercaProviderWrapper") RicercaProviderWrapper wrapper,
 									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
@@ -547,12 +547,12 @@ public class ProviderController {
 		try {
 
 			String returnRedirect = "redirect:/provider/list";
-			
+
 			Set<Provider> listaProvider = new HashSet<Provider>();
 			listaProvider.addAll(providerService.cerca(wrapper));
-			
+
 			redirectAttrs.addFlashAttribute("providerList", listaProvider);
-			
+
 			return returnRedirect;
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/ricerca"),ex);
@@ -560,10 +560,10 @@ public class ProviderController {
 			return "redirect:/provider/ricerca";
 		}
 	}
-	
+
 	private RicercaProviderWrapper prepareRicercaProviderWrapper(){
 		RicercaProviderWrapper wrapper = new RicercaProviderWrapper();
 		return wrapper;
 	}
-	
+
 }

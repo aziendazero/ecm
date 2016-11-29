@@ -3,6 +3,7 @@ package it.tredi.ecm.dao.repository;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -11,9 +12,9 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Valutazione;
 
-public interface ValutazioneRepository extends CrudRepository<Valutazione, Long>{
+public interface ValutazioneRepository extends JpaRepository<Valutazione, Long>{
 	public Valutazione findOne(Long id);
-	public Valutazione findOneByAccreditamentoIdAndAccountId(Long accreditamentoId, Long accountId);
+	public Valutazione findOneByAccreditamentoIdAndAccountIdAndStoricizzatoFalse(Long accreditamentoId, Long accountId);
 	public Set<Valutazione> findAllByAccreditamentoIdOrderByAccount(Long accreditamentoId);
 	public Set<Valutazione> findAllByAccreditamentoIdAndDataValutazioneNotNullOrderByAccount(Long accreditamentoId);
 	@Query("SELECT COUNT(v.account) FROM Valutazione v WHERE v.accreditamento.id = :id AND v.dataValutazione <> null AND :profileReferee IN ELEMENTS(v.account.profiles)")
