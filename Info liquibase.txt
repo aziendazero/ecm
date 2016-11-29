@@ -1,0 +1,14 @@
+-- Comandi da plugin maven liquibase
+NOTA: tutti questi comandi vengono eseguiti sul DB e schema specificato nel file src/main/resources/liquibase/liquibase.properties
+1) > mvn liquibase:update
+	effettua l'aggiornamento del db eseguendo tutti gli eventuali changeSet non ancora eseguiti
+	lanciare
+	> mvn liquibase:update -Dliquibase.changesToApply=numeroChangeSet
+	per eseguire numeroChangeSet changeSet
+2) > mvn liquibase:rollback -Dliquibase.rollbackCount=numeroRollback
+	effettua il rollback di numeroRollback changeSet, ovviamente il changeSet deve gestire il rollback
+3) > mvn liquibase:diff
+	per efffettuare anche la compilazione lanciare
+	> mvn compile liquibase:diff
+	viene creato un file di change nella cartella changelog con nome dataCorrente_oraCorrente_changelog.xml
+	aggiungere l'attributo logicalFilePath="path/nomefile.xml" (esempio logicalFilePath="v000/000_01_sequence.xml") al databaseChangeLog
