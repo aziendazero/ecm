@@ -74,7 +74,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private PdfService pdfService;
 
 	@Autowired private MessageSource messageSource;
-	
+
 	@Autowired private EcmProperties ecmProperties;
 
 	@Override
@@ -154,10 +154,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId) throws AccreditamentoNotFoundException{
 		LOGGER.debug(Utils.getLogMessage("Recupero eventuale accreditamento attivo per il provider: " + providerId));
-		
+
 		Accreditamento accreditamento = null;
 		Set<Accreditamento> listaAccreditamentiAttivi = accreditamentoRepository.findAllByProviderIdAndStatoAndDataFineAccreditamentoAfterOrderByDataFineAccreditamentoAsc(providerId, AccreditamentoStatoEnum.ACCREDITATO, LocalDate.now());
-		
+
 		if(listaAccreditamentiAttivi != null && !listaAccreditamentiAttivi.isEmpty()){
 			LOGGER.info("Trovati " + listaAccreditamentiAttivi.size() + " accreditamenti attivi per il provider: " + providerId);
 			//prendo il primo (quello che sarà il primo a scadere)
@@ -166,7 +166,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}else{
 			throw new AccreditamentoNotFoundException("Nessun Accreditamento attivo trovato per il provider " + providerId);
 		}
-		
+
 		return accreditamento;
 	}
 
@@ -205,12 +205,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Procedimento Attivo"));
 				return false;
 			}
-			
+
 			if (accreditamento.isDomandaAttiva()){
 				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Domanda Attiva con scadenza " + accreditamento.getDataFineAccreditamento()));
 				return false;
 			}
-			
+
 			//TODO gestire la distinzione tra domanda inviata ma ancora non accreditata e domanda accreditata
 			//				if(accreditamento.isInviato())
 			//					return false;
@@ -866,7 +866,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception  {
 		changeState(accreditamentoId, stato, null);
 	}
-	
+
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception  {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
@@ -885,7 +885,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
 			List<String> listaCriticita = new ArrayList<String>();
 			fieldEditabiliAccreditamento.forEach(v -> {
-	            //Richiesta 
+	            //Richiesta
 	            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire singole note sui campi] (pag 4)
 				if(v.getNota() == null || v.getNota().isEmpty())
 					listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
@@ -971,6 +971,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				accreditamento.setPreavvisoRigettoEseguitoDaProvider(eseguitoDaUtente);
 		}
 
+		//TODO se si chiama il servizio di protocollazione verrà settato uno stato intermedio di attesa protocollazione
 		accreditamento.setStato(stato);
 		accreditamentoRepository.save(accreditamento);
 	}
