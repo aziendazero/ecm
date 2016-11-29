@@ -1462,11 +1462,11 @@ public class EventoServiceImpl implements EventoService {
 
 		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
 			//devo fare il join con la tabella provider
-			query ="SELECT e FROM Evento e JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
+			query ="SELECT e FROM Evento e JOIN e.discipline d JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
 			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
 		}else{
 			//posso cercare direttamente su evento
-			query ="SELECT e FROM Evento e";
+			query ="SELECT e FROM Evento e JOIN e.discipline d";
 		}
 
 			//PROVIDER ID
@@ -1477,11 +1477,11 @@ public class EventoServiceImpl implements EventoService {
 
 			//TIPOLOGIA EVENTO
 			if(wrapper.getTipologieSelezionate() != null && !wrapper.getTipologieSelezionate().isEmpty()){
-				query = Utils.QUERY_AND(query, "e.proceduraFormativa IN :tipologieSelezionate");
+				query = Utils.QUERY_AND(query, "e.proceduraFormativa IN (:tipologieSelezionate)");
 				params.put("tipologieSelezionate", wrapper.getTipologieSelezionate());
 
 				if(wrapper.getTipologieRES() != null && !wrapper.getTipologieRES().isEmpty()){
-					querytipologiaOR.add("e.tipologiaEventoRES IN :tipologieRES");
+					querytipologiaOR.add("e.tipologiaEventoRES IN (:tipologieRES)");
 					params.put("tipologieRES", wrapper.getTipologieRES());
 				}else{
 					if(wrapper.getTipologieSelezionate().contains(ProceduraFormativa.RES))
@@ -1489,7 +1489,7 @@ public class EventoServiceImpl implements EventoService {
 				}
 
 				if(wrapper.getTipologieFSC() != null && !wrapper.getTipologieFSC().isEmpty()){
-					querytipologiaOR.add("e.tipologiaEventoFSC IN :tipologieFSC");
+					querytipologiaOR.add("e.tipologiaEventoFSC IN (:tipologieFSC)");
 					params.put("tipologieFSC", wrapper.getTipologieFSC());
 				}else{
 					if(wrapper.getTipologieSelezionate().contains(ProceduraFormativa.FSC))
@@ -1497,7 +1497,7 @@ public class EventoServiceImpl implements EventoService {
 				}
 
 				if(wrapper.getTipologieFAD() != null && !wrapper.getTipologieFAD().isEmpty()){
-					querytipologiaOR.add("e.tipologiaEventoFAD IN :tipologieFAD)");
+					querytipologiaOR.add("e.tipologiaEventoFAD IN (:tipologieFAD)");
 					params.put("tipologieFAD", wrapper.getTipologieFAD());
 				}else{
 					if(wrapper.getTipologieSelezionate().contains(ProceduraFormativa.FAD))
@@ -1516,7 +1516,7 @@ public class EventoServiceImpl implements EventoService {
 
 			//STATO EVENTO
 			if(wrapper.getStatiSelezionati() != null && !wrapper.getStatiSelezionati().isEmpty()){
-				query = Utils.QUERY_AND(query, "e.stato IN :statiSelezionati");
+				query = Utils.QUERY_AND(query, "e.stato IN (:statiSelezionati)");
 				params.put("statiSelezionati", wrapper.getStatiSelezionati());
 			}
 
@@ -1534,13 +1534,13 @@ public class EventoServiceImpl implements EventoService {
 
 			//OBIETTIVI NAZIONALI
 			if(wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty()){
-				query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN :obiettiviNazionaliSelezionati");
+				query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN (:obiettiviNazionaliSelezionati)");
 				params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionati());
 			}
 
 			//OBIETTIVI REGIONALI
 			if(wrapper.getObiettiviRegionaliSelezionati() != null && !wrapper.getObiettiviRegionaliSelezionati().isEmpty()){
-				query = Utils.QUERY_AND(query, "e.obiettivoRegionale IN :obiettiviRegionaleSelezionati");
+				query = Utils.QUERY_AND(query, "e.obiettivoRegionale IN (:obiettiviRegionaliSelezionati)");
 				params.put("obiettiviRegionaliSelezionati", wrapper.getObiettiviRegionaliSelezionati());
 			}
 
@@ -1564,7 +1564,7 @@ public class EventoServiceImpl implements EventoService {
 
 			//DISCIPLINE SELEZIONATE
 			if(wrapper.getDisciplineSelezionate() != null && !wrapper.getDisciplineSelezionate().isEmpty()){
-				query = Utils.QUERY_AND(query, "e.discipline IN :disciplineSelezionate");
+				query = Utils.QUERY_AND(query, "d IN (:disciplineSelezionate)");
 				params.put("disciplineSelezionate", wrapper.getDisciplineSelezionate());
 			}
 
