@@ -41,7 +41,7 @@
 									</td>
 									<td th:text="${quotaAnnuale.pagamento.dataPagamento == null} ? '' : ${#temporals.format(quotaAnnuale.pagamento.dataPagamento,'dd/MM/yyyy')}">abilitato/non abilitato</td>
 									<td>
-										<a th:unless="${quotaAnnuale.pagato}" class="btn btn-success btn-table double" th:href="@{|/provider/${providerId}/pagamento/${quotaAnnuale.id}/paga|}"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
+										<a th:unless="${quotaAnnuale.pagato or quotaAnnuale.provider.isGruppoA()}" class="btn btn-success btn-table double" th:href="@{|/provider/${providerId}/pagamento/${quotaAnnuale.id}/paga|}"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
 									</td>
 								</tr>
 							</tbody>
