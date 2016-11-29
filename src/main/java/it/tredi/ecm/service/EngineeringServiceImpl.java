@@ -234,7 +234,21 @@ public class EngineeringServiceImpl implements EngineeringService {
 		IntestazionePPT header = new IntestazionePPT();
 		header.setCodIpaEnte(engineeringProperties.getIpa());
 
-		PaaSILInviaDovutiRisposta response = port.get().paaSILInviaDovuti(dovuti, header);
+		PaaSILInviaDovutiRisposta response = null;
+		try{
+			response = port.get().paaSILInviaDovuti(dovuti, header);
+		}catch (Exception ex){
+			LOGGER.error("dovuti.EnteSIL: " + dovuti.getEnteSILInviaRispostaPagamentoUrl());
+			LOGGER.error("dovuti.password: " + dovuti.getPassword());
+			LOGGER.error("dovuti.dovuti: " + dovuti.getDovuti().toString());
+			LOGGER.error("header.codIpaEnte: " + header.getCodIpaEnte());
+			throw new Exception();
+		}
+
+		LOGGER.info("dovuti.EnteSIL: " + dovuti.getEnteSILInviaRispostaPagamentoUrl());
+		LOGGER.info("dovuti.password: " + dovuti.getPassword());
+		LOGGER.info("dovuti.dovuti: " + dovuti.getDovuti().toString());
+		LOGGER.info("header.codIpaEnte: " + header.getCodIpaEnte());
 
 		p.setIdSession(response.getIdSession());
 		e = p.getEvento();
