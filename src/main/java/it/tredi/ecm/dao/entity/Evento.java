@@ -350,7 +350,7 @@ public class Evento extends BaseEntity{
 			return true;
 
 		if(stato == EventoStatoEnum.VALIDATO){
-			if(dataFine != null && dataFine.isBefore(LocalDate.now())){
+			if(dataFine != null && dataFine.isAfter(LocalDate.now())){
 				return true;
 			}else{
 				return false;

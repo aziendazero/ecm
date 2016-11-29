@@ -19,7 +19,7 @@ public class PersonaWrapper extends Wrapper {
 	private Long accreditamentoId;
 	private Long providerId;
 	private Boolean isLookup;
-	
+
 	private File attoNomina;
 	private File cv;
 	private File delega;
@@ -29,7 +29,7 @@ public class PersonaWrapper extends Wrapper {
 		setCv(new File(FileEnum.FILE_CV));
 		setDelega(new File(FileEnum.FILE_DELEGA));
 	}
-	
+
 	public PersonaWrapper(Persona persona, Ruolo ruolo, Long accreditamentoId, Long providerId, AccreditamentoWrapperModeEnum wrapperMode){
 		this();
 		this.persona = persona;
@@ -38,7 +38,7 @@ public class PersonaWrapper extends Wrapper {
 		this.providerId = providerId;
 		this.isLookup = false;
 		setWrapperMode(wrapperMode);
-		
+
 //		for(File file : persona.getFiles()){
 //			if(file.isCV())
 //				this.cv = file;
@@ -74,7 +74,7 @@ public class PersonaWrapper extends Wrapper {
 		files.add(delega);
 		return files;
 	}
-	
+
 	public void setFiles(Set<File> files){
 		Set<File> fs = new HashSet<File>(files);
 		for(File file : fs){

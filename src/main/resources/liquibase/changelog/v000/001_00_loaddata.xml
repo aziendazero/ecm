@@ -1,5 +1,8 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/001_00_loaddata.xml">
 
     <changeSet author="abarducci" id="01">
     	<comment>Dati professione</comment>
@@ -9,7 +12,11 @@
             path="001_01_Professione.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
-            stripComments="true"/>    
+            stripComments="true"/>
+        <rollback>
+        	DELETE FROM ecmdb.professione;
+        	SELECT setval('ecmdb.hibernate_sequence', 1, true);
+        </rollback>
     </changeSet>
 
     <changeSet author="abarducci" id="02">
@@ -20,7 +27,8 @@
             path="001_02_Disciplina.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
-            stripComments="true"/>    
+            stripComments="true"/>
+        <rollback>DELETE FROM ecmdb.disciplina;</rollback>
     </changeSet>
 
     <changeSet author="abarducci" id="03">
@@ -31,7 +39,8 @@
             path="001_03_Obiettivo.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
-            stripComments="true"/>    
+            stripComments="true"/>
+        <rollback>DELETE FROM ecmdb.obiettivo;</rollback>
     </changeSet>
 
     <changeSet author="abarducci" id="04">
@@ -42,7 +51,8 @@
             path="001_04_Profile.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
-            stripComments="true"/>    
+            stripComments="true"/>
+        <rollback>DELETE FROM ecmdb.profile;</rollback>
     </changeSet>
 
     <changeSet author="abarducci" id="05">
@@ -53,7 +63,8 @@
             path="001_05_Role.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
-            stripComments="true"/>    
+            stripComments="true"/>
+        <rollback>DELETE FROM ecmdb.role;</rollback>
     </changeSet>
 
     <changeSet author="abarducci" id="06">
@@ -64,7 +75,8 @@
             path="001_06_profile_role.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
-            stripComments="true"/>    
+            stripComments="true"/>
+        <rollback>DELETE FROM ecmdb.profile_role;</rollback>
     </changeSet>
 
     <changeSet author="abarducci" id="07">
@@ -75,7 +87,8 @@
             path="001_07_Province.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
-            stripComments="true"/>    
+            stripComments="true"/>
+        <rollback>DELETE FROM ecmdb.province;</rollback>
     </changeSet>
 
     <changeSet author="abarducci" id="08">
@@ -86,7 +99,8 @@
             path="001_08_Comuni.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
-            stripComments="true"/>    
+            stripComments="true"/>
+        <rollback>DELETE FROM ecmdb.comuni;</rollback>
     </changeSet>
 
     <changeSet author="abarducci" id="09">
@@ -97,6 +111,7 @@
             path="001_09_SetSequence.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
-            stripComments="true"/>    
+            stripComments="true"/>
+        <rollback/>
     </changeSet>
 </databaseChangeLog>

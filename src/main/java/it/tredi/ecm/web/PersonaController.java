@@ -561,7 +561,7 @@ public class PersonaController {
 		}
 
 		//set dei files sul wrapper, per allinearmi nel caso ci fossero dei fieldIntegrazione relativi a files
-		if(!personaWrapper.getPersona().isNew()){
+		if(!reloadByEditId && !personaWrapper.getPersona().isNew()){
 			personaWrapper.setFiles(personaWrapper.getPersona().getFiles());
 		}
 
