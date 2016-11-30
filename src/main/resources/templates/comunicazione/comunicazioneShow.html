@@ -99,7 +99,7 @@
 
 							<div class="view-response message-container"
 								th:unless="${#sets.isEmpty(comunicazioneWrapper.comunicazione.risposte)}"
-								th:each="risposta, row : ${comunicazioneWrapper.comunicazione.risposte}">
+								th:each="risposta, row : ${#lists.sort(comunicazioneWrapper.comunicazione.risposte, comunicazioneWrapper.responseComparator)}">
 
 								<!-- RISPOSTA -->
 								<div class="inbox-body">
@@ -115,7 +115,7 @@
 										<div class="row">
 											<div class="col-xs-12">
 												<strong>Da: </strong>
-												<span th:text="${risposta.mittente.isSegreteria()} ? #{label.from_segreteria} : ${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></span>
+												<span th:text="${risposta.mittente.isSegreteria()} ? #{label.segreteria_ecm} : ${risposta.mittente.getFullName()}"></span>
 												<span th:text="${risposta.mittente.isSegreteria()} ? '&lt;' + #{label.segreteria_ecm_mail} + '&gt;' : '&lt;' + ${risposta.mittente.email} + '&gt;'"></span>
 											</div>
 										</div>
@@ -133,6 +133,7 @@
 									</div>
 								</div>
 							</div>
+
 
 							<!-- CONTENT MAIL -->
 							<div id="comunicazione-head" class="message-container">
