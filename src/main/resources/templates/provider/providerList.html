@@ -21,14 +21,14 @@
 									<th th:text="#{label.id}">Id</th>
 									<th th:text="#{label.denominazione_legale}">Denominazione legale</th>
 									<th th:text="#{label.tipoOrganizzatore_nome}"></th>
-									<th th:text="#{label.status}">Status del provider</th>
-									
+									<th th:text="#{label.stato}">Status del provider</th>
+
 									<th th:text="#{label.caninsert_piano_formativo}">Inserimento Piano Formativo</th>
 									<th th:text="#{label.caninsert_eventi}">Inserimento Eventi</th>
 									<th th:text="#{label.caninsert_domanda_accreditamento_standard}">Inserimento Domanda Accreditamento Standard</th>
-									
+
 									<!-- <th th:text="#{label.permessi}">Permessi</th> -->
-									
+
 									<th th:text="#{label.azioni}">Azioni</th>
 								</tr>
 							</thead>
@@ -38,17 +38,17 @@
 									<td class="text-full-length"><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/accreditamento/list|}">3d informatica</a></td>
 									<td th:text="${provider.tipoOrganizzatore.nome}">informatica</td>
 									<td th:text="${provider.status.nome}">stato</td>
-									
+
 									<td th:text="${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}">abilitato/non abilitato</td>
-									<td th:text="${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard ? 'green' : 'red'}">abilitato/non abilitato</td> 
-									
+									<td th:text="${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard ? 'green' : 'red'}">abilitato/non abilitato</td>
+
 									<!-- <td class="text-full-length">
 										<div th:text="#{label.caninsert_piano_formativo} + ' ' + ${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}"></div>
 										<div th:text="#{label.caninsert_eventi} + ' ' + ${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}"></div>
-										<div th:text="#{label.caninsert_domanda_accreditamento_standard} + ' ' + ${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard ? 'green' : 'red'}"></div>		
+										<div th:text="#{label.caninsert_domanda_accreditamento_standard} + ' ' + ${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard ? 'green' : 'red'}"></div>
 									</td> -->
-									
+
 									<td class="text-full-length">
 										<a th:href="@{|/provider/${provider.id}/comunicazione/list|}" class="btn btn-primary min-icon-width" th:title="#{label.comunicazioni_provider}"><i class="fa fa-comments"> </i></a>
 										<a th:href="@{|/provider/${provider.id}/evento/list|}" class="btn btn-primary min-icon-width" th:title="#{label.eventi_provider}"><i class="fa fa-pencil-square-o"> </i></a>
