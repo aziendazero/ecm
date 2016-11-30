@@ -11,8 +11,8 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
-import it.tredi.ecm.service.ProviderServiceImpl;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.utils.Utils;
@@ -24,53 +24,57 @@ public class FileValidator {
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private MessageSource messageSource;
 	@Autowired private ProviderService providerService;
-	
+	@Autowired private FileService fileService;
+
 	public void validate(Object target, Errors errors, String prefix, Long providerId) throws Exception{
 		validateData(target, errors, prefix);
 		validateFirma(target, errors, prefix, providerId);
 	}
-	
+
 	public void validateData(Object target, Errors errors, String prefix) {
 		LOGGER.info(Utils.getLogMessage("Validazione File"));
 		File file = (File)target;
+		if(file != null) {
+			fileService.getFile(file.getId());
+		}
 		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){
 			errors.rejectValue(prefix, "error.empty");
 		}else{
-			
+
 			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
 				errors.rejectValue(prefix, "error.maxFileSize", new Object[]{String.valueOf(ecmProperties.getMultipartMaxFileSize()/(1024*1024) )},"");
 			}
 		}
 	}
-	
+
 	public void validateFirma(Object target, Errors errors, String prefix, Long providerId) throws Exception{
 		File file = (File)target;
 		if(!(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0)){
-			
+
 			//se il cf della firma non appartiene al legale rappresentane o al delegato del legale rappresentante, allora non è valido
 			if(!validateFirmaCF(file, providerId))
 				errors.rejectValue(prefix, "error.codiceFiscale.firmatario");
 		}
 	}
-	
+
 	public boolean validateFirmaCF(Object target, Long providerId) throws Exception{
 		File file = (File)target;
 		if(!(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0)){
-			
+
 			VerificaFirmaDigitale verificaFirmaDigitale = new VerificaFirmaDigitale(file.getNomeFile(), file.getData());
 			String cfLegaleRappresentante = providerService.getCodiceFiscaleLegaleRappresentantePerVerificaFirmaDigitale(providerId);
 			String cfDelegatoLegaleRappresentante = providerService.getCodiceFiscaleDelegatoLegaleRappresentantePerVerificaFirmaDigitale(providerId);
-			
+
 			//se il cf della firma non appartiene al legale rappresentane o al delegato del legale rappresentante, allora non è valido
 			if((!verificaFirmaDigitale.getLastSignerCF().isEmpty()) && (cfLegaleRappresentante.equalsIgnoreCase(verificaFirmaDigitale.getLastSignerCF()) || cfDelegatoLegaleRappresentante.equalsIgnoreCase(verificaFirmaDigitale.getLastSignerCF())))
 				return true;
-			
+
 			return false;
 		}
-		
+
 		return false;
 	}
-	
+
 	public String validate(Object target, String contentType) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione File AJAX Upload"));
 		File file = (File)target;
