@@ -43,6 +43,8 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.PagDovutiLog;
@@ -192,7 +194,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 	public String pagaQuotaProvider(Long pagamentoId, String backURL) throws Exception {
 		Pagamento p = pagamentoService.getPagamentoById(pagamentoId);
-		String url = prepareDatiPagamentoPerQuotaAnnuale(p, p.getQuotaAnnuale(), CAUSALE_PAGAMENTO_QUOTA_PROVIDER + p.getQuotaAnnuale().getAnnoRiferimento(), backURL);
+		String url = prepareDatiPagamentoPerQuotaAnnuale(p, p.getQuotaAnnuale(), backURL);
 		return url;
 	}
 
@@ -216,7 +218,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setPartitaIva(soggetto.getPartitaIva());
 		p.setEmail(soggetto.getEmailStruttura());
 		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
-		p.setCausale(CAUSALE_PAGAMENTO_EVENTO + " - " + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo());
+		p.setCausale(formatCausale(CAUSALE_PAGAMENTO_EVENTO + " - " + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo()));
 		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione());
 
 		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.
@@ -234,7 +236,21 @@ public class EngineeringServiceImpl implements EngineeringService {
 		IntestazionePPT header = new IntestazionePPT();
 		header.setCodIpaEnte(engineeringProperties.getIpa());
 
-		PaaSILInviaDovutiRisposta response = port.get().paaSILInviaDovuti(dovuti, header);
+		PaaSILInviaDovutiRisposta response = null;
+		try{
+			response = port.get().paaSILInviaDovuti(dovuti, header);
+		}catch (Exception ex){
+			LOGGER.error("dovuti.EnteSIL: " + dovuti.getEnteSILInviaRispostaPagamentoUrl());
+			LOGGER.error("dovuti.password: " + dovuti.getPassword());
+			LOGGER.error("dovuti.dovuti: " + dovuti.getDovuti().toString());
+			LOGGER.error("header.codIpaEnte: " + header.getCodIpaEnte());
+			throw new Exception();
+		}
+
+		LOGGER.info("dovuti.EnteSIL: " + dovuti.getEnteSILInviaRispostaPagamentoUrl());
+		LOGGER.info("dovuti.password: " + dovuti.getPassword());
+		LOGGER.info("dovuti.dovuti: " + dovuti.getDovuti().toString());
+		LOGGER.info("header.codIpaEnte: " + header.getCodIpaEnte());
 
 		p.setIdSession(response.getIdSession());
 		e = p.getEvento();
@@ -260,7 +276,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		return response.getUrl();
 	}
 
-	private String prepareDatiPagamentoPerQuotaAnnuale(Pagamento p, QuotaAnnuale quotaAnnuale, String causale, String backURL) throws Exception{
+	private String prepareDatiPagamentoPerQuotaAnnuale(Pagamento p, QuotaAnnuale quotaAnnuale, String backURL) throws Exception{
 		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione());
 
 		String iud = StringUtils.rightPad(engineeringProperties.getServizio() + fmt.get().format(new Date()), 35, "0");
@@ -579,6 +595,13 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 		return file;
 
+	}
+
+	public String formatCausale(String causale){
+		if(causale != null && !causale.isEmpty() && causale.length() > engineeringProperties.getCausaleLength())
+			return causale.substring(0, engineeringProperties.getCausaleLength());
+
+		return causale;
 	}
 
 }

@@ -9,14 +9,14 @@
 		        <div class="modal-content">
 		            <div class="modal-header">
 		                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		                <h4 class="modal-title" th:text="#{label.elimina}">Delete </h4>
+		                <h4 class="modal-title" th:text="#{label.conferma_azione}">Delete </h4>
 		            </div>
 		            <div class="modal-body">
 		                <span id="deleteMsg"></span>
 
 		            </div>
 		            <div class="modal-footer">
-		                <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{label.annulla}">Cancel</button>
+		                <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{label.indietro}">Cancel</button>
 						<span id='deleteButton'></span>
 		            </div>
 
@@ -423,14 +423,19 @@
 				$('input[value=true]').iCheck('check');
 			}
 
-			function confirmDeleteEventoModal(providerId,eventoId,tipo,codiceIdentificativo){
+			function confirmDeleteEventoModal(providerId,eventoId,tipo,codiceIdentificativo,stato){
 			    $('#deleteModal').modal();
 
 			    var prefix = [[@{/provider/}]];
 			    var url = prefix + providerId + "/evento/" + eventoId + "/delete";
 
-			    $('#deleteMsg').html("<h2>Si desidera elimnare definitivamnete l'evento " + codiceIdentificativo + " (" + tipo + ")?</h2>");
-				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
+			    if(stato == 'BOZZA'){
+			    	$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente l'evento " + codiceIdentificativo + " (" + tipo + ")?</h2>");
+					$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
+			    }else{
+			    	$('#deleteMsg').html("<h2>Si desidera annullare definitivamente l'evento " + codiceIdentificativo + " (" + tipo + ")?</h2>");
+					$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Annulla</a>");
+			    }
 			}
 
 			function confirmDeleteEventoPianoFormativoModal(providerId,pianoFormativoId,eventoId,prefixUrl,tipo,codiceIdentificativo){

@@ -12,7 +12,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.modifica_dati_anagrafici(${anagraficaEventoWrapper.anagraficaEvento.anagrafica.nome}, ${anagraficaEventoWrapper.anagraficaEvento.anagrafica.cognome})}">Modifica dati anagrafici di Tizio Caio</h2>
 						<div class="pull-right buttons-header">
-							<a class="btn btn-success pull-right" th:text="#{label.salva}" th:onclick="|submit(${anagraficaEventoWrapper.full})|"></a>
+							<a class="btn btn-success pull-right" th:text="#{label.salva}" th:onclick="|invia(${anagraficaEventoWrapper.full})|"></a>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/provider/${anagraficaEventoWrapper.anagraficaEvento.provider.id}/anagraficaEvento/list|}"></a>
 						</div>
 						<div class="clearfix"></div>
@@ -24,8 +24,8 @@
 		</div>
 		<script th:inline="javascript">
 		/*<![CDATA[*/
-				function submit(full){
-					var url = [[@{|/provider/${anagraficaEventoWrapper.anagraficaEvento.provider.id}|}]]
+				function invia(full){
+					var url = [[@{|/provider/${anagraficaEventoWrapper.anagraficaEvento.provider.id}|}]];
 					if(full == true){
 						url = url + "/anagraficaFullEvento/save";
 					}else{
