@@ -14,10 +14,11 @@ import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 
 public interface ValutazioneService {
 	public Valutazione getValutazione(Long valutazioneId);
-	public Valutazione getValutazioneByAccreditamentoIdAndAccountId(Long accreditamentoId, Long accountId);
-	public Set<Valutazione> getAllValutazioniForAccreditamentoId(Long accreditamentoId);
-	public Set<Valutazione> getAllValutazioniCompleteForAccreditamentoId(Long accreditamentoId);
+	public Valutazione getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(Long accreditamentoId, Long accountId);
+	public Set<Valutazione> getAllValutazioniForAccreditamentoIdAndNotStoricizzato(Long accreditamentoId);
+	public Set<Valutazione> getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(Long accreditamentoId);
 	public void save(Valutazione valutazione);
+	public void saveAndFlush(Valutazione valutazione);
 	public void delete(Valutazione valutazione);
 	public Set<Account> getAllValutatoriForAccreditamentoId(Long accreditamentoId);
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(Long accreditamentoId, SubSetFieldEnum subset);
@@ -30,4 +31,8 @@ public interface ValutazioneService {
 	public void dataOraScadenzaPossibilitaValutazioneCRECM(Long accreditamentoId, LocalDateTime date) throws Exception;
 	public Map<Long,LocalDateTime> getScadenzaValutazioneByValutatoreId(Long id);
 	public Set<Valutazione> getAllValutazioniForAccount(Long accountId);
+	public Valutazione detachValutazione(Valutazione valutazione) throws Exception;
+	public void cloneDetachedValutazione(Valutazione valStoricizzata);
+	public void copiaInStorico(Valutazione valutazione) throws Exception;
+	public Valutazione getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(Long accreditamentoId);
 }

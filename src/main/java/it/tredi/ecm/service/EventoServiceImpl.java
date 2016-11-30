@@ -1123,7 +1123,7 @@ public class EventoServiceImpl implements EventoService {
 	public Evento detachEvento(Evento eventoPadre) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("DETACH evento id: " + eventoPadre.getId()));
 
-		touchFirstLevelOfEverything(eventoPadre);
+		Utils.touchFirstLevelOfEverything(eventoPadre);
 
 		//casi specifici
 		if(eventoPadre instanceof EventoFAD) {
@@ -1205,19 +1205,6 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug(Utils.getLogMessage("Procedura di detach Evento - success"));
 
 		return eventoPadre;
-	}
-
-	//nobel per il workaround 2016 (in pratica fa una get di tutto | solo il primo livello della entity passata)
-	public <T> void touchFirstLevelOfEverything(T obj) throws Exception{
-		BeanInfo info = Introspector.getBeanInfo(obj.getClass());
-		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-			Method method = pd.getReadMethod();
-			if(method != null) {
-				Object innerEntity = method.invoke(obj);
-				if(innerEntity != null)
-					innerEntity.toString();
-			}
-		}
 	}
 
 	//sistema l'Evento detatchato clonando i campi che devono essere clonati

@@ -10,9 +10,9 @@ public class PdfInfoIntegrazioneRigetto {
 	private boolean eseguitaDaProvider = false;
 
 	public PdfInfoIntegrazioneRigetto() {
-		
+
 	}
-	
+
 	public PdfInfoIntegrazioneRigetto(String numeroProtocollo,
 			LocalDate dataProtocollo,
 		String verbaleNumero,
@@ -61,8 +61,11 @@ public class PdfInfoIntegrazioneRigetto {
 		return eseguitaDaProvider;
 	}
 
-	public void setEseguitaDaProvider(boolean eseguitaDaProvider) {
-		this.eseguitaDaProvider = eseguitaDaProvider;
+	public void setEseguitaDaProvider(Boolean eseguitaDaProvider) {
+		if(eseguitaDaProvider == null)
+			this.eseguitaDaProvider = false;
+		else
+			this.eseguitaDaProvider = eseguitaDaProvider;
 	}
 
 }

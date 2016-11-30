@@ -1342,8 +1342,10 @@ public class EventoValidator {
 
 			if(atLeastOneErrorAzione)
 				errors.rejectValue(prefix + "azioniRuoli", "error.campi_con_errori_azione_ruoli"+tipologiaEvento);
-			else if(errorePartecipanteAudit)
+			else if(errorePartecipanteAudit) {
 				errors.rejectValue(prefix + "azioniRuoli", "error.partecipanti_AUDIT_ore");
+				errors.rejectValue("evento.riepilogoRuoli", "error.partecipanti_AUDIT_ore");
+			}
 			return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
 		}
 	}

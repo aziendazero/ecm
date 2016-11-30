@@ -13,7 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +36,8 @@ public class Valutazione extends BaseEntity{
 	private String valutazioneComplessiva;
 
 	private Boolean storicizzato = false;
+	@Enumerated(EnumType.STRING)
+	private AccreditamentoStatoEnum accreditamentoStatoValutazione;
 
 	@Column(name="dataora_scadenza_possibilita_valutazione")
 	private LocalDateTime dataOraScadenzaPossibilitaValutazione = null;

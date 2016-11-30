@@ -308,6 +308,11 @@ public class PersonaController {
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
 			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(personaWrapper.getAccreditamentoId());
 			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+				for(File file : personaWrapper.getFiles()){
+					if(file != null && !file.isNew()){
+						file.getData().toString();
+					}
+				}
 				integrazioneService.detach(personaWrapper.getPersona());
 				LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: PersonaSave:__AFTER SET__"));
 				integrazioneService.isManaged(personaWrapper.getPersona());
@@ -379,7 +384,7 @@ public class PersonaController {
 						v.setObjectReference(personaWrapper.getPersona().getId());
 				});
 
-				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(personaWrapper.getMappa()));
 				valutazione.getValutazioni().addAll(values);
 				valutazioneService.save(valutazione);
@@ -626,7 +631,7 @@ public class PersonaController {
 		personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 
 		//carico la valutazione per l'utente
-		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 		if(valutazione != null) {
 			//per distinguere il multistanza delle persone del comitato scientifico

@@ -1,10 +1,14 @@
 package it.tredi.ecm.utils;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -192,7 +196,7 @@ public class Utils {
 			default: return null;
 		}
 	}
-	
+
 	public static Object copy(Object fromBean) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         XMLEncoder out = new XMLEncoder(bos);
@@ -205,32 +209,46 @@ public class Utils {
         in.close();
         return toBean;
     }
-	
+
 	public static float getRoundedFloatValue(float value, int precision){
 		BigDecimal bg = new BigDecimal(value).setScale(precision, RoundingMode.HALF_UP);
 		return bg.floatValue();
 	}
-	
+
 	public static float getRoundedFloatValue(BigDecimal value, int precision){
 		BigDecimal bg = value.setScale(precision, RoundingMode.HALF_UP);
 		return bg.floatValue();
 	}
-	
+
 	public static Double getRoundedDoubleValue(Double value, int precision){
 		BigDecimal bg = new BigDecimal(value).setScale(precision, RoundingMode.HALF_UP);
 		return bg.doubleValue();
 	}
-	
+
 	public static String formatOrario(float durata){
 		int ore = (int) durata;
 		int minuti = (int) ((durata*60) % 60);
 		return ore + ":" + minuti;
 	}
-	
+
 	public static String QUERY_AND(String query, String criteria){
 		if(query.contains("WHERE"))
 			return query+= " AND " + criteria;
 		else
 			return query+= " WHERE " + criteria;
+	}
+
+	//nobel per il workaround 2016 (in pratica fa una get di tutto | solo il primo livello della entity passata)
+	//utile per i detach per evitare i lazy init ex
+	public static <T> void touchFirstLevelOfEverything(T obj) throws Exception{
+		BeanInfo info = Introspector.getBeanInfo(obj.getClass());
+		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
+			Method method = pd.getReadMethod();
+			if(method != null) {
+				Object innerEntity = method.invoke(obj);
+				if(innerEntity != null)
+					innerEntity.toString();
+			}
+		}
 	}
 }

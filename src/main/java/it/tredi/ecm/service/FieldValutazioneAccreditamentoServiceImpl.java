@@ -4,13 +4,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldValutazioneAccreditamentoRepository;
@@ -20,8 +23,8 @@ import it.tredi.ecm.utils.Utils;
 public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazioneAccreditamentoService {
 	private static Logger LOGGER = LoggerFactory.getLogger(FieldValutazioneAccreditamentoServiceImpl.class);
 
-	@Autowired
-	private FieldValutazioneAccreditamentoRepository fieldValutazioneAccreditamentoRepository;
+	@Autowired private FieldValutazioneAccreditamentoRepository fieldValutazioneAccreditamentoRepository;
+	@Autowired private ValutazioneService valutazioneService;
 
 	@Override
 	public Set<FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamento(Long accreditamentoId) {
@@ -98,7 +101,7 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		LOGGER.debug(Utils.getLogMessage("Salvataggio FieldValutazioni per la domanda di accreditamento"));
 		fieldValutazioneAccreditamentoRepository.save(valutazione);
 	}
-	
+
 	@Override
 	@Transactional
 	public void delete(Long id) {
@@ -112,5 +115,14 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		LOGGER.debug(Utils.getLogMessage("Salvataggio FieldValutazioni per la domanda di accreditamento"));
 		fieldValutazioneAccreditamentoRepository.save(valutazioneAsMap.values());
 		return valutazioneAsMap.values();
+	}
+
+	//recupera tutte le valutazioni della segreteria non storicizzate per l'accreditamento ID
+	//utile per vedere quali campi applicare dell'integrazione dei provider
+	@Override
+	public Set<FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoBySegreteriaNotStoricizzato(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero la valutazione attiva della segreteria per l'accreditamento id: " + accreditamentoId));
+		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
+		return valutazioneSegreteria.getValutazioni();
 	}
 }

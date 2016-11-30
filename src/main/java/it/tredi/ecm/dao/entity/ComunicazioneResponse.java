@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +17,9 @@ import lombok.Setter;
 @Table(name="comunicazione_response")
 @Getter
 @Setter
-public class ComunicazioneResponse extends BaseEntity{
+public class ComunicazioneResponse extends BaseEntity
+//implements Comparator<ComunicazioneResponse>
+{
 
 	public ComunicazioneResponse() {}
 	public ComunicazioneResponse(Account mittente, Comunicazione comunicazione) {
@@ -35,4 +38,14 @@ public class ComunicazioneResponse extends BaseEntity{
 
 	@OneToOne
 	private File allegatoRisposta;
+
+//	@Override
+//	public int compare(ComunicazioneResponse response1, ComunicazioneResponse response2) {
+//		if(response1.getDataRisposta().isAfter(response2.getDataRisposta()))
+//			return 1;
+//		else if(response1.getDataRisposta().isBefore(response2.getDataRisposta()))
+//			return -1;
+//		else
+//			return 0;
+//	}
 }
