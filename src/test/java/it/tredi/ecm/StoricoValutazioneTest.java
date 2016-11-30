@@ -36,7 +36,7 @@ import it.tredi.ecm.service.ValutazioneService;
 @WithUserDetails("segreteria")
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING) // ordina i test in base al nome crescente
 @Rollback(false)
-//@Ignore
+@Ignore
 public class StoricoValutazioneTest {
 
 	@Autowired
