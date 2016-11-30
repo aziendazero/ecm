@@ -58,7 +58,7 @@ public class AnagraficaEventoController {
 	@ModelAttribute("anagraficaEventoWrapper")
 	public AnagraficaEventoWrapper getAnagraficaPreRequest(@RequestParam(value="editId",required = false) Long id){
 		if(id != null)
-			return prepareAnagraficaEventoWrapper(anagraficaEventoService.getAnagraficaEvento(id));
+			return prepareWrapperForReloadByEditId(anagraficaEventoService.getAnagraficaEvento(id));
 		return new AnagraficaEventoWrapper();
 	}
 
@@ -120,7 +120,7 @@ public class AnagraficaEventoController {
 	public String showAnagraficaEventoForProvider(@PathVariable Long providerId, @PathVariable Long anagraficaEventoId, Model model, RedirectAttributes redirectAttrs){
 		try {
 			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/anagraficaEvento/" + anagraficaEventoId + "/show"));
-			return goToShow(model, prepareAnagraficaEventoWrapper(anagraficaEventoService.getAnagraficaEvento(anagraficaEventoId), providerId));
+			return goToShow(model, prepareAnagraficaEventoWrapper(anagraficaEventoService.getAnagraficaEvento(anagraficaEventoId), providerId, false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/anagraficaEvento/" + anagraficaEventoId + "/show"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -133,7 +133,7 @@ public class AnagraficaEventoController {
 	public String editAnagraficaEvento(@PathVariable Long providerId, @PathVariable Long anagraficaId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/{providerId}/anagraficaEvento/{anagraficaId}/edit"));
 		try {
-			return goToEdit(model, prepareAnagraficaEventoWrapper(anagraficaEventoService.getAnagraficaEvento(anagraficaId),providerId));
+			return goToEdit(model, prepareAnagraficaEventoWrapper(anagraficaEventoService.getAnagraficaEvento(anagraficaId),providerId,false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/anagraficaEvento/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -148,7 +148,7 @@ public class AnagraficaEventoController {
 		LOGGER.info(Utils.getLogMessage("POST /provider/{providerId}/anagraficaEvento/save"));
 		try {
 
-			File file = wrapper.getAnagraficaEvento().getAnagrafica().getCv();
+			File file = wrapper.getCv();
 			if(file != null && !file.isNew())
 				wrapper.getAnagraficaEvento().getAnagrafica().setCv(fileService.getFile(file.getId()));
 
@@ -183,16 +183,19 @@ public class AnagraficaEventoController {
 	}
 
 	//utilizzato save (passa editId come hidden param)
-	private AnagraficaEventoWrapper prepareAnagraficaEventoWrapper(AnagraficaEvento anagraficaEvento){
-		return prepareAnagraficaEventoWrapper(anagraficaEvento, anagraficaEvento.getProvider().getId());
+	private AnagraficaEventoWrapper prepareWrapperForReloadByEditId(AnagraficaEvento anagraficaEvento){
+		return prepareAnagraficaEventoWrapper(anagraficaEvento, anagraficaEvento.getProvider().getId(),true);
 	}
 
-	private AnagraficaEventoWrapper prepareAnagraficaEventoWrapper(AnagraficaEvento anagraficaEvento, Long providerId){
-		LOGGER.info(Utils.getLogMessage("prepareAnagraficaWrapper(" + anagraficaEvento.getId() + "," + providerId + ") - entering"));
+	private AnagraficaEventoWrapper prepareAnagraficaEventoWrapper(AnagraficaEvento anagraficaEvento, Long providerId,boolean reloadById){
+		LOGGER.info(Utils.getLogMessage("prepareAnagraficaWrapper(" + anagraficaEvento.getId() + "," + providerId + "," + reloadById + " - entering"));
 		AnagraficaEventoWrapper wrapper = new AnagraficaEventoWrapper();
 
 		wrapper.setAnagraficaEvento(anagraficaEvento);
 		wrapper.setProviderId(providerId);
+
+		if(!reloadById)
+			wrapper.setCv(anagraficaEvento.getAnagrafica().getCv());
 
 		LOGGER.info(Utils.getLogMessage("prepareAnagraficaWrapper(" + anagraficaEvento.getId() + "," + providerId + ") - exiting"));
 		return wrapper;
