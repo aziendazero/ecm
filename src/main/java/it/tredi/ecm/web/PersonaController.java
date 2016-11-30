@@ -308,6 +308,11 @@ public class PersonaController {
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
 			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(personaWrapper.getAccreditamentoId());
 			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+				for(File file : personaWrapper.getFiles()){
+					if(file != null && !file.isNew()){
+						file.getData().toString();
+					}
+				}
 				integrazioneService.detach(personaWrapper.getPersona());
 				LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: PersonaSave:__AFTER SET__"));
 				integrazioneService.isManaged(personaWrapper.getPersona());
