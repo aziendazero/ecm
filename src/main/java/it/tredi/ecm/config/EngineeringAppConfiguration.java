@@ -36,7 +36,9 @@ public class EngineeringAppConfiguration {
 	private String proxyUsername = "";
 	@Value("${proxy.password}")
 	private String proxyPassword = "";
-	
+	@Value("${causale.length}")
+	private int causaleLength = 140;
+
 	@Value("${firma.url}")
 	private String firmaUrl = "";
 	@Value("${firma.idclassificazione}")
@@ -47,7 +49,7 @@ public class EngineeringAppConfiguration {
 	@Bean
 	public EngineeringProperties engineeringProperties(){
 		EngineeringProperties engineeringProperties = new EngineeringProperties();
-		
+
 		engineeringProperties.setIpa(ipa);
 		engineeringProperties.setPassword(password);
 		engineeringProperties.setServizio(servizio);
@@ -60,11 +62,12 @@ public class EngineeringAppConfiguration {
 		engineeringProperties.setProxyPort(proxyPort);
 		engineeringProperties.setProxyUsername(proxyUsername);
 		engineeringProperties.setProxyPassword(proxyPassword);
-		
+		engineeringProperties.setCausaleLength(causaleLength);
+
 		engineeringProperties.setFirmaUrl(firmaUrl);
 		engineeringProperties.setFirmaIdclassificazione(firmaIdclassificazione);
 		engineeringProperties.setFirmaReferer(firmaReferer);
-		
+
 		return engineeringProperties;
 	}
 }

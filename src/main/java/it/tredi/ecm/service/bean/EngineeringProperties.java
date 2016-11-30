@@ -18,7 +18,8 @@ public class EngineeringProperties {
 	private String proxyPort;
 	private String proxyUsername;
 	private String proxyPassword;
-	
+	private int causaleLength;
+
 	private String firmaUrl;
 	private String firmaIdclassificazione;
 	private String firmaReferer;
