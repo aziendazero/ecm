@@ -1382,7 +1382,7 @@ public class EventoServiceImpl implements EventoService {
 		riedizione.setEventoPianoFormativo(null);
 		riedizione.setDataScadenzaPagamento(null);
 		riedizione.setInviiRendicontazione(new HashSet<RendicontazioneInviata>());
-		riedizione.getAnagrafeRegionaleCrediti().clear();
+		riedizione.setAnagrafeRegionaleCrediti(null);
 		riedizione.setPagato(null);
 		riedizione.setPagInCorso(null);
 		riedizione.setProceduraVerificaQualitaPercepita(null);
