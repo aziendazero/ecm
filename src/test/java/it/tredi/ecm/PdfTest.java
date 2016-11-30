@@ -240,7 +240,7 @@ public class PdfTest {
 			accreditamento.setDecretoAccreditamento(file);
 		} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
 			//Cancelliamo le Valutazioni non completate
-			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
+			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 			for(Valutazione v : valutazioni){
 				if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE && v.getDataValutazione() == null){
 					valutazioneService.delete(v);

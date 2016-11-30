@@ -15,11 +15,11 @@ public class PdfAccreditamentoProvvisorioRigettoInfo {
 	private PdfInfoIntegrazioneRigetto rigettoInfo = null;
 	//private List<String> listaMotivazioni = new ArrayList<String>();
 	private String noteSedutaDomanda = null;
-	
+
 	public PdfAccreditamentoProvvisorioRigettoInfo(Accreditamento accreditamento, Seduta sedutaRigetto, Seduta sedutaIntegrazione, Seduta sedutaPreavvisoRigetto) {
 		this.providerInfo = new PdfProviderInfo(accreditamento.getProvider());
 		this.accreditamentoDataValidazione = accreditamento.getDataInvio();
-		
+
 		for(ValutazioneCommissione valutazione : sedutaRigetto.getValutazioniCommissione()) {
 			if(valutazione.getAccreditamento().getId() == accreditamento.getId()) {
 				this.noteSedutaDomanda = valutazione.getValutazioneCommissione();
@@ -33,18 +33,18 @@ public class PdfAccreditamentoProvvisorioRigettoInfo {
 		//TODO
 		//integrazioneInfo.setDataProtocollo(dataProtocollo);
 		//integrazioneInfo.setNumeroProtocollo(numeroProtocollo);
-		
+
 		rigettoInfo = new PdfInfoIntegrazioneRigetto();
 		rigettoInfo.setDataSedutaCommissione(sedutaPreavvisoRigetto.getData());
 		rigettoInfo.setVerbaleNumero(sedutaPreavvisoRigetto.getNumeroVerbale());
 		rigettoInfo.setEseguitaDaProvider(accreditamento.getPreavvisoRigettoEseguitoDaProvider());
 		//TODO
-		//rigettoInfo.setEseguitaDaProvider(eseguitaDaProvider);		
+		//rigettoInfo.setEseguitaDaProvider(eseguitaDaProvider);
 		//rigettoInfo.setDataProtocollo(dataProtocollo);
 		//rigettoInfo.setNumeroProtocollo(numeroProtocollo);
 
 	}
-	
+
 	public PdfAccreditamentoProvvisorioRigettoInfo(String providerDenominazione,
 		String providerIndirizzo,
 		String providerCap,
@@ -54,26 +54,26 @@ public class PdfAccreditamentoProvvisorioRigettoInfo {
 		String providerCognomeLegaleRappresentante,
 		String providerPec,
 		LocalDate accreditamentoDataValidazione,
-		
+
 		String numeroProtocolloIntegrazione,
 		LocalDate dataProtocolloIntegrazione,
 		String verbaleNumeroIntegrazione,
 		LocalDate dataSedutaCommissioneIntegrazione,
 		boolean eseguitaDaProviderIntegrazione,
-		
+
 		String numeroProtocolloRigetto,
 		LocalDate dataProtocolloRigetto,
 		String verbaleNumeroRigetto,
 		LocalDate dataSedutaCommissioneRigetto,
 		boolean eseguitaDaProviderRigetto,
-		
+
 		String noteSedutaDomanda) {
 		this.providerInfo = new PdfProviderInfo(providerDenominazione, providerIndirizzo, providerCap, providerComune, providerProvincia, providerNomeLegaleRappresentante, providerCognomeLegaleRappresentante, providerPec);
 		this.accreditamentoDataValidazione = accreditamentoDataValidazione;
-		
+
 		this.integrazioneInfo = new PdfInfoIntegrazioneRigetto(numeroProtocolloIntegrazione, dataProtocolloIntegrazione, verbaleNumeroIntegrazione, dataSedutaCommissioneIntegrazione, eseguitaDaProviderIntegrazione);
 		this.rigettoInfo = new PdfInfoIntegrazioneRigetto(numeroProtocolloRigetto, dataProtocolloRigetto, verbaleNumeroRigetto, dataSedutaCommissioneRigetto, eseguitaDaProviderRigetto);
-		
+
 		//this.listaMotivazioni = listaMotivazioni;
 		this.noteSedutaDomanda = noteSedutaDomanda;
 	}
