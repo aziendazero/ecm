@@ -503,11 +503,11 @@
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 														<input type="hidden" th:value="${data.key}" />
 														<input id="dataIntermedia" type="text" class="form-control datapicker-intermedia"
-															th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno}" th:disabled="${isEditSemiBloccato}" />
-														<span th:unless="${isEditSemiBloccato}" class="input-group-addon not-last" onclick="$(this).prev().click()">
+															th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno}" th:disabled="${isEditSemiBloccato or (isRiedizione and #sets.isEmpty(eventoWrapper.evento.eventoPadre.dateIntermedie))}" />
+														<span th:unless="${isEditSemiBloccato or (isRiedizione and #sets.isEmpty(eventoWrapper.evento.eventoPadre.dateIntermedie))}" class="input-group-addon not-last" onclick="$(this).prev().click()">
 								 							<i class="glyphicon glyphicon-calendar"></i>
 														</span>
-														<span th:if="${isEditSemiBloccato}" class="input-group-addon not-last disabled-addon">
+														<span th:if="${isEditSemiBloccato or (isRiedizione and #sets.isEmpty(eventoWrapper.evento.eventoPadre.dateIntermedie))}" class="input-group-addon not-last disabled-addon">
 								 							<i class="glyphicon glyphicon-calendar"></i>
 														</span>
 														<span th:unless="${isEditSemiBloccato or isRiedizione}" class="input-group-addon" th:onclick="${row.count == (row.size - 1) ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}" th:classappend="${row.count == (row.size - 1) ? 'add' : 'remove'}">
