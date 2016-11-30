@@ -15,8 +15,8 @@ import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 public interface ValutazioneService {
 	public Valutazione getValutazione(Long valutazioneId);
 	public Valutazione getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(Long accreditamentoId, Long accountId);
-	public Set<Valutazione> getAllValutazioniForAccreditamentoId(Long accreditamentoId);
-	public Set<Valutazione> getAllValutazioniCompleteForAccreditamentoId(Long accreditamentoId);
+	public Set<Valutazione> getAllValutazioniForAccreditamentoIdAndNotStoricizzato(Long accreditamentoId);
+	public Set<Valutazione> getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(Long accreditamentoId);
 	public void save(Valutazione valutazione);
 	public void saveAndFlush(Valutazione valutazione);
 	public void delete(Valutazione valutazione);
@@ -34,4 +34,5 @@ public interface ValutazioneService {
 	public Valutazione detachValutazione(Valutazione valutazione) throws Exception;
 	public void cloneDetachedValutazione(Valutazione valStoricizzata);
 	public void copiaInStorico(Valutazione valutazione) throws Exception;
+	public Valutazione getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(Long accreditamentoId);
 }

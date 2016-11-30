@@ -19,4 +19,5 @@ public interface FieldValutazioneAccreditamentoService {
 	public void save(FieldValutazioneAccreditamento valutazione);
 	public void delete(Long id);
 	public Collection<FieldValutazioneAccreditamento> saveMapList(Map<IdFieldEnum,FieldValutazioneAccreditamento> valutazioneAsMap);
+	public Set<FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoBySegreteriaNotStoricizzato(Long accreditamentoId);
 }

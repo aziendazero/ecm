@@ -41,7 +41,7 @@ public class ValutazioneController {
 	@RequestMapping("/accreditamento/{accreditamentoId}/valutazioniComplessive")
 	@ResponseBody
 	public LinkedList<Map<String,String>> getValutazioniComplessive(@PathVariable Long accreditamentoId){
-		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
+		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 		LinkedList<Map<String,String>> result = new LinkedList<>();
 
 		for(Valutazione v : valutazioni){

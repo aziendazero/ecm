@@ -564,7 +564,7 @@ public class AccreditamentoController {
 			accreditamentoWrapper.setAllAccreditamento(accreditamento);
 
 		//lista valutazioni per la valutazione complessiva
-		accreditamentoWrapper.setValutazioniList(valutazioneService.getAllValutazioniForAccreditamentoId(accreditamento.getId()));
+		accreditamentoWrapper.setValutazioniList(valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamento.getId()));
 
 		//controllo sul pulsante conferma valutazione
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));

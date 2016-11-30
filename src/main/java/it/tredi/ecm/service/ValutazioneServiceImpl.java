@@ -79,23 +79,23 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 	@Override
-	public Set<Valutazione> getAllValutazioniForAccreditamentoId(Long accreditamentoId) {
+	public Set<Valutazione> getAllValutazioniForAccreditamentoIdAndNotStoricizzato(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le Valutazione per l'accreditamento " + accreditamentoId));
-		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByAccount(accreditamentoId);
+		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoFalseOrderByAccount(accreditamentoId);
 		return allValutazioni;
 	}
 
 	@Override
-	public Set<Valutazione> getAllValutazioniCompleteForAccreditamentoId(Long accreditamentoId) {
+	public Set<Valutazione> getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le Valutazioni complete per l'accreditamento " + accreditamentoId));
-		Set<Valutazione> allCompleteValutazioni = valutazioneRepository.findAllByAccreditamentoIdAndDataValutazioneNotNullOrderByAccount(accreditamentoId);
+		Set<Valutazione> allCompleteValutazioni = valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoFalseAndDataValutazioneNotNullOrderByAccount(accreditamentoId);
 		return allCompleteValutazioni;
 	}
 
 	@Override
 	public Set<Account> getAllValutatoriForAccreditamentoId(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Ottengo la lista dei valutatori dell'accreditamento " + accreditamentoId));
-		Set<Valutazione> valutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByAccount(accreditamentoId);
+		Set<Valutazione> valutazioni = valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoFalseOrderByAccount(accreditamentoId);
 		Set<Account> valutatori = new HashSet<Account>();
 		for (Valutazione v : valutazioni) {
 			valutatori.add(v.getAccount());
@@ -107,7 +107,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndSubSet(Long accreditamentoId, SubSetFieldEnum subset) {
 		LOGGER.debug(Utils.getLogMessage("Genero la mappa valutatori - valutazione dell'accreditamento " + accreditamentoId + " per il subset " + subset));
 		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
-		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByAccount(accreditamentoId);
+		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoFalseOrderByAccount(accreditamentoId);
 		//per ogni valutazione dell'accreditamento
 		for (Valutazione v : allValutazioni) {
 			//mi faccio restituire la valutazione relativa al subset e al determinato valutatore
@@ -122,7 +122,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	public Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapValutatoreValutazioniByAccreditamentoIdAndObjectId(Long accreditamentoId, Long id) {
 		LOGGER.debug(Utils.getLogMessage("Genero la mappa valutatori - valutazione dell'accreditamento " + accreditamentoId + " per l'oggetto " + id));
 		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
-		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdOrderByAccount(accreditamentoId);
+		Set<Valutazione> allValutazioni = valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoFalseOrderByAccount(accreditamentoId);
 		//per ogni valutazione dell'accreditamento
 		for (Valutazione v : allValutazioni) {
 			//mi faccio restituire la valutazione relativa al id dell'oggetto e al determinato valutatore
@@ -173,7 +173,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Override
 	public void updateValutazioniNonDate(Long accreditamentoId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Aggiornamento valutazioni non date per accreditamento: " + accreditamentoId));
-		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoId(accreditamentoId);
+		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 		for(Valutazione v : valutazioni){
 			if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE && v.getDataValutazione() == null){
 				Account referee = v.getAccount();
@@ -195,7 +195,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Override
 	public void dataOraScadenzaPossibilitaValutazioneCRECM(Long accreditamentoId, LocalDateTime date) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Aggiornamento dataora massima (" + date + ") entro la quale effettuare la valutazione CRECM per accreditamento: " + accreditamentoId));
-		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoId(accreditamentoId);
+		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 		for(Valutazione v : valutazioni){
 			if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE){
 				v.setDataOraScadenzaPossibilitaValutazione(date);
@@ -265,5 +265,11 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		cloneDetachedValutazione(valStoricizzata);
 		valStoricizzata.setStoricizzato(true);
 		save(valStoricizzata);
+	}
+
+	@Override
+	public Valutazione getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero la valutazione attiva (non storicizzata) per l'accreditamento id:" + accreditamentoId + " della segreteria"));
+		return valutazioneRepository.findOneByAccreditamentoIdAndTipoValutazioneAndStoricizzatoFalse(accreditamentoId, ValutazioneTipoEnum.SEGRETERIA_ECM);
 	}
 }

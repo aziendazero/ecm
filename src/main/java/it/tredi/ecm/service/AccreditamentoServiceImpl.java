@@ -318,12 +318,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	public void approvaIntegrazione(Long accreditamentoId) throws Exception{
-		Set<FieldValutazioneAccreditamento> fieldValutazioni = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamento(accreditamentoId);
+		Set<FieldValutazioneAccreditamento> fieldValutazioniSegreteria = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoBySegreteriaNotStoricizzato(accreditamentoId);
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
 
 		Set<FieldIntegrazioneAccreditamento> approved = new HashSet<FieldIntegrazioneAccreditamento>();
 
-		fieldValutazioni.forEach(v -> {
+		fieldValutazioniSegreteria.forEach(v -> {
 			FieldIntegrazioneAccreditamento field = null;
 			if(v.getEsito().booleanValue()){
 				if(v.getObjectReference() == -1)
@@ -386,7 +386,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//inserisce il commento complessivo
 		valutazioneSegreteria.setValutazioneComplessiva(valutazioneComplessiva);
+
+		//setta lo stato dell'accreditamento al momento del salvataggio
+		valutazioneSegreteria.setAccreditamentoStatoValutazione(accreditamento.getStato());
+
 		valutazioneService.save(valutazioneSegreteria);
+
+		valutazioneService.copiaInStorico(valutazioneSegreteria);
 
 		//elimino le date delle vecchie valutazioni
 		Set<Account> valutatori = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamentoId);
@@ -464,14 +470,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		integrazioneService.checkIfFieldIntegraizoniConfirmedForAccreditamento(accreditamentoId, fieldIntegrazioneList);
 		fieldIntegrazioneAccreditamentoService.saveSet(fieldIntegrazioneList);
 
-		//per i campi modificati...elimino i field valutazione su tutte le valutazioni presenti
+		//per i campi modificati...elimino i field integrazione su tutte le valutazioni presenti
 		Set<FieldIntegrazioneAccreditamento> fieldModificati = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId);
 
 		//se ci sono state delle modifiche ri-abilito la valutazione cancellando la data
 		if(fieldModificati != null && !fieldModificati.isEmpty()){
 			//elimina data valutazione
 
-			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoId(accreditamentoId);
+			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 			for(Valutazione valutazione : valutazioni){
 				if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
 					valutazione.setDataValutazione(null);
@@ -481,7 +487,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 
 		//se ci sono state delle modifiche elimino i fieldValutazione corrispondenti
-		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
+		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 		FieldValutazioneAccreditamento field = null;
 		for(Valutazione valutazione : valutazioni){
 			Set<FieldValutazioneAccreditamento> fieldValutazioni = valutazione.getValutazioni();
@@ -716,7 +722,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 */
 	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception {
 		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isValutazioneSegreteriaAssegnamento()) {
-			Set<Valutazione> valutazioniAccreditamento = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
+			Set<Valutazione> valutazioniAccreditamento = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 			for (Valutazione v : valutazioniAccreditamento) {
 				if(v.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM)
 					return false;
@@ -756,6 +762,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				if(accreditamento.isValutazioneSegreteria()){
 					if(!task.isAssigned() && !canUserPresaVisione(accreditamentoId, currentUser))
 						return true;
+					else
+						return false;
 				}else{
 					if(!task.isAssigned())
 						return false;
@@ -785,7 +793,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 */
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser) {
 		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm()){
-			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoId(accreditamentoId);
+			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 			return !valutazioni.isEmpty();
 		}
 		return false;
@@ -970,7 +978,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.setDecretoAccreditamento(file);
 		} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
 			//Cancelliamo le Valutazioni non completate
-			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoId(accreditamentoId);
+			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 			for(Valutazione v : valutazioni){
 				if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE && v.getDataValutazione() == null){
 					valutazioneService.delete(v);
