@@ -1,6 +1,7 @@
 package it.tredi.ecm.web.bean;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,14 +17,14 @@ public class RicercaComunicazioneWrapper {
 	private Long campoIdProvider;
 	private String denominazioneLegale;
 	private String oggetto;
-	
+
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
-	private LocalDate dataCreazioneStart;
+	private LocalDateTime dataCreazioneStart;
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
-	private LocalDate dataCreazioneEnd;
-	
+	private LocalDateTime dataCreazioneEnd;
+
 	private Set<ComunicazioneAmbitoEnum> ambitiSelezionati;
 	private Set<ComunicazioneTipologiaEnum> tipologieSelezionate;
-	
+
 	private Long providerId;
 }
