@@ -97,7 +97,7 @@
 							<span th:text="#{label.provincia}">Provincia</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<label class="control-label" th:text="${programmaGiornaliero.sede.provincia}" ></label>
+							<label class="control-label" th:text="${programmaGiornaliero.sede?.provincia}" ></label>
 						</div>
 					</div>
 
@@ -106,7 +106,7 @@
 							<span th:text="#{label.comune}">Comune</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<label class="control-label" th:text="${programmaGiornaliero.sede.comune}" ></label>
+							<label class="control-label" th:text="${programmaGiornaliero.sede?.comune}" ></label>
 						</div>
 					</div>
 
@@ -115,7 +115,7 @@
 							<span th:text="#{label.indirizzo}">Indirizzo</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<label class="control-label" th:text="${programmaGiornaliero.sede.indirizzo}" ></label>
+							<label class="control-label" th:text="${programmaGiornaliero.sede?.indirizzo}" ></label>
 						</div>
 					</div>
 
@@ -124,7 +124,7 @@
 							<span th:text="#{label.luogo}">Luogo</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<label class="control-label" th:text="${programmaGiornaliero.sede.luogo}" ></label>
+							<label class="control-label" th:text="${programmaGiornaliero.sede?.luogo}" ></label>
 						</div>
 					</div>
 

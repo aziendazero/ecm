@@ -1449,11 +1449,11 @@ public class EventoServiceImpl implements EventoService {
 
 		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
 			//devo fare il join con la tabella provider
-			query ="SELECT e FROM Evento e JOIN e.discipline d JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
+			query ="SELECT DISTINCT e FROM Evento e JOIN e.discipline d JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
 			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
 		}else{
 			//posso cercare direttamente su evento
-			query ="SELECT e FROM Evento e JOIN e.discipline d";
+			query ="SELECT DISTINCT e FROM Evento e JOIN e.discipline d";
 		}
 
 			//PROVIDER ID
