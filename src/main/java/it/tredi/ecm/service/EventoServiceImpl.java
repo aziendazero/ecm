@@ -84,13 +84,13 @@ import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.EcmException;
-import it.tredi.ecm.service.bean.VerificaFirmaDigitale;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.validator.FileValidator;
+import scala.noinline;
 
 @Service
 public class EventoServiceImpl implements EventoService {
@@ -302,6 +302,8 @@ public class EventoServiceImpl implements EventoService {
 			//Documento Verifica Ricadute Formative
 			if (eventoWrapper.getDocumentoVerificaRicaduteFormative() != null && eventoWrapper.getDocumentoVerificaRicaduteFormative().getId() != null) {
 				eventoRES.setDocumentoVerificaRicaduteFormative(fileService.getFile(eventoWrapper.getDocumentoVerificaRicaduteFormative().getId()));
+			}else{
+				eventoRES.setDocumentoVerificaRicaduteFormative(null);
 			}
 		}else if(evento instanceof EventoFSC){
 			retrieveProgrammaAndAddJoin(eventoWrapper);
@@ -334,6 +336,8 @@ public class EventoServiceImpl implements EventoService {
 			//Requisiti Hardware Software
 			if (eventoWrapper.getRequisitiHardwareSoftware() != null && eventoWrapper.getRequisitiHardwareSoftware().getId() != null) {
 				((EventoFAD) evento).setRequisitiHardwareSoftware(fileService.getFile(eventoWrapper.getRequisitiHardwareSoftware().getId()));
+			}else{
+				((EventoFAD) evento).setRequisitiHardwareSoftware(null);
 			}
 
 			//Mappa verifica apprendimento
@@ -390,31 +394,43 @@ public class EventoServiceImpl implements EventoService {
 		//brochure
 		if (eventoWrapper.getBrochure() != null && eventoWrapper.getBrochure().getId() != null) {
 			evento.setBrochureEvento(fileService.getFile(eventoWrapper.getBrochure().getId()));
+		}else{
+			evento.setBrochureEvento(null);
 		}
 
 		//Autocertificazione Assenza Finanziamenti
 		if (eventoWrapper.getAutocertificazioneAssenzaFinanziamenti() != null && eventoWrapper.getAutocertificazioneAssenzaFinanziamenti().getId() != null) {
 			evento.setAutocertificazioneAssenzaFinanziamenti(fileService.getFile(eventoWrapper.getAutocertificazioneAssenzaFinanziamenti().getId()));
+		}else{
+			evento.setAutocertificazioneAssenzaFinanziamenti(null);
 		}
 
 		//Contratti Accordi Convenzioni
 		if (eventoWrapper.getContrattiAccordiConvenzioni() != null && eventoWrapper.getContrattiAccordiConvenzioni().getId() != null) {
 			evento.setContrattiAccordiConvenzioni(fileService.getFile(eventoWrapper.getContrattiAccordiConvenzioni().getId()));
+		}else{
+			evento.setContrattiAccordiConvenzioni(null);
 		}
 
 		//Dichiarazione Assenza Conflitto Interesse
 		if (eventoWrapper.getDichiarazioneAssenzaConflittoInteresse() != null && eventoWrapper.getDichiarazioneAssenzaConflittoInteresse().getId() != null) {
 			evento.setDichiarazioneAssenzaConflittoInteresse(fileService.getFile(eventoWrapper.getDichiarazioneAssenzaConflittoInteresse().getId()));
+		}else{
+			evento.setDichiarazioneAssenzaConflittoInteresse(null);
 		}
 
 		//Autocertificazione Assenza Aziende Alimenti Prima Infanzia
 		if (eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null && eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia().getId() != null) {
 			evento.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(fileService.getFile(eventoWrapper.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia().getId()));
+		}else{
+			evento.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(null);
 		}
 
 		//Autocertificazione Autorizzazione Ministero Salute
 		if (eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute() != null && eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute().getId() != null) {
 			evento.setAutocertificazioneAutorizzazioneMinisteroSalute(fileService.getFile(eventoWrapper.getAutocertificazioneAutorizzazioneMinisteroSalute().getId()));
+		}else{
+			evento.setAutocertificazioneAutorizzazioneMinisteroSalute(null);
 		}
 
 		//non  deve essere possibile caricare gli allegati degli sponsor
@@ -1366,7 +1382,7 @@ public class EventoServiceImpl implements EventoService {
 		riedizione.setEventoPianoFormativo(null);
 		riedizione.setDataScadenzaPagamento(null);
 		riedizione.setInviiRendicontazione(new HashSet<RendicontazioneInviata>());
-		riedizione.getAnagrafeRegionaleCrediti().clear();
+		riedizione.setAnagrafeRegionaleCrediti(null);
 		riedizione.setPagato(null);
 		riedizione.setPagInCorso(null);
 		riedizione.setProceduraVerificaQualitaPercepita(null);

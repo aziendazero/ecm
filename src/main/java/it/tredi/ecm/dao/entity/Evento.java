@@ -311,13 +311,15 @@ public class Evento extends BaseEntity{
 		if(anagrafeRegionaleCrediti == null)
 			anagrafeRegionaleCrediti = new HashSet<AnagrafeRegionaleCrediti>();
 
-		for(AnagrafeRegionaleCrediti a : items){
-			a.setEvento(this);
-		}
-
 		if(items != null){
+			for(AnagrafeRegionaleCrediti a : items){
+				a.setEvento(this);
+			}
+
 			anagrafeRegionaleCrediti.clear();
 			anagrafeRegionaleCrediti.addAll(items);
+		}else{
+			anagrafeRegionaleCrediti = new HashSet<AnagrafeRegionaleCrediti>();
 		}
 	}
 
