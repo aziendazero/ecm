@@ -8,26 +8,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import it.tredi.ecm.service.EngineeringServiceImpl;
-import it.tredi.ecm.service.QuotaAnnualeServiceImpl;
+import it.tredi.ecm.service.EngineeringService;
+import it.tredi.ecm.service.QuotaAnnualeService;
 
 @Component
 public class PagamentoTask {
 	private static Logger LOGGER = LoggerFactory.getLogger(PagamentoTask.class);
-	
-	@Autowired EngineeringServiceImpl engineeringService;
-	@Autowired QuotaAnnualeServiceImpl quotaAnnualeService;
-	
+
+	@Autowired EngineeringService engineeringService;
+	@Autowired QuotaAnnualeService quotaAnnualeService;
+
 	@Async
 	@Transactional
 	public void controllaEsitoPagamenti() throws Exception{
 		LOGGER.info(Thread.currentThread().getName());
 		LOGGER.info("controllaEsitoPagamenti - entering");
-		
+
 		engineeringService.esitoPagamentiEventi();
 		engineeringService.esitoPagamentiQuoteAnnuali();
 		quotaAnnualeService.checkAndCreateQuoteAnnualiPerAnnoInCorso();
-		
+
 		LOGGER.info("controllaEsitoPagamenti - exiting");
 	}
 }

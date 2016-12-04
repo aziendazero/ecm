@@ -7,16 +7,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 
-import it.tredi.ecm.service.SedutaServiceImpl;
+import it.tredi.ecm.service.SedutaService;
 
 public class SedutaTask {
 	private static Logger LOGGER = LoggerFactory.getLogger(SedutaTask.class);
-	
-	@Autowired private SedutaServiceImpl sedutaService;
-	
+
+	@Autowired private SedutaService sedutaService;
+
 	@Async
 	@Transactional
 	public void bloccaSeduta(){
-		
+
 	}
 }
