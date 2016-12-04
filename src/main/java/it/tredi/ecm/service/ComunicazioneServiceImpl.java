@@ -268,13 +268,13 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 
 		//AMBITO
 		if(wrapper.getAmbitiSelezionati() != null){
-			query = Utils.QUERY_AND(query, "c.ambito IN :ambitiSelezionati");
+			query = Utils.QUERY_AND(query, "c.ambito IN (:ambitiSelezionati)");
 			params.put("ambitiSelezionati", wrapper.getAmbitiSelezionati());
 		}
 
 		//TIPOLOGIA
 		if(wrapper.getTipologieSelezionate() != null){
-			query = Utils.QUERY_AND(query, "c.tipologia = :tipologieSelezionate");
+			query = Utils.QUERY_AND(query, "c.tipologia IN (:tipologieSelezionate)");
 			params.put("tipologieSelezionate", wrapper.getTipologieSelezionate());
 		}
 
