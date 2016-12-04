@@ -18,6 +18,10 @@ public class EngineeringWrapper {
 	
 	private Long editId;
 	
+	private Long idProtocollo;
+	
+	private String flUscita;
+	
 	private String documentsToSign;
 
 	public EngineeringWrapper() {

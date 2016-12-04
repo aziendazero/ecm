@@ -43,8 +43,6 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.PagDovutiLog;
@@ -74,6 +72,7 @@ import it.veneto.regione.schemas._2012.pagamenti.ente.StTipoIdentificativoUnivoc
 
 @Service
 public class EngineeringServiceImpl implements EngineeringService {
+	public static final Logger LOGGER = Logger.getLogger(EngineeringServiceImpl.class);
 
 	@Autowired private FileService fileService;
 	@Autowired private PagamentoService pagamentoService;
@@ -83,9 +82,6 @@ public class EngineeringServiceImpl implements EngineeringService {
 	@Autowired private EngineeringProperties engineeringProperties;
 	@Autowired private ProviderService providerService;
 	@Autowired private QuotaAnnualeService quotaAnnualeService;
-
-	/** Non credo varierà, ma meglio parametrizzare e settare su file o tabella di configurazione */
-	public static final String VERSIONE = "6.0";
 
 	/** Permette tutti i tipi di pagamento. Si può modificare se necessario impedire certe forme di pagamento (vedi documentazione) */
 	public static final String TIPO_VERSAMENTO_ALL = "ALL";
@@ -107,8 +103,6 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 	public static final String CAUSALE_PAGAMENTO_EVENTO = "Pagamento Evento";
 	public static final String CAUSALE_PAGAMENTO_QUOTA_PROVIDER = "Pagamento Quota Accreditamento Provider - anno ";
-
-	public static final Logger LOGGER = Logger.getLogger(EngineeringServiceImpl.class);
 
 	private static JAXBContext jCtDovutiContext = null;
 	private static JAXBContext jCtPagatiContext = null;
@@ -355,7 +349,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		CtDovuti ctDovuti = new CtDovuti();
 		ctDovuti.setDatiVersamento(datiVersamento);
 		ctDovuti.setSoggettoPagatore(soggettoPagatore);
-		ctDovuti.setVersioneOggetto(VERSIONE);
+		ctDovuti.setVersioneOggetto(engineeringProperties.getVersione());
 
 
 		PaaSILInviaDovuti dovuti = new PaaSILInviaDovuti();

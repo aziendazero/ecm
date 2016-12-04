@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:tns="http://localhost/LapisWebSOAP" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://localhost/LapisWebSOAP" name="LapisWebSOAP">
+	<wsdl:message name="LapisWebSOAPRequest">
+		<wsdl:part name="xml" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="LapisWebSOAPResponse">
+		<wsdl:part name="LapisWebSOAPReturn" type="xsd:boolean"/>
+	</wsdl:message>
+	<wsdl:message name="ValidatoreRequest">
+		<wsdl:part name="xml" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="ValidatoreResponse">
+		<wsdl:part name="ValidatoreReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="ProtoBatchRequest">
+		<wsdl:part name="xml" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="ProtoBatchResponse">
+		<wsdl:part name="ProtoBatchReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="ProtoBatchLogRequest">
+		<wsdl:part name="codice" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="ProtoBatchLogResponse">
+		<wsdl:part name="ProtoBatchLogReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="PBrotoBatchRequest">
+		<wsdl:part name="xml" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="PBrotoBatchResponse">
+		<wsdl:part name="PBrotoBatchReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="PBrotoBatchLogRequest">
+		<wsdl:part name="codice" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="PBrotoBatchLogResponse">
+		<wsdl:part name="PBrotoBatchLogReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="ProtocollaArrivoRequest">
+		<wsdl:part name="xml" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="ProtocollaArrivoResponse">
+		<wsdl:part name="ProtocollaArrivoReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="ModificaStrutturaRequest">
+		<wsdl:part name="xml" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="ModificaStrutturaResponse">
+		<wsdl:part name="ModificaStrutturaReturn" type="xsd:boolean"/>
+	</wsdl:message>
+	<wsdl:message name="AggiungiRicevutaRequest">
+		<wsdl:part name="xml" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="AggiungiRicevutaResponse">
+		<wsdl:part name="AggiungiRicevutaReturn" type="xsd:boolean"/>
+	</wsdl:message>
+	<wsdl:message name="getProfileRequest">
+		<wsdl:part name="account" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getProfileResponse">
+		<wsdl:part name="getProfileReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getPermissionRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getPermissionResponse">
+		<wsdl:part name="getPermissionReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getOwnerRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getOwnerResponse">
+		<wsdl:part name="getOwnerReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getIDCRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getIDCResponse">
+		<wsdl:part name="getIDCReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getFatherRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getFatherResponse">
+		<wsdl:part name="getFatherReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getMovimentazioneRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getMovimentazioneResponse">
+		<wsdl:part name="getMovimentazioneReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getFattureRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+		<wsdl:part name="data_inizio" type="xsd:string"/>
+		<wsdl:part name="data_fine" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getFattureResponse">
+		<wsdl:part name="getFattureReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getDettaglioFatturaRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+		<wsdl:part name="numero_proto" type="xsd:string"/>
+		<wsdl:part name="data_proto" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getDettaglioFatturaResponse">
+		<wsdl:part name="getDettaglioFatturaReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getStatoSpedizioneRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+		<wsdl:part name="numero_proto" type="xsd:string"/>
+		<wsdl:part name="data_proto" type="xsd:string"/>
+		<wsdl:part name="cod_applicativo" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getStatoSpedizioneResponse">
+		<wsdl:part name="getStatoSpedizioneReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="insertFolderRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+		<wsdl:part name="numero_proto" type="xsd:string"/>
+		<wsdl:part name="data_proto" type="xsd:string"/>
+		<wsdl:part name="mas_cod" type="xsd:string"/>
+		<wsdl:part name="ie_fascicolo" type="xsd:string"/>
+		<wsdl:part name="operatore" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="insertFolderResponse">
+		<wsdl:part name="insertFolderReturn" type="xsd:boolean"/>
+	</wsdl:message>
+	<wsdl:message name="deleteFolderRequest">
+		<wsdl:part name="struttura" type="xsd:string"/>
+		<wsdl:part name="numero_proto" type="xsd:string"/>
+		<wsdl:part name="data_proto" type="xsd:string"/>
+		<wsdl:part name="mas_cod" type="xsd:string"/>
+		<wsdl:part name="ie_fascicolo" type="xsd:string"/>
+		<wsdl:part name="operatore" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="deleteFolderResponse">
+		<wsdl:part name="deleteFolderReturn" type="xsd:boolean"/>
+	</wsdl:message>
+	<wsdl:message name="getPECRequest">
+		<wsdl:part name="fileId" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="getPECResponse">
+		<wsdl:part name="getPECReturn" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:message name="LapisWebSOAPFault">
+		<wsdl:part name="faultcode" type="xsd:string"/>
+		<wsdl:part name="faultstring" type="xsd:string"/>
+	</wsdl:message>
+	<wsdl:portType name="LapisWebSOAPType">
+		<wsdl:operation name="LapisWebSOAP">
+			<wsdl:input message="tns:LapisWebSOAPRequest"/>
+			<wsdl:output message="tns:LapisWebSOAPResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="Validatore">
+			<wsdl:input message="tns:ValidatoreRequest"/>
+			<wsdl:output message="tns:ValidatoreResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="ProtoBatch">
+			<wsdl:input message="tns:ProtoBatchRequest"/>
+			<wsdl:output message="tns:ProtoBatchResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="ProtoBatchLog">
+			<wsdl:input message="tns:ProtoBatchLogRequest"/>
+			<wsdl:output message="tns:ProtoBatchLogResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="PBrotoBatch">
+			<wsdl:input message="tns:PBrotoBatchRequest"/>
+			<wsdl:output message="tns:PBrotoBatchResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="PBrotoBatchLog">
+			<wsdl:input message="tns:PBrotoBatchLogRequest"/>
+			<wsdl:output message="tns:PBrotoBatchLogResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="ProtocollaArrivo">
+			<wsdl:input message="tns:ProtocollaArrivoRequest"/>
+			<wsdl:output message="tns:ProtocollaArrivoResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="ModificaStruttura">
+			<wsdl:input message="tns:ModificaStrutturaRequest"/>
+			<wsdl:output message="tns:ModificaStrutturaResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="AggiungiRicevuta">
+			<wsdl:input message="tns:AggiungiRicevutaRequest"/>
+			<wsdl:output message="tns:AggiungiRicevutaResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getProfile">
+			<wsdl:input message="tns:getProfileRequest"/>
+			<wsdl:output message="tns:getProfileResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getPermission">
+			<wsdl:input message="tns:getPermissionRequest"/>
+			<wsdl:output message="tns:getPermissionResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getOwner">
+			<wsdl:input message="tns:getOwnerRequest"/>
+			<wsdl:output message="tns:getOwnerResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getIDC">
+			<wsdl:input message="tns:getIDCRequest"/>
+			<wsdl:output message="tns:getIDCResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getFather">
+			<wsdl:input message="tns:getFatherRequest"/>
+			<wsdl:output message="tns:getFatherResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getMovimentazione">
+			<wsdl:input message="tns:getMovimentazioneRequest"/>
+			<wsdl:output message="tns:getMovimentazioneResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getFatture">
+			<wsdl:input message="tns:getFattureRequest"/>
+			<wsdl:output message="tns:getFattureResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getDettaglioFattura">
+			<wsdl:input message="tns:getDettaglioFatturaRequest"/>
+			<wsdl:output message="tns:getDettaglioFatturaResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getStatoSpedizione">
+			<wsdl:input message="tns:getStatoSpedizioneRequest"/>
+			<wsdl:output message="tns:getStatoSpedizioneResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="insertFolder">
+			<wsdl:input message="tns:insertFolderRequest"/>
+			<wsdl:output message="tns:insertFolderResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="deleteFolder">
+			<wsdl:input message="tns:deleteFolderRequest"/>
+			<wsdl:output message="tns:deleteFolderResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getPEC">
+			<wsdl:input message="tns:getPECRequest"/>
+			<wsdl:output message="tns:getPECResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="LapisWebSOAPBinding" type="tns:LapisWebSOAPType">
+		<wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="LapisWebSOAP">
+			<wsdlsoap:operation soapAction="urn:#LapisWebSOAP"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="Validatore">
+			<wsdlsoap:operation soapAction="urn:#Validatore"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="ProtoBatch">
+			<wsdlsoap:operation soapAction="urn:#ProtoBatch"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="ProtoBatchLog">
+			<wsdlsoap:operation soapAction="urn:#ProtoBatchLog"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="PBrotoBatch">
+			<wsdlsoap:operation soapAction="urn:#PBrotoBatch"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="PBrotoBatchLog">
+			<wsdlsoap:operation soapAction="urn:#PBrotoBatchLog"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="ProtocollaArrivo">
+			<wsdlsoap:operation soapAction="urn:#ProtocollaArrivo"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="ModificaStruttura">
+			<wsdlsoap:operation soapAction="urn:#ModificaStruttura"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="AggiungiRicevuta">
+			<wsdlsoap:operation soapAction="urn:#AggiungiRicevuta"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getProfile">
+			<wsdlsoap:operation soapAction="urn:#getProfile"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getPermission">
+			<wsdlsoap:operation soapAction="urn:#getPermission"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getOwner">
+			<wsdlsoap:operation soapAction="urn:#getOwner"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getIDC">
+			<wsdlsoap:operation soapAction="urn:#getIDC"/>
+			<input>
+				<wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost/LapisWebSOAP" use="literal"/>
+			</input>
+			<output>
+				<wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost/LapisWebSOAP" use="literal"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getFather">
+			<wsdlsoap:operation soapAction="urn:#getFather"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getMovimentazione">
+			<wsdlsoap:operation soapAction="urn:#getMovimentazione"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getFatture">
+			<wsdlsoap:operation soapAction="urn:#getFatture"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getDettaglioFattura">
+			<wsdlsoap:operation soapAction="urn:#getDettaglioFattura"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getStatoSpedizione">
+			<wsdlsoap:operation soapAction="urn:#getStatoSpedizione"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="insertFolder">
+			<wsdlsoap:operation soapAction="urn:#insertFolder"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="deleteFolder">
+			<wsdlsoap:operation soapAction="urn:#deleteFolder"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+		<wsdl:operation name="getPEC">
+			<wsdlsoap:operation soapAction="urn:#getPEC"/>
+			<input>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal" namespace="http://localhost/LapisWebSOAP"/>
+			</output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="LapisWebSOAPService">
+		<wsdl:port name="LapisWebSOAPPort" binding="tns:LapisWebSOAPBinding">
+			<wsdlsoap:address location="http://localhost/LapisWebSOAP/LapisWebSOAP.asp"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

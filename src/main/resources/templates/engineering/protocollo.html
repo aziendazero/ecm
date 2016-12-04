@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{engineering.test_protocollo}">engineering.test_protocollo</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.protocolla_domanda_in_entrata}" th:href="@{|/engineering/protocollaDomandaInArrivo/11617/30108|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.protocolla_allegato_in_uscita}" th:href="@{|/engineering/protocollaAllegatoDomandaInUscita/11617/30110|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<table class="datatable-responsive-protocollo table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.id}">label.id</th>
+									<th th:text="#{label.numero_protocollo}">label.numero_protocollo</th>
+									<th th:text="#{label.data_protocollo}">label.data_protocollo</th>
+
+									<th th:text="#{label.fileId}">label.data_protocollo</th>
+									<th th:text="#{label.nomeFile}">label.data_protocollo</th>
+
+									<th th:text="#{label.id_proto_batch}">label.id_proto_batch</th>
+									<th th:text="#{label.stato_spedizione}">label.stato_spedizione</th>
+									<th th:text="#{label.azioni}">label.azioni</th>
+
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="protocollo, row : ${protocolloList}">
+									<td th:text="${protocollo.id}"></td>
+									<td th:text="${protocollo.numero}"></td>
+									<td th:text="${protocollo.data} ? ${#temporals.format(protocollo.data, 'dd/MM/yyyy')}"></td>
+
+									<td th:text="${protocollo.file.id}"></td>
+									<td th:text="${protocollo.file.nomeFile}"></td>
+
+									<td th:text="${protocollo.idProtoBatch}"></td>
+									<td th:text="${protocollo.statoSpedizione}"></td>
+									<td>
+										<button type="button" class="btn btn-primary btn-protocollo" th:onclick="'protEntrata(' + ${protocollo.id} + ')'">IN ARRIVO</button>
+										<button type="button" class="btn btn-primary btn-protocollo" th:onclick="'protUscita(' + ${protocollo.id} + ')'">IN USCITA</button>
+
+									</td>
+
+								</tr>
+							</tbody>
+						</table>
+
+						<form id="formProtocollo" class="form-horizontal form-label-left" th:action="@{|/engineering/test/protocollo/protocolla|}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+
+								<input type="hidden" name="idProtocollo" id="idProtocollo"/>
+								<input type="hidden" name="flUscita" id="flUscita"/>
+						</form>
+
+						<form id="formProtoBatchLog" class="form-horizontal form-label-left" th:action="@{|/engineering/test/protocollo/protobatchlog|}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+								<button type="submit" class="btn btn-primary btn-protocollo">Proto Batch Log</button>
+						</form>
+
+						<form id="formGetStatoSpedizione" class="form-horizontal form-label-left" th:action="@{|/engineering/test/protocollo/statospedizione|}"
+								method="post" enctype="multipart/form-data" novalidate="novalidate">
+								<button type="submit" class="btn btn-primary btn-protocollo">Get Stato Spedizione</button>
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script th:inline="javascript">
+			$(document).ready(function() {
+				$('.datatable-responsive-protocollo').DataTable();
+			});
+
+			function protEntrata(id) {
+				$('#idProtocollo').val(id)
+				$('#flUscita').val('0');
+				$('#formProtocollo').submit();
+			}
+
+			function protUscita(id) {
+				$('#idProtocollo').val(id)
+				$('#flUscita').val('1');
+				$('#formProtocollo').submit();
+			}
+		</script>
+
+	</div>
+</body>
+</html>

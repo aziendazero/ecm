@@ -25,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +39,7 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.EngineeringService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
+import it.tredi.ecm.service.ProtocolloService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.EngineeringProperties;
 import it.tredi.ecm.utils.Utils;
@@ -54,15 +56,16 @@ import it.veneto.regione.firma.SOURCE;
 public class EngineeringController {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(EngineeringController.class);
-	
+
 	//private static final String FIRMA_URL = "http://svilcomune.ve.eng.it/FirmaWeb/servlet/AdapterHTTP";
 	//private static final String REFERER = "http://192.168.44.171:8080/ecm/*";
-	
+
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
 	@Autowired private EngineeringValidator engineeringValidator;
-	
+	@Autowired private ProtocolloService protocolloService;
+
 	@Autowired private EngineeringService engineeringService;
 	@Autowired private EngineeringProperties engineeringProperties;
 
@@ -93,7 +96,7 @@ public class EngineeringController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	/*** TEST FIRMA ***/
 	@RequestMapping(value = "/engineering/firma/invio", method = RequestMethod.GET)
 	public String engineeringTestFirmaInvio(HttpServletRequest request, RedirectAttributes redirectAttrs, Model model) {
@@ -103,9 +106,9 @@ public class EngineeringController {
 			if (!StringUtils.hasText(idString)) {
 				throw new RuntimeException("ID file non trovato!");
 			}
-			
+
 			Long id = Long.parseLong(idString);
-			
+
 			String xmlMetadataToSign = "<archiviazione_metadati></archiviazione_metadati>";
 			model.addAttribute("xmlMetadataToSign", StringEscapeUtils.escapeXml(xmlMetadataToSign));
 			model.addAttribute("xmlDocumentToSign", prepareDocumentToSign(id));
@@ -120,19 +123,19 @@ public class EngineeringController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	/*** TEST FIRMA ***/
 	@RequestMapping(value = "/engineering/firma/back", method = RequestMethod.POST)
 	public String engineeringTestFirmaBack(Model model, HttpServletRequest request, RedirectAttributes redirectAttrs) {
 		try {
-			
+
 			String documentsToSign = request.getParameter("documentsToSign");
 			LOGGER.debug("Ricevuta da firmaWeb:\n" + documentsToSign);
 			File file = engineeringService.saveFileFirmato(documentsToSign);
-			
+
 			ObjectMapper mapper = new ObjectMapper();
 			model.addAttribute("jsonFile", mapper.writeValueAsString(file));
-			
+
 			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(providerService.getProvider()));
 			return "engineering/firmaBack";
 
@@ -142,13 +145,13 @@ public class EngineeringController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	private String prepareDocumentToSign(Long idFile) throws Exception {
-		
+
 		File file = fileService.getFile(idFile);
-		
+
 		String mimeType = URLConnection.guessContentTypeFromName(file.getNomeFile()); // TODO CHECK
-		
+
 		SOURCE source = new SOURCE();
 		source.setMimeType(mimeType);
 
@@ -157,7 +160,7 @@ public class EngineeringController {
 
 		FILE f = new FILE();
 
-		f.setBytes(Base64Utils.encodeToString(file.getData())); 
+		f.setBytes(Base64Utils.encodeToString(file.getData()));
 		f.setName(file.getNomeFile());
 
 		f.setINFORMAZIONI(file.getId().toString());
@@ -165,7 +168,7 @@ public class EngineeringController {
 		f.setSOURCE(source);
 
 		DOCUMENT doc = new DOCUMENT();
-		doc.setIdClassificazione(engineeringProperties.getFirmaIdclassificazione()); 
+		doc.setIdClassificazione(engineeringProperties.getFirmaIdclassificazione());
 		doc.getFILE().add(f);
 
 		DOCUMENTS docs = new DOCUMENTS();
@@ -187,11 +190,11 @@ public class EngineeringController {
 		transformer.transform(new JAXBSource(JAXBContext.newInstance(FIRMAFILES.class), busta), new StreamResult(writer));
 
 		String document = StringEscapeUtils.escapeXml(writer.toString());
-		
+
 		return document;
 	}
-	
-	
+
+
 
 	/*** TEST MYPAY ***/
 	@RequestMapping("/engineering/test/mypay")
@@ -205,26 +208,26 @@ public class EngineeringController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	/*** MYPAY PAGA ***/
 	@RequestMapping(value = "/engineering/test/mypay/paga", method = RequestMethod.POST)
-	public String engineeringTestPagaConMypay(@ModelAttribute("engineeringWrapper") 
+	public String engineeringTestPagaConMypay(@ModelAttribute("engineeringWrapper")
 			EngineeringWrapper wrapper, HttpServletRequest request, BindingResult result,
 			RedirectAttributes redirectAttrs, Model model) {
 		try {
-			
+
 			String rootUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
-			
+
 			Long id = wrapper.getIdEvento();
 			String url = engineeringService.pagaEvento(id,rootUrl+ request.getContextPath() + "/engineering/test/mypay");
-			
+
 			if (StringUtils.hasText(url)) {
 				return "redirect:" + url;
 			}
-			
-			
+
+
 			model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerService.getProvider().getId()));
-			
+
 			return "engineering/mypayTest";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
@@ -238,44 +241,44 @@ public class EngineeringController {
 	public String engineeringTestChiediPagati(@RequestHeader(value = "referer", required = false) final String referer,
 			@ModelAttribute("engineeringWrapper") EngineeringWrapper wrapper, BindingResult result,
 			RedirectAttributes redirectAttrs, Model model) {
-		
+
 		try {
 			// questo metodo andrebbe chiamato ogni TOT (da dimensionare in base al carico previsto) via scheduler.
 			// in questo prototipo ho inserito un pulsante per invocarlo a piacere.
 			engineeringService.esitoPagamentiEventi();
 			model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerService.getProvider().getId()));
-			
+
 			return "engineering/mypayTest";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
-		
+
 	}
-	
+
 	/*** MYPAY AZZERA PAGAMENTI ***/
 	@RequestMapping(value = "/engineering/test/mypay/azzera", method = RequestMethod.POST)
 	public String engineeringTestChiediPagati(@ModelAttribute("engineeringWrapper") EngineeringWrapper wrapper, BindingResult result,
 			RedirectAttributes redirectAttrs, Model model) {
 		// resetto gli eventi e le tabelle di log per poter ripetere i test
-		// se ho effettuato un pagamento su MyPay questo ovviamente non viene cancellato. 
+		// se ho effettuato un pagamento su MyPay questo ovviamente non viene cancellato.
 		// Posso comunque ripeterlo. MyPay lo registrerà come nuovo pagamento.
 		try {
 			engineeringService.azzeraPagamenti(providerService.getProvider().getId());
 			model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerService.getProvider().getId()));
-			
+
 			return "engineering/mypayTest";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}
-		
+
 	}
-	
-	
-	
+
+
+
 	/*** SAVE ***/
 	@RequestMapping(value = "/engineering/test/firma/save", method = RequestMethod.POST)
 	public String saveEngineeringTestSave(@ModelAttribute("engineeringWrapper") EngineeringWrapper wrapper, BindingResult result,
@@ -307,9 +310,116 @@ public class EngineeringController {
 		}
 	}
 
+	/*** TEST PROTOCOLLO ***/
+	@RequestMapping("/engineering/test/protocollo")
+	public String engineeringTestProtocollo(Model model, RedirectAttributes redirectAttrs){
+		try {
+			model.addAttribute("protocolloList", protocolloService.getAllProtocolli());
+			return "engineering/protocollo";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore redirect firma"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+
+	/*** TEST PROTOCOLLO ***/
+	@RequestMapping(value = "/engineering/test/protocollo/protocolla", method = RequestMethod.POST)
+	public String engineeringTestProtocolloSave(@ModelAttribute("engineeringWrapper") EngineeringWrapper wrapper, BindingResult result,
+													RedirectAttributes redirectAttrs, Model model){
+		try {
+			if ("0".equals(wrapper.getFlUscita())) {
+				//protocolloService.protocollaArrivo(wrapper.getIdProtocollo(), null);
+			}
+			if ("1".equals(wrapper.getFlUscita())) {
+				//protocolloService.protocollaInUscita(wrapper.getIdProtocollo(), null);
+			}
+			return "engineering/protocollo";
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore Protocollo"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "engineering/protocollo";
+
+		} finally {
+			model.addAttribute("protocolloList", protocolloService.getAllProtocolli());
+		}
+	}
+
+	/*** TEST PROTOCOLLO ***/
+	@RequestMapping(value = "/engineering/test/protocollo/protobatchlog", method = RequestMethod.POST)
+	public String engineeringTestProtocolloBatchLog(@ModelAttribute("engineeringWrapper") EngineeringWrapper wrapper, BindingResult result,
+													RedirectAttributes redirectAttrs, Model model){
+		try {
+
+			this.protocolloService.protoBatchLog();
+			return "engineering/protocollo";
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore Protocollo"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "engineering/protocollo";
+
+		} finally {
+			model.addAttribute("protocolloList", protocolloService.getAllProtocolli());
+		}
+	}
+
+	/*** TEST PROTOCOLLO ***/
+	@RequestMapping(value = "/engineering/test/protocollo/statospedizione", method = RequestMethod.POST)
+	public String engineeringTestProtocolloStatoSpedizione(@ModelAttribute("engineeringWrapper") EngineeringWrapper wrapper, BindingResult result,
+													RedirectAttributes redirectAttrs, Model model){
+		try {
+			this.protocolloService.getStatoSpedizione();
+			return "engineering/protocollo";
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore Protocollo"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "engineering/protocollo";
+
+		} finally {
+			model.addAttribute("protocolloList", protocolloService.getAllProtocolli());
+		}
+	}
+
+	/*** TEST PROTOCOLLO ***/
+	@RequestMapping("/engineering/protocollaDomandaInArrivo/{accreditamentoId}/{fileId}")
+	public String engineeringTestProtocollo(@PathVariable Long accreditamentoId, @PathVariable Long fileId, Model model){
+		try {
+			this.protocolloService.protocollaDomandaInArrivo(accreditamentoId, fileId);
+			return "redirect:/engineering/test/protocollo";
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore Protocollo"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "engineering/protocollo";
+
+		} finally {
+			model.addAttribute("protocolloList", protocolloService.getAllProtocolli());
+		}
+	}
+
+	@RequestMapping("/engineering/protocollaAllegatoDomandaInUscita/{accreditamentoId}/{fileId}")
+	public String protocollaAllegatoDomandaInUscita(@PathVariable Long accreditamentoId, @PathVariable Long fileId, Model model){
+		try {
+			this.protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, fileId);
+			return "redirect:/engineering/test/protocollo";
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore Protocollo"),ex);
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "engineering/protocollo";
+
+		} finally {
+			model.addAttribute("protocolloList", protocolloService.getAllProtocolli());
+		}
+	}
+
+
 	private EngineeringWrapper prepareEngineeringWrapper(Provider provider) {
 		EngineeringWrapper wrapper = new EngineeringWrapper();
-	
+
 		Set<File> files = provider.getFiles();
 		for(File file : files){
 			if(file.isFILEDAFIRMARE())

@@ -29,4 +29,6 @@
 
 	<include file="005_20161128_add_column_statoaccreditamentovalutazione.xml" relativeToChangelogFile="true"/>
 
+	<include file="006_20161204_integrazione_protocollo.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

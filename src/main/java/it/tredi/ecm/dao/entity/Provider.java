@@ -185,4 +185,18 @@ public class Provider extends BaseEntity{
 			return true;
 		return false;
 	}
+
+	public Sede getSedeLegale(){
+		for(Sede s : sedi)
+			if(s.isSedeLegale())
+				return s;
+		return null;
+	}
+
+	public Persona getLegaleRappresentante(){
+		for(Persona p : persone)
+			if(p.isLegaleRappresentante())
+				return p;
+		return null;
+	}
 }
