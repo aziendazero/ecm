@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -139,6 +140,7 @@ public class SedutaServiceImpl implements SedutaService {
 
 	@Override
 	//@Transactional //TODO ANDREABBE MESSO?
+	//Corrisponde al task Inserimento Esito ODG
 	public void chiudiSeduta(Long sedutaId) throws Exception {
 		Seduta seduta =  sedutaRepository.findOne(sedutaId);
 		for(ValutazioneCommissione val : seduta.getValutazioniCommissione()){
@@ -207,4 +209,37 @@ public class SedutaServiceImpl implements SedutaService {
 		emailService.inviaConvocazioneACommissioneECM(commissioneECM);
 	}
 
+	@Override
+	public void bloccaSeduta(Long sedutaId) throws Exception {
+		Seduta seduta = sedutaRepository.findOne(sedutaId);
+		bloccaSeduta(seduta);
+	}
+
+	@Override
+	public void eseguiBloccoSeduteDaBloccare() {
+		//Ricavo la lista delle sedute da bloccare
+		//Occorre settare la seduta come
+		LocalDateTime nowPlusSedutaValidationMinute = LocalDateTime.now().plusMinutes(ecmProperties.getSedutaValidationMinutes());
+		Set<Seduta> sedute = sedutaRepository.findSeduteDaBloccare(nowPlusSedutaValidationMinute);
+		for(Seduta seduta : sedute) {
+			this.bloccaSeduta(seduta);
+		}
+	}
+
+	private void bloccaSeduta(Seduta seduta) {
+		Set<Accreditamento> listaInOdg = getAccreditamentiInSeduta(seduta.getId());
+		boolean error = false;
+		for(Accreditamento a : listaInOdg){
+			try {
+				accreditamentoService.inserisciInValutazioneCommissioneForCurrentUser(a.getId());
+			} catch (Exception ex) {
+				error = true;
+			}
+		}
+		if(!error) {
+			//Occorre settare la seduta come
+			seduta.setEseguitoTaskInsOdgAccreditamenti(true);
+			sedutaRepository.save(seduta);
+		}
+	}
 }

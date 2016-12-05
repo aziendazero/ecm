@@ -46,4 +46,6 @@ public interface WorkflowService {
 
 
 	public void prendiTaskInCarica(CurrentUser user, Accreditamento accreditamento)  throws Exception;
+
+	public void eseguiTaskProtocolloEseguitoForAccreditamentoStateAndUserDataModel(UserDataModel userDataModel, Accreditamento accreditamento) throws Exception;
 }

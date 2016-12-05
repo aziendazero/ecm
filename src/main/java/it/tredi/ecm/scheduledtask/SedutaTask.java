@@ -11,12 +11,12 @@ import it.tredi.ecm.service.SedutaServiceImpl;
 
 public class SedutaTask {
 	private static Logger LOGGER = LoggerFactory.getLogger(SedutaTask.class);
-	
+
 	@Autowired private SedutaServiceImpl sedutaService;
-	
+
 	@Async
 	@Transactional
-	public void bloccaSeduta(){
-		
+	public void bloccaSedute(){
+		sedutaService.eseguiBloccoSeduteDaBloccare();
 	}
 }

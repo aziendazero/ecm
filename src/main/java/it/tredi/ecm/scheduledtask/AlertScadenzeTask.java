@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AlertScadenzeTask {
-	private static Logger LOGGER = LoggerFactory.getLogger(SedutaTask.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(AlertScadenzeTask.class);
 
 }

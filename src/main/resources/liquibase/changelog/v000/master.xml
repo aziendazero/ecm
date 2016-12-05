@@ -27,4 +27,6 @@
 
 	<include file="005_20161128_add_column_storicizzato.xml" relativeToChangelogFile="true"/>
 
+	<include file="006_20161202_171105_gestione_protocollazione.xml" relativeToChangelogFile="true"/>
+	<include file="007_20161202_171105_seduta_task_insodg.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
