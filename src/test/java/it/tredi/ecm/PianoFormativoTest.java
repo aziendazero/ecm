@@ -74,7 +74,7 @@ public class PianoFormativoTest {
 	@Autowired private EventoRepository eventoRepository;
 	@Autowired private EventoService eventoService;
 	@Autowired private PagamentoService pagamentoService;
-	
+
 	private Long providerId;
 	private Long accreditamentoId;
 	private MockMvc mockMvc;
@@ -83,12 +83,12 @@ public class PianoFormativoTest {
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 	}
-	
+
 	//@Before
 	@Transactional
 	public void init() {
-		
-		
+
+
 		Provider provider = new Provider();
 		provider.setDenominazioneLegale("VR 46");
 		provider.setPartitaIva("00464646460");
@@ -102,13 +102,13 @@ public class PianoFormativoTest {
 		account.setPassword("junit");
 		account.setEmail("junit@3di.it");
 		account.setNome("Amministratore");
-		account.setCognome("Provider");		
+		account.setCognome("Provider");
 		account.setProvider(provider);
 		accountRepository.save(account);
 		//account = accountRepository.findOne(account.getId());
-		
+
 		Accreditamento accreditamento = null;
-		
+
 		try {
 			accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId(),AccreditamentoTipoEnum.PROVVISORIO);
 			this.providerId = provider.getId();
@@ -116,7 +116,7 @@ public class PianoFormativoTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		DatiAccreditamento datiAccreditamento = new DatiAccreditamento();
 		Set<ProceduraFormativa> procedure = new HashSet<ProceduraFormativa>();
 		procedure.add(ProceduraFormativa.FAD);
@@ -125,7 +125,7 @@ public class PianoFormativoTest {
 		//datiAccreditamento.setProcedureFormative(procedure);
 		datiAccreditamentoService.save(datiAccreditamento, accreditamento.getId());
 	}
-	
+
 	@After
 	public void clean(){
 //		accreditamentoRepository.delete(this.accreditamentoId);
@@ -136,15 +136,15 @@ public class PianoFormativoTest {
 	@Transactional
 	@Ignore
 	public void createPiano(){
-		
+
 		Provider provider = providerService.getProvider(providerId);
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-		
+
 		PianoFormativo pianoFormativo = new PianoFormativo();
 		pianoFormativo.setAnnoPianoFormativo(new Integer(2016));
 		pianoFormativo.setProvider(provider);
 		pianoFormativoRepository.save(pianoFormativo);
-		
+
 		//Eventi
 		Evento evento = new Evento();
 		evento.setCosto(500.99);
@@ -172,14 +172,14 @@ public class PianoFormativoTest {
 		evento3.setProvider(provider);
 		evento3.setAccreditamento(accreditamento);
 		eventoRepository.save(evento3);
-		
+
 		pianoFormativoRepository.save(pianoFormativo);
-		
+
 		PianoFormativo pianoFormativo2 = new PianoFormativo();
 		pianoFormativo2.setAnnoPianoFormativo(new Integer(2017));
 		pianoFormativo2.setProvider(provider);
 		pianoFormativoRepository.save(pianoFormativo2);
-		
+
 		pianoFormativoRepository.save(pianoFormativo2);
 	}
 
@@ -189,12 +189,12 @@ public class PianoFormativoTest {
 	public void showPiano() throws Exception{
 		PianoFormativo piano1 = pianoFormativoService.getPianoFormativoAnnualeForProvider(this.providerId, new Integer(2016));
 		PianoFormativo piano2 = pianoFormativoService.getPianoFormativoAnnualeForProvider(this.providerId, new Integer(2017));
-		
+
 		assertEquals(3, piano1.getEventiPianoFormativo().size());
 		assertEquals(1, piano2.getEventiPianoFormativo().size());
-		
+
 		Set<Evento> eventi = eventoRepository.findAllByProviderId(this.providerId);
-		
+
 		assertEquals(1, eventi.size());
 	}
 
@@ -202,13 +202,14 @@ public class PianoFormativoTest {
 	@Ignore
 	public void getEventi(){
 //		Provider provider = providerService.getProvider(20L);
-//		
+//
 //		for(it.tredi.ecm.dao.entity.File f :  provider.getFiles())
 //			System.out.println(f.getNomeFile());
 //		//eventoService.getAllEventiFromProvider(providerId);
-		
+
 		Provider provider = datiAccreditamentoService.getDatiAccreditamento(207L).getAccreditamento().getProvider();
-		for(it.tredi.ecm.dao.entity.File f :  provider.getFiles())
+		DatiAccreditamento datiAccreditamento = datiAccreditamentoService.getDatiAccreditamento(207L);
+		for(it.tredi.ecm.dao.entity.File f :  datiAccreditamento.getFiles())
 			System.out.println(f.getNomeFile());
 	}
 }

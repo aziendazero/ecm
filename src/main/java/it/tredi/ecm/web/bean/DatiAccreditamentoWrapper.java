@@ -5,7 +5,6 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +14,7 @@ import lombok.Setter;
 public class DatiAccreditamentoWrapper extends Wrapper{
 	private DatiAccreditamento datiAccreditamento;
 	private Long accreditamentoId;
-	private Provider provider;
+	//private Provider provider;
 
 	private File estrattoBilancioComplessivo;
 	private File estrattoBilancioFormazione;
@@ -28,7 +27,7 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		setFunzionigramma(new File(FileEnum.FILE_FUNZIONIGRAMMA));
 		setOrganigramma(new File(FileEnum.FILE_ORGANIGRAMMA));
 	}
-	
+
 	public DatiAccreditamentoWrapper(DatiAccreditamento datiAccreditamento, Long accreditamentoId){
 		this();
 		this.datiAccreditamento = datiAccreditamento;
@@ -37,26 +36,26 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 
 	public void setEstrattoBilancioComplessivo(File file){
 		estrattoBilancioComplessivo = file;
-		if(provider != null)
-			provider.addFile(estrattoBilancioComplessivo);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(estrattoBilancioComplessivo);
 	}
 
 	public void setEstrattoBilancioFormazione(File file){
 		estrattoBilancioFormazione = file;
-		if(provider != null)
-			provider.addFile(estrattoBilancioFormazione);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(estrattoBilancioFormazione);
 	}
 
 	public void setFunzionigramma(File file){
 		funzionigramma = file;
-		if(provider != null)
-			provider.addFile(funzionigramma);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(funzionigramma);
 	}
 
 	public void setOrganigramma(File file){
 		organigramma = file;
-		if(provider != null)
-			provider.addFile(organigramma);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(organigramma);
 	}
 
 	public Set<File> getFiles(){
@@ -67,7 +66,7 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		files.add(organigramma);
 		return files;
 	}
-	
+
 	public void setFiles(Set<File> files){
 		Set<File> fs = new HashSet<File>(files);
 		for(File file : fs){

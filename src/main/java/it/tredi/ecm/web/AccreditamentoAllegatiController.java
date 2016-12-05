@@ -37,6 +37,7 @@ import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
@@ -61,7 +62,7 @@ public class AccreditamentoAllegatiController {
 	private final String ENABLEFIELD = "accreditamento/accreditamentoAllegatiEnableField";
 
 	@Autowired private AccreditamentoAllegatiValidator accreditamentoAllegatiValidator;
-	@Autowired private ProviderService providerService;
+	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 	@Autowired private FileService fileService;
 
 	@Autowired private ValutazioneService valutazioneService;
@@ -205,12 +206,12 @@ public class AccreditamentoAllegatiController {
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
 			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(wrapper.getAccreditamentoId());
 			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
-				integrazioneService.detach(wrapper.getProvider());
+				integrazioneService.detach(wrapper.getDatiAccreditamento());
 
 			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: AccreditamentoAllegatiSave:__AFTER SET__"));
-			integrazioneService.isManaged(wrapper.getProvider());
+			integrazioneService.isManaged(wrapper.getDatiAccreditamento());
 
-			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles(), wrapper.getProvider().getId());
+			accreditamentoAllegatiValidator.validate(wrapper, result, "", wrapper.getFiles(), wrapper.getDatiAccreditamento().getAccreditamento().getProvider().getId());
 
 			if(result.hasErrors()){
 				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
@@ -222,7 +223,7 @@ public class AccreditamentoAllegatiController {
 					integra(wrapper);
 				}else{
 					LOGGER.debug(Utils.getLogMessage("Salvataggio allegati al provider"));
-					providerService.save(wrapper.getProvider());
+					datiAccreditamentoService.save(wrapper.getDatiAccreditamento(),wrapper.getAccreditamentoId());
 				}
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.allegati_inseriti", "success"));
 				redirectAttrs.addFlashAttribute("currentTab","tab3");
@@ -246,7 +247,7 @@ public class AccreditamentoAllegatiController {
 
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(IdFieldEnum idField : wrapper.getIdEditabili()){
-			fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getProvider(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+			fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
 		}
 
 		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);
@@ -347,7 +348,8 @@ public class AccreditamentoAllegatiController {
 
 		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
-		wrapper.setProvider(accreditamento.getProvider());
+		//wrapper.setProvider(accreditamento.getProvider());
+		wrapper.setDatiAccreditamento(accreditamento.getDatiAccreditamento());
 		wrapper.setModelIds(fileService.getModelFileIds());
 		//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
 		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
@@ -363,10 +365,10 @@ public class AccreditamentoAllegatiController {
 
 		//set dei files sul wrapper, per allinearmi nel caso ci fossero dei fieldIntegrazione relativi a files
 		if(!reloadByEditId)
-			wrapper.setFiles(wrapper.getProvider().getFiles());
+			wrapper.setFiles(wrapper.getDatiAccreditamento().getFiles());
 
 		LOGGER.debug(Utils.getLogMessage("__EXITING PREPAREWRAPPER__"));
-		integrazioneService.isManaged(wrapper.getProvider());
+		integrazioneService.isManaged(wrapper.getDatiAccreditamento());
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperEdit(" + accreditamentoId + ") - exiting"));
 		return wrapper;
@@ -374,12 +376,12 @@ public class AccreditamentoAllegatiController {
 
 	private void prepareApplyIntegrazione(AccreditamentoAllegatiWrapper wrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
 		wrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(wrapper.getAccreditamentoId()), subset));
-		wrapper.getProvider().getFiles().size();
-		integrazioneService.detach(wrapper.getProvider());
+		wrapper.getDatiAccreditamento().getFiles().size();
+		integrazioneService.detach(wrapper.getDatiAccreditamento());
 		//se stiamo ricaricando il wrapper per andare in save...non ha senso riapplicare le integrazioni
 		//il wrapper del form arriva gia' aggiornato (vedi accreditamentoId = 0 in PersonaController)
 		if(!reloadByEditId){
-			integrazioneService.applyIntegrazioneObject(wrapper.getProvider(), wrapper.getFieldIntegrazione());
+			integrazioneService.applyIntegrazioneObject(wrapper.getDatiAccreditamento(), wrapper.getFieldIntegrazione());
 		}
 	}
 
@@ -394,7 +396,7 @@ public class AccreditamentoAllegatiController {
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-		wrapper.setProvider(accreditamento.getProvider());
+		wrapper.setDatiAccreditamento(accreditamento.getDatiAccreditamento());
 
 		//carico la valutazione per l'utente
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
@@ -419,7 +421,7 @@ public class AccreditamentoAllegatiController {
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 
-		wrapper.setFiles(wrapper.getProvider().getFiles());
+		wrapper.setFiles(wrapper.getDatiAccreditamento().getFiles());
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperValidate(" + accreditamentoId + ") - exiting"));
 		return wrapper;
@@ -430,7 +432,7 @@ public class AccreditamentoAllegatiController {
 		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
 
-		Set<File> files = accreditamentoService.getAccreditamento(accreditamentoId).getProvider().getFiles();
+		Set<File> files = accreditamentoService.getAccreditamento(accreditamentoId).getDatiAccreditamento().getFiles();
 		for(File file : files){
 			if(file.isATTOCOSTITUTIVO())
 				wrapper.setAttoCostitutivo(file);

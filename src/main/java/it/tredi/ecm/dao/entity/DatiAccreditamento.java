@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -23,7 +25,7 @@ import lombok.Setter;
 public class DatiAccreditamento extends BaseEntity {
 	/*** INFO RELATIVE ALLA RICHIESTA ***/
 	private String tipologiaAccreditamento;
-	
+
 	@ElementCollection
 	@Enumerated(EnumType.STRING)
 	private Set<ProceduraFormativa> procedureFormative = new HashSet<ProceduraFormativa>();
@@ -35,6 +37,22 @@ public class DatiAccreditamento extends BaseEntity {
 				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
+
+	@ManyToMany(fetch=FetchType.LAZY)
+	@JoinTable(name="dati_accreditamento_files",
+	joinColumns={@JoinColumn(name="dati_accreditamento_id")},
+	inverseJoinColumns={@JoinColumn(name="files_id")}
+			)
+	Set<File> files = new HashSet<File>();
+
+	public void addFile(File file){
+		Iterator<File> it = this.getFiles().iterator();
+		while(it.hasNext()){
+			if(it.next().getTipo() == file.getTipo())
+				it.remove();
+		}
+		this.getFiles().add(file);
+	}
 
 	/*** DATI ECONOMICI ***/
 	@Embedded
@@ -51,14 +69,6 @@ public class DatiAccreditamento extends BaseEntity {
 				professioniSelezionate.add(d.getProfessione());
 		}
 		return professioniSelezionate;
-	}
-	
-	public Set<File> getFiles(){
-		return this.accreditamento.getProvider().getFiles();
-	}
-	
-	public void addFile(File file){
-		this.accreditamento.getProvider().addFile(file);
 	}
 
 	@OneToOne(mappedBy="datiAccreditamento")

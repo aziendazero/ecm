@@ -61,6 +61,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AccountService accountService;
 //	@Autowired private PagamentoService pagamentoService;
 	@Autowired private QuotaAnnualeService quotaAnnualeService;
+	@Autowired private ProtocolloService protocolloService;
 
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private FieldEditabileAccreditamentoService fieldEditabileService;
@@ -232,6 +233,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
 
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
+
+		protocolloService.protocollaDomandaInArrivo(accreditamentoId, accreditamento.getFileIdForProtocollo());
 
 		try{
 			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)

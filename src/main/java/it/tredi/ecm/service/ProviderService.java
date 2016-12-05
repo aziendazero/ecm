@@ -16,8 +16,6 @@ public interface ProviderService {
 	public Set<Provider> getAll();
 	public void save(Provider provider);
 
-	public Set<String> getFileTypeUploadedByProviderId(Long id);
-
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper) throws Exception;
 
@@ -27,14 +25,14 @@ public interface ProviderService {
 	public boolean canInsertAccreditamentoStandard(Long providerId);
 	public boolean canInsertRelazioneAnnuale(Long providerId);
 	public boolean hasAlreadySedeLegaleProvider(Provider provider, Sede sede);
-	
+
 	public void saveFromIntegrazione(Provider provider);
-	
+
 	public void bloccaFunzionalitaForPagamento(Long providerId);
 	public void abilitaFunzionalitaAfterPagamento(Long providerId);
-	
+
 	public String getCodiceFiscaleLegaleRappresentantePerVerificaFirmaDigitale(Long providerId);
 	public String getCodiceFiscaleDelegatoLegaleRappresentantePerVerificaFirmaDigitale(Long providerId);
-	
+
 	public List<Provider> cerca(RicercaProviderWrapper wrapper) throws Exception;
 }

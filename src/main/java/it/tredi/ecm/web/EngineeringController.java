@@ -87,7 +87,6 @@ public class EngineeringController {
 	public String engineeringTestFirma(Model model, RedirectAttributes redirectAttrs){
 		try {
 			Provider p = providerService.getProvider();
-			p.getFiles();
 			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(p));
 			return "engineering/firmaTest";
 		}catch (Exception ex){
@@ -420,11 +419,12 @@ public class EngineeringController {
 	private EngineeringWrapper prepareEngineeringWrapper(Provider provider) {
 		EngineeringWrapper wrapper = new EngineeringWrapper();
 
-		Set<File> files = provider.getFiles();
-		for(File file : files){
-			if(file.isFILEDAFIRMARE())
-				wrapper.setFileDaFirmare(file);
-		}
+//	Sistemare in seguito a spostamento dei files da provider -> dariAccreditamento
+//		Set<File> files = provider.getFiles();
+//		for(File file : files){
+//			if(file.isFILEDAFIRMARE())
+//				wrapper.setFileDaFirmare(file);
+//		}
 
 		wrapper.setProvider(provider);
 

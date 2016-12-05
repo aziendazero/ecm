@@ -59,7 +59,7 @@ public class Accreditamento extends BaseEntity{
 	private LocalDate dataInizioAccreditamento;//procedimento terminato..con l'accettazione dell'accreditamento...in attesa del pagamento
 	@Column(name = "data_fine_accreditamento")//data di scadenza calcolata dall'accreditamento +4anni
 	private LocalDate dataFineAccreditamento;
-	
+
 	private Long giorniIntegrazione;
 	private Long giorniPreavvisoRigetto;
 	private Boolean integrazioneEseguitaDaProvider;
@@ -223,7 +223,7 @@ public class Accreditamento extends BaseEntity{
 			return true;
 		return false;
 	}
-	
+
 	public boolean isDomandaAttiva(){
 		if(dataFineAccreditamento != null && (dataFineAccreditamento.isAfter(LocalDate.now()) || dataFineAccreditamento.isEqual(LocalDate.now())) )
 			return true;
@@ -253,6 +253,13 @@ public class Accreditamento extends BaseEntity{
 	public void restartConteggio(){
 		dataInizioConteggio = LocalDate.now().minusDays(durataProcedimento);
 		durataProcedimento = null;
+	}
+
+	public long getFileIdForProtocollo(){
+		for(File f : datiAccreditamento.getFiles())
+			if(f.isDICHIARAZIONELEGALE())
+				return f.getId();
+		return 0L;
 	}
 
 	@Override

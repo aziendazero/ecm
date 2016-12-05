@@ -31,4 +31,6 @@
 
 	<include file="006_20161204_integrazione_protocollo.xml" relativeToChangelogFile="true"/>
 
+	<include file="006_20161205_move_files_from_provider_to_dati_accreditamento.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

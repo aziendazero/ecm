@@ -117,12 +117,6 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Set<String> getFileTypeUploadedByProviderId(Long id) {
-		LOGGER.debug("Recupero i tipi di file presenti per il provider: " + id);
-		return providerRepository.findAllFileTipoByProviderId(id);
-	}
-
-	@Override
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper() {
 		ProviderRegistrationWrapper providerRegistrationWrapper = new ProviderRegistrationWrapper();
 		Provider provider = new Provider();

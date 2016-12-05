@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
@@ -49,14 +48,12 @@ import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
-import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.ResponseUsername;
 import it.tredi.ecm.web.bean.RicercaProviderWrapper;
-import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.ProviderValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
@@ -438,7 +435,7 @@ public class ProviderController {
 	}
 
 	private void prepareApplyIntegrazione(ProviderWrapper providerWrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
-		providerWrapper.getProvider().getFiles().size();
+		//providerWrapper.getProvider().getFiles().size();
 		providerWrapper.getProvider().getComponentiComitatoScientifico().size();
 		integrazioneService.detach(providerWrapper.getProvider());
 		providerWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(providerWrapper.getAccreditamentoId()), SubSetFieldEnum.PROVIDER));
