@@ -74,4 +74,14 @@ public class EmailServiceImpl implements EmailService {
 		String message = templateEngine.process("notificaSegreteriaMancataValutazioneReferee", context);
 		send(ecmProperties.getEmailSegreteriaEcm(), segreteria, "Mancata Valutazione Referee", message, true);
 	}
+
+	@Override
+	public void inviaAlertErroreDiSistema(String alert) throws Exception {
+		LOGGER.info("Invio Alert errore di Sistema");
+		Context context = new Context();
+		context.setVariable("alert", alert);
+		String message = templateEngine.process("alertErroreDiSistema", context);
+		send(ecmProperties.getEmailSegreteriaEcm(), ecmProperties.getEmailSegreteriaEcm(), "Errore di Sistema Applicativo ECM", message, true);
+
+	}
 }
