@@ -31,6 +31,8 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 		if(eventoRES.getSedeEvento() != null) {
 			this.sedeUltimoAggiornamento.copiaDati(eventoRES.getSedeEvento());
 		}
+		boolean hasDataInizio = false;
+		boolean hasDataFine = false;
 		//tengo i programmi giornalieri solo se esistono fra le date INIZIO FINE o INTERMEDIE
 		for(ProgrammaGiornalieroRES pg : this.eventoRES.getProgramma()) {
 			//Quelle senza giorno non vengono considerate, in realta' non dovrebbero neppure venire salvate su db
@@ -38,18 +40,20 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 				//Aggiungo solo se non gia' aggiunta
 //				if(pgLocalDate.contains(pg.getGiorno()))
 //					continue;
-				if(this.eventoRES.getDataInizio() != null && pg.getGiorno().compareTo(this.eventoRES.getDataInizio()) == 0) {
+				if(this.eventoRES.getDataInizio() != null && pg.getGiorno().compareTo(this.eventoRES.getDataInizio()) == 0 && hasDataInizio == false) {
 					//DATAINIZIO
 					index++;
 					programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.INIZIO, pg)));
 					dataInizioKey = index;
 					pgLocalDate.add(pg.getGiorno());
-				} else if(this.eventoRES.getDataFine() != null && pg.getGiorno().compareTo(this.eventoRES.getDataFine()) == 0) {
+					hasDataInizio = true;
+				} else if(this.eventoRES.getDataFine() != null && pg.getGiorno().compareTo(this.eventoRES.getDataFine()) == 0 && hasDataFine == false) {
 					//DATAFINE
 					index++;
 					programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.FINE, pg)));
 					dataFineKey = index;
 					pgLocalDate.add(pg.getGiorno());
+					hasDataFine = true;
 				} else {
 					//POSSIBILE DATA INTERMEDIA
 					if(eventoRES.getDateIntermedie().contains(pg.getGiorno())) {
@@ -214,33 +218,47 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 		aggiornaDati();
 		List<LocalDate> dateIntermedie = new ArrayList<LocalDate>();
 		Set<Long> oldIdProgrammaAncoraPresenti = new HashSet<Long>();
-		//Potrebbe essere gia' stata eseguita questa operazione quindi in eventoRES.getProgramma() potrei avere gia' dei programmi nuovi inseriti lil elimino e riesegup
-		Iterator<ProgrammaGiornalieroRES> i = eventoRES.getProgramma().iterator();
-		while (i.hasNext()) {
-			ProgrammaGiornalieroRES prg = i.next();
-			if(prg.isNew()) {
-				i.remove();
-			}
-		}
+		//Potrebbe essere gia' stata eseguita questa operazione (updateEventoRES, per esempio validazione non riuscita)
+		//quindi in eventoRES.getProgramma() potrei avere gia' dei programmi nuovi inseriti li elimino e rieseguo
+//		Iterator<ProgrammaGiornalieroRES> i = eventoRES.getProgramma().iterator();
+//		while (i.hasNext()) {
+//			ProgrammaGiornalieroRES prg = i.next();
+//			if(prg.isNew()) {
+//				i.remove();
+//			}
+//		}
+//		for(EventoRESProgrammaGiornalieroWrapper evpgw : this.getSortedProgrammiGiornalieriMap().values()) {
+//			if(evpgw.getProgramma().getGiorno() == null) {
+//				//quelli non nuovi vanno eliminati se hanno la data null
+//				if(!evpgw.getProgramma().isNew()) {
+//					eventoRES.getProgramma().remove(evpgw.getProgramma());
+//				}
+//			} else {
+//				//giorno != null
+//				if(evpgw.getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.INTERMEDIA)
+//					dateIntermedie.add(evpgw.getProgramma().getGiorno());
+//				if(evpgw.getProgramma().isNew()) {
+//					if(evpgw.getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.FINE && evpgw.getProgramma().getGiorno().equals(eventoRES.getDataInizio()))
+//						continue;
+//					//aggiungo il programma all'evento, se non gia' aggiunto, quelli non new ci sono gia' e sono aggiornati
+//					if(!eventoRES.getProgramma().contains(evpgw.getProgramma()))
+//						eventoRES.getProgramma().add(evpgw.getProgramma());
+//				} else {
+//					oldIdProgrammaAncoraPresenti.add(evpgw.getProgramma().getId());
+//				}
+//			}
+//		}
+		//### sovrascriviamo ###
+		eventoRES.getProgramma().clear();
 		for(EventoRESProgrammaGiornalieroWrapper evpgw : this.getSortedProgrammiGiornalieriMap().values()) {
-			if(evpgw.getProgramma().getGiorno() == null) {
-				//quelli non nuovi vanno eliminati se hanno la data null
-				if(!evpgw.getProgramma().isNew()) {
-					eventoRES.getProgramma().remove(evpgw.getProgramma());
+			if(evpgw.getProgramma().getGiorno() != null) {
+				if(evpgw.getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.FINE
+						&& evpgw.getProgramma().getGiorno().equals(this.eventoRES.getDataInizio())) {
+							continue;
 				}
-			} else {
-				//giorno != null
+				eventoRES.getProgramma().add(evpgw.getProgramma());
 				if(evpgw.getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.INTERMEDIA)
 					dateIntermedie.add(evpgw.getProgramma().getGiorno());
-				if(evpgw.getProgramma().isNew()) {
-					if(evpgw.getTipoData() == EventoRESTipoDataProgrammaGiornalieroEnum.FINE && evpgw.getProgramma().getGiorno().equals(eventoRES.getDataInizio()))
-						continue;
-					//aggiungo il programma all'evento, se non gia' aggiunto, quelli non new ci sono gia' e sono aggiornati
-					if(!eventoRES.getProgramma().contains(evpgw.getProgramma()))
-						eventoRES.getProgramma().add(evpgw.getProgramma());
-				} else {
-					oldIdProgrammaAncoraPresenti.add(evpgw.getProgramma().getId());
-				}
 			}
 		}
 		eventoRES.setDateIntermedie(dateIntermedie);

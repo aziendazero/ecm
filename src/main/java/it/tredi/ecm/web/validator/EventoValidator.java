@@ -1543,16 +1543,12 @@ public class EventoValidator {
 
 				//tipologiaEvento == PROGETTI DI MIGLIORAMENTO
 				// - impegno complessivo minimo 8 ore totali per ruolo PARTECIPANTE
-				// - massimo un coordinatore
+				// - massimo un responsabile
 				case PROGETTI_DI_MIGLIORAMENTO:
 
 					if(riepilogoRuoli.getRuolo() != null
 							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE
 							&& riepilogoRuoli.getTempoDedicato() < 8f)
-						return true;
-					if(riepilogoRuoli.getRuolo() != null
-							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
-							&& riepilogoRuoli.getNumeroPartecipanti() > 1)
 						return true;
 					if(riepilogoRuoli.getRuolo() != null
 							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.RESPONSABILE

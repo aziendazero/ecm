@@ -79,4 +79,20 @@ public class EventoRES extends Evento{
 	@Embedded
 	private RiepilogoRES riepilogoRES = new RiepilogoRES();
 
+	//se mai un giorno ci venisse in mente di fare le cose come andrebbero fatte
+//	public List<LocalDate> getDateIntermedie() {
+//		List<LocalDate> dateIntermedie = new ArrayList<LocalDate>();
+//		if(this.getProgramma() != null && !this.getProgramma().isEmpty()){
+//			for(ProgrammaGiornalieroRES pgr : this.getProgramma()) {
+//				//se la data corrisponde alla data inizio o fine NON è considerata intermedia
+//				if(pgr.getGiorno() != null && (pgr.getGiorno().isEqual(this.getDataInizio()) || pgr.getGiorno().isEqual(this.getDataFine()))) {
+//					continue;
+//				}
+//				dateIntermedie.add(pgr.getGiorno());
+//			}
+//
+//		}
+//		return dateIntermedie;
+//	}
+
 }
