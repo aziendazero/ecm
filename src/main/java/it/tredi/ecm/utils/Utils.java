@@ -231,6 +231,13 @@ public class Utils {
 		return ore + ":" + minuti;
 	}
 
+	public static String formatOrarioFromMinutes(long minuti){
+		int hh = (int) minuti / 60;
+		int mm = (int) (minuti % 60);
+
+		return ((hh < 10) ? "0" + hh : hh) + ":" + ((mm < 10) ? "0" + mm : mm);
+	}
+
 	public static String QUERY_AND(String query, String criteria){
 		if(query.contains("WHERE"))
 			return query+= " AND " + criteria;
