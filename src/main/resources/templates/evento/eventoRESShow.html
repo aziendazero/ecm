@@ -235,8 +235,8 @@
 							<span class="label-show" th:text="#{label.workshop_radio_text}"></span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="${eventoWrapper.evento.workshopSeminariEcm} ? #{label.sì} : #{label.no}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapper.evento.workshopSeminariEcm != null and eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="${eventoWrapper.evento.workshopSeminariEcm} ? #{label.sì} : #{label.no}"></div>
+							<div class="value danger" th:unless="${eventoWrapper.evento.workshopSeminariEcm != null and eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="#{label.dato_non_inserito}"></div>
 
 						</div>
 					</div>
@@ -414,7 +414,7 @@
 	 						<span class="label-show" th:text="#{label.durata}">Durata</span>
 	 					</label>
 	 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-	 						<div class="value" th:text="${eventoWrapper.evento.durata}"></div>
+	 						<div class="value" th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.durata)}"></div>
 	 					</div>
 	 				</div>
 
@@ -456,11 +456,11 @@
 										<td th:text="${metodologia.key.nome}"></td>
 										<td>
 											<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).FRONTALE}"
-												th:text="${metodologia.value} + ' h'"></span>
+												th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(metodologia.value)}"></span>
 										</td>
 										<td>
 											<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).INTERATTIVA}"
-												th:text="${metodologia.value} + ' h'"></span>
+												th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(metodologia.value)}"></span>
 										</td>
 									</tr>
 									<tr>
@@ -468,10 +468,10 @@
 											<strong><span class="text-uppercase" th:text="#{label.totale_ore}"></span></strong>
 										</td>
 										<td>
-											<strong><span th:text="${eventoWrapper.evento.riepilogoRES.totaleOreFrontali} + ' h'"></span></strong>
+											<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.riepilogoRES.totaleOreFrontali)}"></span></strong>
 										</td>
 										<td>
-											<strong><span th:text="${eventoWrapper.evento.riepilogoRES.totaleOreInterattive} + ' h'"></span></strong>
+											<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.riepilogoRES.totaleOreInterattive)}"></span></strong>
 										</td>
 									</tr>
 								</tbody>

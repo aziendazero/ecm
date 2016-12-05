@@ -226,9 +226,10 @@ public class Utils {
 	}
 
 	public static String formatOrario(float durata){
-		int ore = (int) durata;
-		int minuti = (int) ((durata*60) % 60);
-		return ore + ":" + minuti;
+		int hh = (int) durata;
+		int mm = (int) (((durata*60) % 60) + 0.5f);
+
+		return ((hh < 10) ? "0" + hh : hh) + ":" + ((mm < 10) ? "0" + mm : mm);
 	}
 
 	public static String formatOrarioFromMinutes(long minuti){

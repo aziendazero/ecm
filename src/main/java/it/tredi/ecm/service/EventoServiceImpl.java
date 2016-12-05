@@ -847,13 +847,13 @@ public class EventoServiceImpl implements EventoService {
 		riepilogoRES.setTotaleOreInterattive(oreInterattiva);
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
-			crediti = (0.20f * durata);
+			crediti = (0.20f * (int) durata);
 			if(crediti > 5.0f)
 				crediti = 5.0f;
 		}
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO){
-			crediti = 1 * durata;
+			crediti = 1 * (int) durata;
 			if(crediti > 50f)
 				crediti = 50f;
 		}
@@ -866,20 +866,20 @@ public class EventoServiceImpl implements EventoService {
 			numeroPartecipanti = numeroPartecipanti!= null ? numeroPartecipanti.intValue() : 0;
 
 			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
-				creditiFrontale = oreFrontale * 1.25f;
+				creditiFrontale = (int) oreFrontale * 1.25f;
 			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
 				float creditiDecrescenti = getQuotaFasciaDecrescenteForRES(numeroPartecipanti);
-				creditiFrontale = oreFrontale * creditiDecrescenti;
+				creditiFrontale = (int) oreFrontale * creditiDecrescenti;
 			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){
-				creditiFrontale = oreFrontale * 1.0f;
+				creditiFrontale = (int) oreFrontale * 1.0f;
 			}else if(numeroPartecipanti >= 101 && numeroPartecipanti <= 150){
-				creditiFrontale = oreFrontale * 0.75f;
+				creditiFrontale = (int) oreFrontale* 0.75f;
 			}else if(numeroPartecipanti >= 151 && numeroPartecipanti <= 200){
-				creditiFrontale = oreFrontale * 0.5f;
+				creditiFrontale = (int) oreFrontale * 0.5f;
 			}
 
 			//metodologia interattiva
-			creditiInterattiva = oreInterattiva * 1.5f;
+			creditiInterattiva = (int) oreInterattiva * 1.5f;
 
 			crediti = creditiFrontale + creditiInterattiva;
 		}
@@ -1039,9 +1039,9 @@ public class EventoServiceImpl implements EventoService {
 		float crediti = 0.0f;
 
 		if(conTutor != null && conTutor)
-			crediti = durata * 1.5f;
+			crediti = (int) durata * 1.5f;
 		else
-			crediti = durata * 1.0f;
+			crediti = (int) durata * 1.0f;
 
 		crediti = Utils.getRoundedFloatValue(crediti, 1);
 		return crediti;

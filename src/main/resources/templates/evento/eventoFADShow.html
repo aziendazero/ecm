@@ -346,7 +346,7 @@
 	 						<span class="label-show" th:text="#{label.durata}">Durata</span>
 	 					</label>
 	 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-	 						<div class="value" th:text="${eventoWrapper.evento.durata}"></div>
+	 						<div class="value" th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.durata)}"></div>
 	 					</div>
 	 				</div>
 
