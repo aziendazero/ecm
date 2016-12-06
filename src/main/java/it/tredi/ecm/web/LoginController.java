@@ -3,6 +3,8 @@ package it.tredi.ecm.web;
 import java.util.Iterator;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.CurrentUserDetailsService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.QuotaAnnualeService;
@@ -38,6 +41,8 @@ public class LoginController {
 	@Autowired private SedutaService sedutaService;
 	@Autowired private QuotaAnnualeService quotaAnnualeService;
 	@Autowired private EventoService eventoService;
+
+	@Autowired private CurrentUserDetailsService currentUserDetailsService;
 
 	@RequestMapping("/")
 	public String root(Locale locale) {
@@ -135,5 +140,13 @@ public class LoginController {
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
 	public String main() {
 		return "main";
+	}
+
+	/** Login form. */
+	@RequestMapping(value = "/cas/login", method = RequestMethod.GET)
+	public String casLogin(HttpServletRequest request) {
+		//currentUserDetailsService.authenticateCasUser(request);
+		currentUserDetailsService.authenticateUser("LBENEDETTI",request);
+		return "redirect:/home";
 	}
 }
