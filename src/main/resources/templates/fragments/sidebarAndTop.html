@@ -55,10 +55,6 @@
 									<li><a th:href="@{/provider/user/list}" th:text="#{label.utenti}" th:if="${#authentication.principal.hasProfile('PROVIDERUSERADMIN')}">label.utenti</a></li>
 									<li><a th:href="@{/provider/pagamento/list}" th:text="#{label.contributo_annuale}">label.contributo_annuale</a></li>
 									<li><a th:href="@{/provider/relazioneAnnuale/list}"  th:text="#{label.relazione_annuale}">label.relazione_annuale</a></li>
-									<!--
-									<li><a href="#" th:text="#{label.contributo_annuale}">label.contributo_annuale</a></li>
-									 -->
-									 <li><a th:href="@{/engineering/test/protocollo}" th:text="#{engineering.test_protocollo}">engineering.test_protocollo</a></li>
 								</ul>
 							</li>
 
@@ -74,6 +70,7 @@
 									<li><a th:href="@{/seduta/list}" th:text="#{label.lista_sedute}">label.lista_sedute</a></li>
 									<li><a th:href="@{/comunicazione/dashboard}" th:text="#{label.comunicazioni}"></a></li>
 									<li><a th:href="@{/anagrafeRegionaleCrediti/list}" th:text="#{label.anagrafe_regionale_crediti}"></a></li>
+									<li><a th:href="@{/protocollo/listProtocolliError}" th:text="#{label.protocolli_sospesi}">label.protocolli_sospesi</a></li>
 								</ul>
 							</li>
 
