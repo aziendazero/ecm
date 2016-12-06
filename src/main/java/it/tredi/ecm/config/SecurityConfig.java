@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	     .and()
 	     	.rememberMe();
 
-		http.csrf().ignoringAntMatchers("/engineering/test/firma/back")
+		http.csrf().ignoringAntMatchers("/engineering/firma/back")
 	     .and()
 	     	.headers().frameOptions().sameOrigin();
 
