@@ -22,7 +22,7 @@ import lombok.Setter;
 public class RicercaEventoWrapper {
 	private Long campoIdProvider;
 	private String denominazioneLegale;
-	private Long campoIdEvento;
+	private String campoIdEvento;
 	private String titoloEvento;
 
 	private Set<Obiettivo> obiettiviNazionaliSelezionati;

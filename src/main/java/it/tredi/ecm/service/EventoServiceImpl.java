@@ -1524,8 +1524,8 @@ public class EventoServiceImpl implements EventoService {
 			}
 
 			//EVENTO ID
-			if(wrapper.getCampoIdEvento() != null){
-				query = Utils.QUERY_AND(query, "e.id = :eventoId");
+			if(!wrapper.getCampoIdEvento().isEmpty()){
+				query = Utils.QUERY_AND(query, "e.prefix = :eventoId");
 				params.put("eventoId", wrapper.getCampoIdEvento());
 			}
 
@@ -1591,8 +1591,8 @@ public class EventoServiceImpl implements EventoService {
 
 			//LUOGO
 			if(wrapper.getLuogo() != null && !wrapper.getLuogo().isEmpty()){
-				query = Utils.QUERY_AND(query, "e.sedeEvento.luogo = :luogo");
-				params.put("luogo", wrapper.getLuogo());
+				query = Utils.QUERY_AND(query, "UPPER(e.sedeEvento.luogo) LIKE :luogo");
+				params.put("luogo", "%" + wrapper.getLuogo().toUpperCase() + "%");
 			}
 
 			//DATA INZIO
