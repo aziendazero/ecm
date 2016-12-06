@@ -19,9 +19,9 @@ public class RicercaComunicazioneWrapper {
 	private String oggetto;
 
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
-	private LocalDateTime dataCreazioneStart;
+	private LocalDate dataCreazioneStart;
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
-	private LocalDateTime dataCreazioneEnd;
+	private LocalDate dataCreazioneEnd;
 
 	private Set<ComunicazioneAmbitoEnum> ambitiSelezionati;
 	private Set<ComunicazioneTipologiaEnum> tipologieSelezionate;
