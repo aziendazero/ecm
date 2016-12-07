@@ -31,6 +31,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -121,6 +122,7 @@ public class Evento extends BaseEntity{
 
 	@Enumerated(EnumType.STRING)
 	private ProceduraFormativa proceduraFormativa;
+	@Column(columnDefinition = "text")
 	private String titolo;
 
 	@OneToOne
@@ -430,9 +432,8 @@ public class Evento extends BaseEntity{
 		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
 			return false;
 
-		//TODO deve pagare prima di poter rendicontare???
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
-			if(dataScadenzaInvioRendicontazione != null && sponsorUploaded != null && sponsorUploaded.booleanValue() && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione))
+			if(dataScadenzaInvioRendicontazione != null && sponsorUploaded != null && sponsorUploaded.booleanValue() && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione) && pagato != null && pagato.booleanValue())
 				return true;
 		}
 

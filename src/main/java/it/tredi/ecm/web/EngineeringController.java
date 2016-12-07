@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Base64Utils;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
@@ -412,6 +414,19 @@ public class EngineeringController {
 
 		} finally {
 			model.addAttribute("protocolloList", protocolloService.getAllProtocolli());
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowProtocollo(principal)")
+	@RequestMapping("/protocollo/listProtocolliError")
+	public String listaProtocolliSospesi(Model model){
+		try{
+			model.addAttribute("protocolloList",protocolloService.getAllProtocolliInUscitaErrati());
+			return "protocollo/errorList";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore recupero lista protocolli errati"));
+			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
 		}
 	}
 

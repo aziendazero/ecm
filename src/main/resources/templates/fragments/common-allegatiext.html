@@ -14,7 +14,8 @@
 			Modal content
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
 				</div>
 				<div class="modal-body">
 					<iframe id="firmaFrame" src="" class="frame_invisible"></iframe>
@@ -34,6 +35,7 @@
 			//var propertyName = $(element).parent().parent().find('input[type=file]').attr("propertyName");
 			console.log('propertyName: ' + propertyName);
 			$("#firmaFrame").attr("src", [[@{|/engineering/firma/invio|}]] + '?idFile=' + $("#"+propertyName+"\\.id").val());
+			$("#modalFrame").show();
 		}
 
 		function rimuoviFile(propertyName){

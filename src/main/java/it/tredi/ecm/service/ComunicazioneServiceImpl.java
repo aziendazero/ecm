@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -246,7 +247,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		String query = "";
 		HashMap<String, Object> params = new HashMap<String, Object>();
 
-		query ="SELECT c FROM Comunicazione c JOIN c.destinatari d";
+		query ="SELECT c FROM Comunicazione c JOIN c.destinatari d JOIN c.mittente m";
 
 		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
 			//devo fare il join con la tabella provider
@@ -256,7 +257,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 
 		//PROVIDER ID
 		if(wrapper.getCampoIdProvider() != null){
-			query = Utils.QUERY_AND(query, "d.provider.id = :providerId");
+			query = Utils.QUERY_AND(query, "(d.provider.id = :providerId OR m.provider.id = :providerId)");
 			params.put("providerId", wrapper.getCampoIdProvider());
 		}
 
@@ -281,12 +282,14 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		//DATA CREAZIONE
 		if(wrapper.getDataCreazioneStart() != null){
 			query = Utils.QUERY_AND(query, "c.dataCreazione >= :dataCreazioneStart");
-			params.put("dataCreazioneStart", wrapper.getDataCreazioneStart());
+			LocalDateTime ldt = Timestamp.valueOf(wrapper.getDataCreazioneStart().atStartOfDay()).toLocalDateTime();
+			params.put("dataCreazioneStart", ldt);
 		}
 
 		if(wrapper.getDataCreazioneEnd() != null){
 			query = Utils.QUERY_AND(query, "c.dataCreazione <= :dataCreazioneEnd");
-			params.put("dataCreazioneEnd", wrapper.getDataCreazioneEnd());
+			LocalDateTime ldt = Timestamp.valueOf(wrapper.getDataCreazioneEnd().plusDays(1).atStartOfDay()).toLocalDateTime();
+			params.put("dataCreazioneEnd", ldt);
 		}
 
 

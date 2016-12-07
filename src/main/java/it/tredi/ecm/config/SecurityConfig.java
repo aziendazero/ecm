@@ -23,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		 .antMatchers("/", "/bootstrap/**", "/crlcu-multiselect/**", "/gentella/**", "/engineering/**", "/clockpicker/**", "/shared/**", "/main", "/providerRegistration", "/confirmRegistration", "/user/resetPassword", "/file/upload", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**", "/workflow/**").permitAll()
+		 .antMatchers("/", "/bootstrap/**", "/crlcu-multiselect/**", "/gentella/**", "/engineering/**", "/clockpicker/**", "/shared/**", "/main", "/providerRegistration", "/confirmRegistration", "/user/resetPassword", "/file/upload", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**", "/workflow/**", "/cas/**").permitAll()
 
 		 .antMatchers("/admin/**").hasAuthority("ADMIN")
          .anyRequest().authenticated()
@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	     .and()
 	     	.rememberMe();
 
-		http.csrf().ignoringAntMatchers("/engineering/test/firma/back")
+		http.csrf().ignoringAntMatchers("/engineering/firma/back")
 	     .and()
 	     	.headers().frameOptions().sameOrigin();
 
