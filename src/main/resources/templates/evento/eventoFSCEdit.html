@@ -904,7 +904,7 @@
 				 						<span th:text="#{label.durata}">Durata</span>
 				 					</label>
 				 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata">
-				 						<div class="value-edit" th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.durata)}"></div>
+				 						<div class="value-edit" th:text="${T(it.tredi.ecm.utils.Utils).formatOrario( eventoWrapper.evento.durata != null ? eventoWrapper.evento.durata : 0)}"></div>
 				 					</div>
 				 					<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.durata')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.durata')}__}"></div>
 				 				</div>
