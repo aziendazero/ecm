@@ -6,7 +6,7 @@
 	logicalFilePath="v000/006_20161202_verbaleValutazioneSulCampo.xml">
     <changeSet author="tiommi (generated)" id="1481103215333-1">
         <createTable tableName="verbale_valutazione_sul_campo">
-            <column autoIncrement="true" name="id" type="BIGINT">
+            <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="verbale_valutazione_sul_campoPK"/>
             </column>
             <column name="osservazioni_del_provider" type="TEXT"/>
