@@ -1326,7 +1326,10 @@ li.listStyle-elenco > label{
 	width: 300px;
 }
 
-
 .text-full-length{
 	white-space: nowrap;
+}
+
+.show-calendar {
+	z-index: 99999;
 }
