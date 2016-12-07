@@ -33,4 +33,7 @@
 
 	<include file="006_20161205_move_files_from_provider_to_dati_accreditamento.xml" relativeToChangelogFile="true"/>
 
+	<include file="006_20161202_171105_gestione_protocollazione.xml" relativeToChangelogFile="true"/>
+	<include file="007_20161202_171105_seduta_task_insodg.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

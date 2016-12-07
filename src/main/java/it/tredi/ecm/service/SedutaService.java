@@ -28,4 +28,6 @@ public interface SedutaService {
 	public void removeValutazioneCommissioneFromSeduta(Long valutazioneCommissioneId);
 	public 	Seduta getNextSeduta();
 	public void inviaMailACommissioneEcm() throws Exception;
+	public void bloccaSeduta(Long sedutaId) throws Exception;
+	public void eseguiBloccoSeduteDaBloccare();
 }

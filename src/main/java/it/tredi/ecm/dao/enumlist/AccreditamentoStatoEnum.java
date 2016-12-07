@@ -24,14 +24,18 @@ public enum AccreditamentoStatoEnum {
 	/*
 	 *  Domanda assegnata ad un team di valutazione per valutare l'accreditamento STANDARD
 	 *  Task eseguito dalla segreteria (sostituisce 3 al primo giro nella domanda standard)
-	 *  La segreteria compila la maschera dlel verbale e la salva. Il task termina quando la segreteria esplicitamente VALIDA il verbale. (salvataggio in bozza nel frattempo)
+	 *  La segreteria compila la maschera del verbale e la salva. Il task termina quando la segreteria esplicitamente VALIDA il verbale. (salvataggio in bozza nel frattempo)
 	 * */
 	VALUTAZIONE_SUL_CAMPO (14, "Valutazione sul campo", "valutazioneCampo"),//[SOLO STANDARD]
 	VALUTAZIONE_TEAM_LEADER(15, "Valutazione del Team Leader", "valutazioneLeader"),//[SOLO STANDARD] - domanda asseganata al Team Leader che deve compilare la griglia (sostituisce 3 dal secondo giro nella domanda standard)
-	
-	CANCELLATO(16, "Cancellato", ""),//domanda cancellata - prevista dal vecchio sistema...
-	SOSPESO(17, "Sospeso", "");//domanda sospesa - prevista dal vecchio sistema...
 
+	CANCELLATO(16, "Cancellato", ""),//domanda cancellata - prevista dal vecchio sistema...
+	SOSPESO(17, "Sospeso", ""),//domanda sospesa - prevista dal vecchio sistema...
+
+	RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE (18, "Richiesta integrazione in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
+	RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE (18, "Richiesta Preavviso di Rigetto in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
+	DINIEGO_IN_PROTOCOLLAZIONE (18, "Respinto in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
+	ACCREDITATO_IN_PROTOCOLLAZIONE (18, "Accreditato in protocollazione", "inProtocollazione");//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
 
 	private int id;
 	private String nome;

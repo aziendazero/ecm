@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -893,13 +894,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//In alcuni stati devono essere effettuate altre operazioni
 		//Creazione pdf
-		if(stato == AccreditamentoStatoEnum.INTEGRAZIONE) {
+		if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
 			//Ricavo la seduta
 			Seduta seduta = null;
 			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
 				//TODO nel caso vengano aggancxiati piu' flussi alla domanda occorre prendere l'ultima ValutazioneCommissionew
 				if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
-					seduta= valCom.getSeduta();
+					seduta = valCom.getSeduta();
 				}
 			}
 			Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
@@ -915,11 +916,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
 			integrazioneInfo.setGiorniIntegrazionePreavvisoRigetto(accreditamento.getGiorniIntegrazione());
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
+			//TODO Testare se il file è stato salvato
+			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 			accreditamento.setRichiestaIntegrazione(file);
+			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+			//protocollo il file
 		} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
 			//mi sono spostato da INTEGRAZIONE a VALUTAZIONE_SEGRETERIA quindi rimuovo i fieldEditabili
 			fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
-		} else if(stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
+		} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
 			//Ricavo la seduta
 			Seduta seduta = null;
 			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
@@ -935,8 +940,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
 			preavvisoRigettoInfo.setGiorniIntegrazionePreavvisoRigetto(accreditamento.getGiorniPreavvisoRigetto());
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
+			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 			accreditamento.setRichiestaPreavvisoRigetto(file);
-		} else if(stato == AccreditamentoStatoEnum.DINIEGO) {
+			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+		} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
 			//Ricavo la seduta
 			Seduta sedutaRigetto = null;
 			Seduta sedutaIntegrazione = null;
@@ -948,7 +955,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					sedutaIntegrazione = valCom.getSeduta();
 				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
 					sedutaPreavvisoRigetto = valCom.getSeduta();
-
 				}
 			}
 			/*
@@ -959,8 +965,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			});*/
 			PdfAccreditamentoProvvisorioRigettoInfo rigettoInfo = new PdfAccreditamentoProvvisorioRigettoInfo(accreditamento, sedutaRigetto, sedutaIntegrazione, sedutaPreavvisoRigetto);
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
+			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 			accreditamento.setDecretoDiniego(file);
-		} else if(stato == AccreditamentoStatoEnum.ACCREDITATO) {
+			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+		} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE) {
 			//Ricavo la seduta
 			Seduta sedutaAccreditamento = null;
 			Seduta sedutaIntegrazione = null;
@@ -972,13 +980,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					sedutaIntegrazione = valCom.getSeduta();
 				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
 					sedutaPreavvisoRigetto = valCom.getSeduta();
-
 				}
 			}
 			//Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
 			PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo(accreditamento, sedutaAccreditamento, sedutaIntegrazione, sedutaPreavvisoRigetto);
 			File file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
+			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 			accreditamento.setDecretoAccreditamento(file);
+			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
 		} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
 			//Cancelliamo le Valutazioni non completate
 			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
@@ -1034,8 +1043,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inserisciInValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser) throws Exception{
-		workflowService.eseguiTaskInsOdgForCurrentUser(getAccreditamento(accreditamentoId));
+	public void inserisciInValutazioneCommissioneForSystemUser(Long accreditamentoId) throws Exception{
+		workflowService.eseguiTaskInsOdgForSystemUser(getAccreditamento(accreditamentoId));
 	}
 
 	@Override

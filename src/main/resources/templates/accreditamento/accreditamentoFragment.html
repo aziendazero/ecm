@@ -871,6 +871,7 @@
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.decretoAccreditamento.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.decretoAccreditamento.id}|}"></a></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoAccreditamento.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.decretoAccreditamento.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.decretoAccreditamento.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 
@@ -885,6 +886,7 @@
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.decretoDiniego.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.decretoDiniego.id}|}"></a></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoDiniego.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.decretoDiniego.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.decretoDiniego.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 
@@ -898,6 +900,7 @@
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.richiestaIntegrazione.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.richiestaIntegrazione.id}|}"></a></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.richiestaIntegrazione.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.richiestaIntegrazione.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.richiestaIntegrazione.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 
@@ -910,6 +913,7 @@
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.id}|}"></a></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 										</div>

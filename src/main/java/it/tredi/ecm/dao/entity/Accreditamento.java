@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +65,12 @@ public class Accreditamento extends BaseEntity{
 	private Long giorniPreavvisoRigetto;
 	private Boolean integrazioneEseguitaDaProvider;
 	private Boolean preavvisoRigettoEseguitoDaProvider;
+
+	//Contiene la data in cui il documento (Integrazione/Rigetto/Diniego/Accreditamento) viene inviato al protocollo
+	//viene settato a null quando si ottiene conferma della protocollazione
+	//viene usato per ottenere gli accreditamenti in protocollazzione da troppo tempo
+	@Column(name = "dataora_invio_protocollazione")
+	private LocalDateTime dataoraInvioProtocollazione;
 
 	@JoinColumn(name = "provider_id")
 	@OneToOne(fetch = FetchType.LAZY)

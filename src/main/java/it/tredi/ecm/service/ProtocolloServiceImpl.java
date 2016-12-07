@@ -57,6 +57,7 @@ import it.tredi.ecm.dao.entity.ProtoBatchLog;
 import it.tredi.ecm.dao.entity.Protocollo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
 import it.tredi.ecm.dao.repository.ProtoBatchLogRepository;
 import it.tredi.ecm.dao.repository.ProtocolloRepository;
@@ -73,6 +74,9 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private FileService fileService;
+
+	@Autowired private WorkflowService workflowService;
+	@Autowired private EmailService emailService;
 
 	private static JAXBContext protocollaArrivoReqContext = null;
 	private static JAXBContext protoBatchReqContext = null;
@@ -409,7 +413,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = dbf.newDocumentBuilder();
 
-		Set<Protocollo> protocolliInUscita = protocolloRepository.getStatoSpedizione();
+		Set<Protocollo> protocolliInUscita = protocolloRepository.getStatoSpedizioneNonConsegnateENonInErrore();
 		for (Protocollo p : protocolliInUscita) {
 
 			// creo la request
@@ -460,21 +464,43 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 //			String cap = xpath.compile("//protocollo/destinatario/@cap").evaluate(xmlResultDocument);
 //			String email = xpath.compile("//protocollo/destinatario/@email").evaluate(xmlResultDocument);
 
-			p.setStatoSpedizione(stato);
-			protocolloRepository.save(p);
+			if(p.getStatoSpedizione() == null || !p.getStatoSpedizione().equals(stato)) {
+				p.setStatoSpedizione(stato);
+				protocolloRepository.save(p);
 
-			ProtoBatchLog plog = new ProtoBatchLog();
-			plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
-			plog.setNSpedizione(nr_spedizione);
-			plog.setProtocollo(p);
-			plog.setStato(stato);
-			protoBatchLogRepository.save(plog);
+				ProtoBatchLog plog = new ProtoBatchLog();
+				plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
+				plog.setNSpedizione(nr_spedizione);
+				plog.setProtocollo(p);
+				plog.setStato(stato);
+				protoBatchLogRepository.save(plog);
 
-			//Verifico se deve essere eseguita qualche istruzione automatica dopo la protocollazione
-			if(p.getAccreditamento() != null && stato != null && stato.equalsIgnoreCase(AVVENUTA_CONSEGNA)){
-				if(p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.ESEGUI_TASK)
-					//TODO esegui task
-					LOGGER.info("ProtocolloID: " + p.getId() + " - Avanzamento TAsk per Accreditamento: " + p.getAccreditamento().getId());
+				//Verifico se deve essere eseguita qualche istruzione automatica dopo la protocollazione
+				if(p.getAccreditamento() != null && stato != null && stato.equalsIgnoreCase(AVVENUTA_CONSEGNA)){
+					if(p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.ESEGUI_TASK) {
+						LOGGER.info("ProtocolloID: " + p.getId() + " - Avanzamento Task per Accreditamento: " + p.getAccreditamento().getId());
+						if(p.getAccreditamento().getStato() == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE
+								|| p.getAccreditamento().getStato() == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE
+								|| p.getAccreditamento().getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE
+								|| p.getAccreditamento().getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
+							try {
+								workflowService.eseguiTaskProtocolloEseguitoForAccreditamentoStateAndSystemUser(p.getAccreditamento());
+							} catch(Exception e) {
+								String msg = "Impossibile eseguire il task di avvenuta protocollazione sull'accreditamento id: " + p.getAccreditamento().getId() + " in stato: " + p.getAccreditamento().getStato() + " del provider " + p.getAccreditamento().getProvider().getDenominazioneLegale();
+								LOGGER.error(msg);
+								emailService.inviaAlertErroreDiSistema(msg);
+							}
+							try {
+								p.getAccreditamento().setDataoraInvioProtocollazione(null);
+								accreditamentoService.save(p.getAccreditamento());
+							} catch(Exception e) {
+								String msg = "Impossibile rimuovere la Data ora di invio protocollazione sull'accreditamento id: " + p.getAccreditamento().getId() + " in stato: " + p.getAccreditamento().getStato() + " del provider " + p.getAccreditamento().getProvider().getDenominazioneLegale();
+								LOGGER.error(msg);
+								emailService.inviaAlertErroreDiSistema(msg);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
