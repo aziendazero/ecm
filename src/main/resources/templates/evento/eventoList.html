@@ -183,8 +183,7 @@
 									<th th:text="#{label.data_fine}">label.date</th>
 									<th th:text="#{label.stato}"></th>
 									<th th:text="#{label.numero_partecipanti}">label.titolo</th>
-									<th th:text="#{label.ore_corso}">label.ore_corso</th>
-									<th th:text="#{label.stato_pagamento}"></th>
+									<th th:text="#{label.durata}">label.ore_corso</th>
 									<th th:text="#{label.data_scadenza_pagamento}">label.data_scadenza_pagamento</th>
 									<th th:text="#{label.azioni}">label.azioni</th>
 								</tr>
@@ -206,25 +205,16 @@
 
 									<td th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></td>
 									<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
-							<!-- 		<td>
-										<ul>
-											<li><span th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></span></li>
-											<th:block th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).RES}">
-												<li th:each="data, d : ${evento.dateIntermedie}">
-													<span th:text="${#temporals.format(data, 'dd/MM/yyyy')}"></span>
-												</li>
-											</th:block>
-											<li><span th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></span></li>
-										</ul>
-									</td> -->
-									<td th:text="${evento.stato.nome}"></td>
-									<td th:text="${evento.numeroPartecipanti}"></td>
-									<td th:text="${evento.durata}"></td>
-									<td th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></td>
-									<td th:unless="${evento.pagato}">
-										<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>
-										<span th:unless="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.da_pagare}"></span>
+									<td>
+										<div th:text="${evento.stato.nome}"></div>
+										<div th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></div>
+										<div th:unless="${evento.pagato}">
+											<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>
+											<span th:unless="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.da_pagare}"></span>
+										</div>
 									</td>
+									<td th:text="${evento.numeroPartecipanti}"></td>
+									<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario( evento.durata != null ? evento.durata : 0)}"></td>
 									<td th:text="${evento.dataScadenzaPagamento == null} ? '' : ${#temporals.format(evento.dataScadenzaPagamento, 'dd/MM/yyyy')}"></td>
 									<td>
 										<div class="button-container single">
@@ -250,12 +240,7 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
-						"ordering" : false,
-						"columnDefs": [ {
-							"targets": 6,
-							"width": "1px",
-							"sClass": "center"
-						} ]
+
 					})
 
 					$(".datatable-responsive-eventi-attuazione").DataTable({
