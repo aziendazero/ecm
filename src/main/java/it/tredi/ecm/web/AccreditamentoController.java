@@ -37,6 +37,7 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
@@ -46,9 +47,9 @@ import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
-import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
@@ -62,6 +63,7 @@ import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
+import it.tredi.ecm.web.bean.VerbaleValutazioneSulCampoWrapper;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
@@ -72,6 +74,7 @@ public class AccreditamentoController {
 	@Autowired private ProviderService providerService;
 	@Autowired private PersonaService personaService;
 	@Autowired private SedeService sedeService;
+	@Autowired private FileService fileService;
 
 	@Autowired private AccountService accountService;
 
@@ -577,6 +580,15 @@ public class AccreditamentoController {
 		if(valutazione != null) {
 			mappa = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(valutazione.getValutazioni());
 		}
+		//fieldValutazione relativi al verbale della valutazione sul campo
+		if(accreditamento.isValutazioneSulCampo()) {
+			Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaValutazioniSulCampo = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+			mappaValutazioniSulCampo = fieldValutazioneAccreditamentoService.putSetFieldValutazioneInMap(accreditamento.getVerbaleValutazioneSulCampo().getDatiValutazioneSulCampo().getValutazioniSulCampo());
+			mappa.putAll(mappaValutazioniSulCampo);
+		}
+
+
+
 		accreditamentoWrapper.setMappa(mappa);
 
 		//init delle strutture dati che servono per la verifica degli stati di valutazione dei multistanza
@@ -622,6 +634,22 @@ public class AccreditamentoController {
 		//TODO togliere se confermato che non serve più
 //		accreditamentoWrapper.setMappaEventi(mappaEventi);
 //		accreditamentoWrapper.setEventiStati(eventiStati);
+
+		//gestione valutazione sul campo / preparazione verbale valutazione sul campo
+		if(accreditamento.isValutazioneSulCampo() || (accreditamento.isValutazioneSegreteriaAssegnamento() && accreditamento.isStandard())) {
+			//set scelta select
+			accreditamentoWrapper.setComponentiCRECM(accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
+			accreditamentoWrapper.setOsservatoriRegionali(accountService.getUserByProfileEnum(ProfileEnum.OSSERVATORE));
+			accreditamentoWrapper.setComponentiSegreteria(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
+			accreditamentoWrapper.setReferentiInformatici(accountService.getUserByProfileEnum(ProfileEnum.REFERENTE_INFORMATICO));
+			//set campi precompilati
+			if(accreditamentoWrapper.getVerbaleValutazioneSulCampo() == null) {
+				VerbaleValutazioneSulCampo verbaleValutazioneSulCampo = new VerbaleValutazioneSulCampo();
+				verbaleValutazioneSulCampo.setProvider(accreditamento.getProvider());
+				verbaleValutazioneSulCampo.setAccreditamento(accreditamento);
+				accreditamentoWrapper.setVerbaleValutazioneSulCampo(verbaleValutazioneSulCampo);
+			}
+		}
 
 		commonPrepareAccreditamentoWrapper(accreditamentoWrapper, AccreditamentoWrapperModeEnum.VALIDATE);
 
@@ -701,7 +729,7 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"));
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		try {
-			if(accreditamento.isValutazioneSegreteriaAssegnamento() || accreditamento.isValutazioneCrecm()) {
+			if((accreditamento.isValutazioneSegreteriaAssegnamento() || accreditamento.isValutazioneCrecm()) && accreditamento.isProvvisorio())  {
 
 				//validazione della valutazioneComplessiva
 				valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, result);
@@ -712,7 +740,7 @@ public class AccreditamentoController {
 
 					return goToAccreditamentoValidate(model, accreditamento, wrapper);
 				}else {
-					accreditamentoService.inviaValutazioneDomanda(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getRefereeGroup());
+					accreditamentoService.inviaValutazioneDomanda(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getRefereeGroup(), null);
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
@@ -720,7 +748,7 @@ public class AccreditamentoController {
 				}
 			}
 			// stato VALUTAZIONE_SEGRETERIA dove valuto le integrazioni
-			else if(accreditamento.isValutazioneSegreteria()){
+			else if(accreditamento.isValutazioneSegreteria() && accreditamento.isProvvisorio()){
 
 				//validazione della valutazioneComplessiva
 				valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, result);
@@ -738,11 +766,136 @@ public class AccreditamentoController {
 					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 			}
+			else if(accreditamento.isValutazioneSegreteriaAssegnamento() && accreditamento.isStandard()) {
+
+				VerbaleValutazioneSulCampo verbale = wrapper.getVerbaleValutazioneSulCampo();
+
+				//validazione della valutazioneComplessiva
+				valutazioneValidator.validateValutazioneSulCampo(verbale, wrapper.getValutazioneComplessiva(), result, "verbaleValutazioneSulCampo.", AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
+
+				if(result.hasErrors()){
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+					model.addAttribute("confirmErrors", true);
+
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else {
+					accreditamentoService.inviaValutazioneDomanda(accreditamentoId, wrapper.getValutazioneComplessiva(), null, verbale);
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
+					return "redirect:/accreditamento/{accreditamentoId}/show";
+				}
+			}
+			else if(accreditamento.isValutazioneSulCampo()){
+
+				//attacca gli allegati dal wrapper alla valutazione sul campo
+				VerbaleValutazioneSulCampo verbale = wrapper.getVerbaleValutazioneSulCampo();
+				if(wrapper.getCartaIdentita() != null && !wrapper.getCartaIdentita().isNew())
+					verbale.setCartaIdentita(fileService.getFile(wrapper.getCartaIdentita().getId()));
+				if(wrapper.getDelegaValutazioneSulCampo() != null && !wrapper.getDelegaValutazioneSulCampo().isNew())
+					verbale.getDelegato().setDelega(fileService.getFile(wrapper.getDelegaValutazioneSulCampo().getId()));
+
+				//validate del verbale della valutazione sul campo
+				//validazione della valutazioneComplessiva
+				//validate dello stato di destinazione della domanda standard
+				if(wrapper.getDestinazioneStatoDomandaStandard() == null)
+					result.rejectValue("destinazioneStatoDomandaStandard", "error.empty");
+				valutazioneValidator.validateValutazioneSulCampo(verbale, wrapper.getValutazioneComplessiva(), result , "verbaleValutazioneSulCampo.", AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO);
+
+				if(result.hasErrors()){
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+					model.addAttribute("confirmErrors", true);
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else {
+					accreditamentoService.inviaValutazioneSulCampo(accreditamentoId, wrapper.getValutazioneComplessiva(), verbale, wrapper.getDestinazioneStatoDomandaStandard());
+
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
+					return "redirect:/accreditamento/{accreditamentoId}/show";
+				}
+			}
 
 			return goToAccreditamentoValidate(model, accreditamento, wrapper);
 		}
 		catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/confirmEvaluation"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/verbaleValutazioneSulCampo/{verbaleValutazioneSulCampoId}/insert")
+	public String insertValutazioniSulCampo(@PathVariable Long accreditamentoId,
+			@PathVariable Long verbaleValutazioneSulCampoId, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/insert"));
+		try {
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			model.addAttribute("verbaleWrapper", prepareVerbaleWrapper(accreditamento));
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
+			return "accreditamento/accreditamentoValutazioniSulCampo";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/insert"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}
+	}
+
+	private VerbaleValutazioneSulCampoWrapper prepareVerbaleWrapper(Accreditamento accreditamento) throws Exception {
+		VerbaleValutazioneSulCampoWrapper wrapper = new VerbaleValutazioneSulCampoWrapper();
+		wrapper.setAccreditamento(accreditamento);
+		wrapper.setVerbale(accreditamento.getVerbaleValutazioneSulCampo());
+		wrapper.setMappaErroriValutazione(new HashMap<String, String>());
+		//carico la valutazione per l'utente
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
+		Set<FieldValutazioneAccreditamento> valutazioniSulCampo = accreditamento.getVerbaleValutazioneSulCampo().getDatiValutazioneSulCampo().getValutazioniSulCampo();
+		SubSetFieldEnum subset = SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO;
+		mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazioniSulCampo, subset);
+		wrapper.setMappa(mappa);
+		return wrapper;
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/verbaleValutazioneSulCampo/{verbaleValutazioneSulCampoId}/save", method = RequestMethod.POST)
+	public String saveValutazioniSulCampo(@ModelAttribute("verbaleWrapper") VerbaleValutazioneSulCampoWrapper wrapper, BindingResult result,
+			@PathVariable Long accreditamentoId, @PathVariable Long verbaleValutazioneSulCampoId, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/"));
+		try {
+			//validator
+			Map<String, String> mappaErroriValutazione = valutazioneValidator.validateValutazioneSulCampo(wrapper.getMappa());
+			if(!mappaErroriValutazione.isEmpty()){
+				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
+				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				wrapper.setMappaErroriValutazione(mappaErroriValutazione);
+				model.addAttribute("verbaleWrapper", wrapper);
+				LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoValutazioniSulCampo"));
+				return "accreditamento/accreditamentoValutazioniSulCampo";
+			}else{
+				//salvataggio delle valutazioni
+				Accreditamento accreditamento = new Accreditamento();
+				accreditamento.setId(accreditamentoId);
+				wrapper.getMappa().forEach((k, v) -> {
+					v.setIdField(k);
+					v.setAccreditamento(accreditamento);
+				});
+				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa()));
+				wrapper.getAccreditamento().getVerbaleValutazioneSulCampo().getDatiValutazioneSulCampo().getValutazioniSulCampo().addAll(values);
+				accreditamentoService.save(wrapper.getAccreditamento());
+
+				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
+				redirectAttrs.addFlashAttribute("currentTab","tab6");
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+				return "redirect:/accreditamento/{accreditamentoId}/validate";
+			}
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/save"),ex);
 			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));

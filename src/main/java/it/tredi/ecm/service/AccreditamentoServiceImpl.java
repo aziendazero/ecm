@@ -29,6 +29,7 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
+import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -44,7 +45,6 @@ import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
-import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 
 @Service
 public class AccreditamentoServiceImpl implements AccreditamentoService {
@@ -263,11 +263,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup) throws Exception {
+	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup, VerbaleValutazioneSulCampo verbale) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Assegnamento domanda di Accreditamento " + accreditamentoId + " ad un gruppo CRECM"));
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Account user = Utils.getAuthenticatedUser().getAccount();
+		Long valutazioneId = valutazione.getId();
 
 		//setta la data
 		valutazione.setDataValutazione(LocalDate.now());
@@ -284,35 +285,63 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		valutazioneService.saveAndFlush(valutazione);
 
+		//detacha e copia: da questo momento valutazione si riferisce alla copia storicizzata
 		valutazioneService.copiaInStorico(valutazione);
 
-		//il referee azzera il suo contatore di valutazioni non date consecutivamente e svuota la lista
-		if (user.isReferee()) {
-			user.setValutazioniNonDate(0);
-			user.setDomandeNonValutate(new HashSet<Accreditamento>());
-			accountRepository.save(user);
-			workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
-		}
+		if(accreditamento.isProvvisorio()) {
 
-		//la segreteria crea le valutazioni per i referee
-		if (user.isSegreteria()){
-			List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
-			for (Account a : refereeGroup) {
-				Valutazione valutazioneReferee = new Valutazione();
-				valutazioneReferee.setAccount(a);
-				valutazioneReferee.setAccreditamento(accreditamento);
-				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
-				valutazioneService.save(valutazioneReferee);
-				emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
-				usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
+			//il referee azzera il suo contatore di valutazioni non date consecutivamente e svuota la lista
+			if (user.isReferee()) {
+				user.setValutazioniNonDate(0);
+				user.setDomandeNonValutate(new HashSet<Accreditamento>());
+				accountRepository.save(user);
+				workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
 			}
 
-			accreditamento.setDataValutazioneCrecm(LocalDate.now());
-			accreditamentoRepository.save(accreditamento);
+			//la segreteria crea le valutazioni per i referee
+			if (user.isSegreteria()){
+				List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
+				for (Account a : refereeGroup) {
+					Valutazione valutazioneReferee = new Valutazione();
+					valutazioneReferee.setAccount(a);
+					valutazioneReferee.setAccreditamento(accreditamento);
+					valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+					valutazioneService.save(valutazioneReferee);
+					emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
+					usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
+				}
 
-			//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
-			Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
-			workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
+				accreditamento.setDataValutazioneCrecm(LocalDate.now());
+				accreditamentoRepository.save(accreditamento);
+
+				//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
+				Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
+				workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
+			}
+		}
+
+		else if(accreditamento.isStandard()) {
+			Valutazione valutazioneReload = valutazioneService.getValutazione(valutazioneId);
+
+			//la segreteria designa le persone per la valutazione sul campo
+//			Valutazione valutazioneTeamLeader = new Valutazione();
+//			valutazioneTeamLeader.setAccount(verbale.getTeamLeader());
+//			valutazioneTeamLeader.setAccreditamento(accreditamento);
+//			valutazioneTeamLeader.setTipoValutazione(ValutazioneTipoEnum.TEAM_LEADER);
+//			emailService.inviaNotificaAReferee(verbale.getTeamLeader().getEmail(), accreditamento.getProvider().getDenominazioneLegale());
+//			valutazioneService.save(valutazioneTeamLeader);
+			//svuoto e riabilito la valutazione della segreteria (comunque salvata in storico)
+			valutazioneReload.setDataValutazione(null);
+			valutazioneReload.getValutazioni().clear();
+			valutazioneReload.setDataOraScadenzaPossibilitaValutazione(null);
+			valutazioneReload.setValutazioneComplessiva(null);
+			valutazioneService.save(valutazioneReload);
+			//TODO setta il necessario per il flusso STANDARD
+
+			accreditamento.setVerbaleValutazioneSulCampo(verbale);
+			accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO);
+			accreditamentoRepository.save(accreditamento);
+			//TODO manda avanti flusso STANDARD
 		}
 	}
 
@@ -728,6 +757,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					return false;
 			}
 
+			//TODO rimuovere il seguente "if" quando si avrà il flusso STANDARD
+			if(getAccreditamento(accreditamentoId).isProvvisorio()) {
 			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(getAccreditamento(accreditamentoId));
 			if(task == null){
 				return false;
@@ -735,6 +766,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			if(task.isAssigned())
 				return false;
+
+			}
 
 			return true;
 		}
@@ -751,11 +784,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser) throws Exception{
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
-		if( ((accreditamento.isValutazioneSegreteriaAssegnamento() || accreditamento.isValutazioneSegreteria()) && currentUser.isSegreteria()) ||
+		if( ((accreditamento.isValutazioneSegreteriaAssegnamento() || accreditamento.isValutazioneSulCampo() || accreditamento.isValutazioneSegreteria()) && currentUser.isSegreteria()) ||
 			(accreditamento.isValutazioneCrecm() && currentUser.isReferee())){
 			Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, currentUser.getAccount().getId());
 			if(valutazione != null && valutazione.getDataValutazione() == null){
 				TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+				//TODO rimuovere il seguente "if" quando si avrà il flusso STANDARD
+				if(accreditamento.isStandard())
+					return true;
 				if(task == null){
 					return false;
 				}
@@ -999,7 +1035,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void prendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception{
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		//TODO rimuovere il seguente "if" quando si avrà il flusso STANDARD
+		if(getAccreditamento(accreditamentoId).isProvvisorio()) {
 		workflowService.prendiTaskInCarica(currentUser, accreditamento);
+		}
 
 		Valutazione valutazione = new Valutazione();
 
@@ -1096,4 +1136,43 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Ricerco tutte le utime domande non valutate consecutivamente dal referee id: " + refereeId));
 		return accountRepository.getAllDomandeNonValutateByRefereeId(refereeId);
 	}
+
+	@Override
+	@Transactional
+	public void inviaValutazioneSulCampo(Long accreditamentoId, String valutazioneComplessiva, VerbaleValutazioneSulCampo verbaleValutazioneSulCampo, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Salvataggio verbale valutazione sul campo della domanda di Accreditamento " + accreditamentoId));
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		Account user = Utils.getAuthenticatedUser().getAccount();
+
+		//setta la data
+		valutazione.setDataValutazione(LocalDate.now());
+		//disabilito tutti i filedValutazioneAccreditamento
+		for (FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
+			fva.setEnabled(false);
+		}
+
+		//inserisce il commento complessivo
+		valutazione.setValutazioneComplessiva(valutazioneComplessiva);
+
+		//setta lo stato dell'accreditamento al momento del salvataggio
+		valutazione.setAccreditamentoStatoValutazione(accreditamento.getStato());
+
+		valutazioneService.saveAndFlush(valutazione);
+
+		valutazioneService.copiaInStorico(valutazione);
+
+		VerbaleValutazioneSulCampo verbale = accreditamento.getVerbaleValutazioneSulCampo();
+		verbale.setCartaIdentita(verbaleValutazioneSulCampo.getCartaIdentita());
+		verbale.setDelegato(verbaleValutazioneSulCampo.getDelegato());
+		verbale.setIsPresenteLegaleRappresentante(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante());
+
+		accreditamento.setVerbaleValutazioneSulCampo(verbale);
+		accreditamento.setDataValutazioneCrecm(LocalDate.now());
+		accreditamento.setStato(destinazioneStatoDomandaStandard);
+		accreditamentoRepository.save(accreditamento);
+
+		//TODO mandare avanti il flusso STANDARD
+	}
+
 }

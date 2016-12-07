@@ -1,12 +1,12 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.time.temporal.ChronoUnit;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -59,7 +59,7 @@ public class Accreditamento extends BaseEntity{
 	private LocalDate dataInizioAccreditamento;//procedimento terminato..con l'accettazione dell'accreditamento...in attesa del pagamento
 	@Column(name = "data_fine_accreditamento")//data di scadenza calcolata dall'accreditamento +4anni
 	private LocalDate dataFineAccreditamento;
-	
+
 	private Long giorniIntegrazione;
 	private Long giorniPreavvisoRigetto;
 	private Boolean integrazioneEseguitaDaProvider;
@@ -100,6 +100,9 @@ public class Accreditamento extends BaseEntity{
 	private File richiestaIntegrazione;
 	@OneToOne
 	private File richiestaPreavvisoRigetto;
+
+	@OneToOne(cascade=CascadeType.ALL)
+	private VerbaleValutazioneSulCampo verbaleValutazioneSulCampo;
 
 	@Embedded
 	private WorkflowInfo workflowInfoAccreditamento = null;
@@ -167,11 +170,14 @@ public class Accreditamento extends BaseEntity{
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO))
 			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
-
 	}
 
 	public boolean isProvvisorio(){
 		return tipoDomanda == AccreditamentoTipoEnum.PROVVISORIO;
+	}
+
+	public boolean isStandard(){
+		return tipoDomanda == AccreditamentoTipoEnum.STANDARD;
 	}
 
 	public boolean isBozza(){
@@ -218,12 +224,20 @@ public class Accreditamento extends BaseEntity{
 		return stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO;
 	}
 
+	public boolean isValutazioneSulCampo() {
+		return stato == AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO;
+	}
+
+	public boolean isValutazioneTeamLeader() {
+		return stato == AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER;
+	}
+
 	public boolean isProcedimentoAttivo(){
 		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;
 		return false;
 	}
-	
+
 	public boolean isDomandaAttiva(){
 		if(dataFineAccreditamento != null && (dataFineAccreditamento.isAfter(LocalDate.now()) || dataFineAccreditamento.isEqual(LocalDate.now())) )
 			return true;

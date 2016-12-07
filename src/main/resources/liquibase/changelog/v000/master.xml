@@ -29,4 +29,8 @@
 
 	<include file="005_20161128_add_column_statoaccreditamentovalutazione.xml" relativeToChangelogFile="true"/>
 
+	<include file="006_20161202_verbaleValutazioneSulCampo.xml" relativeToChangelogFile="true"/>
+
+	<include file="007_20161206_applySQLnewProfile.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

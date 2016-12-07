@@ -129,6 +129,14 @@ public enum IdFieldEnum {
 	ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA ("pianoQualita", 85, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.FILE_PIANO_QUALITA"),
 	ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE ("dichiarazioneLegale", 86, null, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO, "files.FILE_DICHIARAZIONE_LEGALE"),
 
+	VALUTAZIONE_SUL_CAMPO__PIANO_FORMATIVO("pianoFormativo", 87, null, SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO, "pianoFormativo"),
+	VALUTAZIONE_SUL_CAMPO__IDONEITA_SEDE("idoneitaSede", 88, null, SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO, "idoneitaSede"),
+	VALUTAZIONE_SUL_CAMPO__RELAZIONE_ANNUALE("relazioneAnnuale", 89, null, SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO, "relazioneAnnuale"),
+	VALUTAZIONE_SUL_CAMPO__PERCEZIONE_INTERESSE_COMMERICALE_SANITA("percezioneInteresseCommercialeQualita", 90, null, SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO, "percezioneInteresseCommercialeQualita"),
+	VALUTAZIONE_SUL_CAMPO__SCHEDA_QUALITA_PERCEPITA("schedaQualitaPercepita", 91, null, SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO, "schedaQualitaPercepita"),
+	VALUTAZIONE_SUL_CAMPO__PRESENZA_PARTECIPANTI("presenzaPartecipanti", 92, null, SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO, "presenzaPartecipanti"),
+	VALUTAZIONE_SUL_CAMPO__RECLUTAMENTO_DIRETTO("reclutamentoDiretto", 93, null, SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO, "reclutamentoDiretto"),
+	VALUTAZIONE_SUL_CAMPO__VERIFICA_APPRENDIMENTO("verificaApprendimento", 94, null, SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO, "verificaApprendimento"),
 
 	EVENTO_PIANO_FORMATIVO__PROCEDURA_FORMATIVA ("evento.proceduraFormativa", 1, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),
 	EVENTO_PIANO_FORMATIVO__TITOLO ("evento.titolo", 2, null, SubSetFieldEnum.EVENTO_PIANO_FORMATIVO),
