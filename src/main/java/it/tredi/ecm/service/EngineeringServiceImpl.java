@@ -558,7 +558,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 	}
 
 	public File saveFileFirmato(String xml) throws Exception {
-		LOGGER.debug("Salvataggio file firmato");
+		LOGGER.info("Salvataggio file firmato - entering");
 
 		xml = java.net.URLDecoder.decode(xml, "UTF-8");
 		LOGGER.debug(xml);
@@ -572,6 +572,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		String name = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/@name").evaluate(doc);
 		String idString = xpath.compile("//FIRMA_FILES/DOCUMENTS/DOCUMENT/FILE/INFORMAZIONI").evaluate(doc);
 
+		LOGGER.info("Get file " + idString);
 		File file = fileService.getFile(Long.parseLong(idString));
 
 		InputStream is = null;
@@ -586,6 +587,8 @@ public class EngineeringServiceImpl implements EngineeringService {
 		} finally {
 			if (is != null) { is.close(); }
 		}
+
+		LOGGER.info("Salvataggio file firmato - exiting");
 
 		return file;
 
