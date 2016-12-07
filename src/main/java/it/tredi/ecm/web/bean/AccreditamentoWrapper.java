@@ -19,6 +19,8 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -80,6 +82,8 @@ public class AccreditamentoWrapper {
 	private boolean dichiarazioneLegaleStato;
 	private boolean dichiarazioneEsclusioneStato;
 
+	private boolean valutazioneSulCampoStato;
+
 	private boolean tuttiEventiValutati = true;
 
 	private boolean sezione1Stato;
@@ -132,6 +136,9 @@ public class AccreditamentoWrapper {
 	//Valutazioni per l'accreditamento
 	private Set<Valutazione> valutazioniList = new HashSet<Valutazione>();
 
+	//Valutazione dell'utente corrente
+	private Valutazione valutazioneCurrentUser;
+
 	//Elenco MultiIstanza aggiunti e eliminati durante Integrazione
 	private Set<Long> aggiunti = new HashSet<Long>();
 	private Set<Long> eliminati = new HashSet<Long>();
@@ -139,9 +146,21 @@ public class AccreditamentoWrapper {
 	//File allegati integrazione
 	private File noteOsservazioniIntegrazione;
 	private File noteOsservazioniPreavvisoRigetto;
-	
+
 	//File import pianoFormativo da csv
 	private File importEventiDaCsvFile;
+
+	//blocco informazioni per modale di inserimento verbale sul campo
+	private VerbaleValutazioneSulCampo verbaleValutazioneSulCampo;
+	private Set<Account> componentiCRECM;
+	private Set<Account> osservatoriRegionali;
+	private Set<Account> componentiSegreteria;
+	private Set<Account> referentiInformatici;
+	private File delegaValutazioneSulCampo;
+	private File cartaIdentita;
+
+	//info di destinazione della domanda standard
+	private AccreditamentoStatoEnum destinazioneStatoDomandaStandard;
 
 	public AccreditamentoWrapper(){};
 	public AccreditamentoWrapper(Accreditamento accreditamento){
@@ -302,6 +321,15 @@ public class AccreditamentoWrapper {
 			dichiarazioneLegaleStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE);
 			dichiarazioneEsclusioneStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE);
 
+			valutazioneSulCampoStato = (mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PIANO_FORMATIVO) &&
+				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__IDONEITA_SEDE) &&
+				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RELAZIONE_ANNUALE) &&
+				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PERCEZIONE_INTERESSE_COMMERICALE_SANITA) &&
+				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__SCHEDA_QUALITA_PERCEPITA) &&
+				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PRESENZA_PARTECIPANTI) &&
+				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RECLUTAMENTO_DIRETTO) &&
+				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__VERIFICA_APPRENDIMENTO));
+
 			//check valutazione dei multistanza
 
 			//componenti comitato scientifico N.B. NON controlla bene tutti i FieldValutazione come gli altri per semplicità TODO decidere se implementare o se semplificare anche le altre
@@ -368,8 +396,13 @@ public class AccreditamentoWrapper {
 			//TODO rimuovere se deciso che non serve più
 //			sezione4Stato = tuttiEventiValutati ? true : false;
 
+			sezione4Stato = valutazioneSulCampoStato;
+
 			//stato di valutazione completa
-			canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato/* && sezione4Stato */);
+			if(accreditamento.isValutazioneSulCampo() || accreditamento.isValutazioneTeamLeader())
+				canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato && sezione4Stato);
+			else
+				canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato);
 
 			canConfermaValutazione = (canValutaDomanda && canSendValutazione) ? true : false;
 		}

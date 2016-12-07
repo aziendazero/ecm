@@ -1,0 +1,83 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/006_20161202_verbaleValutazioneSulCampo.xml">
+    <changeSet author="tiommi (generated)" id="1480686032468-1">
+        <createTable tableName="verbale_valutazione_sul_campo_componenti_segreteria">
+            <column name="verbale_valutazione_sul_campo_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="componenti_segreteria_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480686032468-2">
+        <addPrimaryKey columnNames="verbale_valutazione_sul_campo_id, componenti_segreteria_id" tableName="verbale_valutazione_sul_campo_componenti_segreteria"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480686032468-4">
+        <addForeignKeyConstraint baseColumnNames="verbale_valutazione_sul_campo_id" baseTableName="verbale_valutazione_sul_campo_componenti_segreteria" constraintName="FK_1tei1unnpa6h5rf9jtur1mpu9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="verbale_valutazione_sul_campo"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480686032468-5">
+        <addForeignKeyConstraint baseColumnNames="team_leader_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_f63ck9nh74ytftlyg5cjh0unp" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480686032468-6">
+        <addForeignKeyConstraint baseColumnNames="componenti_segreteria_id" baseTableName="verbale_valutazione_sul_campo_componenti_segreteria" constraintName="FK_fvwifti6fe0d3lkpm67h7xh7h" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480686032468-7">
+        <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_hunwjwtjdkm5t0wrmg3tdc85t" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480686032468-8">
+        <addForeignKeyConstraint baseColumnNames="delega_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_k29g7bckt6ytrq5kt1ws081uw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480686032468-9">
+        <addForeignKeyConstraint baseColumnNames="osservatore_regionale_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_qblmn7yh2oituf47e6oivnd1g" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480935438195-1">
+        <addColumn tableName="verbale_valutazione_sul_campo">
+            <column name="is_presente_legale_rappresentante" type="boolean"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480935438195-2">
+        <addColumn tableName="accreditamento">
+            <column name="verbale_valutazione_sul_campo_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1480935438195-3">
+        <addForeignKeyConstraint baseColumnNames="verbale_valutazione_sul_campo_id" baseTableName="accreditamento" constraintName="FK_ap9cycxv2i1bjfwf4r99ehia7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="verbale_valutazione_sul_campo"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1481012796510-1">
+        <createTable tableName="verbale_valutazione_sul_campo_valutazioni_sul_campo">
+            <column name="verbale_valutazione_sul_campo_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valutazioni_sul_campo_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1481012796510-2">
+        <addColumn tableName="verbale_valutazione_sul_campo">
+            <column name="osservazioni_del_provider" type="text"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1481012796510-3">
+        <addColumn tableName="verbale_valutazione_sul_campo">
+            <column name="osservazioni_team_valutazione" type="text"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1481012796510-4">
+        <addPrimaryKey columnNames="verbale_valutazione_sul_campo_id, valutazioni_sul_campo_id" tableName="verbale_valutazione_sul_campo_valutazioni_sul_campo"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1481012796510-5">
+        <addUniqueConstraint columnNames="valutazioni_sul_campo_id" constraintName="UK_9xa8gutrbpciubmt5ofxjpv6u" tableName="verbale_valutazione_sul_campo_valutazioni_sul_campo"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1481012796510-6">
+        <addForeignKeyConstraint baseColumnNames="valutazioni_sul_campo_id" baseTableName="verbale_valutazione_sul_campo_valutazioni_sul_campo" constraintName="FK_9xa8gutrbpciubmt5ofxjpv6u" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="field_valutazione_accreditamento"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1481012796510-7">
+        <addForeignKeyConstraint baseColumnNames="verbale_valutazione_sul_campo_id" baseTableName="verbale_valutazione_sul_campo_valutazioni_sul_campo" constraintName="FK_ey35frdqmpp2cvbf1qpm1jr5i" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="verbale_valutazione_sul_campo"/>
+    </changeSet>
+</databaseChangeLog>

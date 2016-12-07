@@ -1,12 +1,13 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.time.temporal.ChronoUnit;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -65,6 +66,12 @@ public class Accreditamento extends BaseEntity{
 	private Boolean integrazioneEseguitaDaProvider;
 	private Boolean preavvisoRigettoEseguitoDaProvider;
 
+	//Contiene la data in cui il documento (Integrazione/Rigetto/Diniego/Accreditamento) viene inviato al protocollo
+	//viene settato a null quando si ottiene conferma della protocollazione
+	//viene usato per ottenere gli accreditamenti in protocollazzione da troppo tempo
+	@Column(name = "dataora_invio_protocollazione")
+	private LocalDateTime dataoraInvioProtocollazione;
+
 	@JoinColumn(name = "provider_id")
 	@OneToOne(fetch = FetchType.LAZY)
 	private Provider provider;
@@ -100,6 +107,9 @@ public class Accreditamento extends BaseEntity{
 	private File richiestaIntegrazione;
 	@OneToOne
 	private File richiestaPreavvisoRigetto;
+
+	@OneToOne(cascade=CascadeType.ALL)
+	private VerbaleValutazioneSulCampo verbaleValutazioneSulCampo;
 
 	@Embedded
 	private WorkflowInfo workflowInfoAccreditamento = null;
@@ -167,11 +177,14 @@ public class Accreditamento extends BaseEntity{
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO))
 			idEditabili.add(new FieldEditabileAccreditamento(id, this));
 
-
 	}
 
 	public boolean isProvvisorio(){
 		return tipoDomanda == AccreditamentoTipoEnum.PROVVISORIO;
+	}
+
+	public boolean isStandard(){
+		return tipoDomanda == AccreditamentoTipoEnum.STANDARD;
 	}
 
 	public boolean isBozza(){
@@ -216,6 +229,14 @@ public class Accreditamento extends BaseEntity{
 
 	public boolean isRichiestaPreavvisoRigetto() {
 		return stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO;
+	}
+
+	public boolean isValutazioneSulCampo() {
+		return stato == AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO;
+	}
+
+	public boolean isValutazioneTeamLeader() {
+		return stato == AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER;
 	}
 
 	public boolean isProcedimentoAttivo(){

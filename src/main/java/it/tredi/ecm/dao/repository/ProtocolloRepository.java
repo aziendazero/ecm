@@ -14,8 +14,11 @@ public interface ProtocolloRepository extends CrudRepository<Protocollo, Long> {
 	@Query("SELECT p From Protocollo p WHERE p.idProtoBatch is not null AND p.numero is null")
 	public Set<Protocollo> getProtocolliInUscita();
 
-	@Query("SELECT p From Protocollo p WHERE p.idProtoBatch is not null AND p.numero is not null")
-	public Set<Protocollo> getStatoSpedizione();
+	@Query("SELECT p From Protocollo p WHERE p.idProtoBatch is not null AND p.numero is not null AND p.statoSpedizione<>'avvenuta-consegna'")
+	public Set<Protocollo> getStatoSpedizioneNonConsegnate();
+
+	@Query("SELECT p From Protocollo p WHERE p.idProtoBatch is not null AND p.numero is not null AND (p.statoSpedizione IS NULL OR p.statoSpedizione NOT IN ('avvenuta-consegna', 'errore'))")
+	public Set<Protocollo> getStatoSpedizioneNonConsegnateENonInErrore();
 
 	@Query("SELECT p From Protocollo p WHERE p.idProtoBatch is not null AND (p.statoSpedizione is null OR p.statoSpedizione <> :statoSpedizione)")
 	public Set<Protocollo> findAllWithErrors(@Param("statoSpedizione") String statoSpedizione);

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import it.tredi.ecm.scheduledtask.InvioCogeapsTask;
 import it.tredi.ecm.scheduledtask.PagamentoTask;
 import it.tredi.ecm.scheduledtask.ProtocolloTask;
+import it.tredi.ecm.scheduledtask.SedutaTask;
 /*
  * Scheduler che esegue i task automatici con periodicità fissata (fixedDelay)
  *
@@ -26,11 +27,13 @@ public class ScheduledTasks {
 	@Autowired private PagamentoTask pagamentoTask;
 	@Autowired private InvioCogeapsTask invioCogeapsTask;
 	@Autowired private ProtocolloTask protocolloTask;
+	@Autowired private SedutaTask sedutaTask;
 
 	@Scheduled(fixedDelay=60000)
 	public void taskExecutor() throws Exception{
 		pagamentoTask.controllaEsitoPagamenti();
 		invioCogeapsTask.checkStatoElaborazioneCogeaps();
 		protocolloTask.controllaStatoProtocollazione();
+		sedutaTask.bloccaSedute();
 	}
 }

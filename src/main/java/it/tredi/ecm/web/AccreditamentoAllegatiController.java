@@ -282,7 +282,6 @@ public class AccreditamentoAllegatiController {
 				valutazione.getValutazioni().addAll(values);
 				valutazioneService.save(valutazione);
 
-
 				redirectAttrs.addAttribute("accreditamentoId", wrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata", "success"));
 				redirectAttrs.addFlashAttribute("currentTab","tab3");

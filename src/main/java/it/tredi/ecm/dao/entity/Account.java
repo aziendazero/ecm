@@ -32,7 +32,7 @@ import lombok.Setter;
 @Setter
 public class Account extends BaseEntity{
 	private String username;
-	
+
 	private String password = "";
 	@JsonView(JsonViewModel.ComunicazioniDestinatari.class)
 	private String email;
@@ -151,6 +151,11 @@ public class Account extends BaseEntity{
 			toRet += "(Osservatore ECM)";
 		}
 
+		if(isReferenteInformatico()) {
+			toRet += " ";
+			toRet += "(Referente Informatico)";
+		}
+
 		return toRet;
 	}
 
@@ -215,6 +220,15 @@ public class Account extends BaseEntity{
 	public boolean isOsservatoreEcm() {
 		for (Profile p : profiles){
 			if(p.getProfileEnum().equals(ProfileEnum.OSSERVATORE)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isReferenteInformatico() {
+		for (Profile p : profiles){
+			if(p.getProfileEnum().equals(ProfileEnum.REFERENTE_INFORMATICO)){
 				return true;
 			}
 		}
