@@ -365,4 +365,11 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 			return true;
 		return false;
 	}
+
+	@Override
+	public boolean canShowProtocollo(CurrentUser currentUser) {
+		if(currentUser.isSegreteria())
+			return true;
+		return false;
+	}
 }

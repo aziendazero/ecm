@@ -69,10 +69,10 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			Persona legale = new Persona();
 			legale.getAnagrafica().setCognome("Verdi");
 			legale.getAnagrafica().setNome("Giuseppe");
-			legale.getAnagrafica().setCodiceFiscale("VRDGPP80H17D969I");
+			legale.getAnagrafica().setCodiceFiscale("TRLVNI64E28H199O");
 			legale.getAnagrafica().setCellulare("123456789");
 			legale.getAnagrafica().setEmail("gverdi@3di.it");
-			legale.getAnagrafica().setPec("gverdi@pec.it");
+			legale.getAnagrafica().setPec("demo@pec.3di.it");
 			personaRepository.save(legale);
 
 			LOGGER.info("Persona " + legale.getId() + " created");
@@ -82,8 +82,8 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			Account account = accountRepository.findOneByUsername("provider").orElse(null);
 
 			Sede sedeLegale = new Sede();
-			sedeLegale.setProvincia("Venezia");
-			sedeLegale.setComune("Venezia");
+			sedeLegale.setProvincia("VENEZIA");
+			sedeLegale.setComune("CHIOGGIA");
 			sedeLegale.setCap("30121");
 			sedeLegale.setIndirizzo("Via speranza, 35");
 			sedeLegale.setTelefono("123456");

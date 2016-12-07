@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.protocolli_sospesi}">Protocolli Sospesi</h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<table class="datatable-responsive-protocollo table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.id_proto_batch}">label.id_proto_batch</th>
+									<th th:text="#{label.fileId}">label.data_protocollo</th>
+									<th th:text="#{label.nomeFile}">label.data_protocollo</th>
+
+									<th th:text="#{label.numero_protocollo}">label.numero_protocollo</th>
+									<th th:text="#{label.data_protocollo}">label.data_protocollo</th>
+
+									<th th:text="#{label.stato_spedizione}">label.stato_spedizione</th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="protocollo, row : ${protocolloList}">
+									<td th:text="${protocollo.idProtoBatch}"></td>
+									<td th:text="${protocollo.file.id}"></td>
+									<td th:text="${protocollo.file.nomeFile}"></td>
+
+
+									<td th:text="${protocollo.numero}"></td>
+									<td th:text="${protocollo.data} ? ${#temporals.format(protocollo.data, 'dd/MM/yyyy')}"></td>
+
+									<td th:text="${protocollo.statoSpedizione}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script th:inline="javascript">
+			$(document).ready(function() {
+				$('.datatable-responsive-protocollo').DataTable();
+			});
+		</script>
+	</div>
+</body>
+</html>

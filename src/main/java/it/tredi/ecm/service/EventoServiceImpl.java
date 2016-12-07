@@ -845,15 +845,16 @@ public class EventoServiceImpl implements EventoService {
 
 		riepilogoRES.setTotaleOreFrontali(oreFrontale);
 		riepilogoRES.setTotaleOreInterattive(oreInterattiva);
+		durata += 0.5f;//riesco a effettuare l'approssimazione matematica
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
-			crediti = (0.20f * durata);
+			crediti = (0.20f * (int) durata);
 			if(crediti > 5.0f)
 				crediti = 5.0f;
 		}
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO){
-			crediti = 1 * durata;
+			crediti = 1 * (int) durata;
 			if(crediti > 50f)
 				crediti = 50f;
 		}
@@ -866,20 +867,20 @@ public class EventoServiceImpl implements EventoService {
 			numeroPartecipanti = numeroPartecipanti!= null ? numeroPartecipanti.intValue() : 0;
 
 			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
-				creditiFrontale = oreFrontale * 1.25f;
+				creditiFrontale = (int) oreFrontale * 1.25f;
 			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
 				float creditiDecrescenti = getQuotaFasciaDecrescenteForRES(numeroPartecipanti);
-				creditiFrontale = oreFrontale * creditiDecrescenti;
+				creditiFrontale = (int) oreFrontale * creditiDecrescenti;
 			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){
-				creditiFrontale = oreFrontale * 1.0f;
+				creditiFrontale = (int) oreFrontale * 1.0f;
 			}else if(numeroPartecipanti >= 101 && numeroPartecipanti <= 150){
-				creditiFrontale = oreFrontale * 0.75f;
+				creditiFrontale = (int) oreFrontale* 0.75f;
 			}else if(numeroPartecipanti >= 151 && numeroPartecipanti <= 200){
-				creditiFrontale = oreFrontale * 0.5f;
+				creditiFrontale = (int) oreFrontale * 0.5f;
 			}
 
 			//metodologia interattiva
-			creditiInterattiva = oreInterattiva * 1.5f;
+			creditiInterattiva = (int) oreInterattiva * 1.5f;
 
 			crediti = creditiFrontale + creditiInterattiva;
 		}
@@ -1037,11 +1038,13 @@ public class EventoServiceImpl implements EventoService {
 
 	private float calcoloCreditiFormativiEventoFAD(float durata, Boolean conTutor){
 		float crediti = 0.0f;
+		durata += 0.5f;//riesco a effettuare l'approssimazione matematica
+
 
 		if(conTutor != null && conTutor)
-			crediti = durata * 1.5f;
+			crediti = (int) durata * 1.5f;
 		else
-			crediti = durata * 1.0f;
+			crediti = (int) durata * 1.0f;
 
 		crediti = Utils.getRoundedFloatValue(crediti, 1);
 		return crediti;
@@ -1524,8 +1527,8 @@ public class EventoServiceImpl implements EventoService {
 			}
 
 			//EVENTO ID
-			if(wrapper.getCampoIdEvento() != null){
-				query = Utils.QUERY_AND(query, "e.id = :eventoId");
+			if(!wrapper.getCampoIdEvento().isEmpty()){
+				query = Utils.QUERY_AND(query, "e.prefix = :eventoId");
 				params.put("eventoId", wrapper.getCampoIdEvento());
 			}
 
@@ -1591,8 +1594,8 @@ public class EventoServiceImpl implements EventoService {
 
 			//LUOGO
 			if(wrapper.getLuogo() != null && !wrapper.getLuogo().isEmpty()){
-				query = Utils.QUERY_AND(query, "e.sedeEvento.luogo = :luogo");
-				params.put("luogo", wrapper.getLuogo());
+				query = Utils.QUERY_AND(query, "UPPER(e.sedeEvento.luogo) LIKE :luogo");
+				params.put("luogo", "%" + wrapper.getLuogo().toUpperCase() + "%");
 			}
 
 			//DATA INZIO

@@ -50,6 +50,7 @@
 			<th:block th:if="${showOnly or enableField}">
 				<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 					<div class="" th:unless="${__${wrapper}__.__${propertyName}__.new}"><div class="value"><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div></div>
+					<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(__${wrapper}__.__${propertyName}__.protocollo.numero,0)},${#temporals.format(__${wrapper}__.__${propertyName}__.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 					<div class="" th:if="${__${wrapper}__.__${propertyName}__.new}"><div class="value danger" th:text="#{label.allegato_non_inserito}"></div></div>
 				</div>
 				<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
@@ -106,6 +107,9 @@
 				<div th:unless="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div>
 				<div th:if="${__${wrapper}__.__${propertyName}__.new}" class="allegato-label"><a th:id="__${propertyName}___label" th:text="#{label.nessun_file_selezionato}"></a></div>
 			</div>
+			<th:block th:if="showOnly">
+				<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(__${wrapper}__.__${propertyName}__.protocollo.numero,0)},${#temporals.format(__${wrapper}__.__${propertyName}__.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
+			</th:block>
 			<th:block th:if="${editabile and ( (!required and !__${wrapper}__.__${propertyName}__.new) or withFirma )}">
 				<div class="col-xs-2 btn-group">
 					<!-- pulsante per rimuovi file -->

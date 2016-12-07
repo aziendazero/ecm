@@ -13,11 +13,15 @@ public class EngineeringWrapper {
 	private Provider provider;
 
 	private File fileDaFirmare;
-	
+
 	private Long idEvento;
-	
+
 	private Long editId;
-	
+
+	private Long idProtocollo;
+
+	private String flUscita;
+
 	private String documentsToSign;
 
 	public EngineeringWrapper() {
@@ -26,8 +30,6 @@ public class EngineeringWrapper {
 
 	public void setFileDaFirmare(File file){
 		fileDaFirmare = file;
-		if(provider != null)
-			provider.addFile(fileDaFirmare);
 	}
 }
 

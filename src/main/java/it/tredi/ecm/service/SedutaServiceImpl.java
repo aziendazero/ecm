@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.SedutaRepository;
 import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
@@ -139,6 +141,7 @@ public class SedutaServiceImpl implements SedutaService {
 
 	@Override
 	//@Transactional //TODO ANDREABBE MESSO?
+	//Corrisponde al task Inserimento Esito ODG
 	public void chiudiSeduta(Long sedutaId) throws Exception {
 		Seduta seduta =  sedutaRepository.findOne(sedutaId);
 		for(ValutazioneCommissione val : seduta.getValutazioniCommissione()){
@@ -207,4 +210,46 @@ public class SedutaServiceImpl implements SedutaService {
 		emailService.inviaConvocazioneACommissioneECM(commissioneECM);
 	}
 
+	@Override
+	public void bloccaSeduta(Long sedutaId) throws Exception {
+		Seduta seduta = sedutaRepository.findOne(sedutaId);
+		bloccaSeduta(seduta);
+	}
+
+	@Override
+	public void eseguiBloccoSeduteDaBloccare() {
+		//Ricavo la lista delle sedute da bloccare
+		//Occorre settare la seduta come
+		LocalDateTime nowPlusSedutaValidationMinute = LocalDateTime.now().plusMinutes(ecmProperties.getSedutaValidationMinutes());
+		Set<Seduta> sedute = sedutaRepository.findSeduteDaBloccare(nowPlusSedutaValidationMinute);
+		for(Seduta seduta : sedute) {
+			this.bloccaSeduta(seduta);
+		}
+	}
+
+	private void bloccaSeduta(Seduta seduta) {
+		Set<Accreditamento> listaInOdg = getAccreditamentiInSeduta(seduta.getId());
+		boolean error = false;
+		for(Accreditamento a : listaInOdg){
+			//Processo solo gli accreditamenti nello stato corretto perche' si potrebbe verificare un errore su un accreditamento e non verificarsi su un altro
+			//quindi il secondo cambierebbe restituendo errore per tutte le chiamate successive rendendo impossibile eseguire il bloccaSeduta
+			if(
+					(a.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO && a.getStato() == AccreditamentoStatoEnum.INS_ODG)
+					||
+					//TODO controllare se anche per la standard lo stato e' INS_ODG e quindi il metodo da chiamare resta inserisciInValutazioneCommissioneForCurrentUser
+					(a.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD && a.getStato() == AccreditamentoStatoEnum.INS_ODG)
+				) {
+				try {
+					accreditamentoService.inserisciInValutazioneCommissioneForSystemUser(a.getId());
+				} catch (Exception ex) {
+					error = true;
+				}
+			}
+		}
+		if(!error) {
+			//Indichiamo che e' stato eseguito il task InsOdg su tutti gli accreditamenti in seduta
+			seduta.setEseguitoTaskInsOdgAccreditamenti(true);
+			sedutaRepository.save(seduta);
+		}
+	}
 }

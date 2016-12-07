@@ -27,7 +27,7 @@ public interface WorkflowService {
 	public void eseguiTaskValutazioneCrecmForCurrentUser(Accreditamento accreditamento) throws Exception;
 	public void eseguiTaskValutazioneCrecmForUser(CurrentUser user, Accreditamento accreditamento) throws Exception;
 
-	public void eseguiTaskInsOdgForCurrentUser(Accreditamento accreditamento) throws Exception;
+	public void eseguiTaskInsOdgForSystemUser(Accreditamento accreditamento) throws Exception;
 
 	public void eseguiTaskInserimentoEsitoOdgForCurrentUser(Accreditamento accreditamento, AccreditamentoStatoEnum stato) throws Exception;
 	public void eseguiTaskTaskInserimentoEsitoOdgForUser(CurrentUser user, Accreditamento accreditamento, AccreditamentoStatoEnum stato) throws Exception;
@@ -44,6 +44,7 @@ public interface WorkflowService {
 	public void eseguiTaskPreavvisoRigettoForCurrentUser(Accreditamento accreditamento) throws Exception;
 	public void eseguiTaskPreavvisoRigettoForUser(CurrentUser user, Accreditamento accreditamento) throws Exception;
 
-
 	public void prendiTaskInCarica(CurrentUser user, Accreditamento accreditamento)  throws Exception;
+
+	public void eseguiTaskProtocolloEseguitoForAccreditamentoStateAndSystemUser(Accreditamento accreditamento) throws Exception;
 }

@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +14,8 @@ import lombok.Setter;
 @Setter
 public class AccreditamentoAllegatiWrapper extends Wrapper{
 	private Long accreditamentoId;
-	private Provider provider;
+	//private Provider provider;
+	private DatiAccreditamento datiAccreditamento;
 
 	private File attoCostitutivo;
 	private File esperienzaFormazione;
@@ -54,44 +55,44 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 
 	public void setAttoCostitutivo(File file){
 		attoCostitutivo = file;
-		if(provider != null)
-			provider.addFile(attoCostitutivo);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(attoCostitutivo);
 	}
 
 	public void setEsperienzaFormazione(File file){
 		esperienzaFormazione = file;
-		if(provider != null)
-			provider.addFile(esperienzaFormazione);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(esperienzaFormazione);
 	}
 
 	public void setUtilizzo(File file){
 		utilizzo = file;
-		if(provider != null)
-			provider.addFile(utilizzo);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(utilizzo);
 	}
 
 	public void setSistemaInformatico(File file){
 		sistemaInformatico = file;
-		if(provider != null)
-			provider.addFile(sistemaInformatico);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(sistemaInformatico);
 	}
 
 	public void setPianoQualita(File file){
 		pianoQualita = file;
-		if(provider != null)
-			provider.addFile(pianoQualita);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(pianoQualita);
 	}
 
 	public void setDichiarazioneLegale(File file){
 		dichiarazioneLegale = file;
-		if(provider != null)
-			provider.addFile(dichiarazioneLegale);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(dichiarazioneLegale);
 	}
 
 	public void setDichiarazioneEsclusione(File file) {
 		dichiarazioneEsclusione = file;
-		if(provider != null)
-			provider.addFile(dichiarazioneEsclusione);
+		if(datiAccreditamento != null)
+			datiAccreditamento.addFile(dichiarazioneEsclusione);
 	}
 
 	public Set<File> getFiles(){
@@ -105,7 +106,7 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 		files.add(dichiarazioneEsclusione);
 		return files;
 	}
-	
+
 	public void setFiles(Set<File> files){
 		Set<File> fs = new HashSet<File>(files);
 		for(File file : fs){

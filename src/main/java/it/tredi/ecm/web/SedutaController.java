@@ -357,6 +357,7 @@ public class SedutaController {
 	public String chiudiSeduta(@PathVariable Long sedutaId, Model model, RedirectAttributes redirectAttrs){
 		try {
 			//Conferma della valutazione della seduta
+			//Verra' eseguito il task Inserimento Esito ODG per tutti gli accreditamenti della seduta in stato VALUTAZIONE_COMMISSIONE
 			sedutaService.chiudiSeduta(sedutaId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.seduta_valutata", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /seduta/{sedutaId}/show"));
@@ -444,10 +445,9 @@ public class SedutaController {
 
 	@RequestMapping("/seduta/{sedutaId}/bloccaSeduta")
 	public String bloccaSeduta(@PathVariable Long sedutaId) throws Exception{
-		Set<Accreditamento> listaInOdg = sedutaService.getAccreditamentiInSeduta(sedutaId);
-		for(Accreditamento a : listaInOdg){
-			accreditamentoService.inserisciInValutazioneCommissione(a.getId(), Utils.getAuthenticatedUser());
-		}
+		//Effettua il blocco della seduta
+		//ed esegue uil task INS_ODG (Inserimento ODG) per tutti gli accreditamenti nella seduta
+		sedutaService.bloccaSeduta(sedutaId);
 		return "redirect:/seduta/list";
 	}
 

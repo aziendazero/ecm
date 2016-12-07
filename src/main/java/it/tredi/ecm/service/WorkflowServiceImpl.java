@@ -50,6 +50,11 @@ public class WorkflowServiceImpl implements WorkflowService {
 	@Value("${bonita.admin.password}")
 	private String adminPassword;
 
+	@Value("${bonita.system.username}")
+	private String systemUsername;
+
+	private UserDataModel systemUserDataModel;
+
 	@Value("${bonita.users.password}")
 	private String usersPassword;
 
@@ -87,6 +92,14 @@ public class WorkflowServiceImpl implements WorkflowService {
 
 	public void setAdminPassword(String adminPassword) {
 		this.adminPassword = adminPassword;
+	}
+
+	public String getSystemUsername() {
+		return systemUsername;
+	}
+
+	public void setSystemUsername(String systemUsername) {
+		this.systemUsername = systemUsername;
 	}
 
 	public String getUserPassword() {
@@ -315,6 +328,18 @@ public class WorkflowServiceImpl implements WorkflowService {
 		return null;
 	}
 
+	private TaskInstanceDataModel userDataModelGetTaskForState(UserDataModel userDataModel, Accreditamento accreditamento) throws Exception {
+		if(accreditamento.getWorkflowInfoAccreditamento() == null || accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId() == null)
+			return null;
+		AccreditamentoStatoEnum stato = accreditamento.getStato();
+		List<TaskInstanceDataModel> tasks = bonitaAPIWrapper.getUserTasksList(userDataModel, accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId().longValue());
+		for(TaskInstanceDataModel task : tasks) {
+			if(stato.name().equals(task.getDescription()))
+				return task;
+		}
+		return null;
+	}
+
 	/*
 	// FORSE NON SERVIRA'
 	public void setCookie(ExternalContext context, CookieBonita restCookie) {
@@ -328,29 +353,37 @@ public class WorkflowServiceImpl implements WorkflowService {
 	 */
 
 
-	public void eseguiTaskInsOdgForCurrentUser(Accreditamento accreditamento) throws Exception {
+	//public void eseguiTaskInsOdgForCurrentUser(Accreditamento accreditamento) throws Exception {
+	//	//Ricavo l'utente corrente
+	//	CurrentUser user = Utils.getAuthenticatedUser();
+	//	eseguiTaskInsOdgForUser(user, accreditamento);
+	//};
+
+	public void eseguiTaskInsOdgForSystemUser(Accreditamento accreditamento) throws Exception {
 		//Ricavo l'utente corrente
-		CurrentUser user = Utils.getAuthenticatedUser();
-		eseguiTaskInsOdgForUser(user, accreditamento);
+		//UserDataModel userDataModel = new UserDataModel;
+		eseguiTaskInsOdgForUserDataModel(getSystemUserDataModel(), accreditamento);
 	};
 
-
-
 	public void eseguiTaskInsOdgForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
+		eseguiTaskInsOdgForUserDataModel(user.getWorkflowUserDataModel(), accreditamento);
+	}
+
+	public void eseguiTaskInsOdgForUserDataModel(UserDataModel userDataModel, Accreditamento accreditamento) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.INS_ODG) {
 			LOGGER.error("Non è possibile eseguire il task INS_ODG per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 			throw new Exception("Non è possibile eseguire il task INS_ODG per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
 		}
-		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		TaskInstanceDataModel task = userDataModelGetTaskForState(userDataModel, accreditamento);
 		if(task == null) {
-			LOGGER.error("Il task INS_ODGm non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
-			throw new Exception("Il task INS_ODG non è disponibile per l'utente username: " + user.getUsername());
+			LOGGER.error("Il task INS_ODG non è disponibile per l'utente bonita login: " + userDataModel.getLogin() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task INS_ODG non è disponibile per l'utente bonita login: " + userDataModel.getLogin());
 		}
 		if(!task.isAssigned()) {
 			//lo prendo in carico
-			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+			bonitaAPIWrapper.assignTask(userDataModel, task.getId());
 		}
-		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+		bonitaAPIWrapper.executeTask(userDataModel, task.getId());
 	}
 
 	@Override
@@ -535,5 +568,45 @@ public class WorkflowServiceImpl implements WorkflowService {
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
 
+//	public void eseguiTaskProtocolloRichiestaIntegrazioneForUserDataModel(UserDataModel user, Accreditamento accreditamento) throws Exception {
+//		if(accreditamento.getStato() != AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
+//			LOGGER.error("Non è possibile eseguire il task RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+//			throw new Exception("Non è possibile eseguire il task RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+//		}
+//		TaskInstanceDataModel task = userDataModelGetTaskForState(user, accreditamento);
+//		if(task == null) {
+//			LOGGER.error("Il task RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE non è disponibile per l'utente bonita login: " + user.getLogin() + "; nome: " + user.getNome() + "; cognome: " + user.getCognome() + " - Accreditamento: " + accreditamento.getId());
+//			throw new Exception("Il task RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE non è disponibile per l'utente bonita login: " + user.getLogin() + "; nome: " + user.getNome() + "; cognome: " + user.getCognome() + " - Accreditamento: " + accreditamento.getId());
+//		}
+//		if(!task.isAssigned()) {
+//			//lo prendo in carico
+//			bonitaAPIWrapper.assignTask(user, task.getId());
+//		}
+//		bonitaAPIWrapper.executeTask(user, task.getId());
+//	}
+
+	@Override
+	public void eseguiTaskProtocolloEseguitoForAccreditamentoStateAndSystemUser(Accreditamento accreditamento) throws Exception {
+		eseguiTaskProtocolloEseguitoForAccreditamentoStateAndUserDataModel(getSystemUserDataModel(), accreditamento);
+	}
+
+	private void eseguiTaskProtocolloEseguitoForAccreditamentoStateAndUserDataModel(UserDataModel userDataModel, Accreditamento accreditamento) throws Exception {
+		TaskInstanceDataModel task = userDataModelGetTaskForState(userDataModel, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task " + accreditamento.getStato() + " non è disponibile per l'utente bonita login: " + userDataModel.getLogin() + "; nome: " + userDataModel.getNome() + "; cognome: " + userDataModel.getCognome() + " - e l'accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task " + accreditamento.getStato() + " non è disponibile per l'utente bonita login: " + userDataModel.getLogin() + "; nome: " + userDataModel.getNome() + "; cognome: " + userDataModel.getCognome() + " - e l'accreditamento: " + accreditamento.getId());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(userDataModel, task.getId());
+		}
+		bonitaAPIWrapper.executeTask(userDataModel, task.getId());
+	}
+
+	public UserDataModel getSystemUserDataModel() throws Exception {
+		if(systemUserDataModel == null)
+			systemUserDataModel = bonitaAPIWrapper.getUserByLogin(systemUsername);
+		return systemUserDataModel;
+	}
 
 }

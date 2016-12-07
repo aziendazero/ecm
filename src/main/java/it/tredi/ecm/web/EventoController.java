@@ -594,7 +594,6 @@ public class EventoController {
 		}
 
 		//salva allegato contratto sponsor e ritorna info da aggiornare sulla tabella o errori da far visualizzare
-		@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
 		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/sponsor/{sponsorId}/saveContratto", method = RequestMethod.POST)
 		public String salvaContrattoSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, @PathVariable Long sponsorId,
 				@RequestParam(name = "idModalSponsor", required=false) Long idModalSponsor,

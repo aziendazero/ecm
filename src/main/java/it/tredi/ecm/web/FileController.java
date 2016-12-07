@@ -109,25 +109,4 @@ public class FileController {
 
 		return file;
 	}
-
-	//TODO domenico (check se fa la query di tutto il provider)
-	/*** LIST PERSONA ***/
-	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
-	@RequestMapping("/provider/{providerId}/allegato/list")
-	public String listPersona(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET /provider/" +providerId + "/allegato/list"));
-		try {
-			Provider provider = providerService.getProvider(providerId);
-			model.addAttribute("allegatoList", provider.getFiles());
-			model.addAttribute("titolo", provider.getDenominazioneLegale());
-			LOGGER.info(Utils.getLogMessage("VIEW: /allegato/list"));
-			return "allegato/allegatoList";
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /provider/" +providerId + "/allegato/list"), ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/show"));
-			return "redirect:/provider/show";
-		}
-	}
-
 }

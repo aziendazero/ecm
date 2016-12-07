@@ -217,9 +217,10 @@ public class DatiAccreditamentoController {
 											@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/dati/save"));
 		try {
-			if(wrapper.getDatiAccreditamento().isNew()){
-				wrapper.setProvider(providerService.getProvider(wrapper.getProvider().getId()));
-			}
+//TODO - TEST
+//			if(wrapper.getDatiAccreditamento().isNew()){
+//				wrapper.setProvider(providerService.getProvider(wrapper.getProvider().getId()));
+//			}
 
 			//TODO getFile da testare se funziona anche senza reload
 			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
@@ -241,12 +242,13 @@ public class DatiAccreditamentoController {
 			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(wrapper.getAccreditamentoId());
 			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
 				integrazioneService.detach(wrapper.getDatiAccreditamento());
-				integrazioneService.detach(wrapper.getProvider());
+//TODO - TEST
+//				integrazioneService.detach(wrapper.getProvider());
 			}
 			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: DatiAccreditamentoSave:__AFTER SET__"));
 			//integrazioneService.isManaged(wrapper.getDatiAccreditamento());
 
-			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles(), wrapper.getProvider().getId());
+			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles(), wrapper.getDatiAccreditamento().getAccreditamento().getProvider().getId());
 
 			if(result.hasErrors()){
 				LOGGER.debug(Utils.getLogMessage("Validazione Fallita"));
@@ -288,7 +290,8 @@ public class DatiAccreditamentoController {
 
 	private void salva(DatiAccreditamentoWrapper wrapper){
 		LOGGER.debug(Utils.getLogMessage("Salvataggio DatiAccrdeditmento"));
-		providerService.save(wrapper.getProvider());
+//TODO - TEST
+//		providerService.save(wrapper.getProvider());
 		datiAccreditamentoService.save(wrapper.getDatiAccreditamento(), wrapper.getAccreditamentoId());
 	}
 
@@ -401,13 +404,15 @@ public class DatiAccreditamentoController {
 		wrapper.setStatoAccreditamento(statoAccreditamento);
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
 
+//TODO - TEST
+
 		if(datiAccreditamento.isNew()){
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-			wrapper.setProvider(accreditamento.getProvider());
+//			wrapper.setProvider(accreditamento.getProvider());
 		}else{
-			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
+//			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
 			if(!reloadByEditId)
-				wrapper.setFiles(wrapper.getProvider().getFiles());
+				wrapper.setFiles(wrapper.getDatiAccreditamento().getFiles());
 		}
 
 		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
@@ -415,7 +420,7 @@ public class DatiAccreditamentoController {
 		}
 
 		if(!reloadByEditId && !wrapper.getDatiAccreditamento().isNew()){
-			wrapper.setFiles(wrapper.getProvider().getFiles());
+			wrapper.setFiles(wrapper.getDatiAccreditamento().getFiles());
 		}
 
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperEdit(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
@@ -424,10 +429,11 @@ public class DatiAccreditamentoController {
 
 	private void prepareApplyIntegrazione(DatiAccreditamentoWrapper wrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
 		wrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(wrapper.getAccreditamentoId()), subset));
-		wrapper.getProvider().getFiles().size();
+//		wrapper.getProvider().getFiles().size();
+		wrapper.getDatiAccreditamento().getFiles().size();
 		wrapper.getDatiAccreditamento().getProcedureFormative().size();
 		integrazioneService.detach(wrapper.getDatiAccreditamento());
-		integrazioneService.detach(wrapper.getProvider());
+//		integrazioneService.detach(wrapper.getProvider());
 		if(!reloadByEditId){
 			integrazioneService.applyIntegrazioneObject(wrapper.getDatiAccreditamento(), wrapper.getFieldIntegrazione());
 		}
@@ -437,7 +443,7 @@ public class DatiAccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperShow(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
 
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
-		wrapper.setFiles(datiAccreditamento.getAccreditamento().getProvider().getFiles());
+		wrapper.setFiles(datiAccreditamento.getFiles());
 
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperShow(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;
@@ -449,7 +455,7 @@ public class DatiAccreditamentoController {
 		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
 
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
-		wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
+//		wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
 		wrapper.setStatoAccreditamento(statoAccreditamento);
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
 
@@ -476,7 +482,7 @@ public class DatiAccreditamentoController {
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 
-		wrapper.setFiles(wrapper.getProvider().getFiles());
+		wrapper.setFiles(wrapper.getDatiAccreditamento() .getFiles());
 
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperValidate(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
 		return wrapper;

@@ -34,15 +34,15 @@ import lombok.Setter;
 @Setter
 @NamedEntityGraphs({
 
-	@NamedEntityGraph(name="graph.provider.files",
-			attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"),
-					@NamedAttributeNode(value="files", subgraph="minimalFileInfo")},
-			subgraphs = @NamedSubgraph(name="minimalFileInfo", attributeNodes={
-					@NamedAttributeNode("id"),
-					@NamedAttributeNode("nomeFile"),
-					@NamedAttributeNode("tipo")
-			}))
-	,
+//	@NamedEntityGraph(name="graph.provider.files",
+//			attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"),
+//					@NamedAttributeNode(value="files", subgraph="minimalFileInfo")},
+//			subgraphs = @NamedSubgraph(name="minimalFileInfo", attributeNodes={
+//					@NamedAttributeNode("id"),
+//					@NamedAttributeNode("nomeFile"),
+//					@NamedAttributeNode("tipo")
+//			}))
+//	,
 	@NamedEntityGraph(name="graph.provider.minimal",
 	attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"),
 			})
@@ -100,21 +100,21 @@ public class Provider extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	private ProviderStatoEnum status;
 
-	@ManyToMany(fetch=FetchType.LAZY)
-	@JoinTable(name="provider_files",
-	joinColumns={@JoinColumn(name="provider_id")},
-	inverseJoinColumns={@JoinColumn(name="files_id")}
-			)
-	Set<File> files = new HashSet<File>();
-
-	public void addFile(File file){
-		Iterator<File> it = this.getFiles().iterator();
-		while(it.hasNext()){
-			if(it.next().getTipo() == file.getTipo())
-				it.remove();
-		}
-		this.getFiles().add(file);
-	}
+//	@ManyToMany(fetch=FetchType.LAZY)
+//	@JoinTable(name="provider_files",
+//	joinColumns={@JoinColumn(name="provider_id")},
+//	inverseJoinColumns={@JoinColumn(name="files_id")}
+//			)
+//	Set<File> files = new HashSet<File>();
+//
+//	public void addFile(File file){
+//		Iterator<File> it = this.getFiles().iterator();
+//		while(it.hasNext()){
+//			if(it.next().getTipo() == file.getTipo())
+//				it.remove();
+//		}
+//		this.getFiles().add(file);
+//	}
 
 	@Column(name ="can_insert_accreditamento_standard")
 	private boolean canInsertAccreditamentoStandard;
@@ -184,5 +184,19 @@ public class Provider extends BaseEntity{
 		if(tipoOrganizzatore != null && tipoOrganizzatore.getGruppo().equalsIgnoreCase("B"))
 			return true;
 		return false;
+	}
+
+	public Sede getSedeLegale(){
+		for(Sede s : sedi)
+			if(s.isSedeLegale())
+				return s;
+		return null;
+	}
+
+	public Persona getLegaleRappresentante(){
+		for(Persona p : persone)
+			if(p.isLegaleRappresentante())
+				return p;
+		return null;
 	}
 }

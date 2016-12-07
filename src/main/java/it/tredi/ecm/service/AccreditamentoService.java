@@ -35,7 +35,7 @@ public interface AccreditamentoService{
 	public void prendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup, VerbaleValutazioneSulCampo verbale) throws Exception;
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup) throws Exception;
-	public void inserisciInValutazioneCommissione(Long accreditamentoId, CurrentUser curentUser) throws Exception;
+	public void inserisciInValutazioneCommissioneForSystemUser(Long accreditamentoId) throws Exception;
 	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception;
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception;

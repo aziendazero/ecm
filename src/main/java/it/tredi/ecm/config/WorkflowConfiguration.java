@@ -12,11 +12,11 @@ public class WorkflowConfiguration {
 	/*
 	bonita.serverformurl=https://salute.regione.veneto.it
 	bonita.serverformapplicationname=auac-bpm
-	
+
 	bonita.sessioncookiedomain=regione.veneto.it
 	bonita.sessioncookiename=JSESSIONID
 	*/
-	
+
 	@Value("${bonita.serverurl}")
 	private String serverUrl;
 

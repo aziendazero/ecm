@@ -1,0 +1,49 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+logicalFilePath="v000/006_20161205_move_files_from_provider_to_dati_accreditamento.xml">
+    <changeSet author="dpranteda (generated)" id="1480929259128-1">
+        <createTable tableName="dati_accreditamento_files">
+            <column name="dati_accreditamento_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="files_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1480929259128-2">
+        <addPrimaryKey columnNames="dati_accreditamento_id, files_id" tableName="dati_accreditamento_files"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1480929259128-3">
+        <addForeignKeyConstraint baseColumnNames="files_id" baseTableName="dati_accreditamento_files" constraintName="FK_gor4jf9ie4siy70v8ubobc0ab" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1480929259128-4">
+        <addForeignKeyConstraint baseColumnNames="dati_accreditamento_id" baseTableName="dati_accreditamento_files" constraintName="FK_ojsf7wd9t4v9g2sc6spow8vuw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dati_accreditamento"/>
+    </changeSet>
+
+    <changeSet author="dpranteda" id="1480929259128-5">
+    	<comment>Move files from provider to dati_accreditamento</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="006_01_Move_files.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>
+        <rollback>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="dpranteda (generated)" id="1480929259128-6">
+        <dropForeignKeyConstraint baseTableName="provider_files" constraintName="FK_bvb4dbxd33gb5iatx9ynlyl4q"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1480929259128-7">
+        <dropForeignKeyConstraint baseTableName="provider_files" constraintName="FK_nexnu8ry7fg4u9r69lc72y8qs"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1480929259128-8">
+        <dropTable tableName="provider_files"/>
+    </changeSet>
+</databaseChangeLog>

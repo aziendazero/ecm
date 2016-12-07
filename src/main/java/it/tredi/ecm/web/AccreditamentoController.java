@@ -47,6 +47,7 @@ import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
@@ -75,6 +76,7 @@ public class AccreditamentoController {
 	@Autowired private PersonaService personaService;
 	@Autowired private SedeService sedeService;
 	@Autowired private FileService fileService;
+	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 
 	@Autowired private AccountService accountService;
 
@@ -660,7 +662,10 @@ public class AccreditamentoController {
 	private void commonPrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper, AccreditamentoWrapperModeEnum mode){
 		Long providerId = accreditamentoWrapper.getProvider().getId();
 		//ALLEGATI
-		Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(providerId);
+		//Set<String> filesDelProvider = providerService.getFileTypeUploadedByProviderId(providerId);
+		Set<String> filesDelProvider = new HashSet<>();
+		if(accreditamentoWrapper.getDatiAccreditamento() != null && !accreditamentoWrapper.getDatiAccreditamento().isNew())
+			filesDelProvider = datiAccreditamentoService.getFileTypeUploadedByDatiAccreditamentoId(accreditamentoWrapper.getDatiAccreditamento().getId());
 
 		Set<Professione> professioniSelezionate = (accreditamentoWrapper.getAccreditamento().getDatiAccreditamento() != null && !accreditamentoWrapper.getDatiAccreditamento().isNew()) ? accreditamentoWrapper.getDatiAccreditamento().getProfessioniSelezionate() : new HashSet<Professione>();
 

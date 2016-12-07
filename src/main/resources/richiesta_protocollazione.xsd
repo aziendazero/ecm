@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<!-- RICHIESTA DI PROTOCOLLAZIONE -->
+	<xs:element name="richiesta">
+		<xs:complexType>
+			<xs:sequence>
+				<!-- login dell'Operatore  -->
+				<xs:element name="Operatore" type="varchar100" minOccurs="1" maxOccurs="1"/>
+				<!-- Note da assegnare nel retroscheda  -->
+				<xs:element name="Note" type="varchar500" minOccurs="0" maxOccurs="1"/>
+				<!-- Indice di Classificazione -->
+				<xs:element name="IDC" type="varchar100" minOccurs="1" maxOccurs="1"/>
+				<!-- Oggetto della richiesta -->
+				<xs:element name="Oggetto" type="varchar200" minOccurs="1" maxOccurs="1"/>
+				<!-- Codice Regionale della Struttura Mittente -->
+				<xs:element name="Cod_Mittente" type="varchar020" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="TipoDocumento" type="tipo_documento" minOccurs="0" maxOccurs="1"/>
+				<!-- Riferimenti -->
+				<xs:element ref="Riferimenti" minOccurs="0" maxOccurs="1"/>
+				<!-- Destinatari -->
+				<xs:element ref="Destinatari" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="Documento_Principale" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="Allegati" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="PEC_Singola" minOccurs="0" maxOccurs="1" type="xs:boolean"/>
+			</xs:sequence>
+			<!-- Codice Applicativo che effettua la richiesta -->
+			<xs:attribute name="cod_applicativo" type="xs:string" use="required"/>		
+		</xs:complexType>
+	</xs:element>
+	<!-- ******************************* -->
+	<!-- DEFINIZIONE SEZIONI             -->
+	<!-- ******************************* -->
+	<!-- Destinatari -->
+	<xs:element name="Destinatari">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Destinatario" minOccurs="1" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Nominativo" type="varchar100" minOccurs="1" maxOccurs="1"/>
+							<xs:element name="Indirizzo" type="varchar100" minOccurs="0" maxOccurs="1"/>
+							<xs:element name="Cap" type="varchar005" minOccurs="0" maxOccurs="1"/>
+							<xs:element name="Citta" type="varchar100" minOccurs="0" maxOccurs="1"/>
+							<xs:element name="Provincia" type="SiglaProv" minOccurs="0" maxOccurs="1"/>
+							<xs:element name="PEC" type="varchar100" minOccurs="0" maxOccurs="1"/>
+							<xs:element name="FAX" type="varchar020" minOccurs="0" maxOccurs="1"/>
+						</xs:sequence>
+						<xs:attribute name="tipo_vettore" type="vettore" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Eventuali Riferimenti ad altri Protocolli -->
+	<xs:element name="Riferimenti">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Riferimento" minOccurs="1" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="numero_protocollo" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+							<xs:element name="data_protocollo" type="xs:date" minOccurs="1" maxOccurs="1"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Documento Principale -->
+	<xs:element name="Documento_Principale">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Files" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Allegati -->
+	<xs:element name="Allegati">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Files" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- File -->
+	<xs:element name="Files">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Documento" minOccurs="1" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Content" type="xs:base64Binary" minOccurs="1" maxOccurs="1"/>
+						</xs:sequence>
+						<xs:attribute name="Nome" type="varchar100" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- #####################################################################-->
+	<!-- TIPI DI DATO COMUNI -->
+	<!-- #####################################################################-->
+	<xs:simpleType name="varchar005">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="varchar020">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="varchar100">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="varchar200">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="200"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="varchar500">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="500"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SiglaProv">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="vettore">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PEC"/>
+			<xs:enumeration value="FAX"/>
+			<xs:enumeration value="RC"/>
+			<xs:enumeration value="RR"/>
+			<xs:enumeration value="LT"/>
+			<xs:enumeration value="SDI"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tipo_documento">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FATTURA"/>
+			<xs:enumeration value="RIFIUTO FATTURA"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

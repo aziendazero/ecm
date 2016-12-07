@@ -153,7 +153,7 @@
 										<td th:text="${attivita.risultatoAtteso}"></td>
 										<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
 										<td th:text="${attivita.metodologiaDidattica?.nome}"></td>
-										<td th:text="${attivita.oreAttivita}"></td>
+										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(attivita.oreAttivita)}"></td>
 									</tr>
 								</tbody>
 							</table>

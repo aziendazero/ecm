@@ -19,8 +19,16 @@ public class EngineeringProperties {
 	private String proxyUsername;
 	private String proxyPassword;
 	private int causaleLength;
+	private String versione;
 
 	private String firmaUrl;
 	private String firmaIdclassificazione;
 	private String firmaReferer;
+
+	private String protocolloCodApplicativo;
+	private String protocolloOperatore;
+	private String protocolloCodStruttura;
+	private String protocolloIdc;
+	private String protocolloOggetto;
+	private String protocolloEndpoint;
 }

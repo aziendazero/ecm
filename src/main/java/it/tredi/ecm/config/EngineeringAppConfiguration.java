@@ -38,6 +38,8 @@ public class EngineeringAppConfiguration {
 	private String proxyPassword = "";
 	@Value("${causale.length}")
 	private int causaleLength = 140;
+	@Value("${versione}")
+	private String versione = "";
 
 	@Value("${firma.url}")
 	private String firmaUrl = "";
@@ -45,6 +47,19 @@ public class EngineeringAppConfiguration {
 	private String firmaIdclassificazione = "";
 	@Value("${firma.referer}")
 	private String firmaReferer = "";
+
+	@Value("${protocollo.codApplicativo}")
+	private String protocolloCodApplicativo = "";
+	@Value("${protocollo.operatore}")
+	private String protocolloOperatore = "";
+	@Value("${protocollo.codStruttura}")
+	private String protocolloCodStruttura = "";
+	@Value("${protocollo.idc}")
+	private String protocolloIdc = "";
+	@Value("${protocollo.oggetto}")
+	private String protocolloOggetto = "";
+	@Value("${protocollo.endpoint}")
+	private String protocolloEndpoint = "";
 
 	@Bean
 	public EngineeringProperties engineeringProperties(){
@@ -63,10 +78,18 @@ public class EngineeringAppConfiguration {
 		engineeringProperties.setProxyUsername(proxyUsername);
 		engineeringProperties.setProxyPassword(proxyPassword);
 		engineeringProperties.setCausaleLength(causaleLength);
+		engineeringProperties.setVersione(versione);
 
 		engineeringProperties.setFirmaUrl(firmaUrl);
 		engineeringProperties.setFirmaIdclassificazione(firmaIdclassificazione);
 		engineeringProperties.setFirmaReferer(firmaReferer);
+
+		engineeringProperties.setProtocolloCodApplicativo(protocolloCodApplicativo);
+		engineeringProperties.setProtocolloOperatore(protocolloOperatore);
+		engineeringProperties.setProtocolloCodStruttura(protocolloCodStruttura);
+		engineeringProperties.setProtocolloIdc(protocolloIdc);
+		engineeringProperties.setProtocolloOggetto(protocolloOggetto);
+		engineeringProperties.setProtocolloEndpoint(protocolloEndpoint);
 
 		return engineeringProperties;
 	}

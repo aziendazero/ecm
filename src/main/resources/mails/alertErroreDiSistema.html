@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title th:remove="all">Errore sistema ECM</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+  	<p>Gentile Segreteria ECM,</p>
+  	<p>
+	  	Si e' verificato un errore nel Sistema ECM.<br/>
+	  	<span th:text="${message}"></span>
+  	</p>
+  	<p>Si consiglia di segnalare il problema al fornitore per l'analisi dei log.</p>
+    <p>
+      Distinti Saluti, <br />
+    </p>
+  </body>
+</html>

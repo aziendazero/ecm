@@ -13,6 +13,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -32,14 +33,15 @@ public class File extends BaseEntity{
 	@JsonView(JsonViewModel.Integrazione.class)
 	private String nomeFile;
 
-//	@JsonView(JsonViewModel.Integrazione.class)
-//	@JsonIgnore
-//	private byte[] data;
-
 	@JsonView(JsonViewModel.Integrazione.class)
 	@JsonIgnore
 	@Column(name = "creato")
 	private LocalDate dataCreazione;
+
+	@JsonView(JsonViewModel.Integrazione.class)
+	@JsonIgnore
+	@OneToOne
+	private Protocollo protocollo;
 
 	@JsonView(JsonViewModel.Integrazione.class)
 	@Enumerated(EnumType.STRING)
@@ -135,6 +137,14 @@ public class File extends BaseEntity{
 		return this.tipo.equals(FileEnum.FILE_DA_FIRMARE);
 	}
 
+	@JsonIgnore	public boolean isProtocollato(){
+		if(protocollo != null && !protocollo.isNew()){
+			if(protocollo.getNumero() != null && protocollo.getData() != null)
+				return true;
+		}
+		return false;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -167,6 +177,7 @@ public class File extends BaseEntity{
 		cloned.setFileData(null);
 		cloned.setDataCreazione(this.getDataCreazione());
 		cloned.setData(this.getData());
+		cloned.setProtocollo(null);
 
 		return cloned;
 	}

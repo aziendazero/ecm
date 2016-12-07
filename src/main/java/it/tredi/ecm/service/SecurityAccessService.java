@@ -50,4 +50,6 @@ public interface SecurityAccessService {
 	public boolean canShowAnagrafeRegionale(CurrentUser currentUser);
 
 	public boolean canAllegaSponsorEvento(CurrentUser currentUser, Long eventoId);
+
+	public boolean canShowProtocollo(CurrentUser currentUser);
 }
