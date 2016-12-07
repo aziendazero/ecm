@@ -101,6 +101,12 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
+	public Set<Provider> getAllNotInserito() {
+		LOGGER.info("Recupero tutti i Providers non in stato inserito");
+		return providerRepository.findAllStatusNot(ProviderStatoEnum.INSERITO);
+	}
+
+	@Override
 	@Transactional
 	public void save(Provider provider) {
 		LOGGER.info("Saving Provider");

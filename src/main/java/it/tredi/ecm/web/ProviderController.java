@@ -367,7 +367,7 @@ public class ProviderController {
 		try {
 
 			if(model.asMap().get("providerList") == null)
-				model.addAttribute("providerList", providerService.getAll());
+				model.addAttribute("providerList", providerService.getAllNotInserito());
 
 			LOGGER.info(Utils.getLogMessage("VIEW: /provider/providerList"));
 			return "provider/providerList";
