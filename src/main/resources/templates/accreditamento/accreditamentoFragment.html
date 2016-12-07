@@ -72,7 +72,7 @@
 											<div class="clearfix"></div>
 										</div>
 										<div class="x_content">
-											<div th:if="${editabile}" th:text="#{label.info_blocco_legali}" class="alert alert-info"></div>
+											<div th:if="${editabile and accreditamentoWrapper.accreditamento.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).BOZZA}" th:text="#{label.info_blocco_legali}" class="alert alert-info"></div>
 											<table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${'datatable-responsive-accreditamento-'+mode}">
 												<thead>
 													<tr>
