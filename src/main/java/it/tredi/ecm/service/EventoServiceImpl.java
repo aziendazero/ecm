@@ -1154,8 +1154,12 @@ public class EventoServiceImpl implements EventoService {
 
 			LOGGER.debug(Utils.getLogMessage("Detach Programmi RES"));
 			for(ProgrammaGiornalieroRES pgr : ((EventoRES) eventoPadre).getProgramma()) {
-				pgr.getProgramma().size(); //touch che non viene raggiunto perchè al secondo livello
 				LOGGER.debug(Utils.getLogMessage("Detach Programma RES: " + pgr.getId()));
+				for(DettaglioAttivitaRES dar : pgr.getProgramma()) {
+					LOGGER.debug(Utils.getLogMessage("Detach DettaglioAttivitaRES: " + dar.getId()));
+					dar.getDocenti().size(); //touch che non viene raggiunto perchè al terzo livello
+					entityManager.detach(dar);
+				}
 				entityManager.detach(pgr);
 			}
 		}
@@ -1267,7 +1271,15 @@ public class EventoServiceImpl implements EventoService {
 				pgr.setId(null);
 				LOGGER.debug(Utils.getLogMessage("Clonazione del suo dettaglioAttività RES"));
 				List<DettaglioAttivitaRES> dettaglioAttivitaRESList = new ArrayList<DettaglioAttivitaRES>();
-				dettaglioAttivitaRESList.addAll(Arrays.asList(pgr.getProgramma().toArray(new DettaglioAttivitaRES[pgr.getProgramma().size()])));
+				for(DettaglioAttivitaRES dar : pgr.getProgramma()) {
+					LOGGER.debug(Utils.getLogMessage("Clonazione DettaglioAttivitaRES: " + dar.getId()));
+					dar.setId(null);
+					LOGGER.debug(Utils.getLogMessage("Clonazione dei Docenti del DettaglioAttivitaRES"));
+					Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();
+					docenti.addAll(Arrays.asList(dar.getDocenti().toArray(new PersonaEvento[dar.getDocenti().size()])));
+					dar.setDocenti(docenti);
+					dettaglioAttivitaRESList.add(dar);
+				}
 				pgr.setProgramma(dettaglioAttivitaRESList);
 				programmaRES.add(pgr);
 			}

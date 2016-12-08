@@ -38,6 +38,9 @@
 	<include file="007_20161206_applySQLnewProfile.xml" relativeToChangelogFile="true"/>
 
 	<include file="006_20161202_171105_gestione_protocollazione.xml" relativeToChangelogFile="true"/>
+
 	<include file="007_20161202_171105_seduta_task_insodg.xml" relativeToChangelogFile="true"/>
+
+	<include file="008_20161208_dettaglioRES_entity_multidocenza.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

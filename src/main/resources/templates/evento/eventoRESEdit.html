@@ -24,7 +24,7 @@
 						<div class="modal-body" id="container-attivitaRES">
 							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
 									th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}"
-									th:object="${eventoWrapper.tempAttivitaRES}" method="post" enctype="multipart/form-data"
+									method="post" enctype="multipart/form-data"
 									novalidate="novalidate">
 
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
@@ -74,6 +74,13 @@
 											</div>
 										</div>
 
+										<div th:each="d, r : ${eventoWrapper.tempAttivitaRES.docenti}">
+											<div th:text="${d.id}"></div>
+											<div th:each="ed, rd : ${eventoWrapper.docenti}" th:text="ugualeID" th:if="${ed.id == d.id}"></div>
+											<div th:each="ed, rd : ${eventoWrapper.docenti}" th:text="uguali" th:if="${ed.equals(d)}"></div>
+										</div>
+										<div th:text="${#lists.isEmpty(eventoWrapper.tempAttivitaRES.docenti)}"></div>
+
 										<!-- DOCENTE -->
 										<div id="container-docente" class="item form-group">
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
@@ -83,15 +90,15 @@
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
 												<select
 													id="addAttivitaRES-docente"
-													class="selectpicker selectDocente"
-													th:field="${eventoWrapper.tempAttivitaRES.docente}"
+													th:field="${eventoWrapper.tempAttivitaRES.docenti}"
+													class="selectpicker" multiple="multiple"
 													data-width="100%" data-style="btn-primary"
 													data-actions-box="true" data-size="10"
-													data-hide-disabled="false"
+													data-hide-disabled="false" th:remove="all-but-first"
 													title="Seleziona un docente..." th:disabled="${isEventoIniziato}">
 													<option
-														th:each="docente, row: ${eventoWrapper.docenti}"
-														th:value="${docente.id}"
+														th:each="docente, row : ${eventoWrapper.docenti}"
+														th:value="${{docente.id}}"
 														th:text="${docente.anagrafica.cognome}">Docente Selezionato
 													</option>
 												</select>
@@ -2072,6 +2079,7 @@
 				function sendAjaxModificaAttivitaTo(target,programmaIndex,extraType,modificaElemento){
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
 					$.get(url).done(function(data) {
+						console.log(data);
 						$('#container-' + target).html(data);
 						reInitModaleAddAttivita();
 // 						$('#add-attivita').click();

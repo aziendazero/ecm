@@ -1243,7 +1243,7 @@ public class EventoValidator {
 		if(!dettaglio.isExtraType()) {
 			if(dettaglio.getArgomento() == null || dettaglio.getArgomento().isEmpty())
 				return true;
-			if(dettaglio.getDocente() == null)
+			if(dettaglio.getDocenti() == null || dettaglio.getDocenti().isEmpty())
 				return true;
 			if(dettaglio.getObiettivoFormativo() == null)
 				return true;
