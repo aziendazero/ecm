@@ -1140,6 +1140,13 @@ public class EventoServiceImpl implements EventoService {
 				LOGGER.debug(Utils.getLogMessage("Detach Docente: " + d.getId()));
 				entityManager.detach(d);
 			}
+
+			LOGGER.debug(Utils.getLogMessage("Detach DettaglioAttivitaFAD"));
+			for(DettaglioAttivitaFAD daf : ((EventoFAD) eventoPadre).getProgrammaFAD()) {
+				LOGGER.debug(Utils.getLogMessage("Detach DettaglioAttivitaFAD: " + daf.getId()));
+				daf.getDocenti().size(); //touch che non viene raggiunto perchè al terzo livello
+				entityManager.detach(daf);
+			}
 		}
 
 		else if(eventoPadre instanceof EventoRES) {
@@ -1231,6 +1238,19 @@ public class EventoServiceImpl implements EventoService {
 				personaEventoRepository.save(d);
 				LOGGER.debug(Utils.getLogMessage("Docente clonato salvato: " + d.getId()));
 			}
+
+			LOGGER.debug(Utils.getLogMessage("Clonazione dettaglioAttività FAD"));
+			List<DettaglioAttivitaFAD> dettaglioAttivitaFADList = new ArrayList<DettaglioAttivitaFAD>();
+			for(DettaglioAttivitaFAD daf : ((EventoFAD) riedizione).getProgrammaFAD()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione DettaglioAttivitaFAD: " + daf.getId()));
+				daf.setId(null);
+				LOGGER.debug(Utils.getLogMessage("Clonazione dei Docenti del DettaglioAttivitaFAD"));
+				Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();
+				docenti.addAll(Arrays.asList(daf.getDocenti().toArray(new PersonaEvento[daf.getDocenti().size()])));
+				daf.setDocenti(docenti);
+				dettaglioAttivitaFADList.add(daf);
+			}
+			((EventoFAD) riedizione).setProgrammaFAD(dettaglioAttivitaFADList);
 
 //			((EventoFAD) riedizione).setConfermatiCrediti(null);
 

@@ -254,7 +254,9 @@
 							<tbody>
 								<tr th:attr="data-row-id=${__${row.index}__}" th:each="attivita , row : ${eventoWrapper.evento.programmaFAD}">
 									<td th:text="${attivita.argomento}"></td>
-									<td th:text="${attivita.docente?.anagrafica?.cognome}"></td>
+									<td>
+										<div th:text="${docente.anagrafica?.cognome}" th:each="docente, row : ${attivita.docenti}"></div>
+									</td>
 									<td th:text="${attivita.risultatoAtteso}"></td>
 									<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
 									<td th:text="${attivita.metodologiaDidattica?.nome}"></td>

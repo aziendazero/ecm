@@ -1610,7 +1610,7 @@ public class EventoValidator {
 		if(attivita.getArgomento() == null || attivita.getArgomento().isEmpty()) {
 			return true;
 		}
-		if(attivita.getDocente() == null) {
+		if(attivita.getDocenti() == null || attivita.getDocenti().isEmpty()) {
 			return true;
 		}
 		if(attivita.getRisultatoAtteso() == null || attivita.getRisultatoAtteso().isEmpty()) {

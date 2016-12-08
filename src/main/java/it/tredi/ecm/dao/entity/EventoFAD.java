@@ -17,6 +17,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import lombok.Getter;
@@ -40,7 +41,7 @@ public class EventoFAD extends Evento{
 	@ElementCollection
 	private List<String> risultatiAttesi = new ArrayList<String>();
 
-	@ElementCollection(fetch = FetchType.EAGER) //TODO fastfix per demo.. sarebbe da utilizzare lazy con la annotazione in web.xml(?)
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name = "programma_fad_id")
 	private List<DettaglioAttivitaFAD> programmaFAD = new ArrayList<DettaglioAttivitaFAD>();
 
