@@ -129,7 +129,7 @@ public class EngineeringController {
 	@RequestMapping(value = "/engineering/firma/back", method = RequestMethod.POST)
 	public String engineeringTestFirmaBack(Model model, HttpServletRequest request, RedirectAttributes redirectAttrs) {
 		try {
-
+			LOGGER.info("POST: /engineering/firma/back");
 			String documentsToSign = request.getParameter("documentsToSign");
 			LOGGER.debug("Ricevuta da firmaWeb:\n" + documentsToSign);
 			File file = engineeringService.saveFileFirmato(documentsToSign);
@@ -137,11 +137,10 @@ public class EngineeringController {
 			ObjectMapper mapper = new ObjectMapper();
 			model.addAttribute("jsonFile", mapper.writeValueAsString(file));
 
-			model.addAttribute("engineeringWrapper", prepareEngineeringWrapper(providerService.getProvider()));
+			LOGGER.info("VIEW: engineering/firmaBack");
 			return "engineering/firmaBack";
-
 		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("Errore redirect mypay"),ex);
+			LOGGER.error(Utils.getLogMessage("Errore return firmaWeb"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/home";
 		}

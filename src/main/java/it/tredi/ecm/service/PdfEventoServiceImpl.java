@@ -515,10 +515,11 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 						else
 							addCellSubTable("", tableDettaglioAttivita);
 						addCellSubTable(dettAtt.getArgomento(), tableDettaglioAttivita);
-						if(dettAtt.getDocente() != null && dettAtt.getDocente().getAnagrafica() != null && dettAtt.getDocente().getAnagrafica().getCognome() != null)
-							addCellSubTable(dettAtt.getDocente().getAnagrafica().getCognome(), tableDettaglioAttivita);
-						else
-							addCellSubTable("", tableDettaglioAttivita);
+						//TODO ciclo sui docenti
+//						if(dettAtt.getDocente() != null && dettAtt.getDocente().getAnagrafica() != null && dettAtt.getDocente().getAnagrafica().getCognome() != null)
+//							addCellSubTable(dettAtt.getDocente().getAnagrafica().getCognome(), tableDettaglioAttivita);
+//						else
+//							addCellSubTable("", tableDettaglioAttivita);
 						addCellSubTable(dettAtt.getRisultatoAtteso(), tableDettaglioAttivita);
 						if(dettAtt.getObiettivoFormativo() != null)
 							addCellSubTable(dettAtt.getObiettivoFormativo().getNome(), tableDettaglioAttivita);
@@ -876,10 +877,11 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 			addCellIntestaSubTableByLabel("label.metodologia_didattica", subTable);
 			for(DettaglioAttivitaFAD dettAtt : programma) {
 				addCellSubTable(dettAtt.getArgomento(), subTable);
-				if(dettAtt.getDocente() != null && dettAtt.getDocente().getAnagrafica() != null && dettAtt.getDocente().getAnagrafica().getCognome() != null)
-					addCellSubTable(dettAtt.getDocente().getAnagrafica().getCognome(), subTable);
-				else
-					addCellSubTable("", subTable);
+				//TODO ciclo sui docenti
+//				if(dettAtt.getDocente() != null && dettAtt.getDocente().getAnagrafica() != null && dettAtt.getDocente().getAnagrafica().getCognome() != null)
+//					addCellSubTable(dettAtt.getDocente().getAnagrafica().getCognome(), subTable);
+//				else
+//					addCellSubTable("", subTable);
 				addCellSubTable(dettAtt.getRisultatoAtteso(), subTable);
 				if(dettAtt.getObiettivoFormativo() != null)
 					addCellSubTable(dettAtt.getObiettivoFormativo().getNome(), subTable);

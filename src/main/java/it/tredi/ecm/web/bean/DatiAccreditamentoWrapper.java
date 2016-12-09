@@ -14,6 +14,7 @@ import lombok.Setter;
 public class DatiAccreditamentoWrapper extends Wrapper{
 	private DatiAccreditamento datiAccreditamento;
 	private Long accreditamentoId;
+	private Long providerId;
 	//private Provider provider;
 
 	private File estrattoBilancioComplessivo;
@@ -28,10 +29,11 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 		setOrganigramma(new File(FileEnum.FILE_ORGANIGRAMMA));
 	}
 
-	public DatiAccreditamentoWrapper(DatiAccreditamento datiAccreditamento, Long accreditamentoId){
+	public DatiAccreditamentoWrapper(DatiAccreditamento datiAccreditamento, Long accreditamentoId, Long providerId){
 		this();
 		this.datiAccreditamento = datiAccreditamento;
 		this.accreditamentoId = accreditamentoId;
+		this.providerId = providerId;
 	}
 
 	public void setEstrattoBilancioComplessivo(File file){

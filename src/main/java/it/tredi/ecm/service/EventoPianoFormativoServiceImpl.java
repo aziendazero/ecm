@@ -2,6 +2,8 @@ package it.tredi.ecm.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -81,8 +83,10 @@ public class EventoPianoFormativoServiceImpl implements EventoPianoFormativoServ
 	@Override
 	public Set<EventoPianoFormativo> getAllEventiAttuabiliForProviderId(Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti gli eventi del piano formativo attuabili per il provider: " + providerId));
-		//TODO calcolo dell'anno formativo attuabile
-		Integer pianoFormativo = LocalDateTime.now().getYear();
-		return eventoPianoFormativoRepository.findAllByProviderIdAndPianoFormativoAndAttuatoFalse(providerId, pianoFormativo);
+		//Permetto attuazione degli eventi per il piano formativo corrente e quello dell'anno prossimo (se inserisco un evento a dicembre e voglio attuarlo il 1 gennaio non farei in tempo se no)
+		List<Integer> anni = new ArrayList();
+		anni.add(LocalDateTime.now().getYear());
+		anni.add(LocalDateTime.now().getYear() + 1);
+		return eventoPianoFormativoRepository.findAllByProviderIdAndPianoFormativoInAndAttuatoFalse(providerId, anni);
 	}
 }

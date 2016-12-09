@@ -1700,7 +1700,7 @@
 										<th th:text="#{label.orario_inizio}">ORARIO INIZIO</th>
 										<th th:text="#{label.orario_fine}">ORARIO FINE</th>
 										<th th:text="#{label.argomento}">ARGOMENTO</th>
-										<th th:text="#{label.docente}">Docente</th>
+										<th th:text="#{label.docenti}">Docenti</th>
 										<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
 										<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
 										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
@@ -1740,7 +1740,9 @@
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioInizio}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioFine}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].argomento}"></td>
-										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].docente?.anagrafica?.cognome}"></td>
+										<td>
+											<div th:each="docente, row : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].docenti}" th:text="${docente.anagrafica?.cognome}"></div>
+										</td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].risultatoAtteso}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].obiettivoFormativo?.nome}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].metodologiaDidattica?.nome}"></td>
@@ -1909,7 +1911,9 @@
 									th:each="attivita , row : ${eventoWrapper.programmaEventoFAD}"
 									th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFAD['+__${row.index}__+']')} ? 'bad-row'">
 									<td th:text="${attivita.argomento}"></td>
-									<td th:text="${attivita.docente?.anagrafica?.cognome}"></td>
+									<td>
+										<div th:text="${docente.anagrafica?.cognome}" th:each="docente, row : ${attivita.docenti}"></div>
+									</td>
 									<td th:text="${attivita.risultatoAtteso}"></td>
 									<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
 									<td th:text="${attivita.metodologiaDidattica?.nome}"></td>

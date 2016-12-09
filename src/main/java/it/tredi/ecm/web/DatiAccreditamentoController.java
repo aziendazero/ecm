@@ -248,7 +248,7 @@ public class DatiAccreditamentoController {
 			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: DatiAccreditamentoSave:__AFTER SET__"));
 			//integrazioneService.isManaged(wrapper.getDatiAccreditamento());
 
-			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles(), wrapper.getDatiAccreditamento().getAccreditamento().getProvider().getId());
+			datiAccreditamentoValidator.validate(wrapper.getDatiAccreditamento(), result, "datiAccreditamento.", wrapper.getFiles(), wrapper.getProviderId());
 
 			if(result.hasErrors()){
 				LOGGER.debug(Utils.getLogMessage("Validazione Fallita"));
@@ -395,7 +395,7 @@ public class DatiAccreditamentoController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
 
-		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
+		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId, accreditamentoService.getProviderIdForAccreditamento(accreditamentoId));
 		//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
 		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
 			wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
@@ -442,7 +442,7 @@ public class DatiAccreditamentoController {
 	private DatiAccreditamentoWrapper prepareDatiAccreditamentoWrapperShow(DatiAccreditamento datiAccreditamento, long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperShow(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - entering"));
 
-		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
+		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId, accreditamentoService.getProviderIdForAccreditamento(accreditamentoId));
 		wrapper.setFiles(datiAccreditamento.getFiles());
 
 		LOGGER.info(Utils.getLogMessage("prepareDatiAccreditamentoWrapperShow(" + datiAccreditamento.getId() + "," + accreditamentoId + ") - exiting"));
@@ -454,7 +454,7 @@ public class DatiAccreditamentoController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
 
-		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId);
+		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId, accreditamentoService.getProviderIdForAccreditamento(accreditamentoId));
 //		wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
 		wrapper.setStatoAccreditamento(statoAccreditamento);
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
