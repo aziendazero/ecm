@@ -45,4 +45,6 @@
 
 	<include file="008_20161208_dettaglioFAD_entity_multidocenza.xml" relativeToChangelogFile="true"/>
 
+	<include file="008_20161209_rinominataColonnaDettaglioFAD.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>

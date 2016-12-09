@@ -42,7 +42,7 @@ public class EventoFAD extends Evento{
 	private List<String> risultatiAttesi = new ArrayList<String>();
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
-	@JoinColumn(name = "programma_fad_id")
+	@JoinColumn(name = "eventofad_id")
 	private List<DettaglioAttivitaFAD> programmaFAD = new ArrayList<DettaglioAttivitaFAD>();
 
 	@ElementCollection
