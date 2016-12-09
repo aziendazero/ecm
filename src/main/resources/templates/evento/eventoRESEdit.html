@@ -74,13 +74,6 @@
 											</div>
 										</div>
 
-										<div th:each="d, r : ${eventoWrapper.tempAttivitaRES.docenti}">
-											<div th:text="${d.id}"></div>
-											<div th:each="ed, rd : ${eventoWrapper.docenti}" th:text="ugualeID" th:if="${ed.id == d.id}"></div>
-											<div th:each="ed, rd : ${eventoWrapper.docenti}" th:text="uguali" th:if="${ed.equals(d)}"></div>
-										</div>
-										<div th:text="${#lists.isEmpty(eventoWrapper.tempAttivitaRES.docenti)}"></div>
-
 										<!-- DOCENTE -->
 										<div id="container-docente" class="item form-group">
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="razionale">
