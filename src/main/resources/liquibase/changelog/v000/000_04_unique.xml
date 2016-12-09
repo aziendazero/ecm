@@ -3,19 +3,25 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
 	logicalFilePath="v000/000_04_unique.xml">
-    <changeSet author="abarducci (generated)" id="1479309431348-111">
+    <changeSet author="abarducci (generated)" id="1481296815849-125">
         <addUniqueConstraint columnNames="eventipfa_id" constraintName="UK_2h9vgueq7vc0e13wkxwneqg98" tableName="relazione_annuale_eventipfa"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-112">
+    <changeSet author="abarducci (generated)" id="1481296815849-126">
         <addUniqueConstraint columnNames="componenti_segreteria_id" constraintName="UK_6iwrffw48qf74n4orvpjq4r8n" tableName="team_valutazione_componenti_segreteria"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-113">
+    <changeSet author="abarducci (generated)" id="1481296815849-127">
         <addUniqueConstraint columnNames="eventi_attuati_id" constraintName="UK_8cbgmd8nwomqmwcx8vfm7u3lw" tableName="relazione_annuale_eventi_attuati"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-114">
+    <changeSet author="abarducci (generated)" id="1481296815849-128">
+        <addUniqueConstraint columnNames="valutazioni_sul_campo_id" constraintName="UK_9xa8gutrbpciubmt5ofxjpv6u" tableName="verbale_valutazione_sul_campo_valutazioni_sul_campo"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-129">
         <addUniqueConstraint columnNames="valutatori_id" constraintName="UK_bj9p3udv9pjs3j6q0wyg0bc3b" tableName="gruppo_crecm_valutatori"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-115">
+    <changeSet author="abarducci (generated)" id="1481296815849-130">
+        <addUniqueConstraint columnNames="componenti_segreteria_id" constraintName="UK_fvwifti6fe0d3lkpm67h7xh7h" tableName="verbale_valutazione_sul_campo_componenti_segreteria"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-131">
         <addUniqueConstraint columnNames="valutazioni_id" constraintName="UK_gj7459cba1dsorqj2c54ukfua" tableName="valutazione_valutazioni"/>
     </changeSet>
 </databaseChangeLog>

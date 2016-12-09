@@ -10,41 +10,7 @@
     <include file="000_03_primaryKey.xml" relativeToChangelogFile="true"/>
     <include file="000_04_unique.xml" relativeToChangelogFile="true"/>
     <include file="000_05_foreignKey.xml" relativeToChangelogFile="true"/>
-
     <include file="001_00_loaddata.xml" relativeToChangelogFile="true"/>
 
-    <include file="002_20161117_163720_evento_dataScadenzaInvioRendicontazione.xml" relativeToChangelogFile="true"/>
-
-    <include file="002_20161117_165101_modifica_colonna_sponsor_upload.xml" relativeToChangelogFile="true"/>
-
-    <include file="002_20161121_103000_rinomina_colonna_tipologia_evento_fad.xml" relativeToChangelogFile="true"/>
-
-    <include file="003_00_20161118_105800_loaddata.xml" relativeToChangelogFile="true"/>
-
-    <include file="004_1_20161125_creazione_anagrafe_regionale_crediti.xml" relativeToChangelogFile="true"/>
-
-	<include file="004_2_20161125_relazione_annuale_riepilogo_anagrafe_professioni_aventi_crediti.xml" relativeToChangelogFile="true"/>
-
-	<include file="005_20161128_add_column_storicizzato.xml" relativeToChangelogFile="true"/>
-
-	<include file="005_20161128_add_column_statoaccreditamentovalutazione.xml" relativeToChangelogFile="true"/>
-
-	<include file="006_20161202_verbaleValutazioneSulCampo.xml" relativeToChangelogFile="true"/>
-
-	<include file="006_20161204_integrazione_protocollo.xml" relativeToChangelogFile="true"/>
-
-	<include file="006_20161205_move_files_from_provider_to_dati_accreditamento.xml" relativeToChangelogFile="true"/>
-
-	<include file="007_20161206_applySQLnewProfile.xml" relativeToChangelogFile="true"/>
-
-	<include file="006_20161202_171105_gestione_protocollazione.xml" relativeToChangelogFile="true"/>
-
-	<include file="007_20161202_171105_seduta_task_insodg.xml" relativeToChangelogFile="true"/>
-
-	<include file="008_20161208_dettaglioRES_entity_multidocenza.xml" relativeToChangelogFile="true"/>
-
-	<include file="008_20161208_dettaglioFAD_entity_multidocenza.xml" relativeToChangelogFile="true"/>
-
-	<include file="008_20161209_rinominataColonnaDettaglioFAD.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

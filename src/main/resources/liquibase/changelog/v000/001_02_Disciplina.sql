@@ -1,19 +1,10 @@
---
--- PostgreSQL database dump
---
-
 SET statement_timeout = 0;
-SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 SET search_path = ecmdb, pg_catalog;
-
---
--- Data for Name: disciplina; Type: TABLE DATA; Schema: ecmdb; Owner: ecm
---
 
 INSERT INTO disciplina (id, codice_cogeaps, nome, professione_id) VALUES (1071, '1', 'Allergologia ed immunologia clinica', 1172);
 INSERT INTO disciplina (id, codice_cogeaps, nome, professione_id) VALUES (1072, '2', 'Angiologia', 1172);
@@ -116,4 +107,3 @@ INSERT INTO disciplina (id, codice_cogeaps, nome, professione_id) VALUES (1168, 
 INSERT INTO disciplina (id, codice_cogeaps, nome, professione_id) VALUES (1169, '93', 'Tecnico sanitario laboratorio biomedico', 1199);
 INSERT INTO disciplina (id, codice_cogeaps, nome, professione_id) VALUES (1170, '100', 'Terapista della neuro e psicomotricità dell''età evolutiva', 1200);
 INSERT INTO disciplina (id, codice_cogeaps, nome, professione_id) VALUES (1171, '101', 'Terapista occupazionale', 1201);
-

@@ -114,4 +114,16 @@
             stripComments="true"/>
         <rollback/>
     </changeSet>
+
+    <changeSet author="abarducci" id="10">
+    	<comment>Aggiornamento Obiettivi</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="001_10_AggiornamentoObiettivo.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>
+        <rollback/>
+    </changeSet>
 </databaseChangeLog>

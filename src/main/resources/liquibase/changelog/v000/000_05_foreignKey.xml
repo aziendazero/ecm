@@ -3,427 +3,487 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
 	logicalFilePath="v000/000_05_foreignKey.xml">
-    <changeSet author="abarducci (generated)" id="1479309431348-116">
+    <changeSet author="abarducci (generated)" id="1481296815849-132">
         <addForeignKeyConstraint baseColumnNames="comunicazione_id" baseTableName="comunicazione_response" constraintName="FK_1g5040w2gnwqucwgrbdbfiffl" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="comunicazione"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-117">
+    <changeSet author="abarducci (generated)" id="1481296815849-133">
         <addForeignKeyConstraint baseColumnNames="eventores_id" baseTableName="eventores_verifica_apprendimento" constraintName="FK_1nyxs4wn0mchitb6nf3yrtx60" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-118">
+    <changeSet author="abarducci (generated)" id="1481296815849-134">
+        <addForeignKeyConstraint baseColumnNames="verbale_valutazione_sul_campo_id" baseTableName="verbale_valutazione_sul_campo_componenti_segreteria" constraintName="FK_1tei1unnpa6h5rf9jtur1mpu9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="verbale_valutazione_sul_campo"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-135">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="field_valutazione_accreditamento" constraintName="FK_20ge1v777tf9hu7u1od2sjyj7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-119">
+    <changeSet author="abarducci (generated)" id="1481296815849-136">
         <addForeignKeyConstraint baseColumnNames="documento_verifica_ricadute_formative_id" baseTableName="evento" constraintName="FK_26c9ncnuywdicc4gpc3p0qm8y" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-120">
+    <changeSet author="abarducci (generated)" id="1481296815849-137">
         <addForeignKeyConstraint baseColumnNames="docente_id" baseTableName="persona_evento" constraintName="FK_278xgw3tdgharmroywiv7uh5l" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-121">
+    <changeSet author="abarducci (generated)" id="1481296815849-138">
         <addForeignKeyConstraint baseColumnNames="eventores_id" baseTableName="eventores_obiettivi" constraintName="FK_29mo7grvyxle57fe80b8ep4gp" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-122">
+    <changeSet author="abarducci (generated)" id="1481296815849-139">
         <addForeignKeyConstraint baseColumnNames="eventipfa_id" baseTableName="relazione_annuale_eventipfa" constraintName="FK_2h9vgueq7vc0e13wkxwneqg98" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento_piano_formativo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-123">
+    <changeSet author="abarducci (generated)" id="1481296815849-140">
         <addForeignKeyConstraint baseColumnNames="relazione_annuale_id" baseTableName="relazione_annuale_riepilogo_professioni" constraintName="FK_2kbg6yn01u913fgkijmpc2r8t" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="relazione_annuale"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-124">
+    <changeSet author="abarducci (generated)" id="1481296815849-141">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="accreditamento" constraintName="FK_2kedwkv8fm7anc6ehd8skrs3x" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-125">
+    <changeSet author="abarducci (generated)" id="1481296815849-142">
         <addForeignKeyConstraint baseColumnNames="report_partecipanticsv_id" baseTableName="evento" constraintName="FK_2m1aw5xl23j6pd3kmtmsqh0bf" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-126">
+    <changeSet author="abarducci (generated)" id="1481296815849-143">
         <addForeignKeyConstraint baseColumnNames="fk_evento" baseTableName="pagamento" constraintName="FK_316u1gorq4m3gyw3smb4lv853" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-127">
-        <addForeignKeyConstraint baseColumnNames="docente_id" baseTableName="eventofad_programmafad" constraintName="FK_37jp6v3vsalgaj004j98tk12h" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_evento"/>
+    <changeSet author="abarducci (generated)" id="1481296815849-144">
+        <addForeignKeyConstraint baseColumnNames="file_id" baseTableName="protocollo" constraintName="FK_35kf8naj2w2odr98y6aiynu9g" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-128">
+    <changeSet author="abarducci (generated)" id="1481296815849-145">
+        <addForeignKeyConstraint baseColumnNames="dettaglio_id" baseTableName="dettaglio_attivitafad_docente" constraintName="FK_3ghwfjvym3vr0v52wnfaxt7c4" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dettaglio_attivitafad"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-146">
         <addForeignKeyConstraint baseColumnNames="professione_id" baseTableName="persona" constraintName="FK_45n4gxx0y5xrx1osn8nn382l" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="professione"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-129">
+    <changeSet author="abarducci (generated)" id="1481296815849-147">
         <addForeignKeyConstraint baseColumnNames="profile_id" baseTableName="profile_role" constraintName="FK_4gplwal6tlx22jbgd69rovkb5" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="profile"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-130">
+    <changeSet author="abarducci (generated)" id="1481296815849-148">
         <addForeignKeyConstraint baseColumnNames="piano_formativo_id" baseTableName="piano_formativo_eventi_piano_formativo" constraintName="FK_4j7cic7b65cliqwvlj2yo2kmy" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="piano_formativo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-131">
+    <changeSet author="abarducci (generated)" id="1481296815849-149">
         <addForeignKeyConstraint baseColumnNames="anagrafica_id" baseTableName="persona" constraintName="FK_4ou979c0a9ybt0n0jvw4x1s6f" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="anagrafica"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-132">
+    <changeSet author="abarducci (generated)" id="1481296815849-150">
         <addForeignKeyConstraint baseColumnNames="sponsor_file_id" baseTableName="sponsor" constraintName="FK_4w1rkl0sewhki96ibknm5r9x7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-133">
+    <changeSet author="abarducci (generated)" id="1481296815849-151">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="relazione_annuale" constraintName="FK_4xaqjr4nw5674va1rb6hrrrbt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-134">
+    <changeSet author="abarducci (generated)" id="1481296815849-152">
         <addForeignKeyConstraint baseColumnNames="evento_res_id" baseTableName="programma_giornalierores" constraintName="FK_5bj5lylh4weorb1h5kmrmwslb" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-135">
+    <changeSet author="abarducci (generated)" id="1481296815849-153">
+        <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_63wpjlr803sc5eyh44rhcixqc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-154">
         <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="fase_azioni_ruoli_eventofsctypea" constraintName="FK_669556wjq8x83jhokw3ncrb19" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-136">
+    <changeSet author="abarducci (generated)" id="1481296815849-155">
         <addForeignKeyConstraint baseColumnNames="riepilogo_res_id" baseTableName="riepilogo_res" constraintName="FK_6gopi66kfjkjmqgvqp0bxj756" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-137">
+    <changeSet author="abarducci (generated)" id="1481296815849-156">
         <addForeignKeyConstraint baseColumnNames="componenti_segreteria_id" baseTableName="team_valutazione_componenti_segreteria" constraintName="FK_6iwrffw48qf74n4orvpjq4r8n" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-138">
-        <addForeignKeyConstraint baseColumnNames="eventofad_id" baseTableName="eventofad_programmafad" constraintName="FK_6kr1v2tda9u2iwhututlekagi" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
+    <changeSet author="abarducci (generated)" id="1481296815849-157">
+        <addForeignKeyConstraint baseColumnNames="referente_informatico_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_6mnkmkg9e7gdoxqld052rr3yh" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-139">
+    <changeSet author="abarducci (generated)" id="1481296815849-158">
         <addForeignKeyConstraint baseColumnNames="responsabile_informatico_id" baseTableName="team_valutazione" constraintName="FK_6o48deisgbr1av404mrl8rjtt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-140">
+    <changeSet author="abarducci (generated)" id="1481296815849-159">
         <addForeignKeyConstraint baseColumnNames="relazione_annuale_id" baseTableName="relazione_annuale_riepilogo_obiettivi_regionali" constraintName="FK_6oeialo2a5m84qreotm4xqxk8" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="relazione_annuale"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-141">
+    <changeSet author="abarducci (generated)" id="1481296815849-160">
+        <addForeignKeyConstraint baseColumnNames="docente_id" baseTableName="dettaglio_attivitafad_docente" constraintName="FK_6sm7mrs6ptr503o039wbl1ul8" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_evento"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-161">
         <addForeignKeyConstraint baseColumnNames="requisiti_hardware_software_id" baseTableName="evento" constraintName="FK_7gnk0j2kqqx5pjj8dyt4ihkx2" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-142">
+    <changeSet author="abarducci (generated)" id="1481296815849-162">
         <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="rendicontazione_inviata" constraintName="FK_7lkf6iknink2kwe5qycmj59dm" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-143">
+    <changeSet author="abarducci (generated)" id="1481296815849-163">
         <addForeignKeyConstraint baseColumnNames="obiettivo_nazionale_id" baseTableName="evento_piano_formativo" constraintName="FK_83n3yc67qu67ppehc9t71iubo" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="obiettivo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-144">
+    <changeSet author="abarducci (generated)" id="1481296815849-164">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="field_editabile_accreditamento" constraintName="FK_87eca8ppo766lc3lb42bh5hk4" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-145">
+    <changeSet author="abarducci (generated)" id="1481296815849-165">
         <addForeignKeyConstraint baseColumnNames="allegato_comunicazione_id" baseTableName="comunicazione" constraintName="FK_88phq4ljjdmm3ocgjmtqali6u" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-146">
+    <changeSet author="abarducci (generated)" id="1481296815849-166">
         <addForeignKeyConstraint baseColumnNames="eventi_attuati_id" baseTableName="relazione_annuale_eventi_attuati" constraintName="FK_8cbgmd8nwomqmwcx8vfm7u3lw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-147">
+    <changeSet author="abarducci (generated)" id="1481296815849-167">
         <addForeignKeyConstraint baseColumnNames="persona_id" baseTableName="persona_files" constraintName="FK_8jf0g36ndscn40xpovmhd1y76" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-148">
+    <changeSet author="abarducci (generated)" id="1481296815849-168">
         <addForeignKeyConstraint baseColumnNames="riepilogo_obiettivi_key" baseTableName="relazione_annuale_riepilogo_obiettivi_nazionali" constraintName="FK_8qi1v2tth5k4c1mmne8rvgc63" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="obiettivo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-149">
+    <changeSet author="abarducci (generated)" id="1481296815849-169">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="valutazione" constraintName="FK_8smdd7q6xcwaa17172c20i5uj" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-150">
+    <changeSet author="abarducci (generated)" id="1481296815849-170">
+        <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="protocollo" constraintName="FK_96hmevwgm2ffarxqywt2x55a2" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-171">
+        <addForeignKeyConstraint baseColumnNames="dettaglio_id" baseTableName="dettaglio_attivitares_docente" constraintName="FK_9m9q2nk2d80pyvbr56u8j7rs5" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dettaglio_attivitares"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-172">
         <addForeignKeyConstraint baseColumnNames="file_id" baseTableName="file_data" constraintName="FK_9tbkr357i3fg7klg6kwfq6xws" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-151">
+    <changeSet author="abarducci (generated)" id="1481296815849-173">
         <addForeignKeyConstraint baseColumnNames="disciplina_id" baseTableName="evento_discipline" constraintName="FK_9wvu9v87emxy231b8hx5lrgop" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="disciplina"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-152">
+    <changeSet author="abarducci (generated)" id="1481296815849-174">
+        <addForeignKeyConstraint baseColumnNames="valutazioni_sul_campo_id" baseTableName="verbale_valutazione_sul_campo_valutazioni_sul_campo" constraintName="FK_9xa8gutrbpciubmt5ofxjpv6u" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="field_valutazione_accreditamento"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-175">
         <addForeignKeyConstraint baseColumnNames="eventofsc_id" baseTableName="eventofsc_verifica_presenza_partecipanti" constraintName="FK_9ys7fgsmajjq6yri407x7ja5d" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-153">
+    <changeSet author="abarducci (generated)" id="1481296815849-176">
         <addForeignKeyConstraint baseColumnNames="file_rendicontazione_id" baseTableName="rendicontazione_inviata" constraintName="FK_a0wjtlv3an596ok8p502pmxfk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-154">
+    <changeSet author="abarducci (generated)" id="1481296815849-177">
         <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="account_domande_non_valutate" constraintName="FK_a31dcttxeqksdnntn09bpvqsg" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-155">
+    <changeSet author="abarducci (generated)" id="1481296815849-178">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="anagrafica_full_evento" constraintName="FK_ae7ffqthfl7udvkdwbx4ux3d" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-156">
+    <changeSet author="abarducci (generated)" id="1481296815849-179">
         <addForeignKeyConstraint baseColumnNames="autocertificazione_assenza_finanziamenti_id" baseTableName="evento" constraintName="FK_aek6i2jwonsjy9rihsubabu1o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-157">
-        <addForeignKeyConstraint baseColumnNames="programma_giornalierores_id" baseTableName="programma_giornalierores_programma" constraintName="FK_af18c9j4nm0tpt7tfkvcppn3o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="programma_giornalierores"/>
-    </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-158">
+    <changeSet author="abarducci (generated)" id="1481296815849-180">
         <addForeignKeyConstraint baseColumnNames="gruppo_crecm_id" baseTableName="gruppo_crecm_valutatori" constraintName="FK_alduhsbylsv4vr79f0du8mk7o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="gruppo_crecm"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-159">
+    <changeSet author="abarducci (generated)" id="1481296815849-181">
+        <addForeignKeyConstraint baseColumnNames="verbale_valutazione_sul_campo_id" baseTableName="accreditamento" constraintName="FK_ap9cycxv2i1bjfwf4r99ehia7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="verbale_valutazione_sul_campo"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-182">
+        <addForeignKeyConstraint baseColumnNames="carta_identita_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_bc3804dcqqfjdsniy118herp4" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-183">
         <addForeignKeyConstraint baseColumnNames="azione_ruoli_eventofsc_id" baseTableName="azione_ruoli_eventofsc_ruoli" constraintName="FK_bf5axkse51p2u096f6tukeqqk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="azione_ruoli_eventofsc"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-160">
+    <changeSet author="abarducci (generated)" id="1481296815849-184">
         <addForeignKeyConstraint baseColumnNames="valutatori_id" baseTableName="gruppo_crecm_valutatori" constraintName="FK_bj9p3udv9pjs3j6q0wyg0bc3b" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-161">
-        <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="provider_files" constraintName="FK_bvb4dbxd33gb5iatx9ynlyl4q" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
-    </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-162">
+    <changeSet author="abarducci (generated)" id="1481296815849-185">
         <addForeignKeyConstraint baseColumnNames="disciplina_id" baseTableName="dati_accreditamento_discipline_selezionate" constraintName="FK_c3ptvkmw5ih3ebtuywg90kvje" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="disciplina"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-163">
+    <changeSet author="abarducci (generated)" id="1481296815849-186">
         <addForeignKeyConstraint baseColumnNames="note_osservazioni_integrazione_id" baseTableName="accreditamento" constraintName="FK_c5qvf0hb29ef05noqvacwf73n" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-164">
+    <changeSet author="abarducci (generated)" id="1481296815849-187">
         <addForeignKeyConstraint baseColumnNames="obiettivo_nazionale_id" baseTableName="evento" constraintName="FK_colvsw9mddwupvkpdiussdg4g" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="obiettivo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-165">
+    <changeSet author="abarducci (generated)" id="1481296815849-188">
         <addForeignKeyConstraint baseColumnNames="team_valutazione_id" baseTableName="team_valutazione_componenti_segreteria" constraintName="FK_d3geq5i0lg5adte6ipylyj67o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="team_valutazione"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-166">
+    <changeSet author="abarducci (generated)" id="1481296815849-189">
         <addForeignKeyConstraint baseColumnNames="mittente_id" baseTableName="comunicazione" constraintName="FK_dd78e1kdtlvtd1bqqk462vcce" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-167">
+    <changeSet author="abarducci (generated)" id="1481296815849-190">
         <addForeignKeyConstraint baseColumnNames="dichiarazione_assenza_conflitto_interesse_id" baseTableName="evento" constraintName="FK_ddrcvh24xqxo1hmlb9u51r7im" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-168">
+    <changeSet author="abarducci (generated)" id="1481296815849-191">
         <addForeignKeyConstraint baseColumnNames="eventofsc_id" baseTableName="eventofsc_verifica_apprendimento" constraintName="FK_dj4buhcjnt1utynpa65mbblb5" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-169">
+    <changeSet author="abarducci (generated)" id="1481296815849-192">
         <addForeignKeyConstraint baseColumnNames="professione_id" baseTableName="disciplina" constraintName="FK_dkk8kyk8nab5bbqoxphutj4bd" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="professione"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-170">
+    <changeSet author="abarducci (generated)" id="1481296815849-193">
         <addForeignKeyConstraint baseColumnNames="team_leader_id" baseTableName="team_valutazione" constraintName="FK_dy7j1ymhvp1bvwufrly9ei1fc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-171">
+    <changeSet author="abarducci (generated)" id="1481296815849-194">
         <addForeignKeyConstraint baseColumnNames="gruppo_crecm_id" baseTableName="accreditamento" constraintName="FK_eg4uy72lqnhcmb4ncowdg3wuc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="gruppo_crecm"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-172">
+    <changeSet author="abarducci (generated)" id="1481296815849-195">
         <addForeignKeyConstraint baseColumnNames="codice_provincia" baseTableName="comuni" constraintName="FK_ehboiu05vfk2j4p1h6ejetr2f" deferrable="false" initiallyDeferred="false" referencedColumnNames="codice_provincia" referencedTableName="province"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-173">
+    <changeSet author="abarducci (generated)" id="1481296815849-196">
         <addForeignKeyConstraint baseColumnNames="responsabile_segreteria_id" baseTableName="evento" constraintName="FK_ejnrxs1wv43w8pr63icpr4txh" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_full_evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-174">
+    <changeSet author="abarducci (generated)" id="1481296815849-197">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="evento_piano_formativo" constraintName="FK_elu1b59hrfsvlwutu6ia54id4" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-175">
+    <changeSet author="abarducci (generated)" id="1481296815849-198">
         <addForeignKeyConstraint baseColumnNames="relazione_annuale_id" baseTableName="relazione_annuale_riepilogo_discipline" constraintName="FK_encg5qxul27m3qlqrqkslohlg" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="relazione_annuale"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-176">
+    <changeSet author="abarducci (generated)" id="1481296815849-199">
+        <addForeignKeyConstraint baseColumnNames="protocollo_id" baseTableName="file" constraintName="FK_eocx6qs48tgw17tkyochqpje0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="protocollo"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-200">
+        <addForeignKeyConstraint baseColumnNames="verbale_valutazione_sul_campo_id" baseTableName="verbale_valutazione_sul_campo_valutazioni_sul_campo" constraintName="FK_ey35frdqmpp2cvbf1qpm1jr5i" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="verbale_valutazione_sul_campo"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-201">
         <addForeignKeyConstraint baseColumnNames="seduta_id" baseTableName="valutazione_commissione" constraintName="FK_f3ek101w06cyeqxy2e18le8kj" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="seduta"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-177">
+    <changeSet author="abarducci (generated)" id="1481296815849-202">
+        <addForeignKeyConstraint baseColumnNames="team_leader_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_f63ck9nh74ytftlyg5cjh0unp" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-203">
+        <addForeignKeyConstraint baseColumnNames="programma_giornaliero_res_id" baseTableName="dettaglio_attivitares" constraintName="FK_fkpcdqjrobl5nlw8vdv9ycvnh" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="programma_giornalierores"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-204">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="sede" constraintName="FK_fp7eiush9reoxijdmhfld3da" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-178">
+    <changeSet author="abarducci (generated)" id="1481296815849-205">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="evento_piano_formativo" constraintName="FK_fqdrw6r9h8wii5x0vboqph2ca" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-179">
+    <changeSet author="abarducci (generated)" id="1481296815849-206">
         <addForeignKeyConstraint baseColumnNames="mittente_id" baseTableName="comunicazione_response" constraintName="FK_ftee1ncf3e0j3il7f9q3bjxra" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-180">
+    <changeSet author="abarducci (generated)" id="1481296815849-207">
+        <addForeignKeyConstraint baseColumnNames="componenti_segreteria_id" baseTableName="verbale_valutazione_sul_campo_componenti_segreteria" constraintName="FK_fvwifti6fe0d3lkpm67h7xh7h" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-208">
         <addForeignKeyConstraint baseColumnNames="valutazione_id" baseTableName="valutazione_valutazioni" constraintName="FK_g6799hd43a621eqbt4neqkwie" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="valutazione"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-181">
+    <changeSet author="abarducci (generated)" id="1481296815849-209">
         <addForeignKeyConstraint baseColumnNames="obiettivo_regionale_id" baseTableName="evento_piano_formativo" constraintName="FK_g98j76w3yw2cxix7ocxeg89xn" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="obiettivo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-182">
+    <changeSet author="abarducci (generated)" id="1481296815849-210">
         <addForeignKeyConstraint baseColumnNames="riepilogo_fad_id" baseTableName="riepilogo_fad" constraintName="FK_gfaqoyyo9428mcsof3gcwig8" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-183">
+    <changeSet author="abarducci (generated)" id="1481296815849-211">
         <addForeignKeyConstraint baseColumnNames="cv_id" baseTableName="anagrafica_evento" constraintName="FK_gh1pu34l5d9xuj6q7ay3vcef" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-184">
+    <changeSet author="abarducci (generated)" id="1481296815849-212">
         <addForeignKeyConstraint baseColumnNames="responsabile_id" baseTableName="persona_evento" constraintName="FK_gj2qi752p2nemshioopj6eong" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-185">
+    <changeSet author="abarducci (generated)" id="1481296815849-213">
         <addForeignKeyConstraint baseColumnNames="valutazioni_id" baseTableName="valutazione_valutazioni" constraintName="FK_gj7459cba1dsorqj2c54ukfua" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="field_valutazione_accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-186">
+    <changeSet author="abarducci (generated)" id="1481296815849-214">
         <addForeignKeyConstraint baseColumnNames="relazione_annuale_id" baseTableName="relazione_annuale_riepilogo_obiettivi_nazionali" constraintName="FK_gncfqclge1ekwg6r008yb1s3y" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="relazione_annuale"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-187">
+    <changeSet author="abarducci (generated)" id="1481296815849-215">
+        <addForeignKeyConstraint baseColumnNames="files_id" baseTableName="dati_accreditamento_files" constraintName="FK_gor4jf9ie4siy70v8ubobc0ab" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-216">
         <addForeignKeyConstraint baseColumnNames="azione_ruoli_eventofsc_id" baseTableName="azione_ruoli_eventofsc_metodi_di_lavoro" constraintName="FK_htsrcmphpivwvw33o4m787pn1" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="azione_ruoli_eventofsc"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-188">
+    <changeSet author="abarducci (generated)" id="1481296815849-217">
+        <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_hunwjwtjdkm5t0wrmg3tdc85t" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-218">
         <addForeignKeyConstraint baseColumnNames="fase_id" baseTableName="azione_ruoli_eventofsc" constraintName="FK_hxlvsukj0he5tkhfxqmwv6p7a" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="fase_azioni_ruoli_eventofsctypea"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-189">
+    <changeSet author="abarducci (generated)" id="1481296815849-219">
         <addForeignKeyConstraint baseColumnNames="relazione_annuale_id" baseTableName="relazione_annuale_eventipfa" constraintName="FK_i0oddubh3sh1x6c8h7m3gqrjq" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="relazione_annuale"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-190">
+    <changeSet author="abarducci (generated)" id="1481296815849-220">
         <addForeignKeyConstraint baseColumnNames="pagamento_id" baseTableName="pag_dovuti_log" constraintName="FK_i1do9laag1twmo3c0kjoil7v8" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="pagamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-191">
+    <changeSet author="abarducci (generated)" id="1481296815849-221">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="piano_formativo" constraintName="FK_i1e84votoyn033v1sbyejdgqx" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-192">
+    <changeSet author="abarducci (generated)" id="1481296815849-222">
         <addForeignKeyConstraint baseColumnNames="richiesta_integrazione_id" baseTableName="accreditamento" constraintName="FK_i9kqborag09cd7pyy0juhxuum" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-193">
+    <changeSet author="abarducci (generated)" id="1481296815849-223">
         <addForeignKeyConstraint baseColumnNames="allegato_risposta_id" baseTableName="comunicazione_response" constraintName="FK_iiixjxvinupd3yspfw3m3knm8" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-194">
+    <changeSet author="abarducci (generated)" id="1481296815849-224">
         <addForeignKeyConstraint baseColumnNames="eventores_id" baseTableName="eventores_verifica_presenza_partecipanti" constraintName="FK_irsmj53wuob65i46ddu4n33px" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-195">
+    <changeSet author="abarducci (generated)" id="1481296815849-225">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="field_integrazione_accreditamento" constraintName="FK_isw69j7tns5idmeeu77qxrfgk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-196">
+    <changeSet author="abarducci (generated)" id="1481296815849-226">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="quota_annuale" constraintName="FK_iy79a1uvmisbvdjau6cqpjmi" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-197">
+    <changeSet author="abarducci (generated)" id="1481296815849-227">
         <addForeignKeyConstraint baseColumnNames="riepilogo_discipline_key" baseTableName="relazione_annuale_riepilogo_discipline" constraintName="FK_j1rytaanniwaffpq4bki9awkx" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="disciplina"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-198">
+    <changeSet author="abarducci (generated)" id="1481296815849-228">
         <addForeignKeyConstraint baseColumnNames="obiettivo_regionale_id" baseTableName="evento" constraintName="FK_j640gqaq5rio80yva0ujg8rlt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="obiettivo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-199">
+    <changeSet author="abarducci (generated)" id="1481296815849-229">
         <addForeignKeyConstraint baseColumnNames="files_id" baseTableName="persona_files" constraintName="FK_jgl1yoclrtgthssvcygl7rxe0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-200">
+    <changeSet author="abarducci (generated)" id="1481296815849-230">
         <addForeignKeyConstraint baseColumnNames="autocertificazione_assenza_aziende_alimenti_prima_infanzia_id" baseTableName="evento" constraintName="FK_jjc4evkw605oiwppkef1mm280" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-201">
+    <changeSet author="abarducci (generated)" id="1481296815849-231">
         <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="evento_piano_formativo_discipline" constraintName="FK_jlmsw9ug0ij8ncsa4pi7qgx1l" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento_piano_formativo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-202">
+    <changeSet author="abarducci (generated)" id="1481296815849-232">
         <addForeignKeyConstraint baseColumnNames="relazione_finale_id" baseTableName="relazione_annuale" constraintName="FK_jo4cfijurxhqv9rs8xwtt4hb1" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-203">
+    <changeSet author="abarducci (generated)" id="1481296815849-233">
         <addForeignKeyConstraint baseColumnNames="pagamento_id" baseTableName="pag_pagati_log" constraintName="FK_jujyqrkvld8dajkat2bln4gni" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="pagamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-204">
+    <changeSet author="abarducci (generated)" id="1481296815849-234">
+        <addForeignKeyConstraint baseColumnNames="delega_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_k29g7bckt6ytrq5kt1ws081uw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-235">
         <addForeignKeyConstraint baseColumnNames="profile_id" baseTableName="account_profile" constraintName="FK_k81l0bnjmx2aif52febo38dc7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="profile"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-205">
+    <changeSet author="abarducci (generated)" id="1481296815849-236">
         <addForeignKeyConstraint baseColumnNames="eventores_id" baseTableName="eventores_risultati_attesi" constraintName="FK_kdu4ww7qa4myx7tmqqjjtod4a" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-206">
+    <changeSet author="abarducci (generated)" id="1481296815849-237">
         <addForeignKeyConstraint baseColumnNames="account_invio_id" baseTableName="rendicontazione_inviata" constraintName="FK_kf9kjdyr7fk6yxhwnrhcwiyx9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-207">
+    <changeSet author="abarducci (generated)" id="1481296815849-238">
         <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="evento_destinatari_evento" constraintName="FK_kgkejpsnqwe7u9uvqqbqy0n5l" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-208">
+    <changeSet author="abarducci (generated)" id="1481296815849-239">
         <addForeignKeyConstraint baseColumnNames="relazione_annuale_id" baseTableName="relazione_annuale_eventi_attuati" constraintName="FK_krsejo3r84ewsalssfy74genw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="relazione_annuale"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-209">
+    <changeSet author="abarducci (generated)" id="1481296815849-240">
         <addForeignKeyConstraint baseColumnNames="eventofad_id" baseTableName="eventofad_verifica_apprendimento" constraintName="FK_l0bhcg0ar9upfc2xnupgx9cc9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-210">
+    <changeSet author="abarducci (generated)" id="1481296815849-241">
         <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="partner" constraintName="FK_l4adbfk31fpv0vk2w3dweaet9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-211">
+    <changeSet author="abarducci (generated)" id="1481296815849-242">
         <addForeignKeyConstraint baseColumnNames="eventores_id" baseTableName="eventores_date_intermedie" constraintName="FK_l9tvu01dr7fnsdygpqxtcfwvn" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-212">
+    <changeSet author="abarducci (generated)" id="1481296815849-243">
+        <addForeignKeyConstraint baseColumnNames="docente_id" baseTableName="dettaglio_attivitares_docente" constraintName="FK_l9x03o6vxyyd0mq8yt4yxcbaj" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_evento"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-244">
         <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="valutazione" constraintName="FK_lj9y1gb50w4mufea4vkrtbam4" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-213">
+    <changeSet author="abarducci (generated)" id="1481296815849-245">
         <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="sponsor" constraintName="FK_ll6l29inu89k4iqqy6iix1vcg" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-214">
+    <changeSet author="abarducci (generated)" id="1481296815849-246">
         <addForeignKeyConstraint baseColumnNames="decreto_accreditamento_id" baseTableName="accreditamento" constraintName="FK_m49r5xhl5n96p6c66txlgxf7e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-215">
+    <changeSet author="abarducci (generated)" id="1481296815849-247">
         <addForeignKeyConstraint baseColumnNames="note_osservazioni_preavviso_rigetto_id" baseTableName="accreditamento" constraintName="FK_mg5sx6j0hiot17goqe4u8i7qy" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-216">
+    <changeSet author="abarducci (generated)" id="1481296815849-248">
         <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="field_editabile_evento" constraintName="FK_mimdkycgr8c4db85is4c3jyi" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento_piano_formativo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-217">
+    <changeSet author="abarducci (generated)" id="1481296815849-249">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="evento" constraintName="FK_mtd14jxn5trif92qegspfmhrp" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-218">
+    <changeSet author="abarducci (generated)" id="1481296815849-250">
         <addForeignKeyConstraint baseColumnNames="comunicazione_id" baseTableName="comunicazione_destinatari" constraintName="FK_nafe6xumu4fdbxrdjadm2rc5y" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="comunicazione"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-219">
-        <addForeignKeyConstraint baseColumnNames="files_id" baseTableName="provider_files" constraintName="FK_nexnu8ry7fg4u9r69lc72y8qs" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
-    </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-220">
+    <changeSet author="abarducci (generated)" id="1481296815849-251">
         <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="profile_role" constraintName="FK_ns7m0x44vs7ywdc8n5mk8yb9y" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="role"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-221">
+    <changeSet author="abarducci (generated)" id="1481296815849-252">
+        <addForeignKeyConstraint baseColumnNames="eventofad_id" baseTableName="dettaglio_attivitafad" constraintName="FK_nyll3a8u6s0k8robouj6olmdc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-253">
         <addForeignKeyConstraint baseColumnNames="riepilogo_professioni_key" baseTableName="relazione_annuale_riepilogo_professioni" constraintName="FK_o5lkxfalxdldf3v64nge0k0qk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="professione"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-222">
+    <changeSet author="abarducci (generated)" id="1481296815849-254">
         <addForeignKeyConstraint baseColumnNames="riepilogo_obiettivi_regionali_key" baseTableName="relazione_annuale_riepilogo_obiettivi_regionali" constraintName="FK_o5lmwtaq8dtdkybjs1mkl1e44" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="obiettivo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-223">
+    <changeSet author="abarducci (generated)" id="1481296815849-255">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="anagrafica" constraintName="FK_o9balporr09aq9fqfkrl0grm0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-224">
+    <changeSet author="abarducci (generated)" id="1481296815849-256">
+        <addForeignKeyConstraint baseColumnNames="protocollo_id" baseTableName="proto_batch_log" constraintName="FK_o9vne77upca9vpfxrdxgba7k" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="protocollo"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-257">
         <addForeignKeyConstraint baseColumnNames="report_partecipantixml_id" baseTableName="evento" constraintName="FK_od6m35jidfaiic577j43jo3g4" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-225">
+    <changeSet author="abarducci (generated)" id="1481296815849-258">
         <addForeignKeyConstraint baseColumnNames="evento_piano_formativo_id" baseTableName="evento" constraintName="FK_of0gtj4kw3ugh1ugxhd275t6w" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento_piano_formativo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-226">
+    <changeSet author="abarducci (generated)" id="1481296815849-259">
         <addForeignKeyConstraint baseColumnNames="decreto_diniego_id" baseTableName="accreditamento" constraintName="FK_ogpi5wxvy8wijg4kfkdywgdgl" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-227">
+    <changeSet author="abarducci (generated)" id="1481296815849-260">
+        <addForeignKeyConstraint baseColumnNames="dati_accreditamento_id" baseTableName="dati_accreditamento_files" constraintName="FK_ojsf7wd9t4v9g2sc6spow8vuw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dati_accreditamento"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-261">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="evento" constraintName="FK_ok23q6ytb2nl8h9e1a1mgmp2e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-228">
+    <changeSet author="abarducci (generated)" id="1481296815849-262">
         <addForeignKeyConstraint baseColumnNames="evento_padre_id" baseTableName="evento" constraintName="FK_owaaueregn7ql14tbbebaoo1i" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-229">
+    <changeSet author="abarducci (generated)" id="1481296815849-263">
         <addForeignKeyConstraint baseColumnNames="piano_formativo_id" baseTableName="accreditamento" constraintName="FK_p12tiojklhu8gh8ofyi7e0kpn" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="piano_formativo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-230">
+    <changeSet author="abarducci (generated)" id="1481296815849-264">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="valutazione_commissione" constraintName="FK_p2cqqo5nlxb0wfbcrirr4awsa" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-231">
+    <changeSet author="abarducci (generated)" id="1481296815849-265">
         <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="account_profile" constraintName="FK_pfm098mqligo1wpd1403e4240" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-232">
+    <changeSet author="abarducci (generated)" id="1481296815849-266">
         <addForeignKeyConstraint baseColumnNames="contratti_accordi_convenzioni_id" baseTableName="evento" constraintName="FK_pjtvgm069mpx4ehequypaci2o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-233">
+    <changeSet author="abarducci (generated)" id="1481296815849-267">
         <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="comunicazione_destinatari" constraintName="FK_pk5kk7kgyd27u3g628onratw2" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-234">
+    <changeSet author="abarducci (generated)" id="1481296815849-268">
         <addForeignKeyConstraint baseColumnNames="cv_id" baseTableName="persona_evento" constraintName="FK_poxcaju0ggs7to9i330vgcpy9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-235">
+    <changeSet author="abarducci (generated)" id="1481296815849-269">
         <addForeignKeyConstraint baseColumnNames="componente_osservatorio_regionale_id" baseTableName="team_valutazione" constraintName="FK_pqx9hvpm2w5fyxhpifybruc5a" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-236">
+    <changeSet author="abarducci (generated)" id="1481296815849-270">
         <addForeignKeyConstraint baseColumnNames="brochure_evento_id" baseTableName="evento" constraintName="FK_puvcky5o7fj5iwrk01l86vv6t" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-237">
+    <changeSet author="abarducci (generated)" id="1481296815849-271">
         <addForeignKeyConstraint baseColumnNames="team_valutazione_id" baseTableName="accreditamento" constraintName="FK_pwivugalwbf4l5g9irr5tcmtl" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="team_valutazione"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-238">
-        <addForeignKeyConstraint baseColumnNames="docente_id" baseTableName="programma_giornalierores_programma" constraintName="FK_q1faorg7nd0tajj6flnb4jtao" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_evento"/>
-    </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-239">
+    <changeSet author="abarducci (generated)" id="1481296815849-272">
         <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="evento_discipline" constraintName="FK_q8bof5s8wj2cin3yrielc2ip6" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-240">
+    <changeSet author="abarducci (generated)" id="1481296815849-273">
+        <addForeignKeyConstraint baseColumnNames="osservatore_regionale_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_qblmn7yh2oituf47e6oivnd1g" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-274">
         <addForeignKeyConstraint baseColumnNames="eventofsc_id" baseTableName="eventofsc_riepilogo_ruoli" constraintName="FK_qcbwlh1m7sicradcic20gbxxh" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-241">
+    <changeSet author="abarducci (generated)" id="1481296815849-275">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="account" constraintName="FK_qcc7w4gg3xdhrgt1j3km2cepe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-242">
+    <changeSet author="abarducci (generated)" id="1481296815849-276">
+        <addForeignKeyConstraint baseColumnNames="relazione_annuale_id" baseTableName="relazione_annuale_riepilogo_anagrafe_avente_crediti" constraintName="FK_qjuva1xpb7sghrfx2xp8b0wh5" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="relazione_annuale"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-277">
         <addForeignKeyConstraint baseColumnNames="autocertificazione_autorizzazione_ministero_salute_id" baseTableName="evento" constraintName="FK_qqn3ydf851pg34epyoup5wo9h" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-243">
+    <changeSet author="abarducci (generated)" id="1481296815849-278">
+        <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="anagrafe_regionale_crediti" constraintName="FK_qshmllkkf6ugtpspauqqurh19" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-279">
         <addForeignKeyConstraint baseColumnNames="partner_file_id" baseTableName="partner" constraintName="FK_qtlfodlt6s2h8io09irmnrxbb" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-244">
+    <changeSet author="abarducci (generated)" id="1481296815849-280">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="anagrafica_evento" constraintName="FK_qwhn0cm37h2qhv9ltydbl22hd" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-245">
+    <changeSet author="abarducci (generated)" id="1481296815849-281">
         <addForeignKeyConstraint baseColumnNames="eventi_piano_formativo_id" baseTableName="piano_formativo_eventi_piano_formativo" constraintName="FK_r1oco0mld4yrau4r04ma14sg7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento_piano_formativo"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-246">
+    <changeSet author="abarducci (generated)" id="1481296815849-282">
         <addForeignKeyConstraint baseColumnNames="richiesta_preavviso_rigetto_id" baseTableName="accreditamento" constraintName="FK_r601dr6eo6sw3h4bru1hsvmq7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-247">
+    <changeSet author="abarducci (generated)" id="1481296815849-283">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="account_domande_non_valutate" constraintName="FK_rhnfu5yvgwi0yhbu9j8juboog" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-248">
+    <changeSet author="abarducci (generated)" id="1481296815849-284">
         <addForeignKeyConstraint baseColumnNames="disciplina_id" baseTableName="evento_piano_formativo_discipline" constraintName="FK_rraoiox2bbt3y0c0j7oes08vd" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="disciplina"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-249">
+    <changeSet author="abarducci (generated)" id="1481296815849-285">
         <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="persona" constraintName="FK_s8i45c7exu5kk6vnpt2y0mq2p" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-250">
+    <changeSet author="abarducci (generated)" id="1481296815849-286">
         <addForeignKeyConstraint baseColumnNames="eventofad_id" baseTableName="eventofad_risultati_attesi" constraintName="FK_scsc9mrby84l1guigi2thipms" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-251">
+    <changeSet author="abarducci (generated)" id="1481296815849-287">
         <addForeignKeyConstraint baseColumnNames="dati_accreditamento_id" baseTableName="dati_accreditamento_procedure_formative" constraintName="FK_sfpbi4j5f27rdkcpfqo3hd5j0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dati_accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-252">
+    <changeSet author="abarducci (generated)" id="1481296815849-288">
         <addForeignKeyConstraint baseColumnNames="dati_accreditamento_id" baseTableName="dati_accreditamento_discipline_selezionate" constraintName="FK_sm43ghyj5m3dpa6qx9x4frg4e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dati_accreditamento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-253">
+    <changeSet author="abarducci (generated)" id="1481296815849-289">
         <addForeignKeyConstraint baseColumnNames="eventofad_id" baseTableName="eventofad_obiettivi" constraintName="FK_st96xf6af4y669gx16hb0i4ih" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-254">
+    <changeSet author="abarducci (generated)" id="1481296815849-290">
         <addForeignKeyConstraint baseColumnNames="comunicazione_id" baseTableName="comunicazione_utenti_che_devono_leggere" constraintName="FK_sty7o3wag07k5o1d1xgho2oe3" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="comunicazione"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-255">
+    <changeSet author="abarducci (generated)" id="1481296815849-291">
         <addForeignKeyConstraint baseColumnNames="fk_quota_annuale" baseTableName="pagamento" constraintName="FK_t3l1mgin76qafhx2pbiv57c8m" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="quota_annuale"/>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-256">
+    <changeSet author="abarducci (generated)" id="1481296815849-292">
         <addForeignKeyConstraint baseColumnNames="dati_accreditamento_id" baseTableName="accreditamento" constraintName="FK_td4rxgusqeo84kfo1eva6uvpc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dati_accreditamento"/>
     </changeSet>
 </databaseChangeLog>
