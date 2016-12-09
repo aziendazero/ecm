@@ -1,19 +1,10 @@
---
--- PostgreSQL database dump
---
-
 SET statement_timeout = 0;
-SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 SET search_path = ecmdb, pg_catalog;
-
---
--- Data for Name: obiettivo; Type: TABLE DATA; Schema: ecmdb; Owner: ecm
---
 
 INSERT INTO obiettivo (id, categoria, codice_cogeaps, nazionale, nome) VALUES (1024, NULL, '1', false, 'Non rientra in uno degli obiettivi regionali');
 INSERT INTO obiettivo (id, categoria, codice_cogeaps, nazionale, nome) VALUES (1025, NULL, '2', false, 'Appropriatezza delle prestazioni sanitarie in conformità ai LEA');
@@ -62,4 +53,3 @@ INSERT INTO obiettivo (id, categoria, codice_cogeaps, nazionale, nome) VALUES (1
 INSERT INTO obiettivo (id, categoria, codice_cogeaps, nazionale, nome) VALUES (1068, 'DI_SISTEMA', '16', true, 'Etica, bioetica e deontologia. (16)');
 INSERT INTO obiettivo (id, categoria, codice_cogeaps, nazionale, nome) VALUES (1069, 'DI_SISTEMA', '17', true, 'Argomenti di carattere generale: informatica ed ingleser scientifico livello avanzato; normativa in materia sanitaria: i principi etici e civili del ssn. (17)');
 INSERT INTO obiettivo (id, categoria, codice_cogeaps, nazionale, nome) VALUES (1070, 'DI_SISTEMA', '20', true, 'Tematiche speciali del SSN e SSR ed a carattere urgente e/o straordinario individuate dalla commissione nazionale ECM e dalle regioni/province autonome per far fronte a specifiche emergenze sanitarie. (20)');
-

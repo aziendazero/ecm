@@ -1,11 +1,5 @@
 package it.tredi.ecm.service;
 
-import static org.mockito.Matchers.longThat;
-
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -92,7 +86,6 @@ import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.validator.FileValidator;
-import scala.noinline;
 
 @Service
 public class EventoServiceImpl implements EventoService {
