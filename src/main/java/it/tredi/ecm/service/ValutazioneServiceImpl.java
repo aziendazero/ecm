@@ -43,6 +43,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private AccountService accountService;
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private EcmProperties ecmProperties;
+	@Autowired private EmailService emailService;
 	@PersistenceContext EntityManager entityManager;
 
 	@Override
@@ -190,6 +191,8 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 				valutazioneRepository.delete(v);
 			}
 		}
+
+		emailService.inviaNotificaASegreteriaMancataValutazioneReferee(ecmProperties.getEmailSegreteriaEcm(), accreditamentoService.getAccreditamento(accreditamentoId).getProvider().getDenominazioneLegale());
 	}
 
 	@Override
