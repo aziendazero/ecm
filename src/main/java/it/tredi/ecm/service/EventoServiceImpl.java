@@ -1,5 +1,7 @@
 package it.tredi.ecm.service;
 
+import static org.mockito.Matchers.longThat;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -1144,7 +1146,10 @@ public class EventoServiceImpl implements EventoService {
 			LOGGER.debug(Utils.getLogMessage("Detach DettaglioAttivitaFAD"));
 			for(DettaglioAttivitaFAD daf : ((EventoFAD) eventoPadre).getProgrammaFAD()) {
 				LOGGER.debug(Utils.getLogMessage("Detach DettaglioAttivitaFAD: " + daf.getId()));
-				daf.getDocenti().size(); //touch che non viene raggiunto perchè al terzo livello
+				for(PersonaEvento pe : daf.getDocenti()) {
+					LOGGER.debug(Utils.getLogMessage("Detach Docente in DettaglioAttivitaFAD: " + pe.getId()));
+					entityManager.detach(pe);
+				}
 				entityManager.detach(daf);
 			}
 		}
@@ -1164,7 +1169,10 @@ public class EventoServiceImpl implements EventoService {
 				LOGGER.debug(Utils.getLogMessage("Detach Programma RES: " + pgr.getId()));
 				for(DettaglioAttivitaRES dar : pgr.getProgramma()) {
 					LOGGER.debug(Utils.getLogMessage("Detach DettaglioAttivitaRES: " + dar.getId()));
-					dar.getDocenti().size(); //touch che non viene raggiunto perchè al terzo livello
+					for(PersonaEvento pe : dar.getDocenti()) {
+						LOGGER.debug(Utils.getLogMessage("Detach Docente in DettaglioAttivitaRES: " + pe.getId()));
+						entityManager.detach(pe);
+					}
 					entityManager.detach(dar);
 				}
 				entityManager.detach(pgr);
@@ -1226,6 +1234,9 @@ public class EventoServiceImpl implements EventoService {
 	//sistema l'Evento detatchato clonando i campi che devono essere clonati
 	private void cloneDetachedEvento(Evento riedizione) throws CloneNotSupportedException {
 
+		//mappa oldId , newId per salvare la lista docenti nel dettaglio attività
+		Map<Long, Long> mapIdDocenti = new HashMap<Long, Long>();
+
 		if(riedizione instanceof EventoFAD) {
 
 			LOGGER.debug(Utils.getLogMessage("Procedura di clonazione EventoFAD - start"));
@@ -1233,9 +1244,12 @@ public class EventoServiceImpl implements EventoService {
 			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio Docenti"));
 			for(PersonaEvento d : ((EventoFAD) riedizione).getDocenti()) {
 				LOGGER.debug(Utils.getLogMessage("Clonazione Docente: " + d.getId()));
+				Long oldId = d.getId();
 				d.setId(null);
 				d.getAnagrafica().setCv(fileService.copyFile(d.getAnagrafica().getCv()));
 				personaEventoRepository.save(d);
+				Long newId = d.getId();
+				mapIdDocenti.put(oldId, newId);
 				LOGGER.debug(Utils.getLogMessage("Docente clonato salvato: " + d.getId()));
 			}
 
@@ -1245,9 +1259,14 @@ public class EventoServiceImpl implements EventoService {
 				LOGGER.debug(Utils.getLogMessage("Clonazione DettaglioAttivitaFAD: " + daf.getId()));
 				daf.setId(null);
 				LOGGER.debug(Utils.getLogMessage("Clonazione dei Docenti del DettaglioAttivitaFAD"));
-				Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();
-				docenti.addAll(Arrays.asList(daf.getDocenti().toArray(new PersonaEvento[daf.getDocenti().size()])));
-				daf.setDocenti(docenti);
+				for(PersonaEvento pe : daf.getDocenti()) {
+					Long newId = mapIdDocenti.get(pe.getId());
+					pe.setId(newId);
+					personaEventoRepository.save(pe);
+				}
+				Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
+				docentiSet.addAll(Arrays.asList(daf.getDocenti().toArray(new PersonaEvento[daf.getDocenti().size()])));
+				daf.setDocenti(docentiSet);
 				dettaglioAttivitaFADList.add(daf);
 			}
 			((EventoFAD) riedizione).setProgrammaFAD(dettaglioAttivitaFADList);
@@ -1277,9 +1296,12 @@ public class EventoServiceImpl implements EventoService {
 			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio Docenti"));
 			for(PersonaEvento d : ((EventoRES) riedizione).getDocenti()) {
 				LOGGER.debug(Utils.getLogMessage("Clonazione Docente: " + d.getId()));
+				Long oldId = d.getId();
 				d.setId(null);
 				d.getAnagrafica().setCv(fileService.copyFile(d.getAnagrafica().getCv()));
 				personaEventoRepository.save(d);
+				Long newId = d.getId();
+				mapIdDocenti.put(oldId, newId);
 				LOGGER.debug(Utils.getLogMessage("Docente clonato salvato: " + d.getId()));
 			}
 
@@ -1295,9 +1317,14 @@ public class EventoServiceImpl implements EventoService {
 					LOGGER.debug(Utils.getLogMessage("Clonazione DettaglioAttivitaRES: " + dar.getId()));
 					dar.setId(null);
 					LOGGER.debug(Utils.getLogMessage("Clonazione dei Docenti del DettaglioAttivitaRES"));
-					Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();
-					docenti.addAll(Arrays.asList(dar.getDocenti().toArray(new PersonaEvento[dar.getDocenti().size()])));
-					dar.setDocenti(docenti);
+					for(PersonaEvento pe : dar.getDocenti()) {
+						Long newId = mapIdDocenti.get(pe.getId());
+						pe.setId(newId);
+						personaEventoRepository.save(pe);
+					}
+					Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
+					docentiSet.addAll(Arrays.asList(dar.getDocenti().toArray(new PersonaEvento[dar.getDocenti().size()])));
+					dar.setDocenti(docentiSet);
 					dettaglioAttivitaRESList.add(dar);
 				}
 				pgr.setProgramma(dettaglioAttivitaRESList);
