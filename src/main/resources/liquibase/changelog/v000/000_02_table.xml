@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
 	logicalFilePath="v000/000_02_table.xml">
-    <changeSet author="abarducci (generated)" id="1479309431348-2">
+    <changeSet author="abarducci (generated)" id="1481296815849-2">
         <createTable tableName="account">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="accountPK"/>
@@ -33,7 +33,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-3">
+    <changeSet author="abarducci (generated)" id="1481296815849-3">
         <createTable tableName="account_domande_non_valutate">
             <column name="account_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -43,7 +43,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-4">
+    <changeSet author="abarducci (generated)" id="1481296815849-4">
         <createTable tableName="account_profile">
             <column name="account_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -53,7 +53,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-5">
+    <changeSet author="abarducci (generated)" id="1481296815849-5">
         <createTable tableName="accreditamento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="accreditamentoPK"/>
@@ -68,6 +68,7 @@
             <column name="data_scadenza" type="date"/>
             <column name="data_valutazione_commissione" type="date"/>
             <column name="data_valutazione_crecm" type="date"/>
+            <column name="dataora_invio_protocollazione" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="durata_procedimento" type="INT"/>
             <column name="giorni_integrazione" type="BIGINT"/>
             <column name="giorni_preavviso_rigetto" type="BIGINT"/>
@@ -91,9 +92,24 @@
             <column name="richiesta_integrazione_id" type="BIGINT"/>
             <column name="richiesta_preavviso_rigetto_id" type="BIGINT"/>
             <column name="team_valutazione_id" type="BIGINT"/>
+            <column name="verbale_valutazione_sul_campo_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-6">
+    <changeSet author="abarducci (generated)" id="1481296815849-6">
+        <createTable tableName="anagrafe_regionale_crediti">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="anagrafe_regionale_creditiPK"/>
+            </column>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="cognome" type="VARCHAR(255)"/>
+            <column name="crediti" type="numeric(19, 2)"/>
+            <column name="data" type="date"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="ruolo" type="VARCHAR(255)"/>
+            <column name="evento_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-7">
         <createTable tableName="anagrafica">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="anagraficaPK"/>
@@ -114,7 +130,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-7">
+    <changeSet author="abarducci (generated)" id="1481296815849-8">
         <createTable tableName="anagrafica_evento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="anagrafica_eventoPK"/>
@@ -127,7 +143,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-8">
+    <changeSet author="abarducci (generated)" id="1481296815849-9">
         <createTable tableName="anagrafica_full_evento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="anagrafica_full_eventoPK"/>
@@ -141,7 +157,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-9">
+    <changeSet author="abarducci (generated)" id="1481296815849-10">
         <createTable tableName="azione_ruoli_eventofsc">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="azione_ruoli_eventofscPK"/>
@@ -153,7 +169,7 @@
             <column name="fase_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-10">
+    <changeSet author="abarducci (generated)" id="1481296815849-11">
         <createTable tableName="azione_ruoli_eventofsc_metodi_di_lavoro">
             <column name="azione_ruoli_eventofsc_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -161,7 +177,7 @@
             <column name="metodi_di_lavoro" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-11">
+    <changeSet author="abarducci (generated)" id="1481296815849-12">
         <createTable tableName="azione_ruoli_eventofsc_ruoli">
             <column name="azione_ruoli_eventofsc_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -170,7 +186,7 @@
             <column name="tempo_dedicato" type="FLOAT4"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-12">
+    <changeSet author="abarducci (generated)" id="1481296815849-13">
         <createTable tableName="comuni">
             <column name="codice_comune" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -179,7 +195,7 @@
             <column name="codice_provincia" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-13">
+    <changeSet author="abarducci (generated)" id="1481296815849-14">
         <createTable tableName="comunicazione">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="comunicazionePK"/>
@@ -197,7 +213,7 @@
             <column name="mittente_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-14">
+    <changeSet author="abarducci (generated)" id="1481296815849-15">
         <createTable tableName="comunicazione_destinatari">
             <column name="comunicazione_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -207,7 +223,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-15">
+    <changeSet author="abarducci (generated)" id="1481296815849-16">
         <createTable tableName="comunicazione_response">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="comunicazione_responsePK"/>
@@ -219,7 +235,7 @@
             <column name="mittente_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-16">
+    <changeSet author="abarducci (generated)" id="1481296815849-17">
         <createTable tableName="comunicazione_utenti_che_devono_leggere">
             <column name="comunicazione_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -227,7 +243,7 @@
             <column name="utenti_che_devono_leggere" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-17">
+    <changeSet author="abarducci (generated)" id="1481296815849-18">
         <createTable tableName="dati_accreditamento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="dati_accreditamentoPK"/>
@@ -262,7 +278,7 @@
             <column name="tipologia_accreditamento" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-18">
+    <changeSet author="abarducci (generated)" id="1481296815849-19">
         <createTable tableName="dati_accreditamento_discipline_selezionate">
             <column name="dati_accreditamento_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -272,7 +288,17 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-19">
+    <changeSet author="abarducci (generated)" id="1481296815849-20">
+        <createTable tableName="dati_accreditamento_files">
+            <column name="dati_accreditamento_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="files_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-21">
         <createTable tableName="dati_accreditamento_procedure_formative">
             <column name="dati_accreditamento_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -280,7 +306,64 @@
             <column name="procedure_formative" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-20">
+    <changeSet author="abarducci (generated)" id="1481296815849-22">
+        <createTable tableName="dettaglio_attivitafad">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="dettaglio_attivitafadPK"/>
+            </column>
+            <column name="argomento" type="VARCHAR(255)"/>
+            <column name="metodologia_didattica" type="VARCHAR(255)"/>
+            <column name="obiettivo_formativo" type="VARCHAR(255)"/>
+            <column name="ore_attivita" type="FLOAT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="risultato_atteso" type="VARCHAR(255)"/>
+            <column name="eventofad_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-23">
+        <createTable tableName="dettaglio_attivitafad_docente">
+            <column name="dettaglio_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="docente_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-24">
+        <createTable tableName="dettaglio_attivitares">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="dettaglio_attivitaresPK"/>
+            </column>
+            <column name="pausa" type="VARCHAR(255)"/>
+            <column name="valutazione_apprendimento" type="VARCHAR(255)"/>
+            <column name="argomento" type="VARCHAR(255)"/>
+            <column name="metodologia_didattica" type="VARCHAR(255)"/>
+            <column name="minuti_attivita" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="obiettivo_formativo" type="VARCHAR(255)"/>
+            <column name="orario_fine" type="TIME WITHOUT TIME ZONE"/>
+            <column name="orario_inizio" type="TIME WITHOUT TIME ZONE"/>
+            <column name="ore_attivita" type="FLOAT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="risultato_atteso" type="VARCHAR(255)"/>
+            <column name="programma_giornaliero_res_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-25">
+        <createTable tableName="dettaglio_attivitares_docente">
+            <column name="dettaglio_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="docente_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-26">
         <createTable tableName="disciplina">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="disciplinaPK"/>
@@ -290,7 +373,7 @@
             <column name="professione_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-21">
+    <changeSet author="abarducci (generated)" id="1481296815849-27">
         <createTable tableName="evento">
             <column name="evento_type" type="VARCHAR(31)">
                 <constraints nullable="false"/>
@@ -300,11 +383,6 @@
             </column>
             <column name="altre_forme_finanziamento" type="BOOLEAN"/>
             <column name="autorizzazione_privacy" type="BOOLEAN"/>
-            <column name="can_attach_sponsor" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-            <column name="can_do_pagamento" type="BOOLEAN"/>
-
             <column name="can_do_rendicontazione" type="BOOLEAN"/>
             <column name="confermati_crediti" type="BOOLEAN"/>
             <column name="contenuti_evento" type="VARCHAR(255)"/>
@@ -312,6 +390,7 @@
             <column name="crediti" type="FLOAT4"/>
             <column name="data_fine" type="date"/>
             <column name="data_inizio" type="date"/>
+            <column name="data_scadenza_invio_rendicontazione" type="date"/>
             <column name="data_scadenza_pagamento" type="date"/>
             <column name="data_ultima_modifica" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="durata" type="FLOAT4"/>
@@ -331,8 +410,9 @@
             <column name="procedura_verifica_qualita_percepita" type="BOOLEAN"/>
             <column name="professioni_evento" type="VARCHAR(255)"/>
             <column name="quota_partecipazione" type="numeric(19, 2)"/>
+            <column name="sponsor_uploaded" type="BOOLEAN"/>
             <column name="stato" type="VARCHAR(255)"/>
-            <column name="titolo" type="VARCHAR(255)"/>
+            <column name="titolo" type="TEXT"/>
             <column name="validator_check" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
@@ -363,7 +443,7 @@
             <column name="workshop_seminari_ecm" type="BOOLEAN"/>
             <column name="password" type="VARCHAR(255)"/>
             <column name="supporto_svolto_da_esperto" type="BOOLEAN"/>
-            <column name="tipologia_evento" type="VARCHAR(255)"/>
+            <column name="tipologia_evento_fad" type="VARCHAR(255)"/>
             <column name="url" type="VARCHAR(255)"/>
             <column name="user_id" type="VARCHAR(255)"/>
             <column name="accreditamento_id" type="BIGINT"/>
@@ -385,7 +465,7 @@
             <column name="requisiti_hardware_software_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-22">
+    <changeSet author="abarducci (generated)" id="1481296815849-28">
         <createTable tableName="evento_destinatari_evento">
             <column name="evento_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -393,7 +473,7 @@
             <column name="destinatari_evento" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-23">
+    <changeSet author="abarducci (generated)" id="1481296815849-29">
         <createTable tableName="evento_discipline">
             <column name="evento_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -403,7 +483,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-24">
+    <changeSet author="abarducci (generated)" id="1481296815849-30">
         <createTable tableName="evento_piano_formativo">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="evento_piano_formativoPK"/>
@@ -423,7 +503,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-25">
+    <changeSet author="abarducci (generated)" id="1481296815849-31">
         <createTable tableName="evento_piano_formativo_discipline">
             <column name="evento_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -433,7 +513,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-26">
+    <changeSet author="abarducci (generated)" id="1481296815849-32">
         <createTable tableName="eventofad_obiettivi">
             <column name="eventofad_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -441,22 +521,7 @@
             <column name="obiettivi" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-27">
-        <createTable tableName="eventofad_programmafad">
-            <column name="eventofad_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="argomento" type="VARCHAR(255)"/>
-            <column name="docente_id" type="BIGINT"/>
-            <column name="metodologia_didattica" type="VARCHAR(255)"/>
-            <column name="obiettivo_formativo" type="VARCHAR(255)"/>
-            <column name="ore_attivita" type="FLOAT4">
-                <constraints nullable="false"/>
-            </column>
-            <column name="risultato_atteso" type="VARCHAR(255)"/>
-        </createTable>
-    </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-28">
+    <changeSet author="abarducci (generated)" id="1481296815849-33">
         <createTable tableName="eventofad_risultati_attesi">
             <column name="eventofad_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -464,7 +529,7 @@
             <column name="risultati_attesi" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-29">
+    <changeSet author="abarducci (generated)" id="1481296815849-34">
         <createTable tableName="eventofad_verifica_apprendimento">
             <column name="eventofad_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -473,7 +538,7 @@
             <column name="verifica_apprendimento_inner" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-30">
+    <changeSet author="abarducci (generated)" id="1481296815849-35">
         <createTable tableName="eventofsc_riepilogo_ruoli">
             <column name="eventofsc_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -490,7 +555,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-31">
+    <changeSet author="abarducci (generated)" id="1481296815849-36">
         <createTable tableName="eventofsc_verifica_apprendimento">
             <column name="eventofsc_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -498,7 +563,7 @@
             <column name="verifica_apprendimento" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-32">
+    <changeSet author="abarducci (generated)" id="1481296815849-37">
         <createTable tableName="eventofsc_verifica_presenza_partecipanti">
             <column name="eventofsc_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -506,7 +571,7 @@
             <column name="verifica_presenza_partecipanti" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-33">
+    <changeSet author="abarducci (generated)" id="1481296815849-38">
         <createTable tableName="eventores_date_intermedie">
             <column name="eventores_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -514,7 +579,7 @@
             <column name="date_intermedie" type="date"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-34">
+    <changeSet author="abarducci (generated)" id="1481296815849-39">
         <createTable tableName="eventores_obiettivi">
             <column name="eventores_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -522,7 +587,7 @@
             <column name="obiettivi" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-35">
+    <changeSet author="abarducci (generated)" id="1481296815849-40">
         <createTable tableName="eventores_risultati_attesi">
             <column name="eventores_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -530,7 +595,7 @@
             <column name="risultati_attesi" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-36">
+    <changeSet author="abarducci (generated)" id="1481296815849-41">
         <createTable tableName="eventores_verifica_apprendimento">
             <column name="eventores_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -538,7 +603,7 @@
             <column name="verifica_apprendimento" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-37">
+    <changeSet author="abarducci (generated)" id="1481296815849-42">
         <createTable tableName="eventores_verifica_presenza_partecipanti">
             <column name="eventores_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -546,7 +611,7 @@
             <column name="verifica_presenza_partecipanti" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-38">
+    <changeSet author="abarducci (generated)" id="1481296815849-43">
         <createTable tableName="fase_azioni_ruoli_eventofsctypea">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="fase_azioni_ruoli_eventofsctypeaPK"/>
@@ -555,7 +620,7 @@
             <column name="evento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-39">
+    <changeSet author="abarducci (generated)" id="1481296815849-44">
         <createTable tableName="field_editabile_accreditamento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="field_editabile_accreditamentoPK"/>
@@ -568,7 +633,7 @@
             <column name="accreditamento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-40">
+    <changeSet author="abarducci (generated)" id="1481296815849-45">
         <createTable tableName="field_editabile_evento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="field_editabile_eventoPK"/>
@@ -580,7 +645,7 @@
             <column name="evento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-41">
+    <changeSet author="abarducci (generated)" id="1481296815849-46">
         <createTable tableName="field_integrazione_accreditamento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="field_integrazione_accreditamentoPK"/>
@@ -598,7 +663,7 @@
             <column name="accreditamento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-42">
+    <changeSet author="abarducci (generated)" id="1481296815849-47">
         <createTable tableName="field_valutazione_accreditamento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="field_valutazione_accreditamentoPK"/>
@@ -615,7 +680,7 @@
             <column name="accreditamento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-43">
+    <changeSet author="abarducci (generated)" id="1481296815849-48">
         <createTable tableName="file">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="filePK"/>
@@ -623,9 +688,10 @@
             <column name="creato" type="date"/>
             <column name="nome_file" type="VARCHAR(255)"/>
             <column name="tipo" type="VARCHAR(255)"/>
+            <column name="protocollo_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-44">
+    <changeSet author="abarducci (generated)" id="1481296815849-49">
         <createTable tableName="file_data">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="file_dataPK"/>
@@ -634,7 +700,7 @@
             <column name="file_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-45">
+    <changeSet author="abarducci (generated)" id="1481296815849-50">
         <createTable tableName="gruppo_crecm">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="gruppo_crecmPK"/>
@@ -642,7 +708,7 @@
             <column name="nome" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-46">
+    <changeSet author="abarducci (generated)" id="1481296815849-51">
         <createTable tableName="gruppo_crecm_valutatori">
             <column name="gruppo_crecm_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -652,7 +718,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-47">
+    <changeSet author="abarducci (generated)" id="1481296815849-52">
         <createTable tableName="obiettivo">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="obiettivoPK"/>
@@ -665,7 +731,7 @@
             <column name="nome" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-48">
+    <changeSet author="abarducci (generated)" id="1481296815849-53">
         <createTable tableName="pag_dovuti_log">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="pag_dovuti_logPK"/>
@@ -679,7 +745,7 @@
             <column name="pagamento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-49">
+    <changeSet author="abarducci (generated)" id="1481296815849-54">
         <createTable tableName="pag_pagati_log">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="pag_pagati_logPK"/>
@@ -698,7 +764,7 @@
             <column name="pagamento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-50">
+    <changeSet author="abarducci (generated)" id="1481296815849-55">
         <createTable tableName="pagamento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="pagamentoPK"/>
@@ -733,7 +799,7 @@
             <column name="fk_quota_annuale" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-51">
+    <changeSet author="abarducci (generated)" id="1481296815849-56">
         <createTable tableName="partner">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="partnerPK"/>
@@ -743,7 +809,7 @@
             <column name="evento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-52">
+    <changeSet author="abarducci (generated)" id="1481296815849-57">
         <createTable tableName="persona">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="personaPK"/>
@@ -759,7 +825,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-53">
+    <changeSet author="abarducci (generated)" id="1481296815849-58">
         <createTable tableName="persona_evento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="persona_eventoPK"/>
@@ -776,7 +842,7 @@
             <column name="responsabile_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-54">
+    <changeSet author="abarducci (generated)" id="1481296815849-59">
         <createTable tableName="persona_files">
             <column name="persona_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -786,7 +852,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-55">
+    <changeSet author="abarducci (generated)" id="1481296815849-60">
         <createTable tableName="persona_full_evento">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="persona_full_eventoPK"/>
@@ -799,7 +865,7 @@
             <column name="telefono" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-56">
+    <changeSet author="abarducci (generated)" id="1481296815849-61">
         <createTable tableName="piano_formativo">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="piano_formativoPK"/>
@@ -809,7 +875,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-57">
+    <changeSet author="abarducci (generated)" id="1481296815849-62">
         <createTable tableName="piano_formativo_eventi_piano_formativo">
             <column name="piano_formativo_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -819,7 +885,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-58">
+    <changeSet author="abarducci (generated)" id="1481296815849-63">
         <createTable tableName="professione">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="professionePK"/>
@@ -831,7 +897,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-59">
+    <changeSet author="abarducci (generated)" id="1481296815849-64">
         <createTable tableName="profile">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="profilePK"/>
@@ -839,7 +905,7 @@
             <column name="profile_enum" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-60">
+    <changeSet author="abarducci (generated)" id="1481296815849-65">
         <createTable tableName="profile_role">
             <column name="profile_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -849,7 +915,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-61">
+    <changeSet author="abarducci (generated)" id="1481296815849-66">
         <createTable tableName="programma_giornalierores">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="programma_giornalieroresPK"/>
@@ -862,29 +928,36 @@
             <column name="evento_res_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-62">
-        <createTable tableName="programma_giornalierores_programma">
-            <column name="programma_giornalierores_id" type="BIGINT">
-                <constraints nullable="false"/>
+    <changeSet author="abarducci (generated)" id="1481296815849-67">
+        <createTable tableName="proto_batch_log">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="proto_batch_logPK"/>
             </column>
-            <column name="pausa" type="VARCHAR(255)"/>
-            <column name="valutazione_apprendimento" type="VARCHAR(255)"/>
-            <column name="argomento" type="VARCHAR(255)"/>
-            <column name="docente_id" type="BIGINT"/>
-            <column name="metodologia_didattica" type="VARCHAR(255)"/>
-            <column name="minuti_attivita" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="obiettivo_formativo" type="VARCHAR(255)"/>
-            <column name="orario_fine" type="TIME WITHOUT TIME ZONE"/>
-            <column name="orario_inizio" type="TIME WITHOUT TIME ZONE"/>
-            <column name="ore_attivita" type="FLOAT4">
-                <constraints nullable="false"/>
-            </column>
-            <column name="risultato_atteso" type="VARCHAR(255)"/>
+            <column name="cod_stato" type="VARCHAR(255)"/>
+            <column name="dt_ins" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="dt_spedizione" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="dt_upd" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="log" type="VARCHAR(255)"/>
+            <column name="n_spedizione" type="VARCHAR(255)"/>
+            <column name="stato" type="VARCHAR(255)"/>
+            <column name="protocollo_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-63">
+    <changeSet author="abarducci (generated)" id="1481296815849-68">
+        <createTable tableName="protocollo">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="protocolloPK"/>
+            </column>
+            <column name="action_after_protocollo" type="VARCHAR(255)"/>
+            <column name="data" type="date"/>
+            <column name="id_proto_batch" type="VARCHAR(255)"/>
+            <column name="numero" type="INT"/>
+            <column name="stato_spedizione" type="VARCHAR(255)"/>
+            <column name="accreditamento_id" type="BIGINT"/>
+            <column name="file_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-69">
         <createTable tableName="provider">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="providerPK"/>
@@ -909,17 +982,7 @@
             <column name="tipo_organizzatore" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-64">
-        <createTable tableName="provider_files">
-            <column name="provider_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="files_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-65">
+    <changeSet author="abarducci (generated)" id="1481296815849-70">
         <createTable tableName="province">
             <column name="codice_provincia" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -929,7 +992,7 @@
             <column name="sigla" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-66">
+    <changeSet author="abarducci (generated)" id="1481296815849-71">
         <createTable tableName="quota_annuale">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="quota_annualePK"/>
@@ -941,7 +1004,7 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-67">
+    <changeSet author="abarducci (generated)" id="1481296815849-72">
         <createTable tableName="relazione_annuale">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="relazione_annualePK"/>
@@ -960,6 +1023,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="numero_partecipanti_no_crediti" type="INT"/>
+            <column name="professioni_avente_crediti" type="INT">
+                <constraints nullable="false"/>
+            </column>
             <column name="quote_di_partecipazione" type="numeric(19, 2)"/>
             <column name="rapporto_attuazione" type="numeric(19, 2)"/>
             <column name="rapporto_costi_entrate" type="numeric(19, 2)"/>
@@ -975,7 +1041,7 @@
             <column name="relazione_finale_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-68">
+    <changeSet author="abarducci (generated)" id="1481296815849-73">
         <createTable tableName="relazione_annuale_eventi_attuati">
             <column name="relazione_annuale_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -985,7 +1051,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-69">
+    <changeSet author="abarducci (generated)" id="1481296815849-74">
         <createTable tableName="relazione_annuale_eventipfa">
             <column name="relazione_annuale_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -995,7 +1061,18 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-70">
+    <changeSet author="abarducci (generated)" id="1481296815849-75">
+        <createTable tableName="relazione_annuale_riepilogo_anagrafe_avente_crediti">
+            <column name="relazione_annuale_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="INT"/>
+            <column name="key_ruolo_anagrafe" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-76">
         <createTable tableName="relazione_annuale_riepilogo_discipline">
             <column name="relazione_annuale_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1006,7 +1083,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-71">
+    <changeSet author="abarducci (generated)" id="1481296815849-77">
         <createTable tableName="relazione_annuale_riepilogo_obiettivi_nazionali">
             <column name="relazione_annuale_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1017,7 +1094,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-72">
+    <changeSet author="abarducci (generated)" id="1481296815849-78">
         <createTable tableName="relazione_annuale_riepilogo_obiettivi_regionali">
             <column name="relazione_annuale_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1028,7 +1105,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-73">
+    <changeSet author="abarducci (generated)" id="1481296815849-79">
         <createTable tableName="relazione_annuale_riepilogo_professioni">
             <column name="relazione_annuale_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1039,7 +1116,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-74">
+    <changeSet author="abarducci (generated)" id="1481296815849-80">
         <createTable tableName="rendicontazione_inviata">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="rendicontazione_inviataPK"/>
@@ -1054,7 +1131,7 @@
             <column name="file_rendicontazione_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-75">
+    <changeSet author="abarducci (generated)" id="1481296815849-81">
         <createTable tableName="riepilogo_fad">
             <column name="riepilogo_fad_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1065,7 +1142,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-76">
+    <changeSet author="abarducci (generated)" id="1481296815849-82">
         <createTable tableName="riepilogo_res">
             <column name="riepilogo_res_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1076,7 +1153,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-77">
+    <changeSet author="abarducci (generated)" id="1481296815849-83">
         <createTable tableName="role">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="rolePK"/>
@@ -1085,7 +1162,7 @@
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-78">
+    <changeSet author="abarducci (generated)" id="1481296815849-84">
         <createTable tableName="sede">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="sedePK"/>
@@ -1110,12 +1187,14 @@
             <column name="provider_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-79">
+    <changeSet author="abarducci (generated)" id="1481296815849-85">
         <createTable tableName="seduta">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="sedutaPK"/>
             </column>
             <column name="data" type="date"/>
+            <column name="dataora_seduta" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column defaultValueBoolean="false" name="eseguito_task_insodg_accreditamenti" type="BOOLEAN"/>
             <column name="locked" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
@@ -1123,7 +1202,7 @@
             <column name="ora" type="TIME WITHOUT TIME ZONE"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-80">
+    <changeSet author="abarducci (generated)" id="1481296815849-86">
         <createTable tableName="sponsor">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="sponsorPK"/>
@@ -1133,7 +1212,7 @@
             <column name="evento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-81">
+    <changeSet author="abarducci (generated)" id="1481296815849-87">
         <createTable tableName="team_valutazione">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="team_valutazionePK"/>
@@ -1143,7 +1222,7 @@
             <column name="team_leader_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-82">
+    <changeSet author="abarducci (generated)" id="1481296815849-88">
         <createTable tableName="team_valutazione_componenti_segreteria">
             <column name="team_valutazione_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1153,27 +1232,29 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-83">
+    <changeSet author="abarducci (generated)" id="1481296815849-89">
         <createTable tableName="token">
             <column name="token" type="VARCHAR(36)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-84">
+    <changeSet author="abarducci (generated)" id="1481296815849-90">
         <createTable tableName="valutazione">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="valutazionePK"/>
             </column>
+            <column name="accreditamento_stato_valutazione" type="VARCHAR(255)"/>
             <column name="dataora_scadenza_possibilita_valutazione" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="data_valutazione" type="date"/>
+            <column name="storicizzato" type="BOOLEAN"/>
             <column name="tipo_valutazione" type="VARCHAR(255)"/>
             <column name="valutazione_complessiva" type="VARCHAR(255)"/>
             <column name="account_id" type="BIGINT"/>
             <column name="accreditamento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-85">
+    <changeSet author="abarducci (generated)" id="1481296815849-91">
         <createTable tableName="valutazione_commissione">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="valutazione_commissionePK"/>
@@ -1185,12 +1266,53 @@
             <column name="seduta_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="abarducci (generated)" id="1479309431348-86">
+    <changeSet author="abarducci (generated)" id="1481296815849-92">
         <createTable tableName="valutazione_valutazioni">
             <column name="valutazione_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="valutazioni_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-93">
+        <createTable tableName="verbale_valutazione_sul_campo">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="verbale_valutazione_sul_campoPK"/>
+            </column>
+            <column name="osservazioni_del_provider" type="TEXT"/>
+            <column name="osservazioni_team_valutazione" type="TEXT"/>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="cognome" type="VARCHAR(255)"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="giorno" type="date"/>
+            <column name="is_presente_legale_rappresentante" type="BOOLEAN"/>
+            <column name="accreditamento_id" type="BIGINT"/>
+            <column name="carta_identita_id" type="BIGINT"/>
+            <column name="delega_id" type="BIGINT"/>
+            <column name="osservatore_regionale_id" type="BIGINT"/>
+            <column name="provider_id" type="BIGINT"/>
+            <column name="referente_informatico_id" type="BIGINT"/>
+            <column name="team_leader_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-94">
+        <createTable tableName="verbale_valutazione_sul_campo_componenti_segreteria">
+            <column name="verbale_valutazione_sul_campo_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="componenti_segreteria_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1481296815849-95">
+        <createTable tableName="verbale_valutazione_sul_campo_valutazioni_sul_campo">
+            <column name="verbale_valutazione_sul_campo_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valutazioni_sul_campo_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
