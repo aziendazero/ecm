@@ -210,6 +210,11 @@ public class Utils {
         return toBean;
     }
 
+	public static int getRoundedHALFDOWNFloatValue(float value){
+		BigDecimal bg = new BigDecimal(value).setScale(0, RoundingMode.HALF_DOWN);
+		return (int) bg.floatValue();
+	}
+
 	public static float getRoundedFloatValue(float value, int precision){
 		BigDecimal bg = new BigDecimal(value).setScale(precision, RoundingMode.HALF_UP);
 		return bg.floatValue();

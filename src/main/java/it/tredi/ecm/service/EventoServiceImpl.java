@@ -845,9 +845,11 @@ public class EventoServiceImpl implements EventoService {
 
 		riepilogoRES.setTotaleOreFrontali(oreFrontale);
 		riepilogoRES.setTotaleOreInterattive(oreInterattiva);
-		durata += 0.4f;//riesco a effettuare l'approssimazione matematica
-		oreFrontale += 0.4f;
-		oreInterattiva += 0.4f;
+
+		//approssimazione per calcolo con HALF_DOWN (2.5 -> 2 || 2.6 -> 3)
+		durata = Utils.getRoundedHALFDOWNFloatValue(durata);
+		oreFrontale = Utils.getRoundedHALFDOWNFloatValue(oreFrontale);
+		oreInterattiva = Utils.getRoundedHALFDOWNFloatValue(oreInterattiva);
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
 			crediti = (0.20f * (int) durata);
@@ -1040,8 +1042,7 @@ public class EventoServiceImpl implements EventoService {
 
 	private float calcoloCreditiFormativiEventoFAD(float durata, Boolean conTutor){
 		float crediti = 0.0f;
-		durata += 0.4f;//riesco a effettuare l'approssimazione matematica
-
+		durata = Utils.getRoundedHALFDOWNFloatValue(durata);
 
 		if(conTutor != null && conTutor)
 			crediti = (int) durata * 1.5f;
