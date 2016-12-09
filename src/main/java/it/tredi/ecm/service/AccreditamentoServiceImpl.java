@@ -230,7 +230,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.setDataInvio(LocalDate.now());
 		accreditamento.setDataScadenza(accreditamento.getDataInvio().plusDays(180));
 
-		//accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
+		//TODO rimuovere quando ci sarà il flusso STANDARD
+		if(accreditamento.isStandard())
+			accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
+
 		accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
 
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
