@@ -1190,4 +1190,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//TODO mandare avanti il flusso STANDARD
 	}
 
+	@Override
+	public void updateVerbaleValutazioneSulCampo(Accreditamento target, VerbaleValutazioneSulCampo verbaleToUpdate, VerbaleValutazioneSulCampo verbaleNew) {
+		verbaleToUpdate.setGiorno(verbaleNew.getGiorno());
+		verbaleToUpdate.setTeamLeader(verbaleNew.getTeamLeader());
+		verbaleToUpdate.setComponentiSegreteria(verbaleNew.getComponentiSegreteria());
+		verbaleToUpdate.setOsservatoreRegionale(verbaleNew.getOsservatoreRegionale());
+		verbaleToUpdate.setReferenteInformatico(verbaleNew.getReferenteInformatico());
+		target.setVerbaleValutazioneSulCampo(verbaleToUpdate);
+		save(target);
+	}
+
 }

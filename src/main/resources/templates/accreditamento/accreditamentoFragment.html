@@ -998,7 +998,7 @@
 							<!-- /TAB 6 -->
 						</div>
 						<div th:if="${showOnly and ((accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo != null and #authentication.principal.hasProfile('SEGRETERIA')) or
-									accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo?.cartaIdentita != null)}" role="tabpanel" class="tab-pane fade" id="tab_content7" aria-labelledby="tab7">
+									accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo?.isPresenteLegaleRappresentante != null)}" role="tabpanel" class="tab-pane fade" id="tab_content7" aria-labelledby="tab7">
 							<!--  TAB 7 -->
 							<div class="row">
 								<div class="col-xs-12">
@@ -1011,6 +1011,8 @@
 										<div class="x_content">
 
 											<div class="form-horizontal form-label-left">
+
+												<button type="button" class="pull-right btn btn-primary" data-toggle="modal" data-target=".modal-verbale-edit" th:text="#{label.modifica_verbale}"></button>
 
 												<div class="item form-group">
 													<label class="control-label col-md-3 col-sm-3 col-xs-12">
