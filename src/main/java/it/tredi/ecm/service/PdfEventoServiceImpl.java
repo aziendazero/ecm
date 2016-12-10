@@ -67,7 +67,7 @@ import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Service
 public class PdfEventoServiceImpl implements PdfEventoService {
-	private static Logger LOGGER = LoggerFactory.getLogger(WorkflowServiceImpl.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(PdfEventoServiceImpl.class);
 
 	/*
 	@Override
@@ -465,7 +465,8 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		if(programma != null && programma.size() > 0) {
 			//aggiungo la tableFields corrente al documento e ne inizializzo un'altra che restituisco alla fine e sulla quale aandranno aggiunti i prossimi campi
 			newTableFields = addTableFieldsToDocumentAndGetNewTableField(tableFields, document);
-
+			String docenti;
+			boolean writeDocenti = false;
 			for(ProgrammaGiornalieroRES dettPrg : programma) {
 				PdfPTable tableProgrGior = new PdfPTable(2);
 				tableProgrGior.setWidthPercentage(100);
@@ -506,6 +507,8 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 				addCellIntestaSubTableByLabel("label.ore_attivita", tableDettaglioAttivita);
 				if(dettPrg.getProgramma() != null && dettPrg.getProgramma().size() > 0) {
 					for(DettaglioAttivitaRES dettAtt : dettPrg.getProgramma()) {
+						writeDocenti = false;
+						docenti = "";
 						if(dettAtt.getOrarioInizio() != null)
 							addCellSubTable(formatValue(dettAtt.getOrarioInizio()), tableDettaglioAttivita);
 						else
@@ -520,6 +523,19 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 //							addCellSubTable(dettAtt.getDocente().getAnagrafica().getCognome(), tableDettaglioAttivita);
 //						else
 //							addCellSubTable("", tableDettaglioAttivita);
+
+						if(dettAtt.getDocenti() != null) {
+							for(PersonaEvento docente : dettAtt.getDocenti()) {
+								if(docente.getAnagrafica() != null && docente.getAnagrafica().getCognome() != null && !docente.getAnagrafica().getCognome().isEmpty()) {
+									if(writeDocenti)
+										docenti += "\n";
+									docenti += docente.getAnagrafica().getCognome();
+									writeDocenti = true;
+								}
+							}
+						}
+						addCellSubTable(docenti, tableDettaglioAttivita);
+
 						addCellSubTable(dettAtt.getRisultatoAtteso(), tableDettaglioAttivita);
 						if(dettAtt.getObiettivoFormativo() != null)
 							addCellSubTable(dettAtt.getObiettivoFormativo().getNome(), tableDettaglioAttivita);
@@ -875,13 +891,30 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 			addCellIntestaSubTableByLabel("label.risultato_atteso", subTable);
 			addCellIntestaSubTableByLabel("label.tipologia_obiettivi_formativi", subTable);
 			addCellIntestaSubTableByLabel("label.metodologia_didattica", subTable);
+			String docenti;
+			boolean writeDocenti = false;
 			for(DettaglioAttivitaFAD dettAtt : programma) {
+				docenti = "";
+				writeDocenti = false;
+
 				addCellSubTable(dettAtt.getArgomento(), subTable);
 				//TODO ciclo sui docenti
 //				if(dettAtt.getDocente() != null && dettAtt.getDocente().getAnagrafica() != null && dettAtt.getDocente().getAnagrafica().getCognome() != null)
 //					addCellSubTable(dettAtt.getDocente().getAnagrafica().getCognome(), subTable);
 //				else
 //					addCellSubTable("", subTable);
+				if(dettAtt.getDocenti() != null) {
+					for(PersonaEvento docente : dettAtt.getDocenti()) {
+						if(docente.getAnagrafica() != null && docente.getAnagrafica().getCognome() != null && !docente.getAnagrafica().getCognome().isEmpty()) {
+							if(writeDocenti)
+								docenti += "\n";
+							docenti += docente.getAnagrafica().getCognome();
+							writeDocenti = true;
+						}
+					}
+				}
+				addCellSubTable(docenti, subTable);
+
 				addCellSubTable(dettAtt.getRisultatoAtteso(), subTable);
 				if(dettAtt.getObiettivoFormativo() != null)
 					addCellSubTable(dettAtt.getObiettivoFormativo().getNome(), subTable);
@@ -941,10 +974,18 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 				addCellSubTable(pers.getAnagrafica().getCodiceFiscale(), tablePers);
 				if(mostraQualifica)
 					addCellSubTable(pers.getQualifica(), tablePers);
-				if(mostraRuolo)
-					addCellSubTable(pers.getRuolo().getNome(), tablePers);
-				if(mostraTitolareSostituto)
-					addCellSubTable(pers.getTitolare(), tablePers);
+				if(mostraRuolo) {
+					if(pers.getRuolo() == null)
+						addCellSubTable("", tablePers);
+					else
+						addCellSubTable(pers.getRuolo().getNome(), tablePers);
+				}
+				if(mostraTitolareSostituto) {
+					if(pers.getTitolare() == null)
+						addCellSubTable("", tablePers);
+					else
+						addCellSubTable(pers.getTitolare(), tablePers);
+				}
 				if(pers.getAnagrafica().getCv() == null) {
 					addCellSubTable(getLabelNessunCv(), tablePers);
 				} else {
