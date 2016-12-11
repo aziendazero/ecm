@@ -35,4 +35,5 @@ public interface ValutazioneService {
 	public void cloneDetachedValutazione(Valutazione valStoricizzata);
 	public void copiaInStorico(Valutazione valutazione) throws Exception;
 	public Valutazione getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(Long accreditamentoId);
+	public Set<Valutazione> getAllValutazioniStoricizzateForAccreditamentoId(Long accreditamentoId);
 }

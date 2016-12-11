@@ -3,8 +3,11 @@ package it.tredi.ecm.dao.enumlist;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @Getter
 public enum AccreditamentoStatoEnum {
 	BOZZA (1, "Bozza", ""), //domanda non ufficiale

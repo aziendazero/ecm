@@ -30,6 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
@@ -879,18 +880,19 @@ public class AccreditamentoController {
 		}
 	}
 
-	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
-	@RequestMapping("/accreditamento/{accreditamentoId}/verbaleValutazioneSulCampo/{verbaleValutazioneSulCampoId}/insert")
-	public String insertValutazioniSulCampo(@PathVariable Long accreditamentoId,
-			@PathVariable Long verbaleValutazioneSulCampoId, Model model, RedirectAttributes redirectAttrs) {
-		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/insert"));
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId,#showRiepilogo)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/verbaleValutazioneSulCampo/{verbaleValutazioneSulCampoId}/insertValutazione")
+	public String insertValutazioniSulCampo(@RequestParam(name = "showRiepilogo", required = false) Boolean showRiepilogo,
+			@PathVariable Long accreditamentoId, @PathVariable Long verbaleValutazioneSulCampoId,
+			Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/insertValutazione"));
 		try {
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 			model.addAttribute("verbaleWrapper", prepareVerbaleWrapper(accreditamento));
 			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamento.getId(), Utils.getAuthenticatedUser()));
 			return "accreditamento/accreditamentoValutazioniSulCampo";
 		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/insert"),ex);
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/insertValutazione"),ex);
 			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
@@ -908,7 +910,13 @@ public class AccreditamentoController {
 		Set<FieldValutazioneAccreditamento> valutazioniSulCampo = accreditamento.getVerbaleValutazioneSulCampo().getDatiValutazioneSulCampo().getValutazioniSulCampo();
 		SubSetFieldEnum subset = SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO;
 		mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazioniSulCampo, subset);
+		//carico la mappa valutazione-valutatore TODO riguardare la selezione del valutatore!! molto debole! sarebbe meglio inserirla nel verbale?
+		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+		Account valutatore = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamento.getId()).getAccount();
+		mappaValutatoreValutazioni.put(valutatore, mappa);
 		wrapper.setMappa(mappa);
+		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
+		wrapper.setIdEditabili(mappa.keySet());
 		return wrapper;
 	}
 
@@ -1230,5 +1238,12 @@ public class AccreditamentoController {
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 				return "redirect:/accreditamento/{accreditamentoId}/show";
 			}
+		}
+
+//TODO		@PreAuthorize("@securityAccessServiceImpl.canShowStorico(principal,#accreditamentoId)")
+		@RequestMapping("/accreditamento/{accreditamentoId}/getStorico")
+		@ResponseBody
+		public Set<Valutazione>getValutazioniStorico(@PathVariable Long accreditamentoId){
+			return valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
 		}
 }

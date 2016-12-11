@@ -36,6 +36,12 @@
 					</div>
 				</div>
 
+				<!-- modale riepilogo valutazione -->
+				<th:block th:include="fragments/modaleRiepilogoValutazioni :: modaleRiepilogoValutazioni"></th:block>
+
+				<!-- modale storico -->
+				<th:block th:include="fragments/modaleStoricoValutazioni :: modaleStoricoValutazioni"></th:block>
+
 				<!-- modale conferma valutazione  -->
 				<div id="confirm-modal" class="modal fade modal-confirm"
 					data-model-index="1" role="dialog">
@@ -413,61 +419,6 @@
 					</div>
 				</div>
 
-				<!-- modale showAllValutazioni -->
-				<!-- <div id="showAllValutazioni-modal" class="modal fade modal-showAllValutazioni"
-					data-model-index="1" role="dialog">
-					<div class="modal-dialog modal-lg">
-						<div class="modal-content">
-							<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal">
-									<span aria-hidden="true">×</span>
-								</button>
-								<h4 class="modal-title" id="myModalLabel"
-									th:text="#{label.riepilogo_valutazione_accreditamento(${accreditamentoWrapper.accreditamento.tipoDomanda}, ${accreditamentoWrapper.accreditamento.stato.nome})}">Riepilogo
-									di tutto l'accreditamento</h4>
-							</div>
-							<div class="modal-body">
-
-								<div class="row">
-									<div class="x_panel">
-					              		<div class="x_title">
-											<h2 style="display: inline" th:text="#{label.valutazioni_complessive}">label.valutazioni_complessive</h2>
-											<h2 style="display: inline" th:if="${#sets.isEmpty(accreditamentoWrapper.valutazioniList)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
-											<div class="clearfix"></div>
-										</div>
-
-										<table class="datatable-responsive-search-validation-full table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-											<thead>
-												<tr>
-													<th:block th:each="valutazione, row : ${accreditamentoWrapper.valutazioniList}">
-														<th th:text="#{label.valutazione} + ' ' + ${valutazione.account.isSegreteria() ? 'Segreteria ECM' : 'Referee ' + valutazione.account.nome + ' ' + valutazione.account.cognome}">Nome</th>
-													</th:block>
-												</tr>
-											</thead>
-											<tbody>
-												<tr>
-													<th:block th:each="valutazione, row : ${accreditamentoWrapper.valutazioniList}">
-														<td class="otherValidationCheck">
-															<div th:text="${valutazione.valutazioneComplessiva}"></div>
-														</td>
-													</th:block>
-												</tr>
-											</tbody>
-										</table>
-
-									</div>
-								</div>
-
-								fragment show all
-								<th:block th:include="valutazione/valutazioneShowAll :: showAllValutazioni"></th:block>
-
-							</div>
-						</div>
-					</div>
-				</div> -->
-
-				<th:block th:include="fragments/modaleRiepilogoValutazioni :: modaleRiepilogoValutazioni"></th:block>
-
 				<div class="x_panel">
 					<div class="x_title x_menu">
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.id + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
@@ -483,7 +434,6 @@
 										th:text="#{label.conferma_valutazione}" data-toggle="modal" data-target=".modal-confirm"></a></li>
 									<th:block th:if="${accreditamentoWrapper.canPresaVisione}">
 										<li><a th:text="#{label.presa_visione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/presaVisione|}"></a></li>
-<!-- 										<li><a th:text="#{label.rivaluta}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/rivaluta|}"></a></li> -->
 									</th:block>
 									<li class="divider actions" th:if="${accreditamentoWrapper.canConfermaValutazione or accreditamentoWrapper.canPresaVisione}"></li>
 									<li><a th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></a></li>
@@ -498,6 +448,7 @@
 								<ul class="dropdown-menu actions">
 									<li><a class="ajaxCallShowAll" th:text="#{label.mostra_riepilogo}" data-toggle="modal" data-target=".modal-showAll"></a></li>
   									<li><a class="ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni" type="button"></a></li>
+  									<li><a th:text="#{label.mostra_storico_valutazioni}" onclick="showStorico()"></a></li>
 								</ul>
 							</div>
 						</div>

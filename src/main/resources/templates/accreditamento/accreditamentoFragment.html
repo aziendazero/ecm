@@ -963,7 +963,7 @@
 															<i class="fa table-icon fa-remove red" th:title="#{label.non_inserito}"></i>
 														</td>
 														<td th:if="${valutabile}">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbaleValutazioneSulCampo/${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.id}/insert|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.inserisci} : #{label.mostra}">Valuta/Mostra</span></a>
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbaleValutazioneSulCampo/${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.id}/insertValutazione|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.inserisci} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
 													</tr>
 
