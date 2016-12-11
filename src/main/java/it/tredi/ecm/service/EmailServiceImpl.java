@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.mail.internet.MimeMessage;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import it.tredi.ecm.dao.entity.AlertEmail;
+import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.AlertTipoEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
 
 @Service
@@ -82,6 +86,105 @@ public class EmailServiceImpl implements EmailService {
 		context.setVariable("alert", alert);
 		String message = templateEngine.process("alertErroreDiSistema", context);
 		send(ecmProperties.getEmailSegreteriaEcm(), ecmProperties.getEmailSegreteriaEcm(), "Errore di Sistema Applicativo ECM", message, true);
+	}
+
+	@Override
+	public void inviaAlertScadenzaReInvioIntegrazioneAccreditamento(AlertEmail alert) throws Exception {
+		LOGGER.info("inviaAlertScadenzaReInvioIntegrazioneAccreditamento " + alert.getTipo());
+		Context context = new Context();
+		String subject = "Avviso Scadenza Reinvio Integrazione Domanda Accreditamento";
+
+		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_PROVVISORIO){
+			context.setVariable("isStandard", false);
+			context.setVariable("isPreavvisoDiRigetto", false);
+			subject += " Provvisorio";
+		}
+
+		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_PROVVISORIO){
+			context.setVariable("isStandard", false);
+			context.setVariable("isPreavvisoDiRigetto", true);
+			subject += " Provvisorio";
+		}
+
+		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_STANDARD){
+			context.setVariable("isStandard", true);
+			context.setVariable("isPreavvisoDiRigetto", false);
+			subject += " Standard";
+		}
+
+		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_STANDARD){
+			context.setVariable("isStandard", true);
+			context.setVariable("isPreavvisoDiRigetto", true);
+			subject += " Standard";
+		}
+
+		String message = templateEngine.process("alertScadenzaReinvioIntegrazioniAccreditamento", context);
+
+		for(String dst : alert.getDestinatari()){
+			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
+		}
+	}
+
+	@Override
+	public void inviaAlertScadenzaAccreditamento(AlertEmail alert) throws Exception {
+		LOGGER.info("inviaAlertScadenzaAccreditamento " + alert.getTipo());
+		Context context = new Context();
+		String subject = "Avviso Scadenza Accreditamento";
+
+		if(alert.getTipo() == AlertTipoEnum.SCADENZA_ACCREDITAMENTO_PROVVISORIO){
+			context.setVariable("isStandard", false);
+			subject += " Provvisorio";
+		}
+
+		if(alert.getTipo() == AlertTipoEnum.SCADENZA_ACCREDITAMENTO_STANDARD){
+			context.setVariable("isStandard", true);
+			subject += " Standard";
+		}
+
+		String message = templateEngine.process("alertScadenzaAccreditamento", context);
+
+		for(String dst : alert.getDestinatari()){
+			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
+		}
+	}
+
+	@Override
+	public void inviaConfermaReInvioIntegrazioniAccreditamento(boolean isStandard, boolean isPreavvisoRigetto, Provider provider) throws Exception {
+		LOGGER.info("inviaConfermaReInvioIntegrazioneAccreditamento (standard/preavvisoRigetto): " + isStandard + "/" + isPreavvisoRigetto);
+		Context context = new Context();
+		String subject = "Conferma Reinvio Integrazioni Domanda Accreditamento";
+		context.setVariable("isStandard", isStandard);
+		context.setVariable("isPreavvisoDiRigetto", isPreavvisoRigetto);
+
+		if(isStandard)
+			subject += " Standard";
+		else
+			subject += " Provvisorio";
+
+		String message = templateEngine.process("confermaInvioIntegrazioni", context);
+
+		Set<String> destinatari = new HashSet<String>();
+
+		if(provider.getLegaleRappresentante() != null)
+			destinatari.add(provider.getLegaleRappresentante().getAnagrafica().getEmail());
+		if(provider.getDelegatoLegaleRappresentante() != null)
+			destinatari.add(provider.getDelegatoLegaleRappresentante().getAnagrafica().getEmail());
+
+		for(String dst : destinatari){
+			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
+		}
+	}
+
+	@Override
+	public void inviaAlertScadenzaPagamento(AlertEmail alert) throws Exception {
+		LOGGER.info("inviaAlertScadenzaPagamento");
+		Context context = new Context();
+		String subject = "Scadenza termini per il pagamento del contributo annuo";
+		String message = templateEngine.process("alertScadenzaContributoAnnuo", context);
+
+		for(String dst : alert.getDestinatari()){
+			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
+		}
 
 	}
 }

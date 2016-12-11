@@ -627,7 +627,6 @@ public class EventoController {
 			}
 		}
 
-		@PreAuthorize("@securityAccessServiceImpl.canAllegaSponsorEvento(principal, #eventoId)")
 		@RequestMapping("/provider/{providerId}/evento/{eventoId}/sponsor/{sponsorId}/loadModaleSponsor")
 		public String caricaModaleSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, @PathVariable Long sponsorId,
 				@ModelAttribute ("sponsorWrapper") SponsorWrapper wrapper, Model model, RedirectAttributes redirectAttrs) {

@@ -212,7 +212,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setPartitaIva(soggetto.getPartitaIva());
 		p.setEmail(soggetto.getEmailStruttura());
 		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
-		p.setCausale(formatCausale(CAUSALE_PAGAMENTO_EVENTO + " - " + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo()));
+		p.setCausale(formatCausale(CAUSALE_PAGAMENTO_EVENTO + " - " + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo() + " - " + e.getTitolo()));
 		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione());
 
 		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.

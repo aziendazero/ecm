@@ -24,6 +24,7 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 	@Autowired private EngineeringServiceImpl engineeringService;
 	@Autowired private PagamentoService pagamentoService;
 	@Autowired private EventoService eventoService;
+	@Autowired private AlertEmailService alertEmailService;
 
 	@Override
 	public QuotaAnnuale createPagamentoProviderPerQuotaAnnuale(Long providerId, Integer annoRiferimento, boolean primoAnno) {
@@ -99,6 +100,7 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 
 			save(quotaAnnuale);
 			pagamentoService.save(pagamento);
+			alertEmailService.creaAlertContributoAnnuoForProvider(quotaAnnuale);
 			return quotaAnnuale;
 		}
 		return null;

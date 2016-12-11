@@ -199,4 +199,11 @@ public class Provider extends BaseEntity{
 				return p;
 		return null;
 	}
+
+	public Persona getDelegatoLegaleRappresentante(){
+		for(Persona p : persone)
+			if(p.isDelegatoLegaleRappresentante())
+				return p;
+		return null;
+	}
 }

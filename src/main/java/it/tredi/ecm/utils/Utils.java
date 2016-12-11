@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -263,5 +265,11 @@ public class Utils {
 					innerEntity.toString();
 			}
 		}
+	}
+
+	public static LocalDateTime convertLocalDateToLocalDateTime(LocalDate l){
+		if(l != null)
+			return Timestamp.valueOf(l.atStartOfDay()).toLocalDateTime();
+		return null;
 	}
 }

@@ -550,10 +550,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//TODO non spacca niente???
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 
-		if(accreditamento.isIntegrazione())
+		if(accreditamento.isIntegrazione()){
+			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), false, accreditamento.getProvider());
 			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
-		else if(accreditamento.isPreavvisoRigetto())
+		}
+		else if(accreditamento.isPreavvisoRigetto()){
+			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), true, accreditamento.getProvider());
 			workflowService.eseguiTaskPreavvisoRigettoForCurrentUser(accreditamento);
+		}
 	}
 
 	@Override

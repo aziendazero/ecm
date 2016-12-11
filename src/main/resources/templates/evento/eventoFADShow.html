@@ -383,7 +383,7 @@
 								<tbody>
 									<tr th:each="metodologia, row : ${eventoWrapper.evento.riepilogoFAD.metodologie}">
 										<td th:text="${metodologia.key.nome}"></td>
-										<td th:text="${metodologia.value} + ' h'"></td>
+										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(metodologia.value)}"></td>
 									</tr>
 								</tbody>
 							</table>

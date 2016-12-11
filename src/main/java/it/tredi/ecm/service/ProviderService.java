@@ -35,5 +35,8 @@ public interface ProviderService {
 	public String getCodiceFiscaleLegaleRappresentantePerVerificaFirmaDigitale(Long providerId);
 	public String getCodiceFiscaleDelegatoLegaleRappresentantePerVerificaFirmaDigitale(Long providerId);
 
+	public String getEmailLegaleRappresentante(Long providerId);
+	public String getEmailDelegatoLegaleRappresentante(Long providerId);
+
 	public List<Provider> cerca(RicercaProviderWrapper wrapper) throws Exception;
 }

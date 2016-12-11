@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title th:remove="all">Corretto re-invio domanda di Accreditamento <span th:text="${isStandard} ? 'Standard' : 'Provvisorio'"></span> in stato <span th:text="${isPreavvisoDiRigetto} ? 'Preavviso di Rigetto' : 'Richiesta di Integrazioni'"></span> alla Segreteria ECM.</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <p>Gentile Provider,</p>
+    <p>
+     Le integrazioni richieste sulla domanda di Accreditamento <span th:text="${isStandard} ? 'Standard' : 'Provvisorio'"></span> presentata sono state correttamente inviate alla Segreteria ECM.
+    </p>
+    <p>
+      Distinti Saluti, <br />
+      <em>Segreteria ECM</em>
+    </p>
+  </body>
+</html>

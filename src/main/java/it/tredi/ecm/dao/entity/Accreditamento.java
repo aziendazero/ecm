@@ -239,6 +239,14 @@ public class Accreditamento extends BaseEntity{
 		return stato == AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER;
 	}
 
+	public boolean isAccreditato(){
+		return stato == AccreditamentoStatoEnum.ACCREDITATO;
+	}
+
+	public boolean isDiniego(){
+		return stato == AccreditamentoStatoEnum.DINIEGO;
+	}
+
 	public boolean isProcedimentoAttivo(){
 		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;

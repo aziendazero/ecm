@@ -283,6 +283,32 @@ public class ProviderServiceImpl implements ProviderService {
 		return "";
 	}
 
+	@Override
+	public String getEmailLegaleRappresentante(Long providerId) {
+		LOGGER.debug("Recupero Email Legale Rappresentante del Provider: " + providerId);
+
+		Persona persona = personaService.getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE, providerId);
+		if(persona != null && persona.getAnagrafica() != null){
+			return persona.getAnagrafica().getEmail();
+		}
+
+		LOGGER.debug("Legale Rappresentante non presente per il Provider: " + providerId);
+		return "";
+	}
+
+	@Override
+	public String getEmailDelegatoLegaleRappresentante(Long providerId) {
+		LOGGER.debug("Recupero Email Delegato Legale Rappresentante del Provider: " + providerId);
+
+		Persona persona = personaService.getPersonaByRuolo(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, providerId);
+		if(persona != null && persona.getAnagrafica() != null){
+			return persona.getAnagrafica().getEmail();
+		}
+
+		LOGGER.debug("Delegato Legale Rappresentante non presente per il Provider: " + providerId);
+		return "";
+	}
+
 	/*
 	 * Per la ricerca dei provider in realta si fanno ricerche anche su accreditamenti, sede, quotaAnnuale
 	 *

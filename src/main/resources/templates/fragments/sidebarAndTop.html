@@ -36,7 +36,7 @@
 				<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
 
 					<div class="menu_section">
-						<h3 th:if="${#authentication.principal.hasProfile('PROVIDER')}" class="profile" th:text="${'Provider - ' + #authentication.principal.account.provider.denominazioneLegale}"></h3>
+						<h3 th:if="${#authentication.principal.hasProfile('PROVIDER')}" class="profile" th:text="${'Provider - ' + #authentication.principal.account.provider.denominazioneLegale + ' (' + #authentication.principal.account.provider.id + ')'}"></h3>
 						<h3 th:unless="${#authentication.principal.hasProfile('PROVIDER')}" class="profile"></h3>
 						<ul class="nav side-menu">
 							<li id="provider" th:if="${#authentication.principal.hasProfile('PROVIDER')}">
