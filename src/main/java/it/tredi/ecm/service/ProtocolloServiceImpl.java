@@ -6,7 +6,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,6 +62,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
 import it.tredi.ecm.dao.repository.ProtoBatchLogRepository;
 import it.tredi.ecm.dao.repository.ProtocolloRepository;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.EngineeringProperties;
 import it.tredi.ecm.utils.Utils;
 
@@ -76,6 +80,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	@Autowired private WorkflowService workflowService;
 	@Autowired private EmailService emailService;
 	@Autowired private AlertEmailService alertEmailService;
+	@Autowired private EcmProperties ecmProperties;
 
 	private static JAXBContext protocollaArrivoReqContext = null;
 	private static JAXBContext protoBatchReqContext = null;
@@ -254,23 +259,35 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		String requestString = writer.toString();
 
-		Object response = port.protocollaArrivo(requestString);
-		LOGGER.debug(response);
+		if(ecmProperties.isDebugSaltaProtocollo()) {
+			String start = "2016-01-01 00:00";
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+			LocalDateTime startDT = LocalDateTime.parse(start, formatter);
+			long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
+			protocollo.setData(LocalDate.now());
+			protocollo.setNumero((int)secsFrom);
+			protocollo.setIdProtoBatch(null);
+			protocollo.setStatoSpedizione(null);
 
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document xmlResponse = builder.parse(new InputSource(new StringReader(response.toString())));
-		XPathFactory xPathfactory = XPathFactory.newInstance();
-		XPath xpath = xPathfactory.newXPath();
+		} else {
+			Object response = port.protocollaArrivo(requestString);
+			LOGGER.debug(response);
 
-		String numero = xpath.compile("//protocollo/numero").evaluate(xmlResponse);
-		String data = xpath.compile("//protocollo/data").evaluate(xmlResponse);
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document xmlResponse = builder.parse(new InputSource(new StringReader(response.toString())));
+			XPathFactory xPathfactory = XPathFactory.newInstance();
+			XPath xpath = xPathfactory.newXPath();
 
-		//p.setData(new SimpleDateFormat("dd-MM-yyyyy").parse(data));
-		protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-		protocollo.setNumero(Integer.parseInt(numero));
-		protocollo.setIdProtoBatch(null);
-		protocollo.setStatoSpedizione(null);
+			String numero = xpath.compile("//protocollo/numero").evaluate(xmlResponse);
+			String data = xpath.compile("//protocollo/data").evaluate(xmlResponse);
+
+			//p.setData(new SimpleDateFormat("dd-MM-yyyyy").parse(data));
+			protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+			protocollo.setNumero(Integer.parseInt(numero));
+			protocollo.setIdProtoBatch(null);
+			protocollo.setStatoSpedizione(null);
+		}
 
 		protocolloRepository.save(protocollo);
 	}

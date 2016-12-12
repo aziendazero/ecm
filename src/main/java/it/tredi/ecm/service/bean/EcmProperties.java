@@ -12,6 +12,7 @@ public class EcmProperties {
 	private String applicationBaseUrl;
 	private String emailSegreteriaEcm;
 	private boolean debugTestMode;
+	private boolean debugSaltaProtocollo;
 	private int giorniIntegrazioneMin;
 	private int giorniIntegrazioneMax;
 	private int numeroReferee;

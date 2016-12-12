@@ -26,6 +26,8 @@ public class EcmAppConfiguration {
 	private String emailSegreteriaEcm = "segreteria@ecm.it";
 	@Value("${debugTestMode}")
 	private boolean debugTestMode = false;
+	@Value("${debugSaltaProtocollo}")
+	private boolean debugSaltaProtocollo = false;
 	@Value("${giorni.integrazione.min}")
 	private int giorniIntegrazioneMin = 5;
 	@Value("${giorni.integrazione.max}")
@@ -80,6 +82,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setApplicationBaseUrl(applicationBaseUrl);
 		ecmProperties.setEmailSegreteriaEcm(emailSegreteriaEcm);
 		ecmProperties.setDebugTestMode(debugTestMode);
+		ecmProperties.setDebugSaltaProtocollo(debugSaltaProtocollo);
 		ecmProperties.setGiorniIntegrazioneMin(giorniIntegrazioneMin);
 		ecmProperties.setGiorniIntegrazioneMax(giorniIntegrazioneMax);
 		ecmProperties.setNumeroReferee(numeroReferee);
