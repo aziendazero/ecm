@@ -17,6 +17,8 @@ public interface AlertEmailService {
 	public void creaAlertContributoAnnuoForProvider(QuotaAnnuale quota);
 	public void inviaAlertsEmail() throws Exception;
 
+	public void creaAlertRipetibiliAnnuali();
+
 	public boolean checkIfExistForEvento(AlertTipoEnum tipo, Long eventoId, LocalDateTime dataScadenza);
 
 }

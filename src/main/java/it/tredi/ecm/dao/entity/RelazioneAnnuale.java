@@ -28,6 +28,12 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+/*
+ * Inserimento relazione annuale per l'anno in corso -> gestito dal controllo sulla data e nel caso in cui la data per il termine sia già passata attraverso l flag sul provider
+ *
+ * Abilitare una modifica ad una relazione già scaduta -> gestita attraverso la posticipazione della data di fine modifica
+ *
+ * */
 public class RelazioneAnnuale extends BaseEntity{
 	private Integer annoRiferimento;//anno di riferimento dell'attivita formativa
 
@@ -228,6 +234,14 @@ public class RelazioneAnnuale extends BaseEntity{
 		}else{
 			mappa.put(element,1);
 		}
+	}
+
+	public boolean isRelazioneModificabile(){
+		if(dataFineModifca == null)
+			return true;
+		if(dataFineModifca.isAfter(LocalDate.now()))
+			return true;
+		return false;
 	}
 
 }

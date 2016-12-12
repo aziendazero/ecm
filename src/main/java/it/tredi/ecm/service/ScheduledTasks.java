@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import it.tredi.ecm.scheduledtask.AlertScadenzeTask;
 import it.tredi.ecm.scheduledtask.InvioCogeapsTask;
 import it.tredi.ecm.scheduledtask.PagamentoTask;
 import it.tredi.ecm.scheduledtask.ProtocolloTask;
@@ -28,6 +29,7 @@ public class ScheduledTasks {
 	@Autowired private InvioCogeapsTask invioCogeapsTask;
 	@Autowired private ProtocolloTask protocolloTask;
 	@Autowired private SedutaTask sedutaTask;
+	@Autowired private AlertScadenzeTask alertScadenzeTask;
 
 	@Scheduled(fixedDelay=60000)
 	public void taskExecutor() throws Exception{
@@ -35,5 +37,6 @@ public class ScheduledTasks {
 		invioCogeapsTask.checkStatoElaborazioneCogeaps();
 		protocolloTask.controllaStatoProtocollazione();
 		sedutaTask.bloccaSedute();
+		alertScadenzeTask.inviaAlert();
 	}
 }

@@ -26,14 +26,14 @@ public class EcmAppConfiguration {
 	private String emailSegreteriaEcm = "segreteria@ecm.it";
 	@Value("${debugTestMode}")
 	private boolean debugTestMode = false;
+	@Value("${debugSaltaProtocollo}")
+	private boolean debugSaltaProtocollo = false;
 	@Value("${giorni.integrazione.min}")
 	private int giorniIntegrazioneMin = 5;
 	@Value("${giorni.integrazione.max}")
 	private int giorniIntegrazioneMax = 20;
 	@Value("${numero.referee}")
 	private int numeroReferee = 3;
-	@Value("${fileRootPath}")
-	private String fileRootPath = System.getProperty("catalina.home") + File.separator + "ecmFiles";
 	@Value("${giorni.min.evento.provider.A}")
 	private int giorniMinEventoProviderA = 15;
 	@Value("${giorni.min.evento.provider.B}")
@@ -80,10 +80,10 @@ public class EcmAppConfiguration {
 		ecmProperties.setApplicationBaseUrl(applicationBaseUrl);
 		ecmProperties.setEmailSegreteriaEcm(emailSegreteriaEcm);
 		ecmProperties.setDebugTestMode(debugTestMode);
+		ecmProperties.setDebugSaltaProtocollo(debugSaltaProtocollo);
 		ecmProperties.setGiorniIntegrazioneMin(giorniIntegrazioneMin);
 		ecmProperties.setGiorniIntegrazioneMax(giorniIntegrazioneMax);
 		ecmProperties.setNumeroReferee(numeroReferee);
-		ecmProperties.setFileRootPath(fileRootPath);
 		ecmProperties.setGiorniMinEventoProviderA(giorniMinEventoProviderA);
 		ecmProperties.setGiorniMinEventoProviderB(giorniMinEventoProviderB);
 		ecmProperties.setGiorniMinEventoRiedizione(giorniMinEventoRiedizione);

@@ -19,6 +19,11 @@ public class SedutaTask {
 	@Async
 	@Transactional
 	public void bloccaSedute(){
+		LOGGER.info(Thread.currentThread().getName());
+		LOGGER.info("bloccaSedute - entering");
+
 		sedutaService.eseguiBloccoSeduteDaBloccare();
+
+		LOGGER.info("bloccaSedute - exiting");
 	}
 }
