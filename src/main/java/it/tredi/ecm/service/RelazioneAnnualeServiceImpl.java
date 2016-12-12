@@ -99,6 +99,8 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 
 		relazioneAnnuale.setAnnoRiferimento(annoRiferimento);
 		relazioneAnnuale.setProvider(providerService.getProvider(providerId));
+		//modificabile entro il 30 Aprile dell'anno di riferimento
+		relazioneAnnuale.setDataFineModifca(LocalDate.parse(annoRiferimento + "-04-30"));
 
 		return relazioneAnnuale;
 	}

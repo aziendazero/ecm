@@ -214,7 +214,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public boolean canInsertRelazioneAnnuale(Long providerId) {
 		int annoRiferimento = LocalDate.now().getYear();
-		if(!LocalDate.now().isAfter(LocalDate.of(annoRiferimento, 3, 31)))
+		if(!LocalDate.now().isAfter(LocalDate.of(annoRiferimento, 4, 30)))
 			return true;
 		else{
 			Boolean b = providerRepository.canInsertRelazioneAnnuale(providerId);
