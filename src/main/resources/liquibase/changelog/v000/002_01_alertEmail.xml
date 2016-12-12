@@ -1,0 +1,38 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+					xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+					logicalFilePath="v000/002_01_alertEmail.xml">
+
+    <changeSet author="dpranteda (generated)" id="1481532106212-1">
+        <createTable tableName="alert_email">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="alert_emailPK"/>
+            </column>
+            <column name="data_invio" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="data_scadenza" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="inviato" type="BOOLEAN"/>
+            <column name="tipo" type="VARCHAR(255)"/>
+            <column name="evento_id" type="BIGINT"/>
+            <column name="provider_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1481532106212-2">
+        <createTable tableName="alert_email_destinatari">
+            <column name="alert_email_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destinatari" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1481532106212-3">
+        <addForeignKeyConstraint baseColumnNames="alert_email_id" baseTableName="alert_email_destinatari" constraintName="FK_3pp79cjedyhgotsnjbx7boa03" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="alert_email"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1481532106212-4">
+        <addForeignKeyConstraint baseColumnNames="evento_id" baseTableName="alert_email" constraintName="FK_59x9wku8k8277rlpadnfvw8b9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1481532106212-5">
+        <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="alert_email" constraintName="FK_ia8ge5my7ru3nnv55g6w6t01i" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
+    </changeSet>
+</databaseChangeLog>
