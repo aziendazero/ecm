@@ -1,0 +1,15 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/002_02_valutatoreVerbale.xml">
+    <changeSet author="tiommi (generated)" id="1481538797234-1">
+        <addColumn tableName="verbale_valutazione_sul_campo">
+            <column name="valutatore_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1481538797234-2">
+        <addForeignKeyConstraint baseColumnNames="valutatore_id" baseTableName="verbale_valutazione_sul_campo" constraintName="FK_6cc59ktwo8u0i2r9nwnfgvymk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+</databaseChangeLog>

@@ -345,6 +345,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			valutazioneService.save(valutazioneReload);
 			//TODO setta il necessario per il flusso STANDARD
 
+			//segretario valutatore
+			verbale.setValutatore(Utils.getAuthenticatedUser().getAccount());
 			accreditamento.setVerbaleValutazioneSulCampo(verbale);
 			accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO);
 			accreditamentoRepository.save(accreditamento);

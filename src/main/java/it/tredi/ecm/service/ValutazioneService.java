@@ -11,6 +11,7 @@ import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.web.bean.FieldValutazioniRipetibiliWrapper;
 
 public interface ValutazioneService {
 	public Valutazione getValutazione(Long valutazioneId);
@@ -36,4 +37,6 @@ public interface ValutazioneService {
 	public void copiaInStorico(Valutazione valutazione) throws Exception;
 	public Valutazione getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(Long accreditamentoId);
 	public Set<Valutazione> getAllValutazioniStoricizzateForAccreditamentoId(Long accreditamentoId);
+	public Map<String, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapAllValutazioneSingoli(Valutazione valutazione, Accreditamento accreditamento);
+	public Map<String, FieldValutazioniRipetibiliWrapper> getMapAllValutazioneRipetibili(Valutazione valutazione, Accreditamento accreditamento);
 }

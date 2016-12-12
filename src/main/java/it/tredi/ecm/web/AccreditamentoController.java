@@ -910,13 +910,14 @@ public class AccreditamentoController {
 		Set<FieldValutazioneAccreditamento> valutazioniSulCampo = accreditamento.getVerbaleValutazioneSulCampo().getDatiValutazioneSulCampo().getValutazioniSulCampo();
 		SubSetFieldEnum subset = SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO;
 		mappa = fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazioniSulCampo, subset);
-		//carico la mappa valutazione-valutatore TODO riguardare la selezione del valutatore!! molto debole! sarebbe meglio inserirla nel verbale?
 		Map<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutatoreValutazioni = new HashMap<Account, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
-		Account valutatore = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamento.getId()).getAccount();
+		Account valutatore = accreditamento.getVerbaleValutazioneSulCampo().getValutatore();
 		mappaValutatoreValutazioni.put(valutatore, mappa);
 		wrapper.setMappa(mappa);
 		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
-		wrapper.setIdEditabili(mappa.keySet());
+		//prendo gli idEditabili
+		Set<IdFieldEnum> fieldValutazioneSulCampo = IdFieldEnum.getAllForSubset(subset);
+		wrapper.setIdEditabili(fieldValutazioneSulCampo);
 		return wrapper;
 	}
 
@@ -944,8 +945,11 @@ public class AccreditamentoController {
 					v.setIdField(k);
 					v.setAccreditamento(accreditamento);
 				});
+				//salvo sia in verbale che in valutazione
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(wrapper.getMappa()));
 				wrapper.getAccreditamento().getVerbaleValutazioneSulCampo().getDatiValutazioneSulCampo().getValutazioniSulCampo().addAll(values);
+				valutazione.getValutazioni().addAll(values);
 				accreditamentoService.save(wrapper.getAccreditamento());
 
 				redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);

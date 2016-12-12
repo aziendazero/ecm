@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.enumlist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -251,5 +252,13 @@ public enum IdFieldEnum {
 
 	public static boolean isFull(String nameRef){
 		return nameRef.equals("full");
+	}
+
+	public static Set<IdFieldEnum> getAllIdField() {
+		Set<IdFieldEnum> ids = new HashSet<IdFieldEnum>();
+		for(IdFieldEnum e : IdFieldEnum.values()){
+			ids.add(e);
+		}
+		return ids;
 	}
 }
