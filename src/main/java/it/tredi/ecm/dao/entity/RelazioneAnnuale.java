@@ -230,4 +230,12 @@ public class RelazioneAnnuale extends BaseEntity{
 		}
 	}
 
+	public boolean isRelazioneModificabile(){
+		if(dataFineModifca == null)
+			return true;
+		if(dataFineModifca.isAfter(LocalDate.now()))
+			return true;
+		return false;
+	}
+
 }
