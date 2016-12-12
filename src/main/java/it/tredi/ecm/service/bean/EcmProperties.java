@@ -15,7 +15,6 @@ public class EcmProperties {
 	private int giorniIntegrazioneMin;
 	private int giorniIntegrazioneMax;
 	private int numeroReferee;
-	private String fileRootPath;
 	private int giorniMinEventoProviderA;
 	private int giorniMinEventoProviderB;
 	private int giorniMinEventoRiedizione;

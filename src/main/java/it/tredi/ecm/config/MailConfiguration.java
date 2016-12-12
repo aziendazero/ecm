@@ -23,8 +23,6 @@ public class MailConfiguration {
     private boolean auth;
     @Value("${mail.smtp.starttls.enable}")
     private boolean starttls;
-    @Value("${mail.from}")
-    private String from;
     @Value("${mail.username}")
     private String username;
     @Value("${mail.password}")
@@ -44,7 +42,7 @@ public class MailConfiguration {
         mailSender.setPassword(password);
         return mailSender;
     }
-    
+
     @Bean
     public ClassLoaderTemplateResolver emailTemplateResolver(){
         ClassLoaderTemplateResolver emailTemplateResolver = new ClassLoaderTemplateResolver();
