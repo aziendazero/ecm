@@ -79,6 +79,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private EcmProperties ecmProperties;
 
+	@Autowired private AlertEmailService alertEmailService;
+
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Creazione domanda di accreditamento per il provider corrente"));
@@ -1049,6 +1051,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//TODO se si chiama il servizio di protocollazione verrà settato uno stato intermedio di attesa protocollazione
 		accreditamento.setStato(stato);
 		accreditamentoRepository.save(accreditamento);
+
+		alertEmailService.creaAlertForProvider(accreditamento);
 	}
 
 	@Override

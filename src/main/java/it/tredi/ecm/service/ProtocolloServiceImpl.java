@@ -75,7 +75,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 	@Autowired private WorkflowService workflowService;
 	@Autowired private EmailService emailService;
-	@Autowired private AlertEmailService alertEmailService;
 
 	private static JAXBContext protocollaArrivoReqContext = null;
 	private static JAXBContext protoBatchReqContext = null;
@@ -484,10 +483,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 								|| p.getAccreditamento().getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
 							try {
 								workflowService.eseguiTaskProtocolloEseguitoForAccreditamentoStateAndSystemUser(p.getAccreditamento());
-
-								//TODO dopo aver eseguito il TaskProtocollo...mi aspetto che accreditamento abbia lo stato già avanzato...verificare bene questa cosa.
-								//TODO vedere con Barduz se gli stati rimangono uguali tra Provvisorio e STD
-								alertEmailService.creaAlertForProvider(p.getAccreditamento());
 
 							} catch(Exception e) {
 								String msg = "Impossibile eseguire il task di avvenuta protocollazione sull'accreditamento id: " + p.getAccreditamento().getId() + " in stato: " + p.getAccreditamento().getStato() + " del provider " + p.getAccreditamento().getProvider().getDenominazioneLegale();
