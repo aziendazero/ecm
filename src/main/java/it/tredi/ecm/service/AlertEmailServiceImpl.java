@@ -27,6 +27,7 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 
 	@Autowired private AlertEmailRepository alertMailRepository;
 	@Autowired private EmailService emailService;
+	@Autowired private ProviderService providerService;
 
 	@Override
 	public Set<AlertEmail> getAll() {
@@ -151,10 +152,16 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 					emailService.inviaAlertScadenzaPagamento(alert);
 					alert.setDataInvio(LocalDateTime.now());
 					save(alert);
+				}else if(alert.getTipo() == AlertTipoEnum.SCADENZA_COMPILAZIONE_PFA){
+					emailService.inviaAlertScadenzaPFA(alert);
+					alert.setDataInvio(LocalDateTime.now());
+					save(alert);
+				}else if(alert.getTipo() == AlertTipoEnum.SCADENZA_RELAZIONE_ANNUALE){
+					emailService.inviaAlertScadenzaRelazioneAnnuale(alert);
+					alert.setDataInvio(LocalDateTime.now());
+					save(alert);
 				}
 
-//				case SCADENZA_COMPILAZIONE_PFA: break;
-//				case SCADENZA_RELAZIONE_ANNUALE: break;
 //				case SCADENZA_PAGAMENTO_E_RENDICONTAZIONE_EVENTO: break;
 //				case SCADENZA_COMPILAZIONE_DOMANDA_ACCREDITAMENTO_STANDARD: break;
 //				default : break;
@@ -162,6 +169,23 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 			}catch (Exception ex){
 				LOGGER.error(ex.getMessage(),ex);
 			}
+		}
+	}
+
+	@Override
+	public void creaAlertRipetibiliAnnuali() {
+		LOGGER.info("creaAlertRipetibiliAnnuali");
+		int annoRiferimento = LocalDate.now().getYear();
+
+		Set<Provider> providerList = providerService.getAllAttivi();
+		for(Provider p : providerList){
+			LocalDateTime dataScadenzaCompilazionePFA = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-12-1"));
+			if(!checkIfExistForProvider(AlertTipoEnum.SCADENZA_COMPILAZIONE_PFA, p.getId(), dataScadenzaCompilazionePFA))
+				creaAlertForProvider(AlertTipoEnum.SCADENZA_COMPILAZIONE_PFA, p, dataScadenzaCompilazionePFA);
+
+			LocalDateTime dataScadenzaInserimentoRelazioneAnnuale = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-03-15"));
+			if(!checkIfExistForProvider(AlertTipoEnum.SCADENZA_RELAZIONE_ANNUALE, p.getId(), dataScadenzaInserimentoRelazioneAnnuale))
+				creaAlertForProvider(AlertTipoEnum.SCADENZA_RELAZIONE_ANNUALE, p, dataScadenzaInserimentoRelazioneAnnuale);
 		}
 	}
 }

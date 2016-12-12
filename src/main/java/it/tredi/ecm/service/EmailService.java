@@ -21,4 +21,6 @@ public interface EmailService {
 	public void inviaAlertScadenzaAccreditamento(AlertEmail alert) throws Exception;
 	public void inviaConfermaReInvioIntegrazioniAccreditamento(boolean isStandard, boolean isPreavvisoRigetto, Provider provider) throws Exception;
 	public void inviaAlertScadenzaPagamento(AlertEmail alert) throws Exception;
+	public void inviaAlertScadenzaPFA(AlertEmail alert) throws Exception;
+	public void inviaAlertScadenzaRelazioneAnnuale(AlertEmail alert) throws Exception;
 }

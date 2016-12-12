@@ -185,6 +185,31 @@ public class EmailServiceImpl implements EmailService {
 		for(String dst : alert.getDestinatari()){
 			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
 		}
+	}
 
+	@Override
+	public void inviaAlertScadenzaPFA(AlertEmail alert) throws Exception {
+		LOGGER.info("inviaAlertScadenzaPFA");
+		Context context = new Context();
+		String subject = "Avviso Scadenza Compilazione Piano Formativo Annuale";
+
+		String message = templateEngine.process("alertScadenzaPFA", context);
+
+		for(String dst : alert.getDestinatari()){
+			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
+		}
+	}
+
+	@Override
+	public void inviaAlertScadenzaRelazioneAnnuale(AlertEmail alert) throws Exception {
+		LOGGER.info("inviaAlertScadenzaRelazioneAnnuale");
+		Context context = new Context();
+		String subject = "Avviso Scadenza Inserimento Relazione Annuale";
+
+		String message = templateEngine.process("alertScadenzaRelazioneAnnuale", context);
+
+		for(String dst : alert.getDestinatari()){
+			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
+		}
 	}
 }

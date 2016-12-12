@@ -20,7 +20,13 @@ public class AlertScadenzeTask {
 	@Async
 	@Transactional
 	public void inviaAlert() throws Exception{
+		LOGGER.debug(Thread.currentThread().getName());
+		LOGGER.debug("inviaAlert - entering");
+
+		alertEmailService.creaAlertRipetibiliAnnuali();
 		alertEmailService.inviaAlertsEmail();
+
+		LOGGER.debug("inviaAlert - exiting");
 	}
 
 }

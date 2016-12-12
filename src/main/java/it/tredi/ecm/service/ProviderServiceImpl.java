@@ -3,6 +3,7 @@ package it.tredi.ecm.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -103,7 +104,13 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Set<Provider> getAllNotInserito() {
 		LOGGER.info("Recupero tutti i Providers non in stato inserito");
-		return providerRepository.findAllStatusNot(ProviderStatoEnum.INSERITO);
+		return providerRepository.findAllByStatusNot(ProviderStatoEnum.INSERITO);
+	}
+
+	@Override
+	public Set<Provider> getAllAttivi() {
+		LOGGER.info("Recupero tutti i Providers attivi");
+		return providerRepository.findAllByStatusIn(Arrays.asList(ProviderStatoEnum.ACCREDITATO_STANDARD,ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE));
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package it.tredi.ecm.dao.repository;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -26,8 +27,10 @@ public interface ProviderRepository extends CrudRepository<Provider, Long> {
 	public Provider findOneByPartitaIva(String partitaIva);
 	public Set<Provider> findAll();
 
-	@Query("SELECT p FROM Provider p WHERE p.status <> :status")
-	public Set<Provider> findAllStatusNot(@Param("status") ProviderStatoEnum status);
+	//@Query("SELECT p FROM Provider p WHERE p.status <> :status")
+	public Set<Provider> findAllByStatusNot(@Param("status") ProviderStatoEnum status);
+
+	public Set<Provider> findAllByStatusIn(List<ProviderStatoEnum> stati);
 
 	@Query("SELECT a.provider.id FROM Account a JOIN a.provider p WHERE a.id = :accountId")
 	public Long getIdByAccountId(@Param("accountId") Long accountId);

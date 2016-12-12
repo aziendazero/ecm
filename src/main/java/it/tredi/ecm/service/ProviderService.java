@@ -15,6 +15,7 @@ public interface ProviderService {
 	public Provider getProviderByPartitaIva(String partitaIva);
 	public Set<Provider> getAll();
 	public Set<Provider> getAllNotInserito();
+	public Set<Provider> getAllAttivi();
 	public void save(Provider provider);
 
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
