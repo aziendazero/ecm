@@ -1,19 +1,10 @@
---
--- PostgreSQL database dump
---
-
 SET statement_timeout = 0;
-SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 SET search_path = ecmdb, pg_catalog;
-
---
--- Data for Name: province; Type: TABLE DATA; Schema: ecmdb; Owner: ecm
---
 
 INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('001', '010', 'TORINO', 'TO');
 INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('002', '010', 'VERCELLI', 'VC');
@@ -125,4 +116,3 @@ INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('10
 INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('105', '200', 'OGLIASTRA', 'OG');
 INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('106', '200', 'MEDIO CAMPIDANO', 'VS');
 INSERT INTO province (codice_provincia, codice_regione, nome, sigla) VALUES ('107', '200', 'CARBONIA-IGLESIAS', 'CI');
-

@@ -12,11 +12,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class VerbaleValutazioneSulCampoWrapper {
+public class VerbaleValutazioneSulCampoWrapper extends Wrapper {
 
 	private Accreditamento accreditamento;
 	private VerbaleValutazioneSulCampo verbale;
-	private Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
 	private Map<String, String> mappaErroriValutazione = new HashMap<String, String>();
 
 }

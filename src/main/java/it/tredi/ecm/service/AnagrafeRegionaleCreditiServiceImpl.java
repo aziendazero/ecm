@@ -33,8 +33,9 @@ public class AnagrafeRegionaleCreditiServiceImpl implements AnagrafeRegionaleCre
 		LocalDate minDate = anagrafeRegionaleCreditiRepository.getMinData();
 
 		//creo un elenco dall'anno minimo fino all'anno corrente
-		for(int a = minDate.getYear(); a <= LocalDate.now().getYear(); a++)
-			annoList.add(a);
+		if(minDate != null)
+			for(int a = minDate.getYear(); a <= LocalDate.now().getYear(); a++)
+				annoList.add(a);
 
 		return annoList;
 	}

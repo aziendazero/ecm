@@ -275,4 +275,10 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		LOGGER.debug(Utils.getLogMessage("Recupero la valutazione attiva (non storicizzata) per l'accreditamento id:" + accreditamentoId + " della segreteria"));
 		return valutazioneRepository.findOneByAccreditamentoIdAndTipoValutazioneAndStoricizzatoFalse(accreditamentoId, ValutazioneTipoEnum.SEGRETERIA_ECM);
 	}
+
+	@Override
+	public Set<Valutazione> getAllValutazioniStoricizzateForAccreditamentoId(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero tutte le valutazioni Storicizzate per l'accreditamento id: " + accreditamentoId));
+		return valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoTrue(accreditamentoId);
+	}
 }

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Account;
@@ -116,5 +117,21 @@ public class ValutazioneValidator {
 					mappaErroriValutazione.put(key, "error.note_obbligatorie");
 		}
 		return mappaErroriValutazione;
+	}
+
+	public void validateEditVerbale(VerbaleValutazioneSulCampo verbale, Errors errors, String prefix) {
+		if(verbale.getGiorno() == null)
+			errors.rejectValue(prefix + "giorno", "error.empty");
+		//hanno chiesto di toglierla! ( ._.)
+//		else if(verbale.getGiorno().isBefore(LocalDate.now()))
+//			errors.rejectValue(prefix + "giorno", "error.data_non_valida_verbale");
+		if(verbale.getTeamLeader() == null)
+			errors.rejectValue(prefix + "teamLeader", "error.empty");
+		if(verbale.getOsservatoreRegionale() == null)
+			errors.rejectValue(prefix + "osservatoreRegionale", "error.empty");
+		if(verbale.getComponentiSegreteria() == null || verbale.getComponentiSegreteria().isEmpty())
+			errors.rejectValue(prefix + "componentiSegreteria", "error.empty");
+		if(verbale.getReferenteInformatico() == null && verbale.getAccreditamento().getDatiAccreditamento().getProcedureFormative().contains(ProceduraFormativa.FAD))
+			errors.rejectValue(prefix + "referenteInformatico", "error.empty");
 	}
 }

@@ -1,19 +1,10 @@
---
--- PostgreSQL database dump
---
-
 SET statement_timeout = 0;
-SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 SET search_path = ecmdb, pg_catalog;
-
---
--- Data for Name: professione; Type: TABLE DATA; Schema: ecmdb; Owner: ecm
---
 
 INSERT INTO professione (id, codice_cogeaps, nome, sanitaria) VALUES (1172, '1', 'Medico chirurgo', true);
 INSERT INTO professione (id, codice_cogeaps, nome, sanitaria) VALUES (1173, '2', 'Odontoiatra', true);

@@ -147,6 +147,10 @@ table.datatable-responsive-search thead .sorting_asc:after {
 	visibility: hidden;
 }
 
+table.datatable-responsive-storico thead .sorting_asc:after {
+	visibility: hidden;
+}
+
 table.datatable-responsive-search-validation thead .sorting_asc:after {
 	visibility: hidden;
 }

@@ -1,19 +1,10 @@
---
--- PostgreSQL database dump
---
-
 SET statement_timeout = 0;
-SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 SET search_path = ecmdb, pg_catalog;
-
---
--- Data for Name: comuni; Type: TABLE DATA; Schema: ecmdb; Owner: ecm
---
 
 INSERT INTO comuni (codice_comune, nome, codice_provincia) VALUES ('004031', 'BRIGA ALTA', '004');
 INSERT INTO comuni (codice_comune, nome, codice_provincia) VALUES ('004032', 'BRONDELLO', '004');
@@ -8109,9 +8100,3 @@ INSERT INTO comuni (codice_comune, nome, codice_provincia) VALUES ('109012', 'MO
 INSERT INTO comuni (codice_comune, nome, codice_provincia) VALUES ('109013', 'MONTAPPONE', '109');
 INSERT INTO comuni (codice_comune, nome, codice_provincia) VALUES ('109014', 'MONTEFALCONE APPENNINO', '109');
 INSERT INTO comuni (codice_comune, nome, codice_provincia) VALUES ('109015', 'MONTEFORTINO', '109');
-
-
---
--- PostgreSQL database dump complete
---
-

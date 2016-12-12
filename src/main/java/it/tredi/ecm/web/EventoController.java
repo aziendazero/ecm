@@ -358,6 +358,8 @@ public class EventoController {
 			Evento evento = eventoService.getEvento(eventoId);
 			if(evento instanceof EventoFSC)
 				((EventoFSC) evento).getFasiAzioniRuoli().size(); //workarounda pure Barduz
+			if(evento instanceof EventoFAD)
+				((EventoFAD) evento).getProgrammaFAD().size(); //workarounda pure Barduz
 			EventoWrapper wrapper = prepareEventoWrapperEdit(evento, true);
 			return goToEdit(model, wrapper);
 		}
