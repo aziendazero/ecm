@@ -6,7 +6,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,6 +61,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
 import it.tredi.ecm.dao.repository.ProtoBatchLogRepository;
 import it.tredi.ecm.dao.repository.ProtocolloRepository;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.EngineeringProperties;
 import it.tredi.ecm.utils.Utils;
 
@@ -75,6 +78,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 	@Autowired private WorkflowService workflowService;
 	@Autowired private EmailService emailService;
+	@Autowired private EcmProperties ecmProperties;
 
 	private static JAXBContext protocollaArrivoReqContext = null;
 	private static JAXBContext protoBatchReqContext = null;
@@ -253,23 +257,35 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		String requestString = writer.toString();
 
-		Object response = port.protocollaArrivo(requestString);
-		LOGGER.debug(response);
+		if(ecmProperties.isDebugSaltaProtocollo()) {
+			String start = "2016-01-01 00:00";
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+			LocalDateTime startDT = LocalDateTime.parse(start, formatter);
+			long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
+			protocollo.setData(LocalDate.now());
+			protocollo.setNumero((int)secsFrom);
+			protocollo.setIdProtoBatch(null);
+			protocollo.setStatoSpedizione(null);
 
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document xmlResponse = builder.parse(new InputSource(new StringReader(response.toString())));
-		XPathFactory xPathfactory = XPathFactory.newInstance();
-		XPath xpath = xPathfactory.newXPath();
+		} else {
+			Object response = port.protocollaArrivo(requestString);
+			LOGGER.debug(response);
 
-		String numero = xpath.compile("//protocollo/numero").evaluate(xmlResponse);
-		String data = xpath.compile("//protocollo/data").evaluate(xmlResponse);
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document xmlResponse = builder.parse(new InputSource(new StringReader(response.toString())));
+			XPathFactory xPathfactory = XPathFactory.newInstance();
+			XPath xpath = xPathfactory.newXPath();
 
-		//p.setData(new SimpleDateFormat("dd-MM-yyyyy").parse(data));
-		protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-		protocollo.setNumero(Integer.parseInt(numero));
-		protocollo.setIdProtoBatch(null);
-		protocollo.setStatoSpedizione(null);
+			String numero = xpath.compile("//protocollo/numero").evaluate(xmlResponse);
+			String data = xpath.compile("//protocollo/data").evaluate(xmlResponse);
+
+			//p.setData(new SimpleDateFormat("dd-MM-yyyyy").parse(data));
+			protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+			protocollo.setNumero(Integer.parseInt(numero));
+			protocollo.setIdProtoBatch(null);
+			protocollo.setStatoSpedizione(null);
+		}
 
 		protocolloRepository.save(protocollo);
 	}
@@ -303,19 +319,28 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 	@Transactional
 	private void protocollaInUscita(Protocollo p, it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari d) throws Exception {
-		LapisWebSOAPType port = protocolloThreadLocal.get();
+		String idProtoBatch = null;
+		if(ecmProperties.isDebugSaltaProtocollo()) {
+			String start = "2016-01-01 00:00";
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+			LocalDateTime startDT = LocalDateTime.parse(start, formatter);
+			long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
+			idProtoBatch = Long.toString(secsFrom);
+		} else {
+			LapisWebSOAPType port = protocolloThreadLocal.get();
 
-		it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta richiesta = buildRichiestaUscita(p,d);
+			it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta richiesta = buildRichiestaUscita(p,d);
 
-		Transformer transformer = tf.get();
+			Transformer transformer = tf.get();
 
-		StringWriter writer = new StringWriter();
-		transformer.transform(new JAXBSource(getProtoBatchReqContext(), richiesta), new StreamResult(writer));
+			StringWriter writer = new StringWriter();
+			transformer.transform(new JAXBSource(getProtoBatchReqContext(), richiesta), new StreamResult(writer));
 
-		String requestString = writer.toString();
+			String requestString = writer.toString();
 
-		String idProtoBatch = port.protoBatch(requestString);
-		LOGGER.debug(idProtoBatch);
+			idProtoBatch = port.protoBatch(requestString);
+			LOGGER.debug(idProtoBatch);
+		}
 
 		p.setData(null);
 		p.setNumero(null);
@@ -358,44 +383,66 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
 
-		for (Protocollo p : protocolliInUscita) {
-			Object response = port.protoBatchLog(p.getIdProtoBatch());
+		if(ecmProperties.isDebugSaltaProtocollo()) {
+			String start = "2016-01-01 00:00";
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+			LocalDateTime startDT = LocalDateTime.parse(start, formatter);
+			long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
+			for (Protocollo p : protocolliInUscita) {
+				p.setData(LocalDate.now());
+				p.setNumero((int)secsFrom++);
+				protocolloRepository.save(p);
 
-			LOGGER.debug(response);
+				ProtoBatchLog plog = new ProtoBatchLog();
+				plog.setCodStato("0");
+				plog.setDtIns(null);
+				plog.setDtUpd(null);
+				plog.setLog("Inserimento in Debug Salta protocollazione");
+				plog.setProtocollo(p);
+				plog.setStato("debug-salta-protocollazione");
 
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document xmlResponse = builder.parse(new InputSource(new StringReader(response.toString())));
-			XPathFactory xPathfactory = XPathFactory.newInstance();
-			XPath xpath = xPathfactory.newXPath();
-
-			String stato = xpath.compile("//proto_batch/@stato").evaluate(xmlResponse);
-			String cod_stato = xpath.compile("//proto_batch/@cod_stato").evaluate(xmlResponse);
-			String dt_insert = xpath.compile("//proto_batch/@dt_insert").evaluate(xmlResponse);
-			String dt_update = xpath.compile("//proto_batch/@dt_update").evaluate(xmlResponse);
-//			String cod_applicativo = xpath.compile("//proto_batch/@cod_applicativo").evaluate(xmlResponse);
-			String n_proto = xpath.compile("//proto_batch/n_proto").evaluate(xmlResponse);
-			String d_proto = xpath.compile("//proto_batch/d_proto").evaluate(xmlResponse);
-			String log = xpath.compile("//protocollo/log").evaluate(xmlResponse);
-
-			if (StringUtils.hasText(d_proto)) {
-				//p.setData(new SimpleDateFormat("dd/MM/yyyy").parse(d_proto));
-				p.setData(LocalDate.parse(d_proto, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+				protoBatchLogRepository.save(plog);
 			}
-			if (StringUtils.hasText(n_proto)) {
-				p.setNumero(Integer.parseInt(n_proto));
+		} else {
+			for (Protocollo p : protocolliInUscita) {
+				Object response = port.protoBatchLog(p.getIdProtoBatch());
+
+				LOGGER.debug(response);
+
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder builder = factory.newDocumentBuilder();
+				Document xmlResponse = builder.parse(new InputSource(new StringReader(response.toString())));
+				XPathFactory xPathfactory = XPathFactory.newInstance();
+				XPath xpath = xPathfactory.newXPath();
+
+				String stato = xpath.compile("//proto_batch/@stato").evaluate(xmlResponse);
+				String cod_stato = xpath.compile("//proto_batch/@cod_stato").evaluate(xmlResponse);
+				String dt_insert = xpath.compile("//proto_batch/@dt_insert").evaluate(xmlResponse);
+				String dt_update = xpath.compile("//proto_batch/@dt_update").evaluate(xmlResponse);
+	//			String cod_applicativo = xpath.compile("//proto_batch/@cod_applicativo").evaluate(xmlResponse);
+				String n_proto = xpath.compile("//proto_batch/n_proto").evaluate(xmlResponse);
+				String d_proto = xpath.compile("//proto_batch/d_proto").evaluate(xmlResponse);
+				String log = xpath.compile("//protocollo/log").evaluate(xmlResponse);
+
+				if (StringUtils.hasText(d_proto)) {
+					//p.setData(new SimpleDateFormat("dd/MM/yyyy").parse(d_proto));
+					p.setData(LocalDate.parse(d_proto, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+				}
+				if (StringUtils.hasText(n_proto)) {
+					p.setNumero(Integer.parseInt(n_proto));
+				}
+				protocolloRepository.save(p);
+
+				ProtoBatchLog plog = new ProtoBatchLog();
+				plog.setCodStato(cod_stato);
+				plog.setDtIns(StringUtils.hasText(dt_insert) ? fmt.parse(dt_insert) : null);
+				plog.setDtUpd(StringUtils.hasText(dt_update) ? fmt.parse(dt_update) : null);
+				plog.setLog(log);
+				plog.setProtocollo(p);
+				plog.setStato(stato);
+
+				protoBatchLogRepository.save(plog);
 			}
-			protocolloRepository.save(p);
-
-			ProtoBatchLog plog = new ProtoBatchLog();
-			plog.setCodStato(cod_stato);
-			plog.setDtIns(StringUtils.hasText(dt_insert) ? fmt.parse(dt_insert) : null);
-			plog.setDtUpd(StringUtils.hasText(dt_update) ? fmt.parse(dt_update) : null);
-			plog.setLog(log);
-			plog.setProtocollo(p);
-			plog.setStato(stato);
-
-			protoBatchLogRepository.save(plog);
 		}
 	}
 
@@ -413,54 +460,67 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		Set<Protocollo> protocolliInUscita = protocolloRepository.getStatoSpedizioneNonConsegnateENonInErrore();
 		for (Protocollo p : protocolliInUscita) {
+			String stato = null;
+			String nr_spedizione = null;
+			String dt_spedizione = null;
+			if(ecmProperties.isDebugSaltaProtocollo()) {
+				String start = "2016-01-01 00:00";
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+				LocalDateTime startDT = LocalDateTime.parse(start, formatter);
+				long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
+				stato = AVVENUTA_CONSEGNA;
+				nr_spedizione = Long.toString(secsFrom++);
+				dt_spedizione = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+			} else {
 
-			// creo la request
-			Document request = builder.newDocument();
+				// creo la request
+				Document request = builder.newDocument();
 
-			Element root = request.createElement("getStatoSpedizione");
-			request.appendChild(root);
+				Element root = request.createElement("getStatoSpedizione");
+				request.appendChild(root);
 
-			Element struttura = request.createElement("struttura");struttura.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodStruttura()));root.appendChild(struttura);
-			Element numero_proto = request.createElement("numero_proto");numero_proto.appendChild(request.createTextNode(Integer.toString(p.getNumero())));root.appendChild(numero_proto);
-			Element data_proto = request.createElement("data_proto");data_proto.appendChild(request.createTextNode(p.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));root.appendChild(data_proto);
-			Element cod_applicativo = request.createElement("cod_applicativo");cod_applicativo.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodApplicativo()));root.appendChild(cod_applicativo);
+				Element struttura = request.createElement("struttura");struttura.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodStruttura()));root.appendChild(struttura);
+				Element numero_proto = request.createElement("numero_proto");numero_proto.appendChild(request.createTextNode(Integer.toString(p.getNumero())));root.appendChild(numero_proto);
+				Element data_proto = request.createElement("data_proto");data_proto.appendChild(request.createTextNode(p.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));root.appendChild(data_proto);
+				Element cod_applicativo = request.createElement("cod_applicativo");cod_applicativo.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodApplicativo()));root.appendChild(cod_applicativo);
 
-			// invoco il WS
-			Source response = dispatchThreadLocal.get().invoke(new DOMSource(request));
+				// invoco il WS
+				Source response = dispatchThreadLocal.get().invoke(new DOMSource(request));
 
-			// converto in DOM la risposta
-			Document xmlResponse = builder.newDocument();
-			Transformer transformer = tf.get();
-			transformer.transform(response, new DOMResult(xmlResponse));
+				// converto in DOM la risposta
+				Document xmlResponse = builder.newDocument();
+				Transformer transformer = tf.get();
+				transformer.transform(response, new DOMResult(xmlResponse));
 
-			XPathFactory xPathfactory = XPathFactory.newInstance();
-			XPath xpath = xPathfactory.newXPath();
+				XPathFactory xPathfactory = XPathFactory.newInstance();
+				XPath xpath = xPathfactory.newXPath();
 
-			LOGGER.debug(xpath.compile("//.").evaluate(xmlResponse));
+				LOGGER.debug(xpath.compile("//.").evaluate(xmlResponse));
 
-			// estraggo l'xml innestato.
-			String xmlResult = xpath.compile("//getStatoSpedizioneResponse/getStatoSpedizioneReturn").evaluate(xmlResponse);
+				// estraggo l'xml innestato.
+				String xmlResult = xpath.compile("//getStatoSpedizioneResponse/getStatoSpedizioneReturn").evaluate(xmlResponse);
 
-			// converto in DOM l'xml innestato per poter estrarre le informazioni tramite xpath.
-			InputSource is = new InputSource();
-			is.setCharacterStream(new StringReader(xmlResult));
+				// converto in DOM l'xml innestato per poter estrarre le informazioni tramite xpath.
+				InputSource is = new InputSource();
+				is.setCharacterStream(new StringReader(xmlResult));
 
-			Document xmlResultDocument = builder.parse(is);
+				Document xmlResultDocument = builder.parse(is);
 
-			String stato = xpath.compile("//protocollo/destinatario/@stato").evaluate(xmlResultDocument);
-			String nr_spedizione = xpath.compile("//protocollo/destinatario/@nr_spedizione").evaluate(xmlResultDocument);
-			String dt_spedizione = xpath.compile("//protocollo/destinatario/@dt_spedizione").evaluate(xmlResultDocument);
+				stato = xpath.compile("//protocollo/destinatario/@stato").evaluate(xmlResultDocument);
+				nr_spedizione = xpath.compile("//protocollo/destinatario/@nr_spedizione").evaluate(xmlResultDocument);
+				dt_spedizione = xpath.compile("//protocollo/destinatario/@dt_spedizione").evaluate(xmlResultDocument);
 
-//			String numero = xpath.compile("//protocollo/@numero").evaluate(xmlResultDocument);
-//			String data = xpath.compile("//protocollo/@data").evaluate(xmlResultDocument);
-//			String destinatario = xpath.compile("//protocollo/destinatario/@vettore").evaluate(xmlResultDocument);
-//			String ragione_sociale = xpath.compile("//protocollo/destinatario/@ragione_sociale").evaluate(xmlResultDocument);
-//			String riferimento = xpath.compile("//protocollo/destinatario/@riferimento").evaluate(xmlResultDocument);
-//			String indirizzo = xpath.compile("//protocollo/destinatario/@riferimento").evaluate(xmlResultDocument);
-//			String comune = xpath.compile("//protocollo/destinatario/@comune").evaluate(xmlResultDocument);
-//			String provincia = xpath.compile("//protocollo/destinatario/@provincia").evaluate(xmlResultDocument);
-//			String cap = xpath.compile("//protocollo/destinatario/@cap").evaluate(xmlResultDocument);
-//			String email = xpath.compile("//protocollo/destinatario/@email").evaluate(xmlResultDocument);
+	//			String numero = xpath.compile("//protocollo/@numero").evaluate(xmlResultDocument);
+	//			String data = xpath.compile("//protocollo/@data").evaluate(xmlResultDocument);
+	//			String destinatario = xpath.compile("//protocollo/destinatario/@vettore").evaluate(xmlResultDocument);
+	//			String ragione_sociale = xpath.compile("//protocollo/destinatario/@ragione_sociale").evaluate(xmlResultDocument);
+	//			String riferimento = xpath.compile("//protocollo/destinatario/@riferimento").evaluate(xmlResultDocument);
+	//			String indirizzo = xpath.compile("//protocollo/destinatario/@riferimento").evaluate(xmlResultDocument);
+	//			String comune = xpath.compile("//protocollo/destinatario/@comune").evaluate(xmlResultDocument);
+	//			String provincia = xpath.compile("//protocollo/destinatario/@provincia").evaluate(xmlResultDocument);
+	//			String cap = xpath.compile("//protocollo/destinatario/@cap").evaluate(xmlResultDocument);
+	//			String email = xpath.compile("//protocollo/destinatario/@email").evaluate(xmlResultDocument);
+			}
 
 			if(p.getStatoSpedizione() == null || !p.getStatoSpedizione().equals(stato)) {
 				p.setStatoSpedizione(stato);

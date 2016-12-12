@@ -98,6 +98,7 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 				}
 			}
 
+			quotaAnnuale.setPagamento(pagamento);
 			save(quotaAnnuale);
 			pagamentoService.save(pagamento);
 			alertEmailService.creaAlertContributoAnnuoForProvider(quotaAnnuale);
