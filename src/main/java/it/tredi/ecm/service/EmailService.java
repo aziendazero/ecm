@@ -23,4 +23,7 @@ public interface EmailService {
 	public void inviaAlertScadenzaPagamento(AlertEmail alert) throws Exception;
 	public void inviaAlertScadenzaPFA(AlertEmail alert) throws Exception;
 	public void inviaAlertScadenzaRelazioneAnnuale(AlertEmail alert) throws Exception;
+	public void inviaAlertScadenzaPagamentoRendicontazioneEvento(AlertEmail alert) throws Exception;
+	public void inviaAlertScadenzaValutazioneReferee(AlertEmail alert) throws Exception;
+	public void inviaAlertScadenzaInvioAccreditamentoStandard(AlertEmail alert) throws Exception;
 }

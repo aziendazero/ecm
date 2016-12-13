@@ -1,5 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
@@ -118,15 +119,16 @@ public class Provider extends BaseEntity{
 
 	@Column(name ="can_insert_accreditamento_standard")
 	private boolean canInsertAccreditamentoStandard;
+
+	@Column(name = "data_insert_accreditamento_standard")//termine per invio domanda standard dopo attivazione da parte della segreteria (90 gg dall'abilitazione)
+	private LocalDate dataScadenzaInsertAccreditamentoStandard;
+
 	@Column(name ="can_insert_piano_formativo")
 	private boolean canInsertPianoFormativo;
 	@Column(name ="can_insert_evento")
 	private boolean canInsertEvento;
 	@Column(name ="can_insert_relazione_annuale")
 	private Boolean canInsertRelazioneAnnuale;
-
-//	@OneToMany(mappedBy = "provider")
-//	private Set<QuotaAnnuale> pagamenti = new HashSet<QuotaAnnuale>();
 
 	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;
@@ -205,5 +207,17 @@ public class Provider extends BaseEntity{
 			if(p.isDelegatoLegaleRappresentante())
 				return p;
 		return null;
+	}
+
+	public boolean canInsertAccreditamentoStandard(){
+		//se flag disattivato - non permetto l'inserimento
+		if(!canInsertAccreditamentoStandard)
+			return false;
+
+		//se flag attivato, controllo la data
+		if(dataScadenzaInsertAccreditamentoStandard != null && !LocalDate.now().isBefore(dataScadenzaInsertAccreditamentoStandard))
+			return true;
+
+		return false;
 	}
 }

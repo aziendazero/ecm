@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Autowired private ProfileAndRoleService profileAndRoleService;
 	@Autowired private AccountService accountService;
 	@Autowired private FileService fileService;
+	@Autowired private AlertEmailService alertEmailService;
 	@PersistenceContext EntityManager entityManager;
 
 	@Override
@@ -211,7 +213,8 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	public boolean canInsertAccreditamentoStandard(Long providerId) {
-		return providerRepository.canInsertAccreditamentoStandard(providerId);
+		Provider provider = providerRepository.findOne(providerId);
+		return provider.canInsertAccreditamentoStandard();
 	}
 	@Override
 	public boolean canInsertEvento(Long providerId) {
@@ -459,6 +462,39 @@ public class ProviderServiceImpl implements ProviderService {
 		System.out.println(q.getMaxResults());
 
 		return q.getResultList();
+	}
+
+	@Override
+	@Transactional
+	public void abilitaCanInsertAccreditamentoStandard(Long providerId, LocalDate dataFine) throws Exception{
+		LOGGER.info("Abilitazione insertAccreditamentoStandard per Provider: " + providerId);
+
+		Provider provider = getProvider(providerId);
+		if(provider == null){
+			throw new Exception("Provider non trovato");
+		}
+
+		provider.setCanInsertAccreditamentoStandard(true);
+		provider.setDataScadenzaInsertAccreditamentoStandard(dataFine);
+
+		save(provider);
+
+		alertEmailService.creaAlertInvioDomandaStandardForProvider(provider);
+	}
+
+	@Override
+	public void disabilitaCanInsertAccreditamentoStandard(Long providerId) throws Exception {
+		LOGGER.info("Disabilitazione insertAccreditamentoStandard per Provider: " + providerId);
+
+		Provider provider = getProvider(providerId);
+		if(provider == null){
+			throw new Exception("Provider non trovato");
+		}
+
+		provider.setCanInsertAccreditamentoStandard(false);
+		provider.setDataScadenzaInsertAccreditamentoStandard(LocalDate.now());
+
+		save(provider);
 	}
 
 }

@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -40,4 +41,7 @@ public interface ProviderService {
 	public String getEmailDelegatoLegaleRappresentante(Long providerId);
 
 	public List<Provider> cerca(RicercaProviderWrapper wrapper) throws Exception;
+
+	public void abilitaCanInsertAccreditamentoStandard(Long providerId, LocalDate dataFine) throws Exception;
+	public void disabilitaCanInsertAccreditamentoStandard(Long providerId) throws Exception;
 }

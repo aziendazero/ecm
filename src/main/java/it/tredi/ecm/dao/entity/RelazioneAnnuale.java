@@ -29,7 +29,7 @@ import lombok.Setter;
 @Getter
 @Setter
 /*
- * Inserimento relazione annuale per l'anno in corso -> gestito dal controllo sulla data e nel caso in cui la data per il termine sia già passata attraverso l flag sul provider
+ * Inserimento relazione annuale per l'anno in corso -> gestito dal controllo sulla data corrente e nel caso in cui la data per il termine sia già passata attraverso il flag sul provider
  *
  * Abilitare una modifica ad una relazione già scaduta -> gestita attraverso la posticipazione della data di fine modifica
  *

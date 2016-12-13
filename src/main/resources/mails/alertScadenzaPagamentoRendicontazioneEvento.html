@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title th:remove="all">Avviso di scadenza termini per il pagamento e la rendicontazione di un evento</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <p>Gentile Provider,</p>
+    <p>
+     La informiamo che scadranno fra 15 giorni i termini  per procedere al pagamento e alla rendicontazione dell'evento <span th:text="${eventoIdentificativo}"></span> con titolo <span th:text="${eventoTitolo}"></span>
+    </p>
+    <p>
+      Distinti Saluti, <br />
+      <em>Segreteria ECM</em>
+    </p>
+  </body>
+</html>

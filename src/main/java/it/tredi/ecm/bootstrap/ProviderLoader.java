@@ -71,7 +71,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 			legale.getAnagrafica().setNome("Giuseppe");
 			legale.getAnagrafica().setCodiceFiscale("TRLVNI64E28H199O");
 			legale.getAnagrafica().setCellulare("123456789");
-			legale.getAnagrafica().setEmail("gverdi@3di.it");
+			legale.getAnagrafica().setEmail("eluconi@3di.it");
 			legale.getAnagrafica().setPec("demo@pec.3di.it");
 			personaRepository.save(legale);
 
