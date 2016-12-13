@@ -28,6 +28,9 @@ public class VerbaleValutazioneSulCampo extends BaseEntity {
 //	private File verbaleFirmato;
 
 	@OneToOne
+	private Account valutatore;
+
+	@OneToOne
 	private Account teamLeader;
 
 	@OneToOne

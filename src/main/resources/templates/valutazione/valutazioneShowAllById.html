@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<th:block th:fragment="showAllValutazioneById">
+			<div class="x_panel">
+           		<div class="x_title">
+					<h2 style="display: inline" th:text="#{label.valutazioni_complessive}">label.valutazioni_complessive</h2>
+					<ul class="nav navbar-right panel_toolbox">
+	                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                 		</ul>
+					<div class="clearfix"></div>
+				</div>
+
+				<div class="valutazione-collapse">
+					<table id="valutazioneComplessivaStorico" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th th:text="${valutazioneWrapper.valutazione.account.getFullName()}"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td th:text="${valutazioneWrapper.valutazione.valutazioneComplessiva}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- FRAGMENT SINGOLI -->
+			<div th:fragment="tabellaValutazioneSingoli(label, subset)" th:remove="all">
+				<div class="x_panel">
+		            <div class="x_title">
+						<h2 style="display: inline" th:text="#{label.__${label}__}"></h2>
+						<h2 style="display: inline" th:if="${#sets.isEmpty(valutazioneWrapper.valutazioneSingoli.get('__${subset}__'))}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${#sets.isEmpty(valutazioneWrapper.valutazioneSingoli.get('__${subset}__'))}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+		                </ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:unless="${#sets.isEmpty(valutazioneWrapper.valutazioneSingoli.get('__${subset}__'))}" th:with="mappa=${valutazioneWrapper.valutazioneSingoli.get('__${subset}__')}" id="__${subset}__BlockValidate" class="valutazione-collapse">
+						<table class="datatable-responsive-search-validation-storico table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th th:text="#{label.id}">label.id</th>
+									<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM - ' + valutazioneWrapper.valutazione.account.getFullNameBase() : 'Referee - ' + valutazioneWrapper.valutazione.account.getFullNameBase()}">Nome</th>
+									<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM' : 'Referee'}">Nome</th>
+								</tr>
+							</thead>
+							<!-- ciclo su IdField (tranne che per il FULL / idEditabile == -1)-->
+							<tbody>
+								<tr th:each="field, row : ${#lists.sort(mappa.keySet())}" th:unless="${field.idEcm == -1}">
+									<td th:text="${field.idEcm}">numero idEditabile</td>
+									<!-- cerco nella mappa della valutazione la valutazione relativa all'IdField -->
+									<td class="otherValidationCheck">
+										<div>
+											<th:block th:unless="${mappa.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__) == null}">
+												<span th:if="${mappa.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__).esito == true}" class="fa table-icon fa-check green" th:title="#{label.valido}"></span>
+												<span th:if="${mappa.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__).esito == false}" class="fa table-icon fa-remove red" th:title="#{label.non_valido}"></span>
+											</th:block>
+											<span th:if="${mappa.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__) == null}" class="fa table-icon fa-question grey" th:title="#{label.non_valutato}"></span>
+											<div th:if="${mappa.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__) != null and !#strings.isEmpty(mappa.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__).note)}" th:text="${mappa.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__).note}" class="nota-validazione">nota della valutazione</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<!-- FRAGMENT RIPETIBILI -->
+			<div th:fragment="tabellaValutazioneRipetibili(label, subset)" th:remove="all">
+				<div class="x_panel" th:with="contenitore=${valutazioneWrapper.valutazioneRipetibili.get('__${subset}__')}" >
+		            <div class="x_title">
+						<h2 style="display: inline" th:text="#{label.__${label}__}"></h2>
+						<h2 style="display: inline" th:if="${#maps.isEmpty(contenitore.mappaValutazioni)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${#maps.isEmpty(contenitore.mappaValutazioni)}">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+		                </ul>
+						<div class="clearfix"></div>
+					</div>
+					<th:block th:each="mappa, r : ${contenitore.mappaValutazioni}">
+						<h2 th:text="${mappa.key}"></h2>
+						<div th:unless="${r.last}" class="divider-dashed"></div>
+						<div th:id="${'__${label}__BlockValidate'+r.index}" class="valutazione-collapse">
+							<table class="datatable-responsive-search-validation-storico table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th th:text="#{label.id}">label.id</th>
+										<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM - ' + valutazioneWrapper.valutazione.account.getFullNameBase() : 'Referee - ' + valutazioneWrapper.valutazione.account.getFullNameBase()}">Nome</th>
+										<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM' : 'Referee'}">Nome</th>
+									</tr>
+								</thead>
+								<!-- ciclo su IdField (tranne che per il FULL / idEditabile == -1)-->
+								<tbody>
+									<tr th:each="field, row : ${#lists.sort(mappa.value.keySet())}" th:unless="${field.idEcm == -1}">
+										<td th:text="${field.idEcm}">numero idEditabile</td>
+										<!-- cerco nella mappa della valutazione la valutazione relativa all'IdField -->
+										<td class="otherValidationCheck">
+											<div>
+												<th:block th:unless="${mappa.value.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__) == null}">
+													<span th:if="${mappa.value.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__).esito == true}" class="fa table-icon fa-check green" th:title="#{label.valido}"></span>
+													<span th:if="${mappa.value.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__).esito == false}" class="fa table-icon fa-remove red" th:title="#{label.non_valido}"></span>
+												</th:block>
+												<span th:if="${mappa.value.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__) == null}" class="fa table-icon fa-question grey" th:title="#{label.non_valutato}"></span>
+												<div th:if="${mappa.value.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__) != null and !#strings.isEmpty(mappa.value.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__).note)}" th:text="${mappa.value.get(T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__).note}" class="nota-validazione">nota della valutazione</div>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</th:block>
+
+				</div>
+			</div>
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(info_provider, provider)" />
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(legale_rappresentante, legaleRappresentante)" />
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(delegato_legale_rappresentante, delegatoLegaleRappresentante)" />
+
+			<th:block th:include="this :: tabellaValutazioneRipetibili(sedi_provider, sedi)" />
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(dati_accreditamento, datiAccreditamento)" />
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(responsabile_segreteria, responsabileSegreteria)" />
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(responsabile_amministrativo, responsabileAmministrativo)" />
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(responsabile_sistema_informatico, responsabileSistemaInformatico)" />
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(responsabile_qualita, responsabileQualita)" />
+
+			<th:block th:include="this :: tabellaValutazioneRipetibili(componenti_comitato_scientifico, componentiComitato)" />
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(allegati, allegati)" />
+
+			<th:block th:include="this :: tabellaValutazioneSingoli(valutazioni_sul_campo, valutazioniSulCampo)"
+				th:if="${valutazioneWrapper.valutazione.accreditamento.isStandard()
+					and (valutazioneWrapper.valutazione.accreditamentoStatoValutazione != T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO)}" />
+
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				$(document).ready(function() {
+					$('#valutazioneComplessivaStorico').DataTable({
+						"bInfo" : false,
+						"bPaginate" : false,
+						"bFilter" : false,
+						"order": [ 0, 'disabled' ],
+					    "columnDefs": [
+					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
+					                  ]
+					});
+					$('.datatable-responsive-search-validation-storico').DataTable({
+						"bInfo" : false,
+						"bPaginate" : false,
+						"bFilter": false,
+					    "order": [ 0, 'asc' ],
+					    "columnDefs": [
+					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
+					                   	{"targets": 0, "width": "1px", "sClass": "center"},
+					                  ],
+					});
+				});
+
+				//mostra nascondi div con informazioni
+				$('.link-collapse-valutazione').on('click', function() {
+					$(this).children().toggleClass("fa-chevron-down fa-chevron-up");
+					$(this).parents(".x_title").siblings(".valutazione-collapse").slideToggle("slow");
+				});
+
+				function openAllValutazione() {
+					$('.iconToggleValutazione').addClass("fa-chevron-up").removeClass("fa-chevron-down");
+					$(".valutazione-collapse").slideDown("slow");
+					$('.toggleButtonsValutazione').toggle();
+				}
+
+				function closeAllValutazione() {
+					$('.iconToggleValutazione').addClass("fa-chevron-down").removeClass("fa-chevron-up");
+					$(".valutazione-collapse").slideUp("slow");
+					$('.toggleButtonsValutazione').toggle();
+				}
+
+			/*]]>*/
+			</script>
+		</th:block>
+	</div>
+</body>
+</html>

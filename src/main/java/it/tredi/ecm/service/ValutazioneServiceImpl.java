@@ -2,6 +2,8 @@ package it.tredi.ecm.service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,12 +14,15 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
@@ -27,6 +32,7 @@ import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ValutazioneRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.FieldValutazioniRipetibiliWrapper;
 
 @Service
 public class ValutazioneServiceImpl implements ValutazioneService {
@@ -41,6 +47,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private EmailService emailService;
 	@Autowired private AlertEmailService alertEmailService;
 	@PersistenceContext EntityManager entityManager;
+	@Autowired private MessageSource messageSource;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -284,5 +291,66 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	public Set<Valutazione> getAllValutazioniStoricizzateForAccreditamentoId(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le valutazioni Storicizzate per l'accreditamento id: " + accreditamentoId));
 		return valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoTrue(accreditamentoId);
+	}
+
+	@Override
+	public Map<String, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapAllValutazioneSingoli(Valutazione valutazione, Accreditamento accreditamento) {
+		Map<String, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaValutazione = new HashMap<String, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+		//PROVIDER
+		mappaValutazione.put("provider", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.PROVIDER));
+		//LEGALE RAPPRESENTANTE
+		mappaValutazione.put("legaleRappresentante", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.LEGALE_RAPPRESENTANTE));
+		//DELEGATO RAPPRESENTANTE
+		mappaValutazione.put("delegatoRappresentante", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE));
+		//DATI ACCREDITAMENTO
+		mappaValutazione.put("datiAccreditamento", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.DATI_ACCREDITAMENTO));
+		//RESPONSABILE SEGRETERIA
+		mappaValutazione.put("responsabileSegreteria", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_SEGRETERIA));
+		//RESPONSABILE AMMINISTRATIVO
+		mappaValutazione.put("responsabileAmministrativo", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO));
+		//RESPONSABILE SISTEMA INFORMATICO
+		mappaValutazione.put("responsabileSistemaInformatico", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO));
+		//RESPONSABILE QUALITA
+		mappaValutazione.put("responsabileQualita", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_QUALITA));
+		//ALLEGATI
+		mappaValutazione.put("allegati", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
+		//VERBALE VALUTAZIONE SUL CAMPO
+		mappaValutazione.put("valutazioniSulCampo", fieldValutazioneAccreditamentoService.filterFieldValutazioneBySubSetAsMap(valutazione.getValutazioni(), SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO));
+
+		return mappaValutazione;
+	}
+
+	@Override
+	public Map<String, FieldValutazioniRipetibiliWrapper> getMapAllValutazioneRipetibili(Valutazione valutazione, Accreditamento accreditamento) {
+		Map<String, FieldValutazioniRipetibiliWrapper> mappaValutazioniRipetibili = new HashMap<String, FieldValutazioniRipetibiliWrapper>();
+		//SEDI
+		FieldValutazioniRipetibiliWrapper fvrwSedi = new FieldValutazioniRipetibiliWrapper();
+		fvrwSedi.setSubset("sedi");
+		String sedeOperativaLabel = messageSource.getMessage("label.sede_operativa", null, Locale.ITALIAN);
+		String sedeLegaleLabel = messageSource.getMessage("label.sede_legale", null, Locale.ITALIAN);
+		for(Sede sede : accreditamento.getProvider().getSedi()) {
+			if(sede.isSedeLegale()) {
+				fvrwSedi.getMappaValutazioni().put(sedeLegaleLabel + ": " + sede.getIndirizzo() + " (" + sede.getComune() + ")", fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), sede.getId()));
+			}
+			else {
+				fvrwSedi.getMappaValutazioni().put(sedeOperativaLabel + ": " + sede.getIndirizzo() + " (" + sede.getComune() + ")", fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), sede.getId()));
+			}
+		}
+		mappaValutazioniRipetibili.put(fvrwSedi.getSubset(), fvrwSedi);
+		//COMPONENTI COMITATO SCIENTIFICO
+		FieldValutazioniRipetibiliWrapper fvrwComp = new FieldValutazioniRipetibiliWrapper();
+		fvrwComp.setSubset("componentiComitato");
+		String componenteComitatoLabel = messageSource.getMessage("label.componente_comitato", null, Locale.ITALIAN);
+		String coordinatoreComitatoLabel = messageSource.getMessage("label.coordinatore_comitato", null, Locale.ITALIAN);
+		for(Persona persona : accreditamento.getProvider().getComponentiComitatoScientifico()) {
+			if(persona.isCoordinatoreComitatoScientifico()) {
+				fvrwComp.getMappaValutazioni().put(coordinatoreComitatoLabel + ": " + persona.getAnagrafica().getNome() + " " + persona.getAnagrafica().getCognome(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(),  persona.getId()));
+			}
+			else {
+				fvrwComp.getMappaValutazioni().put(componenteComitatoLabel + ": " + persona.getAnagrafica().getNome() + " " + persona.getAnagrafica().getCognome(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(),  persona.getId()));
+			}
+		}
+		mappaValutazioniRipetibili.put(fvrwComp.getSubset(), fvrwComp);
+		return mappaValutazioniRipetibili;
 	}
 }

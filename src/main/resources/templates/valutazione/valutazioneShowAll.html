@@ -233,19 +233,19 @@
 
 <!-- 				</div> -->
 
-					<!-- riempito con chiamata ajax valutazioni sul campo (se l'accreditamento è standard) -->
-					<div class="x_panel" th:if="${accreditamentoWrapper.accreditamento.isStandard()}">
-	              		<div class="x_title">
-							<h2 style="display: inline" th:text="#{label.valutazioni_sul_campo}">label.valutazioni_sul_campo</h2>
-							<ul class="nav navbar-right panel_toolbox">
-			                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
-	                  		</ul>
-							<div class="clearfix"></div>
-						</div>
-
-						<div id="valutazioniSulCampoBlockValidate" class="valutazione-collapse"></div>
-
+				<!-- riempito con chiamata ajax valutazioni sul campo (se l'accreditamento è standard) -->
+				<div class="x_panel" th:if="${accreditamentoWrapper.accreditamento.isStandard() and !accreditamentoWrapper.accreditamento.isValutazioneSegreteriaAssegnamento()}">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.valutazioni_sul_campo}">label.valutazioni_sul_campo</h2>
+						<ul class="nav navbar-right panel_toolbox">
+		                    <li><a class="link-collapse-valutazione"><i class="fa iconToggleValutazione fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
 					</div>
+
+					<div id="valutazioniSulCampoBlockValidate" class="valutazione-collapse"></div>
+
+				</div>
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/

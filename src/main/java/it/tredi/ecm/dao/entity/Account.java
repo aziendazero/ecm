@@ -34,6 +34,7 @@ import lombok.Setter;
 public class Account extends BaseEntity{
 	private String username;
 
+	@JsonIgnore
 	private String password = "";
 	@JsonView(JsonViewModel.ComunicazioniDestinatari.class)
 	private String email;

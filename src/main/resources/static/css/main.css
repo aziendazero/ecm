@@ -163,6 +163,10 @@ table.datatable-responsive-eventi-riedizione thead .sorting_asc:after {
 	visibility: hidden;
 }
 
+table.datatable-responsive-search-validation-storico thead .sorting_asc:after {
+	visibility: hidden;
+}
+
 .dropdown-header {
 	color: white;
 	font-weight: bold;
