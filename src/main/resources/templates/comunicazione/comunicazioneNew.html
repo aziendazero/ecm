@@ -31,12 +31,12 @@
 							<input type="hidden" th:field="${comunicazioneWrapper.tipologiaList}" />
 
 							<div class="header row">
-								<div class="header-comunicazione col-lg-7 col-md-7 col-sm-12 col-xs-12">
+								<div class="header-comunicazione col-xs-12">
 									<div class="mittente-container item form-group">
-										<div class="col-sm-2 col-xs-2 text-right">
+										<div class="col-sm-1 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.from}"></label>
 										</div>
-										<div class="col-xs-12 col-sm-10">
+										<div class="col-xs-10 col-sm-7 col-md-5">
 											<div class="fixed-value" th:unless="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}"
 												th:text="${comunicazioneWrapper.comunicazione.mittente.getFullName()} + ' &lt;' + ${comunicazioneWrapper.comunicazione.mittente.email} + '&gt;'">
 											</div>
@@ -47,10 +47,10 @@
 									</div>
 
 									<div th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}" class="filter-destinatari-container item form-group">
-										<div class="col-sm-2 col-xs-2 text-right">
+										<div class="col-sm-1 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.filtri}"></label>
 										</div>
-										<div class="col-xs-12 col-sm-10">
+										<div class="col-xs-10 col-sm-7 col-md-4">
 											<select class="selectpicker" multiple="multiple"
 												data-width="100%" data-style="btn-primary"
 												data-size="10" data-hide-disabled="false"
@@ -66,10 +66,10 @@
 
 									<th:block th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
 										<div class="providerFilter-container item form-group" style="display: none;">
-											<div class="col-sm-2 col-xs-2 text-right">
+											<div class="col-sm-1 col-xs-2 text-right">
 												<label class="control-label" th:text="#{label.provider_filter}"></label>
 											</div>
-											<div class="col-xs-12 col-sm-10">
+											<div class="col-xs-10 col-sm-7 col-md-4">
 												<div class="checkbox col-xs-6">
 													<label>
 														<input type="checkbox" class="flat" name="filtroProvider" value="A"/>
@@ -99,10 +99,10 @@
 									</th:block>
 
 									<div class="destinatari-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.destinatari')} ? 'bad'">
-										<div class="col-sm-2 col-xs-2 text-right">
+										<div class="col-sm-1 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.to}"></label>
 										</div>
-										<div class="col-xs-12 col-sm-10">
+										<div class="col-xs-10 col-sm-11">
 											<th:block th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
 												<div class="col-xs-5 no-padding">
 													<select name="from" id="optgroup" class="form-control selectMulti" size="9" multiple="multiple">
@@ -114,7 +114,7 @@
 														</optgroup>
 													</select>
 												</div>
-												<div class="col-xs-2">
+												<div class="col-xs-1">
 													<button type="button" id="optgroup_rightAllOpt" class="btn btn-block btn-selectMulti">
 														<i class="glyphicon glyphicon-forward"></i>
 													</button>
@@ -140,10 +140,10 @@
 									</div>
 
 									<div class="oggetto-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.oggetto')} ? 'bad'">
-										<div class="col-sm-2 col-xs-2 text-right">
+										<div class="col-sm-1 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.oggetto}"></label>
 										</div>
-										<div class="col-xs-12 col-sm-10">
+										<div class="col-xs-10 col-sm-7 col-md-4">
 											<div class="no-padding">
 												<input th:field="${comunicazioneWrapper.comunicazione.oggetto}" type="text"
 													class="form-control comunicazione-input"/>
@@ -151,14 +151,12 @@
 											<div th:if="${#fields.hasErrors('comunicazioneWrapper.comunicazione.oggetto')}" class="alert" th:errors="${comunicazioneWrapper.comunicazione.oggetto}"></div>
 										</div>
 									</div>
-								</div>
 
-								<div class="subheader-comunicazione col-lg-5 col-md-5 col-sm-12 col-xs-12">
 									<div class="ambito-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.ambito')} ? 'bad'">
-										<div class="col-sm-4 col-xs-2 text-right">
+										<div class="col-sm-1 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.ambito}"></label>
 										</div>
-										<div class="col-xs-12 col-sm-8">
+										<div class="col-xs-10 col-sm-7 col-md-4">
 											<div class="no-padding">
 												<select
 													class="selectpicker"
@@ -180,10 +178,10 @@
 									</div>
 
 									<div class="tipologia-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.tipologia')} ? 'bad'">
-										<div class="col-sm-4 col-xs-2 text-right">
+										<div class="col-sm-1 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.tipologia}"></label>
 										</div>
-										<div class="col-xs-12 col-sm-8">
+										<div class="col-xs-10 col-sm-7 col-md-4">
 											<div class="no-padding">
 												<select
 													class="selectpicker"
