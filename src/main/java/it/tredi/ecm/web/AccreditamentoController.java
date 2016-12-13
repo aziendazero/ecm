@@ -100,7 +100,7 @@ public class AccreditamentoController {
 	@RequestMapping("/workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}")
 	@ResponseBody
 	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato,
-			@RequestParam(required = false) Integer numeroValutazioniNonDate, @RequestParam(required = false) String dataOraScadenzaPossibiltaValutazioneCRECM,
+			@RequestParam(required = false) Integer numeroValutazioniNonDate, @RequestParam(required = false) String dataOraScadenzaPossibiltaValutazione,
 			@RequestParam(required = false) Boolean eseguitoDaUtente) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato} token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato));
 
@@ -116,17 +116,28 @@ public class AccreditamentoController {
 			accreditamentoService.changeState(accreditamentoId, stato);
 		}
 
-		if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
-			valutazioneService.updateValutazioniNonDate(accreditamentoId);
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO) {
+			if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
+				valutazioneService.updateValutazioniNonDate(accreditamentoId);
+			}
+			if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
+				//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
+				LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+				valutazioneService.dataOraScadenzaPossibilitaValutazioneCRECM(accreditamentoId, ldt);
+			}
+		} else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD) {
+			if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
+				//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
+				LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+				valutazioneService.dataOraScadenzaPossibilitaValutazione(accreditamentoId, ldt);
+			}
 		}
 
-		if(dataOraScadenzaPossibiltaValutazioneCRECM != null && !dataOraScadenzaPossibiltaValutazioneCRECM.isEmpty()) {
-			//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			Date date = df.parse(dataOraScadenzaPossibiltaValutazioneCRECM);
-			LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-			valutazioneService.dataOraScadenzaPossibilitaValutazioneCRECM(accreditamentoId, ldt);
-		}
 
 
 		return new ResponseState(false, "Stato modificato");

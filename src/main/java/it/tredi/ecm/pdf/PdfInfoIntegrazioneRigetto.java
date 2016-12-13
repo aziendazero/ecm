@@ -8,6 +8,7 @@ public class PdfInfoIntegrazioneRigetto {
 	private String verbaleNumero = null;
 	private LocalDate dataSedutaCommissione = null;
 	private boolean eseguitaDaProvider = false;
+	private boolean sottoscrizioneAutocertificazione = false;
 
 	public PdfInfoIntegrazioneRigetto() {
 
@@ -66,6 +67,14 @@ public class PdfInfoIntegrazioneRigetto {
 			this.eseguitaDaProvider = false;
 		else
 			this.eseguitaDaProvider = eseguitaDaProvider;
+	}
+
+	public boolean isSottoscrizioneAutocertificazione() {
+		return sottoscrizioneAutocertificazione;
+	}
+
+	public void setSottoscrizioneAutocertificazione(boolean sottoscrizioneAutocertificazione) {
+		this.sottoscrizioneAutocertificazione = sottoscrizioneAutocertificazione;
 	}
 
 }
