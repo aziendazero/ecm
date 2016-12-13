@@ -60,6 +60,11 @@ public enum FileEnum {
 	FILE_DELEGA_VALUTAZIONE_SUL_CAMPO(47, "Delega"),
 	FILE_CARTA_IDENTITA(48, "Carta d'identità"),
 
+	FILE_ACCREDITAMENTO_STANDARD_DECRETO_ACCREDITAMENTO (49, "Decreto accreditamento standard"),
+	FILE_ACCREDITAMENTO_STANDARD_DECRETO_DINIEGO (50, "Decreto diniego accreditamento standard"),
+	FILE_ACCREDITAMENTO_STANDARD_INTEGRAZIONE (51, "Integrazione accreditamento standard"),
+	FILE_ACCREDITAMENTO_STANDARD_PREAVVISO_RIGETTO (52, "Preavviso rigetto accreditamento standard"),
+
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 

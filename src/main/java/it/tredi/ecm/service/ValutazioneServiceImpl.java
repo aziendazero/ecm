@@ -219,6 +219,18 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 	@Override
+	public void dataOraScadenzaPossibilitaValutazione(Long accreditamentoId, LocalDateTime date) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Aggiornamento dataora massima (" + date + ") entro la quale effettuare la valutazione Team Leader per accreditamento: " + accreditamentoId));
+		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+		for(Valutazione v : valutazioni){
+			if(v.getTipoValutazione() == ValutazioneTipoEnum.TEAM_LEADER){
+				v.setDataOraScadenzaPossibilitaValutazione(date);
+				valutazioneRepository.save(v);
+			}
+		}
+	}
+
+	@Override
 	public Set<Valutazione> getAllValutazioniForAccount(Long accountId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le valutazioni per il referee: " + accountId));
 		return valutazioneRepository.findAllByAccountId(accountId);

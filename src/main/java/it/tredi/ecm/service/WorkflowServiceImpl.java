@@ -251,6 +251,31 @@ public class WorkflowServiceImpl implements WorkflowService {
 		return workflowInfo;
 	}
 
+	public WorkflowInfo createWorkflowAccreditamentoStandard(CurrentUser user, Accreditamento accreditamento) throws Exception {
+		//Carico il processDefinition tramite processDefinitionName
+		WorkflowInfo workflowInfo = null;
+		List<ProcessDefinitionDataModel> listProc = bonitaAPIWrapper.getProcessDefinitionCanBeStartedByUser(user.getWorkflowUserDataModel(), WorkflowTipoEnum.ACCREDITAMENTOSTANDARD.getNome(), null);
+		if(listProc.size() != 1)
+			throw new Exception("Trovati " + listProc.size() + " process definition con nome " + WorkflowTipoEnum.ACCREDITAMENTOSTANDARD.name() + " invece di 1.");
+		ProcessDefinitionDataModel processDefinition = listProc.get(0);
+		Map<String, Object> variables = new HashMap<String, Object>();
+		variables.put("idProvider", accreditamento.getProvider().getId());
+		variables.put("idAccreditamento", accreditamento.getId());
+
+		long processDefinitionId = bonitaAPIWrapper.getProcessDefinitionId(processDefinition.getName(), processDefinition.getVersion());
+
+		ProcessInstanceDataModel processInstanceDataModel = bonitaAPIWrapper.startProcessInstance(processDefinitionId, user.getWorkflowUserDataModel(), variables);
+		WorkflowInfo workFlowInfo = new WorkflowInfo();
+		workFlowInfo.setDataAvvio(LocalDate.now());
+		workFlowInfo.setProcessDefinitionId(processDefinitionId);
+		workFlowInfo.setProcessDefinitionName(processDefinition.getName());
+		workFlowInfo.setProcessDefinitionVersion(processDefinition.getVersion());
+		workFlowInfo.setProcessInstanceId(processInstanceDataModel.getId());
+		accreditamento.setWorkflowInfoAccreditamento(workFlowInfo);
+		accreditamentoRepository.save(accreditamento);
+		return workflowInfo;
+	}
+
 	public List<AccreditamentoStatoEnum> getInserimentoEsitoOdgStatiPossibiliAccreditamento(long processInstanceId) throws Exception {
 		List<String> stati = new ArrayList<String>();
 		Serializable val = bonitaAPIWrapper.getProcessVariable(processInstanceId, "statiPossibiliEsitoODG");
@@ -286,6 +311,57 @@ public class WorkflowServiceImpl implements WorkflowService {
 		}
 		bonitaAPIWrapper.setTaskVariable(task.getId(), "usernameListValutazioneCrecm", (Serializable)usernameWorkflowValutatoriCrecm);
 		bonitaAPIWrapper.setTaskVariable(task.getId(), "numeroValutazioniCrecmRichieste", (Serializable)numeroValutazioniCrecmRichieste);
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
+	public void eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(Accreditamento accreditamento, String usernameWorkflowTeamLeader) throws Exception {
+		//Ricavo l'utente corrente
+		CurrentUser user = Utils.getAuthenticatedUser();
+		eseguiTaskValutazioneAssegnazioneTeamLeaderForUser(user, accreditamento, usernameWorkflowTeamLeader);
+	}
+
+	public void eseguiTaskValutazioneAssegnazioneTeamLeaderForUser(CurrentUser user, Accreditamento accreditamento, String usernameWorkflowTeamLeader) throws Exception {
+		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) {
+			LOGGER.error("Non è possibile eseguire il task Valutazione Assegnazione Team Valutazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+			throw new Exception("Non è possibile eseguire il task Valutazione Assegnazione Team Valutazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task Valutazione Assegnazione Team Valutazione non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task Valutazione Assegnazione Team Valutazione non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
+		bonitaAPIWrapper.setTaskVariable(task.getId(), "usernameTeamLeader", (Serializable)usernameWorkflowTeamLeader);
+		bonitaAPIWrapper.setTaskVariable(task.getId(), "numeroValutazioniRichieste", (Serializable)1);
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
+	public void eseguiTaskValutazioneSulCampoForCurrentUser(Accreditamento accreditamento, String usernameWorkflowTeamLeader, AccreditamentoStatoEnum stato) throws Exception {
+		//Ricavo l'utente corrente
+		CurrentUser user = Utils.getAuthenticatedUser();
+		eseguiTaskValutazioneSulCampoForCurrentUser(user, accreditamento, usernameWorkflowTeamLeader, stato);
+	}
+
+	public void eseguiTaskValutazioneSulCampoForCurrentUser(CurrentUser user, Accreditamento accreditamento, String usernameWorkflowTeamLeader, AccreditamentoStatoEnum stato) throws Exception {
+		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO) {
+			LOGGER.error("Non è possibile eseguire il task Valutazione Sul Campo per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+			throw new Exception("Non è possibile eseguire il task Valutazione Sul Campo per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task Valutazione Sul Campo non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task Valutazione Sul Campo non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
+		bonitaAPIWrapper.setTaskVariable(task.getId(), "usernameTeamLeader", (Serializable)usernameWorkflowTeamLeader);
+		bonitaAPIWrapper.setTaskVariable(task.getId(), "numeroValutazioniRichieste", (Serializable)1);
+		bonitaAPIWrapper.setTaskVariable(task.getId(), "stato", (Serializable)(stato.name()));
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
 
@@ -517,6 +593,24 @@ public class WorkflowServiceImpl implements WorkflowService {
 		}
 		if(usernameWorkflowValutatoriCrecm != null)
 			bonitaAPIWrapper.setTaskVariable(task.getId(), "usernameListValutazioneCrecm", (Serializable)usernameWorkflowValutatoriCrecm);
+		bonitaAPIWrapper.setTaskVariable(task.getId(), "presaVisione", (Serializable)presaVisione);
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
+	public void eseguiTaskValutazioneSegreteriaForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione) throws Exception {
+		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
+			LOGGER.error("Non è possibile eseguire il task ValutazioneSegreteria per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+			throw new Exception("Non è possibile eseguire il task ValutazioneSegreteria per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task ValutazioneSegreteria non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task ValutazioneSegreteria non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
 		bonitaAPIWrapper.setTaskVariable(task.getId(), "presaVisione", (Serializable)presaVisione);
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
