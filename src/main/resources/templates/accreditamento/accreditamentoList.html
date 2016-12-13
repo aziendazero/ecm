@@ -67,7 +67,7 @@
 										<div th:unless="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:each="valutatore, row : ${mappaCarica.get(accreditamento.id)}" class="valutatore" th:text="${valutatore.isSegreteria() ? 'Segreteria ECM - ' : 'Referee - '} + ${valutatore.getFullName()}"></div>
 										<div th:if="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:text="#{label.da_prendere_in_carica}" class="danger"></div>
 									</td>
-									<td th:if="${#authentication.principal.isReferee() and mappaScadenze != null}" th:text="${#temporals.format(mappaScadenze.get(accreditamento.id), 'dd/MM/yyyy')}"></td>
+									<td th:if="${#authentication.principal.isReferee() and mappaScadenze != null and mappaScadenze.get(accreditamento.id) != null}" th:text="${#temporals.format(mappaScadenze.get(accreditamento.id), 'dd/MM/yyyy')}"></td>
 									<td>
 										<span th:text="${accreditamento.dataFineAccreditamento == null} ? '' : ${#temporals.format(accreditamento.dataFineAccreditamento, 'dd/MM/yyyy')}"></span>
 									</td>

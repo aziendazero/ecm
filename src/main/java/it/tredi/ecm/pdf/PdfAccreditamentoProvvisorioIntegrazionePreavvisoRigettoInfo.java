@@ -15,15 +15,16 @@ import it.tredi.ecm.utils.Utils;
 public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 	private PdfProviderInfo providerInfo = null;
 	private LocalDate accreditamentoDataValidazione = null;
+	private LocalDate accreditamentoDataVisita = null;
 	private LocalDate accreditamentoDataSeduta = null;
 	private List<String> listaCriticita = new ArrayList<String>();
 	private String noteSedutaDomanda = null;
 	private Long giorniIntegrazionePreavvisoRigetto = null;
-	
+
 	public PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(Accreditamento accreditamento, Seduta seduta, List<String> listaCriticita) {
 		this.providerInfo = new PdfProviderInfo(accreditamento.getProvider());
 		this.accreditamentoDataValidazione = accreditamento.getDataInvio();
-		
+
 		this.accreditamentoDataSeduta = seduta.getData();
 		for(ValutazioneCommissione valutazione : seduta.getValutazioniCommissione()) {
 			if(valutazione.getAccreditamento().getId() == accreditamento.getId()) {
@@ -33,7 +34,7 @@ public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 		}
 		this.listaCriticita = listaCriticita;
 	}
-	
+
 	public PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(String providerDenominazione,
 		String providerIndirizzo,
 		String providerCap,
@@ -100,5 +101,13 @@ public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 
 	public void setGiorniIntegrazionePreavvisoRigetto(Long giorniIntegrazionePreavvisoRigetto) {
 		this.giorniIntegrazionePreavvisoRigetto = giorniIntegrazionePreavvisoRigetto;
+	}
+
+	public LocalDate getAccreditamentoDataVisita() {
+		return accreditamentoDataVisita;
+	}
+
+	public void setAccreditamentoDataVisita(LocalDate accreditamentoDataVisita) {
+		this.accreditamentoDataVisita = accreditamentoDataVisita;
 	}
 }
