@@ -45,7 +45,7 @@
 					</div>
 
 					<div th:unless="${#sets.isEmpty(valutazioneWrapper.valutazioneSingoli.get('__${subset}__'))}" th:with="mappa=${valutazioneWrapper.valutazioneSingoli.get('__${subset}__')}" id="__${subset}__BlockValidate" class="valutazione-collapse">
-						<table class="datatable-responsive-search-validation table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<table class="datatable-responsive-search-validation-storico table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
 									<th th:text="#{label.id}">label.id</th>
@@ -90,7 +90,7 @@
 						<h2 th:text="${mappa.key}"></h2>
 						<div th:unless="${r.last}" class="divider-dashed"></div>
 						<div th:id="${'__${label}__BlockValidate'+r.index}" class="valutazione-collapse">
-							<table class="datatable-responsive-search-validation table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+							<table class="datatable-responsive-search-validation-storico table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<thead>
 									<tr>
 										<th th:text="#{label.id}">label.id</th>
@@ -161,8 +161,7 @@
 					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
 					                  ]
 					});
-
-					$('.datatable-responsive-search-validation').DataTable({
+					$('.datatable-responsive-search-validation-storico').DataTable({
 						"bInfo" : false,
 						"bPaginate" : false,
 						"bFilter": false,
@@ -170,7 +169,7 @@
 					    "columnDefs": [
 					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
 					                   	{"targets": 0, "width": "1px", "sClass": "center"},
-					                  ]
+					                  ],
 					});
 				});
 

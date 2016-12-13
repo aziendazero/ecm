@@ -115,6 +115,10 @@
 			$(".modal-showAllValutazioneStorico").on('hide.bs.modal', function() {
 				$("#apriCheck").show();
 				$("#chiudiCheck").hide();
+				$.each($('.datatable-responsive-search-validation-storico'), function(i,t) {
+					$(t).DataTable().destroy();
+				});
+				$("#container-valutazione-storico").html("");
 			})
 
 		/*]]>*/
