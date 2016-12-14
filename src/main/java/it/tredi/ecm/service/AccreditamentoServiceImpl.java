@@ -1217,7 +1217,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		workflowService.eseguiTaskValutazioneSulCampoForCurrentUser(accreditamento, accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader().getUsernameWorkflow(), destinazioneStatoDomandaStandard);
 
 		if(destinazioneStatoDomandaStandard == AccreditamentoStatoEnum.ACCREDITATO)
-			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(verbaleValutazioneSulCampo.getGiorno(), accreditamentoId, Utils.getAuthenticatedUser(), destinazioneStatoDomandaStandard);
+			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(verbale.getGiorno(), accreditamentoId, Utils.getAuthenticatedUser(), destinazioneStatoDomandaStandard);
 	}
 
 	@Override
