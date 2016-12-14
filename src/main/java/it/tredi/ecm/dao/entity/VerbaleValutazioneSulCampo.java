@@ -6,8 +6,12 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -36,7 +40,7 @@ public class VerbaleValutazioneSulCampo extends BaseEntity {
 	@OneToOne
 	private Account osservatoreRegionale;
 
-	@OneToMany
+	@ManyToMany
 	private Set<Account> componentiSegreteria;
 
 	@OneToOne
