@@ -233,11 +233,13 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 
 		Set<Provider> providerList = providerService.getAllAttivi();
 		for(Provider p : providerList){
-			LocalDateTime dataScadenzaCompilazionePFA = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-12-1"));
+			//LocalDateTime dataScadenzaCompilazionePFA = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-12-1"));
+			LocalDateTime dataScadenzaCompilazionePFA = Utils.convertLocalDateToLocalDateTime(LocalDate.of(annoRiferimento, 12, 1));
 			if(!checkIfExistForProvider(AlertTipoEnum.SCADENZA_COMPILAZIONE_PFA, p.getId(), dataScadenzaCompilazionePFA))
 				creaAlertForProvider(AlertTipoEnum.SCADENZA_COMPILAZIONE_PFA, p, dataScadenzaCompilazionePFA);
 
-			LocalDateTime dataScadenzaInserimentoRelazioneAnnuale = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-03-15"));
+			//LocalDateTime dataScadenzaInserimentoRelazioneAnnuale = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-03-15"));
+			LocalDateTime dataScadenzaInserimentoRelazioneAnnuale = Utils.convertLocalDateToLocalDateTime(LocalDate.of(annoRiferimento, 3, 15));
 			if(!checkIfExistForProvider(AlertTipoEnum.SCADENZA_RELAZIONE_ANNUALE, p.getId(), dataScadenzaInserimentoRelazioneAnnuale))
 				creaAlertForProvider(AlertTipoEnum.SCADENZA_RELAZIONE_ANNUALE, p, dataScadenzaInserimentoRelazioneAnnuale);
 		}

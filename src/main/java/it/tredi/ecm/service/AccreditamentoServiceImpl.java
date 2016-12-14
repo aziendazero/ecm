@@ -1128,11 +1128,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
 		workflowService.eseguiTaskTaskInserimentoEsitoOdgForUser(curentUser, getAccreditamento(accreditamentoId), stato);
-		settaStatusProviderAndDateAccreditamentoAndQuotaAnuale(seduta.getData(), accreditamentoId, curentUser, stato);
+		settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(seduta.getData(), accreditamentoId, curentUser, stato);
 	}
 
 	@Override
-	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnuale(LocalDate dataSeduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
+	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate dataSeduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
 		Provider provider = providerService.getProvider(getProviderIdForAccreditamento(accreditamentoId));
 		if(stato == AccreditamentoStatoEnum.ACCREDITATO){
 			Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -1150,7 +1150,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(stato == AccreditamentoStatoEnum.DINIEGO)
 			provider.setStatus(ProviderStatoEnum.DINIEGO);
 		providerService.save(provider);
-		quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO)
+			quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);
 	}
 
 	@Override
@@ -1216,7 +1217,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		workflowService.eseguiTaskValutazioneSulCampoForCurrentUser(accreditamento, accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader().getUsernameWorkflow(), destinazioneStatoDomandaStandard);
 
 		if(destinazioneStatoDomandaStandard == AccreditamentoStatoEnum.ACCREDITATO)
-			settaStatusProviderAndDateAccreditamentoAndQuotaAnuale(verbaleValutazioneSulCampo.getGiorno(), accreditamentoId, Utils.getAuthenticatedUser(), destinazioneStatoDomandaStandard);
+			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(verbaleValutazioneSulCampo.getGiorno(), accreditamentoId, Utils.getAuthenticatedUser(), destinazioneStatoDomandaStandard);
 	}
 
 	@Override

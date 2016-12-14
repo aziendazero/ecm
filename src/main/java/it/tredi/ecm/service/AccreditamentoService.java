@@ -96,5 +96,5 @@ public interface AccreditamentoService{
 	public void inviaValutazioneSulCampo(Long accreditamentoId, String valutazioneComplessiva, VerbaleValutazioneSulCampo verbaleValutazioneSulCampo, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception;
 	public void updateVerbaleValutazioneSulCampo(Accreditamento target, VerbaleValutazioneSulCampo verbaleToUpdate, VerbaleValutazioneSulCampo verbaleNew);
 
-	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnuale(LocalDate dataSeduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception;
+	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate dataSeduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception;
 }

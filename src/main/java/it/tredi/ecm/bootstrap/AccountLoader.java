@@ -153,26 +153,11 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			/* PROFILE OSSERVATORE */
 			Profile profile_osservatore = profileRepository.findOneByProfileEnum(ProfileEnum.OSSERVATORE).orElse(null);
 
-			Account provider = new Account();
-			provider.setUsername("provider");
-			provider.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
-			//provider.setPassword("admin");
-			provider.setEmail("tiommi@3di.it");
-			provider.setChangePassword(false);
-			provider.setEnabled(true);
-			provider.setExpiresDate(null);
-			provider.setLocked(false);
-			provider.getProfiles().add(profile_provider);
-			provider.getProfiles().add(profile_providerUserAdmin);
-			provider.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
-
-			try {
-				//accountService.save(provider);
-				accountRepository.save(provider);
-				workflowService.saveOrUpdateBonitaUserByAccount(provider);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			createAccountProviderWithUserNameAndEmail("provider1", "abarducci@3di.it", profile_provider, profile_providerUserAdmin);
+			createAccountProviderWithUserNameAndEmail("provider2", "dpranteda@3di.it", profile_provider, profile_providerUserAdmin);
+			createAccountProviderWithUserNameAndEmail("provider3", "eluconi@3di.it", profile_provider, profile_providerUserAdmin);
+			createAccountProviderWithUserNameAndEmail("provider4", "sstagni@3di.it", profile_provider, profile_providerUserAdmin);
+			createAccountProviderWithUserNameAndEmail("provider5", "tiommi@3di.it", profile_provider, profile_providerUserAdmin);
 
 			Account admin = new Account();
 			admin.setUsername("segreteria");
@@ -263,5 +248,32 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 		}else{
 			LOGGER.info("BOOTSTRAP ECM - ACL trovata (" + accounts.size() + ")");
 		}
+	}
+
+	private void createAccountProviderWithUserNameAndEmail(String userName, String email, Profile profile_provider, Profile profile_providerUserAdmin) {
+		Account account = getAccountProviderWithUserNameAndEmail(userName, email, profile_provider, profile_providerUserAdmin);
+		try {
+			//accountService.save(provider);
+			accountRepository.save(account);
+			workflowService.saveOrUpdateBonitaUserByAccount(account);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private Account getAccountProviderWithUserNameAndEmail(String userName, String email, Profile profile_provider, Profile profile_providerUserAdmin) {
+		Account provider = new Account();
+		provider.setUsername(userName);
+		provider.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+		//provider.setPassword("admin");
+		provider.setEmail(email);
+		provider.setChangePassword(false);
+		provider.setEnabled(true);
+		provider.setExpiresDate(null);
+		provider.setLocked(false);
+		provider.getProfiles().add(profile_provider);
+		provider.getProfiles().add(profile_providerUserAdmin);
+		provider.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+		return provider;
 	}
 }
