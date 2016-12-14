@@ -172,7 +172,7 @@
 												</select>
 											</div>
 											<div class="col-xs-1">
-												<div th:attr="data-original-title=#{label.info_metodologie_interattive}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
+												<div id="tooltip-metodologie-interattive" th:attr="data-original-title=#{label.info_metodologie_interattive}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
 											</div>
 										</div>
 
@@ -2004,11 +2004,13 @@
 									$(this).hide();
 								});
 								$(selectObiettiviFormativi).selectpicker('refresh');
+								$('#tooltip-metodologie-interattive').hide();
 							}else{
 								$.each($(selectObiettiviFormativi + " option"), function() {
 									$(this).show();
 								});
 								$(selectObiettiviFormativi).selectpicker('refresh');
+								$('#tooltip-metodologie-interattive').show();
 							}
 
 						}
