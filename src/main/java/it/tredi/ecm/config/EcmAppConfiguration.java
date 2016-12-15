@@ -31,7 +31,7 @@ public class EcmAppConfiguration {
 	@Value("${giorni.integrazione.min}")
 	private int giorniIntegrazioneMin = 5;
 	@Value("${giorni.integrazione.max}")
-	private int giorniIntegrazioneMax = 20;
+	private int giorniIntegrazioneMax = 30;
 	@Value("${numero.referee}")
 	private int numeroReferee = 3;
 	@Value("${giorni.min.evento.provider.A}")

@@ -1068,6 +1068,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 
 		//TODO se si chiama il servizio di protocollazione verrà settato uno stato intermedio di attesa protocollazione
+		//TODO registrazione cronologia degli stati
 		accreditamento.setStato(stato);
 		accreditamentoRepository.save(accreditamento);
 
