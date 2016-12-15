@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.inserimento_sottoscrivente_verbale}">Dati del persona.ruolo</h2>
+						<div class="pull-right buttons-header">
+							<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/validate?tab=tab6|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<div class="x_content">
+						<form id="formSottoscrivente" class="form-horizontal form-label-left"
+							th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbaleValutazioneSulCampo/${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.id}/sottoscrivente/save|}"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+							<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.isPresenteLegaleRappresentante')} ? 'bad'">
+								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+									<span th:text="#{label.presente_legale_rappresentante_sottoscrizione_verbale}">È presente il Legale Rappresentante per la sottoscrizione del verbale?</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat radioLegale" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.isPresenteLegaleRappresentante}" th:value="${true}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat radioLegale" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.isPresenteLegaleRappresentante}" th:value="${false}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.isPresenteLegaleRappresentante')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.isPresenteLegaleRappresentante}"></div>
+							</div>
+
+							<div class="showLegale" style="display: none;">
+
+								<div class="divider"></div>
+
+								<!-- BLOCCO LEGALE RAPPRESENTANTE PROVIDER (autocompilato) -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span th:text="#{label.legale_rappresentante}">Legale Rappresentante</span>
+									</label>
+								</div>
+								<!-- cognome -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span th:text="#{label.cognome}">Cognome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="value-edit" th:text="${accreditamentoWrapper.legaleRappresentante.anagrafica.cognome}"></div>
+									</div>
+								</div>
+								<!-- nome -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span th:text="#{label.nome}">Nome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="value-edit" th:text="${accreditamentoWrapper.legaleRappresentante.anagrafica.nome}"></div>
+									</div>
+								</div>
+								<!-- codice fiscale -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span th:text="#{label.codice_fiscale}">Codice Fiscale</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="value-edit" th:text="${accreditamentoWrapper.legaleRappresentante.anagrafica.codiceFiscale}"></div>
+									</div>
+								</div>
+
+								<div class="divider"></div>
+							</div>
+
+							<div class="showDelegato" style="display: none;">
+								<!-- BLOCCO DELEGATO PER LA VISITA DI VERIFICA -->
+								<div class="item form-group">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span th:text="#{label.delegato_legale_rappresentante}">Delegato Legale Rappresentante</span>
+									</label>
+								</div>
+								<!-- cognome -->
+								<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.cognome')} ? 'bad'">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span th:text="#{label.cognome}">Cognome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<input type="text" class="form-control" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.cognome}" />
+									</div>
+									<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.cognome')}" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.cognome}"></div>
+								</div>
+								<!-- nome -->
+								<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.nome')} ? 'bad'">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span th:text="#{label.nome}">Nome</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<input type="text" class="form-control" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.nome}" />
+									</div>
+									<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.nome')}" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.nome}"></div>
+								</div>
+								<!-- codice fiscale -->
+								<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.codiceFiscale')} ? 'bad'">
+									<label class="control-label col-md-4 col-sm-4 col-xs-12">
+										<span th:text="#{label.codice_fiscale}">Codice Fiscale</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<input type="text" class="form-control" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.codiceFiscale}" />
+									</div>
+									<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.codiceFiscale')}" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.codiceFiscale}"></div>
+								</div>
+
+								<div class="divider"></div>
+
+								<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.delega')} ? 'bad'">
+									<div class="col-lg-1 col-xs-12"></div>
+									<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DELEGA_VALUTAZIONE_SUL_CAMPO}', delegaValutazioneSulCampo, null, null, null, false, 'edit', false)" ></th:block>
+									<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.delega')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.delega}"></div>
+								</div>
+							</div>
+
+							<div class="showCarta" style="display: none;">
+								<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.cartaIdentita')} ? 'bad'">
+									<div class="col-lg-1 col-xs-12"></div>
+									<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CARTA_IDENTITA}', cartaIdentita, null, null, null, false, 'edit', false)" ></th:block>
+									<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.cartaIdentita')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.cartaIdentita}"></div>
+								</div>
+							</div>
+
+							<input type="submit" id="submitButton" style="display: none;" />
+
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+
+			$(document).ready(function() {
+
+				mostraNascondiLegaleDelegato($(".radioLegale:checked").val());
+
+				$(".radioLegale").on("ifChecked", function() {
+					mostraNascondiLegaleDelegato($(this).val());
+				});
+
+			})
+
+			function mostraNascondiLegaleDelegato(value) {
+				if(value != undefined) {
+					$('.showCarta').slideDown("slow");
+				}
+				if(value == 'true') {
+					$('.showLegale').slideDown("slow");
+					$('.showDelegato').slideUp("fast");
+				}
+				else if(value == 'false') {
+					$('.showDelegato').slideDown("slow");
+					$('.showLegale').slideUp("fast");
+				}
+			}
+
+		/*]]>*/
+		</script>
+	</div>
+</body>
+</html>

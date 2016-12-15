@@ -1187,7 +1187,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaValutazioneSulCampo(Long accreditamentoId, String valutazioneComplessiva, VerbaleValutazioneSulCampo verbaleValutazioneSulCampo, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception {
+	public void inviaValutazioneSulCampo(Long accreditamentoId, String valutazioneComplessiva, File verbalePdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio verbale valutazione sul campo della domanda di Accreditamento " + accreditamentoId));
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -1210,31 +1210,41 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		valutazioneService.copiaInStorico(valutazione);
 
-		VerbaleValutazioneSulCampo verbale = accreditamento.getVerbaleValutazioneSulCampo();
-		verbale.setCartaIdentita(verbaleValutazioneSulCampo.getCartaIdentita());
-		verbale.setDelegato(verbaleValutazioneSulCampo.getDelegato());
-		verbale.setIsPresenteLegaleRappresentante(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante());
-
 		//inutile viene modificando gia' quello
 		//accreditamento.setVerbaleValutazioneSulCampo(verbale);
+		//accreditamento.setVerbaleValutazioneSulCampoPdf(verbalePdf);
+
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
 
 		workflowService.eseguiTaskValutazioneSulCampoForCurrentUser(accreditamento, accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader().getUsernameWorkflow(), destinazioneStatoDomandaStandard);
 
 		if(destinazioneStatoDomandaStandard == AccreditamentoStatoEnum.ACCREDITATO)
-			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(verbale.getGiorno(), accreditamentoId, Utils.getAuthenticatedUser(), destinazioneStatoDomandaStandard);
+			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(accreditamento.getVerbaleValutazioneSulCampo().getGiorno(), accreditamentoId, Utils.getAuthenticatedUser(), destinazioneStatoDomandaStandard);
 	}
 
+	//inserisce il sottoscrivente del verbale sul campo
 	@Override
-	public void updateVerbaleValutazioneSulCampo(Accreditamento target, VerbaleValutazioneSulCampo verbaleToUpdate, VerbaleValutazioneSulCampo verbaleNew) {
+	public void editScheduleVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew) {
+		VerbaleValutazioneSulCampo verbaleToUpdate = accreditamento.getVerbaleValutazioneSulCampo();
 		verbaleToUpdate.setGiorno(verbaleNew.getGiorno());
 		verbaleToUpdate.setTeamLeader(verbaleNew.getTeamLeader());
 		verbaleToUpdate.setComponentiSegreteria(verbaleNew.getComponentiSegreteria());
 		verbaleToUpdate.setOsservatoreRegionale(verbaleNew.getOsservatoreRegionale());
-		verbaleToUpdate.setReferenteInformatico(verbaleNew.getReferenteInformatico());
-		target.setVerbaleValutazioneSulCampo(verbaleToUpdate);
-		save(target);
+		verbaleToUpdate.setReferenteInformatico(verbaleToUpdate.getReferenteInformatico());
+		accreditamento.setVerbaleValutazioneSulCampo(verbaleToUpdate);
+		save(accreditamento);
+	}
+
+	//modifica le info base del verbale sul campo
+	@Override
+	public void saveSottoscriventeVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew) {
+		VerbaleValutazioneSulCampo verbaleToUpdate = accreditamento.getVerbaleValutazioneSulCampo();
+		verbaleToUpdate.setCartaIdentita(verbaleNew.getCartaIdentita());
+		verbaleToUpdate.setDelegato(verbaleNew.getDelegato());
+		verbaleToUpdate.setIsPresenteLegaleRappresentante(verbaleNew.getIsPresenteLegaleRappresentante());
+		accreditamento.setVerbaleValutazioneSulCampo(verbaleToUpdate);
+		save(accreditamento);
 	}
 
 }

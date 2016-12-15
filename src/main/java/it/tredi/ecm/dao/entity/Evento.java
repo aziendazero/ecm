@@ -354,7 +354,7 @@ public class Evento extends BaseEntity{
 			return true;
 
 		if(stato == EventoStatoEnum.VALIDATO){
-			if(dataFine != null && dataFine.isAfter(LocalDate.now())){
+			if((dataFine != null && dataFine.isAfter(LocalDate.now()) || Utils.getAuthenticatedUser().isSegreteria())){
 				return true;
 			}else{
 				return false;

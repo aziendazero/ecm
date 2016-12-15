@@ -14,6 +14,7 @@
     <include file="002_01_alertEmail.xml" relativeToChangelogFile="true"/>
     <include file="002_02_add_colonna_dataScadenzaInserimentoAccreditamentoStandard.xml" relativeToChangelogFile="true"/>
     <include file="002_02_valutatoreVerbale.xml" relativeToChangelogFile="true"/>
+    <include file="003_01_verbalePdfInAccreditamento.xml" relativeToChangelogFile="true"/>
     <include file="20161214_VerbaleValutazioneSulCampo_componentiSegreteria.xml" relativeToChangelogFile="true"/>
     <include file="003_01_Update_Profile.xml" relativeToChangelogFile="true"/>
 

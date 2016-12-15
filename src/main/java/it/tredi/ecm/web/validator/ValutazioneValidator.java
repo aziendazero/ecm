@@ -84,24 +84,6 @@ public class ValutazioneValidator {
 			if(verbaleValutazioneSulCampo.getReferenteInformatico() == null && verbaleValutazioneSulCampo.getAccreditamento().getDatiAccreditamento().getProcedureFormative().contains(ProceduraFormativa.FAD))
 				errors.rejectValue(prefix + "referenteInformatico", "error.empty");
 		}
-		if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO) {
-			if(verbaleValutazioneSulCampo.getCartaIdentita() == null || verbaleValutazioneSulCampo.getCartaIdentita().isNew()) {
-				errors.rejectValue(prefix + "cartaIdentita", "error.empty");
-			}
-			if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() == null) {
-				errors.rejectValue(prefix + "isPresenteLegaleRappresentante", "error.empty");
-			}
-			else if(!verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante()) {
-				if(verbaleValutazioneSulCampo.getDelegato().getCognome().isEmpty())
-					errors.rejectValue(prefix + "delegato.cognome", "error.empty");
-				if(verbaleValutazioneSulCampo.getDelegato().getNome().isEmpty())
-					errors.rejectValue(prefix + "delegato.nome", "error.empty");
-				if(verbaleValutazioneSulCampo.getDelegato().getCodiceFiscale().isEmpty())
-					errors.rejectValue(prefix + "delegato.codiceFiscale", "error.empty");
-				if(verbaleValutazioneSulCampo.getDelegato().getDelega() == null || verbaleValutazioneSulCampo.getDelegato().getDelega().isNew())
-					errors.rejectValue(prefix + "delegato.delega", "error.empty");
-			}
-		}
 	}
 
 	public Map<String, String> validateValutazioneSulCampo(Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa) {
@@ -133,5 +115,24 @@ public class ValutazioneValidator {
 			errors.rejectValue(prefix + "componentiSegreteria", "error.empty");
 		if(verbale.getReferenteInformatico() == null && verbale.getAccreditamento().getDatiAccreditamento().getProcedureFormative().contains(ProceduraFormativa.FAD))
 			errors.rejectValue(prefix + "referenteInformatico", "error.empty");
+	}
+
+	public void validateSottoscriventeValutazioneSulCampo(VerbaleValutazioneSulCampo verbaleValutazioneSulCampo, Errors errors, String prefix) {
+		if(verbaleValutazioneSulCampo.getCartaIdentita() == null || verbaleValutazioneSulCampo.getCartaIdentita().isNew()) {
+			errors.rejectValue(prefix + "cartaIdentita", "error.empty");
+		}
+		if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() == null) {
+			errors.rejectValue(prefix + "isPresenteLegaleRappresentante", "error.empty");
+		}
+		else if(!verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante()) {
+			if(verbaleValutazioneSulCampo.getDelegato().getCognome().isEmpty())
+				errors.rejectValue(prefix + "delegato.cognome", "error.empty");
+			if(verbaleValutazioneSulCampo.getDelegato().getNome().isEmpty())
+				errors.rejectValue(prefix + "delegato.nome", "error.empty");
+			if(verbaleValutazioneSulCampo.getDelegato().getCodiceFiscale().isEmpty())
+				errors.rejectValue(prefix + "delegato.codiceFiscale", "error.empty");
+			if(verbaleValutazioneSulCampo.getDelegato().getDelega() == null || verbaleValutazioneSulCampo.getDelegato().getDelega().isNew())
+				errors.rejectValue(prefix + "delegato.delega", "error.empty");
+		}
 	}
 }

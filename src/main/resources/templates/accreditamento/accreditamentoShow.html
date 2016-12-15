@@ -336,6 +336,11 @@
 			    		$("#verbale-edit-modal").modal("show");
 			    	}
 
+			    	$('#componentiSegreteria').selectpicker({
+						selectAllText : 'Seleziona tutti',
+						deselectAllText : 'Deseleziona tutti',
+					});
+
 			    	//setta i nomi dei giorni e dei mesi a seconda delle label i18n anche per le date intermedie
 					days = getDayNamesShort();
 					months = getMonthNames();

@@ -1,0 +1,15 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/003_01_verbalePdfInAccreditamento.xml">
+    <changeSet author="tiommi (generated)" id="1481644449528-1">
+        <addColumn tableName="accreditamento">
+            <column name="verbale_valutazione_sul_campo_pdf_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1481644449528-2">
+        <addForeignKeyConstraint baseColumnNames="verbale_valutazione_sul_campo_pdf_id" baseTableName="accreditamento" constraintName="FK_qqajqv3yelr7oxl2d9a5ce63r" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="file"/>
+    </changeSet>
+</databaseChangeLog>

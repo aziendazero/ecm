@@ -7,6 +7,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Sponsor;
+import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 
@@ -19,6 +20,7 @@ public interface EventoService {
 	public List<Evento> getAllEventi();
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
 	public boolean canCreateEvento(Account account);
+	public boolean canRieditEvento(Account account);
 	public void inviaRendicontoACogeaps(Long id) throws Exception;
 	public void statoElaborazioneCogeaps(Long id) throws Exception;
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) throws Exception;
@@ -58,4 +60,6 @@ public interface EventoService {
 	public boolean hasDataInizioRestrictions(Evento evento);
 	public Sponsor getSponsorById(Long sponsorId);
 	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode);
+	public Set<Evento> getEventiByProviderIdAndStato(Long id, EventoStatoEnum stato);
+	public Integer countAllEventiByProviderIdAndStato(Long id, EventoStatoEnum stato);
 }

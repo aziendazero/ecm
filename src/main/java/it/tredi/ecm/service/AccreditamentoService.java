@@ -1,20 +1,18 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.bean.CurrentUser;
-import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 
 public interface AccreditamentoService{
 	public boolean canProviderCreateAccreditamento(Long providerId,AccreditamentoTipoEnum tipoTomanda);
@@ -93,8 +91,9 @@ public interface AccreditamentoService{
 
 	public void saveFileNoteOsservazioni(Long fileId, Long accreditamentoId);
 	public Set<Accreditamento> getAllDomandeNonValutateByRefereeId(Long refereeId);
-	public void inviaValutazioneSulCampo(Long accreditamentoId, String valutazioneComplessiva, VerbaleValutazioneSulCampo verbaleValutazioneSulCampo, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception;
-	public void updateVerbaleValutazioneSulCampo(Accreditamento target, VerbaleValutazioneSulCampo verbaleToUpdate, VerbaleValutazioneSulCampo verbaleNew);
+	public void inviaValutazioneSulCampo(Long accreditamentoId, String valutazioneComplessiva, File verbaleFirmatoPdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception;
+	public void saveSottoscriventeVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew);
+	public void editScheduleVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew);
 
 	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate dataSeduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception;
 }

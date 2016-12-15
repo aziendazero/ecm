@@ -256,8 +256,15 @@ public class EventoServiceImpl implements EventoService {
 
 	@Override
 	public boolean canCreateEvento(Account account) {
-		// TODO Auto-generated method stub
-		return true;
+		return account.isSegreteria() || account.getProvider().isCanInsertEvento();
+	}
+
+	//evento rieditabile solo prima del 20/12 dell'anno corrente
+	@Override
+	public boolean canRieditEvento(Account account) {
+		return canCreateEvento(account)
+			&& (LocalDate.now().isAfter(LocalDate.of(LocalDate.now().getYear(), 1, 1))
+			&& LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), 12, 20)));
 	}
 
 	/*	SALVATAGGIO	*/
@@ -1091,7 +1098,8 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti gli eventi del piano formativo rieditabili per il provider: " + providerId));
-		return eventoRepository.findAllByProviderIdAndStatoNotAndDataInizioBefore(providerId, EventoStatoEnum.BOZZA, LocalDate.now());
+		//mostra tutti gli eventi del provider non in bozza e già iniziati e che finiscono dopo l'inizio dell'anno corrente
+		return eventoRepository.findAllByProviderIdAndStatoNotAndDataInizioBeforeAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, LocalDate.now(), LocalDate.of(LocalDate.now().getYear(), 1, 1));
 	}
 
 	//trovo ultima edizione di un evento con il determinato prefix
@@ -1801,5 +1809,17 @@ public class EventoServiceImpl implements EventoService {
 			evento.setSponsorUploaded(true);
 			save(evento);
 		}
+	}
+
+	@Override
+	public Set<Evento> getEventiByProviderIdAndStato(Long id, EventoStatoEnum stato) {
+		LOGGER.debug("Recupero eventi per il provider: " + id + ", in stato: " + stato);
+		return eventoRepository.findAllByProviderIdAndStato(id, stato);
+	}
+
+	@Override
+	public Integer countAllEventiByProviderIdAndStato(Long id, EventoStatoEnum stato) {
+		LOGGER.debug("Conteggio eventi del provider: " + id + ", in stato: " + stato);
+		return eventoRepository.countAllByProviderIdAndStato(id, stato);
 	}
 }
