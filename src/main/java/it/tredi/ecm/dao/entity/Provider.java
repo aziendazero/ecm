@@ -215,7 +215,7 @@ public class Provider extends BaseEntity{
 			return false;
 
 		//se flag attivato, controllo la data
-		if(dataScadenzaInsertAccreditamentoStandard != null && !LocalDate.now().isBefore(dataScadenzaInsertAccreditamentoStandard))
+		if(dataScadenzaInsertAccreditamentoStandard != null && LocalDate.now().isBefore(dataScadenzaInsertAccreditamentoStandard))
 			return true;
 
 		return false;
