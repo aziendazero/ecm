@@ -106,7 +106,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(provider.getId(), tipoDomanda);
 
-			if(accreditamentiAttivi.isEmpty()){
+//			if(accreditamentiAttivi.isEmpty()){
+			if(canProviderCreateAccreditamento(provider.getId(), tipoDomanda)){
 				Accreditamento accreditamento = new Accreditamento(tipoDomanda);
 				accreditamento.setProvider(provider);
 				accreditamento.enableAllIdField();
@@ -154,6 +155,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	/**
 	 * Restituisce l'unica domanda di accreditamento che ha una data di fine accreditamento "attiva" e che è in stato "ACCREDITATO"
+	 * se ne trova più di una prendo quella che scadrà per primo
 	 * */
 	@Override
 	public Accreditamento getAccreditamentoAttivoForProvider(Long providerId) throws AccreditamentoNotFoundException{
@@ -214,11 +216,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Domanda Attiva con scadenza " + accreditamento.getDataFineAccreditamento()));
 				return false;
 			}
-
 			//TODO gestire la distinzione tra domanda inviata ma ancora non accreditata e domanda accreditata
 			//				if(accreditamento.isInviato())
 			//					return false;
+
+			if(tipoTomanda == AccreditamentoTipoEnum.PROVVISORIO){
+				if(!accreditamento.isCancellato())
+					return false;
+			}
 		}
+
 		return canProvider;
 	}
 

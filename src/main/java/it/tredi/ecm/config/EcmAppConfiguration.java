@@ -70,7 +70,7 @@ public class EcmAppConfiguration {
 	private int giorniPrimaBloccoEditGruppoA = 4;
 	@Value("${giorni.prima.blocco.edit.gruppoB}")
 	private int giorniPrimaBloccoEditGruppoB = 10;
-	@Value("${task.sendAlertEmail=false}")
+	@Value("${task.sendAlertEmail}")
 	private boolean taskSendAlertEmail = false;
 
 	@Bean

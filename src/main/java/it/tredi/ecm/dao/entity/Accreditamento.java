@@ -247,6 +247,10 @@ public class Accreditamento extends BaseEntity{
 		return stato == AccreditamentoStatoEnum.DINIEGO;
 	}
 
+	public boolean isCancellato(){
+		return stato == AccreditamentoStatoEnum.CANCELLATO;
+	}
+
 	public boolean isProcedimentoAttivo(){
 		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;
