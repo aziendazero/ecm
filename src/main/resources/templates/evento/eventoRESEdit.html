@@ -778,7 +778,7 @@
 										</div>
 
 										<!-- RISULTATI ATTESI -->
-										<div class="item form-group">
+										<div class="item form-group risultati-attesi-input">
 											<label class="control-label col-xs-1">
 												<span>22</span>
 											</label>
@@ -787,7 +787,7 @@
 												<span class="required">*</span>
 											</label>
 										</div>
-										<div class="risultati-attesi-container" id="risultatiAttesiId">
+										<div class="risultati-attesi-container risultati-attesi-input" id="risultatiAttesiId">
 											<div th:fragment="risultatiAttesiId"
 												th:class="${row.last ? 'nextRisultatoAtteso item form-group' : 'prevRisultatoAtteso item form-group'}"
 												th:each="risultato, row : ${eventoWrapper.risultatiAttesiMapTemp}"
@@ -1747,6 +1747,7 @@
 						$(".titolo-convegno").prop("disabled", true);
 						$("#brochure-obbligatoria").removeClass("hidden");
 						abilitaModalitaVerificaApprendimento('autocertificazione')
+						$(".risultati-attesi-input").hide();
 						break;
 					case 'WORKSHOP_SEMINARIO':
 						$(".convegno-congresso").slideUp("slow");
@@ -1758,6 +1759,7 @@
 						}
 						$("#brochure-obbligatoria").removeClass("hidden");
 						abilitaModalitaVerificaApprendimento('esame');
+						$(".risultati-attesi-input").show();
 						break;
 					case 'CORSO_AGGIORNAMENTO':
 						$(".convegno-congresso").slideUp("slow");
@@ -1767,6 +1769,7 @@
 						$(".titolo-convegno").prop("disabled", true);
 						$("#brochure-obbligatoria").addClass("hidden");
 						abilitaModalitaVerificaApprendimento('esame');
+						$(".risultati-attesi-input").show();
 						break;
 					default:
 						$(".convegno-congresso").slideUp("slow");
@@ -1776,6 +1779,7 @@
 						$(".titolo-convegno").prop("disabled", true);
 						$("#brochure-obbligatoria").addClass("hidden");
 						abilitaModalitaVerificaApprendimento('disableAll');
+						$(".risultati-attesi-input").show();
 						break;
 					}
 				}
