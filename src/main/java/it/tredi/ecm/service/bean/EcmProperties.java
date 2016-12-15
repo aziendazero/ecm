@@ -34,4 +34,5 @@ public class EcmProperties {
 	private int giorniPrimaBloccoEditRiedizione;
 	private int giorniPrimaBloccoEditGruppoA;
 	private int giorniPrimaBloccoEditGruppoB;
+	private boolean taskSendAlertEmail;
 }

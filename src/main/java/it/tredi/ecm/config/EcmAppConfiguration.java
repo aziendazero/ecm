@@ -70,6 +70,8 @@ public class EcmAppConfiguration {
 	private int giorniPrimaBloccoEditGruppoA = 4;
 	@Value("${giorni.prima.blocco.edit.gruppoB}")
 	private int giorniPrimaBloccoEditGruppoB = 10;
+	@Value("${task.sendAlertEmail=false}")
+	private boolean taskSendAlertEmail = false;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -102,6 +104,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setGiorniPrimaBloccoEditRiedizione(giorniPrimaBloccoEditRiedizione);
 		ecmProperties.setGiorniPrimaBloccoEditGruppoA(giorniPrimaBloccoEditGruppoA);
 		ecmProperties.setGiorniPrimaBloccoEditGruppoB(giorniPrimaBloccoEditGruppoB);
+		ecmProperties.setTaskSendAlertEmail(taskSendAlertEmail);
 		return ecmProperties;
 	}
 }
