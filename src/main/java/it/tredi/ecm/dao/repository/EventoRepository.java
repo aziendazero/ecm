@@ -35,4 +35,5 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(Long providerId, LocalDate now);
 	public Set<Evento> findAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
 	public Integer countAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
+	public Set<Evento> findAllByProviderIdAndStatoNotAndDataInizioBeforeAndDataFineAfter(Long providerId, EventoStatoEnum bozza, LocalDate now, LocalDate of);
 }

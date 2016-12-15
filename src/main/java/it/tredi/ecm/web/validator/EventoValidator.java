@@ -105,6 +105,8 @@ public class EventoValidator {
 		 * controllo effettutato solo da VALIDATO a VALIDATO
 		 * -------------------
 		 * la segreteria gestisce le date come vuole
+		 * -------------------
+		 * le riedizioni si devono svolgere nell'anno solare di riferimento del padre (anno data fine)
 		 * */
 		if(evento.getStato() == EventoStatoEnum.BOZZA) {
 			int minGiorni;
@@ -116,7 +118,7 @@ public class EventoValidator {
 
 			if(evento.getDataInizio() == null)
 				errors.rejectValue(prefix + "dataInizio", "error.empty");
-			else if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)))
+			else if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)) && !Utils.getAuthenticatedUser().isSegreteria())
 				errors.rejectValue(prefix + "dataInizio", "error.data_inizio_non_valida");
 		}
 		else {
@@ -424,13 +426,23 @@ public class EventoValidator {
 
 		/* DATA FINE (campo obbligatorio)
 		 * la data di fine deve essere compresa nello stesso anno solare della data di inizio
+		 * -------------
+		 * riedizione stesso anno solare data inizio
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
-		else if(evento.getDataInizio() != null && (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
-			errors.rejectValue(prefix + "dataFine", "error.data_fine_res_non_valida");
+		else {
+			if(evento.isRiedizione()) {
+				if(evento.getDataInizio() != null && (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
+			}
+			else {
+				if(evento.getDataInizio() != null && (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+					errors.rejectValue(prefix + "dataFine", "error.data_fine_res_non_valida");
+			}
+		}
 
 		/* DATE INTERMEDIE (campo opzionale)
 		 * le date intermedie devono essere strettamente comprese tra quella di inizio e quella di fine
@@ -734,13 +746,24 @@ public class EventoValidator {
 
 		/* DATA FINE (campo obbligatorio)
 		 * l'evento non può avere durata superiore a 730 giorni
+		 * -------------
+		 * riedizione stesso anno solare data inizio
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
-		else if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFSC())))
-			errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fsc730");
+		else {
+			if(evento.isRiedizione()) {
+				if(evento.getDataInizio() != null && (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
+			}
+			else {
+				if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFSC())))
+					errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fsc730");
+			}
+		}
+
 
 		/* TIPOLOGIA EVENTO (campo obbligatorio)
 		 * selectpicker (influenza altri campi, ma il controllo su questo campo è banale)
@@ -930,16 +953,24 @@ public class EventoValidator {
 	private void validateFAD(EventoFAD evento, EventoWrapper wrapper, Errors errors, String prefix) throws Exception{
 
 		/* DATA FINE (campo obbligatorio)
-		 * la data di fine deve può essere compresa nello stesso anno solare della data di inizio
 		 * e l'evento non può avere durata superiore a 365 giorni
+		 * -------------
+		 * riedizione stesso anno solare data inizio
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
-		else if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFAD())))
-			errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fad365");
-
+		else {
+			if(evento.isRiedizione()) {
+				if(evento.getDataInizio() != null && (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
+			}
+			else {
+				if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFAD())))
+					errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fad365");
+			}
+		}
 		/* PARTECIPANTI (campo obbligatorio)
 		 * massimo 5 cifre
 		 * */

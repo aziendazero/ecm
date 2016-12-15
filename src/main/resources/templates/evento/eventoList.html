@@ -96,7 +96,7 @@
 				</div>
 			</div>
 
-			<div id="scelta-riedizione-modal" class="modal fade modal-scelta-riedizione" data-model-index="1" role="dialog">
+			<div th:if="${canRieditEvento}" id="scelta-riedizione-modal" class="modal fade modal-scelta-riedizione" data-model-index="1" role="dialog">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -153,7 +153,7 @@
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
 								<th:block th:if="${canCreateEvento}">
-									<a class="btn btn-primary pull-right" th:text="#{label.riedizione_evento}" data-toggle="modal" data-target=".modal-scelta-riedizione"></a>
+									<a th:if="${canRieditEvento}" class="btn btn-primary pull-right" th:text="#{label.riedizione_evento}" data-toggle="modal" data-target=".modal-scelta-riedizione"></a>
 									<a class="btn btn-primary pull-right" th:text="#{label.nuovo_evento_da_pfa}" data-toggle="modal" data-target=".modal-scelta-attuazione"></a>
 									<a class="btn btn-primary pull-right" th:text="#{label.creazione_evento}" data-toggle="modal" data-target=".modal-scelta-tipologia"></a>
 								</th:block>
@@ -175,14 +175,14 @@
 								<tr>
 									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 									<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
-									<th th:text="#{label.edizione}">label.edizione</th>
-									<th th:text="#{label.procedure_formative_tipologia}">label.procedure_formative_tipologia</th>
+									<th th:text="#{label.edizione_short}">label.edizione_short</th>
+									<th th:text="#{label.tipo}">label.tipo</th>
 									<th th:text="#{label.titolo}">label.titolo</th>
 									<th th:text="#{label.sede}">label.sede</th>
 									<th th:text="#{label.data_inizio}">label.date</th>
 									<th th:text="#{label.data_fine}">label.date</th>
 									<th th:text="#{label.stato}"></th>
-									<th th:text="#{label.numero_partecipanti}">label.titolo</th>
+									<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
 									<th th:text="#{label.durata}">label.ore_corso</th>
 									<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 									<th th:text="#{label.azioni}">label.azioni</th>
@@ -234,6 +234,14 @@
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 
+				var colonne = []
+				if([[${#authentication.principal.isSegreteria()}]]) {
+					colonne = [0,1,2,3,5,6,7,8,9,10,11,12]
+				}
+				else {
+					colonne = [0,1,2,4,5,6,7,8,9,10,11]
+				}
+
 				$(document).ready(function() {
 
 					$(".datatable-responsive-eventi-provider").DataTable({
@@ -241,7 +249,7 @@
 						"bInfo" : false,
 						"bPaginate" : false,
 						 "columnDefs": [
-					                    {"targets": 3, "width": "2000px"},
+					                    {"targets": colonne, "width": "1px"},
 					                  ],
 
 					})

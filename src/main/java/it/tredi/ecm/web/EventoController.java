@@ -229,6 +229,7 @@ public class EventoController {
 		model.addAttribute("denominazioneProvider", denominazioneProvider);
 		model.addAttribute("providerId", providerId);
 		model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
+		model.addAttribute("canRieditEvento", eventoService.canRieditEvento(Utils.getAuthenticatedUser().getAccount()));
 		LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 		return LIST;
 	}

@@ -20,6 +20,7 @@ public interface EventoService {
 	public List<Evento> getAllEventi();
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
 	public boolean canCreateEvento(Account account);
+	public boolean canRieditEvento(Account account);
 	public void inviaRendicontoACogeaps(Long id) throws Exception;
 	public void statoElaborazioneCogeaps(Long id) throws Exception;
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) throws Exception;
