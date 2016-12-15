@@ -1491,6 +1491,9 @@ public class EventoController {
 				case NON_RAPPORTATI : listaEventi = eventoService.getEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId());
 										break;
 
+				case BOZZA : listaEventi = eventoService.getEventiByProviderIdAndStato(currentUser.getAccount().getProvider().getId(), EventoStatoEnum.BOZZA);
+								break;
+
 				default: break;
 			}
 

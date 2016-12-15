@@ -18,6 +18,7 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.CurrentUserDetailsService;
@@ -85,6 +86,7 @@ public class LoginController {
 					wrapper.setAccreditamentiDaIntegrare(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.INTEGRAZIONE, wrapper.getProviderId()));
 					wrapper.setAccreditamentiInPreavvisoRigetto(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.PREAVVISO_RIGETTO, wrapper.getProviderId()));
 					wrapper.setNomeProvider(providerService.getProvider(providerService.getProviderIdByAccountId(currentUser.getAccount().getId())).getDenominazioneLegale()); //TODO fare con query
+					wrapper.setEventiBozza(eventoService.countAllEventiByProviderIdAndStato(currentUser.getAccount().getProvider().getId(), EventoStatoEnum.BOZZA));
 					break;
 				case SEGRETERIA:
 					wrapper.setIsSegreteria(true);

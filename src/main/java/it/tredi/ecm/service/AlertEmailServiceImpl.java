@@ -157,7 +157,7 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 		alert.setTipo(tipo);
 
 		Set<String> destinatari = new HashSet<String>();
-		Provider provider = evento.getProvider();
+		Provider provider = providerService.getProvider(evento.getProvider().getId());
 
 		if(provider.getLegaleRappresentante() != null)
 			destinatari.add(provider.getLegaleRappresentante().getAnagrafica().getEmail());

@@ -1802,4 +1802,16 @@ public class EventoServiceImpl implements EventoService {
 			save(evento);
 		}
 	}
+
+	@Override
+	public Set<Evento> getEventiByProviderIdAndStato(Long id, EventoStatoEnum stato) {
+		LOGGER.debug("Recupero eventi per il provider: " + id + ", in stato: " + stato);
+		return eventoRepository.findAllByProviderIdAndStato(id, stato);
+	}
+
+	@Override
+	public Integer countAllEventiByProviderIdAndStato(Long id, EventoStatoEnum stato) {
+		LOGGER.debug("Conteggio eventi del provider: " + id + ", in stato: " + stato);
+		return eventoRepository.countAllByProviderIdAndStato(id, stato);
+	}
 }

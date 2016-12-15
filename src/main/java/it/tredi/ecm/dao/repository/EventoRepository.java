@@ -22,15 +22,17 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
 	@Query("SELECT e.edizione FROM Evento e WHERE e.prefix = :prefix ORDER BY e.edizione DESC")
 	public Page<Integer> findLastEdizioneOfEventoByPrefix(@Param("prefix") String prefix, Pageable pageable);
-	
+
 	public Set<Evento> findAllByProviderIdAndDataFineBetween(Long providerId, LocalDate start, LocalDate end);
 	public Set<Evento> findAllByProviderIdAndDataFineBetweenAndStato(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum stato);
 	public Set<Evento> findAllByProviderIdAndDataFineBetweenAndStatoNot(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum stato);
-	
+
 	@Query("SELECT e FROM Evento e WHERE e.id = :id")
 	@EntityGraph(value = "graph.evento.forRiedizione", type = EntityGraphType.FETCH)
 	public Evento findOneForRiedizione(@Param("id") Long id);
-	
+
 	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalse(Long providerId, LocalDate start, LocalDate end);
 	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(Long providerId, LocalDate now);
+	public Set<Evento> findAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
+	public Integer countAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
 }

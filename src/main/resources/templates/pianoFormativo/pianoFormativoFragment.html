@@ -54,7 +54,7 @@
 										<!-- <a th:if="${!evento.new and __${pianoFormativo}__.pianoModificabile and editabileFull}" th:href="@{|${prefixURL}provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/delete|}" class="btn btn-table double btn-danger"><span class="fa fa-trash"></span> <span th:text="#{label.elimina}"></span></a> -->
 
 										<th:block th:if="${!evento.new and evento.isAttuato()}">
-											<span th:text="#{label.evento_proveniente_da_pfa_precedente}"></span>
+											<span th:text="#{label.evento_non_modificabile_gia_attuato}"></span>
 										</th:block>
 										<th:block th:unless="${!evento.new and evento.isAttuato()}">
 											<button th:if="${!evento.new and __${pianoFormativo}__.pianoModificabile and editabileFull}" class="btn btn-danger btn-table double" th:onclick="|confirmDeleteEventoPianoFormativoModal('${__${pianoFormativo}__.provider.id}','${__${pianoFormativo}__.id}','${evento.id}','@{|${prefixURL}|}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}')|"><i class="fa fa-trash"></i><span th:text="#{label.elimina}"> </span></button>

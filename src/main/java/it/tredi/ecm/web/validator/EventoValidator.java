@@ -103,6 +103,8 @@ public class EventoValidator {
 		 * -------------------
 		 * un evento non può essere anticipato e non gli può essere cambiato il numero di date
 		 * controllo effettutato solo da VALIDATO a VALIDATO
+		 * -------------------
+		 * la segreteria gestisce le date come vuole
 		 * */
 		if(evento.getStato() == EventoStatoEnum.BOZZA) {
 			int minGiorni;
