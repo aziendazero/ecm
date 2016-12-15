@@ -117,9 +117,9 @@ public class EventoValidator {
 				minGiorni = ecmProperties.getGiorniMinEventoRiedizione();
 				if(evento.getDataInizio() == null)
 					errors.rejectValue(prefix + "dataInizio", "error.empty");
-				else if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni))
-						&& !Utils.getAuthenticatedUser().isSegreteria()
-						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
+				else if(!Utils.getAuthenticatedUser().isSegreteria())
+					if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni))
+						|| (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida");
 			}
 			else {
@@ -444,7 +444,7 @@ public class EventoValidator {
 		else {
 			if(evento.isRiedizione()) {
 				if(evento.getDataInizio() != null
-						&& (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+						&& (evento.getDataFine().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
 			}
 			else {
@@ -765,7 +765,7 @@ public class EventoValidator {
 		else {
 			if(evento.isRiedizione()) {
 				if(evento.getDataInizio() != null
-						&& (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+						&& (evento.getDataFine().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
 			}
 			else {
@@ -974,7 +974,7 @@ public class EventoValidator {
 		else {
 			if(evento.isRiedizione()) {
 				if(evento.getDataInizio() != null
-						&& (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+						&& (evento.getDataFine().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
 			}
 			else {
