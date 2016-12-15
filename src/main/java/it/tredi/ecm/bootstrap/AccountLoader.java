@@ -22,7 +22,7 @@ import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.WorkflowService;
 
 @Component
-@org.springframework.context.annotation.Profile({"demo","simone","abarducci", "tom", "joe19"})
+@org.springframework.context.annotation.Profile({"demo","simone","abarducci", "tom", "joe19","dev"})
 public class AccountLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AccountLoader.class);
@@ -151,7 +151,7 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			Profile profile_commissione = profileRepository.findOneByProfileEnum(ProfileEnum.COMMISSIONE).orElse(null);
 
 			/* PROFILE OSSERVATORE */
-			Profile profile_osservatore = profileRepository.findOneByProfileEnum(ProfileEnum.OSSERVATORE).orElse(null);
+			Profile profile_osservatore = profileRepository.findOneByProfileEnum(ProfileEnum.COMPONENTE_OSSERVATORIO).orElse(null);
 
 			createAccountProviderWithUserNameAndEmail("provider1", "abarducci@3di.it", profile_provider, profile_providerUserAdmin);
 			createAccountProviderWithUserNameAndEmail("provider2", "dpranteda@3di.it", profile_provider, profile_providerUserAdmin);

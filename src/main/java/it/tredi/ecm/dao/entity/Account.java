@@ -148,9 +148,9 @@ public class Account extends BaseEntity{
 			toRet += "(Commissario ECM)";
 		}
 
-		if(isOsservatoreEcm()) {
+		if(isComponenteOsservatorioEcm()) {
 			toRet += " ";
-			toRet += "(Osservatore ECM)";
+			toRet += "(Componente Osservatorio ECM)";
 		}
 
 		if(isReferenteInformatico()) {
@@ -219,9 +219,9 @@ public class Account extends BaseEntity{
 		return false;
 	}
 
-	public boolean isOsservatoreEcm() {
+	public boolean isComponenteOsservatorioEcm() {
 		for (Profile p : profiles){
-			if(p.getProfileEnum().equals(ProfileEnum.OSSERVATORE)){
+			if(p.getProfileEnum().equals(ProfileEnum.COMPONENTE_OSSERVATORIO)){
 				return true;
 			}
 		}

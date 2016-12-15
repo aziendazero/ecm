@@ -563,7 +563,7 @@ public class AccreditamentoController {
 		if(accreditamento.isValutazioneSulCampo() && accreditamento.isStandard() && user.isSegreteria() && !hasVerbaleErrors) {
 			//set scelta select
 			accreditamentoWrapper.setComponentiCRECM(accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
-			accreditamentoWrapper.setOsservatoriRegionali(accountService.getUserByProfileEnum(ProfileEnum.OSSERVATORE));
+			accreditamentoWrapper.setOsservatoriRegionali(accountService.getUserByProfileEnum(ProfileEnum.COMPONENTE_OSSERVATORIO));
 			accreditamentoWrapper.setComponentiSegreteria(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 			accreditamentoWrapper.setReferentiInformatici(accountService.getUserByProfileEnum(ProfileEnum.REFERENTE_INFORMATICO));
 			accreditamentoWrapper.setVerbaleValutazioneSulCampo(accreditamento.getVerbaleValutazioneSulCampo());
@@ -664,7 +664,7 @@ public class AccreditamentoController {
 		if(accreditamento.isValutazioneSulCampo() || (accreditamento.isValutazioneSegreteriaAssegnamento() && accreditamento.isStandard())) {
 			//set scelta select
 			accreditamentoWrapper.setComponentiCRECM(accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
-			accreditamentoWrapper.setOsservatoriRegionali(accountService.getUserByProfileEnum(ProfileEnum.OSSERVATORE));
+			accreditamentoWrapper.setOsservatoriRegionali(accountService.getUserByProfileEnum(ProfileEnum.COMPONENTE_OSSERVATORIO));
 			accreditamentoWrapper.setComponentiSegreteria(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 			accreditamentoWrapper.setReferentiInformatici(accountService.getUserByProfileEnum(ProfileEnum.REFERENTE_INFORMATICO));
 			//set campi precompilati

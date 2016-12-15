@@ -106,7 +106,7 @@ public class LoginController {
 					wrapper.setIsCommissione(true);
 					wrapper.setProssimaSeduta(sedutaService.getNextSeduta());
 					break;
-				case OSSERVATORE:
+				case COMPONENTE_OSSERVATORIO:
 					//TODO
 					break;
 				case ENGINEERING:

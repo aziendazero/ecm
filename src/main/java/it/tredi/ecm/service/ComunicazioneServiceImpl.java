@@ -116,7 +116,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 				if(!a.isSegreteria() && a.isReferee()) {
 					refereeSet.add(a);
 				}
-				if(!a.isSegreteria() && a.isOsservatoreEcm()) {
+				if(!a.isSegreteria() && a.isComponenteOsservatorioEcm()) {
 					osservatoriSet.add(a);
 				}
 			}
