@@ -73,6 +73,16 @@ public class EcmAppConfiguration {
 	@Value("${task.sendAlertEmail}")
 	private boolean taskSendAlertEmail = false;
 
+	@Value("${pianoFormativo.giornoFineModifica}")
+	private int pianoFormativoGiornoFineModifica = 15;
+	@Value("${pianoFormativo.meseFineModifica}")
+	private int pianoFormativoMeseFineModifica = 12;
+
+	@Value("${relazioneAnnuale.giornoFineModifica}")
+	private int relazioneAnnualeGiornoFineModifica = 30;
+	@Value("${relazioneAnnuale.meseFineModifica}")
+	private int relazioneAnnualeMeseFineModifica = 4;
+
 	@Bean
 	public EcmProperties ecmProperties(){
 		EcmProperties ecmProperties = new EcmProperties();
@@ -105,6 +115,11 @@ public class EcmAppConfiguration {
 		ecmProperties.setGiorniPrimaBloccoEditGruppoA(giorniPrimaBloccoEditGruppoA);
 		ecmProperties.setGiorniPrimaBloccoEditGruppoB(giorniPrimaBloccoEditGruppoB);
 		ecmProperties.setTaskSendAlertEmail(taskSendAlertEmail);
+
+		ecmProperties.setPianoFormativoGiornoFineModifica(pianoFormativoGiornoFineModifica);
+		ecmProperties.setPianoFormativoMeseFineModifica(pianoFormativoMeseFineModifica);
+		ecmProperties.setRelazioneAnnualeGiornoFineModifica(relazioneAnnualeGiornoFineModifica);
+		ecmProperties.setRelazioneAnnualeMeseFineModifica(relazioneAnnualeMeseFineModifica);
 		return ecmProperties;
 	}
 }
