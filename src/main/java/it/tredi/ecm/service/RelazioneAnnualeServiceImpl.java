@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RelazioneAnnuale;
 import it.tredi.ecm.dao.repository.RelazioneAnnualeRepository;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 
 @Service
@@ -25,6 +26,7 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Autowired private EventoPianoFormativoService eventoPianoFormativoService;
 	@Autowired private EventoService eventoService;
 	@Autowired private AnagrafeRegionaleCreditiService anagrafeRegionaleCreditiService;
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public RelazioneAnnuale getRelazioneAnnuale(Long relazioneAnnualeId) {
@@ -100,7 +102,7 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 		relazioneAnnuale.setAnnoRiferimento(annoRiferimento);
 		relazioneAnnuale.setProvider(providerService.getProvider(providerId));
 		//modificabile entro il 30 Aprile dell'anno di riferimento
-		relazioneAnnuale.setDataFineModifca(LocalDate.parse(annoRiferimento + "-04-30"));
+		relazioneAnnuale.setDataFineModifca(LocalDate.of(annoRiferimento, ecmProperties.getRelazioneAnnualeMeseFineModifica(), ecmProperties.getRelazioneAnnualeGiornoFineModifica()));
 
 		return relazioneAnnuale;
 	}

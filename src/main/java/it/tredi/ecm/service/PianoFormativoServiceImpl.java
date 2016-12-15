@@ -33,6 +33,7 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.repository.PianoFormativoRepository;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import javassist.bytecode.analysis.Util;
 
@@ -46,6 +47,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 	@Autowired private EventoPianoFormativoService eventoPianoFormativoService;
 	@Autowired private ObiettivoService obiettivoService;
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public boolean exist(Long providerId, Integer annoPianoFormativo){
@@ -66,7 +68,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		pianoFormativo.setAnnoPianoFormativo(annoPianoFormativo);
 		pianoFormativo.setProvider(provider);
 		//modificabile entro il 15 Dicembre dell'anno prima
-		pianoFormativo.setDataFineModifca(LocalDate.parse(annoPianoFormativo-1 + "-12-15"));
+		pianoFormativo.setDataFineModifca(LocalDate.of(annoPianoFormativo-1, ecmProperties.getPianoFormativoMeseFineModifica(), ecmProperties.getPianoFormativoGiornoFineModifica()));
 		pianoFormativoRepository.save(pianoFormativo);
 		return pianoFormativo;
 	}
