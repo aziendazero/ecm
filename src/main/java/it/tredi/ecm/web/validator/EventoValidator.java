@@ -427,7 +427,7 @@ public class EventoValidator {
 		/* DATA FINE (campo obbligatorio)
 		 * la data di fine deve essere compresa nello stesso anno solare della data di inizio
 		 * -------------
-		 * riedizione stesso anno solare data inizio
+		 * riedizione stesso anno solare data inizio, che deve coincidere con la data di fine dell'eventoPadre
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
@@ -435,7 +435,9 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
 		else {
 			if(evento.isRiedizione()) {
-				if(evento.getDataInizio() != null && (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+				if(evento.getDataInizio() != null
+						&& (evento.getDataFine().getYear() != evento.getDataInizio().getYear())
+						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
 			}
 			else {
@@ -747,7 +749,7 @@ public class EventoValidator {
 		/* DATA FINE (campo obbligatorio)
 		 * l'evento non può avere durata superiore a 730 giorni
 		 * -------------
-		 * riedizione stesso anno solare data inizio
+		 * riedizione stesso anno solare data inizio, che deve coincidere con la data di fine dell'eventoPadre
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
@@ -755,7 +757,9 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
 		else {
 			if(evento.isRiedizione()) {
-				if(evento.getDataInizio() != null && (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+				if(evento.getDataInizio() != null
+						&& (evento.getDataFine().getYear() != evento.getDataInizio().getYear())
+						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
 			}
 			else {
@@ -955,7 +959,7 @@ public class EventoValidator {
 		/* DATA FINE (campo obbligatorio)
 		 * e l'evento non può avere durata superiore a 365 giorni
 		 * -------------
-		 * riedizione stesso anno solare data inizio
+		 * riedizione stesso anno solare data inizio, che deve coincidere con la data di fine dell'eventoPadre
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
@@ -963,7 +967,9 @@ public class EventoValidator {
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
 		else {
 			if(evento.isRiedizione()) {
-				if(evento.getDataInizio() != null && (evento.getDataFine().getYear() != evento.getDataInizio().getYear()))
+				if(evento.getDataInizio() != null
+						&& (evento.getDataFine().getYear() != evento.getDataInizio().getYear())
+						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
 			}
 			else {
