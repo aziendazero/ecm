@@ -12,7 +12,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.lista_sedute}">Lista delle sedute</h2>
 						<div class="pull-right buttons-header">
-							<a class="btn btn-primary pull-right"
+							<a th:if="${#authentication.principal.isSegreteria()}" class="btn btn-primary pull-right"
 									th:href="@{|/seduta/new|}"
 									th:text="#{label.inserisci_nuova_seduta}">label.inserisci_nuova_seduta</a>
 							<a class="btn btn-primary pull-right"

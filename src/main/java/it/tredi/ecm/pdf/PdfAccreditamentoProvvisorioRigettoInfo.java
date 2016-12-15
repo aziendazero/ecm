@@ -11,6 +11,7 @@ import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 public class PdfAccreditamentoProvvisorioRigettoInfo {
 	private PdfProviderInfo providerInfo = null;
 	private LocalDate accreditamentoDataValidazione = null;
+	private LocalDate accreditamentoDataVisita = null;
 	private PdfInfoIntegrazioneRigetto integrazioneInfo = null;
 	private PdfInfoIntegrazioneRigetto rigettoInfo = null;
 	//private List<String> listaMotivazioni = new ArrayList<String>();
@@ -117,6 +118,14 @@ public class PdfAccreditamentoProvvisorioRigettoInfo {
 
 	public void setNoteSedutaDomanda(String noteSedutaDomanda) {
 		this.noteSedutaDomanda = noteSedutaDomanda;
+	}
+
+	public LocalDate getAccreditamentoDataVisita() {
+		return accreditamentoDataVisita;
+	}
+
+	public void setAccreditamentoDataVisita(LocalDate accreditamentoDataVisita) {
+		this.accreditamentoDataVisita = accreditamentoDataVisita;
 	}
 
 	/*

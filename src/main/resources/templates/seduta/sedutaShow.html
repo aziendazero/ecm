@@ -54,7 +54,7 @@
 							<div class="dropdown pull-right">
 								<a class="btn btn-primary" th:text="#{label.indietro}" th:href="@{|/seduta/list|}"></a>
 
-								<button th:if="${sedutaWrapper.canEdit == true || sedutaWrapper.canValidate == true || #sets.isEmpty(sedutaWrapper.seduta.valutazioniCommissione)}" class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+								<button th:if="${ (sedutaWrapper.canEdit == true || sedutaWrapper.canValidate == true || #sets.isEmpty(sedutaWrapper.seduta.valutazioniCommissione)) and #authentication.principal.isSegreteria()}" class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
 									<span th:text="#{label.menu_azioni}"></span>
 									<span class="caret"></span>
 								</button>

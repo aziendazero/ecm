@@ -212,4 +212,50 @@ public class EmailServiceImpl implements EmailService {
 			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
 		}
 	}
+
+	@Override
+	public void inviaAlertScadenzaPagamentoRendicontazioneEvento(AlertEmail alert) throws Exception {
+		LOGGER.info("inviaAlertScadenzaPagamentoRendicontazioneEvento");
+		Context context = new Context();
+		String subject = "Avviso Scadenza Pagamento e Rendicontazione Evento";
+
+		context.setVariable("eventoIdentificativo", alert.getEvento().getCodiceIdentificativo());
+		context.setVariable("eventoTitolo", alert.getEvento().getTitolo());
+
+		String message = templateEngine.process("alertScadenzaPagamentoRendicontazioneEvento", context);
+
+		for(String dst : alert.getDestinatari()){
+			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
+		}
+	}
+
+	@Override
+	public void inviaAlertScadenzaValutazioneReferee(AlertEmail alert) throws Exception {
+		LOGGER.info("inviaAlertScadenzaValutazioneReferee");
+		Context context = new Context();
+		String subject = "Avviso Scadenza Valutazione Domanda Accreditamento";
+
+		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
+		context.setVariable("provider", alert.getProvider());
+
+		String message = templateEngine.process("alertScadenzaValutazioneReferee", context);
+
+		for(String dst : alert.getDestinatari()){
+			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
+		}
+	}
+
+	@Override
+	public void inviaAlertScadenzaInvioAccreditamentoStandard(AlertEmail alert) throws Exception {
+		LOGGER.info("inviaAlertScadenzaInvioAccreditamentoStandard");
+		Context context = new Context();
+		String subject = "Avviso Scadenza Invio Accreditamento Standard";
+
+		String message = templateEngine.process("inviaAlertScadenzaInvioAccreditamentoStandard", context);
+
+		for(String dst : alert.getDestinatari()){
+			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
+		}
+
+	}
 }

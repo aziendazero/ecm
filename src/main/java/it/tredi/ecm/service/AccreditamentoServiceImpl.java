@@ -245,6 +245,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		try{
 			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
 				workflowService.createWorkflowAccreditamentoProvvisorio(Utils.getAuthenticatedUser(), accreditamento);
+			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+				workflowService.createWorkflowAccreditamentoStandard(Utils.getAuthenticatedUser(), accreditamento);
 		}catch (Exception ex){
 			LOGGER.debug(Utils.getLogMessage("Errore avvio Workflow Accreditamento per la domanda " + accreditamentoId));
 			throw new Exception("Errore avvio Workflow Accreditamento per la domanda " + accreditamentoId);
@@ -298,7 +300,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		valutazioneService.copiaInStorico(valutazione);
 
 		if(accreditamento.isProvvisorio()) {
-
 			//il referee azzera il suo contatore di valutazioni non date consecutivamente e svuota la lista
 			if (user.isReferee()) {
 				user.setValutazioniNonDate(0);
@@ -306,7 +307,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				accountRepository.save(user);
 				workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
 			}
-
 			//la segreteria crea le valutazioni per i referee
 			if (user.isSegreteria()){
 				List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
@@ -316,22 +316,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					valutazioneReferee.setAccreditamento(accreditamento);
 					valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
 					valutazioneService.save(valutazioneReferee);
+					//valutazioneService.saveAndFlush(valutazioneReferee);
 					emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 					usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
 				}
-
 				accreditamento.setDataValutazioneCrecm(LocalDate.now());
 				accreditamentoRepository.save(accreditamento);
-
 				//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
 				Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
 				workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
 			}
-		}
-
-		else if(accreditamento.isStandard()) {
+		} else if(accreditamento.isStandard()) {
 			Valutazione valutazioneReload = valutazioneService.getValutazione(valutazioneId);
-
 			//la segreteria designa le persone per la valutazione sul campo
 //			Valutazione valutazioneTeamLeader = new Valutazione();
 //			valutazioneTeamLeader.setAccount(verbale.getTeamLeader());
@@ -350,9 +346,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			//segretario valutatore
 			verbale.setValutatore(Utils.getAuthenticatedUser().getAccount());
 			accreditamento.setVerbaleValutazioneSulCampo(verbale);
-			accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO);
 			accreditamentoRepository.save(accreditamento);
-			//TODO manda avanti flusso STANDARD
+			workflowService.eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(accreditamento, verbale.getTeamLeader().getUsernameWorkflow());
 		}
 	}
 
@@ -962,7 +957,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			});
 			PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
 			integrazioneInfo.setGiorniIntegrazionePreavvisoRigetto(accreditamento.getGiorniIntegrazione());
-			File file = pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
+			File file = null;
+			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
+				file = pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
+			else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+				file = pdfService.creaPdfAccreditamentoStandardIntegrazione(integrazioneInfo);
 			//TODO Testare se il file è stato salvato
 			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 			accreditamento.setRichiestaIntegrazione(file);
@@ -986,7 +985,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			});
 			PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
 			preavvisoRigettoInfo.setGiorniIntegrazionePreavvisoRigetto(accreditamento.getGiorniPreavvisoRigetto());
-			File file = pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
+			File file = null;
+			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
+				file = pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
+			else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+				file = pdfService.creaPdfAccreditamentoStandardPreavvisoRigetto(preavvisoRigettoInfo);
 			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 			accreditamento.setRichiestaPreavvisoRigetto(file);
 			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
@@ -1011,7 +1014,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
 			});*/
 			PdfAccreditamentoProvvisorioRigettoInfo rigettoInfo = new PdfAccreditamentoProvvisorioRigettoInfo(accreditamento, sedutaRigetto, sedutaIntegrazione, sedutaPreavvisoRigetto);
-			File file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
+			File file = null;
+			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
+				file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
+			else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+				file = pdfService.creaPdfAccreditamentoStandardDiniego(rigettoInfo);
 			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 			accreditamento.setDecretoDiniego(file);
 			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
@@ -1031,7 +1038,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 			//Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
 			PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo(accreditamento, sedutaAccreditamento, sedutaIntegrazione, sedutaPreavvisoRigetto);
-			File file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
+			File file = null;
+			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
+				file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
+			else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+				file = pdfService.creaPdfAccreditamentoStandardAccreditato(accreditatoInfo);
 			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 			accreditamento.setDecretoAccreditamento(file);
 			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
@@ -1062,9 +1073,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
 		//TODO rimuovere il seguente "if" quando si avrà il flusso STANDARD
-		if(getAccreditamento(accreditamentoId).isProvvisorio()) {
+		//if(getAccreditamento(accreditamentoId).isProvvisorio()) {
 		workflowService.prendiTaskInCarica(currentUser, accreditamento);
-		}
+		//}
 
 		Valutazione valutazione = new Valutazione();
 
@@ -1117,16 +1128,21 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
 		workflowService.eseguiTaskTaskInserimentoEsitoOdgForUser(curentUser, getAccreditamento(accreditamentoId), stato);
+		settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(seduta.getData(), accreditamentoId, curentUser, stato);
+	}
+
+	@Override
+	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate dataSeduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception{
 		Provider provider = providerService.getProvider(getProviderIdForAccreditamento(accreditamentoId));
 		if(stato == AccreditamentoStatoEnum.ACCREDITATO){
 			Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 			if(accreditamento.isProvvisorio()) {
-			provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
-				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(4));
+				provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
+				accreditamento.setDataFineAccreditamento(dataSeduta.plusYears(4));
 				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			} else {
 				provider.setStatus(ProviderStatoEnum.ACCREDITATO_STANDARD);
-				accreditamento.setDataFineAccreditamento(seduta.getData().plusYears(2));
+				accreditamento.setDataFineAccreditamento(dataSeduta.plusYears(2));
 				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			}
 			save(accreditamento);
@@ -1134,7 +1150,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(stato == AccreditamentoStatoEnum.DINIEGO)
 			provider.setStatus(ProviderStatoEnum.DINIEGO);
 		providerService.save(provider);
-		quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO)
+			quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);
 	}
 
 	@Override
@@ -1187,13 +1204,17 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		valutazioneService.copiaInStorico(valutazione);
 
-		accreditamento.setVerbaleValutazioneSulCampoPdf(verbalePdf);
+		//inutile viene modificando gia' quello
+		//accreditamento.setVerbaleValutazioneSulCampo(verbale);
+		//accreditamento.setVerbaleValutazioneSulCampoPdf(verbalePdf);
 
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
-		accreditamento.setStato(destinazioneStatoDomandaStandard);
 		accreditamentoRepository.save(accreditamento);
 
-		//TODO mandare avanti il flusso STANDARD
+		workflowService.eseguiTaskValutazioneSulCampoForCurrentUser(accreditamento, accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader().getUsernameWorkflow(), destinazioneStatoDomandaStandard);
+
+		if(destinazioneStatoDomandaStandard == AccreditamentoStatoEnum.ACCREDITATO)
+			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(accreditamento.getVerbaleValutazioneSulCampo().getGiorno(), accreditamentoId, Utils.getAuthenticatedUser(), destinazioneStatoDomandaStandard);
 	}
 
 	//inserisce il sottoscrivente del verbale sul campo

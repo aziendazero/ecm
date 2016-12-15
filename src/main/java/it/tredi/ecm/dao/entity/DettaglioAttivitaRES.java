@@ -74,7 +74,7 @@ public class DettaglioAttivitaRES extends BaseEntity implements Serializable{
 
 	public boolean isPausa(){
 		if((this.argomento!= null && this.argomento.equalsIgnoreCase(PAUSA)) &&
-				this.docenti == null &&
+				(this.docenti == null || this.docenti.isEmpty()) &&
 				(this.risultatoAtteso != null && this.risultatoAtteso.isEmpty()) &&
 				this.obiettivoFormativo == null &&
 				this.metodologiaDidattica == null)
@@ -94,7 +94,7 @@ public class DettaglioAttivitaRES extends BaseEntity implements Serializable{
 
 	public boolean isValutazioneApprendimento(){
 		if((this.argomento!= null && this.argomento.equalsIgnoreCase(VALUTAZIONE_APPRENDIMENTO)) &&
-				this.docenti == null &&
+				(this.docenti == null || this.docenti.isEmpty()) &&
 				(this.risultatoAtteso != null && this.risultatoAtteso.isEmpty()) &&
 				this.obiettivoFormativo == null &&
 				this.metodologiaDidattica == null)
@@ -114,7 +114,7 @@ public class DettaglioAttivitaRES extends BaseEntity implements Serializable{
 
 	public boolean isRegistrazionePartecipanti() {
 		if((this.argomento!= null && this.argomento.equalsIgnoreCase(REGISTRAZIONE_PARTECIPANTI)) &&
-				this.docenti == null &&
+				(this.docenti == null || this.docenti.isEmpty()) &&
 				(this.risultatoAtteso != null && this.risultatoAtteso.isEmpty()) &&
 				this.obiettivoFormativo == null &&
 				this.metodologiaDidattica == null)

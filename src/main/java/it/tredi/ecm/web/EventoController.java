@@ -78,6 +78,7 @@ import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.AlertEmailService;
 import it.tredi.ecm.service.AnagraficaEventoService;
 import it.tredi.ecm.service.AnagraficaFullEventoService;
 import it.tredi.ecm.service.DisciplinaService;
@@ -126,6 +127,7 @@ public class EventoController {
 	@Autowired private DisciplinaService disciplinaService;
 
 	@Autowired private PdfEventoService pdfEventoService;
+	@Autowired private AlertEmailService alertEmailService;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -333,6 +335,7 @@ public class EventoController {
 				evento.setValidatorCheck(true);
 				evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 				eventoService.save(evento);
+				alertEmailService.creaAlertForEvento(evento);
 				LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 			}
 

@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
@@ -93,4 +94,6 @@ public interface AccreditamentoService{
 	public void inviaValutazioneSulCampo(Long accreditamentoId, String valutazioneComplessiva, File verbaleFirmatoPdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception;
 	public void saveSottoscriventeVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew);
 	public void editScheduleVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew);
+
+	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate dataSeduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception;
 }

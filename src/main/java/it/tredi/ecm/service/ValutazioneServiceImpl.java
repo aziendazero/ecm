@@ -2,6 +2,7 @@ package it.tredi.ecm.service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
@@ -43,6 +45,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private EmailService emailService;
+	@Autowired private AlertEmailService alertEmailService;
 	@PersistenceContext EntityManager entityManager;
 	@Autowired private MessageSource messageSource;
 
@@ -199,8 +202,28 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	public void dataOraScadenzaPossibilitaValutazioneCRECM(Long accreditamentoId, LocalDateTime date) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Aggiornamento dataora massima (" + date + ") entro la quale effettuare la valutazione CRECM per accreditamento: " + accreditamentoId));
 		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+
+		Set<Account> refereeGroup = new HashSet<Account>();
+
 		for(Valutazione v : valutazioni){
 			if(v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE){
+				refereeGroup.add(v.getAccount());
+				v.setDataOraScadenzaPossibilitaValutazione(date);
+				valutazioneRepository.save(v);
+			}
+		}
+
+		Provider provider = accreditamentoService.getAccreditamento(accreditamentoId).getProvider();
+
+		alertEmailService.creaAlertForReferee(refereeGroup, provider, date);
+	}
+
+	@Override
+	public void dataOraScadenzaPossibilitaValutazione(Long accreditamentoId, LocalDateTime date) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Aggiornamento dataora massima (" + date + ") entro la quale effettuare la valutazione Team Leader per accreditamento: " + accreditamentoId));
+		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+		for(Valutazione v : valutazioni){
+			if(v.getTipoValutazione() == ValutazioneTipoEnum.TEAM_LEADER){
 				v.setDataOraScadenzaPossibilitaValutazione(date);
 				valutazioneRepository.save(v);
 			}

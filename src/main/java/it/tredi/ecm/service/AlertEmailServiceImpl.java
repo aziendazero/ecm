@@ -13,8 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AlertEmail;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.enumlist.AlertTipoEnum;
@@ -49,8 +51,7 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 		return false;
 	}
 
-	@Override
-	public boolean checkIfExistForEvento(AlertTipoEnum tipo, Long eventoId, LocalDateTime dataScadenza) {
+	private boolean checkIfExistForEvento(AlertTipoEnum tipo, Long eventoId, LocalDateTime dataScadenza) {
 		LOGGER.info("Verifica se Alert già registrato");
 		AlertEmail alert = alertMailRepository.findByTipoAndEventoIdAndDataScadenza(tipo, eventoId, dataScadenza);
 		if(alert != null)
@@ -99,6 +100,30 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 	}
 
 	@Override
+	public void creaAlertForReferee(Set<Account> refereeGroup, Provider provider, LocalDateTime dataScadenza) {
+		LOGGER.info("Creazione Alert per Referee");
+		dataScadenza = dataScadenza.minusDays(5);
+		AlertTipoEnum tipo = AlertTipoEnum.SCADENZA_VALUTAZIONE_CRECM;
+
+		if(!checkIfExistForProvider(tipo, provider.getId(), dataScadenza)){
+			AlertEmail alert = new AlertEmail();
+			alert.setProvider(provider);
+			alert.setDataScadenza(dataScadenza);
+			alert.setTipo(tipo);
+
+			Set<String> destinatari = new HashSet<String>();
+
+			for(Account a :  refereeGroup){
+				if(a.isReferee())
+					destinatari.add(a.getEmail());
+			}
+
+			alert.setDestinatari(destinatari);
+			save(alert);
+		}
+	}
+
+	@Override
 	public void creaAlertContributoAnnuoForProvider(QuotaAnnuale quota) {
 		LOGGER.info("Creazione Alert per QuotaAnnuale");
 		LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(quota.getPagamento().getDataScadenzaPagamento());
@@ -114,6 +139,25 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 		alert.setTipo(tipo);
 
 		Set<String> destinatari = new HashSet<String>();
+
+		if(provider.getLegaleRappresentante() != null)
+			destinatari.add(provider.getLegaleRappresentante().getAnagrafica().getEmail());
+		if(provider.getDelegatoLegaleRappresentante() != null)
+			destinatari.add(provider.getDelegatoLegaleRappresentante().getAnagrafica().getEmail());
+
+		alert.setDestinatari(destinatari);
+		save(alert);
+	}
+
+	private void creaAlertForEvento(AlertTipoEnum tipo, Evento evento, LocalDateTime dataScadenza) {
+		LOGGER.info("Creazione Alert per " + tipo);
+		AlertEmail alert = new AlertEmail();
+		alert.setEvento(evento);
+		alert.setDataScadenza(dataScadenza);
+		alert.setTipo(tipo);
+
+		Set<String> destinatari = new HashSet<String>();
+		Provider provider = evento.getProvider();
 
 		if(provider.getLegaleRappresentante() != null)
 			destinatari.add(provider.getLegaleRappresentante().getAnagrafica().getEmail());
@@ -160,12 +204,22 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 					emailService.inviaAlertScadenzaRelazioneAnnuale(alert);
 					alert.setDataInvio(LocalDateTime.now());
 					save(alert);
+				}else if(alert.getTipo() == AlertTipoEnum.SCADENZA_PAGAMENTO_E_RENDICONTAZIONE_EVENTO){
+					emailService.inviaAlertScadenzaPagamentoRendicontazioneEvento(alert);
+					alert.setDataInvio(LocalDateTime.now());
+					save(alert);
+				}else if(alert.getTipo() == AlertTipoEnum.SCADENZA_VALUTAZIONE_CRECM){
+					emailService.inviaAlertScadenzaValutazioneReferee(alert);
+					alert.setDataInvio(LocalDateTime.now());
+					save(alert);
+				}else if(alert.getTipo() == AlertTipoEnum.SCADENZA_COMPILAZIONE_DOMANDA_ACCREDITAMENTO_STANDARD){
+					emailService.inviaAlertScadenzaValutazioneReferee(alert);
+					alert.setDataInvio(LocalDateTime.now());
+					save(alert);
+				}else{
+					LOGGER.error("Alert non classificato");
+					emailService.inviaAlertErroreDiSistema("Tipo Alert non riconosciuto!");
 				}
-
-//				case SCADENZA_PAGAMENTO_E_RENDICONTAZIONE_EVENTO: break;
-//				case SCADENZA_COMPILAZIONE_DOMANDA_ACCREDITAMENTO_STANDARD: break;
-//				default : break;
-//				}
 			}catch (Exception ex){
 				LOGGER.error(ex.getMessage(),ex);
 			}
@@ -179,13 +233,36 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 
 		Set<Provider> providerList = providerService.getAllAttivi();
 		for(Provider p : providerList){
-			LocalDateTime dataScadenzaCompilazionePFA = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-12-1"));
+			//LocalDateTime dataScadenzaCompilazionePFA = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-12-1"));
+			LocalDateTime dataScadenzaCompilazionePFA = Utils.convertLocalDateToLocalDateTime(LocalDate.of(annoRiferimento, 12, 1));
 			if(!checkIfExistForProvider(AlertTipoEnum.SCADENZA_COMPILAZIONE_PFA, p.getId(), dataScadenzaCompilazionePFA))
 				creaAlertForProvider(AlertTipoEnum.SCADENZA_COMPILAZIONE_PFA, p, dataScadenzaCompilazionePFA);
 
-			LocalDateTime dataScadenzaInserimentoRelazioneAnnuale = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-03-15"));
+			//LocalDateTime dataScadenzaInserimentoRelazioneAnnuale = Utils.convertLocalDateToLocalDateTime(LocalDate.parse(annoRiferimento + "-03-15"));
+			LocalDateTime dataScadenzaInserimentoRelazioneAnnuale = Utils.convertLocalDateToLocalDateTime(LocalDate.of(annoRiferimento, 3, 15));
 			if(!checkIfExistForProvider(AlertTipoEnum.SCADENZA_RELAZIONE_ANNUALE, p.getId(), dataScadenzaInserimentoRelazioneAnnuale))
 				creaAlertForProvider(AlertTipoEnum.SCADENZA_RELAZIONE_ANNUALE, p, dataScadenzaInserimentoRelazioneAnnuale);
 		}
+	}
+
+	public void creaAlertForEvento(Evento evento) {
+		LOGGER.info("Creazione Alert per Evento");
+		LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(evento.getDataScadenzaPagamento());
+		dataScadenza = dataScadenza.minusDays(15);
+		AlertTipoEnum tipo = AlertTipoEnum.SCADENZA_PAGAMENTO_E_RENDICONTAZIONE_EVENTO;
+
+		if(!checkIfExistForEvento(tipo, evento.getId(), dataScadenza))
+			creaAlertForEvento(tipo, evento, dataScadenza);
+	}
+
+	@Override
+	public void creaAlertInvioDomandaStandardForProvider(Provider provider) {
+		LOGGER.info("Creazione Alert per Invio Domanda Standard");
+		LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(provider.getDataScadenzaInsertAccreditamentoStandard());
+		dataScadenza = dataScadenza.minusDays(15);
+		AlertTipoEnum tipo = AlertTipoEnum.SCADENZA_COMPILAZIONE_DOMANDA_ACCREDITAMENTO_STANDARD;
+
+		if(!checkIfExistForProvider(tipo, provider.getId(), dataScadenza))
+			creaAlertForProvider(tipo, provider, dataScadenza);
 	}
 }

@@ -184,7 +184,7 @@
 									<th th:text="#{label.stato}"></th>
 									<th th:text="#{label.numero_partecipanti}">label.titolo</th>
 									<th th:text="#{label.durata}">label.ore_corso</th>
-									<th th:text="#{label.data_scadenza_pagamento}">label.data_scadenza_pagamento</th>
+									<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 									<th th:text="#{label.azioni}">label.azioni</th>
 								</tr>
 							</thead>
@@ -194,7 +194,7 @@
 									<td th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="${evento.provider.denominazioneLegale}"></td>
 									<td th:text="${evento.edizione}"></td>
 									<td th:text="${evento.proceduraFormativa.name()}"></td>
-									<td th:text="${evento.titolo}"></td>
+									<td style="word-break: break-word" th:text="${evento.titolo}"></td>
 
 									<td th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
 										<span></span>
@@ -240,6 +240,9 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
+						 "columnDefs": [
+					                    {"targets": 3, "width": "2000px"},
+					                  ],
 
 					})
 

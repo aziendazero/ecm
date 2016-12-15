@@ -89,7 +89,7 @@ import it.tredi.ecm.web.validator.FileValidator;
 
 @Service
 public class EventoServiceImpl implements EventoService {
-	public static final Logger LOGGER = Logger.getLogger(Evento.class);
+	public static final Logger LOGGER = Logger.getLogger(EventoServiceImpl.class);
 
 	@Autowired private EventoRepository eventoRepository;
 
@@ -1781,12 +1781,16 @@ public class EventoServiceImpl implements EventoService {
 		Evento evento = getEvento(eventoId);
 		if(mode.equals("edit")) {
 			Long fileId = sponsor.getSponsorFile().getId();
-			sponsor.setSponsorFile(null);
-			sponsorRepository.save(sponsor);
-			fileService.deleteById(fileId);
+
+			if(fileId != sponsorFile.getId()){
+				sponsor.setSponsorFile(null);
+				sponsorRepository.save(sponsor);
+				fileService.deleteById(fileId);
+			}
 		}
 		sponsor.setSponsorFile(sponsorFile);
 		sponsorRepository.save(sponsor);
+
 		//check se sono stati inseriti tutti i Contratti sponsor
 		boolean allSponsorsOk = true;
 		for(Sponsor s : evento.getSponsors()) {

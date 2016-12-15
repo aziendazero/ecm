@@ -41,12 +41,12 @@
 
 									<td th:text="${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}">abilitato/non abilitato</td>
-									<td th:text="${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard ? 'green' : 'red'}">abilitato/non abilitato</td>
+									<td th:text="${provider.canInsertAccreditamentoStandard() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard() ? 'green' : 'red'}">abilitato/non abilitato</td>
 
 									<!-- <td class="text-full-length">
 										<div th:text="#{label.caninsert_piano_formativo} + ' ' + ${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}"></div>
 										<div th:text="#{label.caninsert_eventi} + ' ' + ${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}"></div>
-										<div th:text="#{label.caninsert_domanda_accreditamento_standard} + ' ' + ${provider.canInsertAccreditamentoStandard ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard ? 'green' : 'red'}"></div>
+										<div th:text="#{label.caninsert_domanda_accreditamento_standard} + ' ' + ${provider.canInsertAccreditamentoStandard() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard() ? 'green' : 'red'}"></div>
 									</td> -->
 
 									<td class="text-full-length">

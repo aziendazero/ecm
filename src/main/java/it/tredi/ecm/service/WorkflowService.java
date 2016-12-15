@@ -17,6 +17,7 @@ public interface WorkflowService {
 	public UserDataModel getUserByLogin(String userName) throws Exception;
 	public void saveOrUpdateBonitaUserByAccount(Account account) throws Exception;
 	public WorkflowInfo createWorkflowAccreditamentoProvvisorio(CurrentUser user, Accreditamento accreditamento) throws Exception;
+	public WorkflowInfo createWorkflowAccreditamentoStandard(CurrentUser user, Accreditamento accreditamento) throws Exception;
 	public ProcessInstanceDataModelComplete getProcessInstanceDataModelComplete(long processInstanceId, UserDataModel user) throws Exception;
 	public List<AccreditamentoStatoEnum> getInserimentoEsitoOdgStatiPossibiliAccreditamento(long processInstanceId) throws Exception;
 	public TaskInstanceDataModel currentUserGetTaskForState(Accreditamento accreditamento) throws Exception;
@@ -47,4 +48,10 @@ public interface WorkflowService {
 	public void prendiTaskInCarica(CurrentUser user, Accreditamento accreditamento)  throws Exception;
 
 	public void eseguiTaskProtocolloEseguitoForAccreditamentoStateAndSystemUser(Accreditamento accreditamento) throws Exception;
+
+	public void eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(Accreditamento accreditamento, String usernameWorkflowTeamLeader) throws Exception;
+	//public void eseguiTaskValutazioneAssegnazioneTeamLeaderForUser(CurrentUser user, Accreditamento accreditamento, String usernameWorkflowTeamLeader) throws Exception;
+
+	public void eseguiTaskValutazioneSulCampoForCurrentUser(Accreditamento accreditamento, String usernameWorkflowTeamLeader, AccreditamentoStatoEnum stato) throws Exception;
+	public void eseguiTaskValutazioneSegreteriaForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione) throws Exception;
 }
