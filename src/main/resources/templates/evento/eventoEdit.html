@@ -1265,6 +1265,7 @@
 			};
 
 			function submitSave(){
+				$(".form-evento").attr("action", [[@{|/provider/${eventoWrapper.providerId}/evento/save|}]]);
 				$("#submitButton").click();
 			}
 

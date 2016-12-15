@@ -200,8 +200,7 @@
 				<!--  TODO RIMUOVERE NUMERAZIONE HARDCODATA E METTERLA IN UN ENUM?  -->
 
 				<form id="formEventoRES" class="form-horizontal form-label-left form-evento"
-					th:action="@{|/provider/${eventoWrapper.providerId}/evento/save|}"
-					method="post" enctype="multipart/form-data"
+					method="post" enctype="multipart/form-data" th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/validate|}"
 					novalidate="novalidate">
 
 					<!-- input hidden -->

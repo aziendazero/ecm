@@ -133,22 +133,29 @@ public class EventoValidator {
 			//impedisce anticipazioni di date di eventi validati e un cambio di numero di date confrontando con l'evento
 			//sul DB non ancora modificato
 			Evento eventoDaDB = eventoService.getEvento(evento.getId());
+			if(evento.getDataInizio() == null)
+				errors.rejectValue(prefix + "dataInizio", "error.empty");
 			//la segreteria solo può anticipare la data di un evento
 			if(evento.getDataInizio().isBefore(eventoDaDB.getDataInizio()) && !Utils.getAuthenticatedUser().isSegreteria())
 				errors.rejectValue(prefix + "dataInizio", "error.anticipazione_data_non_possibile");
-			else if(evento instanceof EventoRES) {
-				//numero date da rispettare
-				//data inizio fine uguali
-				if(eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
-						&& !evento.getDataFine().isEqual(evento.getDataInizio())) {
-					errors.rejectValue(prefix + "dataInizio", "error.date_non_separabili");
-					errors.rejectValue(prefix + "dataFine", "error.date_non_separabili");
-				}
-				//data inizio fine non uguali
-				else if (!eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
-						&& evento.getDataFine().isEqual(evento.getDataInizio())) {
-					errors.rejectValue(prefix + "dataInizio", "error.date_non_unificabili");
-					errors.rejectValue(prefix + "dataFine", "error.date_non_unificabili");
+			if(evento.isRiedizione()) {
+				if((!Utils.getAuthenticatedUser().isSegreteria())
+						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
+					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida");
+				if(evento instanceof EventoRES) {
+					//numero date da rispettare
+					//data inizio fine uguali
+					if(eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
+							&& !evento.getDataFine().isEqual(evento.getDataInizio())) {
+						errors.rejectValue(prefix + "dataInizio", "error.date_non_separabili");
+						errors.rejectValue(prefix + "dataFine", "error.date_non_separabili");
+					}
+					//data inizio fine non uguali
+					else if (!eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
+							&& evento.getDataFine().isEqual(evento.getDataInizio())) {
+						errors.rejectValue(prefix + "dataInizio", "error.date_non_unificabili");
+						errors.rejectValue(prefix + "dataFine", "error.date_non_unificabili");
+					}
 				}
 			}
 		}
@@ -442,7 +449,7 @@ public class EventoValidator {
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
 		else {
-			if(evento.isRiedizione()) {
+			if(evento.isRiedizione() && !Utils.getAuthenticatedUser().isSegreteria()) {
 				if(evento.getDataInizio() != null
 						&& (evento.getDataFine().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
@@ -763,7 +770,7 @@ public class EventoValidator {
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
 		else {
-			if(evento.isRiedizione()) {
+			if(evento.isRiedizione() && !Utils.getAuthenticatedUser().isSegreteria()) {
 				if(evento.getDataInizio() != null
 						&& (evento.getDataFine().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
@@ -972,7 +979,7 @@ public class EventoValidator {
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
 		else {
-			if(evento.isRiedizione()) {
+			if(evento.isRiedizione() && !Utils.getAuthenticatedUser().isSegreteria()) {
 				if(evento.getDataInizio() != null
 						&& (evento.getDataFine().getYear() != evento.getEventoPadre().getDataFine().getYear()))
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
