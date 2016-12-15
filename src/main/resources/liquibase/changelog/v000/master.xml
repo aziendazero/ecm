@@ -13,6 +13,6 @@
     <include file="001_00_loaddata.xml" relativeToChangelogFile="true"/>
     <include file="002_01_alertEmail.xml" relativeToChangelogFile="true"/>
     <include file="002_02_valutatoreVerbale.xml" relativeToChangelogFile="true"/>
-
+    <include file="003_01_verbalePdfInAccreditamento.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

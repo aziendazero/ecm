@@ -970,6 +970,32 @@
 												</tbody>
 											</table>
 
+											<table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"  th:classappend="${'datatable-responsive-accreditamento-'+mode}">
+												<thead>
+													<tr>
+														<th th:text="#{label.sottoscrivente_verbale}">Sottoscrivente della Valutazione sul Campo</th>
+														<th th:text="#{label.stato_inserimento}">label.stato_valutazione</th>
+														<th th:if="${hasActionButtons}" th:text="#{label.azioni}">label.azioni</th>
+													</tr>
+												</thead>
+												<tbody>
+													<!-- VALUTAZIONI SUL CAMPO -->
+													<tr>
+														<td><div th:text="#{label.sottoscrivente}"></div></td>
+														<td	th:if="${accreditamentoWrapper.sottoscriventeStato}">
+															<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
+														</td>
+														<td	th:unless="${accreditamentoWrapper.sottoscriventeStato}">
+															<i class="fa table-icon fa-remove red" th:title="#{label.non_inserito}"></i>
+														</td>
+														<td th:if="${valutabile}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbaleValutazioneSulCampo/${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.id}/insertSottoscrivente|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.inserisci} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+													</tr>
+
+												</tbody>
+											</table>
+
 											<div class="divider"></div>
 
 											<div class="item form-group">
@@ -1012,7 +1038,8 @@
 
 											<div class="form-horizontal form-label-left">
 
-												<button type="button" class="pull-right btn btn-primary" data-toggle="modal" data-target=".modal-verbale-edit" th:text="#{label.modifica_verbale}"></button>
+												<button th:if="${#authentication.principal.isSegreteria() and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()}"
+													type="button" class="pull-right btn btn-primary" data-toggle="modal" data-target=".modal-verbale-edit" th:text="#{label.modifica_verbale}"></button>
 
 												<div class="item form-group">
 													<label class="control-label col-md-3 col-sm-3 col-xs-12">

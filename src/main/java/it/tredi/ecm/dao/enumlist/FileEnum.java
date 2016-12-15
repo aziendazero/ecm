@@ -59,6 +59,7 @@ public enum FileEnum {
 
 	FILE_DELEGA_VALUTAZIONE_SUL_CAMPO(47, "Delega"),
 	FILE_CARTA_IDENTITA(48, "Carta d'identità"),
+	FILE_PDF_VERBALE_VALUTAZIONE_SUL_CAMPO(49, "File pdf firmato del Verbale della Valutazione Sul Campo"),
 
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");

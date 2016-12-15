@@ -107,6 +107,8 @@ public class Accreditamento extends BaseEntity{
 	private File richiestaIntegrazione;
 	@OneToOne
 	private File richiestaPreavvisoRigetto;
+	@OneToOne
+	private File verbaleValutazioneSulCampoPdf;
 
 	@OneToOne(cascade=CascadeType.ALL)
 	private VerbaleValutazioneSulCampo verbaleValutazioneSulCampo;
