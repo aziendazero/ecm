@@ -199,7 +199,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		}
 
-		//controllo che non ci siano procedimenti gia' attivi
 		Set<Accreditamento> accreditamentoList = getAllAccreditamentiForProvider(providerId,tipoTomanda);
 		for(Accreditamento accreditamento : accreditamentoList){
 			if(accreditamento.isBozza()){
@@ -212,15 +211,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				return false;
 			}
 
-			if (accreditamento.isDomandaAttiva()){
-				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Domanda Attiva con scadenza " + accreditamento.getDataFineAccreditamento()));
-				return false;
-			}
-			//TODO gestire la distinzione tra domanda inviata ma ancora non accreditata e domanda accreditata
-			//				if(accreditamento.isInviato())
-			//					return false;
-
+			//SOLO PER IL PROVVISORIO - se e' già attiva una domanda non facciamo crearne altre
+			//PER LA STD invece si...caso del rinnovo
 			if(tipoTomanda == AccreditamentoTipoEnum.PROVVISORIO){
+				if (accreditamento.isDomandaAttiva()){
+					LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Domanda Attiva con scadenza " + accreditamento.getDataFineAccreditamento()));
+					return false;
+				}
+
+				//se esiste solo domande cancellate di fatto si puo creare una nuova domanda
 				if(!accreditamento.isCancellato())
 					return false;
 			}
