@@ -21,7 +21,7 @@ SET search_path = ecmdb, pg_catalog;
  * */
 delete from ecmdb.account_profile where profile_id IN (
 	select id from ecmdb.profile where profile_enum = 'OSSERVATORE' or profile_enum = 'VISUALIZZATORE'
-)
+);
 
 /*
  * ELIMINO RELAZIONE PROFILI - RUOLI -> che hanno (OSSERVATORE e VISUALIZZATORE)
@@ -29,8 +29,8 @@ delete from ecmdb.account_profile where profile_id IN (
  * */
 delete from ecmdb.profile_role where profile_id IN (
 	select id from ecmdb.profile where profile_enum = 'OSSERVATORE' or profile_enum = 'VISUALIZZATORE'
-)
-delete from ecmdb.profile where profile_enum = 'OSSERVATORE' or profile_enum = 'VISUALIZZATORE'
+);
+delete from ecmdb.profile where profile_enum = 'OSSERVATORE' or profile_enum = 'VISUALIZZATORE';
 
 
 /*
@@ -42,4 +42,4 @@ INSERT INTO profile_role (profile_id, role_id) VALUES (1023, 1006);
 /*
  * RINOMINO COMPONENTE_OSSERVATORE -> COMPONENTE_OSSERVATORIO
  * */
-update ecmdb.profile set profile_enum = 'COMPONENTE_OSSERVATORIO' where profile_enum = 'COMPONENTE_OSSERVATORE';
+UPDATE ecmdb.profile SET profile_enum = 'COMPONENTE_OSSERVATORIO' WHERE id = 1023;

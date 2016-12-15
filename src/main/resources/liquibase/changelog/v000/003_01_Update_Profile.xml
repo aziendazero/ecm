@@ -9,7 +9,7 @@
 		<sqlFile dbms="postgresql"
             encoding="utf8"
             endDelimiter=";"
-            path="003_01_Profili.sql"
+            path="003_01_Update_Profile.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
             stripComments="true"/>
