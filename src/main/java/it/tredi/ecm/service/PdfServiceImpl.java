@@ -255,12 +255,12 @@ public class PdfServiceImpl implements PdfService {
 
             //Corpo
             //In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
-            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il {0} "
+            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il {0} (protocollo n° {1} del {2})"
             		+ ", sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), "
-            		+ " si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del {1}"
+            		+ " si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del {3}"
             		+ ", non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, "
             		+ "ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:");
-            Object[] valuesCorpo = {preavvisoRigettoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), preavvisoRigettoInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
+            Object[] valuesCorpo = {preavvisoRigettoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), preavvisoRigettoInfo.getNumeroProtocolloValidazione(), preavvisoRigettoInfo.getDataProtocolloValidazione().format(dateTimeFormatter), preavvisoRigettoInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesCorpo));
 
             /*
@@ -413,11 +413,11 @@ public class PdfServiceImpl implements PdfService {
 
             //Corpo
             //In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
-            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il {0}, "
+            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il {0} (protocollo n° {1} del {2}), "
             		+ "sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia "
             		+ "(consultabile sul sito internet della Regione http://providerveneto.agenas.it/ProviderModuliDoc.aspx, unitamente agli esempi di “atti”), "
-            		+ "la Commissione Regionale per la Formazione Continua ECM in data {1}, ha rilevato le seguenti criticità:");
-            Object[] valuesCorpo = {integrazioneInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), integrazioneInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
+            		+ "la Commissione Regionale per la Formazione Continua ECM in data {3}, ha rilevato le seguenti criticità:");
+            Object[] valuesCorpo = {integrazioneInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), integrazioneInfo.getNumeroProtocolloValidazione(), integrazioneInfo.getDataProtocolloValidazione().format(dateTimeFormatter), integrazioneInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesCorpo));
 
             List list;
@@ -575,9 +575,9 @@ public class PdfServiceImpl implements PdfService {
 
 			cell.addElement(new Phrase("Estremi dei principali documenti dell’istruttoria:", fontCorpo));
 
-			msgFormat = new MessageFormat("istanza di accreditamento provvisorio validata il {0}");
-            Object[] valuesDataValid = {diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
-			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
+			msgFormat = new MessageFormat("istanza di accreditamento provvisorio validata il {0} (protocollo n° {1} del {2})");
+            Object[] valuesDataValidAndProtocolloValid = {diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+			cell.addElement(new Phrase(msgFormat.format(valuesDataValidAndProtocolloValid), fontCorpo));
 			msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2}).");
 			Object[] valuesDataSed = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(yearFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataSed), fontCorpo));
@@ -611,8 +611,8 @@ public class PdfServiceImpl implements PdfService {
 	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 tra Regione del Veneto e Age.Na.S. sulla base di quanto approvato con la suddetta deliberazione n. 1236 del 16 luglio 2013;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
 
-			msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma Age.Na.S.- Regione del Veneto;");
-            Object[] valuesNomeProvDataValid = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S.- Regione del Veneto;");
+            Object[] valuesNomeProvDataValid = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
 
             addCorpoParagraph(document, false, true, "ATTESO CHE la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. n. 382498 del 13 settembre 2013, con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei provider e della sottoscrizione della richiesta di eventuali documenti integrativi, ivi compresa la sottoscrizione della comunicazione di preavviso di rigetto ai sensi dell’art.10bis della L.241/1990 e ss.mm.ii.;");
@@ -633,7 +633,7 @@ public class PdfServiceImpl implements PdfService {
 				msgFormat = new MessageFormat("VISTA la documentazione inviata da parte dell’aspirante Provider {0} per il tramite del legale rappresentante pro-tempore contenente osservazioni e documentazioni in ossequio al richiamato art.10 bis della L.241/1990 e ss.mm.ii.;");
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
 	        } else {
-				msgFormat = new MessageFormat("PRESO ATTO che alla data della seduta della Commissione Regionale ECM del {0} sono decorsi inutilmente i termini indicati nella nota prot. n. {1}. del {2} (10bis) senza che nessuna osservazione o documentazione sia pervenuta per essere sottoposta alla valutazione della Commissione Regionale ECM;");
+				msgFormat = new MessageFormat("PRESO ATTO che alla data della seduta della Commissione Regionale ECM del {0} sono decorsi inutilmente i termini indicati nella nota prot. n. {1}. del {2} senza che nessuna osservazione o documentazione sia pervenuta per essere sottoposta alla valutazione della Commissione Regionale ECM;");
 	            Object[] valuesAttoRigetto = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter)};
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesAttoRigetto));
 	        }
@@ -665,8 +665,8 @@ public class PdfServiceImpl implements PdfService {
             list.add(getListItem(msgFormat.format(valuesRigetto3), fontListItem));
 
             //di rigettare l’istanza di accreditamento provvisorio come Provider regionale ECM del NOME PROVIDER in nome del legale rappresentante pro-tempore validata in data DATA VALIDAZIONE per le seguenti motivazioni:
-			msgFormat = new MessageFormat("di rigettare l’istanza di accreditamento provvisorio come Provider regionale ECM del {0} in nome del legale rappresentante pro-tempore validata in data {1} per le seguenti motivazioni:");
-            Object[] valuesRigetto4 = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("di rigettare l’istanza di accreditamento provvisorio come Provider regionale ECM del {0} in nome del legale rappresentante pro-tempore validata in data {1} (protocollo n° {2} del {3}) per le seguenti motivazioni:");
+            Object[] valuesRigetto4 = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
             ListItem listItem = getListItem(msgFormat.format(valuesRigetto4), fontListItem);
 
             par = new Paragraph(diniegoInfo.getNoteSedutaDomanda(), fontListItem);
@@ -796,8 +796,8 @@ public class PdfServiceImpl implements PdfService {
 
 			cell.addElement(new Phrase("Estremi dei principali documenti dell’istruttoria:", fontCorpo));
 
-			msgFormat = new MessageFormat("istanza di accreditamento provvisorio validata il {0}");
-            Object[] valuesDataValid = {accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("istanza di accreditamento provvisorio validata il {0} (protocollo n° {1} del {2})");
+            Object[] valuesDataValid = {accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 			msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2}).");
             Object[] valuesDataSed = {accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(dateTimeFormatter), accreditatoInfo.getAccreditamentoInfo().getVerbaleNumero(), accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(yearFormatter)};
@@ -836,8 +836,8 @@ public class PdfServiceImpl implements PdfService {
 	        //Togliere nei casi:
 	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
 	        if(accreditatoInfo.getIntegrazioneInfo() != null) {
-				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento provvisorio;");
-	            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento provvisorio;");
+	            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
 	            addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
 	        }
 
@@ -1027,12 +1027,12 @@ public class PdfServiceImpl implements PdfService {
 
             //Corpo
             //In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
-            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il {0} "
+            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il {0} (protocollo n° {1} del {2}) "
             		+ ", sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), "
-            		+ " si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del {1}"
+            		+ " si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del {3}"
             		+ ", non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, "
             		+ "ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:");
-            Object[] valuesCorpo = {preavvisoRigettoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), preavvisoRigettoInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
+            Object[] valuesCorpo = {preavvisoRigettoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), preavvisoRigettoInfo.getNumeroProtocolloValidazione(), preavvisoRigettoInfo.getDataProtocolloValidazione().format(dateTimeFormatter), preavvisoRigettoInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesCorpo));
 
             /*
@@ -1185,11 +1185,11 @@ public class PdfServiceImpl implements PdfService {
 
             //Corpo
             //In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
-            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il {0}, "
+            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il {0} (protocollo n° {1} del {2}), "
             		+ "sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia, si rappresenta "
             		+ "che il referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 "
-            		+ "nel corso della visita in loco del {0}, ha rilevato le seguenti criticità:");
-            Object[] valuesCorpo = {integrazioneInfo.getAccreditamentoDataVisita().format(dateTimeFormatter), integrazioneInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
+            		+ "nel corso della visita in loco del {1}, ha rilevato le seguenti criticità:");
+            Object[] valuesCorpo = {integrazioneInfo.getAccreditamentoDataVisita().format(dateTimeFormatter), integrazioneInfo.getNumeroProtocolloValidazione(), integrazioneInfo.getDataProtocolloValidazione().format(dateTimeFormatter), integrazioneInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesCorpo));
 
             List list;
@@ -1346,8 +1346,8 @@ public class PdfServiceImpl implements PdfService {
 
 			cell.addElement(new Phrase("Estremi dei principali documenti dell’istruttoria:", fontCorpo));
 
-			msgFormat = new MessageFormat("istanza di accreditamento standard validata il {0}");
-            Object[] valuesDataValid = {diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("istanza di accreditamento standard validata il {0} (protocollo n° {1} del {2})");
+            Object[] valuesDataValid = {diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 			msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2}).");
 			Object[] valuesDataSed = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(yearFormatter)};
@@ -1382,8 +1382,8 @@ public class PdfServiceImpl implements PdfService {
 	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 tra Regione del Veneto e Age.Na.S. sulla base di quanto approvato con la suddetta deliberazione n. 1236 del 16 luglio 2013;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
 
-			msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma Age.Na.S.- Regione del Veneto;");
-            Object[] valuesNomeProvDataValid = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S.- Regione del Veneto;");
+            Object[] valuesNomeProvDataValid = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
 
             addCorpoParagraph(document, false, true, "ATTESO CHE la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. n. 382498 del 13 settembre 2013, con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei provider e della sottoscrizione della richiesta di eventuali documenti integrativi, ivi compresa la sottoscrizione della comunicazione di preavviso di rigetto ai sensi dell’art.10bis della L.241/1990 e ss.mm.ii.;");
@@ -1404,7 +1404,7 @@ public class PdfServiceImpl implements PdfService {
 				msgFormat = new MessageFormat("VISTA la documentazione inviata da parte dell’aspirante Provider {0} per il tramite del legale rappresentante pro-tempore contenente osservazioni e documentazioni in ossequio al richiamato art.10 bis della L.241/1990 e ss.mm.ii.;");
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
 	        } else {
-				msgFormat = new MessageFormat("PRESO ATTO che alla data della seduta della Commissione Regionale ECM del {0} sono decorsi inutilmente i termini indicati nella nota prot. n. {1}. del {2} (10bis) senza che nessuna osservazione o documentazione sia pervenuta per essere sottoposta alla valutazione della Commissione Regionale ECM;");
+				msgFormat = new MessageFormat("PRESO ATTO che alla data della seduta della Commissione Regionale ECM del {0} sono decorsi inutilmente i termini indicati nella nota prot. n. {1}. del {2} senza che nessuna osservazione o documentazione sia pervenuta per essere sottoposta alla valutazione della Commissione Regionale ECM;");
 	            Object[] valuesAttoRigetto = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter)};
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesAttoRigetto));
 	        }
@@ -1436,8 +1436,8 @@ public class PdfServiceImpl implements PdfService {
             list.add(getListItem(msgFormat.format(valuesRigetto3), fontListItem));
 
             //di rigettare l’istanza di accreditamento standard come Provider regionale ECM del NOME PROVIDER in nome del legale rappresentante pro-tempore validata in data DATA VALIDAZIONE per le seguenti motivazioni:
-			msgFormat = new MessageFormat("di rigettare l’istanza di accreditamento standard come Provider regionale ECM del {0} in nome del legale rappresentante pro-tempore validata in data {1} per le seguenti motivazioni:");
-            Object[] valuesRigetto4 = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("di rigettare l’istanza di accreditamento standard come Provider regionale ECM del {0} in nome del legale rappresentante pro-tempore validata in data {1} (protocollo n° {2} del {3}) per le seguenti motivazioni:");
+            Object[] valuesRigetto4 = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
             ListItem listItem = getListItem(msgFormat.format(valuesRigetto4), fontListItem);
 
             par = new Paragraph(diniegoInfo.getNoteSedutaDomanda(), fontListItem);
@@ -1567,8 +1567,8 @@ public class PdfServiceImpl implements PdfService {
 
 			cell.addElement(new Phrase("Estremi dei principali documenti dell’istruttoria:", fontCorpo));
 
-			msgFormat = new MessageFormat("istanza di accreditamento standard validata il {0}");
-            Object[] valuesDataValid = {accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("istanza di accreditamento standard validata il {0} (protocollo n° {1} del {2})");
+            Object[] valuesDataValid = {accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 
 			msgFormat = new MessageFormat("verbale di visita di verifica in loco effettuata il {0}");
@@ -1626,8 +1626,8 @@ public class PdfServiceImpl implements PdfService {
 	        //Togliere nei casi:
 	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
 	        if(accreditatoInfo.getIntegrazioneInfo() != null) {
-				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento standard;");
-	            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento standard;");
+	            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
 	            addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
 	        }
 	        addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. 220017 del 21 maggio 2014 con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei Provider e della sottoscrizione della richiesta di documentazione integrativa, ai sensi della L.241/1990 e ss.mm.ii;");

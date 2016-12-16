@@ -60,8 +60,8 @@ public class PdfTest {
 	private PdfService pdfService;
 	@Autowired
 	private FileService fileService;
-	
-	@Autowired 
+
+	@Autowired
 	private AccountRepository accountRepository;
 	@Autowired
 	private CurrentUserDetailsService currentUserDetailsService;
@@ -69,27 +69,27 @@ public class PdfTest {
 	private ProviderService providerService;
 	@Autowired
 	private AccreditamentoService accreditamentoService;
-	
+
 	@Autowired
 	private ProfileRepository profileRepository;
 
-	@Autowired private MessageSource messageSource;	
+	@Autowired private MessageSource messageSource;
 
 	@Autowired
 	private AccreditamentoRepository accreditamentoRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private FieldEditabileAccreditamentoService fieldEditabileService;
-	
-	@Autowired 
+
+	@Autowired
 	private ValutazioneService valutazioneService;
-	
+
 	/*
 	@Before
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 	}
-	
+
 	@Before
 	public void init() {
 		Persona persona = new Persona();
@@ -102,13 +102,13 @@ public class PdfTest {
 		persona.getAnagrafica().setPec("vrossi@pec.com");
 		persona.setRuolo(Ruolo.RESPONSABILE_SEGRETERIA);
 		personaService.save(persona);
-		
+
 		Account account = new Account();
 		account.setUsername("junit");
 		account.setPassword("junit");
 		account.setEmail("junit@3di.it");
 		accountRepository.save(account);
-		
+
 		Provider provider = new Provider();
 		provider.setDenominazioneLegale("VR 46");
 		provider.setPartitaIva("00464646460");
@@ -117,9 +117,9 @@ public class PdfTest {
 		provider.addPersona(persona);
 		provider.setAccount(account);
 		providerService.save(provider);
-		
+
 		personaService.save(persona);
-		
+
 		try {
 			Accreditamento accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId(),AccreditamentoTipoEnum.PROVVISORIO);
 			this.personaId = persona.getId();
@@ -129,7 +129,7 @@ public class PdfTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@After
 	public void clean(){
 		accreditamentoRepository.delete(this.accreditamentoId);
@@ -143,7 +143,7 @@ public class PdfTest {
 	public void testMessageSource() throws Exception {
 		System.out.println(messageSource.getMessage("IdFieldEnum." + IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE.name() , null, Locale.getDefault()));
 	}
-	
+
 	@Test
 	@Ignore
 	@Transactional
@@ -251,71 +251,71 @@ public class PdfTest {
 				accreditamento.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
 			else if(accreditamento.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
 				accreditamento.setPreavvisoRigettoEseguitoDaProvider(eseguitoDaUtente);
-		}		
+		}
 		accreditamentoRepository.save(accreditamento);
 	}
-	
-	@Test
-	@Ignore
-	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
-	public void creaPdf() throws Exception {
-		//String userName = "segreteria";
-		//CurrentUser currentUser = currentUserDetailsService.loadUserByUsername(userName);
-		
-        List<String> listaCriticita = new ArrayList<String>();
-        listaCriticita.add("DENOMINAZIONE CAMPO 1 – DESCRIZIONE CRITICITA’");
-        listaCriticita.add("DENOMINAZIONE CAMPO 2 – DESCRIZIONE CRITICITA’");
-        listaCriticita.add("DENOMINAZIONE CAMPO 3 – DESCRIZIONE CRITICITA’");
-        listaCriticita.add("DENOMINAZIONE CAMPO 4 – DESCRIZIONE CRITICITA’");
-        PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo("providerDenominazione", "providerIndirizzo", "providerCap", "providerComune", "providerProvincia", "providerNomeLegaleRappresentante", "providerCognomeLegaleRappresentante", "providerPec", LocalDate.now(), LocalDate.now(), listaCriticita, "Note seduta domanda con molto testo molto testo molto testo molto testo molto testo molto testo molto testo molto testo");
-        pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
-        
-        List<String> listaCriticitaPreavvisoRigetto = new ArrayList<String>();
-        listaCriticita.add("DENOMINAZIONE CAMPO 1 – DESCRIZIONE CRITICITA’");
-        listaCriticita.add("DENOMINAZIONE CAMPO 2 – DESCRIZIONE CRITICITA’");
-        listaCriticita.add("DENOMINAZIONE CAMPO 3 – DESCRIZIONE CRITICITA’");
-        listaCriticita.add("DENOMINAZIONE CAMPO 4 – DESCRIZIONE CRITICITA’");
-        listaCriticita.add("DENOMINAZIONE CAMPO 5 – DESCRIZIONE CRITICITA’");
-        listaCriticita.add("DENOMINAZIONE CAMPO 6 – DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’");
-        PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo("providerDenominazione", "providerIndirizzo", "providerCap", "providerComune", "providerProvincia", "providerNomeLegaleRappresentante", "providerCognomeLegaleRappresentante", "providerPec", LocalDate.now(), LocalDate.now(), listaCriticitaPreavvisoRigetto, "Note seduta domanda con molto testo molto testo molto testo molto testo molto testo molto testo molto testo molto testo");        
-        pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
-        
-        /*
-        List<String> listaMotivazioni = new ArrayList<String>();
-        listaMotivazioni.add("vedi motivazioni 10 bis 1");
-        listaMotivazioni.add("vedi Motivazioni 10 bis 2");
-        listaMotivazioni.add("vedi motivazioni 10 bis 3");
-        listaMotivazioni.add("vedi motivazioni 10 BIS 4");
-        listaMotivazioni.add("vedi motivazioni 10 bis 5");
-        */
-        PdfAccreditamentoProvvisorioRigettoInfo diniegoInfo = new PdfAccreditamentoProvvisorioRigettoInfo("providerDenominazione", "providerIndirizzo", "providerCap", "providerComune", "providerProvincia", "providerNomeLegaleRappresentante", "providerCognomeLegaleRappresentante", "providerPec", LocalDate.now(),              "numeroProtocolloIntegrazione", LocalDate.now(),           "verbaleNumeroIntegrazione", LocalDate.now(),                 true,                           "numeroProtocolloRigetto", LocalDate.now(),     "verbaleNumeroRigetto", LocalDate.now(),                 true,                   "Note seduta domanda");
-        pdfService.creaPdfAccreditamentoProvvisiorioDiniego(diniegoInfo);
-        
-        List<String> listaMotivazioniAccreditamento = new ArrayList<String>();
-        listaMotivazioniAccreditamento.add("vedi motivazioni 10 bis 1");
-        listaMotivazioniAccreditamento.add("vedi Motivazioni 10 bis 2");
-        listaMotivazioniAccreditamento.add("vedi motivazioni 10 bis 3");
-        PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo("providerDenominazione", "providerIndirizzo", "providerCap", "providerComune", "providerProvincia", "providerNomeLegaleRappresentante", "providerCognomeLegaleRappresentante", "providerPec", "providerId", LocalDate.now(),              "numeroProtocolloIntegrazione", LocalDate.now(),           "verbaleNumeroIntegrazione", LocalDate.now(),                 true,                           "numeroProtocolloRigetto", LocalDate.now(),     "verbaleNumeroRigetto", LocalDate.now(),                 true, LocalDate.now());
-        pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
-        //pdfService.writePdfAccreditamentoProvvisiorioAccreditato(outputStreamAccreditata, accreditatoInfo);
-        
-        System.out.println("FATTO");
-		
-	}
-	
+
+//	@Test
+//	@Ignore
+//	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
+//	public void creaPdf() throws Exception {
+//		//String userName = "segreteria";
+//		//CurrentUser currentUser = currentUserDetailsService.loadUserByUsername(userName);
+//
+//        List<String> listaCriticita = new ArrayList<String>();
+//        listaCriticita.add("DENOMINAZIONE CAMPO 1 – DESCRIZIONE CRITICITA’");
+//        listaCriticita.add("DENOMINAZIONE CAMPO 2 – DESCRIZIONE CRITICITA’");
+//        listaCriticita.add("DENOMINAZIONE CAMPO 3 – DESCRIZIONE CRITICITA’");
+//        listaCriticita.add("DENOMINAZIONE CAMPO 4 – DESCRIZIONE CRITICITA’");
+//        PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo("providerDenominazione", "providerIndirizzo", "providerCap", "providerComune", "providerProvincia", "providerNomeLegaleRappresentante", "providerCognomeLegaleRappresentante", "providerPec", LocalDate.now(), LocalDate.now(), listaCriticita, "Note seduta domanda con molto testo molto testo molto testo molto testo molto testo molto testo molto testo molto testo");
+//        pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
+//
+//        List<String> listaCriticitaPreavvisoRigetto = new ArrayList<String>();
+//        listaCriticita.add("DENOMINAZIONE CAMPO 1 – DESCRIZIONE CRITICITA’");
+//        listaCriticita.add("DENOMINAZIONE CAMPO 2 – DESCRIZIONE CRITICITA’");
+//        listaCriticita.add("DENOMINAZIONE CAMPO 3 – DESCRIZIONE CRITICITA’");
+//        listaCriticita.add("DENOMINAZIONE CAMPO 4 – DESCRIZIONE CRITICITA’");
+//        listaCriticita.add("DENOMINAZIONE CAMPO 5 – DESCRIZIONE CRITICITA’");
+//        listaCriticita.add("DENOMINAZIONE CAMPO 6 – DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’  DESCRIZIONE CRITICITA’");
+//        PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo("providerDenominazione", "providerIndirizzo", "providerCap", "providerComune", "providerProvincia", "providerNomeLegaleRappresentante", "providerCognomeLegaleRappresentante", "providerPec", LocalDate.now(), LocalDate.now(), listaCriticitaPreavvisoRigetto, "Note seduta domanda con molto testo molto testo molto testo molto testo molto testo molto testo molto testo molto testo");
+//        pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
+//
+//        /*
+//        List<String> listaMotivazioni = new ArrayList<String>();
+//        listaMotivazioni.add("vedi motivazioni 10 bis 1");
+//        listaMotivazioni.add("vedi Motivazioni 10 bis 2");
+//        listaMotivazioni.add("vedi motivazioni 10 bis 3");
+//        listaMotivazioni.add("vedi motivazioni 10 BIS 4");
+//        listaMotivazioni.add("vedi motivazioni 10 bis 5");
+//        */
+//        PdfAccreditamentoProvvisorioRigettoInfo diniegoInfo = new PdfAccreditamentoProvvisorioRigettoInfo("providerDenominazione", "providerIndirizzo", "providerCap", "providerComune", "providerProvincia", "providerNomeLegaleRappresentante", "providerCognomeLegaleRappresentante", "providerPec", LocalDate.now(),              "numeroProtocolloIntegrazione", LocalDate.now(),           "verbaleNumeroIntegrazione", LocalDate.now(),                 true,                           "numeroProtocolloRigetto", LocalDate.now(),     "verbaleNumeroRigetto", LocalDate.now(),                 true,                   "Note seduta domanda");
+//        pdfService.creaPdfAccreditamentoProvvisiorioDiniego(diniegoInfo);
+//
+//        List<String> listaMotivazioniAccreditamento = new ArrayList<String>();
+//        listaMotivazioniAccreditamento.add("vedi motivazioni 10 bis 1");
+//        listaMotivazioniAccreditamento.add("vedi Motivazioni 10 bis 2");
+//        listaMotivazioniAccreditamento.add("vedi motivazioni 10 bis 3");
+//        PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo("providerDenominazione", "providerIndirizzo", "providerCap", "providerComune", "providerProvincia", "providerNomeLegaleRappresentante", "providerCognomeLegaleRappresentante", "providerPec", "providerId", LocalDate.now(),              "numeroProtocolloIntegrazione", LocalDate.now(),           "verbaleNumeroIntegrazione", LocalDate.now(),                 true,                           "numeroProtocolloRigetto", LocalDate.now(),     "verbaleNumeroRigetto", LocalDate.now(),                 true, LocalDate.now());
+//        pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
+//        //pdfService.writePdfAccreditamentoProvvisiorioAccreditato(outputStreamAccreditata, accreditatoInfo);
+//
+//        System.out.println("FATTO");
+//
+//	}
+
 	@Test
 	@Ignore
 	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
 	public void creaFile() throws Exception {
 		it.tredi.ecm.dao.entity.File file = new it.tredi.ecm.dao.entity.File();
-		
+
 		byte[] byteArrayFile = null;
 		file.setData(byteArrayFile);
 		file.setDataCreazione(LocalDate.now());
 		file.setNomeFile(FileEnum.FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_ACCREDITAMENTO.getNome() + ".pdf");
 		file.setTipo(FileEnum.FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_ACCREDITAMENTO);
 	}
-	
+
 	private void printPersona(Persona persona){
 		if(persona != null){
 			System.out.println("PERSONA ID: " + persona.getId());

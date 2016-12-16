@@ -7,6 +7,7 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.utils.Utils;
@@ -15,6 +16,8 @@ import it.tredi.ecm.utils.Utils;
 public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 	private PdfProviderInfo providerInfo = null;
 	private LocalDate accreditamentoDataValidazione = null;
+	private String numeroProtocolloValidazione = null;
+	private LocalDate dataProtocolloValidazione = null;
 	private LocalDate accreditamentoDataVisita = null;
 	private LocalDate accreditamentoDataSeduta = null;
 	private List<String> listaCriticita = new ArrayList<String>();
@@ -24,6 +27,11 @@ public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 	public PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(Accreditamento accreditamento, Seduta seduta, List<String> listaCriticita) {
 		this.providerInfo = new PdfProviderInfo(accreditamento.getProvider());
 		this.accreditamentoDataValidazione = accreditamento.getDataInvio();
+		File fileProtocolloInvio = accreditamento.getFileForProtocollo();
+		if(fileProtocolloInvio != null) {
+			this.numeroProtocolloValidazione = fileProtocolloInvio.getProtocollo().getNumero().toString();
+			this.dataProtocolloValidazione = fileProtocolloInvio.getProtocollo().getData();
+		}
 
 		this.accreditamentoDataSeduta = seduta.getData();
 		for(ValutazioneCommissione valutazione : seduta.getValutazioniCommissione()) {
@@ -109,5 +117,21 @@ public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 
 	public void setAccreditamentoDataVisita(LocalDate accreditamentoDataVisita) {
 		this.accreditamentoDataVisita = accreditamentoDataVisita;
+	}
+
+	public String getNumeroProtocolloValidazione() {
+		return numeroProtocolloValidazione;
+	}
+
+	public void setNumeroProtocolloValidazione(String numeroProtocolloValidazione) {
+		this.numeroProtocolloValidazione = numeroProtocolloValidazione;
+	}
+
+	public LocalDate getDataProtocolloValidazione() {
+		return dataProtocolloValidazione;
+	}
+
+	public void setDataProtocolloValidazione(LocalDate dataProtocolloValidazione) {
+		this.dataProtocolloValidazione = dataProtocolloValidazione;
 	}
 }
