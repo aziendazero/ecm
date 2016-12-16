@@ -657,7 +657,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		});
 
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO).isEmpty())
-			checkIfFieldIntegraizoniConfirmed(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
+			checkIfFieldIntegraizoniConfirmed(accreditamento.getDatiAccreditamento(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
 	}
 
 	private void checkIfFieldIntegraizoniConfirmed(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList){
