@@ -11,7 +11,8 @@
 		<th:block th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
 			showOnly=${mode == 'show'},
-			enableField=${mode == 'enableField'}">
+			enableField=${mode == 'enableField'},
+			isFULL=${personaWrapper.FullIntegrazione != null}">
 			<!-- ogni parte non in comune sarà gestita in maniera appropriata -->
 			<div class="x_content">
 				<!-- rimove il tag form se la persona NON è editabile -->
@@ -43,6 +44,41 @@
 
 						<!-- info -->
 						<h2 th:if="${personaWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
+
+						<div th:if="${valutabile and isFULL}" class="item validateAlert form-group" th:classappend="${#fields.hasErrors('personaWrapper')} ? 'bad'">
+							<th:block>
+								<label class="margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1" th:text="${''}"></label>
+								<label class="margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4" for="comitatoScientifico">
+									<span th:text="${'Sostituzione completa'}">Provincia</span>
+								</label>
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.FullIntegrazione.tipoIntegrazioneEnum}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat full" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__]?.enabled == false}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat full" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].enabled}"  />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].note}" th:disabled="${!canValutaDomanda or
+									!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].enabled}"></textarea>
+								</div>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].id}" />
+								<div th:if="${#fields.hasErrors('personaWrapper')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper}"></div>
+	                   		</th:block>
+	                    </div>
+	                    <div  th:if="${valutabile and isFULL}" class="divider"></div>
 
 						<!-- CHECKBOX FLAG COORDINATORE -->
 						<div th:if="(${personaWrapper.persona.coordinatoreComitatoScientifico} or
@@ -551,6 +587,20 @@
 					</form>
 				</div>
 			</div>
+			<script th:inline="javascript">
+			$(document).ready(function() {
+				$(".full").on("ifChecked", function() {
+					selezionaTuttiSi();
+				});
+
+				handleFull();
+			});
+
+			function handleFull(){
+				if($(".full").val() == 'true' || $(".full").val() == 'false')
+					selezionaTuttiSi();
+			}
+		</script>
 		</th:block>
 	</th:block>
 </body>

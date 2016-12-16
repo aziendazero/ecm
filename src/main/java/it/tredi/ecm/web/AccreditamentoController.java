@@ -596,6 +596,10 @@ public class AccreditamentoController {
 		else
 			accreditamentoWrapper.setAllAccreditamento(accreditamento);
 
+		if(accreditamento.getStato() == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
+		}
+
 		//lista valutazioni per la valutazione complessiva
 		accreditamentoWrapper.setValutazioniList(valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamento.getId()));
 

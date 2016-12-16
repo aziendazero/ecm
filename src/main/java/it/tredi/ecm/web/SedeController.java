@@ -322,11 +322,20 @@ public class SedeController {
 			}else{
 				Accreditamento accreditamento = new Accreditamento();
 				accreditamento.setId(sedeWrapper.getAccreditamentoId());
+
+				if(sedeWrapper.getMappa() != null && sedeWrapper.getMappa().containsKey(IdFieldEnum.SEDE__FULL)){
+					Boolean esitoFull = sedeWrapper.getMappa().get(IdFieldEnum.SEDE__FULL).getEsito();
+					if(esitoFull != null){
+						sedeWrapper.getMappa().forEach((k, v) -> {v.setEsito(true);});
+					}
+				}
+
 				sedeWrapper.getMappa().forEach((k, v) -> {
 					v.setIdField(k);
 					v.setAccreditamento(accreditamento);
 					v.setObjectReference(sedeWrapper.getSede().getId());
 				});
+
 				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 				Set<FieldValutazioneAccreditamento> values = new HashSet<FieldValutazioneAccreditamento>(fieldValutazioneAccreditamentoService.saveMapList(sedeWrapper.getMappa()));
 				valutazione.getValutazioni().addAll(values);
@@ -421,7 +430,14 @@ public class SedeController {
 	}
 
 	private void prepareApplyIntegrazione(SedeWrapper sedeWrapper, SubSetFieldEnum subset, boolean reloadByEditIt) throws Exception{
-		sedeWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(sedeWrapper.getAccreditamentoId(), sedeWrapper.getSede().getId()), subset));
+		//prendo tutte le integrazioni fatte dal provider
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(sedeWrapper.getAccreditamentoId(), sedeWrapper.getSede().getId());
+		//filtro per quelle del subset sede
+		sedeWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
+
+		//vedo se e' presente il filed FULL e setto la info nel wrapper
+		sedeWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.SEDE__FULL));
+
 		integrazioneService.detach(sedeWrapper.getSede());
 		//nuova sede
 		if(sedeWrapper.getSede() == null || sedeWrapper.getSede().getId() == null){

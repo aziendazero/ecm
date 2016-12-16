@@ -377,6 +377,14 @@ public class PersonaController {
 			}else{
 				Accreditamento accreditamento = new Accreditamento();
 				accreditamento.setId(personaWrapper.getAccreditamentoId());
+
+				if(personaWrapper.getMappa() != null && personaWrapper.getMappa().containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL)){
+					Boolean esitoFull = personaWrapper.getMappa().get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL).getEsito();
+					if(esitoFull != null){
+						personaWrapper.getMappa().forEach((k, v) -> {v.setEsito(true);});
+					}
+				}
+
 				personaWrapper.getMappa().forEach((k, v) -> {
 					v.setIdField(k);
 					v.setAccreditamento(accreditamento);
@@ -578,10 +586,16 @@ public class PersonaController {
 	}
 
 	private void prepareApplyIntegrazione(PersonaWrapper personaWrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
-		if(personaWrapper.getPersona().isComponenteComitatoScientifico())
-			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(personaWrapper.getAccreditamentoId(), personaWrapper.getPersona().getId()), subset));
-		else
-			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(personaWrapper.getAccreditamentoId()), subset));
+		if(personaWrapper.getPersona().isComponenteComitatoScientifico()){
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(personaWrapper.getAccreditamentoId(), personaWrapper.getPersona().getId());
+			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
+			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL));
+		}
+		else{
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(personaWrapper.getAccreditamentoId());
+			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
+			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL));
+		}
 
 		//detach dei files...fatto qui perchè altrimenti hibernate segnala che è stato modificato l'ID di una entity (file) e durante un salvataggio da errore.
 		//Inoltre una volta fatto il detach non è possibile cariare i LazyField...quindi facciamo una chiamata prima per caricarli

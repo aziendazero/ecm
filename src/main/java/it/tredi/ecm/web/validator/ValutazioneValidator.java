@@ -25,15 +25,30 @@ public class ValutazioneValidator {
 
 	public void validateValutazione(Object target, Errors errors) {
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = (Map<IdFieldEnum, FieldValutazioneAccreditamento>) target;
-		for (Map.Entry<IdFieldEnum, FieldValutazioneAccreditamento> entry : mappa.entrySet()) {
-			String key = gestisciEccezioniKey(entry.getKey().getKey());
-			if(entry.getValue().getEsito() == null) {
-				errors.rejectValue(key, "error.atleast_one_empty");
+
+		if(mappa.containsKey(IdFieldEnum.SEDE__FULL) || mappa.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL)){
+			FieldValutazioneAccreditamento f = mappa.get(IdFieldEnum.SEDE__FULL);
+			if(f == null)
+				f = mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL);
+
+			if(f.getEsito() == null) {
+				errors.rejectValue("", "error.atleast_one_empty");
 			}
 			else
-				if(entry.getValue().getEsito() == false && (entry.getValue().getNote() == null
-				|| entry.getValue().getNote().isEmpty()))
-					errors.rejectValue(key, "error.note_obbligatorie");
+				if(f.getEsito() == false && (f.getNote() == null
+				|| f.getNote().isEmpty()))
+					errors.rejectValue("", "error.note_obbligatorie");
+		}else{
+			for (Map.Entry<IdFieldEnum, FieldValutazioneAccreditamento> entry : mappa.entrySet()) {
+				String key = gestisciEccezioniKey(entry.getKey().getKey());
+				if(entry.getValue().getEsito() == null) {
+					errors.rejectValue(key, "error.atleast_one_empty");
+				}
+				else
+					if(entry.getValue().getEsito() == false && (entry.getValue().getNote() == null
+					|| entry.getValue().getNote().isEmpty()))
+						errors.rejectValue(key, "error.note_obbligatorie");
+			}
 		}
 	}
 
