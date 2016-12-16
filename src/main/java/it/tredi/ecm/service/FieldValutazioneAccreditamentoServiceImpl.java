@@ -245,11 +245,14 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		//allegati
 		boolean noDichiarazioneEsclusione = true;
 		boolean noEsperienzaFormazione = true;
+		boolean noEstrattoBilancioComplessivo = true;
 		for(File file : accreditamento.getDatiAccreditamento().getFiles()) {
 			if(file.isDICHIARAZIONEESCLUSIONE())
 				noDichiarazioneEsclusione = false;
 			if(file.isESPERIENZAFORMAZIONE())
 				noEsperienzaFormazione = false;
+			if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+				noEstrattoBilancioComplessivo = false;
 			if(accreditamento.isStandard()) {
 				//TODO nuovi allegati facoltativi standard
 			}
@@ -267,6 +270,14 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 			field.setAccreditamento(accreditamento);
 			field.setEsito(true);
 			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE);
+			save(field);
+			defaults.add(field);
+		}
+		if(noEstrattoBilancioComplessivo) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO);
 			save(field);
 			defaults.add(field);
 		}
