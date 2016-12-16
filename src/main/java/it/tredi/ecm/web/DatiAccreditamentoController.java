@@ -123,6 +123,41 @@ public class DatiAccreditamentoController {
 		return disciplinaService.getAllDiscipline();
 	}
 
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/{sezione}/edit")
+	public String editSezioneDatiAccreditamento(@PathVariable Long accreditamentoId, @PathVariable String sezione, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/"+accreditamentoId+"/"+sezione+"/edit"));
+		try {
+			model.addAttribute("title", "label.edit_"+sezione);
+			model.addAttribute("sezione", sezione);
+			DatiAccreditamento dati = accreditamentoService.getAccreditamento(accreditamentoId).getDatiAccreditamento();
+			return goToEdit(model, prepareDatiAccreditamentoWrapperEdit(dati, accreditamentoId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false));
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/tipologiaFormativa/edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/{accreditamentoId}/edit";
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/{sezione}/new")
+	public String newSezioneDatiAccreditamento(@PathVariable Long accreditamentoId, @PathVariable String sezione, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/"+accreditamentoId+"/"+sezione+"/new"));
+		try {
+			model.addAttribute("title", "label.new_"+sezione);
+			model.addAttribute("sezione", sezione);
+			return goToEdit(model, prepareDatiAccreditamentoWrapperEdit(new DatiAccreditamento(), accreditamentoId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false));
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/tipologiaFormativa/new"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
+			return "redirect:/accreditamento/{accreditamentoId}/edit";
+		}
+	}
+
 	/*** NEW ***/
 	@PreAuthorize("@securityAccessServiceImpl.canEditAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/dati/new")
