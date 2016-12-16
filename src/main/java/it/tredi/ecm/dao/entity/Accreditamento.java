@@ -297,6 +297,13 @@ public class Accreditamento extends BaseEntity{
 		return 0L;
 	}
 
+	public File getFileForProtocollo(){
+		for(File f : datiAccreditamento.getFiles())
+			if(f.isDICHIARAZIONELEGALE())
+				return f;
+		return null;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

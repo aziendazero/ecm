@@ -10,7 +10,7 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.modifica} + ' ' + #{label.dati_attività}">Dati relativi all’attività</h2>
+						<h2 th:text="#{__${title}__}">Dati relativi all’attività</h2>
 						<div class="pull-right buttons-header">
 							<th:block th:unless="${#lists.isEmpty(datiAccreditamentoWrapper.idEditabili)}">
 								<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
@@ -20,7 +20,7 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<th:block th:include="accreditamento/datiAccreditamentoFragment :: datiAccreditamento('edit')"></th:block>
+					<th:block th:include="accreditamento/datiAccreditamentoFragment :: datiAccreditamento('edit', ${sezione})"></th:block>
 
 				</div>
 			</div>
