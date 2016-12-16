@@ -648,8 +648,11 @@ public class AccreditamentoController {
 			componentiComitatoScientificoStati.put(p.getId(), false);
 		}
 		//aggiungo anche il coordinatore
-		Long coordinatoreId = accreditamentoWrapper.getCoordinatoreComitatoScientifico().getId();
-		mappaCoordinatore = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), coordinatoreId);
+
+		if(accreditamentoWrapper.getCoordinatoreComitatoScientifico() != null){
+			Long coordinatoreId = accreditamentoWrapper.getCoordinatoreComitatoScientifico().getId();
+			mappaCoordinatore = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), coordinatoreId);
+		}
 
 		//aggiungo gli eventi
 		for(EventoPianoFormativo e : accreditamentoWrapper.getAccreditamento().getPianoFormativo().getEventiPianoFormativo()) {

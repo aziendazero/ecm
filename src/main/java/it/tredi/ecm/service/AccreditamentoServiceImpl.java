@@ -446,6 +446,21 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			if(a.isReferee()) {
 				usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
 				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, a.getId());
+
+				//TODO potrebbe spaccarsi perchè esistono gia - setta i campi valutati positivamente di default
+				Set<FieldValutazioneAccreditamento> defaults = fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento);
+				for(FieldValutazioneAccreditamento f : valutazione.getValutazioni()){
+					defaults.removeIf(field -> (
+													field.getIdField() == f.getIdField() &&
+													field.getObjectReference() == f.getObjectReference() &&
+													field.getAccreditamento().getId() == f.getAccreditamento().getId()
+													)
+										);
+				}
+
+				if(!defaults.isEmpty())
+					valutazione.getValutazioni().addAll(defaults);
+
 				valutazione.setDataValutazione(null);
 				valutazioneService.save(valutazione);
 				emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
