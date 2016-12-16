@@ -33,6 +33,7 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
@@ -183,24 +184,41 @@ public class AccreditamentoAllegatiController {
 		try {
 			//TODO getFile da testare se funziona anche senza reload
 			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
+			Set<FileEnum> fileNonCancellati = new HashSet<FileEnum>();
 			for(File file : wrapper.getFiles()){
 				if(file != null && !file.isNew()){
-					if(file.isATTOCOSTITUTIVO())
+					if(file.isATTOCOSTITUTIVO()) {
 						wrapper.setAttoCostitutivo(fileService.getFile(file.getId()));
-					else if(file.isESPERIENZAFORMAZIONE())
+						fileNonCancellati.add(FileEnum.FILE_ATTO_COSTITUTIVO);
+					}
+					else if(file.isESPERIENZAFORMAZIONE()) {
 						wrapper.setEsperienzaFormazione(fileService.getFile(file.getId()));
-					else if(file.isDICHIARAZIONELEGALE())
+						fileNonCancellati.add(FileEnum.FILE_ESPERIENZA_FORMAZIONE);
+					}
+					else if(file.isDICHIARAZIONELEGALE()) {
 						wrapper.setDichiarazioneLegale(fileService.getFile(file.getId()));
-					else if(file.isPIANOQUALITA())
+						fileNonCancellati.add(FileEnum.FILE_DICHIARAZIONE_LEGALE);
+					}
+					else if(file.isPIANOQUALITA()) {
 						wrapper.setPianoQualita(fileService.getFile(file.getId()));
-					else if(file.isUTILIZZO())
+						fileNonCancellati.add(FileEnum.FILE_PIANO_QUALITA);
+					}
+					else if(file.isUTILIZZO()) {
 						wrapper.setUtilizzo(fileService.getFile(file.getId()));
-					else if(file.isSISTEMAINFORMATICO())
+						fileNonCancellati.add(FileEnum.FILE_UTILIZZO);
+					}
+					else if(file.isSISTEMAINFORMATICO()) {
 						wrapper.setSistemaInformatico(fileService.getFile(file.getId()));
-					else if(file.isDICHIARAZIONEESCLUSIONE())
+						fileNonCancellati.add(FileEnum.FILE_SISTEMA_INFORMATICO);
+					}
+					else if(file.isDICHIARAZIONEESCLUSIONE()) {
 						wrapper.setDichiarazioneEsclusione(fileService.getFile(file.getId()));
+						fileNonCancellati.add(FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE);
+					}
 				}
 			}
+			//i files non trovati vanno rimossi perche' sono stati cancellati
+
 
 			//Ri-effettuo il detach..non sarebbe indispensabile...ma e' una precauzione a eventuali modifiche future
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
