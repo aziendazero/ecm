@@ -1288,12 +1288,13 @@ public class AccreditamentoController {
 		}
 	}
 
-	//TODO @PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
+	@PreAuthorize("@securityAccessServiceImpl.canUserPresaVisione(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/presaVisione")
 	public String presaVisione(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"));
 		try{
 			accreditamentoService.presaVisione(accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.presa_visione_success", "success"));
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);

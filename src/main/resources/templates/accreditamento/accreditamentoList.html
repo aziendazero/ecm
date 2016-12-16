@@ -36,20 +36,20 @@
 									<th th:text="#{label.accreditamento_tipo}">Tipo</th>
 									<th th:text="#{label.inserito_da}">inserito_da</th>
 									<th th:text="#{label.codiceFiscaleOrIVAProvider}">cf/piva</th>
-									<th th:text="#{label.gruppo_appartenenza}">Gruppo di appartenenza</th>
+									<th th:text="#{label.gruppo}">Gruppo di appartenenza</th>
 									<th th:text="#{label.accreditamento_stato}">Stato</th>
-									<th:block th:unless="${#authentication.principal.hasProfile('REFEREE')}">
-										<th th:text="#{label.accreditamento_invio}">Data invio</th>
-										<th th:text="#{label.accreditamento_valutazione_segreteria}">Datavalidazione</th>
-										<th th:text="#{label.accreditamento_scadenza}">Scadenza</th>
-									</th:block>
+
+									<th th:text="#{label.accreditamento_validazione}">Data invio</th>
+									<th th:text="#{label.accreditamento_scadenza}">Scadenza</th>
+									<th th:text="#{label.accreditamento_data_inizio}">Scadenza</th>
+									<th th:text="#{label.accreditamento_fine}">Fine accreditamento</th>
+
 									<th th:if="${mappaCarica != null}" th:text="#{label.lista_valutatori}">Lista Valutatori</th>
 									<th th:if="${#authentication.principal.isReferee() and mappaScadenze != null}" th:text="#{label.scadenza_valutazione}">scadenza</th>
-									<th th:text="#{label.accreditamento_fine}">Fine accreditamento</th>
 								</tr>
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(accreditamentoList)}" th:remove="all-but-first">
-								<tr th:each="accreditamento : ${accreditamentoList}">
+								<tr class="text-center" th:each="accreditamento : ${accreditamentoList}">
 									<td><a th:href="@{|/accreditamento/${accreditamento.id}/show|}" th:text="${accreditamento.tipoDomanda.nome}">Provvisorio/Standard</a></td>
 									<td th:text="${accreditamento.provider.denominazioneLegale}">Provvisorio/Standard</td>
 									<td>
@@ -58,19 +58,17 @@
 									</td>
 									<td th:text="${accreditamento.provider.gruppo}">informatica</td>
 									<td th:text="${accreditamento.stato.nome}">Accettata</td>
-									<th:block th:unless="${#authentication.principal.hasProfile('REFEREE')}">
-										<td th:text="${accreditamento.dataInvio == null} ? '' : ${#temporals.format(accreditamento.dataInvio, 'dd/MM/yyyy')}">22/05/2014</td>
-										<td th:text="${accreditamento.dataValutazioneCrecm  == null} ? '' : ${#temporals.format(accreditamento.dataValutazioneCrecm, 'dd/MM/yyyy')}">24/05/2014</td>
-										<td th:text="${accreditamento.dataScadenza  == null} ? '' : ${#temporals.format(accreditamento.dataScadenza, 'dd/MM/yyyy')}">24/05/2016</td>
-									</th:block>
+
+									<td th:text="${accreditamento.dataInvio == null} ? '' : ${#temporals.format(accreditamento.dataInvio, 'dd/MM/yyyy')}">22/05/2014</td>
+									<td th:text="${accreditamento.dataScadenza  == null} ? '' : ${#temporals.format(accreditamento.dataScadenza, 'dd/MM/yyyy')}">24/05/2016</td>
+									<td th:text="${accreditamento.dataInizioAccreditamento == null} ? '' : ${#temporals.format(accreditamento.dataInizioAccreditamento, 'dd/MM/yyyy')}"></td>
+									<td th:text="${accreditamento.dataFineAccreditamento == null} ? '' : ${#temporals.format(accreditamento.dataFineAccreditamento, 'dd/MM/yyyy')}"></td>
+
 									<td th:if="${mappaCarica != null}">
 										<div th:unless="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:each="valutatore, row : ${mappaCarica.get(accreditamento.id)}" class="valutatore" th:text="${valutatore.isSegreteria() ? 'Segreteria ECM - ' : 'Referee - '} + ${valutatore.getFullName()}"></div>
 										<div th:if="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:text="#{label.da_prendere_in_carica}" class="danger"></div>
 									</td>
 									<td th:if="${#authentication.principal.isReferee() and mappaScadenze != null and mappaScadenze.get(accreditamento.id) != null}" th:text="${#temporals.format(mappaScadenze.get(accreditamento.id), 'dd/MM/yyyy')}"></td>
-									<td>
-										<span th:text="${accreditamento.dataFineAccreditamento == null} ? '' : ${#temporals.format(accreditamento.dataFineAccreditamento, 'dd/MM/yyyy')}"></span>
-									</td>
 								</tr>
 							</tbody>
 						</table>

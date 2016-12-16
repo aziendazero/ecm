@@ -241,6 +241,24 @@ public class DatiAccreditamentoController {
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
 			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(wrapper.getAccreditamentoId());
 			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+				/*
+				 * 20161216 abarducci
+				 * correzzione bug POST /accreditamento/3445/dati/save
+				 * org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: it.tredi.ecm.dao.entity.File.fileData, could not initialize proxy - no Session
+				 * at it.tredi.ecm.dao.entity.File.getData(File.java:81)
+				 * at it.tredi.ecm.web.validator.FileValidator.validateData(FileValidator.java:40)
+				 * at it.tredi.ecm.web.validator.FileValidator.validate(FileValidator.java:30)
+				 * at it.tredi.ecm.web.validator.FileValidator.validateWithCondition(FileValidator.java:114)
+				 * at it.tredi.ecm.web.validator.DatiAccreditamentoValidator.validateFilesConCondizione(DatiAccreditamentoValidator.java:85)
+				 * at it.tredi.ecm.web.validator.DatiAccreditamentoValidator.validate(DatiAccreditamentoValidator.java:26)
+				 * che si verifica in INTEGRAZIONE e PREAVVISO_RIGETTO a causa del successivo detach (vedi sotto)
+				 * integrazioneService.detach(wrapper.getDatiAccreditamento());
+				 * che detach anche i file restituiti da wrapper.getFiles() causando l'eccezione in validazione sul campo file.getFileData() che risulta lazy
+				 */
+				for(File file: wrapper.getFiles()) {
+					if(file != null && !file.isNew())
+						file.getFileData().size();
+				}
 				integrazioneService.detach(wrapper.getDatiAccreditamento());
 //TODO - TEST
 //				integrazioneService.detach(wrapper.getProvider());

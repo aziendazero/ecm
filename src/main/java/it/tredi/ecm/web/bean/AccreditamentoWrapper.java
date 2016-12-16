@@ -83,7 +83,7 @@ public class AccreditamentoWrapper {
 	private boolean dichiarazioneLegaleStato;
 	private boolean dichiarazioneEsclusioneStato;
 
-	private boolean valutazioneSulCampoStato;
+	private boolean valutazioneSulCampoStato = false;
 	private boolean sottoscriventeStato;
 
 	private boolean tuttiEventiValutati = true;
@@ -338,7 +338,7 @@ public class AccreditamentoWrapper {
 					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__VERIFICA_APPRENDIMENTO));
 
 
-				if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() != null) {
+				if(verbaleValutazioneSulCampo != null && verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() != null) {
 					if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante()) {
 						if(verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
 							sottoscriventeStato = true;

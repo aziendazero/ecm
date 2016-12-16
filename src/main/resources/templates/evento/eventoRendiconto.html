@@ -21,7 +21,7 @@
 			</div>
 		</div>
 
-		<h2 class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.upload_sponsor_before}"></h2>
+		<h2 th:if="${eventoWrapper.evento.canDoUploadSponsor()}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.upload_sponsor_before}"></h2>
 
 		<div class="row">
 

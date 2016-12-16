@@ -289,6 +289,11 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	}
 
 	@Override
+	public boolean canUserPresaVisione(CurrentUser currentUser, Long accreditamentoId) throws Exception {
+		return accreditamentoService.canUserPresaVisione(accreditamentoId, currentUser);
+	}
+
+	@Override
 	public boolean canShowSeduta(CurrentUser currentUser) {
 		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm())
 			return true;
