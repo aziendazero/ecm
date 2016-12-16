@@ -261,4 +261,21 @@ public enum IdFieldEnum {
 		}
 		return ids;
 	}
+
+	public static Set<IdFieldEnum> getAllFromIdToId(int i, int j) {
+		Set<IdFieldEnum> ids = new HashSet<IdFieldEnum>();
+		for(int x = i; x <= j; x++){
+			IdFieldEnum id = getIdFieldFromIdEcm(x);
+			ids.add(id);
+		}
+		return ids;
+	}
+
+	public static IdFieldEnum getIdFieldFromIdEcm(int i) {
+		for(IdFieldEnum e : IdFieldEnum.values()){
+			if(e.getIdEcm() == i)
+				return e;
+		}
+		return null;
+	}
 }

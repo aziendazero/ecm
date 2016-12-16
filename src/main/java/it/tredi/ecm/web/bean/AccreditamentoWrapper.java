@@ -24,6 +24,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
@@ -325,39 +326,51 @@ public class AccreditamentoWrapper {
 			dichiarazioneLegaleStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE);
 			dichiarazioneEsclusioneStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE);
 
-			valutazioneSulCampoStato = (mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PIANO_FORMATIVO) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__IDONEITA_SEDE) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RELAZIONE_ANNUALE) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PERCEZIONE_INTERESSE_COMMERICALE_SANITA) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__SCHEDA_QUALITA_PERCEPITA) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PRESENZA_PARTECIPANTI) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RECLUTAMENTO_DIRETTO) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__VERIFICA_APPRENDIMENTO));
+			//TODO l'ha fatto anche Barduz ma non l'ha committato (DISONORE BARDUZ)... OCCHIO COL MERGE
+			if(accreditamento.isValutazioneSulCampo()) {
+				valutazioneSulCampoStato = (mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PIANO_FORMATIVO) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__IDONEITA_SEDE) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RELAZIONE_ANNUALE) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PERCEZIONE_INTERESSE_COMMERICALE_SANITA) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__SCHEDA_QUALITA_PERCEPITA) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PRESENZA_PARTECIPANTI) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RECLUTAMENTO_DIRETTO) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__VERIFICA_APPRENDIMENTO));
 
-			if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() != null) {
-				if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante()) {
-					if(verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
-						sottoscriventeStato = true;
-					else
-						sottoscriventeStato = false;
-				}
-				else {
-					if((verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
-						&& verbaleValutazioneSulCampo.getDelegato() != null) {
-						sottoscriventeStato = true;
+
+				if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() != null) {
+					if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante()) {
+						if(verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
+							sottoscriventeStato = true;
+						else
+							sottoscriventeStato = false;
 					}
-					else
-						sottoscriventeStato = false;
+					else {
+						if((verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
+							&& verbaleValutazioneSulCampo.getDelegato() != null) {
+							sottoscriventeStato = true;
+						}
+						else
+							sottoscriventeStato = false;
+					}
 				}
+				else
+					sottoscriventeStato = false;
 			}
-			else
-				sottoscriventeStato = false;
 
 			//check valutazione dei multistanza
 
 			//componenti comitato scientifico N.B. NON controlla bene tutti i FieldValutazione come gli altri per semplicità TODO decidere se implementare o se semplificare anche le altre
 			for (Persona p : componentiComitatoScientifico) {
-				if(mappaComponenti.get(p.getId()) != null && !mappaComponenti.get(p.getId()).isEmpty())
+				boolean fullValutato = (mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) &&
+						mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) &&
+						mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) &&
+						mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO) &&
+						mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL) &&
+						mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE) &&
+						mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA) &&
+						mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV));
+				if(mappaComponenti.get(p.getId()) != null && fullValutato)
 					componentiComitatoScientificoStati.replace(p.getId(), true);
 			};
 
@@ -368,7 +381,15 @@ public class AccreditamentoWrapper {
 			};
 
 			//controllo anche il coordinatore N.B. stesso discorso dei componenti
-			coordinatoreComitatoScientificoStato = (mappaCoordinatore != null && !mappaCoordinatore.isEmpty()) ? true : false;
+			boolean coordinatoreFullValutato = (mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) &&
+					mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) &&
+					mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) &&
+					mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO) &&
+					mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL) &&
+					mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE) &&
+					mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA) &&
+					mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV));
+			coordinatoreComitatoScientificoStato = (mappaCoordinatore != null && coordinatoreFullValutato) ? true : false;
 
 			//controllo anche la sede legale N.B. stesso discorso delle sedi
 			sedeLegaleStato = (mappaSedeLegale != null && !mappaSedeLegale.isEmpty()) ? true : false;

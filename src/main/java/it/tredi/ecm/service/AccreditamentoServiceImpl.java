@@ -318,6 +318,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
 				for (Account a : refereeGroup) {
 					Valutazione valutazioneReferee = new Valutazione();
+					//setta i campi valutati positivamente di default
+					valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
 					valutazioneReferee.setAccount(a);
 					valutazioneReferee.setAccreditamento(accreditamento);
 					valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
@@ -391,6 +393,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
 		for (Account a : refereeGroup) {
 			Valutazione valutazioneReferee = new Valutazione();
+			//setta i campi valutati positivamente di default
+			valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
 			valutazioneReferee.setAccount(a);
 			valutazioneReferee.setAccreditamento(accreditamento);
 			valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
@@ -1084,6 +1088,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//}
 
 		Valutazione valutazione = new Valutazione();
+
+		//setta i campi valutati positivamente di default
+		valutazione.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
 
 		//utente corrente che prende in carico
 		Account segretarioEcm = currentUser.getAccount();

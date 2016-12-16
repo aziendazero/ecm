@@ -2,6 +2,7 @@ package it.tredi.ecm.service;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -124,5 +129,148 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		LOGGER.debug(Utils.getLogMessage("Recupero la valutazione attiva della segreteria per l'accreditamento id: " + accreditamentoId));
 		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
 		return valutazioneSegreteria.getValutazioni();
+	}
+
+	@Override
+	public Set<FieldValutazioneAccreditamento> getValutazioniDefault(Accreditamento accreditamento) {
+		Set<FieldValutazioneAccreditamento> defaults = new HashSet<FieldValutazioneAccreditamento>();
+
+		/*DATI DELL'ORGANIZZATORE (TAB1)*/
+		//provider
+		for(IdFieldEnum idFEProvider : IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER)) {
+			if(idFEProvider.getIdEcm() != -1) {
+				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+				field.setAccreditamento(accreditamento);
+				field.setEsito(true);
+				field.setIdField(idFEProvider);
+				save(field);
+				defaults.add(field);
+			}
+		}
+		//legale rappresentante
+		for(IdFieldEnum idFELegale : IdFieldEnum.getAllFromIdToId(9, 15)) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(idFELegale);
+			save(field);
+			defaults.add(field);
+		}
+		//delegato legale rappresentante
+		if(accreditamento.getProvider().getDelegatoLegaleRappresentante() != null) {
+			for(IdFieldEnum idFEDelegato: IdFieldEnum.getAllFromIdToId(18, 23)) {
+				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+				field.setAccreditamento(accreditamento);
+				field.setEsito(true);
+				field.setIdField(idFEDelegato);
+				save(field);
+				defaults.add(field);
+			}
+		}
+		//sedi
+		for(Sede sede : accreditamento.getProvider().getSedi()) {
+			for(IdFieldEnum idFESede : IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE)) {
+				if(idFESede.getIdEcm() != -1) {
+					FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+					field.setAccreditamento(accreditamento);
+					field.setEsito(true);
+					field.setIdField(idFESede);
+					field.setObjectReference(sede.getId());
+					save(field);
+					defaults.add(field);
+				}
+			}
+		}
+		//dati accreditamento
+		for(IdFieldEnum idFEDati : IdFieldEnum.getAllFromIdToId(33, 36)) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(idFEDati);
+			save(field);
+			defaults.add(field);
+		}
+
+		/*DATI DEI RESPONSABILI*/
+		//resp. segreteria
+		for(IdFieldEnum idFERespSegre : IdFieldEnum.getAllFromIdToId(44, 48)) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(idFERespSegre);
+			save(field);
+			defaults.add(field);
+		}
+		//resp. amministrazione
+		for(IdFieldEnum idFERespAmm : IdFieldEnum.getAllFromIdToId(51, 55)) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(idFERespAmm);
+			save(field);
+			defaults.add(field);
+		}
+		//resp. sis. informatico
+		for(IdFieldEnum idFERespSisInfo : IdFieldEnum.getAllFromIdToId(58, 62)) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(idFERespSisInfo);
+			save(field);
+			defaults.add(field);
+		}
+		//resp. qualità
+		for(IdFieldEnum idFERespQual : IdFieldEnum.getAllFromIdToId(65, 69)) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(idFERespQual);
+			save(field);
+			defaults.add(field);
+		}
+		//componenti comitato
+		for(Persona persona : accreditamento.getProvider().getComponentiComitatoScientifico()) {
+			for(IdFieldEnum idFECompScie : IdFieldEnum.getAllFromIdToId(72, 76)) {
+				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+				field.setAccreditamento(accreditamento);
+				field.setEsito(true);
+				field.setIdField(idFECompScie);
+				field.setObjectReference(persona.getId());
+				save(field);
+				defaults.add(field);
+			}
+		}
+
+		/*ALLEGATI*/
+		//allegati
+		boolean noDichiarazioneEsclusione = true;
+		boolean noEsperienzaFormazione = true;
+		for(File file : accreditamento.getDatiAccreditamento().getFiles()) {
+			if(file.isDICHIARAZIONEESCLUSIONE())
+				noDichiarazioneEsclusione = false;
+			if(file.isESPERIENZAFORMAZIONE())
+				noEsperienzaFormazione = false;
+			if(accreditamento.isStandard()) {
+				//TODO nuovi allegati facoltativi standard
+			}
+		}
+		if(noDichiarazioneEsclusione) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE);
+			save(field);
+			defaults.add(field);
+		}
+		if(noEsperienzaFormazione) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE);
+			save(field);
+			defaults.add(field);
+		}
+
+		return defaults;
 	}
 }
