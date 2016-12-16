@@ -205,8 +205,32 @@ public class AccreditamentoAllegatiController {
 			//Ri-effettuo il detach..non sarebbe indispensabile...ma e' una precauzione a eventuali modifiche future
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
 			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(wrapper.getAccreditamentoId());
-			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
+				/*
+				 * 20161216 abarducci
+				 * correzzione ERROR - it.tredi.ecm.web.AccreditamentoAllegatiController - [provider4] - POST /accreditamento/3445/allegati/save
+				 * org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: it.tredi.ecm.dao.entity.File.fileData, could not initialize proxy - no Session
+				 * at org.hibernate.collection.internal.AbstractPersistentCollection.throwLazyInitializationException(AbstractPersistentCollection.java:576)
+				 * at org.hibernate.collection.internal.AbstractPersistentCollection.withTemporarySessionIfNeeded(AbstractPersistentCollection.java:215)
+				 * at org.hibernate.collection.internal.AbstractPersistentCollection.readSize(AbstractPersistentCollection.java:156)
+				 * at org.hibernate.collection.internal.PersistentBag.isEmpty(PersistentBag.java:283)
+				 * at it.tredi.ecm.dao.entity.File.getData(File.java:81)
+				 * at it.tredi.ecm.web.validator.FileValidator.validateData(FileValidator.java:40)
+				 * at it.tredi.ecm.web.validator.FileValidator.validate(FileValidator.java:30)
+				 * at it.tredi.ecm.web.validator.AccreditamentoAllegatiValidator.validateFiles(AccreditamentoAllegatiValidator.java:69)
+				 * at it.tredi.ecm.web.validator.AccreditamentoAllegatiValidator.validate(AccreditamentoAllegatiValidator.java:28)
+				 * at it.tredi.ecm.web.AccreditamentoAllegatiController.saveAllegatiAccreditamento(AccreditamentoAllegatiController.java:214)
+				 * at it.tredi.ecm.web.AccreditamentoAllegatiController$$FastClassBySpringCGLIB$$816a8258.invoke(<generated>)
+				 * che si verifica in INTEGRAZIONE e PREAVVISO_RIGETTO a causa del successivo detach (vedi sotto)
+				 * integrazioneService.detach(wrapper.getDatiAccreditamento());
+				 * che detach anche i file restituiti da wrapper.getFiles() causando l'eccezione in validazione sul campo file.getFileData() che risulta lazy
+				 */
+				for(File file: wrapper.getFiles()) {
+					if(file != null && !file.isNew())
+						file.getFileData().size();
+				}
 				integrazioneService.detach(wrapper.getDatiAccreditamento());
+			}
 
 			LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: AccreditamentoAllegatiSave:__AFTER SET__"));
 			integrazioneService.isManaged(wrapper.getDatiAccreditamento());

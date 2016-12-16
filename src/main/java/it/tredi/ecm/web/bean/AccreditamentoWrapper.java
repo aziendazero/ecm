@@ -82,7 +82,7 @@ public class AccreditamentoWrapper {
 	private boolean dichiarazioneLegaleStato;
 	private boolean dichiarazioneEsclusioneStato;
 
-	private boolean valutazioneSulCampoStato;
+	private boolean valutazioneSulCampoStato = false;
 	private boolean sottoscriventeStato;
 
 	private boolean tuttiEventiValutati = true;
@@ -325,34 +325,35 @@ public class AccreditamentoWrapper {
 			dichiarazioneLegaleStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE);
 			dichiarazioneEsclusioneStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE);
 
-			valutazioneSulCampoStato = (mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PIANO_FORMATIVO) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__IDONEITA_SEDE) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RELAZIONE_ANNUALE) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PERCEZIONE_INTERESSE_COMMERICALE_SANITA) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__SCHEDA_QUALITA_PERCEPITA) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PRESENZA_PARTECIPANTI) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RECLUTAMENTO_DIRETTO) &&
-				mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__VERIFICA_APPRENDIMENTO));
+			if(accreditamento.isStandard()) {
+				valutazioneSulCampoStato = (mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PIANO_FORMATIVO) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__IDONEITA_SEDE) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RELAZIONE_ANNUALE) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PERCEZIONE_INTERESSE_COMMERICALE_SANITA) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__SCHEDA_QUALITA_PERCEPITA) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PRESENZA_PARTECIPANTI) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__RECLUTAMENTO_DIRETTO) &&
+					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__VERIFICA_APPRENDIMENTO));
 
-			if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() != null) {
-				if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante()) {
-					if(verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
-						sottoscriventeStato = true;
-					else
-						sottoscriventeStato = false;
-				}
-				else {
-					if((verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
-						&& verbaleValutazioneSulCampo.getDelegato() != null) {
-						sottoscriventeStato = true;
+				if(verbaleValutazioneSulCampo != null && verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() != null) {
+					if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante()) {
+						if(verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
+							sottoscriventeStato = true;
+						else
+							sottoscriventeStato = false;
 					}
-					else
-						sottoscriventeStato = false;
+					else {
+						if((verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
+							&& verbaleValutazioneSulCampo.getDelegato() != null) {
+							sottoscriventeStato = true;
+						}
+						else
+							sottoscriventeStato = false;
+					}
 				}
+				else
+					sottoscriventeStato = false;
 			}
-			else
-				sottoscriventeStato = false;
-
 			//check valutazione dei multistanza
 
 			//componenti comitato scientifico N.B. NON controlla bene tutti i FieldValutazione come gli altri per semplicità TODO decidere se implementare o se semplificare anche le altre
