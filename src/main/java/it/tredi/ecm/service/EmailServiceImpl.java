@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -256,6 +257,29 @@ public class EmailServiceImpl implements EmailService {
 		for(String dst : alert.getDestinatari()){
 			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
 		}
+	}
 
+	@Override
+	public void inviaNotificaATeamLeader(String referee, String provider) throws Exception {
+		LOGGER.info("Invio notifica a Team Leader");
+		Context context = new Context();
+		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
+		context.setVariable("provider", provider);
+		String message = templateEngine.process("assegnaDomandaTeamLeader", context);
+
+		send(ecmProperties.getEmailSegreteriaEcm(), referee, "Assegnamento Domanda da Valutare", message, true);
+	}
+
+	@Override
+	public void inviaConvocazioneValutazioneSulCampo(Set<String> valutatori, LocalDate data, String provider) throws Exception {
+		LOGGER.info("Invio convocazione Valutazione Sul Campo");
+		Context context = new Context();
+		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
+		context.setVariable("data", data);
+		String message = templateEngine.process("convocazioneValutazioneSulCampo", context);
+
+		for(String email : valutatori){
+			send(ecmProperties.getEmailSegreteriaEcm(),email, "Convocazione Valutazione Sul Campo", message, true);
+		}
 	}
 }

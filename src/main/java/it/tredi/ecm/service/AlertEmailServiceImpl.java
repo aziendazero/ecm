@@ -259,7 +259,7 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 	public void creaAlertInvioDomandaStandardForProvider(Provider provider) {
 		LOGGER.info("Creazione Alert per Invio Domanda Standard");
 		LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(provider.getDataScadenzaInsertAccreditamentoStandard());
-		dataScadenza = dataScadenza.minusDays(15);
+		dataScadenza = dataScadenza.minusDays(30);
 		AlertTipoEnum tipo = AlertTipoEnum.SCADENZA_COMPILAZIONE_DOMANDA_ACCREDITAMENTO_STANDARD;
 
 		if(!checkIfExistForProvider(tipo, provider.getId(), dataScadenza))

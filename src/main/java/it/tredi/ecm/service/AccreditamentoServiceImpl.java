@@ -114,7 +114,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				save(accreditamento);
 				return accreditamento;
 			}else{
-				throw new Exception("E' già presente una domanda di accreditamento " + tipoDomanda + " per il provider " + provider.getId());
+				throw new Exception("Il provider " + provider.getId() + " non può presentare una domanda di accreditamento " + tipoDomanda);
 			}
 		}
 	}
@@ -195,6 +195,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//per le domande standard è innanzitutto necessario che la segreteria abiliti il provider
 		if(tipoTomanda == AccreditamentoTipoEnum.STANDARD){
 			if(!providerService.canInsertAccreditamentoStandard(providerId)){
+				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> " + "Non Abilitato"));
 				return false;
 			}
 		}
@@ -355,6 +356,22 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			verbale.setValutatore(Utils.getAuthenticatedUser().getAccount());
 			accreditamento.setVerbaleValutazioneSulCampo(verbale);
 			accreditamentoRepository.save(accreditamento);
+
+			//è qui che è stata settala la data di valutazione del verbale e tutti i suoi componenti???
+			Set<String> dst = new HashSet<String>();
+			if(verbale != null){
+				if(verbale.getTeamLeader() != null)
+					dst.add(verbale.getTeamLeader().getEmail());
+				if(verbale.getReferenteInformatico() != null)
+					dst.add(verbale.getReferenteInformatico().getEmail());
+
+				if(verbale.getComponentiSegreteria() != null){
+					for(Account a : verbale.getComponentiSegreteria())
+						dst.add(a.getEmail());
+				}
+				emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
+			}
+
 			workflowService.eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(accreditamento, verbale.getTeamLeader().getUsernameWorkflow());
 		}
 	}

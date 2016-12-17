@@ -232,9 +232,15 @@ public class AccreditamentoWrapper {
 			legaleRappresentanteStato = (legaleRappresentante != null && !legaleRappresentante.isNew() && legaleRappresentante.getAnagrafica().getCellulare() != null && !legaleRappresentante.getAnagrafica().getCellulare().isEmpty()) ? true : false;
 			delegatoLegaleRappresentanteStato = (delegatoLegaleRappresentante != null && !delegatoLegaleRappresentante.isNew() && delegatoLegaleRappresentante.getAnagrafica().getCellulare() != null && !delegatoLegaleRappresentante.getAnagrafica().getCellulare().isEmpty()) ? true : false;
 
-			tipologiaFormativaStato = accreditamento.getDatiAccreditamento().isTipologiaFormativaInserita();
-			datiEconomiciStato = accreditamento.getDatiAccreditamento().isDatiEconomiciInseriti();
-			datiStrutturaStato = accreditamento.getDatiAccreditamento().isDatiStrutturaInseriti();
+			if(accreditamento.getDatiAccreditamento() != null){
+				tipologiaFormativaStato = accreditamento.getDatiAccreditamento().isTipologiaFormativaInserita();
+				datiEconomiciStato = accreditamento.getDatiAccreditamento().isDatiEconomiciInseriti();
+				datiStrutturaStato = accreditamento.getDatiAccreditamento().isDatiStrutturaInseriti();
+			}else{
+				tipologiaFormativaStato = false;
+				datiEconomiciStato = false;
+				datiStrutturaStato = false;
+			}
 
 			responsabileSegreteriaStato = (responsabileSegreteria != null && !responsabileSegreteria.isNew()) ? true : false;
 			responsabileAmministrativoStato = (responsabileAmministrativo != null && !responsabileAmministrativo.isNew()) ? true : false;

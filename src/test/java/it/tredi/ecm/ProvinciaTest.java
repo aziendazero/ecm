@@ -1,6 +1,7 @@
 package it.tredi.ecm;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,31 +35,33 @@ import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.ProvinciaRepository;
 import it.tredi.ecm.service.AnagraficaEventoService;
+import it.tredi.ecm.service.EmailService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ProviderService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("abarducci")
-//@WithUserDetails("provider")
+@ActiveProfiles("demo")
+@WithUserDetails("Provider")
 @Rollback(false)
 @Ignore
 public class ProvinciaTest {
 
 	@Autowired private ProvinciaRepository provinciaReppository;
 	@Autowired private ObjectMapper jacksonObjectMapper;
-	
+	@Autowired private EmailService emailService;
+
 	@Test
 	@Transactional
 	@Ignore
 	public void loadProvincia() throws Exception {
 		//List<Provincia> province = provinciaReppository.findAll();
 		List<Provincia> province = provinciaReppository.findAllByOrderByNomeAsc();
-		
+
 		//Provincia p = provinciaReppository.findOne("001");
 		//System.out.println(p.getSigla());
-		
+
 		List<Provincia> provinceVeneto = new ArrayList<Provincia>();
 		for(Provincia prov : province) {
 			if(prov.getCodiceRegione().equals("050")) {
@@ -65,9 +69,8 @@ public class ProvinciaTest {
 				provinceVeneto.add(prov);
 			}
 		}
-		
+
 		String json = jacksonObjectMapper.writerWithView(JsonViewModel.Provincia.class).writeValueAsString(provinceVeneto);
 		System.out.println(json.replace("'", "\\'"));
-	}	
-	
+	}
 }

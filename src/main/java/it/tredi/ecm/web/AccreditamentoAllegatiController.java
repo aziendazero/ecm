@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
@@ -170,8 +171,8 @@ public class AccreditamentoAllegatiController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			redirectAttrs.addFlashAttribute("currentTab","tab3");
 			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/"+ accreditamentoId));
-			return "redirect:/accreditamento/{accreditamentoId}";
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/"+ accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
 	}
 
@@ -455,7 +456,8 @@ public class AccreditamentoAllegatiController {
 		AccreditamentoAllegatiWrapper wrapper = new AccreditamentoAllegatiWrapper();
 		wrapper.setAccreditamentoId(accreditamentoId);
 
-		Set<File> files = accreditamentoService.getAccreditamento(accreditamentoId).getDatiAccreditamento().getFiles();
+		DatiAccreditamento datiAccreditamento = accreditamentoService.getAccreditamento(accreditamentoId).getDatiAccreditamento();
+		Set<File> files = datiAccreditamento != null ? datiAccreditamento.getFiles() : new HashSet<File>();
 		for(File file : files){
 			if(file.isATTOCOSTITUTIVO())
 				wrapper.setAttoCostitutivo(file);

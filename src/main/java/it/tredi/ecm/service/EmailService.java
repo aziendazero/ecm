@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import org.springframework.mail.SimpleMailMessage;
@@ -26,4 +27,7 @@ public interface EmailService {
 	public void inviaAlertScadenzaPagamentoRendicontazioneEvento(AlertEmail alert) throws Exception;
 	public void inviaAlertScadenzaValutazioneReferee(AlertEmail alert) throws Exception;
 	public void inviaAlertScadenzaInvioAccreditamentoStandard(AlertEmail alert) throws Exception;
+
+	public void inviaNotificaATeamLeader(String referee, String provider) throws Exception;
+	public void inviaConvocazioneValutazioneSulCampo(Set<String> valutatori,LocalDate data, String provider) throws Exception;
 }

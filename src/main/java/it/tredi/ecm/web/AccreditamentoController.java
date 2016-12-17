@@ -210,8 +210,8 @@ public class AccreditamentoController {
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + id + "/show"),ex);
 			model.addAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoList"));
-			return "accreditamento/accreditamentoList";
+			LOGGER.info(Utils.getLogMessage("VIEW: /home"));
+			return "redirect:/home";
 		}
 	}
 
@@ -797,6 +797,7 @@ public class AccreditamentoController {
 				}
 			}
 			// stato VALUTAZIONE_SEGRETERIA dove valuto le integrazioni
+			//TODO manca gestione VALUTAZIONE_SEGRETERIA isStandard() -> assegnare la domanda la team leader per andare in valutazione
 			else if(accreditamento.isValutazioneSegreteria() && accreditamento.isProvvisorio()){
 
 				//validazione della valutazioneComplessiva

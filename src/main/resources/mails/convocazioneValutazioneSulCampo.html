@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title th:remove="all">Convocazione Valutazione Sul Campo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+  	<p>Gentile Componente della Commissione ECM,</p>
+  	<p>
+	  	&Egrave; stata fissata una valutazione sul campo in data <span th:text="${data == null} ? '' : ${#temporals.format(data, 'dd/MM/yyyy')}"></span> per il Provider <span th:text="${provider}"></span><br/>
+	  	&Egrave; possibile collegarsi all' <b><a th:href="${applicationBaseUrl}">applicativo gestionale ECM</a></b> per visualizzare i dettagli.
+  	</p>
+    <p>
+      Distinti Saluti, <br />
+      <em>Segreteria ECM</em>
+    </p>
+    <!--
+    <footer>
+    	<img alt="logo_ecm" th:src="|${applicationBaseUrl + '/images/logo_ecm.jpg'}|" />
+    </footer>
+     -->
+  </body>
+</html>
