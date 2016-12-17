@@ -32,6 +32,7 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
@@ -421,9 +422,23 @@ public class ProviderServiceImpl implements ProviderService {
 		List<Provider> resultFromSede = new ArrayList<Provider>();
 		List<Provider> resultFromQuotaAnnuale = new ArrayList<Provider>();
 
+		List<Provider> resultFromAccreditamentoDaScartare = new ArrayList<Provider>();
+
 		if(!query_accreditamento.isEmpty()){
 			LOGGER.info(Utils.getLogMessage("Cerca Provider: " + query_accreditamento));
 			resultFromAccreditamento = executeQuery(query_accreditamento, query_accreditamento_params, Provider.class);
+
+			//se viene selezionato solo accreditamento provvisorio fitro per quelli ke hanno SOLO il provvisorio
+			if(wrapper.getAccreditamentoTipoSelezionati() != null && wrapper.getAccreditamentoTipoSelezionati().size() == 1 && wrapper.getAccreditamentoTipoSelezionati().contains(AccreditamentoTipoEnum.PROVVISORIO)){
+				String query_accreditamento_da_scartare = "";
+				HashMap<String, Object> query_accreditamento_params_da_scartare = new HashMap<String, Object>();
+
+				query_accreditamento_da_scartare = "SELECT a.provider FROM Accreditamento a JOIN a.datiAccreditamento d JOIN d.procedureFormative pF";
+				query_accreditamento_da_scartare = Utils.QUERY_AND(query_accreditamento_da_scartare, "a.tipoDomanda IN :accreditamentoTipoSelezionati");
+				query_accreditamento_params_da_scartare.put("accreditamentoTipoSelezionati", AccreditamentoTipoEnum.STANDARD);
+				resultFromAccreditamentoDaScartare = executeQuery(query_accreditamento_da_scartare, query_accreditamento_params_da_scartare, Provider.class);
+				resultFromAccreditamento.removeAll(resultFromAccreditamentoDaScartare);
+			}
 		}
 
 		if(!query_sede.isEmpty()){
