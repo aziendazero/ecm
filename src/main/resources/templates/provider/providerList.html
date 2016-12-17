@@ -35,7 +35,7 @@
 							<tbody th:unless="${#lists.isEmpty(providerList)}" th:remove="all-but-first">
 								<tr th:each="provider : ${providerList}" th:class="${provider.gruppo == 'A'} ? 'whiteBGround' : 'yellowBGround'">
 									<td th:text="${provider.id}"></td>
-									<td class="text-full-length"><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/accreditamento/list|}">3d informatica</a></td>
+									<td><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/accreditamento/list|}">3d informatica</a></td>
 									<td th:text="${provider.tipoOrganizzatore.nome}">informatica</td>
 									<td th:text="${provider.status.nome}">stato</td>
 
