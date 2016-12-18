@@ -7,7 +7,7 @@
 <body>
 	<!-- fragment interno dei datiAccreditamento, la parte di paginazione è gestita dai file datiAccreditamentoShow e datiAccreditamentoEdit -->
 	<!-- parametri del fragment: boolean passato come parametro e prende datiAccreditamentoWrapper dal module del chiamante -->
-	<th:block th:fragment="datiAccreditamento(mode, sezione)">
+	<th:block th:fragment="datiAccreditamento(mode)">
 		<th:block th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
 			showOnly=${mode == 'show'},
@@ -40,684 +40,669 @@
 							</th:block>
 						</th:block>
 
-						<!-- tipologia foramativa -->
-						<th:block th:if="${sezione == 'tipologiaFormativa'}">
+						<!-- TIPOLOGIA ACCREDITAMENTO -->
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.tipologiaAccreditamento') : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_tipologia">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.tipologiaAccreditamento}">Accreditamento per tipologia</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="accreditamento_tipologia">
+									<div class="radio">
+										<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')) ? 'label-disabled' : ''}">
+											<input type="radio" class="flat" id="generaleTipologia"
+												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento'))}"
+												th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
+											<span th:text="#{label.generale}">Generale </span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')) ? 'label-disabled' : ''}">
+											<input type="radio" class="flat" id="settorialeTipologia"
+												name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento'))}"
+												th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Settoriale" />
+											<span th:text="#{label.settoriale}">Settoriale </span>
+										</label>
+									</div>
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="accreditamento_tipologia">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" ></div>
+								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}" />
+		                    	</div>
+							</th:block>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__]?.enabled == false}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].enabled}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].note}" th:disabled="${!canValutaDomanda or
+									!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].enabled}"></textarea>
+								</div>
+								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}"></div>
+						</div>
 
-							<!-- TIPOLOGIA ACCREDITAMENTO -->
-							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')} ? 'bad'">
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.tipologiaAccreditamento') : ''}"></label>
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_tipologia">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.tipologiaAccreditamento}">Accreditamento per tipologia</span>
-									<span th:if="${editabile}" class="required">*</span>
-								</label>
-								<th:block th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="accreditamento_tipologia">
-										<div class="radio">
-											<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')) ? 'label-disabled' : ''}">
-												<input type="radio" class="flat" id="generaleTipologia"
-													name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento'))}"
-													th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Generale" />
-												<span th:text="#{label.generale}">Generale </span>
-											</label>
-										</div>
-										<div class="radio">
-											<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')) ? 'label-disabled' : ''}">
-												<input type="radio" class="flat" id="settorialeTipologia"
-													name="tipologiaAccr" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento'))}"
-													th:field="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" th:value="Settoriale" />
-												<span th:text="#{label.settoriale}">Settoriale </span>
-											</label>
-										</div>
-									</div>
-								</th:block>
-								<th:block th:if="${showOnly or enableField}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="accreditamento_tipologia">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}" ></div>
-									</div>
-									<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-			                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}" />
-			                    	</div>
-								</th:block>
-								<th:block th:if="${valutabile}">
-			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-				              			<div th:text="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}"></div>
-			                    	</div>
-			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
-										<div class="radio">
-											<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__]?.enabled == false} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
-												${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__]?.enabled == false}" />
-												<span th:text="#{label.sì}">Sì</span>
-											</label>
-										</div>
-										<div class="radio">
-											<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].enabled} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
-												!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].enabled}" />
-												<span th:text="#{label.no}">No</span>
-											</label>
-										</div>
-									</div>
-									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-										<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].note}" th:disabled="${!canValutaDomanda or
-										!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].enabled}"></textarea>
-									</div>
-									<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__].id}" />
-			                    </th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}"></div>
-							</div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+						<!-- PROCEDURE FORMATIVE -->
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.procedureFormative') : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="procedure_formative_checkbox">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.procedure_formative_tipologia}">Procedure formative</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_checkbox">
+									<div class="checkbox" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
+										<label th:class="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Generale'  or
+																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
+																!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')) ? 'label-disabled' : ''}">
+											<input type="checkbox" class="flat" th:field="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}" th:value="${proceduraFormativa}"
+												th:disabled="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Generale'  or
+																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
+																!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative'))}" />
+											<span th:text="${proceduraFormativa.nome}">formazione residenziale (RES)</span>
+											<input type="hidden" name="datiAccreditamento.procedureFormative" th:value="${proceduraFormativa}"
+												th:disabled="${(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Settoriale') or
+																(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
+																!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative'))}"/>
+										</label>
+									</div>
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="procedure_formative_checkbox">
+									<div th:each="proceduraFormativa, row : ${proceduraFormativaList}">
+										<div class="value" th:if="${#lists.contains(datiAccreditamentoWrapper.datiAccreditamento.procedureFormative, proceduraFormativa)}" th:text="${proceduraFormativa.nome}"></div>
+									</div>
+								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}" />
+		                    	</div>
+							</th:block>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:each="proceduraFormativa, row : ${proceduraFormativaList}">
+										<div th:if="${#lists.contains(datiAccreditamentoWrapper.datiAccreditamento.procedureFormative, proceduraFormativa)}" th:text="${proceduraFormativa.nome}"></div>
+									</div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.enabled == false}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].enabled}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].note}" th:disabled="${!canValutaDomanda or
+									!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].enabled}"></textarea>
 
-							<!-- PROCEDURE FORMATIVE -->
-							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')} ? 'bad'">
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.procedureFormative') : ''}"></label>
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="procedure_formative_checkbox">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.procedure_formative_tipologia}">Procedure formative</span>
-									<span th:if="${editabile}" class="required">*</span>
-								</label>
-								<th:block th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="procedure_formative_checkbox">
-										<div class="checkbox" th:each="proceduraFormativa, row : ${proceduraFormativaList}">
-											<label th:class="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Generale'  or
-																	(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
-																	!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')) ? 'label-disabled' : ''}">
-												<input type="checkbox" class="flat" th:field="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}" th:value="${proceduraFormativa}"
-													th:disabled="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Generale'  or
-																	(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
-																	!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative'))}" />
-												<span th:text="${proceduraFormativa.nome}">formazione residenziale (RES)</span>
-												<input type="hidden" name="datiAccreditamento.procedureFormative" th:value="${proceduraFormativa}"
-													th:disabled="${(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == 'Settoriale') or
-																	(datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento == null) or
-																	!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative'))}"/>
-											</label>
-										</div>
-									</div>
-								</th:block>
-								<th:block th:if="${showOnly or enableField}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="procedure_formative_checkbox">
-										<div th:each="proceduraFormativa, row : ${proceduraFormativaList}">
-											<div class="value" th:if="${#lists.contains(datiAccreditamentoWrapper.datiAccreditamento.procedureFormative, proceduraFormativa)}" th:text="${proceduraFormativa.nome}"></div>
-										</div>
-									</div>
-									<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-			                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}" />
-			                    	</div>
-								</th:block>
-								<th:block th:if="${valutabile}">
-			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-				              			<div th:each="proceduraFormativa, row : ${proceduraFormativaList}">
-											<div th:if="${#lists.contains(datiAccreditamentoWrapper.datiAccreditamento.procedureFormative, proceduraFormativa)}" th:text="${proceduraFormativa.nome}"></div>
-										</div>
-			                    	</div>
-			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
-										<div class="radio">
-											<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.enabled == false} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
-												${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.enabled == false}" />
-												<span th:text="#{label.sì}">Sì</span>
-											</label>
-										</div>
-										<div class="radio">
-											<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].enabled} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
-												!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].enabled}" />
-												<span th:text="#{label.no}">No</span>
-											</label>
-										</div>
-									</div>
-									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-										<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].note}" th:disabled="${!canValutaDomanda or
-										!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].enabled}"></textarea>
+								</div>
+								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}"></div>
+						</div>
 
-									</div>
-									<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__].id}" />
-			                    </th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.procedureFormative')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.procedureFormative}"></div>
-							</div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+						<!-- PROFESSIONI ACCREDITAMENTO -->
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.professioniAccreditamento') : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_professioni">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioniAccreditamento}">Accreditamento per professioni</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="accreditamento_professioni">
+									<div class="radio">
+										<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')) ? 'label-disabled' : ''}">
+											<input type="radio" class="flat" id="generaleProf"
+												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
+												th:value="Generale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento'))}" />
+											<span th:text="#{label.generale}">Generale </span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')) ? 'label-disabled' : ''}">
+											<input type="radio" class="flat" id="settorialeProf"
+												name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
+												th:value="Settoriale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento'))}" />
+											<span th:text="#{label.settoriale}">Settoriale </span>
+										</label>
+									</div>
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="accreditamento_professioni">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
+								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}" />
+		                    	</div>
+							</th:block>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__]?.enabled == false}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].enabled}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].note}" th:disabled="${!canValutaDomanda or
+											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].enabled}"></textarea>
+								</div>
+								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
+						</div>
 
-							<!-- PROFESSIONI ACCREDITAMENTO -->
-							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')} ? 'bad'">
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.professioniAccreditamento') : ''}"></label>
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_professioni">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioniAccreditamento}">Accreditamento per professioni</span>
-									<span th:if="${editabile}" class="required">*</span>
-								</label>
-								<th:block th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="accreditamento_professioni">
-										<div class="radio">
-											<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')) ? 'label-disabled' : ''}">
-												<input type="radio" class="flat" id="generaleProf"
-													name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
-													th:value="Generale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento'))}" />
-												<span th:text="#{label.generale}">Generale </span>
-											</label>
-										</div>
-										<div class="radio">
-											<label th:class="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')) ? 'label-disabled' : ''}">
-												<input type="radio" class="flat" id="settorialeProf"
-													name="professioneAccr" th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"
-													th:value="Settoriale" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento'))}" />
-												<span th:text="#{label.settoriale}">Settoriale </span>
-											</label>
-										</div>
-									</div>
-								</th:block>
-								<th:block th:if="${showOnly or enableField}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="accreditamento_professioni">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
-									</div>
-									<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-			                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}" />
-			                    	</div>
-								</th:block>
-								<th:block th:if="${valutabile}">
-			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-				              			<div th:text="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
-			                    	</div>
-			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
-										<div class="radio">
-											<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__]?.enabled == false} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
-												${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__]?.enabled == false}" />
-												<span th:text="#{label.sì}">Sì</span>
-											</label>
-										</div>
-										<div class="radio">
-											<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].enabled} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
-												!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].enabled}" />
-												<span th:text="#{label.no}">No</span>
-											</label>
-										</div>
-									</div>
-									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-										<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].note}" th:disabled="${!canValutaDomanda or
-												!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].enabled}"></textarea>
-									</div>
-									<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__].id}" />
-			                    </th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
-							</div>
-
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
 
-							<!-- PROFESSIONI/DISCIPLINE -->
-							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.discipline')} ? 'bad'">
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.discipline') : ''}"></label>
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_professioni">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioni_discipline}">Professioni</span>
-									<span th:if="${editabile}" class="required">*</span>
-								</label>
-								<th:block th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="accreditamento_professioni">
-										<div class="col-xs-12 select-with-margin-container">
-											<select id="professioni" class="selectpicker required"
-												multiple="multiple" data-width="100%"
-												data-style="btn-primary" data-actions-box="true"
-												data-size="10" title="Seleziona una professione..."
-												onchange="abilitaDiscipline(this)" data-selected-text-format="count"
-												th:remove="all-but-first"
-												th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}">
-												<option th:each="professione, row: ${professioneList}"
-													th:value="${professione.id}" th:text="${professione.nome}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
-													th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniSelezionate}">Professione selezionata</option>
-											</select>
-										</div>
-										<select id="discipline" class="selectpicker required" th:field="${datiAccreditamentoWrapper.datiAccreditamento.discipline}"
+						<!-- PROFESSIONI/DISCIPLINE -->
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.discipline')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.discipline') : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="accreditamento_professioni">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.professioni_discipline}">Professioni</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="accreditamento_professioni">
+									<div class="col-xs-12 select-with-margin-container">
+										<select id="professioni" class="selectpicker required"
 											multiple="multiple" data-width="100%"
-											data-style="btn-success" data-actions-box="true"
-											data-size="10" data-hide-disabled="true" th:attr="data-editabile=${#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}"
-											title="Seleziona una disciplina..." disabled="disabled"
-											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}"
-											data-selected-text-format="count"
-											th:remove="all-but-first">
-											<optgroup class="optgroup-success" disabled="disabled"
-												th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}"
-												th:each="professione, row: ${professioneList}"
-												th:label="${professione.nome}"
-												th:remove="all-but-first">
-												<option th:each="disciplina, row: ${disciplinaList}"
-												th:if="${disciplina.professione == professione}"
-												th:value="${disciplina.id}" th:text="${disciplina.nome}">Disciplina selezionata</option>
-											</optgroup>
+											data-style="btn-primary" data-actions-box="true"
+											data-size="10" title="Seleziona una professione..."
+											onchange="abilitaDiscipline(this)" data-selected-text-format="count"
+											th:remove="all-but-first"
+											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}">
+											<option th:each="professione, row: ${professioneList}"
+												th:value="${professione.id}" th:text="${professione.nome}" th:unless="${professione.nome == 'Nessuna professione sanitaria'}"
+												th:field="${datiAccreditamentoWrapper.datiAccreditamento.professioniSelezionate}">Professione selezionata</option>
 										</select>
 									</div>
+									<select id="discipline" class="selectpicker required" th:field="${datiAccreditamentoWrapper.datiAccreditamento.discipline}"
+										multiple="multiple" data-width="100%"
+										data-style="btn-success" data-actions-box="true"
+										data-size="10" data-hide-disabled="true" th:attr="data-editabile=${#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}"
+										title="Seleziona una disciplina..." disabled="disabled"
+										th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}"
+										data-selected-text-format="count"
+										th:remove="all-but-first">
+										<optgroup class="optgroup-success" disabled="disabled"
+											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline'))}"
+											th:each="professione, row: ${professioneList}"
+											th:label="${professione.nome}"
+											th:remove="all-but-first">
+											<option th:each="disciplina, row: ${disciplinaList}"
+											th:if="${disciplina.professione == professione}"
+											th:value="${disciplina.id}" th:text="${disciplina.nome}">Disciplina selezionata</option>
+										</optgroup>
+									</select>
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly or enableField}">
+								<th:block th:if="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+										<div class="value" th:text="#{label.tutte_le_professioni}"></div>
+									</div>
+									<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    			<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}" />
+		                    		</div>
 								</th:block>
-								<th:block th:if="${showOnly or enableField}">
-									<th:block th:if="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
-										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-											<div class="value" th:text="#{label.tutte_le_professioni}"></div>
+								<th:block th:unless="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
+									<div class="row" style="clear:both; padding:2px;"></div>
+									<div class="row" style="clear:both">
+										<div class="col-md-3 col-sm-3 col-xs-11"></div>
+										<div class="col-md-6 col-sm-6 col-xs-11" id="accreditamento_professioni">
+											<table class="professioni-discipline table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline"
+												cellspacing="0" width="100%">
+												<thead>
+													<tr>
+														<th th:text="#{label.professione}">Professione</th>
+														<th th:text="#{label.disciplina}">Disciplina</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr th:each="disciplina, row: ${datiAccreditamentoWrapper.datiAccreditamento.discipline}">
+														<td th:text="${disciplina.professione.nome}"></td>
+														<td th:text="${disciplina.nome}"></td>
+													</tr>
+												</tbody>
+											</table>
+
 										</div>
 										<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
 			                    			<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}" />
 			                    		</div>
-									</th:block>
-									<th:block th:unless="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
-										<div class="row" style="clear:both; padding:2px;"></div>
-										<div class="row" style="clear:both">
-											<div class="col-md-3 col-sm-3 col-xs-11"></div>
-											<div class="col-md-6 col-sm-6 col-xs-11" id="accreditamento_professioni">
-												<table class="professioni-discipline table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline"
-													cellspacing="0" width="100%">
-													<thead>
-														<tr>
-															<th th:text="#{label.professione}">Professione</th>
-															<th th:text="#{label.disciplina}">Disciplina</th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr th:each="disciplina, row: ${datiAccreditamentoWrapper.datiAccreditamento.discipline}">
-															<td th:text="${disciplina.professione.nome}"></td>
-															<td th:text="${disciplina.nome}"></td>
-														</tr>
-													</tbody>
-												</table>
-
-											</div>
-											<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-				                    			<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}" />
-				                    		</div>
-										</div>
-									</th:block>
-								</th:block>
-								<th:block th:if="${valutabile}">
-									<th:block th:if="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
-										<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-											<div th:text="#{label.tutte_le_professioni}"></div>
-										</div>
-									</th:block>
-									<th:block th:unless="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
-				                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-					              			<button type="button" class="btn btn-default toggleButtons" th:text="#{label.mostra}" onclick="showTable()"></button>
-					              			<button type="button" class="btn btn-default toggleButtons" style="display: none;" th:text="#{label.nascondi}" onclick="showTable()"></button>
-				                    	</div>
-				                    </th:block>
-			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
-										<div class="radio">
-											<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.enabled == false} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
-												${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.enabled == false}" />
-												<span th:text="#{label.sì}">Sì</span>
-											</label>
-										</div>
-										<div class="radio">
-											<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].enabled} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
-												!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].enabled}" />
-												<span th:text="#{label.no}">No</span>
-											</label>
-										</div>
-									</div>
-									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-										<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].note}" th:disabled="${!canValutaDomanda or
-										!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].enabled}"></textarea>
-									</div>
-									<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].id}" />
-									<th:block th:unless="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
-				                    	<!-- lista professioni/discipline a scomparsa -->
-				                    	<div class="row" style="clear:both; padding:2px;"></div>
-										<div class="row" style="clear:both">
-											<div class="col-md-3 col-sm-3 col-xs-12"></div>
-											<div class="col-md-6 col-sm-6 col-xs-12" id="accreditamento_professioni" style="display: none;">
-												<table class="professioni-discipline table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline"
-													cellspacing="0" width="100%">
-													<thead>
-														<tr>
-															<th th:text="#{label.professione}">Professione</th>
-															<th th:text="#{label.disciplina}">Disciplina</th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr th:each="disciplina, row: ${datiAccreditamentoWrapper.datiAccreditamento.discipline}">
-															<td th:text="${disciplina.professione.nome}"></td>
-															<td th:text="${disciplina.nome}"></td>
-														</tr>
-													</tbody>
-												</table>
-											</div>
-										</div>
-									</th:block>
-			                    </th:block>
-			                    <div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.discipline')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.discipline}"></div>
-							</div>
-
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
-
-						</th:block>
-
-						<!-- dati economici -->
-						<th:block th:if="${sezione == 'datiEconomici'}">
-
-							<!-- FATTURATO COMPLESSIVO -->
-							<div class="item">
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'text-right col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.datiEconomici.fatturatoComplessivo') : ''}"></label>
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'col-xs-11'}">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.fatturato_complessivo_title}">Fatturato o Costi complessivi degli ultimi 3 anni</span>
-								</label>
-							</div>
-							<!-- ANNO 1 -->
-							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')} ? 'bad'">
-								<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno1_value">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno}">2016</span>
-								</label>
-								<th:block th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<input
-											th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"
-											class="form-control col-md-7 col-xs-12 optional" type="text" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}"
-											/>
 									</div>
 								</th:block>
-								<th:block th:if="${showOnly or enableField}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="costi_complessivi_anno1_value">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+							</th:block>
+							<th:block th:if="${valutabile}">
+								<th:block th:if="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
+									<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+										<div th:text="#{label.tutte_le_professioni}"></div>
 									</div>
-									<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-			                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}" />
-			                    	</div>
 								</th:block>
-								<th:block th:if="${valutabile}">
+								<th:block th:unless="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
 			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-			                    		<div>
-				              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
-			                    		</div>
-			                    		<div>
-				              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoDue} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
-			                    		</div>
-			                    		<div>
-				              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
-			                    		</div>
+				              			<button type="button" class="btn btn-default toggleButtons" th:text="#{label.mostra}" onclick="showTable()"></button>
+				              			<button type="button" class="btn btn-default toggleButtons" style="display: none;" th:text="#{label.nascondi}" onclick="showTable()"></button>
 			                    	</div>
-			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
-										<div class="radio">
-											<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__]?.enabled == false} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
-												${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__]?.enabled == false}" />
-												<span th:text="#{label.sì}">Sì</span>
-											</label>
-										</div>
-										<div class="radio">
-											<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].enabled} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
-												!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].enabled}" />
-												<span th:text="#{label.no}">No</span>
-											</label>
-										</div>
-									</div>
-									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-										<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].note}" th:disabled="${!canValutaDomanda or
-										!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].enabled}"></textarea>
-									</div>
-									<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].id}" />
 			                    </th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"></div>
-							</div>
-							<!-- ANNO 2 -->
-							<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')} ? 'bad'">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno2_value">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoDue}">2015</span>
-								</label>
-								<th:block th:with="counter=${counter}" th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<input id="costi_complessivi_anno2_value"
-											th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"
-											class="form-control col-md-7 col-xs-12 optional" type="text"
-											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}" />
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.enabled == false}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
 									</div>
-								</th:block>
-								<th:block th:unless="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].enabled}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
 									</div>
-								</th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"></div>
-							</div>
-							<!-- ANNO 3 -->
-							<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')} ? 'bad'">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno3_value">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre}">2014</span>
-								</label>
-								<th:block th:with="counter=${counter}" th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<input id="costi_complessivi_anno3_value"
-											th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"
-											class="form-control col-md-7 col-xs-12 optional" type="text"
-											data-validate-length-range="0,50" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}" />
-									</div>
-								</th:block>
-								<th:block th:unless="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
-									</div>
-								</th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></div>
-							</div>
-
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
-
-							<!-- ALLEGATO 1 (ESTRATTO DEL BILANCIO COMPLESSIVO) -->
-							<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${!showOnly ? 'estrattoBilancioComplessivo' : null}, null, ${editabile ? #messages.msg('label.required_fatturato') : null}, true, ${mode}, false)" ></th:block> -->
-							<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ESTRATTO_BILANCIO_COMPLESSIVO}', estrattoBilancioComplessivo, ${!showOnly ? 'estrattoBilancioComplessivo' : null}, null, ${editabile ? #messages.msg('label.required_fatturato') : null}, true, ${mode}, false)" ></th:block>
-
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
-
-							<!-- FATTURATO FORMAZIONE -->
-							<div class="item">
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'text-right col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.datiEconomici.fatturatoFormazione') : ''}"></label>
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'col-xs-11'}">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.fatturato_formazione_title}">Fatturato o Costi dedicati alla formazione del personale sanitario degli ultimi 3 anni (in migliaia di euro)</span>
-								</label>
-							</div>
-							<!-- ANNO 1 -->
-							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')} ? 'bad'">
-								<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno1_value">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoUno}">2016</span>
-								</label>
-								<th:block th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<input id="costi_formazione_anno1_value"
-											th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"
-											class="form-control col-md-7 col-xs-12 optional" type="text"
-											th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}" />
-									</div>
-								</th:block>
-								<th:block th:if="${showOnly or enableField}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
-									</div>
-									<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-			                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}" />
-			                    	</div>
-								</th:block>
-		 						<th:block th:if="${valutabile}">
-			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-			                    		<div>
-				              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoUno} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
-			                    		</div>
-			                    		<div>
-				              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoDue} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
-			                    		</div>
-			                    		<div>
-				              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
-			                    		</div>
-			                    	</div>
-			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
-										<div class="radio">
-											<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__]?.enabled == false} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
-												${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__]?.enabled == false}" />
-												<span th:text="#{label.sì}">Sì</span>
-											</label>
-										</div>
-										<div class="radio">
-											<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].enabled} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
-												!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].enabled}" />
-												<span th:text="#{label.no}">No</span>
-											</label>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].note}" th:disabled="${!canValutaDomanda or
+									!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].enabled}"></textarea>
+								</div>
+								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__].id}" />
+								<th:block th:unless="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
+			                    	<!-- lista professioni/discipline a scomparsa -->
+			                    	<div class="row" style="clear:both; padding:2px;"></div>
+									<div class="row" style="clear:both">
+										<div class="col-md-3 col-sm-3 col-xs-12"></div>
+										<div class="col-md-6 col-sm-6 col-xs-12" id="accreditamento_professioni" style="display: none;">
+											<table class="professioni-discipline table table-striped table-bordered dt-responsive nowrap datatable-responsive-discipline"
+												cellspacing="0" width="100%">
+												<thead>
+													<tr>
+														<th th:text="#{label.professione}">Professione</th>
+														<th th:text="#{label.disciplina}">Disciplina</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr th:each="disciplina, row: ${datiAccreditamentoWrapper.datiAccreditamento.discipline}">
+														<td th:text="${disciplina.professione.nome}"></td>
+														<td th:text="${disciplina.nome}"></td>
+													</tr>
+												</tbody>
+											</table>
 										</div>
 									</div>
-									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-										<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].note}" th:disabled="${!canValutaDomanda or
-										!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].enabled}"></textarea>
-									</div>
-									<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].id}" />
-			                    </th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"></div>
-							</div>
-							<!-- ANNO 2 -->
-							<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')} ? 'bad'">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno2_value">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoDue}">2015</span>
-								</label>
-								<th:block th:with="counter=${counter}" th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<input id="costi_formazione_anno2_value"
-											th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"
-											class="form-control col-md-7 col-xs-12 optional" type="text"
-											data-validate-length-range="0,50" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}"/>
-									</div>
 								</th:block>
-								<th:block th:unless="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+		                    </th:block>
+		                    <div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.discipline')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.discipline}"></div>
+						</div>
+
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+
+						<!-- FATTURATO COMPLESSIVO -->
+						<div class="item">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'text-right col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.datiEconomici.fatturatoComplessivo') : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'col-xs-11'}">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.fatturato_complessivo_title}">Fatturato o Costi complessivi degli ultimi 3 anni</span>
+							</label>
+						</div>
+						<!-- ANNO 1 -->
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')} ? 'bad'">
+							<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno1_value">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno}">2016</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input
+										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"
+										class="form-control col-md-7 col-xs-12 optional" type="text" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}"
+										/>
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="costi_complessivi_anno1_value">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}" />
+		                    	</div>
+							</th:block>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+		                    		<div>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoUno} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
+		                    		</div>
+		                    		<div>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoDue} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
+		                    		</div>
+		                    		<div>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
+		                    		</div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__]?.enabled == false}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
 									</div>
-								</th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"></div>
-							</div>
-							<!-- ANNO 3 -->
-							<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')} ? 'bad'">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno3_value">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre}">2014</span>
-								</label>
-								<th:block th:with="counter=${counter}" th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<input id="costi_formazione_anno3_value"
-											th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"
-											class="form-control col-md-7 col-xs-12 optional" type="text"
-											data-validate-length-range="0,50" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}" />
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].enabled}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
 									</div>
-								</th:block>
-								<th:block th:unless="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].note}" th:disabled="${!canValutaDomanda or
+									!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].enabled}"></textarea>
+								</div>
+								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno}"></div>
+						</div>
+						<!-- ANNO 2 -->
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno2_value">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoDue}">2015</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="costi_complessivi_anno2_value"
+										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"
+										class="form-control col-md-7 col-xs-12 optional" type="text"
+										th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}" />
+								</div>
+							</th:block>
+							<th:block th:unless="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreDue}"></div>
+						</div>
+						<!-- ANNO 3 -->
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_complessivi_anno3_value">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre}">2014</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="costi_complessivi_anno3_value"
+										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"
+										class="form-control col-md-7 col-xs-12 optional" type="text"
+										data-validate-length-range="0,50" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo'))}" />
+								</div>
+							</th:block>
+							<th:block th:unless="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre}"></div>
+						</div>
+
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+
+						<!-- ALLEGATO 1 (ESTRATTO DEL BILANCIO COMPLESSIVO) -->
+						<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioComplessivo, ${!showOnly ? 'estrattoBilancioComplessivo' : null}, null, ${editabile ? #messages.msg('label.required_fatturato') : null}, true, ${mode}, false)" ></th:block> -->
+						<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ESTRATTO_BILANCIO_COMPLESSIVO}', estrattoBilancioComplessivo, ${!showOnly ? 'estrattoBilancioComplessivo' : null}, null, ${editabile ? #messages.msg('label.required_fatturato') : null}, true, ${mode}, false)" ></th:block>
+
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+
+						<!-- FATTURATO FORMAZIONE -->
+						<div class="item">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'text-right col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.datiEconomici.fatturatoFormazione') : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'col-xs-11'}">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.fatturato_formazione_title}">Fatturato o Costi dedicati alla formazione del personale sanitario degli ultimi 3 anni (in migliaia di euro)</span>
+							</label>
+						</div>
+						<!-- ANNO 1 -->
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')} ? 'bad'">
+							<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno1_value">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoUno}">2016</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="costi_formazione_anno1_value"
+										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"
+										class="form-control col-md-7 col-xs-12 optional" type="text"
+										th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}" />
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}" />
+		                    	</div>
+							</th:block>
+	 						<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+		                    		<div>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoUno} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
+		                    		</div>
+		                    		<div>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoDue} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
+		                    		</div>
+		                    		<div>
+			              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
+		                    		</div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__]?.enabled == false}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
 									</div>
-								</th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></div>
-							</div>
-
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
-
-							<!-- ALLEGATO 2 (ETRATTO BILANCIO RELATIVO FORMAZIONE + BUDGET PREVISIONALE) -->
-							<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${!showOnly ? 'estrattoBilancioFormazione' : null}, null, null, true, ${mode}, true)" ></th:block> -->
-							<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ESTRATTO_BILANCIO_FORMAZIONE}', estrattoBilancioFormazione, ${!showOnly ? 'estrattoBilancioFormazione' : null}, null, null, true, ${mode}, true)" ></th:block>
-
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
-
-						</th:block>
-
-						<!-- dati struttura -->
-						<th:block th:if="${sezione == 'datiStruttura'}">
-
-							<!-- NUMERO DIPENDENTI -->
-							<div class="item">
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'text-right col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.numeroDipendenti') : ''}"></label>
-								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'col-xs-11'}">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.numero_dipendenti_title}">Numero dipendenti dedicati alla formazione</span>
-									<span th:if="${editabile}" class="required">*</span>
-								</label>
-							</div>
-							<!-- TEMPO INDETERMINATO -->
-							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')} ? 'bad'">
-								<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="tempo_indeterminato">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.tempo_indeterminato}">Tempo indeterminato</span>
-								</label>
-								<th:block th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tempo_indeterminato">
-										<input id="tempo_indeterminato_value" th:field="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"
-											required="required"	class="form-control col-md-7 col-xs-12" type="text"
-											pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti'))}" />
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].enabled}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
 									</div>
-								</th:block>
-								<th:block th:if="${showOnly or enableField}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></div>
-									</div>
-									<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-			                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}" />
-			                    	</div>
-								</th:block>
-								<th:block th:if="${valutabile}">
-			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-			                    		<div>
-				              				<span class="bold" th:text="#{label.tempo_indeterminato} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></span>
-			                    		</div>
-			                    		<div>
-				              				<span class="bold" th:text="#{label.altro_personale} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></span>
-			                    		</div>
-			                    	</div>
-			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
-										<div class="radio">
-											<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__]?.enabled == false} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
-												${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__]?.enabled == false}" />
-												<span th:text="#{label.sì}">Sì</span>
-											</label>
-										</div>
-										<div class="radio">
-											<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].enabled} ? 'label-disabled'">
-												<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
-												!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].enabled}" />
-												<span th:text="#{label.no}">No</span>
-											</label>
-										</div>
-									</div>
-									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-										<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].note}" th:disabled="${!canValutaDomanda or
-										!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].enabled}"></textarea>
-									</div>
-									<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].id}" />
-			                    </th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></div>
-							</div>
-							<!-- ALTRO PERSONALE -->
-							<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')} ? 'bad'">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12" for="altro_personale">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.altro_personale}">Altro personale</span>
-								</label>
-								<th:block th:if="${editabile}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="altro_personale">
-										<input id="altro_personale_value" th:field="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"
-											required="required"	class="form-control col-md-7 col-xs-12" type="text"
-											pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti'))}" />
-									</div>
-								</th:block>
-								<th:block th:if="${showOnly or enableField}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
-									</div>
-								</th:block>
-								<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
-							</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].note}" th:disabled="${!canValutaDomanda or
+									!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].enabled}"></textarea>
+								</div>
+								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno}"></div>
+						</div>
+						<!-- ANNO 2 -->
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno2_value">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoDue}">2015</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="costi_formazione_anno2_value"
+										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"
+										class="form-control col-md-7 col-xs-12 optional" type="text"
+										data-validate-length-range="0,50" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}"/>
+								</div>
+							</th:block>
+							<th:block th:unless="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreDue}"></div>
+						</div>
+						<!-- ANNO 3 -->
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="costi_formazione_anno3_value">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre}">2014</span>
+							</label>
+							<th:block th:with="counter=${counter}" th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<input id="costi_formazione_anno3_value"
+										th:field="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"
+										class="form-control col-md-7 col-xs-12 optional" type="text"
+										data-validate-length-range="0,50" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione'))}" />
+								</div>
+							</th:block>
+							<th:block th:unless="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre}"></div>
+						</div>
 
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
-							<!-- ALLEGATO 3 (ORGANIGRAMMA) -->
-							<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${!showOnly ? 'organigramma' : null}, null, null, true, ${mode}, true)" ></th:block> -->
-							<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ORGANIGRAMMA}', organigramma,  ${!showOnly ? 'organigramma' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<!-- ALLEGATO 2 (ETRATTO BILANCIO RELATIVO FORMAZIONE + BUDGET PREVISIONALE) -->
+						<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, estrattoBilancioFormazione, ${!showOnly ? 'estrattoBilancioFormazione' : null}, null, null, true, ${mode}, true)" ></th:block> -->
+						<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ESTRATTO_BILANCIO_FORMAZIONE}', estrattoBilancioFormazione, ${!showOnly ? 'estrattoBilancioFormazione' : null}, null, null, true, ${mode}, true)" ></th:block>
 
-							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 
-							<!-- ALLEGATO 4 (FUNZIONIGRAMMA) -->
-							<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${!showOnly ? 'funzionigramma' : null}, null, null, true, ${mode}, true)" ></th:block> -->
-							<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_FUNZIONIGRAMMA}', funzionigramma,  ${!showOnly ? 'funzionigramma' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<!-- NUMERO DIPENDENTI -->
+						<div class="item">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'text-right col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.numeroDipendenti') : ''}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'col-xs-11'}">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.numero_dipendenti_title}">Numero dipendenti dedicati alla formazione</span>
+								<span th:if="${editabile}" class="required">*</span>
+							</label>
+						</div>
+						<!-- TEMPO INDETERMINATO -->
+						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')} ? 'bad'">
+							<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="tempo_indeterminato">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.tempo_indeterminato}">Tempo indeterminato</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tempo_indeterminato">
+									<input id="tempo_indeterminato_value" th:field="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"
+										required="required"	class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti'))}" />
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></div>
+								</div>
+								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}" />
+		                    	</div>
+							</th:block>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+		                    		<div>
+			              				<span class="bold" th:text="#{label.tempo_indeterminato} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></span>
+		                    		</div>
+		                    		<div>
+			              				<span class="bold" th:text="#{label.altro_personale} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></span>
+		                    		</div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__]?.enabled == false}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].enabled}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].note}" th:disabled="${!canValutaDomanda or
+									!datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].enabled}"></textarea>
+								</div>
+								<input type="hidden" th:field="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__].id}" />
+		                    </th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato}"></div>
+						</div>
+						<!-- ALTRO PERSONALE -->
+						<div th:unless="${valutabile}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')} ? 'bad'">
+							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="altro_personale">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.altro_personale}">Altro personale</span>
+							</label>
+							<th:block th:if="${editabile}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="altro_personale">
+									<input id="altro_personale_value" th:field="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"
+										required="required"	class="form-control col-md-7 col-xs-12" type="text"
+										pattern="numeric" th:disabled="${!#lists.contains(datiAccreditamentoWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti'))}" />
+								</div>
+							</th:block>
+							<th:block th:if="${showOnly or enableField}">
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="value" th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
+								</div>
+							</th:block>
+							<div th:if="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></div>
+						</div>
 
-						</th:block>
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+
+						<!-- ALLEGATO 3 (ORGANIGRAMMA) -->
+						<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, organigramma,  ${!showOnly ? 'organigramma' : null}, null, null, true, ${mode}, true)" ></th:block> -->
+						<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ORGANIGRAMMA}', organigramma,  ${!showOnly ? 'organigramma' : null}, null, null, true, ${mode}, true)" ></th:block>
+
+						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+
+						<!-- ALLEGATO 4 (FUNZIONIGRAMMA) -->
+						<!-- <th:block th:include="fragments/allegati :: allegati(datiAccreditamentoWrapper, true, funzionigramma,  ${!showOnly ? 'funzionigramma' : null}, null, null, true, ${mode}, true)" ></th:block> -->
+						<th:block th:include="fragments/allegatiext :: allegatiext(datiAccreditamentoWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_FUNZIONIGRAMMA}', funzionigramma,  ${!showOnly ? 'funzionigramma' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 						<input id="submitButton" type="submit" style="display: none;" />
 
