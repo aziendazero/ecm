@@ -239,7 +239,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.setDataInvio(LocalDate.now());
 		accreditamento.setDataScadenza(accreditamento.getDataInvio().plusDays(180));
 
-		//TODO rimuovere quando ci sarà il flusso STANDARD
+		//TODO RIMUOVERE quando ci sarà il flusso STANDARD
 		if(accreditamento.isStandard())
 			accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
 
@@ -358,6 +358,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamentoRepository.save(accreditamento);
 
 			//è qui che è stata settala la data di valutazione del verbale e tutti i suoi componenti???
+			// risposta: sì, ma rimane modificabile per tutta la durata di valutazione sul campo
 			Set<String> dst = new HashSet<String>();
 			if(verbale != null){
 				if(verbale.getTeamLeader() != null)
@@ -372,6 +373,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
 			}
 
+			//TODO non deve creare un task di valutazione per il team leader.. deve solo mandare il flusso in valutazione sul campo con lo stesso
+			//attore (segretario) che deve inserire la valutazione sul campo.. solo se l'accreditamento va in integrazione il teamleader deve valutare
 			workflowService.eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(accreditamento, verbale.getTeamLeader().getUsernameWorkflow());
 		}
 	}
@@ -428,6 +431,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		workflowService.eseguiTaskAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
 	}
 
+	//TODO al secondo giro e al terzo questo sarebbe il valuta domanda della segreteria.. sarebbe da fare un corrispettivo per lo standard
+	//dove al primo giro crea la valutazione del team leader e al terzo la riassegna..
 	@Override
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Riassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
@@ -1257,6 +1262,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
 
+		//TODO nemmeno qua sarebbe da assegnare la valutazione del team leader se l'accreditamento viene accreditato
+		//mentre se va in integrazione se ne va in integrazione.. si potrebbe creare la valutazione del team leader al momento in cui va in integrazione
+		//o meglio ancora quando si sblocca la valutazione dell'integrazione della segreteria.. nello stesso punto in cui nel provvisorio si andrebbe in riassegna stesso gruppo crecm
 		workflowService.eseguiTaskValutazioneSulCampoForCurrentUser(accreditamento, accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader().getUsernameWorkflow(), destinazioneStatoDomandaStandard);
 
 		if(destinazioneStatoDomandaStandard == AccreditamentoStatoEnum.ACCREDITATO)
@@ -1264,6 +1272,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	//inserisce il sottoscrivente del verbale sul campo
+	//TODO se si deve mandare un email di aggiornamento del verbale sul campo questo sarebbe il punto :')
 	@Override
 	public void editScheduleVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew) {
 		VerbaleValutazioneSulCampo verbaleToUpdate = accreditamento.getVerbaleValutazioneSulCampo();
