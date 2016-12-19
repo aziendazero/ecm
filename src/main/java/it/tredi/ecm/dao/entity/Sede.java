@@ -48,4 +48,8 @@ public class Sede extends BaseEntity{
         Sede entitapiatta = (Sede) o;
         return Objects.equals(id, entitapiatta.id);
     }
+
+	public String getAddressName() {
+		return (this.indirizzo + " (" + this.comune + ")");
+	}
 }

@@ -17,5 +17,6 @@
     <include file="003_01_verbalePdfInAccreditamento.xml" relativeToChangelogFile="true"/>
     <include file="20161214_VerbaleValutazioneSulCampo_componentiSegreteria.xml" relativeToChangelogFile="true"/>
     <include file="003_01_Update_Profile.xml" relativeToChangelogFile="true"/>
+    <include file="004_01_aggiuntaSedeValutazioneSulCampo.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

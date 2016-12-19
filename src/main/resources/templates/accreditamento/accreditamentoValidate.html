@@ -225,38 +225,25 @@
 
 										<div class="divider"></div>
 
-										<!-- BLOCCO SEDE LEGALE (autocompilato) -->
-										<div class="item modalAlert form-group">
-											<label class="control-label col-md-4 col-sm-4 col-xs-12">
-												<span th:text="#{label.sede_legale}">Sede Legale</span>
-											</label>
-										</div>
-										<!-- provincia -->
-										<div class="item form-group">
-											<label class="control-label col-md-4 col-sm-4 col-xs-12">
-												<span th:text="#{label.provincia}">Provincia</span>
+										<!-- SEDE PROVIDER (scelta tra le sedi del provider) -->
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.sede')} ? 'bad'">
+											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="sede">
+												<span th:text="#{label.sede_valutazione}">Sede della Valutazione</span>
+												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-												<div class="value-edit" th:text="${accreditamentoWrapper.sedeLegale.provincia}"></div>
+												<select id="sede" class="selectpicker"
+													th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.sede}"
+													data-width="100%"
+													data-style="btn-primary"
+													data-size="10" title="Seleziona la sede..."
+													th:remove="all-but-first">
+													<option th:each="sede, row: ${accreditamentoWrapper.sediProvider}"
+														th:value="${sede.id}" th:text="${sede.getAddressName()}">
+													</option>
+												</select>
 											</div>
-										</div>
-										<!-- comune -->
-										<div class="item form-group">
-											<label class="control-label col-md-4 col-sm-4 col-xs-12">
-												<span th:text="#{label.comune}">Comune</span>
-											</label>
-											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-												<div class="value-edit" th:text="${accreditamentoWrapper.sedeLegale.comune}"></div>
-											</div>
-										</div>
-										<!-- indirizzo -->
-										<div class="item form-group">
-											<label class="control-label col-md-4 col-sm-4 col-xs-12">
-												<span th:text="#{label.indirizzo}">Indirizzo</span>
-											</label>
-											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-												<div class="value-edit" th:text="${accreditamentoWrapper.sedeLegale.indirizzo}"></div>
-											</div>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.sede')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.sede}"></div>
 										</div>
 
 									</th:block>

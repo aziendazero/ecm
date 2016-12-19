@@ -135,6 +135,26 @@
 											</div>
 											<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.referenteInformatico')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.referenteInformatico}"></div>
 										</div>
+										<!-- SEDE PROVIDER (scelta tra le sedi del provider) -->
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.sede')} ? 'bad'">
+											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="sede">
+												<span th:text="#{label.sede_valutazione}">Sede della Valutazione</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<select id="sede" class="selectpicker"
+													th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.sede}"
+													data-width="100%"
+													data-style="btn-primary"
+													data-size="10" title="Seleziona la sede..."
+													th:remove="all-but-first">
+													<option th:each="sede, row: ${accreditamentoWrapper.sediProvider}"
+														th:value="${sede.id}" th:text="${sede.getAddressName()}">
+													</option>
+												</select>
+											</div>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.sede')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.sede}"></div>
+										</div>
 
 										<input id="submitButtonModalVerbale" type="submit" style="display: none;" />
 										<input type="hidden" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.accreditamento}" />

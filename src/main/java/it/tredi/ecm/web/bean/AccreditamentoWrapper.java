@@ -158,6 +158,7 @@ public class AccreditamentoWrapper {
 	private Set<Account> osservatoriRegionali;
 	private Set<Account> componentiSegreteria;
 	private Set<Account> referentiInformatici;
+	private Set<Sede> sediProvider;
 	private File delegaValutazioneSulCampo;
 	private File cartaIdentita;
 

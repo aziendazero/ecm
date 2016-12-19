@@ -1280,7 +1280,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		verbaleToUpdate.setTeamLeader(verbaleNew.getTeamLeader());
 		verbaleToUpdate.setComponentiSegreteria(verbaleNew.getComponentiSegreteria());
 		verbaleToUpdate.setOsservatoreRegionale(verbaleNew.getOsservatoreRegionale());
-		verbaleToUpdate.setReferenteInformatico(verbaleToUpdate.getReferenteInformatico());
+		verbaleToUpdate.setReferenteInformatico(verbaleNew.getReferenteInformatico());
+		verbaleToUpdate.setSede(verbaleNew.getSede());
 		accreditamento.setVerbaleValutazioneSulCampo(verbaleToUpdate);
 		save(accreditamento);
 	}
