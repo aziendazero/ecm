@@ -290,17 +290,24 @@ public class AccreditamentoWrapper {
 				mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__CV) &&
 				mappa.containsKey(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__DELEGA));
 
-			tipologiaFormativaStato = (mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__TIPOLOGIA_ACCREDITAMENTO) &&
- 				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE) &&
- 				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO) &&
-				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__DISCIPLINE));
-			datiEconomiciStato = (mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO) &&
- 				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO) &&
- 				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE) &&
-				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE));
-			datiStrutturaStato = (mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI) &&
- 				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__ORGANIGRAMMA) &&
- 				mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__FUNZIONIGRAMMA));
+			tipologiaFormativaStato = (
+				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__TIPOLOGIA_ACCREDITAMENTO) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__TIPOLOGIA_ACCREDITAMENTO).getEsito() != null) &&
+ 				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE).getEsito() != null) &&
+ 				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO).getEsito() != null) &&
+				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__DISCIPLINE) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__DISCIPLINE).getEsito() != null)
+				);
+			datiEconomiciStato = (
+				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO).getEsito() != null) &&
+ 				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO)  && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO).getEsito() != null) &&
+ 				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE).getEsito() != null) &&
+				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE).getEsito() != null)
+				);
+
+			datiStrutturaStato = (
+				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI).getEsito() != null) &&
+ 				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__ORGANIGRAMMA) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__ORGANIGRAMMA).getEsito() != null) &&
+ 				(mappa.containsKey(IdFieldEnum.DATI_ACCREDITAMENTO__FUNZIONIGRAMMA) && mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__FUNZIONIGRAMMA).getEsito() != null)
+ 				);
 
 			responsabileSegreteriaStato = (mappa.containsKey(IdFieldEnum.RESPONSABILE_SEGRETERIA__COGNOME) &&
 				mappa.containsKey(IdFieldEnum.RESPONSABILE_SEGRETERIA__NOME) &&

@@ -4,14 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -84,8 +81,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private AlertEmailService alertEmailService;
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
-
-	@PersistenceContext EntityManager entityManager;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
