@@ -99,15 +99,25 @@
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${sedeWrapper.sede.sedeLegale ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
-								</div>
-								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}" />
+		                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+			              			<div class="value-edit" th:if="${enableField}" th:text="${sedeWrapper.sede.sedeLegale ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+			              			<div class="value" th:if="${showOnly}" th:text="${sedeWrapper.sede.sedeLegale ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
 		                    	</div>
+			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
+			                    	<div class="row">
+				                    	<div class="col-xs-1">
+				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}" />
+				                    	</div>
+										<div class="col-xs-11">
+											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]}"></textarea>
+										</div>
+									</div>
+								</div>
 							</th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.sedeLegale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.sedeLegale}"></div>
 						</div>
+
+						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- RADIO FLAG SEDEOPERATIVA -->
 						<div th:if="${!valutabile and !showOnly}" id="operativaRadioContainer" th:classappend="${(sedeWrapper.sede.sedeLegale == false and !enableField) ? 'hidden' : ''}">
@@ -132,18 +142,27 @@
 									</div>
 								</th:block>
 								<th:block th:if="${showOnly or enableField}">
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-										<div class="value" th:text="${sedeWrapper.sede.sedeOperativa ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
-									</div>
-									<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-			                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}" />
+			                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+				              			<div class="value-edit" th:if="${enableField}" th:text="${sedeWrapper.sede.sedeOperativa ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+				              			<div class="value" th:if="${showOnly}" th:text="${sedeWrapper.sede.sedeOperativa ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
 			                    	</div>
+				           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
+				                    	<div class="row">
+					                    	<div class="col-xs-1">
+					                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}" />
+					                    	</div>
+											<div class="col-xs-11">
+												<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]}"></textarea>
+											</div>
+										</div>
+									</div>
 								</th:block>
 								<div th:if="${#fields.hasErrors('sedeWrapper.sede.sedeOperativa')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.sedeOperativa}"></div>
 							</div>
 						</div>
 
 						<div th:if="${editabile}" class="divider-dashed"></div>
+						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- PROVINCIA -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.provincia')} ? 'bad'">
@@ -168,12 +187,20 @@
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${sedeWrapper.sede.provincia}"></div>
-								</div>
-								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.provincia')}" />
+		                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+			              			<div class="value-edit" th:if="${enableField}" th:text="${sedeWrapper.sede.provincia}"></div>
+			              			<div class="value" th:if="${showOnly}" th:text="${sedeWrapper.sede.provincia}"></div>
 		                    	</div>
+			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
+			                    	<div class="row">
+				                    	<div class="col-xs-1">
+				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.provincia')}" />
+				                    	</div>
+										<div class="col-xs-11">
+											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.provincia')}__]}"></textarea>
+										</div>
+									</div>
+								</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -204,7 +231,7 @@
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.provincia')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.provincia}"></div>
 						</div>
 
-						<div th:if="${valutabile}" class="divider"></div>
+						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- COMUNE -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.comune')} ? 'bad'">
@@ -230,12 +257,20 @@
 							  	</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${sedeWrapper.sede.comune}"></div>
-								</div>
-								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune')}" />
+		                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+			              			<div class="value-edit" th:if="${enableField}" th:text="${sedeWrapper.sede.comune}"></div>
+			              			<div class="value" th:if="${showOnly}" th:text="${sedeWrapper.sede.comune}"></div>
 		                    	</div>
+			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
+			                    	<div class="row">
+				                    	<div class="col-xs-1">
+				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune')}" />
+				                    	</div>
+										<div class="col-xs-11">
+											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune')}__]}"></textarea>
+										</div>
+									</div>
+								</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -266,7 +301,7 @@
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.comune')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.comune}"></div>
 						</div>
 
-						<div th:if="${valutabile}" class="divider"></div>
+						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- INDIRIZZO -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.indirizzo')} ? 'bad'">
@@ -284,12 +319,20 @@
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${sedeWrapper.sede.indirizzo}"></div>
-								</div>
-								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.indirizzo')}" />
+		                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+			              			<div class="value-edit" th:if="${enableField}" th:text="${sedeWrapper.sede.indirizzo}"></div>
+			              			<div class="value" th:if="${showOnly}" th:text="${sedeWrapper.sede.indirizzo}"></div>
 		                    	</div>
+			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
+			                    	<div class="row">
+				                    	<div class="col-xs-1">
+				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.indirizzo')}" />
+				                    	</div>
+										<div class="col-xs-11">
+											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.indirizzo')}__]}"></textarea>
+										</div>
+									</div>
+								</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -320,7 +363,7 @@
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.indirizzo')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.indirizzo}"></div>
 						</div>
 
-						<div th:if="${valutabile}" class="divider"></div>
+						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- CAP -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.cap')} ? 'bad'">
@@ -338,12 +381,20 @@
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${sedeWrapper.sede.cap}"></div>
-								</div>
-								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.cap')}" />
+		                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+			              			<div class="value-edit" th:if="${enableField}" th:text="${sedeWrapper.sede.cap}"></div>
+			              			<div class="value" th:if="${showOnly}" th:text="${sedeWrapper.sede.cap}"></div>
 		                    	</div>
+			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
+			                    	<div class="row">
+				                    	<div class="col-xs-1">
+				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.cap')}" />
+				                    	</div>
+										<div class="col-xs-11">
+											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.cap')}__]}"></textarea>
+										</div>
+									</div>
+								</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -374,7 +425,7 @@
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.cap')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.cap}"></div>
 						</div>
 
-						<div th:if="${valutabile}" class="divider"></div>
+						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- TELEFONO -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.telefono')} ? 'bad'">
@@ -392,12 +443,20 @@
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${sedeWrapper.sede.telefono}"></div>
-								</div>
-								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.telefono')}" />
+		                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+			              			<div class="value-edit" th:if="${enableField}" th:text="${sedeWrapper.sede.telefono}"></div>
+			              			<div class="value" th:if="${showOnly}" th:text="${sedeWrapper.sede.telefono}"></div>
 		                    	</div>
+			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
+			                    	<div class="row">
+				                    	<div class="col-xs-1">
+				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.telefono')}" />
+				                    	</div>
+										<div class="col-xs-11">
+											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.telefono')}__]}"></textarea>
+										</div>
+									</div>
+								</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -428,7 +487,7 @@
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.telefono')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.telefono}"></div>
 						</div>
 
-						<div th:if="${valutabile}" class="divider"></div>
+						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- FAX -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.fax')} ? 'bad'">
@@ -445,12 +504,20 @@
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${sedeWrapper.sede.fax}"></div>
-								</div>
-								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.fax')}" />
+		                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+			              			<div class="value-edit" th:if="${enableField}" th:text="${sedeWrapper.sede.fax}"></div>
+			              			<div class="value" th:if="${showOnly}" th:text="${sedeWrapper.sede.fax}"></div>
 		                    	</div>
+			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
+			                    	<div class="row">
+				                    	<div class="col-xs-1">
+				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.fax')}" />
+				                    	</div>
+										<div class="col-xs-11">
+											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.fax')}__]}"></textarea>
+										</div>
+									</div>
+								</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
@@ -481,7 +548,7 @@
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.fax')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.fax}"></div>
 						</div>
 
-						<div th:if="${valutabile}" class="divider"></div>
+						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- EMAIL -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.email')} ? 'bad'">
@@ -499,12 +566,20 @@
 								</div>
 							</th:block>
 							<th:block th:if="${showOnly or enableField}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-									<div class="value" th:text="${sedeWrapper.sede.email}"></div>
-								</div>
-								<div th:if="${enableField}" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-		                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.email')}" />
+		                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+			              			<div class="value-edit" th:if="${enableField}" th:text="${sedeWrapper.sede.email}"></div>
+			              			<div class="value" th:if="${showOnly}" th:text="${sedeWrapper.sede.email}"></div>
 		                    	</div>
+			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
+			                    	<div class="row">
+				                    	<div class="col-xs-1">
+				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.email')}" />
+				                    	</div>
+										<div class="col-xs-11">
+											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.email')}__]}"></textarea>
+										</div>
+									</div>
+								</div>
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">

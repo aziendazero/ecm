@@ -86,6 +86,14 @@
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneLegale,  ${!showOnly ? 'dichiarazioneLegale' : null}, null, null, true, ${mode}, true)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_LEGALE}', dichiarazioneLegale,  ${!showOnly ? 'dichiarazioneLegale' : null}, null, null, true, ${mode}, true)" ></th:block>
 
+						<th:block th:if="${accreditamentoAllegatiWrapper.datiAccreditamento.accreditamento.isStandard()}">
+							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+							<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_RICHIESTA_ACCREDITAMENTO_STANDARD}', richiestaAccreditamentoStandard,  ${!showOnly ? 'richiestaAccreditamentoStandard' : null}, null, null, true, ${mode}, true)" ></th:block>
+
+							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+							<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_RELAZIONE_ATTIVITA_FORMATIVA}', relazioneAttivitaFormativa,  ${!showOnly ? 'relazioneAttivitaFormativa' : null}, null, null, true, ${mode}, true)" ></th:block>
+						</th:block>
+
 						<input id="submitButton" type="submit" style="display: none;" />
 
 					</form>

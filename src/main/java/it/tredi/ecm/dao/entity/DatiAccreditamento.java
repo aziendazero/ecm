@@ -104,12 +104,12 @@ public class DatiAccreditamento extends BaseEntity {
 	}
 
 	public boolean isDatiEconomiciInseriti() {
-		return (this.datiEconomici.getFatturatoComplessivoValoreUno() != null
-				&& this.datiEconomici.getFatturatoComplessivoValoreDue() != null
-				&& this.datiEconomici.getFatturatoComplessivoValoreTre() != null
-				&& this.datiEconomici.getFatturatoFormazioneValoreUno() != null
-				&& this.datiEconomici.getFatturatoFormazioneValoreDue() != null
-				&& this.datiEconomici.getFatturatoFormazioneValoreTre() != null);
+		boolean hasEstrattoBilancioFormazione = false;
+		for(File file : this.getFiles()) {
+			if(file.isESTRATTOBILANCIOFORMAZIONE())
+				hasEstrattoBilancioFormazione = true;
+		}
+		return hasEstrattoBilancioFormazione;
 	}
 
 	public boolean isDatiStrutturaInseriti() {

@@ -24,6 +24,8 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 	private File pianoQualita;
 	private File dichiarazioneLegale;
 	private File dichiarazioneEsclusione;
+	private File richiestaAccreditamentoStandard;
+	private File relazioneAttivitaFormativa;
 
 	private Long attoCostitutivoModel;
 	private Long esperienzaFormazioneModel;
@@ -41,6 +43,8 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 		setPianoQualita(new File(FileEnum.FILE_PIANO_QUALITA));
 		setDichiarazioneLegale(new File(FileEnum.FILE_DICHIARAZIONE_LEGALE));
 		setDichiarazioneEsclusione(new File(FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE));
+		setRichiestaAccreditamentoStandard(new File(FileEnum.FILE_RICHIESTA_ACCREDITAMENTO_STANDARD));
+		setRelazioneAttivitaFormativa(new File(FileEnum.FILE_RELAZIONE_ATTIVITA_FORMATIVA));
 	}
 
 	public void setModelIds(HashMap<FileEnum, Long> modelIds){
@@ -131,6 +135,28 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 		}
 	}
 
+	public void setRelazioneAttivitaFormativa(File file) {
+		relazioneAttivitaFormativa = file;
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(relazioneAttivitaFormativa);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_RELAZIONE_ATTIVITA_FORMATIVA);
+			}
+		}
+	}
+
+	public void setRichiestaAccreditamentoStandard(File file) {
+		richiestaAccreditamentoStandard = file;
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(richiestaAccreditamentoStandard);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_RICHIESTA_ACCREDITAMENTO_STANDARD);
+			}
+		}
+	}
+
 	public Set<File> getFiles(){
 		Set<File> files = new HashSet<File>();
 		files.add(attoCostitutivo);
@@ -140,6 +166,8 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 		files.add(pianoQualita);
 		files.add(dichiarazioneLegale);
 		files.add(dichiarazioneEsclusione);
+		files.add(richiestaAccreditamentoStandard);
+		files.add(relazioneAttivitaFormativa);
 		return files;
 	}
 
@@ -160,6 +188,10 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 				this.setDichiarazioneLegale(file);
 			else if(file.isDICHIARAZIONEESCLUSIONE())
 				this.setDichiarazioneEsclusione(file);
+			else if(file.isRELAZIONEATTIVITAFORMATIVA())
+				this.setRelazioneAttivitaFormativa(file);
+			else if(file.isRICHIESTAACCREDITAMENTOSTANDARD())
+				this.setRichiestaAccreditamentoStandard(file);
 		}
 	}
 }

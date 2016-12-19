@@ -131,6 +131,12 @@ public class File extends BaseEntity{
 	@JsonIgnore public boolean isEVENTIPIANOFORMATIVO() {
 		return this.tipo.equals(FileEnum.FILE_EVENTI_PIANO_FORMATIVO);
 	}
+	@JsonIgnore public boolean isRELAZIONEATTIVITAFORMATIVA() {
+		return this.tipo.equals(FileEnum.FILE_RELAZIONE_ATTIVITA_FORMATIVA);
+	}
+	@JsonIgnore public boolean isRICHIESTAACCREDITAMENTOSTANDARD() {
+		return this.tipo.equals(FileEnum.FILE_RICHIESTA_ACCREDITAMENTO_STANDARD);
+	}
 
 	//ENGINEERING TEST FILE
 	@JsonIgnore	public boolean isFILEDAFIRMARE(){

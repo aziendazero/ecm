@@ -44,6 +44,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 		File pianoQualita = null;
 		File dichiarazioneLegale = null;
 		File dichiarazioneEsclusione = null;
+		File richiestaAccreditamentoStandard = null;
+		File relazioneAttivitaFormativa = null;
 
 		for(File file : files){
 			if(file != null && !file.isNew()){
@@ -61,6 +63,10 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 					sistemaInformatico = file;
 				else if(file.isDICHIARAZIONEESCLUSIONE())
 					dichiarazioneEsclusione = file;
+				else if(file.isRELAZIONEATTIVITAFORMATIVA())
+					relazioneAttivitaFormativa = file;
+				else if(file.isRICHIESTAACCREDITAMENTOSTANDARD())
+					richiestaAccreditamentoStandard = file;
 			}
 		}
 
@@ -72,7 +78,11 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 		fileValidator.validate(sistemaInformatico, errors, prefix + "sistemaInformatico", providerId);
 		fileValidator.validate(pianoQualita, errors, prefix + "pianoQualita", providerId);
 		fileValidator.validate(dichiarazioneLegale, errors, prefix + "dichiarazioneLegale", providerId);
-		
+		if(accreditamento.isStandard()) {
+			fileValidator.validate(richiestaAccreditamentoStandard, errors, prefix + "richiestaAccreditamentoStandard", providerId);
+			fileValidator.validate(relazioneAttivitaFormativa, errors, prefix + "relazioneAttivitaFormativa", providerId);
+		}
+
 		if(dichiarazioneEsclusione != null && !dichiarazioneEsclusione.getNomeFile().isEmpty())
 			fileValidator.validateFirma(dichiarazioneEsclusione, errors, prefix + "dichiarazioneEsclusione", providerId);
 	}

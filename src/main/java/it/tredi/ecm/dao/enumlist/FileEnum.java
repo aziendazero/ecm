@@ -66,6 +66,9 @@ public enum FileEnum {
 	FILE_ACCREDITAMENTO_STANDARD_INTEGRAZIONE (51, "Integrazione accreditamento standard"),
 	FILE_ACCREDITAMENTO_STANDARD_PREAVVISO_RIGETTO (52, "Preavviso rigetto accreditamento standard"),
 
+	FILE_RICHIESTA_ACCREDITAMENTO_STANDARD(53, "Richista di accreditamento standard"),
+	FILE_RELAZIONE_ATTIVITA_FORMATIVA(54, "Relazione sull'attività formativa"),
+
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 

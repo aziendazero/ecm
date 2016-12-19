@@ -36,49 +36,49 @@ public class DatiAccreditamentoValidator {
 	private void validateDatiAccreditamento(Object target, Errors errors, String prefix, int sezione){
 		DatiAccreditamento datiAccreditamento = (DatiAccreditamento)target;
 
-		if(sezione == 1){
-		if(datiAccreditamento.getTipologiaAccreditamento() == null || datiAccreditamento.getTipologiaAccreditamento().isEmpty())
-			errors.rejectValue(prefix + "tipologiaAccreditamento", "error.empty");
-		if(datiAccreditamento.getProcedureFormative() == null || datiAccreditamento.getProcedureFormative().isEmpty())
-			errors.rejectValue(prefix + "procedureFormative", "error.empty");
-		if(datiAccreditamento.getProfessioniAccreditamento() == null || datiAccreditamento.getProfessioniAccreditamento().isEmpty())
-			errors.rejectValue(prefix + "professioniAccreditamento", "error.empty");
-		if(datiAccreditamento.getDiscipline() == null || datiAccreditamento.getDiscipline().isEmpty())
-			errors.rejectValue(prefix + "discipline", "error.empty");
-		}else if(sezione == 2){
-		if(datiAccreditamento.getAccreditamento().isProvvisorio()) {
-			//controllo di tipo cronologico, se inserisco un anno, gli altri più recenti diventano obbligatori
-			if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreTre() != null) {
+		if(sezione == 1) {
+			if(datiAccreditamento.getTipologiaAccreditamento() == null || datiAccreditamento.getTipologiaAccreditamento().isEmpty())
+				errors.rejectValue(prefix + "tipologiaAccreditamento", "error.empty");
+			if(datiAccreditamento.getProcedureFormative() == null || datiAccreditamento.getProcedureFormative().isEmpty())
+				errors.rejectValue(prefix + "procedureFormative", "error.empty");
+			if(datiAccreditamento.getProfessioniAccreditamento() == null || datiAccreditamento.getProfessioniAccreditamento().isEmpty())
+				errors.rejectValue(prefix + "professioniAccreditamento", "error.empty");
+			if(datiAccreditamento.getDiscipline() == null || datiAccreditamento.getDiscipline().isEmpty())
+				errors.rejectValue(prefix + "discipline", "error.empty");
+		}else if(sezione == 2) {
+			if(datiAccreditamento.getAccreditamento().isProvvisorio()) {
+				//controllo di tipo cronologico, se inserisco un anno, gli altri più recenti diventano obbligatori
+				if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreTre() != null) {
+					if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreDue() == null)
+						errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreDue", "error.empty");
+					if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreUno() == null)
+						errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreUno", "error.empty");
+				}
+				if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreDue() != null) {
+					if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreUno() == null)
+						errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreUno", "error.empty");
+				}
+				if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreTre() != null) {
+					if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreDue() == null)
+						errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreDue", "error.empty");
+					if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() == null)
+						errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreUno", "error.empty");
+				}
+				if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreDue() != null) {
+					if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() == null)
+						errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreUno", "error.empty");
+				}
+			}
+			if(datiAccreditamento.getAccreditamento().isStandard()) {
 				if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreDue() == null)
 					errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreDue", "error.empty");
 				if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreUno() == null)
 					errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreUno", "error.empty");
-			}
-			if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreDue() != null) {
-				if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreUno() == null)
-					errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreUno", "error.empty");
-			}
-			if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreTre() != null) {
 				if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreDue() == null)
 					errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreDue", "error.empty");
 				if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() == null)
 					errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreUno", "error.empty");
 			}
-			if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreDue() != null) {
-				if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() == null)
-					errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreUno", "error.empty");
-			}
-		}
-		if(datiAccreditamento.getAccreditamento().isStandard()) {
-			if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreDue() == null)
-				errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreDue", "error.empty");
-			if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreUno() == null)
-				errors.rejectValue(prefix + "datiEconomici.fatturatoComplessivoValoreUno", "error.empty");
-			if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreDue() == null)
-				errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreDue", "error.empty");
-			if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() == null)
-				errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreUno", "error.empty");
-		}
 		}else if(sezione == 3){
 			if(datiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato() == null)
 				errors.rejectValue(prefix + "numeroDipendentiFormazioneTempoIndeterminato", "error.empty");

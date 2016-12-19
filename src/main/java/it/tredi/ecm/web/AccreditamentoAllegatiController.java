@@ -220,6 +220,14 @@ public class AccreditamentoAllegatiController {
 						wrapper.setDichiarazioneEsclusione(fileService.getFile(file.getId()));
 						fileNonCancellati.add(FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE);
 					}
+					else if(file.isRICHIESTAACCREDITAMENTOSTANDARD()) {
+						wrapper.setRichiestaAccreditamentoStandard(fileService.getFile(file.getId()));
+						fileNonCancellati.add(FileEnum.FILE_RICHIESTA_ACCREDITAMENTO_STANDARD);
+					}
+					else if(file.isRELAZIONEATTIVITAFORMATIVA()) {
+						wrapper.setRelazioneAttivitaFormativa(fileService.getFile(file.getId()));
+						fileNonCancellati.add(FileEnum.FILE_RELAZIONE_ATTIVITA_FORMATIVA);
+					}
 				}
 			}
 			//i files non trovati vanno rimossi perche' sono stati cancellati
@@ -247,6 +255,12 @@ public class AccreditamentoAllegatiController {
 							break;
 						case FILE_DICHIARAZIONE_ESCLUSIONE:
 							wrapper.setDichiarazioneEsclusione(null);
+							break;
+						case FILE_RICHIESTA_ACCREDITAMENTO_STANDARD:
+							wrapper.setRichiestaAccreditamentoStandard(null);
+							break;
+						case FILE_RELAZIONE_ATTIVITA_FORMATIVA:
+							wrapper.setRelazioneAttivitaFormativa(null);
 							break;
 					}
 				}
@@ -523,7 +537,13 @@ public class AccreditamentoAllegatiController {
 				wrapper.setSistemaInformatico(file);
 			else if(file.isDICHIARAZIONEESCLUSIONE())
 				wrapper.setDichiarazioneEsclusione(file);
+			else if(file.isRICHIESTAACCREDITAMENTOSTANDARD())
+				wrapper.setRichiestaAccreditamentoStandard(file);
+			else if(file.isRELAZIONEATTIVITAFORMATIVA())
+				wrapper.setRelazioneAttivitaFormativa(file);
 		}
+		wrapper.setDatiAccreditamento(datiAccreditamento);
+
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoAllegatiWrapperShow(" + accreditamentoId + ") - exiting"));
 		return wrapper;

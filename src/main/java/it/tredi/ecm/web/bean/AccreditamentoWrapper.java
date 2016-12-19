@@ -85,6 +85,8 @@ public class AccreditamentoWrapper {
 	private boolean pianoQualitaStato;
 	private boolean dichiarazioneLegaleStato;
 	private boolean dichiarazioneEsclusioneStato;
+	private boolean richiestaAccreditamentoStandardStato;
+	private boolean relazioneAttivitaFormativaStato;
 
 	private boolean valutazioneSulCampoStato = false;
 	private boolean sottoscriventeStato;
@@ -255,6 +257,8 @@ public class AccreditamentoWrapper {
 			sezione1Stato = (providerStato && sedeLegaleStato && legaleRappresentanteStato && tipologiaFormativaStato && datiEconomiciStato && datiStrutturaStato) ? true : false;
 			sezione2Stato = (responsabileSegreteriaStato && responsabileAmministrativoStato && responsabileSistemaInformaticoStato && responsabileQualitaStato && comitatoScientificoStato) ? true : false;
 			sezione3Stato = (attoCostitutivoStato && (esperienzaFormazioneStato || !accreditamento.getDatiAccreditamento().getDatiEconomici().hasFatturatoFormazione()) && utilizzoStato && sistemaInformaticoStato && pianoQualitaStato && dichiarazioneLegaleStato) ? true : false;
+			if(accreditamento.isStandard())
+				sezione3Stato = sezione3Stato && richiestaAccreditamentoStandardStato && relazioneAttivitaFormativaStato;
 		}
 
 		if(mode == AccreditamentoWrapperModeEnum.VALIDATE) {
@@ -337,6 +341,8 @@ public class AccreditamentoWrapper {
 			pianoQualitaStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA);
 			dichiarazioneLegaleStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE);
 			dichiarazioneEsclusioneStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE);
+			richiestaAccreditamentoStandardStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD);
+			relazioneAttivitaFormativaStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA);
 
 			//TODO l'ha fatto anche Barduz ma non l'ha committato (DISONORE BARDUZ)... OCCHIO COL MERGE
 			if(accreditamento.isValutazioneSulCampo()) {
@@ -452,6 +458,9 @@ public class AccreditamentoWrapper {
 			//TODO rimuovere se deciso che non serve più
 //			sezione4Stato = tuttiEventiValutati ? true : false;
 
+			if(accreditamento.isStandard())
+				sezione3Stato = sezione3Stato && relazioneAttivitaFormativaStato && richiestaAccreditamentoStandardStato;
+
 			sezione4Stato = valutazioneSulCampoStato && sottoscriventeStato;
 
 			//stato di valutazione completa
@@ -536,6 +545,10 @@ public class AccreditamentoWrapper {
 			dichiarazioneLegaleStato = true;
 		if(filesDelProvider.contains(FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE))
 			dichiarazioneEsclusioneStato = true;
+		if(filesDelProvider.contains(FileEnum.FILE_RICHIESTA_ACCREDITAMENTO_STANDARD))
+			richiestaAccreditamentoStandardStato = true;
+		if(filesDelProvider.contains(FileEnum.FILE_RELAZIONE_ATTIVITA_FORMATIVA))
+			relazioneAttivitaFormativaStato = true;
 	}
 
 	public boolean isComitatoScientificoEditabile(){
