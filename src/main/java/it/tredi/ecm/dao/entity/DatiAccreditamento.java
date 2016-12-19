@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,6 +54,14 @@ public class DatiAccreditamento extends BaseEntity {
 				it.remove();
 		}
 		this.getFiles().add(file);
+	}
+
+	public void removeFileByType(FileEnum fileType){
+		Iterator<File> it = this.getFiles().iterator();
+		while(it.hasNext()){
+			if(it.next().getTipo() == fileType)
+				it.remove();
+		}
 	}
 
 	/*** DATI ECONOMICI ***/

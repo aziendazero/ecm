@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -184,6 +185,9 @@ public class AccreditamentoAllegatiController {
 		try {
 			//TODO getFile da testare se funziona anche senza reload
 			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
+			List<FileEnum> tuttiFileGestiti = Arrays.asList(FileEnum.FILE_ATTO_COSTITUTIVO, FileEnum.FILE_ESPERIENZA_FORMAZIONE,
+					FileEnum.FILE_DICHIARAZIONE_LEGALE, FileEnum.FILE_PIANO_QUALITA,
+					FileEnum.FILE_UTILIZZO, FileEnum.FILE_SISTEMA_INFORMATICO, FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE);
 			Set<FileEnum> fileNonCancellati = new HashSet<FileEnum>();
 			for(File file : wrapper.getFiles()){
 				if(file != null && !file.isNew()){
@@ -218,6 +222,34 @@ public class AccreditamentoAllegatiController {
 				}
 			}
 			//i files non trovati vanno rimossi perche' sono stati cancellati
+			for(FileEnum fe : tuttiFileGestiti) {
+				if(!fileNonCancellati.contains(fe)) {
+					//cancello il file
+					switch (fe) {
+						case FILE_ATTO_COSTITUTIVO:
+							wrapper.setAttoCostitutivo(null);
+							break;
+						case FILE_ESPERIENZA_FORMAZIONE:
+							wrapper.setEsperienzaFormazione(null);
+							break;
+						case FILE_DICHIARAZIONE_LEGALE:
+							wrapper.setDichiarazioneLegale(null);
+							break;
+						case FILE_PIANO_QUALITA:
+							wrapper.setPianoQualita(null);
+							break;
+						case FILE_UTILIZZO:
+							wrapper.setUtilizzo(null);
+							break;
+						case FILE_SISTEMA_INFORMATICO:
+							wrapper.setSistemaInformatico(null);
+							break;
+						case FILE_DICHIARAZIONE_ESCLUSIONE:
+							wrapper.setDichiarazioneEsclusione(null);
+							break;
+					}
+				}
+			}
 
 
 			//Ri-effettuo il detach..non sarebbe indispensabile...ma e' una precauzione a eventuali modifiche future
