@@ -19,17 +19,24 @@ public class DatiAccreditamentoValidator {
 
 	@Autowired private FileValidator fileValidator;
 
-	public void validate(Object target, Errors errors, String prefix, Set<File> files, Long providerId) throws Exception{
+	public void validate(Object target, Errors errors, String prefix, Set<File> files, Long providerId, int sezione) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione DatiAccreditamento"));
 		DatiAccreditamento dati = (DatiAccreditamento) target;
-		validateDatiAccreditamento(target, errors, prefix);
+		validateDatiAccreditamento(target, errors, prefix, sezione);
+
+		if(sezione == 2)
 		validateFilesConCondizione(files, errors, "", dati, providerId);
-		validateFilesObbligatori(files, errors, "", providerId);
+
+		if(sezione == 2 || sezione ==3)
+			validateFilesObbligatori(files, errors, "", providerId, sezione);
+
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
-	private void validateDatiAccreditamento(Object target, Errors errors, String prefix){
+	private void validateDatiAccreditamento(Object target, Errors errors, String prefix, int sezione){
 		DatiAccreditamento datiAccreditamento = (DatiAccreditamento)target;
+
+		if(sezione == 1){
 		if(datiAccreditamento.getTipologiaAccreditamento() == null || datiAccreditamento.getTipologiaAccreditamento().isEmpty())
 			errors.rejectValue(prefix + "tipologiaAccreditamento", "error.empty");
 		if(datiAccreditamento.getProcedureFormative() == null || datiAccreditamento.getProcedureFormative().isEmpty())
@@ -38,11 +45,7 @@ public class DatiAccreditamentoValidator {
 			errors.rejectValue(prefix + "professioniAccreditamento", "error.empty");
 		if(datiAccreditamento.getDiscipline() == null || datiAccreditamento.getDiscipline().isEmpty())
 			errors.rejectValue(prefix + "discipline", "error.empty");
-		if(datiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato() == null)
-			errors.rejectValue(prefix + "numeroDipendentiFormazioneTempoIndeterminato", "error.empty");
-		if(datiAccreditamento.getNumeroDipendentiFormazioneAltro() == null)
-			errors.rejectValue(prefix + "numeroDipendentiFormazioneAltro", "error.empty");
-
+		}else if(sezione == 2){
 		if(datiAccreditamento.getAccreditamento().isProvvisorio()) {
 			//controllo di tipo cronologico, se inserisco un anno, gli altri più recenti diventano obbligatori
 			if(datiAccreditamento.getDatiEconomici().getFatturatoComplessivoValoreTre() != null) {
@@ -76,6 +79,12 @@ public class DatiAccreditamentoValidator {
 			if(datiAccreditamento.getDatiEconomici().getFatturatoFormazioneValoreUno() == null)
 				errors.rejectValue(prefix + "datiEconomici.fatturatoFormazioneValoreUno", "error.empty");
 		}
+		}else if(sezione == 3){
+			if(datiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato() == null)
+				errors.rejectValue(prefix + "numeroDipendentiFormazioneTempoIndeterminato", "error.empty");
+			if(datiAccreditamento.getNumeroDipendentiFormazioneAltro() == null)
+				errors.rejectValue(prefix + "numeroDipendentiFormazioneAltro", "error.empty");
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -98,7 +107,7 @@ public class DatiAccreditamentoValidator {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void validateFilesObbligatori(Object target, Errors errors, String prefix, Long providerId) throws Exception{
+	private void validateFilesObbligatori(Object target, Errors errors, String prefix, Long providerId, int sezione) throws Exception{
 		LOGGER.debug("VALIDAZIONE ALLEGATI OBBLIGATORI");
 		Set<File> files = null;
 		if(target != null)
@@ -119,8 +128,12 @@ public class DatiAccreditamentoValidator {
 					estrattoBilancioFormazione = file;
 			}
 		}
+
+		if(sezione == 2){
+			fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione", providerId);
+		}else if(sezione == 3){
 		fileValidator.validate(funzionigramma, errors, prefix + "funzionigramma",providerId);
 		fileValidator.validate(organigramma, errors, prefix + "organigramma", providerId);
-		fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione", providerId);
 	}
+}
 }

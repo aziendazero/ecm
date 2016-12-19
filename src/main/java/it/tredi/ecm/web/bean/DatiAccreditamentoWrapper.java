@@ -16,6 +16,7 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 	private Long accreditamentoId;
 	private Long providerId;
 	//private Provider provider;
+	private int sezione;
 
 	private File estrattoBilancioComplessivo;
 	private File estrattoBilancioFormazione;
@@ -38,26 +39,46 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 
 	public void setEstrattoBilancioComplessivo(File file){
 		estrattoBilancioComplessivo = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(estrattoBilancioComplessivo);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(estrattoBilancioComplessivo);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_ESTRATTO_BILANCIO_COMPLESSIVO);
+			}
+		}
 	}
 
 	public void setEstrattoBilancioFormazione(File file){
 		estrattoBilancioFormazione = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(estrattoBilancioFormazione);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(estrattoBilancioFormazione);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
+			}
+		}
 	}
 
 	public void setFunzionigramma(File file){
 		funzionigramma = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(funzionigramma);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(funzionigramma);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_FUNZIONIGRAMMA);
+			}
+		}
 	}
 
 	public void setOrganigramma(File file){
 		organigramma = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(organigramma);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(organigramma);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_ORGANIGRAMMA);
+			}
+		}
 	}
 
 	public Set<File> getFiles(){

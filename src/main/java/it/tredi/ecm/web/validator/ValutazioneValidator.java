@@ -2,6 +2,7 @@ package it.tredi.ecm.web.validator;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,6 +23,26 @@ import it.tredi.ecm.utils.Utils;
 @Component
 public class ValutazioneValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ValutazioneValidator.class);
+
+	public void validateValutazioneDatiAccreditamento(Object target, Errors errors, int sezione) {
+		Set<IdFieldEnum> fieldsDaControllare = new HashSet<IdFieldEnum>();
+		fieldsDaControllare = IdFieldEnum.getDatiAccreditamentoSplitBySezione(sezione);
+
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = (Map<IdFieldEnum, FieldValutazioneAccreditamento>) target;
+		for (Map.Entry<IdFieldEnum, FieldValutazioneAccreditamento> entry : mappa.entrySet()) {
+			if(fieldsDaControllare.contains(entry.getKey()))
+			{
+				String key = gestisciEccezioniKey(entry.getKey().getKey());
+				if(entry.getValue().getEsito() == null) {
+					errors.rejectValue(key, "error.atleast_one_empty");
+				}
+				else
+					if(entry.getValue().getEsito() == false && (entry.getValue().getNote() == null
+					|| entry.getValue().getNote().isEmpty()))
+						errors.rejectValue(key, "error.note_obbligatorie");
+			}
+		}
+	}
 
 	public void validateValutazione(Object target, Errors errors) {
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = (Map<IdFieldEnum, FieldValutazioneAccreditamento>) target;

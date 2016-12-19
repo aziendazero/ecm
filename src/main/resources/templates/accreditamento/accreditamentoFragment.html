@@ -298,30 +298,87 @@
 												</thead>
 												<tbody>
 													<!-- DATI ACCREDITAMENTO -->
+													<!-- SEZIONE 1 -->
 													<tr>
-														<td th:unless="${accreditamentoWrapper.datiAccreditamento.new}"><a th:text="#{label.dati_accreditamento}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/show${urlParam}|}"></a></td>
-														<td th:if="${accreditamentoWrapper.datiAccreditamento.new}"><div th:text="#{label.dati_accreditamento}"></div></td>
+														<td th:if="${accreditamentoWrapper.datiAccreditamento.isTipologiaFormativaInserita()}"><a th:text="#{label.tipologia_formativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/show/1${urlParam}|}"></a></td>
+														<td th:unless="${accreditamentoWrapper.datiAccreditamento.isTipologiaFormativaInserita()}"><div th:text="#{label.tipologia_formativa}"></div></td>
 														<th:block th:unless="${enableField}">
-															<td	th:if="${accreditamentoWrapper.datiAccreditamentoStato}">
+															<td	th:if="${accreditamentoWrapper.tipologiaFormativaStato}">
 																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
 															</td>
-															<td	th:unless="${accreditamentoWrapper.datiAccreditamentoStato}">
+															<td	th:unless="${accreditamentoWrapper.tipologiaFormativaStato}">
 																<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
 															</td>
 														</th:block>
 														<td th:if="${editabile}">
 															<span style="white-space: nowrap">
-																<a th:if="${accreditamentoWrapper.datiAccreditamento.new}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/new|}" class="btn btn-success btn-table double"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+																<a th:if="${accreditamentoWrapper.datiAccreditamento.new}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/new/1|}" class="btn btn-success btn-table double"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
 																<a th:unless="${accreditamentoWrapper.datiAccreditamento.new}" class="btn btn-success btn-table double disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
-																<a th:if="${!accreditamentoWrapper.datiAccreditamento.new and (!#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'DATI_ACCREDITAMENTO')) or accreditamentoWrapper.canSegreteriaEdit)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/edit|}" class="btn btn-primary btn-table double"><i class="fa fa-pencil"></i> <span th:text="#{label.modifica}">Modifica</span></a>
+																<a th:if="${!accreditamentoWrapper.datiAccreditamento.new and (!#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'DATI_ACCREDITAMENTO')) or accreditamentoWrapper.canSegreteriaEdit)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/edit/1|}" class="btn btn-primary btn-table double"><i class="fa fa-pencil"></i> <span th:text="#{label.modifica}">Modifica</span></a>
 																<a th:if="${accreditamentoWrapper.datiAccreditamento.new or (#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'DATI_ACCREDITAMENTO')) and !accreditamentoWrapper.canSegreteriaEdit)}" class="btn btn-primary btn-table double disabled"><i class="fa fa-pencil"></i> <span th:text="#{label.modifica}">Modifica</span></a>
 															</span>
 														</td>
 														<td th:if="${valutabile}">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/validate/1|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
 														<td th:if="${enableField}">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/enableField/1|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
+													</tr>
+
+													<!-- SEZIONE 2 -->
+													<tr>
+														<td th:if="${accreditamentoWrapper.datiAccreditamento.isDatiEconomiciInseriti()}"><a th:text="#{label.dati_economici}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/show/2${urlParam}|}"></a></td>
+														<td th:unless="${accreditamentoWrapper.datiAccreditamento.isDatiEconomiciInseriti()}"><div th:text="#{label.dati_economici}"></div></td>
+														<th:block th:unless="${enableField}">
+															<td	th:if="${accreditamentoWrapper.datiEconomiciStato}">
+																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
+															</td>
+															<td	th:unless="${accreditamentoWrapper.datiEconomiciStato}">
+																<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
+															</td>
+														</th:block>
+														<td th:if="${editabile}">
+															<span style="white-space: nowrap">
+																<a th:if="${accreditamentoWrapper.datiAccreditamento.new}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/new/2|}" class="btn btn-success btn-table double"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+																<a th:unless="${accreditamentoWrapper.datiAccreditamento.new}" class="btn btn-success btn-table double disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+																<a th:if="${!accreditamentoWrapper.datiAccreditamento.new and (!#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'DATI_ACCREDITAMENTO')) or accreditamentoWrapper.canSegreteriaEdit)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/edit/2|}" class="btn btn-primary btn-table double"><i class="fa fa-pencil"></i> <span th:text="#{label.modifica}">Modifica</span></a>
+																<a th:if="${accreditamentoWrapper.datiAccreditamento.new or (#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'DATI_ACCREDITAMENTO')) and !accreditamentoWrapper.canSegreteriaEdit)}" class="btn btn-primary btn-table double disabled"><i class="fa fa-pencil"></i> <span th:text="#{label.modifica}">Modifica</span></a>
+															</span>
+														</td>
+														<td th:if="${valutabile}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/validate/2|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/enableField/2|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+														</td>
+													</tr>
+
+													<!-- SEZIONE 3 -->
+													<tr>
+														<td th:if="${accreditamentoWrapper.datiAccreditamento.isDatiStrutturaInseriti()}"><a th:text="#{label.dati_struttura}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/show/3${urlParam}|}"></a></td>
+														<td th:unless="${accreditamentoWrapper.datiAccreditamento.isDatiStrutturaInseriti()}"><div th:text="#{label.dati_struttura}"></div></td>
+														<th:block th:unless="${enableField}">
+															<td	th:if="${accreditamentoWrapper.datiStrutturaStato}">
+																<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
+															</td>
+															<td	th:unless="${accreditamentoWrapper.datiStrutturaStato}">
+																<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
+															</td>
+														</th:block>
+														<td th:if="${editabile}">
+															<span style="white-space: nowrap">
+																<a th:if="${accreditamentoWrapper.datiAccreditamento.new}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/new/3|}" class="btn btn-success btn-table double"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+																<a th:unless="${accreditamentoWrapper.datiAccreditamento.new}" class="btn btn-success btn-table double disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+																<a th:if="${!accreditamentoWrapper.datiAccreditamento.new and (!#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'DATI_ACCREDITAMENTO')) or accreditamentoWrapper.canSegreteriaEdit)}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/edit/3|}" class="btn btn-primary btn-table double"><i class="fa fa-pencil"></i> <span th:text="#{label.modifica}">Modifica</span></a>
+																<a th:if="${accreditamentoWrapper.datiAccreditamento.new or (#lists.isEmpty(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'DATI_ACCREDITAMENTO')) and !accreditamentoWrapper.canSegreteriaEdit)}" class="btn btn-primary btn-table double disabled"><i class="fa fa-pencil"></i> <span th:text="#{label.modifica}">Modifica</span></a>
+															</span>
+														</td>
+														<td th:if="${valutabile}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/validate/3|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+														<td th:if="${enableField}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/enableField/3|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 														</td>
 													</tr>
 												</tbody>

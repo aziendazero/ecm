@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,6 +56,14 @@ public class DatiAccreditamento extends BaseEntity {
 		this.getFiles().add(file);
 	}
 
+	public void removeFileByType(FileEnum fileType){
+		Iterator<File> it = this.getFiles().iterator();
+		while(it.hasNext()){
+			if(it.next().getTipo() == fileType)
+				it.remove();
+		}
+	}
+
 	/*** DATI ECONOMICI ***/
 	@Embedded
 	private DatiEconomici datiEconomici = new DatiEconomici();
@@ -85,4 +95,25 @@ public class DatiAccreditamento extends BaseEntity {
         DatiAccreditamento entitapiatta = (DatiAccreditamento) o;
         return Objects.equals(id, entitapiatta.id);
     }
+
+	public boolean isTipologiaFormativaInserita() {
+		return (this.tipologiaAccreditamento != null && !this.tipologiaAccreditamento.isEmpty()
+				&& this.procedureFormative != null && !this.procedureFormative.isEmpty()
+				&& this.professioniAccreditamento != null && !this.professioniAccreditamento.isEmpty()
+				&& this.discipline != null && !this.discipline.isEmpty());
+	}
+
+	public boolean isDatiEconomiciInseriti() {
+		return (this.datiEconomici.getFatturatoComplessivoValoreUno() != null
+				&& this.datiEconomici.getFatturatoComplessivoValoreDue() != null
+				&& this.datiEconomici.getFatturatoComplessivoValoreTre() != null
+				&& this.datiEconomici.getFatturatoFormazioneValoreUno() != null
+				&& this.datiEconomici.getFatturatoFormazioneValoreDue() != null
+				&& this.datiEconomici.getFatturatoFormazioneValoreTre() != null);
+	}
+
+	public boolean isDatiStrutturaInseriti() {
+		return (this.numeroDipendentiFormazioneTempoIndeterminato != null
+				&& this.numeroDipendentiFormazioneAltro != null);
+	}
 }
