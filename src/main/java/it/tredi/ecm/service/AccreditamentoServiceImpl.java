@@ -4,11 +4,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -80,6 +83,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private EcmProperties ecmProperties;
 
 	@Autowired private AlertEmailService alertEmailService;
+	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
+
+	@PersistenceContext EntityManager entityManager;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -95,6 +101,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return getNewAccreditamento(provider,tipoDomanda);
 	}
 
+	@Transactional
 	private Accreditamento getNewAccreditamento(Provider provider, AccreditamentoTipoEnum tipoDomanda) throws Exception{
 		if(provider == null){
 			throw new Exception("Provider non può essere NULL");
@@ -111,7 +118,31 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				Accreditamento accreditamento = new Accreditamento(tipoDomanda);
 				accreditamento.setProvider(provider);
 				accreditamento.enableAllIdField();
+
 				save(accreditamento);
+
+				if(tipoDomanda == AccreditamentoTipoEnum.STANDARD){
+					Accreditamento ultimoAccreditamento = getAccreditamentoAttivoForProvider(provider.getId());
+					if(ultimoAccreditamento != null && ultimoAccreditamento.getDatiAccreditamento() != null){
+						DatiAccreditamento ultimoDatiAccreditamento = ultimoAccreditamento.getDatiAccreditamento();
+						if(ultimoDatiAccreditamento.isDatiStrutturaInseriti() || ultimoDatiAccreditamento.isTipologiaFormativaInserita()){
+							//entityManager.detach(ultimoDatiAccreditamento);
+
+							DatiAccreditamento datiAccreditamento = new DatiAccreditamento();
+
+							datiAccreditamento.setTipologiaAccreditamento(String.copyValueOf(ultimoDatiAccreditamento.getTipologiaAccreditamento().toCharArray()));
+							datiAccreditamento.getProcedureFormative().addAll(ultimoDatiAccreditamento.getProcedureFormative());
+							datiAccreditamento.setProfessioniAccreditamento(String.copyValueOf(ultimoDatiAccreditamento.getProfessioniAccreditamento().toCharArray()));
+							datiAccreditamento.getProfessioniSelezionate().addAll(ultimoDatiAccreditamento.getProfessioniSelezionate());
+
+							datiAccreditamento.setNumeroDipendentiFormazioneTempoIndeterminato(ultimoDatiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato());
+							datiAccreditamento.setNumeroDipendentiFormazioneAltro(ultimoDatiAccreditamento.getNumeroDipendentiFormazioneAltro());
+
+							datiAccreditamentoService.save(datiAccreditamento, accreditamento.getId());
+						}
+					}
+				}
+
 				return accreditamento;
 			}else{
 				throw new Exception("Il provider " + provider.getId() + " non può presentare una domanda di accreditamento " + tipoDomanda);
