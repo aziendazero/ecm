@@ -69,11 +69,15 @@ public class PersonaServiceImpl implements PersonaService {
 		LOGGER.debug(Utils.getLogMessage("Recupero Anagrafiche del Provider " + providerId));
 		Set<Anagrafica> listAnagrafiche = anagraficaService.getAllAnagraficheAttiveByProviderId(providerId);
 
+		/*
+		 * 20161219 - dpranteda su richiesta della segreteria ECM
+		 * */
 		//Elimino l'anagrafica del Rappresentante Legale
-		Persona persona = getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE, providerId);
-		if(persona != null){
-			listAnagrafiche.remove(persona.getAnagrafica());
-		}
+//		Persona persona = getPersonaByRuolo(Ruolo.LEGALE_RAPPRESENTANTE, providerId);
+//		if(persona != null){
+//			listAnagrafiche.remove(persona.getAnagrafica());
+//		}
+
 		return listAnagrafiche;
 	}
 
@@ -138,7 +142,7 @@ public class PersonaServiceImpl implements PersonaService {
 		if(anagrafica.isDirty())
 			anagraficaService.delete(anagrafica.getId());
 	}
-	
+
 	@Override
 	public Set<Persona> getComponentiComitatoScientificoFromIntegrazione(Long providerId) {
 		LOGGER.debug("Recupero componenti comitato scientifico per approvazione integrazione per il provider:" + providerId);

@@ -420,10 +420,20 @@
 			}
 
 			function selezionaTuttiSi(){
-				$('input[value=true]').iCheck('check');
+				$.each($('input[value=true]'), function(i, element){
+					$element = $(element);
+
+					if($element.parent().is(":visible"))
+						$element.iCheck('check');
+				});
 			}
 			function selezionaTuttiNo(){
-				$('input[value=false]').iCheck('check');
+				$.each($('input[value=false]'), function(i, element){
+					$element = $(element);
+
+					if($element.parent().is(":visible"))
+						$element.iCheck('check');
+				});
 			}
 
 			function confirmDeleteEventoModal(providerId,eventoId,tipo,codiceIdentificativo,stato){

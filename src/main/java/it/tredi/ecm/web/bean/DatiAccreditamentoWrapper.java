@@ -16,6 +16,7 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 	private Long accreditamentoId;
 	private Long providerId;
 	//private Provider provider;
+	private int sezione;
 
 	private File estrattoBilancioComplessivo;
 	private File estrattoBilancioFormazione;

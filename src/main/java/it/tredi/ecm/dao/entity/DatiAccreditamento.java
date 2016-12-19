@@ -85,4 +85,25 @@ public class DatiAccreditamento extends BaseEntity {
         DatiAccreditamento entitapiatta = (DatiAccreditamento) o;
         return Objects.equals(id, entitapiatta.id);
     }
+
+	public boolean isTipologiaFormativaInserita() {
+		return (this.tipologiaAccreditamento != null && !this.tipologiaAccreditamento.isEmpty()
+				&& this.procedureFormative != null && !this.procedureFormative.isEmpty()
+				&& this.professioniAccreditamento != null && !this.professioniAccreditamento.isEmpty()
+				&& this.discipline != null && !this.discipline.isEmpty());
+	}
+
+	public boolean isDatiEconomiciInseriti() {
+		return (this.datiEconomici.getFatturatoComplessivoValoreUno() != null
+				&& this.datiEconomici.getFatturatoComplessivoValoreDue() != null
+				&& this.datiEconomici.getFatturatoComplessivoValoreTre() != null
+				&& this.datiEconomici.getFatturatoFormazioneValoreUno() != null
+				&& this.datiEconomici.getFatturatoFormazioneValoreDue() != null
+				&& this.datiEconomici.getFatturatoFormazioneValoreTre() != null);
+	}
+
+	public boolean isDatiStrutturaInseriti() {
+		return (this.numeroDipendentiFormazioneTempoIndeterminato != null
+				&& this.numeroDipendentiFormazioneAltro != null);
+	}
 }

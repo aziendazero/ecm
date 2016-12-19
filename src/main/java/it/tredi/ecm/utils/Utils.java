@@ -272,4 +272,5 @@ public class Utils {
 			return Timestamp.valueOf(l.atStartOfDay()).toLocalDateTime();
 		return null;
 	}
+
 }
