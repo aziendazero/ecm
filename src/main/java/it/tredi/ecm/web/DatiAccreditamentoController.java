@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,7 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -225,16 +227,47 @@ public class DatiAccreditamentoController {
 
 			//TODO getFile da testare se funziona anche senza reload
 			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
+			List<FileEnum> tuttiFileGestiti = Arrays.asList(FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE, FileEnum.FILE_ESTRATTO_BILANCIO_COMPLESSIVO,
+					FileEnum.FILE_FUNZIONIGRAMMA, FileEnum.FILE_ORGANIGRAMMA);
+			Set<FileEnum> fileNonCancellati = new HashSet<FileEnum>();
 			for(File file : wrapper.getFiles()){
 				if(file != null && !file.isNew()){
-					if(file.isESTRATTOBILANCIOFORMAZIONE())
+					if(file.isESTRATTOBILANCIOFORMAZIONE()) {
 						wrapper.setEstrattoBilancioFormazione(fileService.getFile(file.getId()));
-					else if(file.isESTRATTOBILANCIOCOMPLESSIVO())
+						fileNonCancellati.add(FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE);
+					}
+					else if(file.isESTRATTOBILANCIOCOMPLESSIVO()) {
 						wrapper.setEstrattoBilancioComplessivo(fileService.getFile(file.getId()));
-					else if(file.isFUNZIONIGRAMMA())
+						fileNonCancellati.add(FileEnum.FILE_ESTRATTO_BILANCIO_COMPLESSIVO);
+					}
+					else if(file.isFUNZIONIGRAMMA()) {
 						wrapper.setFunzionigramma(fileService.getFile(file.getId()));
-					else if(file.isORGANIGRAMMA())
+						fileNonCancellati.add(FileEnum.FILE_FUNZIONIGRAMMA);
+					}
+					else if(file.isORGANIGRAMMA())	{
 						wrapper.setOrganigramma(fileService.getFile(file.getId()));
+						fileNonCancellati.add(FileEnum.FILE_ORGANIGRAMMA);
+					}
+				}
+			}
+			//i files non trovati vanno rimossi perche' sono stati cancellati
+			for(FileEnum fe : tuttiFileGestiti) {
+				if(!fileNonCancellati.contains(fe)) {
+					//cancello il file
+					switch (fe) {
+						case FILE_ESTRATTO_BILANCIO_FORMAZIONE:
+							wrapper.setEstrattoBilancioFormazione(null);
+							break;
+						case FILE_ESTRATTO_BILANCIO_COMPLESSIVO:
+							wrapper.setEstrattoBilancioComplessivo(null);
+							break;
+						case FILE_FUNZIONIGRAMMA:
+							wrapper.setFunzionigramma(null);
+							break;
+						case FILE_ORGANIGRAMMA:
+							wrapper.setOrganigramma(null);
+							break;
+					}
 				}
 			}
 

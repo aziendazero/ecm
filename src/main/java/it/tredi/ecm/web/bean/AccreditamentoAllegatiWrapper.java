@@ -55,44 +55,80 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 
 	public void setAttoCostitutivo(File file){
 		attoCostitutivo = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(attoCostitutivo);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(attoCostitutivo);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_MODELLO_ATTO_COSTITUTIVO);
+			}
+		}
+
 	}
 
 	public void setEsperienzaFormazione(File file){
 		esperienzaFormazione = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(esperienzaFormazione);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(esperienzaFormazione);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_ESPERIENZA_FORMAZIONE);
+			}
+		}
 	}
 
 	public void setUtilizzo(File file){
 		utilizzo = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(utilizzo);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(utilizzo);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_UTILIZZO);
+			}
+		}
 	}
 
 	public void setSistemaInformatico(File file){
 		sistemaInformatico = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(sistemaInformatico);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(sistemaInformatico);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_SISTEMA_INFORMATICO);
+			}
+		}
 	}
 
 	public void setPianoQualita(File file){
 		pianoQualita = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(pianoQualita);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(pianoQualita);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_PIANO_QUALITA);
+			}
+		}
 	}
 
 	public void setDichiarazioneLegale(File file){
 		dichiarazioneLegale = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(dichiarazioneLegale);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(dichiarazioneLegale);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_DICHIARAZIONE_LEGALE);
+			}
+		}
 	}
 
 	public void setDichiarazioneEsclusione(File file) {
 		dichiarazioneEsclusione = file;
-		if(datiAccreditamento != null)
-			datiAccreditamento.addFile(dichiarazioneEsclusione);
+		if(datiAccreditamento != null) {
+			if(file != null) {
+				datiAccreditamento.addFile(dichiarazioneEsclusione);
+			} else {
+				datiAccreditamento.removeFileByType(FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE);
+			}
+		}
 	}
 
 	public Set<File> getFiles(){
