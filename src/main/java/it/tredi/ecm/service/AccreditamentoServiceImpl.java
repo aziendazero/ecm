@@ -113,7 +113,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(provider.getId(), tipoDomanda);
 
-//			if(accreditamentiAttivi.isEmpty()){
 			if(canProviderCreateAccreditamento(provider.getId(), tipoDomanda)){
 				Accreditamento accreditamento = new Accreditamento(tipoDomanda);
 				accreditamento.setProvider(provider);
@@ -122,24 +121,46 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				save(accreditamento);
 
 				if(tipoDomanda == AccreditamentoTipoEnum.STANDARD){
-					Accreditamento ultimoAccreditamento = getAccreditamentoAttivoForProvider(provider.getId());
-					if(ultimoAccreditamento != null && ultimoAccreditamento.getDatiAccreditamento() != null){
-						DatiAccreditamento ultimoDatiAccreditamento = ultimoAccreditamento.getDatiAccreditamento();
-						if(ultimoDatiAccreditamento.isDatiStrutturaInseriti() || ultimoDatiAccreditamento.isTipologiaFormativaInserita()){
-							//entityManager.detach(ultimoDatiAccreditamento);
+					try{
+						Accreditamento ultimoAccreditamento = getAccreditamentoAttivoForProvider(provider.getId());
+						if(ultimoAccreditamento != null && ultimoAccreditamento.getDatiAccreditamento() != null){
+							DatiAccreditamento ultimoDatiAccreditamento = ultimoAccreditamento.getDatiAccreditamento();
+							if(ultimoDatiAccreditamento.isDatiStrutturaInseriti() || ultimoDatiAccreditamento.isTipologiaFormativaInserita()){
+								DatiAccreditamento datiAccreditamento = new DatiAccreditamento();
 
-							DatiAccreditamento datiAccreditamento = new DatiAccreditamento();
+								datiAccreditamento.setTipologiaAccreditamento(String.copyValueOf(ultimoDatiAccreditamento.getTipologiaAccreditamento().toCharArray()));
+								datiAccreditamento.getProcedureFormative().addAll(ultimoDatiAccreditamento.getProcedureFormative());
+								datiAccreditamento.setProfessioniAccreditamento(String.copyValueOf(ultimoDatiAccreditamento.getProfessioniAccreditamento().toCharArray()));
+								datiAccreditamento.getDiscipline().addAll(ultimoDatiAccreditamento.getDiscipline());
 
-							datiAccreditamento.setTipologiaAccreditamento(String.copyValueOf(ultimoDatiAccreditamento.getTipologiaAccreditamento().toCharArray()));
-							datiAccreditamento.getProcedureFormative().addAll(ultimoDatiAccreditamento.getProcedureFormative());
-							datiAccreditamento.setProfessioniAccreditamento(String.copyValueOf(ultimoDatiAccreditamento.getProfessioniAccreditamento().toCharArray()));
-							datiAccreditamento.getProfessioniSelezionate().addAll(ultimoDatiAccreditamento.getProfessioniSelezionate());
+								datiAccreditamento.setNumeroDipendentiFormazioneTempoIndeterminato(ultimoDatiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato());
+								datiAccreditamento.setNumeroDipendentiFormazioneAltro(ultimoDatiAccreditamento.getNumeroDipendentiFormazioneAltro());
 
-							datiAccreditamento.setNumeroDipendentiFormazioneTempoIndeterminato(ultimoDatiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato());
-							datiAccreditamento.setNumeroDipendentiFormazioneAltro(ultimoDatiAccreditamento.getNumeroDipendentiFormazioneAltro());
+								File organigramma = null;
+								File funzionigramma = null;
+								for(File f : ultimoDatiAccreditamento.getFiles()){
+									if(f.isORGANIGRAMMA())
+										organigramma = (File) f.clone();
+									else if(f.isFUNZIONIGRAMMA()){
+										funzionigramma = (File) f.clone();
+									}
+								}
 
-							datiAccreditamentoService.save(datiAccreditamento, accreditamento.getId());
+								if(organigramma != null){
+									fileService.save(organigramma);
+									datiAccreditamento.addFile(organigramma);
+								}
+
+								if(funzionigramma != null){
+									fileService.save(funzionigramma);
+									datiAccreditamento.addFile(funzionigramma);
+								}
+
+								datiAccreditamentoService.save(datiAccreditamento, accreditamento.getId());
+							}
 						}
+					}catch(Exception ex){
+						LOGGER.info(ex.getMessage());
 					}
 				}
 
