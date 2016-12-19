@@ -466,8 +466,12 @@ public class WorkflowServiceImpl implements WorkflowService {
 	public void prendiTaskInCarica(CurrentUser user, Accreditamento accreditamento) throws Exception{
 		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
 		if(task == null) {
-			LOGGER.error("Il task " + task.getName() + " non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
-			throw new Exception("Il task " + task.getName() + " non è disponibile per l'utente username: " + user.getUsername());
+			//il task è null
+//			LOGGER.error("Il task " + task.getName() + " non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+//			throw new Exception("Il task " + task.getName() + " non è disponibile per l'utente username: " + user.getUsername());
+			LOGGER.error("Il task non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task non è disponibile per l'utente username: " + user.getUsername());
+
 		}
 		if(!task.isAssigned()) {
 			//lo prendo in carico
