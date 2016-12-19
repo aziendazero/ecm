@@ -570,6 +570,7 @@ public class AccreditamentoController {
 			accreditamentoWrapper.setOsservatoriRegionali(accountService.getUserByProfileEnum(ProfileEnum.COMPONENTE_OSSERVATORIO));
 			accreditamentoWrapper.setComponentiSegreteria(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 			accreditamentoWrapper.setReferentiInformatici(accountService.getUserByProfileEnum(ProfileEnum.REFERENTE_INFORMATICO));
+			accreditamentoWrapper.setSediProvider(accreditamento.getProvider().getSedi());
 			if(!hasVerbaleErrors)
 				accreditamentoWrapper.setVerbaleValutazioneSulCampo(accreditamento.getVerbaleValutazioneSulCampo());
 		}
@@ -677,6 +678,7 @@ public class AccreditamentoController {
 			accreditamentoWrapper.setOsservatoriRegionali(accountService.getUserByProfileEnum(ProfileEnum.COMPONENTE_OSSERVATORIO));
 			accreditamentoWrapper.setComponentiSegreteria(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 			accreditamentoWrapper.setReferentiInformatici(accountService.getUserByProfileEnum(ProfileEnum.REFERENTE_INFORMATICO));
+			accreditamentoWrapper.setSediProvider(accreditamento.getProvider().getSedi());
 			//set campi precompilati
 			if(!hasErrors) {
 				if(accreditamento.getVerbaleValutazioneSulCampo() == null) {

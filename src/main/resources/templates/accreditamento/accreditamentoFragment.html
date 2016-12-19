@@ -816,6 +816,52 @@
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
 														</td>
 													</tr>
+													<th:block th:if="${accreditamentoWrapper.accreditamento.isStandard()}">
+														<!-- ALLEGATO RICHIESTA DI ACCREDITAMENTO STANDARD -->
+														<tr>
+															<td><a th:text="#{label.richiestaAccreditamentoStandard}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show${urlParam}|}"></a></td>
+															<th:block th:unless="${enableField}">
+																<td	th:if="${accreditamentoWrapper.richiestaAccreditamentoStandardStato}">
+																	<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
+																</td>
+																<td	th:unless="${accreditamentoWrapper.richiestaAccreditamentoStandardStato}">
+																	<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
+																</td>
+															</th:block>
+															<td th:if="${editabile}">
+																<a th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE) or accreditamentoWrapper.canSegreteriaEdit}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+																<a th:unless="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE) or accreditamentoWrapper.canSegreteriaEdit}" class="btn btn-success btn-table single disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+															</td>
+															<td th:if="${valutabile}">
+																<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+															</td>
+															<td th:if="${enableField}">
+																<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+															</td>
+														</tr>
+														<!-- ALLEGATO RELAZIONE ATTIVITÀ FORMATIVA -->
+														<tr>
+															<td><a th:text="#{label.relazioneAttivitaFormativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/show${urlParam}|}"></a></td>
+															<th:block th:unless="${enableField}">
+																<td	th:if="${accreditamentoWrapper.relazioneAttivitaFormativaStato}">
+																	<i class="fa table-icon fa-check green" th:title="${valutabile ? #messages.msg('label.valutato') : #messages.msg('label.inserito')}"></i>
+																</td>
+																<td	th:unless="${accreditamentoWrapper.relazioneAttivitaFormativaStato}">
+																	<i class="fa table-icon fa-remove red" th:title="${valutabile ? #messages.msg('label.non_valutato') : #messages.msg('label.non_inserito')}"></i>
+																</td>
+															</th:block>
+															<td th:if="${editabile}">
+																<a th:if="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE) or accreditamentoWrapper.canSegreteriaEdit}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/edit|}" class="btn btn-success btn-table single"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+																<a th:unless="${#sets.contains(T(it.tredi.ecm.utils.Utils).getSubsetOfIdFieldEnum(accreditamentoWrapper.accreditamento.idEditabili, 'ALLEGATI_ACCREDITAMENTO'), T(it.tredi.ecm.dao.enumlist.IdFieldEnum).ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE) or accreditamentoWrapper.canSegreteriaEdit}" class="btn btn-success btn-table single disabled"><i class="fa fa-sign-in"></i> <span th:text="#{label.inserisci}">Inserisci</span></a>
+															</td>
+															<td th:if="${valutabile}">
+																<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/validate|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+															</td>
+															<td th:if="${enableField}">
+																<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/allegati/enableField|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
+															</td>
+														</tr>
+													</th:block>
 												</tbody>
 											</table>
 										</div>
@@ -1154,10 +1200,10 @@
 													</div>
 												</div>
 
-												<!-- BLOCCO SEDE LEGALE (autocompilato) -->
+												<!-- BLOCCO SEDE -->
 												<div class="item form-group">
 													<label class="control-label col-md-3 col-sm-3 col-xs-12">
-														<span class="label-show" th:text="#{label.sede_legale} + ':'">Sede Legale</span>
+														<span class="label-show" th:text="#{label.sede_valutazione} + ':'">Sede della Valutazione</span>
 													</label>
 												</div>
 												<div class="item form-group">
@@ -1165,7 +1211,7 @@
 														<span class="label-show" th:text="#{label.provincia}">Provincia</span>
 													</label>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-														<div class="value" th:text="${accreditamentoWrapper.sedeLegale.provincia}"></div>
+														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.sede.provincia}"></div>
 													</div>
 												</div>
 
@@ -1174,7 +1220,7 @@
 														<span class="label-show" th:text="#{label.comune}">Comune</span>
 													</label>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-														<div class="value" th:text="${accreditamentoWrapper.sedeLegale.comune}"></div>
+														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.sede.comune}"></div>
 													</div>
 												</div>
 
@@ -1183,7 +1229,7 @@
 														<span class="label-show" th:text="#{label.indirizzo}">Indirizzo</span>
 													</label>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-														<div class="value" th:text="${accreditamentoWrapper.sedeLegale.indirizzo}"></div>
+														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.sede.indirizzo}"></div>
 													</div>
 												</div>
 

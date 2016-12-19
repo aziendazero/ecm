@@ -3,15 +3,11 @@ package it.tredi.ecm.dao.entity;
 import java.time.LocalDate;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.JoinColumn;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -31,10 +27,10 @@ public class VerbaleValutazioneSulCampo extends BaseEntity {
 //	@OneToOne
 //	private File verbaleFirmato;
 
-	@OneToOne
+	@ManyToOne
 	private Account valutatore;
 
-	@OneToOne
+	@ManyToOne
 	private Account teamLeader;
 
 	@OneToOne
@@ -43,8 +39,11 @@ public class VerbaleValutazioneSulCampo extends BaseEntity {
 	@ManyToMany
 	private Set<Account> componentiSegreteria;
 
-	@OneToOne
+	@ManyToOne
 	private Account referenteInformatico;
+
+	@OneToOne
+	private Sede sede;
 
 	@OneToOne
 	private Provider provider;
