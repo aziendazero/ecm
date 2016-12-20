@@ -222,12 +222,20 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	public void dataOraScadenzaPossibilitaValutazione(Long accreditamentoId, LocalDateTime date) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Aggiornamento dataora massima (" + date + ") entro la quale effettuare la valutazione Team Leader per accreditamento: " + accreditamentoId));
 		Set<Valutazione> valutazioni = getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+
+		Set<Account> refereeGroup = new HashSet<Account>();
+
 		for(Valutazione v : valutazioni){
 			if(v.getTipoValutazione() == ValutazioneTipoEnum.TEAM_LEADER){
+				refereeGroup.add(v.getAccount());
 				v.setDataOraScadenzaPossibilitaValutazione(date);
 				valutazioneRepository.save(v);
 			}
 		}
+
+		Provider provider = accreditamentoService.getAccreditamento(accreditamentoId).getProvider();
+
+		alertEmailService.creaAlertForReferee(refereeGroup, provider, date);
 	}
 
 	@Override
