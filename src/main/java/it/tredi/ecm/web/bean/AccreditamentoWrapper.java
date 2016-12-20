@@ -577,10 +577,11 @@ public class AccreditamentoWrapper {
 
 	//Invia domanda alla segreteria cambiando stato all'accreditamento e rendendo la domanda non più modificabile
 	public boolean isCanSend(){
-		if(accreditamento.isBozza() && isCompleta() && isPianoFormativoCompleto())
-			return true;
-		else
-			return false;
+		if(accreditamento.isProvvisorio())
+			return (accreditamento.isBozza() && isCompleta() && isPianoFormativoCompleto());
+		else if(accreditamento.isStandard())
+			return (accreditamento.isBozza() && isCompleta());
+		return false;
 	}
 
 	//ci sono eventi inseriti nel piano formativo

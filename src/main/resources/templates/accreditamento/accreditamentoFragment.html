@@ -34,7 +34,7 @@
 								Allegati
 							</a>
 						</li>
-						<li th:unless="${valutabile}" role="presentation" class="presentation">
+						<li th:unless="${valutabile or accreditamentoWrapper.accreditamento.isStandard()}" role="presentation" class="presentation">
 							<a href="#tab_content4" role="tab" id="tab4" data-toggle="tab" aria-expanded="false" th:text="#{label.piano_formativo}">
 								Piano Formativo
 							</a>
@@ -870,7 +870,7 @@
 							</div>
 							<!--  /TAB 3 -->
 						</div>
-						<div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="tab4">
+						<div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="tab4" th:unless="${accreditamentoWrapper.accreditamento.isStandard()}}">
 							<!--  TAB 4 -->
 							<div class="row">
 								<div class="col-xs-12">
