@@ -99,7 +99,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 				provider.setDenominazioneLegale(providerName);
 				provider.setHasPartitaIVA(true);
 				provider.setPartitaIva(partitaIva);
-				provider.setCodiceFiscale("3dInformatica");
+				provider.setCodiceFiscale("3dInformatica" + i);
 				provider.setTipoOrganizzatore(TipoOrganizzatore.AZIENDE_SANITARIE);
 				provider.setRagioneSociale(RagioneSocialeEnum.SRL);
 				provider.setNaturaOrganizzazione("Privata");

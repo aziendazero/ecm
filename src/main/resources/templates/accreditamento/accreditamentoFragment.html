@@ -45,7 +45,8 @@
 										(accreditamentoWrapper.accreditamento.decretoAccreditamento != null and !accreditamentoWrapper.accreditamento.decretoAccreditamento.new) or
 										(accreditamentoWrapper.accreditamento.decretoDiniego != null and !accreditamentoWrapper.accreditamento.decretoDiniego.new) or
 										(accreditamentoWrapper.accreditamento.richiestaIntegrazione != null and !accreditamentoWrapper.accreditamento.richiestaIntegrazione.new) or
-										(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.new))}" class="presentation">
+										(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.new) or
+										(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf != null and !accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.new))}" class="presentation">
 							<a href="#tab_content5" role="tab" id="tab5" data-toggle="tab" aria-expanded="false" th:text="#{label.documenti}">
 								Documenti
 							</a>
@@ -938,7 +939,8 @@
 										(accreditamentoWrapper.accreditamento.decretoAccreditamento != null and !accreditamentoWrapper.accreditamento.decretoAccreditamento.new) or
 										(accreditamentoWrapper.accreditamento.decretoDiniego != null and !accreditamentoWrapper.accreditamento.decretoDiniego.new) or
 										(accreditamentoWrapper.accreditamento.richiestaIntegrazione != null and !accreditamentoWrapper.accreditamento.richiestaIntegrazione.new) or
-										(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.new)}" role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="tab5">
+										(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto != null and !accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.new) or
+										(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf != null and !accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.new)}" role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="tab5">
 							<!--  TAB 5 -->
 							<div class="row">
 								<div class="col-xs-12">
@@ -1030,6 +1032,23 @@
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.id}|}"></a></div>
 													<div class="" th:if="${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
+												</div>
+											</div>
+
+											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione} or
+																				${accreditamentoWrapper.accreditamento.noteOsservazioniPreavvisoRigetto} or
+																				${accreditamentoWrapper.accreditamento.decretoAccreditamento} or
+																				${accreditamentoWrapper.accreditamento.decretoDiniego} or
+																				${accreditamentoWrapper.accreditamento.richiestaIntegrazione} or
+																				${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto}"></div>
+
+											<div th:if="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf}">
+												<label class="control-label">
+													<span th:class="label-show" th:text="#{label.pdf_verbale_valutazione_sul_campo}">richiesta_preavviso_rigetto</span>
+												</label>
+												<div>
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.id}|}"></a></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 										</div>

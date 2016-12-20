@@ -39,6 +39,7 @@ public interface WorkflowService {
 	public void eseguiTaskIntegrazioneForCurrentUser(Accreditamento accreditamento) throws Exception;
 	public void eseguiTaskIntegrazioneForUser(CurrentUser user, Accreditamento accreditamento) throws Exception;
 	public void eseguiTaskValutazioneSegreteriaForCurrentUser(Accreditamento accreditamento, Boolean presaVisione, List<String> usernameWorkflowValutatoriCrecm) throws Exception;
+	public void eseguiTaskValutazioneSegreteriaTeamLeaderForCurrentUser(Accreditamento accreditamento, Boolean presaVisione, String usernameWorkflowTeamLeader) throws Exception;
 	public void eseguiTaskValutazioneSegreteriaForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione, List<String> usernameWorkflowValutatoriCrecm) throws Exception;
 	public void eseguiTaskRichiestaPreavvisoRigettoForCurrentUser(Accreditamento accreditamento, Long timerIntegrazioneRigetto) throws Exception;
 	public void eseguiTaskRichiestaPreavvisoRigettoForUser(CurrentUser user, Accreditamento accreditamento, Long timerIntegrazioneRigetto) throws Exception;
