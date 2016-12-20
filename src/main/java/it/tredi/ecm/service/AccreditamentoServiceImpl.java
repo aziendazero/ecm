@@ -1307,6 +1307,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//accreditamento.setVerbaleValutazioneSulCampoPdf(verbalePdf);
 
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
+
+		accreditamento.setVerbaleValutazioneSulCampoPdf(verbalePdf);
+
 		accreditamentoRepository.save(accreditamento);
 
 		//TODO nemmeno qua sarebbe da assegnare la valutazione del team leader se l'accreditamento viene accreditato
