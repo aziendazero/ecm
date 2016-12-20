@@ -41,9 +41,11 @@
 							<i class="fa fa-pencil"></i>
 						</button>
 						<!-- pulsante per aggiungere firma -->
-						<button th:onclick="|rimuoviFile('__${propertyName}__')|" type="button" th:if="${!required and !__${wrapper}__.__${propertyName}__.new}" class="btn btn-danger pull-right">
-							<i class="fa fa-trash"></i>
-						</button>
+						<th:block th:unless="${fieldKey == null or !#lists.contains(__${wrapper}__.idEditabili, idField)}">
+							<button th:onclick="|rimuoviFile('__${propertyName}__')|" type="button" th:if="${!required and !__${wrapper}__.__${propertyName}__.new}" class="btn btn-danger pull-right">
+								<i class="fa fa-trash"></i>
+							</button>
+						</th:block>
 					</div>
 				</th:block>
 			</th:block>

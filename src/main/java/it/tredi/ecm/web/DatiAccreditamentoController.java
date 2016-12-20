@@ -333,8 +333,20 @@ public class DatiAccreditamentoController {
 
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(IdFieldEnum idField : wrapper.getIdEditabili()){
-			if(idField.getGruppo().isEmpty())
-				fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+			if(idField.getGruppo().isEmpty()){
+				if(!idField.isFileFromSet()){
+					fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+				}else{
+					//gestione particolare per i file...
+					//gestiamo la cancellazione dei file facoltativi
+					Object fileId = integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef());
+					if(fileId == null){
+						fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef()), TipoIntegrazioneEnum.ELIMINAZIONE));
+					}else{
+						fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+					}
+				}
+			}
 		}
 
 		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);

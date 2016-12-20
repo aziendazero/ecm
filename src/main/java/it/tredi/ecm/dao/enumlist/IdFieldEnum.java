@@ -309,4 +309,8 @@ public enum IdFieldEnum {
 
 		return ids;
 	}
+
+	public boolean isFileFromSet(){
+		return nameRef != null && nameRef.startsWith("files.");
+	}
 }

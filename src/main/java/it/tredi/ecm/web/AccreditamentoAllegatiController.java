@@ -188,7 +188,8 @@ public class AccreditamentoAllegatiController {
 			//reload degli allegati perchè se è stato fatto un upload ajax...il wrapper non ha i byte[] aggiornati e nemmeno il ref a providerId
 			List<FileEnum> tuttiFileGestiti = Arrays.asList(FileEnum.FILE_ATTO_COSTITUTIVO, FileEnum.FILE_ESPERIENZA_FORMAZIONE,
 					FileEnum.FILE_DICHIARAZIONE_LEGALE, FileEnum.FILE_PIANO_QUALITA,
-					FileEnum.FILE_UTILIZZO, FileEnum.FILE_SISTEMA_INFORMATICO, FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE);
+					FileEnum.FILE_UTILIZZO, FileEnum.FILE_SISTEMA_INFORMATICO, FileEnum.FILE_DICHIARAZIONE_ESCLUSIONE,
+					FileEnum.FILE_RICHIESTA_ACCREDITAMENTO_STANDARD, FileEnum.FILE_RELAZIONE_ATTIVITA_FORMATIVA);
 			Set<FileEnum> fileNonCancellati = new HashSet<FileEnum>();
 			for(File file : wrapper.getFiles()){
 				if(file != null && !file.isNew()){
@@ -336,7 +337,12 @@ public class AccreditamentoAllegatiController {
 
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(IdFieldEnum idField : wrapper.getIdEditabili()){
-			fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+			Object fileId = integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef());
+			if(fileId == null){
+				fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef()), TipoIntegrazioneEnum.ELIMINAZIONE));
+			}else{
+				fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getDatiAccreditamento(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
+			}
 		}
 
 		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);

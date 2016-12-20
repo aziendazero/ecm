@@ -337,7 +337,7 @@
 
 					//dati accreditamento
 					if([[${!accreditamentoWrapper.datiAccreditamento.new}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/validate?showRiepilogo=true|}]];
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/validate/1?showRiepilogo=true|}]];
 						$("#datiBlockValidate").load(url + ' #toValidateModal', function(){
 							initTable($(this).find('table'));
 						});

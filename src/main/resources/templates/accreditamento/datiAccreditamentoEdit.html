@@ -10,7 +10,9 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.modifica} + ' ' + #{label.dati_attività}">Dati relativi all’attività</h2>
+						<h2 th:if="${datiAccreditamentoWrapper.sezione == 1}" th:text="#{label.modifica} + ' ' + #{label.tipologia_formativa}">Dati relativi all’attività</h2>
+						<h2 th:if="${datiAccreditamentoWrapper.sezione == 2}" th:text="#{label.modifica} + ' ' + #{label.dati_economici}">Dati relativi all’attività</h2>
+						<h2 th:if="${datiAccreditamentoWrapper.sezione == 3}" th:text="#{label.modifica} + ' ' + #{label.dati_struttura}">Dati relativi all’attività</h2>
 						<div class="pull-right buttons-header">
 							<th:block th:unless="${#lists.isEmpty(datiAccreditamentoWrapper.idEditabili)}">
 								<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
