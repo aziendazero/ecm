@@ -13,14 +13,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Obiettivo extends BaseEntity{
+	@Column(columnDefinition = "text")
 	private String nome;
 	private boolean nazionale;
 	@Enumerated(EnumType.STRING)
-	private CategoriaObiettivoNazionale categoria; 
-	
+	private CategoriaObiettivoNazionale categoria;
+
 	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;
-	
+
 	public Obiettivo(){}
 	public Obiettivo(String nome, boolean nazionale, CategoriaObiettivoNazionale categoria){
 		this(nome, nazionale, categoria, null);
@@ -31,7 +32,7 @@ public class Obiettivo extends BaseEntity{
 		this.categoria = categoria;
 		this.codiceCogeaps = codiceCogeaps;
 	}
-	
+
 	//obiettivo regionale -> Non rientra in uno degli obiettivi regionali
 	public boolean isNonRientraTraObiettiviRegionali(){
 		if(!nazionale){
