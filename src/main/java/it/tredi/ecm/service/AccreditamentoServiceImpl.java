@@ -544,7 +544,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		approvaIntegrazione(accreditamentoId);
 
 		//setta la data (per la presa visione)
-		//valutazioneSegreteria.setDataValutazione(LocalDate.now());
+		valutazioneSegreteria.setDataValutazione(LocalDateTime.now());
 
 		//Non dovrebbe servire perche' passando in AssegnazioneCRECM la valutazione della segreteria è già bloccata
 		/*
