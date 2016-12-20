@@ -80,6 +80,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private EcmProperties ecmProperties;
 
 	@Autowired private AlertEmailService alertEmailService;
+	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -95,6 +96,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return getNewAccreditamento(provider,tipoDomanda);
 	}
 
+	@Transactional
 	private Accreditamento getNewAccreditamento(Provider provider, AccreditamentoTipoEnum tipoDomanda) throws Exception{
 		if(provider == null){
 			throw new Exception("Provider non può essere NULL");
@@ -106,12 +108,57 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			Set<Accreditamento> accreditamentiAttivi = getAccreditamentiAvviatiForProvider(provider.getId(), tipoDomanda);
 
-//			if(accreditamentiAttivi.isEmpty()){
 			if(canProviderCreateAccreditamento(provider.getId(), tipoDomanda)){
 				Accreditamento accreditamento = new Accreditamento(tipoDomanda);
 				accreditamento.setProvider(provider);
 				accreditamento.enableAllIdField();
+
 				save(accreditamento);
+
+				if(tipoDomanda == AccreditamentoTipoEnum.STANDARD){
+					try{
+						Accreditamento ultimoAccreditamento = getAccreditamentoAttivoForProvider(provider.getId());
+						if(ultimoAccreditamento != null && ultimoAccreditamento.getDatiAccreditamento() != null){
+							DatiAccreditamento ultimoDatiAccreditamento = ultimoAccreditamento.getDatiAccreditamento();
+							if(ultimoDatiAccreditamento.isDatiStrutturaInseriti() || ultimoDatiAccreditamento.isTipologiaFormativaInserita()){
+								DatiAccreditamento datiAccreditamento = new DatiAccreditamento();
+
+								datiAccreditamento.setTipologiaAccreditamento(String.copyValueOf(ultimoDatiAccreditamento.getTipologiaAccreditamento().toCharArray()));
+								datiAccreditamento.getProcedureFormative().addAll(ultimoDatiAccreditamento.getProcedureFormative());
+								datiAccreditamento.setProfessioniAccreditamento(String.copyValueOf(ultimoDatiAccreditamento.getProfessioniAccreditamento().toCharArray()));
+								datiAccreditamento.getDiscipline().addAll(ultimoDatiAccreditamento.getDiscipline());
+
+								datiAccreditamento.setNumeroDipendentiFormazioneTempoIndeterminato(ultimoDatiAccreditamento.getNumeroDipendentiFormazioneTempoIndeterminato());
+								datiAccreditamento.setNumeroDipendentiFormazioneAltro(ultimoDatiAccreditamento.getNumeroDipendentiFormazioneAltro());
+
+								File organigramma = null;
+								File funzionigramma = null;
+								for(File f : ultimoDatiAccreditamento.getFiles()){
+									if(f.isORGANIGRAMMA())
+										organigramma = (File) f.clone();
+									else if(f.isFUNZIONIGRAMMA()){
+										funzionigramma = (File) f.clone();
+									}
+								}
+
+								if(organigramma != null){
+									fileService.save(organigramma);
+									datiAccreditamento.addFile(organigramma);
+								}
+
+								if(funzionigramma != null){
+									fileService.save(funzionigramma);
+									datiAccreditamento.addFile(funzionigramma);
+								}
+
+								datiAccreditamentoService.save(datiAccreditamento, accreditamento.getId());
+							}
+						}
+					}catch(Exception ex){
+						LOGGER.info(ex.getMessage());
+					}
+				}
+
 				return accreditamento;
 			}else{
 				throw new Exception("Il provider " + provider.getId() + " non può presentare una domanda di accreditamento " + tipoDomanda);
