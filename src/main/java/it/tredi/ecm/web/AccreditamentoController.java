@@ -49,6 +49,7 @@ import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
+import it.tredi.ecm.service.EmailService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
@@ -90,6 +91,7 @@ public class AccreditamentoController {
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
 	@Autowired private EcmProperties ecmProperties;
+	@Autowired private EmailService emailService;
 
 
 	@InitBinder
@@ -875,7 +877,7 @@ public class AccreditamentoController {
 		}
 	}
 
-//	TODO @PreAuthorize("@securityAccessServiceImpl.canEditVerbaleAccreditamento(principal,#accreditamentoId)")
+    @PreAuthorize("@securityAccessServiceImpl.canEditVerbaleAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/verbale/edit", method = RequestMethod.POST)
 	public String editVerbaleValutazioneSulCampo(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
 			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
@@ -1348,5 +1350,21 @@ public class AccreditamentoController {
 		@ResponseBody
 		public Set<Valutazione>getValutazioniStorico(@PathVariable Long accreditamentoId){
 			return valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
+		}
+
+		@PreAuthorize("@securityAccessServiceImpl.canEditVerbaleAccreditamento(principal,#accreditamentoId)")
+		@RequestMapping("/accreditamento/{accreditamentoId}/inviaConvocazioneSulCampo")
+		public String inviaMailConvocazioneValutazioneSulCampo(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
+			LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/inviaConvocazioneSulCampo"));
+			try{
+				accreditamentoService.inviaEmailConvocazioneValutazioneSulCampo(accreditamentoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.email_convocazione_valutazione_sul_campo_inviata", "success"));
+				return "redirect:/accreditamento/{accreditamentoId}/show?tab=tab5";
+			}catch (Exception ex){
+				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/show"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
 		}
 }

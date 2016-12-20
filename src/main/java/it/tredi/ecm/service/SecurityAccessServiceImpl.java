@@ -377,4 +377,14 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 			return true;
 		return false;
 	}
+
+	@Override
+	public boolean canEditVerbaleAccreditamento(CurrentUser currentUser, Long accreditamentoId) {
+		if(currentUser.isSegreteria()){
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			if(accreditamento.isValutazioneSulCampo())
+				return true;
+		}
+		return false;
+	}
 }

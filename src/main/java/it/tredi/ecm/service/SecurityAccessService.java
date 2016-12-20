@@ -53,4 +53,6 @@ public interface SecurityAccessService {
 	public boolean canAllegaSponsorEvento(CurrentUser currentUser, Long eventoId);
 
 	public boolean canShowProtocollo(CurrentUser currentUser);
+
+	public boolean canEditVerbaleAccreditamento(CurrentUser currentUser, Long accreditamentoId);
 }
