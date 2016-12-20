@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -337,20 +338,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		} else if(accreditamento.isStandard()) {
 			Valutazione valutazioneReload = valutazioneService.getValutazione(valutazioneId);
-			//la segreteria designa le persone per la valutazione sul campo
-//			Valutazione valutazioneTeamLeader = new Valutazione();
-//			valutazioneTeamLeader.setAccount(verbale.getTeamLeader());
-//			valutazioneTeamLeader.setAccreditamento(accreditamento);
-//			valutazioneTeamLeader.setTipoValutazione(ValutazioneTipoEnum.TEAM_LEADER);
-//			emailService.inviaNotificaAReferee(verbale.getTeamLeader().getEmail(), accreditamento.getProvider().getDenominazioneLegale());
-//			valutazioneService.save(valutazioneTeamLeader);
 			//svuoto e riabilito la valutazione della segreteria (comunque salvata in storico)
 			valutazioneReload.setDataValutazione(null);
-			valutazioneReload.getValutazioni().clear();
 			valutazioneReload.setDataOraScadenzaPossibilitaValutazione(null);
 			valutazioneReload.setValutazioneComplessiva(null);
+			valutazioneReload.getValutazioni().clear();
+			valutazioneReload.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
 			valutazioneService.save(valutazioneReload);
-			//TODO setta il necessario per il flusso STANDARD
 
 			//segretario valutatore
 			verbale.setValutatore(Utils.getAuthenticatedUser().getAccount());
@@ -373,7 +367,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
 			}
 
-			//TODO non deve creare un task di valutazione per il team leader.. deve solo mandare il flusso in valutazione sul campo con lo stesso
+			//non deve creare un task di valutazione per il team leader.. deve solo mandare il flusso in valutazione sul campo con lo stesso
 			//attore (segretario) che deve inserire la valutazione sul campo.. solo se l'accreditamento va in integrazione il teamleader deve valutare
 			workflowService.eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(accreditamento, verbale.getTeamLeader().getUsernameWorkflow());
 		}
@@ -495,6 +489,42 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
+	public void assegnaTeamLeader(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Riassegnamento domanda di Accreditamento " + accreditamentoId + " al Team Leader"));
+		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		approvaIntegrazione(accreditamentoId);
+
+		//setta la data (per la presa visione)
+		valutazioneSegreteria.setDataValutazione(LocalDate.now());
+		//Non dovrebbe servire perche' passando in AssegnazioneCRECM la valutazione della segreteria è già bloccata
+		/*
+		//disabilito tutti i filedValutazioneAccreditamento
+		for (FieldValutazioneAccreditamento fva : valutazioneSegreteria.getValutazioni()) {
+			fva.setEnabled(false);
+		}
+		*/
+
+		//inserisce il commento complessivo
+		valutazioneSegreteria.setValutazioneComplessiva(valutazioneComplessiva);
+
+		//setta lo stato dell'accreditamento al momento del salvataggio
+		valutazioneSegreteria.setAccreditamentoStatoValutazione(accreditamento.getStato());
+
+		valutazioneService.save(valutazioneSegreteria);
+
+		valutazioneService.copiaInStorico(valutazioneSegreteria);
+
+		Account accountTeamLeader = accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader();
+		String usernameWorkflowTeamLeader = accountTeamLeader.getUsernameWorkflow();
+
+		//accreditamento.setDataValutazioneCrecm(LocalDate.now());
+		accreditamentoRepository.save(accreditamento);
+		workflowService.eseguiTaskValutazioneSegreteriaTeamLeaderForCurrentUser(accreditamento, false, usernameWorkflowTeamLeader);
+	}
+
+	@Override
 	public void presaVisione(Long accreditamentoId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Presa visione della conferma dei dati da parte del provider e cambiamento stato della domanda " + accreditamentoId + " in INS_ODG"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -506,7 +536,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
 		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazioneList);
 
-		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, true, null);
+		if(accreditamento.isProvvisorio())
+			workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, true, null);
+		else if (accreditamento.isStandard())
+			workflowService.eseguiTaskValutazioneSegreteriaTeamLeaderForCurrentUser(accreditamento, true, null);
+
 	}
 
 	@Override
@@ -987,7 +1021,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			//Ricavo la seduta
 			Seduta seduta = null;
 			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
-				//TODO nel caso vengano aggancxiati piu' flussi alla domanda occorre prendere l'ultima ValutazioneCommissionew
+				//TODO nel caso vengano agganciati piu' flussi alla domanda occorre prendere l'ultima ValutazioneCommissionew
 				if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
 					seduta = valCom.getSeduta();
 				}
@@ -1009,7 +1043,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				file = pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
 			else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 				file = pdfService.creaPdfAccreditamentoStandardIntegrazione(integrazioneInfo);
-			//TODO Testare se il file è stato salvato
 			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 			accreditamento.setRichiestaIntegrazione(file);
 			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
@@ -1106,6 +1139,32 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				accreditamento.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
 			else if(accreditamento.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
 				accreditamento.setPreavvisoRigettoEseguitoDaProvider(eseguitoDaUtente);
+		} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER) {
+			Account accountTeamLeader = accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader();
+			String usernameWorkflowTeamLeader = accountTeamLeader.getUsernameWorkflow();
+			//Ricavo la valutazione della segreteria perche' contiene i field editabili
+			Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
+			//ATTENZIONE la valutazioe restituita è detachata me è sempre lo stesso oggetto valutazioneSegreteria
+			Valutazione valutazioneTL = valutazioneService.detachValutazione(valutazioneSegreteria);
+			valutazioneService.cloneDetachedValutazione(valutazioneTL);
+			//valutazioneService.setEsitoForEnabledFields(valutazioneTL, null);
+
+			valutazioneTL.setStoricizzato(false);
+			valutazioneTL.setDataValutazione(null);
+			valutazioneTL.setAccount(accountTeamLeader);
+			valutazioneTL.setAccreditamento(accreditamento);
+			valutazioneTL.setTipoValutazione(ValutazioneTipoEnum.TEAM_LEADER);
+
+			//rimuovo i field editabili per quelli isEnabled=true
+			Iterator<FieldValutazioneAccreditamento> iterator = valutazioneTL.getValutazioni().iterator();
+			while (iterator.hasNext()) {
+				FieldValutazioneAccreditamento fval = iterator.next();
+				if(fval.isEnabled()) {
+			        iterator.remove();
+			    }
+			}
+			valutazioneService.save(valutazioneTL);
+			emailService.inviaNotificaATeamLeader(accountTeamLeader.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 		}
 
 		//TODO se si chiama il servizio di protocollazione verrà settato uno stato intermedio di attesa protocollazione
@@ -1255,7 +1314,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		valutazioneService.copiaInStorico(valutazione);
 
-		//inutile viene modificando gia' quello
+		//inutile viene modificato gia' quello
 		//accreditamento.setVerbaleValutazioneSulCampo(verbale);
 		//accreditamento.setVerbaleValutazioneSulCampoPdf(verbalePdf);
 

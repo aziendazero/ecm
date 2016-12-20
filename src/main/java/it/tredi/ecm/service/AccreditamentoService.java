@@ -43,6 +43,7 @@ public interface AccreditamentoService{
 	public void rivaluta(Long accreditamentoId);
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 
+	public void assegnaTeamLeader(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 	//modifica??
 	//inserisciPianoFormativo
 	//invia domanda

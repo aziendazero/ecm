@@ -32,12 +32,18 @@ public class PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo {
 			this.numeroProtocolloValidazione = fileProtocolloInvio.getProtocollo().getNumero().toString();
 			this.dataProtocolloValidazione = fileProtocolloInvio.getProtocollo().getData();
 		}
+		if(accreditamento.isStandard())
+			if(accreditamento.getVerbaleValutazioneSulCampo() != null)
+				this.accreditamentoDataVisita = accreditamento.getVerbaleValutazioneSulCampo().getGiorno();
 
-		this.accreditamentoDataSeduta = seduta.getData();
-		for(ValutazioneCommissione valutazione : seduta.getValutazioniCommissione()) {
-			if(valutazione.getAccreditamento().getId() == accreditamento.getId()) {
-				//this.noteSedutaDomanda = valutazione.getOggettoDiscussione() + " - " + valutazione.getValutazioneCommissione();
-				this.noteSedutaDomanda = valutazione.getValutazioneCommissione();
+		//per l'accreditamento standard in integrazione non si passa dalla seduta della commissione
+		if(seduta != null) {
+			this.accreditamentoDataSeduta = seduta.getData();
+			for(ValutazioneCommissione valutazione : seduta.getValutazioniCommissione()) {
+				if(valutazione.getAccreditamento().getId() == accreditamento.getId()) {
+					//this.noteSedutaDomanda = valutazione.getOggettoDiscussione() + " - " + valutazione.getValutazioneCommissione();
+					this.noteSedutaDomanda = valutazione.getValutazioneCommissione();
+				}
 			}
 		}
 		this.listaCriticita = listaCriticita;

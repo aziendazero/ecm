@@ -294,6 +294,15 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 	@Override
+	public void setEsitoForEnabledFields(Valutazione valutazione, Boolean esito) throws Exception {
+		for(FieldValutazioneAccreditamento f : valutazione.getValutazioni() ) {
+			if(f.isEnabled()) {
+				f.setEsito(esito);
+			}
+		}
+	}
+
+	@Override
 	public Valutazione getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero la valutazione attiva (non storicizzata) per l'accreditamento id:" + accreditamentoId + " della segreteria"));
 		return valutazioneRepository.findOneByAccreditamentoIdAndTipoValutazioneAndStoricizzatoFalse(accreditamentoId, ValutazioneTipoEnum.SEGRETERIA_ECM);
