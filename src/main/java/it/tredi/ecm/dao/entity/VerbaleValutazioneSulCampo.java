@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -21,6 +22,7 @@ public class VerbaleValutazioneSulCampo extends BaseEntity {
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate giorno;
 	@OneToOne
+	@JoinColumn(name = "accreditamento_id")
 	private Accreditamento accreditamento;
 //	@OneToOne
 //	private Valutazione valutazione;

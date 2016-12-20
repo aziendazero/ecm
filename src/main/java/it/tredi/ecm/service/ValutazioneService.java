@@ -40,4 +40,5 @@ public interface ValutazioneService {
 	public Set<Valutazione> getAllValutazioniStoricizzateForAccreditamentoId(Long accreditamentoId);
 	public Map<String, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapAllValutazioneSingoli(Valutazione valutazione, Accreditamento accreditamento);
 	public Map<String, FieldValutazioniRipetibiliWrapper> getMapAllValutazioneRipetibili(Valutazione valutazione, Accreditamento accreditamento);
+	public void setEsitoForEnabledFields(Valutazione valutazione, Boolean esito) throws Exception;
 }

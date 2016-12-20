@@ -19,5 +19,6 @@
     <include file="003_01_Update_Profile.xml" relativeToChangelogFile="true"/>
     <include file="004_01_aggiuntaSedeValutazioneSulCampo.xml" relativeToChangelogFile="true"/>
     <include file="005_01_cambioDataValutazione_LocalDateTime.xml" relativeToChangelogFile="true"/>
+    <include file="20161219_Accreditamento_VerbaleValutazioneSulCampo.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -800,8 +800,7 @@ public class AccreditamentoController {
 					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 			}
-			// stato VALUTAZIONE_SEGRETERIA dove valuto le integrazioni
-			//TODO manca gestione VALUTAZIONE_SEGRETERIA isStandard() -> assegnare la domanda la team leader per andare in valutazione
+			// stato VALUTAZIONE_SEGRETERIA dove valuto le integrazioni per domanda accreditamento provvisorio
 			else if(accreditamento.isValutazioneSegreteria() && accreditamento.isProvvisorio()){
 
 				//validazione della valutazioneComplessiva
@@ -817,6 +816,25 @@ public class AccreditamentoController {
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata_gruppo_riassegnato", "success"));
+					return "redirect:/accreditamento/{accreditamentoId}/show";
+				}
+			}
+			// stato VALUTAZIONE_SEGRETERIA dove valuto le integrazioni per domanda accreditamento standard
+			else if(accreditamento.isValutazioneSegreteria() && accreditamento.isStandard()){
+
+				//validazione della valutazioneComplessiva
+				valutazioneValidator.validateValutazioneComplessivaTeamLeader(wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, result);
+
+				if(result.hasErrors()){
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+					model.addAttribute("confirmErrors", true);
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else {
+					accreditamentoService.assegnaTeamLeader(accreditamentoId, wrapper.getValutazioneComplessiva());
+
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata_team_leader_assegnato", "success"));
 					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 			}
@@ -1356,7 +1374,7 @@ public class AccreditamentoController {
 			try{
 				accreditamentoService.inviaEmailConvocazioneValutazioneSulCampo(accreditamentoId);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.email_convocazione_valutazione_sul_campo_inviata", "success"));
-				return "redirect:/accreditamento/{accreditamentoId}/show?tab=tab5";
+				return "redirect:/accreditamento/{accreditamentoId}/show?tab=tab7";
 			}catch (Exception ex){
 				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/show"),ex);
 				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));

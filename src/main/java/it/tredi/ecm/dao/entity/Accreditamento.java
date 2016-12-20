@@ -89,8 +89,8 @@ public class Accreditamento extends BaseEntity{
 	@OneToOne
 	private GruppoCrecm gruppoCrecm;
 
-	@OneToOne
-	private TeamValutazione teamValutazione;
+	//@OneToOne
+	//private TeamValutazione teamValutazione;
 
 	@OneToMany(mappedBy = "accreditamento")
 	Set<ValutazioneCommissione> valutazioniCommissione = new HashSet<ValutazioneCommissione>();
@@ -110,7 +110,8 @@ public class Accreditamento extends BaseEntity{
 	@OneToOne
 	private File verbaleValutazioneSulCampoPdf;
 
-	@OneToOne(cascade=CascadeType.ALL)
+	//@OneToOne(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "accreditamento", cascade=CascadeType.ALL)
 	private VerbaleValutazioneSulCampo verbaleValutazioneSulCampo;
 
 	@Embedded

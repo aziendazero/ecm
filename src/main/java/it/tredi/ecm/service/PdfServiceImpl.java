@@ -1188,8 +1188,8 @@ public class PdfServiceImpl implements PdfService {
             msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il {0} (protocollo n° {1} del {2}), "
             		+ "sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia, si rappresenta "
             		+ "che il referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 "
-            		+ "nel corso della visita in loco del {1}, ha rilevato le seguenti criticità:");
-            Object[] valuesCorpo = {integrazioneInfo.getAccreditamentoDataVisita().format(dateTimeFormatter), integrazioneInfo.getNumeroProtocolloValidazione(), integrazioneInfo.getDataProtocolloValidazione().format(dateTimeFormatter), integrazioneInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
+            		+ "nel corso della visita in loco del {3}, ha rilevato le seguenti criticità:");
+            Object[] valuesCorpo = {integrazioneInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), integrazioneInfo.getNumeroProtocolloValidazione(), integrazioneInfo.getDataProtocolloValidazione().format(dateTimeFormatter), integrazioneInfo.getAccreditamentoDataVisita().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesCorpo));
 
             List list;

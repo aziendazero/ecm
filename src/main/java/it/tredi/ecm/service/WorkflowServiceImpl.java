@@ -601,6 +601,32 @@ public class WorkflowServiceImpl implements WorkflowService {
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
 
+	public void eseguiTaskValutazioneSegreteriaTeamLeaderForCurrentUser(Accreditamento accreditamento, Boolean presaVisione, String usernameWorkflowTeamLeader) throws Exception {
+		//Ricavo l'utente corrente
+		CurrentUser user = Utils.getAuthenticatedUser();
+		eseguiTaskValutazioneSegreteriaTeamLeaderForUser(user, accreditamento, presaVisione, usernameWorkflowTeamLeader);
+	}
+
+	public void eseguiTaskValutazioneSegreteriaTeamLeaderForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione, String usernameWorkflowTeamLeader) throws Exception {
+		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
+			LOGGER.error("Non è possibile eseguire il task ValutazioneSegreteria per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+			throw new Exception("Non è possibile eseguire il task ValutazioneSegreteria per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task ValutazioneSegreteria non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task ValutazioneSegreteria non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
+		if(usernameWorkflowTeamLeader != null)
+			bonitaAPIWrapper.setTaskVariable(task.getId(), "usernameTeamLeader", (Serializable)usernameWorkflowTeamLeader);
+		bonitaAPIWrapper.setTaskVariable(task.getId(), "presaVisione", (Serializable)presaVisione);
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
 	public void eseguiTaskValutazioneSegreteriaForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione) throws Exception {
 		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
 			LOGGER.error("Non è possibile eseguire il task ValutazioneSegreteria per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
