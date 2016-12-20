@@ -336,7 +336,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Long valutazioneId = valutazione.getId();
 
 		//setta la data
-		valutazione.setDataValutazione(LocalDate.now());
+		valutazione.setDataValutazione(LocalDateTime.now());
 		//disabilito tutti i filedValutazioneAccreditamento
 		for (FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
 			fva.setEnabled(false);
@@ -489,7 +489,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		approvaIntegrazione(accreditamentoId);
 
 		//setta la data (per la presa visione)
-		valutazioneSegreteria.setDataValutazione(LocalDate.now());
+		valutazioneSegreteria.setDataValutazione(LocalDateTime.now());
 		//Non dovrebbe servire perche' passando in AssegnazioneCRECM la valutazione della segreteria è già bloccata
 		/*
 		//disabilito tutti i filedValutazioneAccreditamento
@@ -1286,7 +1286,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Account user = Utils.getAuthenticatedUser().getAccount();
 
 		//setta la data
-		valutazione.setDataValutazione(LocalDate.now());
+		valutazione.setDataValutazione(LocalDateTime.now());
 		//disabilito tutti i filedValutazioneAccreditamento
 		for (FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
 			fva.setEnabled(false);

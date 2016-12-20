@@ -9,6 +9,9 @@
 		<div class="row">
 			<div class="col-xs-12">
 
+				<!-- modale storico -->
+				<th:block th:include="fragments/modaleStoricoValutazioni :: modaleStoricoValutazioni"></th:block>
+
 				<!-- modale modifica verbale  -->
 				<th:block th:if="${#authentication.principal.hasProfile('SEGRETERIA')
 					and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()
@@ -304,10 +307,10 @@
 									<span th:text="#{label.menu_riepiloghi}"></span>
 									<span class="caret"></span>
 								</button>
-								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
 									<li><a class="ajaxCallShowAll" th:text="#{label.mostra_riepilogo}" data-toggle="modal" data-target=".modal-showAll"></a></li>
   									<li><a class="ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni" th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button"></a></li>
+  									<li><a th:text="#{label.mostra_storico_valutazioni}" onclick="showStorico()" th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}"></a></li>
   									<li><a class="ajaxCallShowAllPiano" th:text="#{label.mostra_riepilogo_piano_formativo}" data-toggle="modal" data-target=".modal-showPianoAll"></a></li>
 								</ul>
 							</div>

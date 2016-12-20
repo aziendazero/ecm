@@ -28,7 +28,7 @@
 									<span th:if="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__].esito == true}" class="fa table-icon fa-check green" th:title="#{label.valido}"></span>
 									<span th:if="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__].esito == false}" class="fa table-icon fa-remove red" th:title="#{label.non_valido}"></span>
 								</th:block>
-								<span th:if="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__] == null}" class="fa table-icon fa-question grey" th:title="#{label.non_valutato}"></span>
+								<span th:if="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__] == null or mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__].esito == null}" class="fa table-icon fa-question grey" th:title="#{label.non_valutato}"></span>
 								<div th:if="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__] != null and !#strings.isEmpty(mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__].note)}" th:text="${mapValutazione.value[T(it.tredi.ecm.dao.enumlist.IdFieldEnum).__${field}__].note}" class="nota-validazione">nota della valutazione</div>
 							</div>
 						</td>

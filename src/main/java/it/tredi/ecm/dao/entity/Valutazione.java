@@ -1,6 +1,5 @@
 package it.tredi.ecm.dao.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +26,7 @@ import lombok.Setter;
 public class Valutazione extends BaseEntity{
 	@Column(name="data_valutazione")
 	@JsonView(JsonViewModel.Valutazione.class)
-	private LocalDate dataValutazione;
+	private LocalDateTime dataValutazione;
 	@OneToOne
 	@JsonView(JsonViewModel.Valutazione.class)
 	private Account account;

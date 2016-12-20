@@ -103,8 +103,6 @@ public class ValutazioneValidator {
 	}
 
 	public void validateValutazioneSulCampo(VerbaleValutazioneSulCampo verbaleValutazioneSulCampo, String valutazioneComplessiva, Errors errors, String prefix, AccreditamentoStatoEnum stato) {
-		if(valutazioneComplessiva == null || valutazioneComplessiva.isEmpty())
-			errors.rejectValue("valutazioneComplessiva", "error.empty");
 
 		if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) {
 			if(verbaleValutazioneSulCampo.getGiorno() == null)

@@ -33,7 +33,7 @@ public class VerbaleValutazioneSulCampo extends BaseEntity {
 	@ManyToOne
 	private Account teamLeader;
 
-	@OneToOne
+	@ManyToOne
 	private Account osservatoreRegionale;
 
 	@ManyToMany

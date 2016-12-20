@@ -302,7 +302,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Override
 	public Set<Valutazione> getAllValutazioniStoricizzateForAccreditamentoId(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le valutazioni Storicizzate per l'accreditamento id: " + accreditamentoId));
-		return valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoTrue(accreditamentoId);
+		return valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoTrueOrderByDataValutazioneAsc(accreditamentoId);
 	}
 
 	@Override

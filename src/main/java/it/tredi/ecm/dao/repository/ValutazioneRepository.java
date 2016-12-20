@@ -29,4 +29,5 @@ public interface ValutazioneRepository extends JpaRepository<Valutazione, Long>{
 	public Set<Valutazione> findAllByAccountId(Long accountId);
 	public Valutazione findOneByAccreditamentoIdAndTipoValutazioneAndStoricizzatoFalse(Long accreditamentoId, ValutazioneTipoEnum segreteriaEcm);
 	public Set<Valutazione> findAllByAccreditamentoIdAndStoricizzatoTrue(Long accreditamentoId);
+	public Set<Valutazione> findAllByAccreditamentoIdAndStoricizzatoTrueOrderByDataValutazioneAsc(Long accreditamentoId);
 }

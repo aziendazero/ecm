@@ -656,10 +656,10 @@ public class AccreditamentoController {
 		}
 
 		//aggiungo gli eventi
-		for(EventoPianoFormativo e : accreditamentoWrapper.getAccreditamento().getPianoFormativo().getEventiPianoFormativo()) {
-			mappaEventi.put(e.getId(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), e.getId()));
-			eventiStati.put(e.getId(), false);
-		}
+//		for(EventoPianoFormativo e : accreditamentoWrapper.getAccreditamento().getPianoFormativo().getEventiPianoFormativo()) {
+//			mappaEventi.put(e.getId(), fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), e.getId()));
+//			eventiStati.put(e.getId(), false);
+//		}
 
 		accreditamentoWrapper.setMappaSedeLegale(mappaSedeLegale);
 		accreditamentoWrapper.setMappaSedi(mappaSedi);
@@ -840,9 +840,6 @@ public class AccreditamentoController {
 			}
 			else if(accreditamento.isValutazioneSulCampo()){
 
-				//validazione della valutazioneComplessiva
-				if(wrapper.getValutazioneComplessiva() == null || wrapper.getValutazioneComplessiva().isEmpty())
-					result.rejectValue("valutazioneComplessiva", "error.empty");
 				//validate dello stato di destinazione della domanda standard
 				if(wrapper.getDestinazioneStatoDomandaStandard() == null)
 					result.rejectValue("destinazioneStatoDomandaStandard", "error.empty");

@@ -870,7 +870,7 @@
 							</div>
 							<!--  /TAB 3 -->
 						</div>
-						<div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="tab4" th:unless="${accreditamentoWrapper.accreditamento.isStandard()}}">
+						<div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="tab4" th:unless="${accreditamentoWrapper.accreditamento.isStandard()}">
 							<!--  TAB 4 -->
 							<div class="row">
 								<div class="col-xs-12">
@@ -1211,7 +1211,7 @@
 														<span class="label-show" th:text="#{label.provincia}">Provincia</span>
 													</label>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.sede.provincia}"></div>
+														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.sede?.provincia}"></div>
 													</div>
 												</div>
 
@@ -1220,7 +1220,7 @@
 														<span class="label-show" th:text="#{label.comune}">Comune</span>
 													</label>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.sede.comune}"></div>
+														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.sede?.comune}"></div>
 													</div>
 												</div>
 
@@ -1229,7 +1229,7 @@
 														<span class="label-show" th:text="#{label.indirizzo}">Indirizzo</span>
 													</label>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.sede.indirizzo}"></div>
+														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.sede?.indirizzo}"></div>
 													</div>
 												</div>
 
