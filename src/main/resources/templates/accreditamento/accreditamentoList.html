@@ -45,7 +45,7 @@
 									<th th:text="#{label.accreditamento_fine}">Fine accreditamento</th>
 
 									<th th:if="${mappaCarica != null}" th:text="#{label.lista_valutatori}">Lista Valutatori</th>
-									<th th:if="${#authentication.principal.isReferee() and mappaScadenze != null}" th:text="#{label.scadenza_valutazione}">scadenza</th>
+									<th th:if="${#authentication.principal.isReferee() and mappaScadenze != null}" th:text="#{label.data_ora_scadenza_valutazione}">scadenza</th>
 								</tr>
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(accreditamentoList)}" th:remove="all-but-first">
@@ -57,7 +57,10 @@
 										<span th:if="${accreditamento.provider.partitaIva != null and !#strings.isEmpty(accreditamento.provider.partitaIva)}" th:text="${'(' + accreditamento.provider.partitaIva + ')'}"></span>
 									</td>
 									<td th:text="${accreditamento.provider.gruppo}">informatica</td>
-									<td th:text="${accreditamento.stato.nome}">Accettata</td>
+									<td>
+										<div th:text="${accreditamento.stato.nome}">Accettata</div>
+										<div th:if="${accreditamento.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE or accreditamento.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).PREAVVISO_RIGETTO}" th:text="${'entro il ' + #temporals.format(accreditamento.dataInizioConteggio.plusDays(accreditamento.giorniIntegrazione), 'dd/MM/yyyy')}"></div>
+									</td>
 
 									<td th:text="${accreditamento.dataInvio == null} ? '' : ${#temporals.format(accreditamento.dataInvio, 'dd/MM/yyyy')}">22/05/2014</td>
 									<td th:text="${accreditamento.dataScadenza  == null} ? '' : ${#temporals.format(accreditamento.dataScadenza, 'dd/MM/yyyy')}">24/05/2016</td>
@@ -68,7 +71,7 @@
 										<div th:unless="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:each="valutatore, row : ${mappaCarica.get(accreditamento.id)}" class="valutatore" th:text="${valutatore.isSegreteria() ? 'Segreteria ECM - ' : 'Referee - '} + ${valutatore.getFullName()}"></div>
 										<div th:if="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:text="#{label.da_prendere_in_carica}" class="danger"></div>
 									</td>
-									<td th:if="${#authentication.principal.isReferee() and mappaScadenze != null and mappaScadenze.get(accreditamento.id) != null}" th:text="${#temporals.format(mappaScadenze.get(accreditamento.id), 'dd/MM/yyyy')}"></td>
+									<td th:if="${#authentication.principal.isReferee() and mappaScadenze != null and mappaScadenze.get(accreditamento.id) != null}" th:text="${#temporals.format(mappaScadenze.get(accreditamento.id), 'dd/MM/yyyy - HH:mm')}"></td>
 								</tr>
 							</tbody>
 						</table>

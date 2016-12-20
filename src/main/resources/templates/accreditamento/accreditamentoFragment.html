@@ -17,6 +17,7 @@
 			enableField=${mode == 'enableField'}">
 
 			<div class="x_content">
+
 				<div id="tabs" class="" role="tabpanel" data-example-id="togglable-tabs">
 					<ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
 						<li role="presentation" class="active presentation">
@@ -61,6 +62,7 @@
 							</a>
 						</li>
 					</ul>
+
 					<div id="myTabContent" class="tab-content">
 						<div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="active-tab1">
 
@@ -1135,17 +1137,18 @@
 									<div class="x_panel">
 										<div class="x_title">
 											<h2 th:text="#{label.verbale_valutazione_sul_campo}"></h2>
+
+											<button th:if="${#authentication.principal.isSegreteria() and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()}"
+													type="button" class="pull-right btn btn-primary" data-toggle="modal" data-target=".modal-verbale-edit" th:text="#{label.modifica_verbale}"></button>
+											<a th:if="${#authentication.principal.isSegreteria() and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()}"
+												type="button" class="pull-right btn btn-primary" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/inviaConvocazioneSulCampo|}" th:text="#{label.invia_email_valutazione_sul_campo}"></a>
+
+
 											<div class="clearfix"></div>
 										</div>
 										<div class="x_content">
 
 											<div class="form-horizontal form-label-left">
-
-												<button th:if="${#authentication.principal.isSegreteria() and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()}"
-													type="button" class="pull-right btn btn-primary" data-toggle="modal" data-target=".modal-verbale-edit" th:text="#{label.modifica_verbale}"></button>
-												<a th:if="${#authentication.principal.isSegreteria() and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()}"
-													type="button" class="pull-right btn btn-primary" th:href="@{/accreditamento/{accreditamentoWrapper.accreditamento.id}/inviaConvocazioneSulCampo}" th:text="#{label.invia_email_valutazione_sul_campo}"></a>
-
 												<div class="item form-group">
 													<label class="control-label col-md-3 col-sm-3 col-xs-12">
 														<span class="label-show" th:text="#{label.data_verifica_loco}">Data della verifica in loco</span>

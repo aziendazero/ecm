@@ -1356,7 +1356,7 @@ public class AccreditamentoController {
 			try{
 				accreditamentoService.inviaEmailConvocazioneValutazioneSulCampo(accreditamentoId);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.email_convocazione_valutazione_sul_campo_inviata", "success"));
-				return "redirect:/accreditamento/{accreditamentoId}/show?tab=tab5";
+				return "redirect:/accreditamento/{accreditamentoId}/show?tab=tab7";
 			}catch (Exception ex){
 				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/show"),ex);
 				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
