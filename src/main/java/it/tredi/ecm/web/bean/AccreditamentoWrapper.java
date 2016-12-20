@@ -88,6 +88,29 @@ public class AccreditamentoWrapper {
 	private boolean richiestaAccreditamentoStandardStato;
 	private boolean relazioneAttivitaFormativaStato;
 
+	//flag per abilitare disabilitare il pulsante valida
+	private boolean canValidateProvider;
+	private boolean canValidateLegale;
+	private boolean canValidateDelegato;
+	private boolean canValidateTipologiaFormativa;
+	private boolean canValidateDatiEconomici;
+	private boolean canValidateDatiStruttura;
+	private boolean canValidateResponsabileSegreteria;
+	private boolean canValidateResponsabileAmministrativo;
+	private boolean canValidateResponsabileSistemaInformatico;
+	private boolean canValidateResponsabileQualita;
+	private boolean canValidateAttoCostitutivo;
+	private boolean canValidateEsperienzaFormazione;
+	private boolean canValidateUtilizzo;
+	private boolean canValidateSistemaInformatico;
+	private boolean canValidatePianoQualita;
+	private boolean canValidateDichiarazioneLegale;
+	private boolean canValidateDichiarazioneEsclusione;
+	private boolean canValidateRichiestaAccreditamentoStandard;
+	private boolean canValidateRelazioneAttivitaFormativa;
+	private Map<Long, Boolean> mappaCanValidateSedi = new HashMap<Long, Boolean>();
+	private Map<Long, Boolean> mappaCanValidateComitato = new HashMap<Long, Boolean>();
+
 	private boolean valutazioneSulCampoStato = false;
 	private boolean sottoscriventeStato;
 
@@ -351,7 +374,6 @@ public class AccreditamentoWrapper {
 			richiestaAccreditamentoStandardStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD);
 			relazioneAttivitaFormativaStato = mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA);
 
-			//TODO l'ha fatto anche Barduz ma non l'ha committato (DISONORE BARDUZ)... OCCHIO COL MERGE
 			if(accreditamento.isValutazioneSulCampo()) {
 				valutazioneSulCampoStato = (mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__PIANO_FORMATIVO) &&
 					mappa.containsKey(IdFieldEnum.VALUTAZIONE_SUL_CAMPO__IDONEITA_SEDE) &&
@@ -457,6 +479,156 @@ public class AccreditamentoWrapper {
 //				if(v == false)
 //					tuttiEventiValutati = false;
 //			});
+
+			/* check per abilitare disabilitare pulsanti valutazione dopo integrazione
+			* controllo lo stato di inserimento per velocizzare la procedura:
+			* se NON ha tutti i valori inseriti sicuramento canValidate è true
+			* se ha tutti i valori inseriti ho già fatto questo controllo e controllo che almeno 1 sia abilitato
+			*/
+			if(!providerStato)
+				canValidateProvider = true;
+			else {
+				canValidateProvider = (mappa.get(IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE).isEnabled() ||
+					mappa.get(IdFieldEnum.PROVIDER__DENOMINAZIONE_LEGALE).isEnabled() ||
+					mappa.get(IdFieldEnum.PROVIDER__PARTITA_IVA).isEnabled() ||
+					mappa.get(IdFieldEnum.PROVIDER__CODICE_FISCALE).isEnabled() ||
+					mappa.get(IdFieldEnum.PROVIDER__RAGIONE_SOCIALE).isEnabled() ||
+					mappa.get(IdFieldEnum.PROVIDER__EMAIL_STRUTTURA).isEnabled() ||
+					mappa.get(IdFieldEnum.PROVIDER__NATURA_ORGANIZZAZIONE).isEnabled() ||
+					mappa.get(IdFieldEnum.PROVIDER__NO_PROFIT).isEnabled());
+			}
+			if(!legaleRappresentanteStato)
+				canValidateLegale = true;
+			else {
+				canValidateLegale = (mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__COGNOME).isEnabled() ||
+					mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__NOME).isEnabled() ||
+					mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__CODICEFISCALE).isEnabled() ||
+					mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__CELLULARE).isEnabled() ||
+					mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__EMAIL).isEnabled() ||
+					mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__PEC).isEnabled() ||
+					mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__ATTO_NOMINA).isEnabled() ||
+					mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__CV).isEnabled());
+			}
+			if(!delegatoLegaleRappresentanteStato)
+				canValidateDelegato = true;
+			else {
+				canValidateDelegato = (mappa.get(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__COGNOME).isEnabled() ||
+					mappa.get(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__NOME).isEnabled() ||
+					mappa.get(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__CODICEFISCALE).isEnabled() ||
+					mappa.get(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__TELEFONO).isEnabled() ||
+					mappa.get(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__CELLULARE).isEnabled() ||
+					mappa.get(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__EMAIL).isEnabled() ||
+					mappa.get(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__CV).isEnabled() ||
+					mappa.get(IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__DELEGA).isEnabled());
+			}
+			if(!tipologiaFormativaStato)
+				canValidateTipologiaFormativa = true;
+			else {
+				canValidateTipologiaFormativa = (mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__TIPOLOGIA_ACCREDITAMENTO).isEnabled() ||
+	 				mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE).isEnabled() ||
+	 				mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO).isEnabled() ||
+					mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__DISCIPLINE).isEnabled());
+			}
+			if(!datiEconomiciStato)
+				canValidateDatiEconomici = true;
+			else {
+				canValidateDatiEconomici = (mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO).isEnabled() ||
+	 				mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO).isEnabled() ||
+	 				mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE).isEnabled() ||
+					mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE).isEnabled());
+			}
+			if(!datiStrutturaStato)
+				canValidateDatiStruttura = true;
+			else {
+				canValidateDatiStruttura = (mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI).isEnabled() ||
+	 				mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__ORGANIGRAMMA).isEnabled() ||
+	 				mappa.get(IdFieldEnum.DATI_ACCREDITAMENTO__FUNZIONIGRAMMA).isEnabled());
+			}
+			if(!responsabileSegreteriaStato)
+				canValidateResponsabileSegreteria = true;
+			else {
+				canValidateResponsabileSegreteria = (mappa.get(IdFieldEnum.RESPONSABILE_SEGRETERIA__COGNOME).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SEGRETERIA__NOME).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SEGRETERIA__CODICEFISCALE).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SEGRETERIA__TELEFONO).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SEGRETERIA__EMAIL).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SEGRETERIA__ATTO_NOMINA).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SEGRETERIA__CV).isEnabled());
+			}
+			if(!responsabileAmministrativoStato)
+				canValidateResponsabileAmministrativo = true;
+			else {
+				canValidateResponsabileAmministrativo = (mappa.get(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__COGNOME).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__NOME).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__CODICEFISCALE).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__TELEFONO).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__EMAIL).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__ATTO_NOMINA).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__CV).isEnabled());
+			}
+			if(!responsabileSistemaInformaticoStato)
+				canValidateResponsabileSistemaInformatico = true;
+			else {
+				canValidateResponsabileSistemaInformatico = (mappa.get(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__COGNOME).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__NOME).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__CODICEFISCALE).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__TELEFONO).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__EMAIL).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__ATTO_NOMINA).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__CV).isEnabled());
+			}
+			if(!responsabileQualitaStato)
+				canValidateResponsabileQualita = true;
+			else {
+				canValidateResponsabileQualita = (mappa.get(IdFieldEnum.RESPONSABILE_QUALITA__COGNOME).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_QUALITA__NOME).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_QUALITA__CODICEFISCALE).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_QUALITA__TELEFONO).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_QUALITA__EMAIL).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_QUALITA__ATTO_NOMINA).isEnabled() ||
+					mappa.get(IdFieldEnum.RESPONSABILE_QUALITA__CV).isEnabled());
+			}
+			canValidateAttoCostitutivo = !mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO) || mappa.get(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO).isEnabled();
+			canValidateEsperienzaFormazione = !mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE) || mappa.get(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE).isEnabled();
+			canValidateUtilizzo = !mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__UTILIZZO) || mappa.get(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__UTILIZZO).isEnabled();
+			canValidateSistemaInformatico = !mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO) || mappa.get(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO).isEnabled();
+			canValidatePianoQualita = !mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA) || mappa.get(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA).isEnabled();
+			canValidateDichiarazioneLegale = !mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE) || mappa.get(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE).isEnabled();
+			canValidateDichiarazioneEsclusione = !mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE) || mappa.get(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE).isEnabled();
+			canValidateRichiestaAccreditamentoStandard = !mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD) || mappa.get(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD).isEnabled();
+			canValidateRelazioneAttivitaFormativa = !mappa.containsKey(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA) || mappa.get(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA).isEnabled();
+			//ripetibili canValidate
+			for (Persona p : componentiComitatoScientifico) {
+				boolean canValidatePersona;
+				if(!componentiComitatoScientificoStati.get(p.getId()))
+					canValidatePersona = true;
+				else {
+					canValidatePersona = (!mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) || mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME).isEnabled() ||
+						!mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) || mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME).isEnabled() ||
+						!mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) || mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE).isEnabled() ||
+						!mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO) || mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO).isEnabled() ||
+						!mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL) || mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL).isEnabled() ||
+						!mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE) || mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE).isEnabled() ||
+						!mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA) || mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA).isEnabled() ||
+						!mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV) || mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV).isEnabled());
+				};
+				mappaCanValidateComitato.put(p.getId(), canValidatePersona);
+			}
+			for (Sede s : sedi) {
+				boolean canValidateSede;
+				if(!sediStati.get(s.getId()))
+					canValidateSede = true;
+				else {
+					canValidateSede = (!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__PROVINCIA) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__PROVINCIA).isEnabled() ||
+						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__COMUNE) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__COMUNE).isEnabled() ||
+						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__INDIRIZZO) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__INDIRIZZO).isEnabled() ||
+						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__CAP) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__CAP).isEnabled() ||
+						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__TELEFONO) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__TELEFONO).isEnabled() ||
+						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__FAX) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__FAX).isEnabled() ||
+						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__EMAIL) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__EMAIL).isEnabled());
+				};
+				mappaCanValidateSedi.put(s.getId(), canValidateSede);
+			}
 
 			//sezioni validate o meno
 			sezione1Stato = (providerStato && sediStato && legaleRappresentanteStato && tipologiaFormativaStato && datiEconomiciStato && datiStrutturaStato) ? true : false;
