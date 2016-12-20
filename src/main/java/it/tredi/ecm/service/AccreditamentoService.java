@@ -96,4 +96,6 @@ public interface AccreditamentoService{
 	public void editScheduleVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew);
 
 	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate dataSeduta, Long accreditamentoId, CurrentUser curentUser, AccreditamentoStatoEnum stato) throws Exception;
+
+	public void inviaEmailConvocazioneValutazioneSulCampo(Long accreditamentoId) throws Exception;
 }

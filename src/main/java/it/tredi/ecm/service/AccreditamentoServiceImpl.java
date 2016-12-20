@@ -1344,4 +1344,21 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		save(accreditamento);
 	}
 
+	@Override
+	public void inviaEmailConvocazioneValutazioneSulCampo(Long accreditamentoId) throws Exception {
+		LOGGER.info("Invio email per la Convocazione della Valutazione Sul Campo per accreditamento: " + accreditamentoId);
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		VerbaleValutazioneSulCampo verbale = accreditamento.getVerbaleValutazioneSulCampo();
+		Set<String> dst = new HashSet<String>();
+
+		dst.add(verbale.getTeamLeader().getEmail());
+		dst.add(verbale.getOsservatoreRegionale().getEmail());
+		for(Account a : verbale.getComponentiSegreteria())
+			dst.add(a.getEmail());
+		if(verbale.getReferenteInformatico() != null)
+			dst.add(verbale.getReferenteInformatico().getEmail());
+
+		emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
+	}
+
 }

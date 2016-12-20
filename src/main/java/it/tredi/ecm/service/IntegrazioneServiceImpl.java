@@ -228,7 +228,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 		});
 
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO).isEmpty())
-			applyIntegrazioneAndSave(accreditamento.getProvider(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
+			applyIntegrazioneAndSave(accreditamento.getDatiAccreditamento(), Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO));
 
 	}
 
@@ -240,7 +240,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 	@Override
 	public void applyIntegrazioneObject(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) throws Exception{
 		for(FieldIntegrazioneAccreditamento field : fieldIntegrazioneList){
-			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE)
+			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE || (field.getTipoIntegrazioneEnum() == TipoIntegrazioneEnum.ELIMINAZIONE && field.getIdField().getNameRef().startsWith("files.")))
 				try{
 					if(field.getIdField().getGruppo().isEmpty())
 						setField(dst,field.getIdField().getNameRef(),field.getNewValue());
@@ -258,7 +258,12 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE){
 					setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
 				}else{
-					removeEntityFromRepo(dst.getClass(), field.getNewValue());
+					if(field.getNewValue() != null){
+						removeEntityFromRepo(dst.getClass(), field.getNewValue());
+					}else{
+						setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
+
+					}
 				}
 				LOGGER.debug(Utils.getLogMessage("Applicazione integrazione su DB -> " + field.getIdField().getNameRef() + " a " + dst.getClass()));
 			}catch (Exception ex){
@@ -354,9 +359,16 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 			}else{
 				clazz = dst.getClass();
 			}
-			Method m = clazz.getMethod("addFile", File.class);
-			File f = (File) getEntityFromRepo(File.class, fieldValue);
-			m.invoke(dst, f);
+
+			if(fieldValue == null){
+				Method m = clazz.getMethod("removeFileByType", FileEnum.class);
+				FileEnum fileType = FileEnum.valueOf(fieldName.substring(6));
+				m.invoke(dst, fileType);
+			}else{
+				Method m = clazz.getMethod("addFile", File.class);
+				File f = (File) getEntityFromRepo(File.class, fieldValue);
+				m.invoke(dst, f);
+			}
 		}else {
 			/****	se è modifica a campi singoli 	****/
 			//se fieldName è composto (campo1.camp2) applico ricorsivamente fino a ricondurmi al caso semplice

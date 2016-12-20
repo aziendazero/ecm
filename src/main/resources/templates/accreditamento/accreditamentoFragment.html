@@ -1143,6 +1143,8 @@
 
 												<button th:if="${#authentication.principal.isSegreteria() and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()}"
 													type="button" class="pull-right btn btn-primary" data-toggle="modal" data-target=".modal-verbale-edit" th:text="#{label.modifica_verbale}"></button>
+												<a th:if="${#authentication.principal.isSegreteria() and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()}"
+													type="button" class="pull-right btn btn-primary" th:href="@{/accreditamento/{accreditamentoWrapper.accreditamento.id}/inviaConvocazioneSulCampo}" th:text="#{label.invia_email_valutazione_sul_campo}"></a>
 
 												<div class="item form-group">
 													<label class="control-label col-md-3 col-sm-3 col-xs-12">

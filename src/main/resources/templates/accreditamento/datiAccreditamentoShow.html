@@ -10,7 +10,9 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h2 th:text="#{label.visualizzazione} + ' ' + #{label.dati_attività}">Dati relativi all’attività</h2>
+						<h2 th:if="${datiAccreditamentoWrapper.sezione == 1}" th:text="#{label.visualizzazione} + ' ' + #{label.tipologia_formativa}">Dati relativi all’attività</h2>
+						<h2 th:if="${datiAccreditamentoWrapper.sezione == 2}" th:text="#{label.visualizzazione} + ' ' + #{label.dati_economici}">Dati relativi all’attività</h2>
+						<h2 th:if="${datiAccreditamentoWrapper.sezione == 3}" th:text="#{label.visualizzazione} + ' ' + #{label.dati_struttura}">Dati relativi all’attività</h2>
 						<div class="pull-right buttons-header">
 							<a th:if="${mode == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}/show|}"></a>
 							<a th:if="${mode != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${datiAccreditamentoWrapper.accreditamentoId}/${mode}|}"></a>
