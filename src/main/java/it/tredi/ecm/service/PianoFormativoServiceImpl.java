@@ -63,7 +63,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 	@Transactional
 	public PianoFormativo create(Long providerId, Integer annoPianoFormativo) {
 		LOGGER.debug(Utils.getLogMessage("Inserimento Piano Formativo Anno " + annoPianoFormativo + " del Provider: " + providerId));
-		Provider provider = providerService.getProvider();
+		Provider provider = providerService.getProvider(providerId);
 		PianoFormativo pianoFormativo = new PianoFormativo();
 		pianoFormativo.setAnnoPianoFormativo(annoPianoFormativo);
 		pianoFormativo.setProvider(provider);
