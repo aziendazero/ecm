@@ -1,0 +1,45 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20161219_Accreditamento_VerbaleValutazioneSulCampo.xml">
+    <changeSet author="abarducci (generated)" id="1482157209299-1">
+        <dropForeignKeyConstraint baseTableName="accreditamento" constraintName="FK_ap9cycxv2i1bjfwf4r99ehia7"/>
+        <rollback/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482157209299-2">
+        <dropColumn columnName="verbale_valutazione_sul_campo_id" tableName="accreditamento"/>
+        <rollback/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-3">
+        <dropForeignKeyConstraint baseTableName="team_valutazione_componenti_segreteria" constraintName="FK_6iwrffw48qf74n4orvpjq4r8n"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-4">
+        <dropForeignKeyConstraint baseTableName="team_valutazione" constraintName="FK_6o48deisgbr1av404mrl8rjtt"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-5">
+        <dropForeignKeyConstraint baseTableName="team_valutazione_componenti_segreteria" constraintName="FK_d3geq5i0lg5adte6ipylyj67o"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-6">
+        <dropForeignKeyConstraint baseTableName="team_valutazione" constraintName="FK_dy7j1ymhvp1bvwufrly9ei1fc"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-7">
+        <dropForeignKeyConstraint baseTableName="team_valutazione" constraintName="FK_pqx9hvpm2w5fyxhpifybruc5a"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-8">
+        <dropForeignKeyConstraint baseTableName="accreditamento" constraintName="FK_pwivugalwbf4l5g9irr5tcmtl"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-9">
+        <dropUniqueConstraint constraintName="UK_6iwrffw48qf74n4orvpjq4r8n" tableName="team_valutazione_componenti_segreteria"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-10">
+        <dropTable tableName="team_valutazione"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-11">
+        <dropTable tableName="team_valutazione_componenti_segreteria"/>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482174546237-12">
+        <dropColumn columnName="team_valutazione_id" tableName="accreditamento"/>
+    </changeSet>
+</databaseChangeLog>

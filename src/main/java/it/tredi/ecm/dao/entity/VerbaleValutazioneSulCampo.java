@@ -21,6 +21,7 @@ public class VerbaleValutazioneSulCampo extends BaseEntity {
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate giorno;
 	@OneToOne
+	@JoinColumn(name = "accreditamento_id")
 	private Accreditamento accreditamento;
 //	@OneToOne
 //	private Valutazione valutazione;
