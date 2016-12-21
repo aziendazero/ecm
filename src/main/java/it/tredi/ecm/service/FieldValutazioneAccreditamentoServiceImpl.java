@@ -13,12 +13,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldValutazioneAccreditamentoRepository;
@@ -283,5 +286,61 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		}
 
 		return defaults;
+	}
+
+	//debug mode
+	@Override
+	public Set<FieldValutazioneAccreditamento> createAllFieldValutazioneAndSetEsito(boolean b, Accreditamento accreditamento) {
+		Set<FieldValutazioneAccreditamento> allFieldsValutazione = new HashSet<FieldValutazioneAccreditamento>();
+		for(IdFieldEnum id : IdFieldEnum.values()) {
+			//gestisco i ripetibili a parte
+			if(id.getSubSetField() == SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO || id.getSubSetField() == SubSetFieldEnum.SEDE)
+				continue;
+			//inserisco la valutazione sul campo solo se sono nello stato giusto
+			if(!accreditamento.isValutazioneSulCampo()) {
+				if(id.getSubSetField() == SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO)
+					continue;
+			}
+			//allegati relativi alla parte standard
+			else if(accreditamento.isProvvisorio()) {
+				if(id == IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD || id == IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA)
+					continue;
+			}
+			//full esclusi
+			if(id.getIdEcm() == -1)
+				continue;
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(b);
+			field.setIdField(id);
+			save(field);
+			allFieldsValutazione.add(field);
+		}
+		//ripetibili
+		for(Sede sede : accreditamento.getProvider().getSedi()) {
+			for(IdFieldEnum idFESede : IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE)) {
+				if(idFESede.getIdEcm() != -1) {
+					FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+					field.setAccreditamento(accreditamento);
+					field.setEsito(true);
+					field.setIdField(idFESede);
+					field.setObjectReference(sede.getId());
+					save(field);
+					allFieldsValutazione.add(field);
+				}
+			}
+		}
+		for(Persona persona : accreditamento.getProvider().getComponentiComitatoScientifico()) {
+			for(IdFieldEnum idFECompScie : IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO)) {
+				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+				field.setAccreditamento(accreditamento);
+				field.setEsito(true);
+				field.setIdField(idFECompScie);
+				field.setObjectReference(persona.getId());
+				save(field);
+				allFieldsValutazione.add(field);
+			}
+		}
+		return allFieldsValutazione;
 	}
 }

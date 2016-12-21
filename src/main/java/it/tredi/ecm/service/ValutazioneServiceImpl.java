@@ -382,4 +382,12 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		mappaValutazioniRipetibili.put(fvrwComp.getSubset(), fvrwComp);
 		return mappaValutazioniRipetibili;
 	}
+
+	//debug mode
+	@Override
+	public void valutaTuttiSi(Accreditamento accreditamento, Account account) {
+		Valutazione valutazione = getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamento.getId(), account.getId());
+		valutazione.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsito(true, accreditamento));
+		save(valutazione);
+	}
 }
