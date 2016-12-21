@@ -5,9 +5,14 @@ NOTA: tutti questi comandi vengono eseguiti sul DB e schema specificato nel file
 	lanciare
 	> mvn liquibase:update -Dliquibase.changesToApply=numeroChangeSet
 	per eseguire numeroChangeSet changeSet
-2) > mvn liquibase:rollback -Dliquibase.rollbackCount=numeroRollback
+2) > mvn liquibase:updateSQL
+	crea lo script sql di aggiornamento per il db eseguendo tutti gli eventuali changeSet non ancora eseguiti
+	lanciare
+	> mvn liquibase:updateSQL -Dliquibase.changesToApply=numeroChangeSet
+	per creare lo script sql per numeroChangeSet changeSet
+3) > mvn liquibase:rollback -Dliquibase.rollbackCount=numeroRollback
 	effettua il rollback di numeroRollback changeSet, ovviamente il changeSet deve gestire il rollback
-3) > mvn liquibase:diff
+4) > mvn liquibase:diff
 	per efffettuare anche la compilazione lanciare
 	> mvn compile liquibase:diff
 	viene creato un file di change nella cartella changelog con nome dataCorrente_oraCorrente_changelog.xml
