@@ -97,7 +97,7 @@ public class FileValidator {
 			}
 			//validazione file pdf/pdf.p7m
 			else {
-				if(!(contentType.equalsIgnoreCase("application/pdf") || contentType.equalsIgnoreCase("application/pkcs7-mime")))
+				if(!(contentType.equalsIgnoreCase("application/pdf") || contentType.equalsIgnoreCase("application/pkcs7-mime") || contentType.equalsIgnoreCase("application/x-pkcs7-mime")))
 					error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
 			}
 			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
