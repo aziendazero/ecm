@@ -57,7 +57,7 @@ import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PdfService;
-import it.tredi.ecm.service.PdfVerbaleService;
+//import it.tredi.ecm.service.PdfVerbaleService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
@@ -83,7 +83,7 @@ public class AccreditamentoController {
 	@Autowired private SedeService sedeService;
 	@Autowired private FileService fileService;
 	@Autowired private PdfService pdfService;
-	@Autowired private PdfVerbaleService pdfVerbaleService;
+	//@Autowired private PdfVerbaleService pdfVerbaleService;
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 
 	@Autowired private AccountService accountService;
@@ -1398,9 +1398,9 @@ public class AccreditamentoController {
 			VerbaleValutazioneSulCampo verbale = accreditamento.getVerbaleValutazioneSulCampo();
 			response.setHeader("Content-Disposition", String.format("attachment; filename=\"Verbale Valutazione sul Campo " + verbale.getId() + ".pdf\""));
 
-			ByteArrayOutputStream pdfOutputStream = pdfVerbaleService.creaOutputSteramPdfVerbale(accreditamento);
-			response.setContentLength(pdfOutputStream.size());
-			response.getOutputStream().write(pdfOutputStream.toByteArray());
+			//ByteArrayOutputStream pdfOutputStream = pdfVerbaleService.creaOutputSteramPdfVerbale(accreditamento);
+			//response.setContentLength(pdfOutputStream.size());
+			//response.getOutputStream().write(pdfOutputStream.toByteArray());
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbale/pdf"),ex);
@@ -1411,15 +1411,15 @@ public class AccreditamentoController {
 
 	//Debug mode
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/valuta/tutti")
-	public void valutaTutti(@PathVariable Long accreditamentoId, Model model) {
+	public String valutaTutti(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttr) {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/valuta/tutti"));
 		try {
 			valutazioneService.valutaTuttiSi(accreditamentoService.getAccreditamento(accreditamentoId), Utils.getAuthenticatedUser().getAccount());
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/valuta/tutti"),ex);
-			model.addAttribute("message",new Message("message.errore", "Errore nel settaggio dei FieldValutazione", "error"));
+			redirectAttr.addFlashAttribute("message",new Message("message.errore", "Errore nel settaggio dei FieldValutazione", "error"));
 		}
-
+		return "redirect:/accreditamento/{accreditamentoId}/validate";
 	}
 }
