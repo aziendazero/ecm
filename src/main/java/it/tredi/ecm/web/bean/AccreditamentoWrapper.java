@@ -614,6 +614,22 @@ public class AccreditamentoWrapper {
 				};
 				mappaCanValidateComitato.put(p.getId(), canValidatePersona);
 			}
+			if(coordinatoreComitatoScientifico != null) {
+				boolean canValidatePersona;
+				if(!coordinatoreComitatoScientificoStato)
+					canValidatePersona = true;
+				else {
+					canValidatePersona = (!mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) || mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME).isEnabled() ||
+						!mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) || mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME).isEnabled() ||
+						!mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) || mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE).isEnabled() ||
+						!mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO) || mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO).isEnabled() ||
+						!mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL) || mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL).isEnabled() ||
+						!mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE) || mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE).isEnabled() ||
+						!mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA) || mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA).isEnabled() ||
+						!mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV) || mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV).isEnabled());
+				};
+				mappaCanValidateComitato.put(coordinatoreComitatoScientifico.getId(), canValidatePersona);
+			}
 			for (Sede s : sedi) {
 				boolean canValidateSede;
 				if(!sediStati.get(s.getId()))
@@ -628,6 +644,22 @@ public class AccreditamentoWrapper {
 						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__EMAIL) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__EMAIL).isEnabled());
 				};
 				mappaCanValidateSedi.put(s.getId(), canValidateSede);
+			}
+			if(sedeLegale != null) {
+				boolean canValidateSede;
+				if(!sedeLegaleStato)
+					canValidateSede = true;
+				else {
+					canValidateSede = (!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__PROVINCIA) || mappaSedeLegale.get(IdFieldEnum.SEDE__PROVINCIA).isEnabled() ||
+						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__COMUNE) || mappaSedeLegale.get(IdFieldEnum.SEDE__COMUNE).isEnabled() ||
+						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__INDIRIZZO) || mappaSedeLegale.get(IdFieldEnum.SEDE__INDIRIZZO).isEnabled() ||
+						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__CAP) || mappaSedeLegale.get(IdFieldEnum.SEDE__CAP).isEnabled() ||
+						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__TELEFONO) || mappaSedeLegale.get(IdFieldEnum.SEDE__TELEFONO).isEnabled() ||
+						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__FAX) || mappaSedeLegale.get(IdFieldEnum.SEDE__FAX).isEnabled() ||
+						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__EMAIL) || mappaSedeLegale.get(IdFieldEnum.SEDE__EMAIL).isEnabled());
+				};
+				mappaCanValidateSedi.put(sedeLegale.getId(), canValidateSede);
+
 			}
 
 			//sezioni validate o meno

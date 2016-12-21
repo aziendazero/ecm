@@ -310,7 +310,7 @@
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.id + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
-								<a th:if=${@ecmProperties.debugTestMode} class="btn btn-warning" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/valuta/tutti|}" th:text="'Valuta Tutto Sì'"></a>
+								<a th:if="${@ecmProperties.debugTestMode}" class="btn btn-warning" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/valuta/tutti|}" th:text="'Valuta Tutto Sì'"></a>
 								<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"  th:if="${#authentication.principal.hasProfile('SEGRETERIA') or #authentication.principal.hasProfile('REFEREE')}">
 									<span th:text="#{label.menu_azioni}"></span>
 									<span class="caret"></span>
