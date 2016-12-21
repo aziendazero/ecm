@@ -20,6 +20,11 @@
     <include file="004_01_aggiuntaSedeValutazioneSulCampo.xml" relativeToChangelogFile="true"/>
     <include file="005_01_cambioDataValutazione_LocalDateTime.xml" relativeToChangelogFile="true"/>
     <include file="20161219_Accreditamento_VerbaleValutazioneSulCampo.xml" relativeToChangelogFile="true"/>
-    <include file="005_02_cambioNomeObiettivo_Text.xml" relativeToChangelogFile="true" />
+
+	<!-- UPDATE FATTO con liquibase:updateSQL su test e prod 20161221 -->
+	<include file="005_02_cambioNomeObiettivo_Text.xml" relativeToChangelogFile="true" />
+    <include file="20161221_Update_Obiettivo.xml" relativeToChangelogFile="true" />
+
+ <!--  <include file="006_01_AccreditamentoStatoHistory.xml" relativeToChangelogFile="true" /> -->
 
 </databaseChangeLog>
