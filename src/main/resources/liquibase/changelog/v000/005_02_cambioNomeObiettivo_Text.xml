@@ -9,6 +9,7 @@
 	    <modifyDataType tableName="obiettivo"
 	    				columnName="nome"
 	    				newDataType="text" />
+		 <rollback/>
 	</changeSet>
 
 </databaseChangeLog>
