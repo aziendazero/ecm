@@ -256,7 +256,7 @@
 											<label class="control-label col-lg-3 col-md-4 col-sm-4 col-xs-7">
 												<span th:text="#{label.scarica_pdf_verbale}"></span>
 											</label>
-											<a class="btn btn-primary" th:text="#{label.genera_file}" ></a>
+											<a class="btn btn-primary" th:text="#{label.genera_file}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbale/pdf|}"></a>
 										</div>
 
 										<div class="divider"></div>

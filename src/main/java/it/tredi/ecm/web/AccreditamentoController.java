@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -10,6 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +67,7 @@ import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
+import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
@@ -1381,5 +1386,22 @@ public class AccreditamentoController {
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 				return "redirect:/accreditamento/{accreditamentoId}/show";
 			}
+		}
+
+		//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowEvento(principal, #providerId")
+		@RequestMapping(value = "/accreditamento/{accreditamentoId}/verbale/pdf", method = RequestMethod.GET)
+		public void pdfEvento(@PathVariable Long accreditamentoId, HttpServletResponse response, Model model) throws IOException {
+			LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbale/pdf"));
+			try {
+				//TODO controller pdf
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbale/pdf"),ex);
+				//redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				//LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+				//return "redirect:/provider/{providerId}/evento/list";
+				model.addAttribute("message",new Message("message.errore", "message.impossibile_creare_pdf", "error"));
+			}
+
 		}
 }
