@@ -34,8 +34,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.Anagrafica;
-import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
@@ -58,6 +56,8 @@ import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
+import it.tredi.ecm.service.PdfService;
+import it.tredi.ecm.service.PdfVerbaleService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedeService;
@@ -67,7 +67,6 @@ import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
-import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
@@ -83,6 +82,8 @@ public class AccreditamentoController {
 	@Autowired private PersonaService personaService;
 	@Autowired private SedeService sedeService;
 	@Autowired private FileService fileService;
+	@Autowired private PdfService pdfService;
+	@Autowired private PdfVerbaleService pdfVerbaleService;
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 
 	@Autowired private AccountService accountService;
@@ -1337,71 +1338,88 @@ public class AccreditamentoController {
 	}
 
 	//TODO @PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
-		@RequestMapping("/accreditamento/{accreditamentoId}/rivaluta")
-		public String rivaluta(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
-			LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"));
-			try{
-				accreditamentoService.rivaluta(accreditamentoId);
-				return "redirect:/accreditamento/{accreditamentoId}/validate";
-			}catch (Exception ex){
-				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);
-				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
-				return "redirect:/accreditamento/{accreditamentoId}/show";
-			}
+	@RequestMapping("/accreditamento/{accreditamentoId}/rivaluta")
+	public String rivaluta(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"));
+		try{
+			accreditamentoService.rivaluta(accreditamentoId);
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
+	}
 
-		@RequestMapping("/accreditamento/{accreditamentoId}/runtimeTest")
-		public String runtimeTest(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
-			LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/runtimeTest"));
-			try{
-				accreditamentoService.approvaIntegrazione(accreditamentoId);
-				return "redirect:/accreditamento/{accreditamentoId}/show";
-			}catch (Exception ex){
-				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);
-				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
-				return "redirect:/accreditamento/{accreditamentoId}/show";
-			}
+	@RequestMapping("/accreditamento/{accreditamentoId}/runtimeTest")
+	public String runtimeTest(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/runtimeTest"));
+		try{
+			accreditamentoService.approvaIntegrazione(accreditamentoId);
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
+	}
 
 //TODO		@PreAuthorize("@securityAccessServiceImpl.canShowStorico(principal,#accreditamentoId)")
-		@RequestMapping("/accreditamento/{accreditamentoId}/getStorico")
-		@ResponseBody
-		public Set<Valutazione>getValutazioniStorico(@PathVariable Long accreditamentoId){
-			return valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
+	@RequestMapping("/accreditamento/{accreditamentoId}/getStorico")
+	@ResponseBody
+	public Set<Valutazione>getValutazioniStorico(@PathVariable Long accreditamentoId){
+		return valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canEditVerbaleAccreditamento(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/inviaConvocazioneSulCampo")
+	public String inviaMailConvocazioneValutazioneSulCampo(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/inviaConvocazioneSulCampo"));
+		try{
+			accreditamentoService.inviaEmailConvocazioneValutazioneSulCampo(accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.email_convocazione_valutazione_sul_campo_inviata", "success"));
+			return "redirect:/accreditamento/{accreditamentoId}/show?tab=tab7";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/show"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}
+	}
+
+	//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowEvento(principal, #providerId")
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/verbale/pdf", method = RequestMethod.GET)
+	public void pdfEvento(@PathVariable Long accreditamentoId, HttpServletResponse response, Model model) throws IOException {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbale/pdf"));
+		try {
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			VerbaleValutazioneSulCampo verbale = accreditamento.getVerbaleValutazioneSulCampo();
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"Verbale Valutazione sul Campo " + verbale.getId() + ".pdf\""));
+
+			ByteArrayOutputStream pdfOutputStream = pdfVerbaleService.creaOutputSteramPdfVerbale(accreditamento);
+			response.setContentLength(pdfOutputStream.size());
+			response.getOutputStream().write(pdfOutputStream.toByteArray());
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbale/pdf"),ex);
+			model.addAttribute("message",new Message("message.errore", "message.impossibile_creare_pdf_verbale", "error"));
 		}
 
-		@PreAuthorize("@securityAccessServiceImpl.canEditVerbaleAccreditamento(principal,#accreditamentoId)")
-		@RequestMapping("/accreditamento/{accreditamentoId}/inviaConvocazioneSulCampo")
-		public String inviaMailConvocazioneValutazioneSulCampo(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
-			LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/inviaConvocazioneSulCampo"));
-			try{
-				accreditamentoService.inviaEmailConvocazioneValutazioneSulCampo(accreditamentoId);
-				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.email_convocazione_valutazione_sul_campo_inviata", "success"));
-				return "redirect:/accreditamento/{accreditamentoId}/show?tab=tab7";
-			}catch (Exception ex){
-				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/show"),ex);
-				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
-				return "redirect:/accreditamento/{accreditamentoId}/show";
-			}
+	}
+
+	//Debug mode
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/valuta/tutti")
+	public void valutaTutti(@PathVariable Long accreditamentoId, Model model) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/valuta/tutti"));
+		try {
+			valutazioneService.valutaTuttiSi(accreditamentoService.getAccreditamento(accreditamentoId), Utils.getAuthenticatedUser().getAccount());
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/valuta/tutti"),ex);
+			model.addAttribute("message",new Message("message.errore", "Errore nel settaggio dei FieldValutazione", "error"));
 		}
 
-		//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowEvento(principal, #providerId")
-		@RequestMapping(value = "/accreditamento/{accreditamentoId}/verbale/pdf", method = RequestMethod.GET)
-		public void pdfEvento(@PathVariable Long accreditamentoId, HttpServletResponse response, Model model) throws IOException {
-			LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbale/pdf"));
-			try {
-				//TODO controller pdf
-			}
-			catch (Exception ex) {
-				LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbale/pdf"),ex);
-				//redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-				//LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-				//return "redirect:/provider/{providerId}/evento/list";
-				model.addAttribute("message",new Message("message.errore", "message.impossibile_creare_pdf", "error"));
-			}
-
-		}
+	}
 }
