@@ -6,6 +6,7 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 
@@ -22,4 +23,6 @@ public interface FieldValutazioneAccreditamentoService {
 	public Collection<FieldValutazioneAccreditamento> saveMapList(Map<IdFieldEnum,FieldValutazioneAccreditamento> valutazioneAsMap);
 	public Set<FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamentoBySegreteriaNotStoricizzato(Long accreditamentoId);
 	public Set<FieldValutazioneAccreditamento> getValutazioniDefault(Accreditamento accreditamento);
+	//debug mode
+	public Set<FieldValutazioneAccreditamento> createAllFieldValutazioneAndSetEsito(boolean b, Accreditamento accreditamento);
 }
