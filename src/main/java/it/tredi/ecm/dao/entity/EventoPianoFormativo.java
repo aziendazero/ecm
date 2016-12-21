@@ -56,6 +56,7 @@ public class EventoPianoFormativo extends BaseEntity{
 
 	@Enumerated(EnumType.STRING)
 	private ProceduraFormativa proceduraFormativa;
+	@Column(columnDefinition = "text")
 	private String titolo;
 
 	@OneToOne

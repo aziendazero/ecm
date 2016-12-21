@@ -5,7 +5,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <include file="000_01_sequence.xml" relativeToChangelogFile="true"/>
+	<include file="000_01_sequence.xml" relativeToChangelogFile="true"/>
     <include file="000_02_table.xml" relativeToChangelogFile="true"/>
     <include file="000_03_primaryKey.xml" relativeToChangelogFile="true"/>
     <include file="000_04_unique.xml" relativeToChangelogFile="true"/>
@@ -21,9 +21,12 @@
     <include file="005_01_cambioDataValutazione_LocalDateTime.xml" relativeToChangelogFile="true"/>
     <include file="20161219_Accreditamento_VerbaleValutazioneSulCampo.xml" relativeToChangelogFile="true"/>
 
-	<!-- UPDATE FATTO con liquibase:updateSQL su test e prod 20161221 -->
+	<!-- UPDATE FATTO con liquibase:updateSQL su test e prod 20161221  -->
 	<include file="005_02_cambioNomeObiettivo_Text.xml" relativeToChangelogFile="true" />
     <include file="20161221_Update_Obiettivo.xml" relativeToChangelogFile="true" />
+
+	<!-- UPDATE FATTO con liquibase:updateSQL su test e prod 20161221 -->
+    <include file="20161221_cambioTitoloEventoPianoFormativo_Text.xml" relativeToChangelogFile="true"/>
 
  <!--  <include file="006_01_AccreditamentoStatoHistory.xml" relativeToChangelogFile="true" /> -->
 
