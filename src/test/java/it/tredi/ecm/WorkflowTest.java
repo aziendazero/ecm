@@ -74,9 +74,9 @@ public class WorkflowTest {
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 
-	@Autowired 
+	@Autowired
 	private AccountRepository accountRepository;
-	@Autowired 
+	@Autowired
 	private WorkflowService workflowService;
 	@Autowired
 	private CurrentUserDetailsService currentUserDetailsService;
@@ -86,13 +86,13 @@ public class WorkflowTest {
 	private AccreditamentoService accreditamentoService;
 	@Autowired
 	private ProfileRepository profileRepository;
-	
+
 	/*
 	@Before
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 	}
-	
+
 	@Before
 	public void init() {
 		Persona persona = new Persona();
@@ -105,13 +105,13 @@ public class WorkflowTest {
 		persona.getAnagrafica().setPec("vrossi@pec.com");
 		persona.setRuolo(Ruolo.RESPONSABILE_SEGRETERIA);
 		personaService.save(persona);
-		
+
 		Account account = new Account();
 		account.setUsername("junit");
 		account.setPassword("junit");
 		account.setEmail("junit@3di.it");
 		accountRepository.save(account);
-		
+
 		Provider provider = new Provider();
 		provider.setDenominazioneLegale("VR 46");
 		provider.setPartitaIva("00464646460");
@@ -120,9 +120,9 @@ public class WorkflowTest {
 		provider.addPersona(persona);
 		provider.setAccount(account);
 		providerService.save(provider);
-		
+
 		personaService.save(persona);
-		
+
 		try {
 			Accreditamento accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId(),AccreditamentoTipoEnum.PROVVISORIO);
 			this.personaId = persona.getId();
@@ -132,7 +132,7 @@ public class WorkflowTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@After
 	public void clean(){
 		accreditamentoRepository.delete(this.accreditamentoId);
@@ -150,7 +150,7 @@ public class WorkflowTest {
 			workflowService.saveOrUpdateBonitaUserByAccount(account);
 		}
 	}
-	
+
 	@Test
 	@Ignore
 	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
@@ -168,12 +168,12 @@ public class WorkflowTest {
 		segreteria.setLocked(false);
 		segreteria.getProfiles().add(profileSegreteria);
 		segreteria.setDataScadenzaPassword(LocalDate.now());
-		
+
 		accountRepository.save(segreteria);
-		
+
 		CurrentUser currentUser = currentUserDetailsService.loadUserByUsername(userName);
 	}
-	
+
 	@Test
 	@Ignore
 	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
@@ -192,7 +192,7 @@ public class WorkflowTest {
 	public void GetStatiPossibiliPerInserimentoEsitoOdg() throws Exception {
 		CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("segreteria");
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(306L);
-		
+
 		List<AccreditamentoStatoEnum> stati = workflowService.getInserimentoEsitoOdgStatiPossibiliAccreditamento(accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId());
 		System.out.println(stati);
 	}
@@ -204,7 +204,7 @@ public class WorkflowTest {
 		//CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("provider");
 		CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("segreteria");
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(306L);
-		
+
 		TaskInstanceDataModel task = workflowService.userGetTaskForState(currentUser, accreditamento);
 		System.out.println("-- getTaskPerUtenteEAccreditamentoConControlloDelloStato --");
 		if(task != null)
@@ -221,51 +221,6 @@ public class WorkflowTest {
 		if(currentUser != null) {
 			workflowService.createWorkflowAccreditamentoProvvisorio(currentUser, accreditamento);
 		}
-	}
-
-	@Test
-	@Ignore
-	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
-	public void eseguiTaskValutazioneAssegnazioneCrecmForUser() throws Exception {
-		//CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("provider");
-		CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("segreteria");
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(306L);
-		
-		List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
-		usernameWorkflowValutatoriCrecm.add("referee1");
-		usernameWorkflowValutatoriCrecm.add("referee2");
-		usernameWorkflowValutatoriCrecm.add("referee3");
-		workflowService.eseguiTaskValutazioneAssegnazioneCrecmForUser(currentUser, accreditamento, usernameWorkflowValutatoriCrecm, usernameWorkflowValutatoriCrecm.size() - 1);
-		System.out.println("-- eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser --");
-		System.out.println("OK");
-	}
-	
-	@Test
-	@Ignore
-	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
-	public void eseguiTaskValutazioneCrecm() throws Exception {
-		//CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("provider");
-		CurrentUser referee1 = currentUserDetailsService.loadUserByUsername("referee3");
-		//CurrentUser referee2 = currentUserDetailsService.loadUserByUsername("referee2");
-		//CurrentUser referee3 = currentUserDetailsService.loadUserByUsername("referee3");
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(306L);
-		
-		workflowService.eseguiTaskValutazioneCrecmForUser(referee1, accreditamento);
-		System.out.println("-- eseguiTaskValutazioneCrecm --");
-		System.out.println("OK");
-	}	
-	
-	@Test
-	@Ignore
-	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
-	public void eseguiTaskInviaRichiestaPreavvisoRigetto() throws Exception {
-		//CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("provider");
-		CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("segreteria");
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(1911L);
-		
-		workflowService.eseguiTaskRichiestaPreavvisoRigettoForUser(currentUser, accreditamento, 100L);
-		System.out.println("-- eseguiTaskRichiestaPreavvisoRigettoForUser --");
-		System.out.println("OK");
 	}
 
 	private void printPersona(Persona persona){
@@ -294,7 +249,7 @@ public class WorkflowTest {
 			System.out.println("getActivitieDataModels().size(): " + pic.getActivitieDataModels().size());
 			int i = 1;
 			for(ActivityDataModel adm : pic.getActivitieDataModels()) {
-				printActivityDataModel(i++ + ") ", adm);				
+				printActivityDataModel(i++ + ") ", adm);
 			}
 			System.out.println("taskInstanceDataModels().size(): " + pic.getTaskInstanceDataModels().size());
 			i = 1;
@@ -342,7 +297,7 @@ public class WorkflowTest {
 			System.out.println("TaskInstanceDataModel is NULL");
 		}
 	}
-	
+
 	private void printProcessInstanceDataModel(String start, ProcessInstanceDataModel pidm){
 		if(pidm != null){
 			if(start==null)

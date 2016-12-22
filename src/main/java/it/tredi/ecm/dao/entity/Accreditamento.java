@@ -44,7 +44,7 @@ public class Accreditamento extends BaseEntity{
 	@Column(name = "data_inizio_conteggio")//data fittizia utilizzata per calcolare la reale durata del procedimento
 	private LocalDate dataInizioConteggio;
 	@Column(name = "durata_procedimento")//campo contenente la durata del procedimento espresso in giorni...nel caso in cui il timer viene messo in pausa dal flusso
-	private Integer durataProcedimento;
+	private Integer durataProcedimento = null;
 
 	@Column(name = "data_valutazione_crecm")//la data in cui il gruppo CRECM termina la valutazione e il flusso avanza
 	private LocalDate dataValutazioneCrecm;
@@ -52,10 +52,17 @@ public class Accreditamento extends BaseEntity{
 	private LocalDate dataInserimentoOdg;//domanda inserita in odg della prossima seduta
 	@Column(name = "data_valutazione_commissione")
 	private LocalDate dataValutazioneCommissione;//domanda discussa dalla commissione ECM
-	@Column(name = "data_richiesta_integrazione")
-	private LocalDate dataRichiestaIntegrazione;//domanda rispedita al provider per integrazioni
-	@Column(name = "data_integrazione")
-	private LocalDate dataIntegrazione;//domanda rispedita alla segreteria in seguito alle integrazioni del provider
+
+	@Column(name = "data_integrazione_inizio")
+	private LocalDate dataIntegrazioneInizio;//domanda rispedita al provider per integrazioni
+	@Column(name = "data_integrazione_fine")
+	private LocalDate dataIntegrazioneFine;//domanda rispedita alla segreteria in seguito alle integrazioni del provider
+
+	@Column(name = "data_preavviso_rigetto_inizio")
+	private LocalDate dataPreavvisoRigettoInizio;//domanda rispedita al provider per integrazioni preavviso rigetto
+	@Column(name = "data_preavviso_rigetto_fine")
+	private LocalDate dataPreavvisoRigettoFine;//domanda rispedita alla segreteria dal provider in seguito alle integrazioni su preavviso rigetto
+
 	@Column(name = "data_inizio_accreditamento")
 	private LocalDate dataInizioAccreditamento;//procedimento terminato..con l'accettazione dell'accreditamento...in attesa del pagamento
 	@Column(name = "data_fine_accreditamento")//data di scadenza calcolata dall'accreditamento +4anni
@@ -286,8 +293,11 @@ public class Accreditamento extends BaseEntity{
 	}
 
 	//nel caso in cui riparte il conteggio...azzero la variabile durataProcedimento e setto una dataInizioConteggio coerente
-	public void restartConteggio(){
-		dataInizioConteggio = LocalDate.now().minusDays(durataProcedimento);
+	public void startRestartConteggio(){
+		if(durataProcedimento == null)
+			dataInizioConteggio = LocalDate.now();
+		else
+			dataInizioConteggio = LocalDate.now().minusDays(durataProcedimento);
 		durataProcedimento = null;
 	}
 

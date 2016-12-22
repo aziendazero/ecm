@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20161221_accreditamento_datePreavvisoRigetto.xml">
+    <changeSet author="abarducci (generated)" id="1482332861326-1">
+        <addColumn tableName="accreditamento">
+            <column name="data_preavviso_rigetto_inizio" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1482332861326-2">
+        <addColumn tableName="accreditamento">
+            <column name="data_preavviso_rigetto_fine" type="date"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="abarducci" id="1482332861326-3">
+	    <renameColumn tableName="accreditamento" oldColumnName="data_integrazione" newColumnName="data_integrazione_inizio"/>
+    </changeSet>
+    <changeSet author="abarducci" id="1482332861326-4">
+	    <renameColumn tableName="accreditamento" oldColumnName="data_richiesta_integrazione" newColumnName="data_integrazione_fine"/>
+    </changeSet>
+</databaseChangeLog>
