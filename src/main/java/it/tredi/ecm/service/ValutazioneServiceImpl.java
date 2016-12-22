@@ -24,6 +24,7 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -384,6 +385,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 	//debug mode
+	@Transactional
 	@Override
 	public void valutaTuttiSi(Accreditamento accreditamento, Account account) {
 		Valutazione valutazione = getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamento.getId(), account.getId());
@@ -391,5 +393,18 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		valutazione.getValutazioni().clear();
 		valutazione.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsito(true, accreditamento));
 		save(valutazione);
+
+		if(accreditamento.isValutazioneSulCampo()) {
+			VerbaleValutazioneSulCampo verbale = accreditamento.getVerbaleValutazioneSulCampo();
+			Set<FieldValutazioneAccreditamento> valSulCampo = new HashSet<FieldValutazioneAccreditamento>();
+			for(FieldValutazioneAccreditamento val : valutazione.getValutazioni()) {
+				if(val.getIdField().getSubSetField() == SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO)
+					valSulCampo.add(val);
+			}
+			verbale.getDatiValutazioneSulCampo().getValutazioniSulCampo().clear();
+			verbale.getDatiValutazioneSulCampo().setValutazioniSulCampo(valSulCampo);
+			accreditamento.setVerbaleValutazioneSulCampo(verbale);
+			accreditamentoService.save(accreditamento);
+		}
 	}
 }
