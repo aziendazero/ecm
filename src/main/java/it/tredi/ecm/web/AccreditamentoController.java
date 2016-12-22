@@ -50,6 +50,8 @@ import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.AccreditamentoStatoHistoryService;
+import it.tredi.ecm.service.AccreditamentoStatoHistoryServiceImpl;
 import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.EmailService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
@@ -98,6 +100,8 @@ public class AccreditamentoController {
 
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private EmailService emailService;
+
+	@Autowired private AccreditamentoStatoHistoryService accreditamentoStatoHistoryService;
 
 
 	@InitBinder
@@ -299,6 +303,11 @@ public class AccreditamentoController {
 			//rimuove dalla lista di tutti i referee selezionabili quelli che erano stati precedentemente incaricati di valutare la domanda
 			model.addAttribute("refereeList", refereeList);
 		}
+
+		//Carico la storia del flusso
+		if(accreditamento.getWorkflowInfoAccreditamento() != null)
+			model.addAttribute("accreditamentoHistoryList", accreditamentoStatoHistoryService.getAllByAccreditamentoIdAndProcessInstanceId(accreditamento.getId(), accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId()));
+
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoShow"));
 		return "accreditamento/accreditamentoShow";
 	}

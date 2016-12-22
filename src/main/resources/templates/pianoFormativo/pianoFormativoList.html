@@ -45,7 +45,7 @@
 												th:attr="aria-controls=${'collapse'+pianoFormativo.annoPianoFormativo}">
 												<span class="panel-title" th:text="${pianoFormativo.annoPianoFormativo}">2016</span>
 												<span th:text="#{label.proveniente_da_accreditamento}" th:if="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
-												<span th:text="#{label.piano_formativo_modificabile_fino_a(${#temporals.format(pianoFormativo.dataFineModifca,'dd/MM/yyyy')})}" th:unless="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id) or pianoFormativo.dataFineModifca == null}"></span>
+												<span th:text="#{label.piano_formativo_modificabile_fino_a(${#temporals.format(pianoFormativo.dataFineModifca,'dd/MM/yyyy')})}" th:unless="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
 											</a>
 											<div th:id="${'collapse'+pianoFormativo.annoPianoFormativo}" class="panel-collapse collapse"
 												role="tabpanel" th:attr="aria-labelledby=${'heading'+pianoFormativo.annoPianoFormativo}">
@@ -108,7 +108,7 @@
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-primary modal-btn" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
-									<label for="submitButtonPianoNew" class="btn btn-success modal-btn" th:text="#{label.Ok}">Ok</label>
+									<button type="submit" class="btn btn-success modal-btn" form="formPianoFormativoAnno" th:text="#{label.Ok}">Ok</button>
 								</div>
 							</div>
 						</div>
@@ -146,7 +146,7 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
-// 						"ordering" : false,
+						/* "ordering" : false, */
 						"autoWidth": false,
 						"columnDefs": [
 							{ "targets": 1, "width": "210px", "sClass": "center" },
@@ -158,7 +158,7 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
-// 						"ordering" : false,
+						/* "ordering" : false, */
 						"columnDefs": [ {
 							"targets": 3,
 							"width": "70px",
