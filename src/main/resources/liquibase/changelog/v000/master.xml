@@ -29,7 +29,7 @@
     <include file="20161221_cambioTitoloEventoPianoFormativo_Text.xml" relativeToChangelogFile="true"/>
 
     <include file="20161221_accreditamento_datePreavvisoRigetto.xml" relativeToChangelogFile="true"/>
-
  	<include file="006_01_AccreditamentoStatoHistory.xml" relativeToChangelogFile="true" />
- 	
+ 	<include file="20161222_cambioTypeText_InEvento.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

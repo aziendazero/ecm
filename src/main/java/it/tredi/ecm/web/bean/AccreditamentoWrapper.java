@@ -682,12 +682,12 @@ public class AccreditamentoWrapper {
 			sezione4Stato = valutazioneSulCampoStato && sottoscriventeStato;
 
 			//stato di valutazione completa
-			if(accreditamento.isValutazioneSulCampo() || accreditamento.isValutazioneTeamLeader())
+			if(accreditamento.isValutazioneSulCampo())
 				canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato && sezione4Stato);
 			else
 				canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato);
 
-			canConfermaValutazione = (canValutaDomanda && canSendValutazione) ? true : false;
+			canConfermaValutazione = canValutaDomanda && canSendValutazione;
 		}
 	}
 

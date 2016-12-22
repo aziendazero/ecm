@@ -838,7 +838,7 @@ public class AccreditamentoController {
 			else if(accreditamento.isValutazioneSegreteria() && accreditamento.isStandard()){
 
 				//validazione della valutazioneComplessiva
-				valutazioneValidator.validateValutazioneComplessivaTeamLeader(wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, result);
+				valutazioneValidator.validateValutazioneComplessivaTeamLeader(wrapper.getValutazioneComplessiva(), result);
 
 				if(result.hasErrors()){
 					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
@@ -850,6 +850,24 @@ public class AccreditamentoController {
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_salvata_team_leader_assegnato", "success"));
+					return "redirect:/accreditamento/{accreditamentoId}/show";
+				}
+			}
+			else if(accreditamento.isValutazioneTeamLeader())  {
+				//SOLO NELLO STANDARD
+
+				//validazione della valutazioneComplessiva
+				valutazioneValidator.validateValutazioneComplessivaTeamLeader(wrapper.getValutazioneComplessiva(), result);
+
+				if(result.hasErrors()){
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+					model.addAttribute("confirmErrors", true);
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else {
+					accreditamentoService.inviaValutazioneTeamLeader(accreditamentoId, wrapper.getValutazioneComplessiva());;
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
 					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 			}
