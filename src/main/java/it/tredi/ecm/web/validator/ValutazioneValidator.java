@@ -85,7 +85,7 @@ public class ValutazioneValidator {
 		}
 	}
 
-	public void validateValutazioneComplessivaTeamLeader(Object valutazioneFull, AccreditamentoStatoEnum stato, Errors errors) {
+	public void validateValutazioneComplessivaTeamLeader(Object valutazioneFull, Errors errors) {
 		String valutazioneComplessiva = (String) valutazioneFull;
 		if(valutazioneComplessiva == null || valutazioneComplessiva.isEmpty()) {
 			errors.rejectValue("valutazioneComplessiva", "error.empty");

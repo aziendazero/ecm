@@ -1390,9 +1390,10 @@ public class PdfServiceImpl implements PdfService {
             addCorpoParagraph(document, false, true, "ATTESO CHE la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. n. 382498 del 13 settembre 2013, con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei provider e della sottoscrizione della richiesta di eventuali documenti integrativi, ivi compresa la sottoscrizione della comunicazione di preavviso di rigetto ai sensi dell’art.10bis della L.241/1990 e ss.mm.ii.;");
 
             //Integrazione
-			msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata all’aspirante Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
-            Object[] valuesIntegrazione = {diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(), (diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null) ? "" : diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getIntegrazioneInfo().getVerbaleNumero(), diniegoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
-	        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
+			//Impossibile inserire info sulla commissione in integrazione in quanto non e' la commissione che invia in integrazione la domanda standard
+//            msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata all’aspirante Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
+//            Object[] valuesIntegrazione = {diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(), (diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null) ? "" : diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getIntegrazioneInfo().getVerbaleNumero(), diniegoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
+//	        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
 
             //Rigetto
 			msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata all’aspirante Provider {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii, a seguito a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
@@ -1641,7 +1642,10 @@ public class PdfServiceImpl implements PdfService {
             //Integrazione
             if(accreditatoInfo.getIntegrazioneInfo() != null) {
 				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}., notificata al Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dal Team Leader del Team di Valutazione, referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 nel corso della visita in loco del {3};");
-				Object[] valuesIntegrazione = {accreditatoInfo.getIntegrazioneInfo().getNumeroProtocollo(), accreditatoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  accreditatoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getIntegrazioneInfo().getVerbaleNumero(), accreditatoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter), accreditatoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter)};
+				Object[] valuesIntegrazione = {accreditatoInfo.getIntegrazioneInfo().getNumeroProtocollo(),
+						accreditatoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  accreditatoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter),
+						accreditatoInfo.getProviderInfo().getProviderDenominazione(),
+						accreditatoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter)};
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
             }
 
