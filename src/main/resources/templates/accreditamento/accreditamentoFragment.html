@@ -51,7 +51,7 @@
 								Documenti
 							</a>
 						</li>
-						<li th:if="${valutabile and (accreditamentoWrapper.accreditamento.isValutazioneSulCampo() or accreditamentoWrapper.accreditamento.isValutazioneTeamLeader())}" class="presentation">
+						<li th:if="${valutabile and (accreditamentoWrapper.accreditamento.isValutazioneSulCampo())}" class="presentation">
 							<a href="#tab_content6" role="tab" id="tab6" data-toggle="tab" aria-expanded="false" th:text="#{label.valutazioni_verifica_sul_campo}">
 								Valutazione Sul Campo
 							</a>
@@ -1057,7 +1057,7 @@
 							</div>
 							<!-- /TAB 5 -->
 						</div>
-						<div th:if="${valutabile and (accreditamentoWrapper.accreditamento.isValutazioneSulCampo() or accreditamentoWrapper.accreditamento.isValutazioneTeamLeader())}" role="tabpanel" class="tab-pane fade" id="tab_content6" aria-labelledby="tab6">
+						<div th:if="${valutabile and (accreditamentoWrapper.accreditamento.isValutazioneSulCampo())}" role="tabpanel" class="tab-pane fade" id="tab_content6" aria-labelledby="tab6">
 							<!--  TAB 6 -->
 							<div class="row">
 								<div class="col-xs-12">

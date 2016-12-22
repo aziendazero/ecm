@@ -647,6 +647,30 @@ public class WorkflowServiceImpl implements WorkflowService {
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
 
+	@Override
+	public void eseguiTaskValutazioneTeamLeaderForCurrentUser(Accreditamento accreditamento) throws Exception {
+		//Ricavo l'utente corrente
+		CurrentUser user = Utils.getAuthenticatedUser();
+		eseguiTaskValutazioneTeamLeaderForUser(user, accreditamento);
+	}
+
+	private void eseguiTaskValutazioneTeamLeaderForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
+		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER) {
+			LOGGER.error("Non è possibile eseguire il task ValutazioneTeamLeader per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+			throw new Exception("Non è possibile eseguire il task ValutazioneTeamLeader per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task ValutazioneTeamLeader non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task ValutazioneTeamLeader non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
 //	public void eseguiTaskValutazioneSegreteriaForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione) throws Exception {
 //		if(accreditamento.getStato() != AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
 //			LOGGER.error("Non è possibile eseguire il task ValutazioneSegreteria per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStato());

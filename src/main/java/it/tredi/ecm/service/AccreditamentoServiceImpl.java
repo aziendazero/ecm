@@ -394,8 +394,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			valutazioneService.save(valutazioneReload);
 
 			//segretario valutatore
-			verbale.setValutatore(Utils.getAuthenticatedUser().getAccount());
-			accreditamento.setVerbaleValutazioneSulCampo(verbale);
+			if(verbale != null) {
+				verbale.setValutatore(Utils.getAuthenticatedUser().getAccount());
+				accreditamento.setVerbaleValutazioneSulCampo(verbale);
+			}
 			accreditamentoRepository.save(accreditamento);
 
 			//è qui che è stata settala la data di valutazione del verbale e tutti i suoi componenti???
@@ -418,6 +420,42 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			//attore (segretario) che deve inserire la valutazione sul campo.. solo se l'accreditamento va in integrazione il teamleader deve valutare
 			workflowService.eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(accreditamento, verbale.getTeamLeader().getUsernameWorkflow());
 		}
+	}
+
+	@Override
+	@Transactional
+	public void inviaValutazioneTeamLeader(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invia Valutazione TeamLeader " + accreditamentoId));
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		//setta la data
+		valutazione.setDataValutazione(LocalDateTime.now());
+		//disabilito tutti i filedValutazioneAccreditamento
+		for (FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
+			fva.setEnabled(false);
+		}
+
+		//inserisce il commento complessivo
+		valutazione.setValutazioneComplessiva(valutazioneComplessiva);
+
+		//setta lo stato dell'accreditamento al momento del salvataggio
+		valutazione.setAccreditamentoStatoValutazione(accreditamento.getStato());
+
+		valutazioneService.saveAndFlush(valutazione);
+
+		//detacha e copia: da questo momento valutazione si riferisce alla copia storicizzata
+		valutazioneService.copiaInStorico(valutazione);
+		workflowService.eseguiTaskValutazioneTeamLeaderForCurrentUser(accreditamento);
+
+			//NEL CASO VENGA RICHIESTO
+			//per il referee si azzera il suo contatore di valutazioni non date consecutivamente e svuota la lista
+//			if (user.isReferee()) {
+//				user.setValutazioniNonDate(0);
+//				user.setDomandeNonValutate(new HashSet<Accreditamento>());
+//				accountRepository.save(user);
+//				workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
+//			}
 	}
 
 	@Override
@@ -1204,18 +1242,23 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER) {
 			Account accountTeamLeader = accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader();
 			String usernameWorkflowTeamLeader = accountTeamLeader.getUsernameWorkflow();
-			//Ricavo la valutazione della segreteria perche' contiene i field editabili
-			Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
-			//ATTENZIONE la valutazioe restituita è detachata me è sempre lo stesso oggetto valutazioneSegreteria
-			Valutazione valutazioneTL = valutazioneService.detachValutazione(valutazioneSegreteria);
-			valutazioneService.cloneDetachedValutazione(valutazioneTL);
-			//valutazioneService.setEsitoForEnabledFields(valutazioneTL, null);
+			//controllo se ho gia la valutazione per lutente corrente
+			Valutazione valutazioneTL = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, accountTeamLeader.getId());
 
-			valutazioneTL.setStoricizzato(false);
-			valutazioneTL.setDataValutazione(null);
-			valutazioneTL.setAccount(accountTeamLeader);
-			valutazioneTL.setAccreditamento(accreditamento);
-			valutazioneTL.setTipoValutazione(ValutazioneTipoEnum.TEAM_LEADER);
+			if(valutazioneTL != null) {
+				//Ricavo la valutazione della segreteria perche' contiene i field editabili
+				Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
+				//ATTENZIONE la valutazioe restituita è detachata me è sempre lo stesso oggetto valutazioneSegreteria
+				valutazioneTL = valutazioneService.detachValutazione(valutazioneSegreteria);
+				valutazioneService.cloneDetachedValutazione(valutazioneTL);
+				//valutazioneService.setEsitoForEnabledFields(valutazioneTL, null);
+
+				valutazioneTL.setStoricizzato(false);
+				valutazioneTL.setDataValutazione(null);
+				valutazioneTL.setAccount(accountTeamLeader);
+				valutazioneTL.setAccreditamento(accreditamento);
+				valutazioneTL.setTipoValutazione(ValutazioneTipoEnum.TEAM_LEADER);
+			}
 
 			//rimuovo i field editabili per quelli isEnabled=true
 			Iterator<FieldValutazioneAccreditamento> iterator = valutazioneTL.getValutazioni().iterator();
