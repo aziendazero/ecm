@@ -82,6 +82,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private AlertEmailService alertEmailService;
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
+	@Autowired private AccreditamentoStatoHistoryService accreditamentoStatoHistoryService;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -1235,6 +1236,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamentoRepository.save(accreditamento);
 
 		alertEmailService.creaAlertForProvider(accreditamento);
+
+		accreditamentoStatoHistoryService.createHistoryFine(accreditamento, accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId(), stato, LocalDateTime.now());
 	}
 
 	@Override
