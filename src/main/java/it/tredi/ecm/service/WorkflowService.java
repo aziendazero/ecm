@@ -10,7 +10,6 @@ import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.ProcessInstanceDataModelComplete;
-import it.tredi.ecm.utils.Utils;
 
 public interface WorkflowService {
 	public boolean isCreateAccountOnLogin();
@@ -55,4 +54,6 @@ public interface WorkflowService {
 
 	public void eseguiTaskValutazioneSulCampoForCurrentUser(Accreditamento accreditamento, String usernameWorkflowTeamLeader, AccreditamentoStatoEnum stato) throws Exception;
 	//public void eseguiTaskValutazioneSegreteriaForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione) throws Exception;
+
+	public void eseguiTaskValutazioneTeamLeaderForCurrentUser(Accreditamento accreditamento) throws Exception;
 }

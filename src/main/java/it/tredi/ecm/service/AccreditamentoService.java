@@ -99,4 +99,5 @@ public interface AccreditamentoService{
 	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate dataSeduta, Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception;
 
 	public void inviaEmailConvocazioneValutazioneSulCampo(Long accreditamentoId) throws Exception;
+	public void inviaValutazioneTeamLeader(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 }
