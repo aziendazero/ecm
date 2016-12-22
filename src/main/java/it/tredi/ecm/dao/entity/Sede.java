@@ -52,4 +52,8 @@ public class Sede extends BaseEntity{
 	public String getAddressName() {
 		return (this.indirizzo + " (" + this.comune + ")");
 	}
+
+	public String getAddressNameFull() {
+		return (this.indirizzo + ", " + this.comune + " (" + this.provincia + ")");
+	}
 }

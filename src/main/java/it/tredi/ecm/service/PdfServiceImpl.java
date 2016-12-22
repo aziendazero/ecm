@@ -25,6 +25,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
@@ -1807,5 +1808,4 @@ public class PdfServiceImpl implements PdfService {
         //return new ListItem(parList);
 
     }
-
 }

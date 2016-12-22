@@ -126,15 +126,29 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 
 			byte []csv = importEventiDaCsvFile.getData();
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withDelimiter(';').withFirstRecordAsHeader().parse(new StringReader(new String(csv, CSV_REPORT_ENCODING)));
+			int counterLine = 0;
 			for (CSVRecord record : records) { //per ogni evento (riga del CSV) -> creo EventoPianoFormativo
+				counterLine++;
 				EventoPianoFormativo evento = new EventoPianoFormativo();
 				evento.setTitolo(getEventoTitoloFromCSVRow(record));
 				evento.setEdizione(0);
 				evento.setProceduraFormativa(getEventoProceduraformativaFromCSVRow(record, accreditamento.getDatiAccreditamento()));
 				evento.setPianoFormativo(pianoFormativo.getAnnoPianoFormativo());
-				evento.setObiettivoNazionale(getEventoObiettivoNazionaleFromCVSRow(record));
-				evento.setObiettivoRegionale(getEventoObiettivoRegionaleFromCVSRow(record));
-				evento.setProfessioniEvento(getEventoGeneraleSettorialeFromCVSRow(record)); //Generale //Settoriale
+				try {
+					evento.setObiettivoNazionale(getEventoObiettivoNazionaleFromCVSRow(record));
+				} catch (Exception obNex) {
+					throw new EcmException("error.csv_import_eventi_piano_formativo_error", "Errore Obiettivo Nazionale alla righa: " + counterLine + " (+ righe intestazione)", obNex);
+				}
+				try {
+					evento.setObiettivoRegionale(getEventoObiettivoRegionaleFromCVSRow(record));
+				} catch (Exception obRex) {
+					throw new EcmException("error.csv_import_eventi_piano_formativo_error", "Errore Obiettivo Regionale alla righa: " + counterLine + " (+ righe intestazione)", obRex);
+				}
+				try {
+					evento.setProfessioniEvento(getEventoGeneraleSettorialeFromCVSRow(record)); //Generale //Settoriale
+				} catch (Exception proex) {
+					throw new EcmException("error.csv_import_eventi_piano_formativo_error", "Errore Professioni Evento alla righa: " + counterLine + " (+ righe intestazione)", proex);
+				}
 				evento.setProvider(pianoFormativo.getProvider());
 				evento.setAccreditamento(accreditamento);
 				for (Disciplina disciplina: getEventoDisciplineFromCSVRow(record, accreditamento.getDatiAccreditamento())) {
