@@ -387,6 +387,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Override
 	public void valutaTuttiSi(Accreditamento accreditamento, Account account) {
 		Valutazione valutazione = getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamento.getId(), account.getId());
+		//Eliminando e riinserendo si perde il valore del campo enabled
 		valutazione.getValutazioni().clear();
 		valutazione.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsito(true, accreditamento));
 		save(valutazione);

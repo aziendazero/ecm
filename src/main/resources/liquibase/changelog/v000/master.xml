@@ -28,6 +28,8 @@
 	<!-- UPDATE FATTO con liquibase:updateSQL su test e prod 20161221 -->
     <include file="20161221_cambioTitoloEventoPianoFormativo_Text.xml" relativeToChangelogFile="true"/>
 
+    <include file="20161221_accreditamento_datePreavvisoRigetto.xml" relativeToChangelogFile="true"/>
+
  <!--  <include file="006_01_AccreditamentoStatoHistory.xml" relativeToChangelogFile="true" /> -->
 
 </databaseChangeLog>

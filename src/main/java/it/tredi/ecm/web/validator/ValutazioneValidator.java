@@ -91,6 +91,7 @@ public class ValutazioneValidator {
 			errors.rejectValue("valutazioneComplessiva", "error.empty");
 		}
 	}
+
 	public void validateGruppoCrecm(Object targetReferee, int refereeDaRiassegnare, Errors errors) {
 		Set<Account> refereeGroup = (Set<Account>)targetReferee;
 		if(Utils.getAuthenticatedUser().isSegreteria() && (refereeGroup == null || refereeGroup.size() != refereeDaRiassegnare)) {
