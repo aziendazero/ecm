@@ -302,7 +302,9 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 					continue;
 			}
 			//allegati relativi alla parte standard
-			else if(accreditamento.isProvvisorio()) {
+			//con else if non entra mai
+			//else if(accreditamento.isProvvisorio()) {
+			if(accreditamento.isProvvisorio()) {
 				if(id == IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD || id == IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA)
 					continue;
 			}

@@ -30,7 +30,7 @@ public enum AccreditamentoStatoEnum {
 	 *  La segreteria compila la maschera del verbale e la salva. Il task termina quando la segreteria esplicitamente VALIDA il verbale. (salvataggio in bozza nel frattempo)
 	 * */
 	VALUTAZIONE_SUL_CAMPO (14, "Valutazione sul campo", "valutazioneCampo"),//[SOLO STANDARD]
-	VALUTAZIONE_TEAM_LEADER(15, "Valutazione del Team Leader", "valutazioneLeader"),//[SOLO STANDARD] - domanda asseganata al Team Leader che deve compilare la griglia (sostituisce 3 dal secondo giro nella domanda standard)
+	VALUTAZIONE_TEAM_LEADER(15, "Valutazione del Team Leader", "valutazioneReferee"),//[SOLO STANDARD] - domanda asseganata al Team Leader che deve compilare la griglia (sostituisce 3 dal secondo giro nella domanda standard)
 
 	CANCELLATO(16, "Cancellato", ""),//domanda cancellata - prevista dal vecchio sistema...
 	SOSPESO(17, "Sospeso", ""),//domanda sospesa - prevista dal vecchio sistema...
