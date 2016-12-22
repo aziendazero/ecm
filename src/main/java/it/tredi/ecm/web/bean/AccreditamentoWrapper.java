@@ -407,7 +407,6 @@ public class AccreditamentoWrapper {
 
 			//check valutazione dei multistanza
 
-			//componenti comitato scientifico N.B. NON controlla bene tutti i FieldValutazione come gli altri per semplicità TODO decidere se implementare o se semplificare anche le altre
 			for (Persona p : componentiComitatoScientifico) {
 				boolean fullValutato = (mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) &&
 						mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) &&
@@ -423,7 +422,15 @@ public class AccreditamentoWrapper {
 
 			//sedi N.B. NON controlla bene tutti i FieldValutazione come gli altri per semplicità TODO decidere se implementare o se semplificare anche le altre
 			for (Sede s : sedi) {
-				if(mappaSedi.get(s.getId()) != null && !mappaSedi.get(s.getId()).isEmpty())
+				boolean fullValutato = (mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__PROVINCIA) &&
+						mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__COMUNE) &&
+						mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__INDIRIZZO) &&
+						mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__CAP) &&
+						mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__TELEFONO) &&
+						mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__FAX) &&
+						mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__EMAIL));
+
+				if(mappaSedi.get(s.getId()) != null && fullValutato)
 					sediStati.replace(s.getId(), true);
 			};
 
