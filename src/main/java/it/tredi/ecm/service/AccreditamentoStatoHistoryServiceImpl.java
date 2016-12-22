@@ -17,6 +17,7 @@ public class AccreditamentoStatoHistoryServiceImpl implements AccreditamentoStat
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoStatoHistoryServiceImpl.class);
 
 	@Autowired private AccreditamentoStatoHistoryRepository accreditamentoStatoHistoryRepository;
+	@Autowired private AccountService accountService;
 
 	@Override
 	public Set<AccreditamentoStatoHistory> getAllByAccreditamentoId(Long accreditamentoId) {
@@ -38,6 +39,7 @@ public class AccreditamentoStatoHistoryServiceImpl implements AccreditamentoStat
 		history.setProcessInstanceId(processInstanceId);
 		history.setStato(stato);
 		history.setDataFine(dataFine);
+		history.setAccount(null);
 		accreditamentoStatoHistoryRepository.save(history);
 	}
 }

@@ -34,7 +34,7 @@ import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
 
 @Component
-@org.springframework.context.annotation.Profile({"simone","abarducci", "tom", "joe19"})
+@org.springframework.context.annotation.Profile({"simone","abarducci", "tom", "joe19","dev"})
 public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent> {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ProviderLoader.class);
 

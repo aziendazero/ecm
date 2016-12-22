@@ -4,19 +4,23 @@
 					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 					xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
 					logicalFilePath="v000/006_01_AccreditamentoStatoHistory.xml">
-    <changeSet author="dpranteda (generated)" id="1482260254275-1">
+    <changeSet author="dpranteda (generated)" id="1482358711520-1">
         <createTable tableName="accreditamento_stato_history">
-            <column autoIncrement="true" name="id" type="BIGINT">
+            <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="accreditamento_stato_historyPK"/>
             </column>
             <column name="data_fine" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="data_inizio" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="process_instance_id" type="BIGINT"/>
             <column name="stato" type="VARCHAR(255)"/>
+            <column name="account_id" type="BIGINT"/>
             <column name="accreditamento_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dpranteda (generated)" id="1482260254275-2">
+    <changeSet author="dpranteda (generated)" id="1482358711520-2">
+        <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="accreditamento_stato_history" constraintName="FK_j1ts1659q0khwe4e4h4scm18l" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet author="dpranteda (generated)" id="1482358711520-3">
         <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="accreditamento_stato_history" constraintName="FK_lh5y1r76x484mtg0rgcg4evfv" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
     </changeSet>
 </databaseChangeLog>

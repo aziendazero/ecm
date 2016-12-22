@@ -25,6 +25,8 @@ public class AccreditamentoStatoHistory extends BaseEntity{
 	private AccreditamentoStatoEnum stato;
 	@Column(name = "data_fine")
 	private LocalDateTime dataFine;
+	@ManyToOne
+	private Account account;
 
 	@Column(name = "data_inizio")
 	private LocalDateTime dataInizio;

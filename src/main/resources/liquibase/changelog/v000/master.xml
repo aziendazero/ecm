@@ -22,4 +22,6 @@
     <include file="20161219_Accreditamento_VerbaleValutazioneSulCampo.xml" relativeToChangelogFile="true"/>
     <include file="005_02_cambioNomeObiettivo_Text.xml" relativeToChangelogFile="true" />
 
+    <include file="006_01_AccreditamentoStatoHistory.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

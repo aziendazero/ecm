@@ -1393,12 +1393,14 @@
 													<tr>
 														<th th:text="#{label.data}">Tipologia Sede</th>
 														<th th:text="#{label.stato}">Provincia</th>
+														<!--  th th:text="#{label.eseguito_da}">Provincia</th -->
 													</tr>
 												</thead>
 												<tbody>
-													<tr th:each="history, row : ${accreditamentoStatoHistory}">
-														<td th:text="${history.dataFine}"></td>
-														<td th:text="${history.stato}"></td>
+													<tr th:each="history, row : ${accreditamentoHistoryList}">
+														<td th:text="${history.dataFine != null} ? ${#temporals.format(history.dataFine,'dd/MM/yyyy - HH:mm')} : ''"></td>
+														<td th:text="${history?.stato.nome}"></td>
+														<!-- td th:text="${history?.account?.username}"></td -->
 													</tr>
 												</tbody>
 											</table>
