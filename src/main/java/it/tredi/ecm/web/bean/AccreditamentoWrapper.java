@@ -406,7 +406,6 @@ public class AccreditamentoWrapper {
 			}
 
 			//check valutazione dei multistanza
-
 			for (Persona p : componentiComitatoScientifico) {
 				boolean fullValutato = (mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) &&
 						mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) &&
@@ -420,7 +419,6 @@ public class AccreditamentoWrapper {
 					componentiComitatoScientificoStati.replace(p.getId(), true);
 			};
 
-			//sedi N.B. NON controlla bene tutti i FieldValutazione come gli altri per semplicità TODO decidere se implementare o se semplificare anche le altre
 			for (Sede s : sedi) {
 				boolean fullValutato = (mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__PROVINCIA) &&
 						mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__COMUNE) &&
@@ -434,7 +432,6 @@ public class AccreditamentoWrapper {
 					sediStati.replace(s.getId(), true);
 			};
 
-			//controllo anche il coordinatore N.B. stesso discorso dei componenti
 			boolean coordinatoreFullValutato = (mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) &&
 					mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) &&
 					mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) &&
