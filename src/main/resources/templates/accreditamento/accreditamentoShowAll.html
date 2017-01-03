@@ -78,10 +78,11 @@
 
 				</div>
 
-				<!-- riempito con chiamata ajax dati accreditamento -->
+				<!-- riempito con chiamata ajax dati accreditamento diviso in sezioni-->
+				<!-- sezione 1 -->
 				<div class="x_panel">
               		<div class="x_title">
-						<h2 style="display: inline" th:text="#{label.dati_accreditamento}">label.dati_accreditamento</h2>
+						<h2 style="display: inline" th:text="#{label.tipologia_formativa}">label.tipologia_formativa</h2>
 						<h2 style="display: inline" th:if="${accreditamentoWrapper.datiAccreditamento.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
 						<ul class="nav navbar-right panel_toolbox" th:unless="${accreditamentoWrapper.datiAccreditamento.new}">
 		                    <li><a class="link-collapse"><i class="fa iconToggle fa-chevron-down"></i></a></li>
@@ -89,7 +90,35 @@
 						<div class="clearfix"></div>
 					</div>
 
-					<div th:unless="${accreditamentoWrapper.datiAccreditamento.new}" id="datiBlock" class="container-collapse"></div>
+					<div th:unless="${accreditamentoWrapper.datiAccreditamento.new}" id="tipologiaFormativaBlock" class="container-collapse"></div>
+
+				</div>
+				<!-- sezione 2 -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.dati_economici}">label.dati_economici</h2>
+						<h2 style="display: inline" th:if="${accreditamentoWrapper.datiAccreditamento.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${accreditamentoWrapper.datiAccreditamento.new}">
+		                    <li><a class="link-collapse"><i class="fa iconToggle fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:unless="${accreditamentoWrapper.datiAccreditamento.new}" id="datiEconomiciBlock" class="container-collapse"></div>
+
+				</div>
+				<!-- sezione 3 -->
+				<div class="x_panel">
+              		<div class="x_title">
+						<h2 style="display: inline" th:text="#{label.dati_struttura}">label.dati_struttura</h2>
+						<h2 style="display: inline" th:if="${accreditamentoWrapper.datiAccreditamento.new}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
+						<ul class="nav navbar-right panel_toolbox" th:unless="${accreditamentoWrapper.datiAccreditamento.new}">
+		                    <li><a class="link-collapse"><i class="fa iconToggle fa-chevron-down"></i></a></li>
+                  		</ul>
+						<div class="clearfix"></div>
+					</div>
+
+					<div th:unless="${accreditamentoWrapper.datiAccreditamento.new}" id="datiStrutturaBlock" class="container-collapse"></div>
 
 				</div>
 
@@ -249,8 +278,12 @@
 
 					//dati accreditamento
 					if([[${!accreditamentoWrapper.datiAccreditamento.new}]]) {
-						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/show|}]];
-						$("#datiBlock").load(url + ' #toModal');
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/show/1|}]];
+						$("#tipologiaFormativaBlock").load(url + ' #toModal');
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/show/2|}]];
+						$("#datiEconomiciBlock").load(url + ' #toModal');
+						url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento?.id}/show/3|}]];
+						$("#datiStrutturaBlock").load(url + ' #toModal');
 					}
 
 					//responsabile segreteria
