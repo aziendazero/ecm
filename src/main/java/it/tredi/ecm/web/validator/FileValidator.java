@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.EcmProperties;
@@ -60,6 +62,11 @@ public class FileValidator {
 	public boolean validateFirmaCF(Object target, Long providerId) throws Exception{
 		File file = (File)target;
 		if(!(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0)){
+
+			//20170103 - dpranteda: se il provider è di tipo AZIENDE_SANITARIE, non bisogna fare il controllo sul CF in quanto ci sono provider unificati
+			Provider provider = providerService.getProvider(providerId);
+			if(provider.getTipoOrganizzatore() == TipoOrganizzatore.AZIENDE_SANITARIE)
+				return true;
 
 			VerificaFirmaDigitale verificaFirmaDigitale = new VerificaFirmaDigitale(file.getNomeFile(), file.getData());
 			String cfLegaleRappresentante = providerService.getCodiceFiscaleLegaleRappresentantePerVerificaFirmaDigitale(providerId);
