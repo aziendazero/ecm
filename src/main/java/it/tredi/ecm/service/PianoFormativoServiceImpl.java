@@ -306,4 +306,18 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		eventoPianoFormativoService.save(epf);
 	}
 
+	@Override
+	public Set<Provider> getAllProviderNotPianoFormativoInseritoPerAnno() {
+		Integer annoPianoFormativo = LocalDate.now().getYear();
+		LOGGER.debug(Utils.getLogMessage("Recupero lista di Provider con piano formativo non inserito per anno: " + annoPianoFormativo));
+		return pianoFormativoRepository.findAllProviderNotPianoFormativoInseritoPerAnno(annoPianoFormativo);
+	}
+
+	@Override
+	public int countProviderNotPianoFormativoInseritoPerAnno() {
+		Set<Provider> list = getAllProviderNotPianoFormativoInseritoPerAnno();
+		if(list != null)
+			return list.size();
+		return 0;
+	}
 }

@@ -1,5 +1,6 @@
 package it.tredi.ecm.web;
 
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -23,6 +24,7 @@ import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.CurrentUserDetailsService;
 import it.tredi.ecm.service.EventoService;
+import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.QuotaAnnualeService;
 import it.tredi.ecm.service.QuotaAnnualeServiceImpl;
@@ -42,6 +44,7 @@ public class LoginController {
 	@Autowired private SedutaService sedutaService;
 	@Autowired private QuotaAnnualeService quotaAnnualeService;
 	@Autowired private EventoService eventoService;
+	@Autowired private PianoFormativoService pianoFormativoService;
 
 	@Autowired private CurrentUserDetailsService currentUserDetailsService;
 
@@ -98,6 +101,7 @@ public class LoginController {
 					wrapper.setDomandeDaValutareAll(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, null));
 					wrapper.setDomandeInInsODG(accreditamentoService.countAllAccreditamentiInseribiliInODG());
 					wrapper.setProviderPagamentoNonEffettuatoAllaScadenza(quotaAnnualeService.countProviderNotPagamentoEffettuatoAllaScadenza());
+					wrapper.setProviderPianoFormativoNonInserito(pianoFormativoService.countProviderNotPianoFormativoInseritoPerAnno());
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);

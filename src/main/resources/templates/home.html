@@ -196,6 +196,17 @@
 						</div>
 					</div>
 
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('provider/pianoFormativoNotInserito/list')">
+							<div class="icon"><i class="fa fa-calendar-o"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.providerPianoFormativoNonInserito}"></div>
+			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+			                	<p class="count-text" th:text="${homeWrapper.providerPianoFormativoNonInserito == 1} ? #{label.non_ha_inserito_piano_formativo} :  #{label.non_hanno_inserito_piano_formativo}"></p>
+							</div>
+						</div>
+					</div>
+
 				</div>
 
 				<!-- COMMISSIONE -->

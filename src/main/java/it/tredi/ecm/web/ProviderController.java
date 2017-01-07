@@ -1,5 +1,6 @@
 package it.tredi.ecm.web;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.IntegrazioneService;
+import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
@@ -81,6 +83,7 @@ public class ProviderController {
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
 	@Autowired private TokenService tokenService;
+	@Autowired private PianoFormativoService pianoFormativoService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -373,6 +376,26 @@ public class ProviderController {
 			return "provider/providerList";
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET: /provider/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
+	@RequestMapping("/provider/pianoFormativoNotInserito/list")
+	public String showAllPianoFormativoNotInserito(Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET: /provider/pianoFormativoNotInserito/list"));
+		try {
+			String returnRedirect = "redirect:/provider/list";
+
+			Set<Provider> listaProvider = new HashSet<Provider>();
+			listaProvider.addAll(pianoFormativoService.getAllProviderNotPianoFormativoInseritoPerAnno());
+			redirectAttrs.addFlashAttribute("providerList", listaProvider);
+
+			return returnRedirect;
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET: /provider/pianoFormativoNotInserito/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";

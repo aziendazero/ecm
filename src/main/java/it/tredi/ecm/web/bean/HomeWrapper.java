@@ -37,6 +37,7 @@ public class HomeWrapper {
 	private Integer domandeDaValutareAll;
 	private Integer domandeInInsODG;
 	private Integer providerPagamentoNonEffettuatoAllaScadenza;
+	private Integer providerPianoFormativoNonInserito;
 
 	//Referee
 	private Boolean isReferee;

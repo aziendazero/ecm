@@ -4,6 +4,7 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.PianoFormativo;
+import it.tredi.ecm.dao.entity.Provider;
 
 public interface PianoFormativoService {
 
@@ -18,7 +19,10 @@ public interface PianoFormativoService {
 	public Set<Long> getAllPianiFormativiIdInAccreditamentoForProvider(Long providerId);
 
 	public void importaEventiDaCSV(Long pianoFormativoId, File importEventiDaCsvFile, Long accreditamentoId) throws Exception;
-	
+
 	public void removeEventoFrom(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception;
 	public void addEventoTo(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception;
+
+	public Set<Provider> getAllProviderNotPianoFormativoInseritoPerAnno();
+	public int countProviderNotPianoFormativoInseritoPerAnno();
 }
