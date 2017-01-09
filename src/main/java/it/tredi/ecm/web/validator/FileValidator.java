@@ -108,7 +108,7 @@ public class FileValidator {
 //				if(!(contentType.equalsIgnoreCase("application/pdf") || contentType.equalsIgnoreCase("application/pkcs7-mime") || contentType.equalsIgnoreCase("application/x-pkcs7-mime")))
 //					error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
 				//inserito il controllo sull'estensione del file
-				if (!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith("PDF.P7M") || file.getNomeFile().toUpperCase().endsWith("PDF.P7C")))
+				if (!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".P7M") || file.getNomeFile().toUpperCase().endsWith(".P7C")))
 					error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
 			}
 			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
