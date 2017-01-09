@@ -47,6 +47,7 @@ public class DettaglioAttivitaRES extends BaseEntity implements Serializable{
 	@DateTimeFormat (pattern = "HH:mm")
 	@Column(name="orario_fine")
 	private LocalTime orarioFine;
+	@Column(columnDefinition = "text")
 	private String argomento;
 
 	@ManyToMany
@@ -152,9 +153,9 @@ public class DettaglioAttivitaRES extends BaseEntity implements Serializable{
 	}
 
 	public void calcolaOreAttivita(){
-		if(orarioInizio !=null && orarioFine != null){
+		if(orarioInizio != null && orarioFine != null){
 			Duration duration = Duration.between(orarioInizio, orarioFine);
-			BigDecimal bg = new BigDecimal(duration.toMinutes() / 60.0).setScale(2, RoundingMode.HALF_UP);
+			BigDecimal bg = new BigDecimal(duration.toMinutes() / 60.0).setScale(6, RoundingMode.HALF_UP);
 			this.oreAttivita = bg.floatValue();
 			this.minutiAttivita = duration.toMinutes();
 		}

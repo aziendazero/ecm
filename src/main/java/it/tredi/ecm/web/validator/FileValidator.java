@@ -87,7 +87,7 @@ public class FileValidator {
 		File file = (File)target;
 		String error = "";
 		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){
-			error = messageSource.getMessage("error.empty", null, Locale.getDefault());
+			error = messageSource.getMessage("error.file_vuoto", null, Locale.getDefault());
 		}else{
 			//validazione file xml/csv/xml.p7m/xml.zip.p7m
 			if(file.getTipo() == FileEnum.FILE_REPORT_PARTECIPANTI) {
@@ -104,7 +104,11 @@ public class FileValidator {
 			}
 			//validazione file pdf/pdf.p7m
 			else {
-				if(!(contentType.equalsIgnoreCase("application/pdf") || contentType.equalsIgnoreCase("application/pkcs7-mime") || contentType.equalsIgnoreCase("application/x-pkcs7-mime")))
+				//rimosso controllo sul MIME per motivi di compatibilità con le configurazioni browser dei vari utenti
+//				if(!(contentType.equalsIgnoreCase("application/pdf") || contentType.equalsIgnoreCase("application/pkcs7-mime") || contentType.equalsIgnoreCase("application/x-pkcs7-mime")))
+//					error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
+				//inserito il controllo sull'estensione del file
+				if (!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith("PDF.P7M") || file.getNomeFile().toUpperCase().endsWith("PDF.P7C")))
 					error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
 			}
 			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){

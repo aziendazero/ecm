@@ -43,6 +43,7 @@ public class EventoFSC extends Evento{
 	private Boolean sperimentazioneClinica;
 	private Boolean ottenutoComitatoEtico;
 
+	@Column(columnDefinition = "text")
 	private String descrizioneProgetto;
 
 	@ElementCollection
@@ -53,6 +54,7 @@ public class EventoFSC extends Evento{
 	@Enumerated(EnumType.STRING)
 	private Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti;
 
+	@Column(columnDefinition = "text")
 	private String indicatoreEfficaciaFormativa;
 
 	private String fasiAzioniRuoliJson;

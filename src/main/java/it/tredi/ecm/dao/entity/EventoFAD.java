@@ -37,8 +37,10 @@ public class EventoFAD extends Evento{
 	@JoinColumn(name = "docente_id")
 	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();//Sono ammessi per il RuoloPersonaEventoEnum solo DOCENTE e TUTOR
 
+	@Column(columnDefinition="text")
 	private String razionale;
 	@ElementCollection
+	@Column(columnDefinition="text")
 	private List<String> risultatiAttesi = new ArrayList<String>();
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
@@ -50,6 +52,7 @@ public class EventoFAD extends Evento{
 
 	private Boolean supportoSvoltoDaEsperto;
 
+	@Column(columnDefinition="text")
 	private String materialeDurevoleRilasciatoAiPratecipanti;
 
 	@OneToOne

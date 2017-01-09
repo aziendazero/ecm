@@ -241,7 +241,7 @@ public class Utils {
 
 	public static String formatOrarioFromMinutes(long minuti){
 		int hh = (int) minuti / 60;
-		int mm = (int) (minuti % 60);
+		int mm = (int) ((minuti % 60) + 0.5f);
 
 		return ((hh < 10) ? "0" + hh : hh) + ":" + ((mm < 10) ? "0" + mm : mm);
 	}

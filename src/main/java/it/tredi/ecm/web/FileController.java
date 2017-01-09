@@ -90,7 +90,7 @@ public class FileController {
 		LOGGER.debug(Utils.getLogMessage("tipo: " + tipo));
 		File file = new File(FileEnum.valueOf(tipo));
 		try{
-			if(multiPartFile != null && !multiPartFile.isEmpty()){
+			if(multiPartFile != null){
 				file = Utils.convertFromMultiPart(multiPartFile);
 				file.setNomeFile(file.getNomeFile().substring(file.getNomeFile().lastIndexOf("\\") + 1));
 				file.setTipo(FileEnum.valueOf(tipo));

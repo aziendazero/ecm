@@ -658,11 +658,8 @@ public class EventoServiceImpl implements EventoService {
 		float durata = 0;
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
-
 			//durata = calcoloDurataEventoRES(eventoWrapper.getProgrammaEventoRES());
 			durata = calcoloDurataEventoRES(eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values());
-
-
 			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			durata = calcoloDurataEventoFSC(eventoWrapper.getProgrammaEventoFSC(), eventoWrapper.getRiepilogoRuoliFSC());
@@ -709,16 +706,21 @@ public class EventoServiceImpl implements EventoService {
 
 	private float calcoloDurataEventoRES(Collection<EventoRESProgrammaGiornalieroWrapper> programma){
 		float durata = 0;
+		long durataMinuti = 0;
 
 		if(programma != null){
 			for(EventoRESProgrammaGiornalieroWrapper progrGior : programma){
 				for(DettaglioAttivitaRES dett : progrGior.getProgramma().getProgramma()){
-					if(!dett.isExtraType())
-						durata += dett.getOreAttivita();
+					if(!dett.isExtraType()) {
+//						durata += dett.getOreAttivita();
+						durataMinuti += dett.getMinutiAttivita();
+					}
 				}
 			}
 		}
 
+		durata = (float) durataMinuti / 60;
+		durata = Utils.getRoundedFloatValue(durata, 2);
 		return durata;
 	}
 
@@ -1098,8 +1100,8 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti gli eventi del piano formativo rieditabili per il provider: " + providerId));
-		//mostra tutti gli eventi del provider non in bozza e già iniziati e che finiscono dopo l'inizio dell'anno corrente
-		return eventoRepository.findAllByProviderIdAndStatoNotAndDataInizioBeforeAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, LocalDate.now(), LocalDate.of(LocalDate.now().getYear(), 1, 1));
+		//mostra tutti gli eventi del provider non in bozza che finiscono dopo l'inizio dell'anno corrente
+		return eventoRepository.findAllByProviderIdAndStatoNotAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, LocalDate.of(LocalDate.now().getYear(), 1, 1));
 	}
 
 	//trovo ultima edizione di un evento con il determinato prefix

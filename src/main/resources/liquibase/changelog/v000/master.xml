@@ -32,4 +32,6 @@
  	<include file="006_01_AccreditamentoStatoHistory.xml" relativeToChangelogFile="true" />
  	<include file="20161222_cambioTypeText_InEvento.xml" relativeToChangelogFile="true"/>
 
+ 	<include file="20170109_cambioType_resAttesi_evento_fad_res.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

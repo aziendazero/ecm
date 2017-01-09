@@ -771,7 +771,7 @@
 												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-												<input type="text" class="form-control" th:field="${eventoWrapper.evento.razionale}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+												<textarea rows="10" class="form-control" th:field="${eventoWrapper.evento.razionale}" th:disabled="${isRiedizione or isEditSemiBloccato}"></textarea>
 											</div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.razionale')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.razionale')}__}"></div>
 										</div>

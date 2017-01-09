@@ -26,7 +26,7 @@ import it.tredi.ecm.service.WorkflowService;
 public class AccountLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AccountLoader.class);
-	private final String defaultDataScadenzaPassword = "2016-12-31";
+	private final String defaultDataScadenzaPassword = "2099-12-31";
 
 	private final RoleRepository roleRepository;
 	private final AccountService accountService;
@@ -181,6 +181,28 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				e.printStackTrace();
 			}
 
+			Account admin1 = new Account();
+			admin1.setUsername("segreteria1");
+			admin1.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+			//admin.setPassword("admin");
+			admin1.setEmail("segreteriaECM1@ecm.it");
+			admin1.setChangePassword(false);
+			admin1.setEnabled(true);
+			admin1.setExpiresDate(null);
+			admin1.setLocked(false);
+			admin1.setNome("Segretario");
+			admin1.setCognome("DiRiserva");
+			admin1.getProfiles().add(profile_admin);
+			admin1.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+
+			try {
+				//accountService.save(admin);
+				accountRepository.save(admin1);
+				workflowService.saveOrUpdateBonitaUserByAccount(admin1);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			Account referee1 = new Account();
 			referee1.setUsername("referee1");
 			referee1.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
@@ -240,6 +262,48 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				//accountService.save(referee3);
 				accountRepository.save(referee3);
 				workflowService.saveOrUpdateBonitaUserByAccount(referee3);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			Account osservatore = new Account();
+			osservatore.setUsername("osservatore");
+			osservatore.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+			//referee1.setPassword("admin");
+			osservatore.setEmail("osservatore@ecm.it");
+			osservatore.setChangePassword(false);
+			osservatore.setEnabled(true);
+			osservatore.setExpiresDate(null);
+			osservatore.setLocked(false);
+			osservatore.setNome("Osservatore");
+			osservatore.setCognome("Osservante");
+			osservatore.getProfiles().add(profile_osservatore);
+			osservatore.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+			try {
+				//accountService.save(referee1);
+				accountRepository.save(osservatore);
+				workflowService.saveOrUpdateBonitaUserByAccount(osservatore);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			Account commissione = new Account();
+			commissione.setUsername("commissione");
+			commissione.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+			//commissione.setPassword("admin");
+			commissione.setEmail("commissione@ecm.it");
+			commissione.setChangePassword(false);
+			commissione.setEnabled(true);
+			commissione.setExpiresDate(null);
+			commissione.setLocked(false);
+			commissione.setNome("Commissario");
+			commissione.setCognome("Basettoni");
+			commissione.getProfiles().add(profile_commissione);
+			commissione.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+			try {
+				//accountService.save(commissione);
+				accountRepository.save(commissione);
+				workflowService.saveOrUpdateBonitaUserByAccount(commissione);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -24,6 +25,8 @@ public class DettaglioAttivitaFAD extends BaseEntity implements Serializable{
 	 *
 	 */
 	private static final long serialVersionUID = 8581821767653797912L;
+
+	@Column(columnDefinition = "text")
 	private String argomento;
 	@ManyToMany
 	@JoinTable(name = "dettaglio_attivitafad_docente",

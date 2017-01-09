@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
@@ -48,8 +49,10 @@ public class EventoRES extends Evento{
 	@JoinColumn(name="docente_id")
 	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
+	@Column(columnDefinition="text")
 	private String razionale;
 	@ElementCollection
+	@Column(columnDefinition="text")
 	private Set<String> risultatiAttesi = new HashSet<String>();
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
@@ -65,6 +68,7 @@ public class EventoRES extends Evento{
 	@Enumerated(EnumType.STRING)
 	private Set<VerificaPresenzaPartecipantiEnum> verificaPresenzaPartecipanti;
 
+	@Column(columnDefinition="text")
 	private String materialeDurevoleRilasciatoAiPratecipanti;
 
 	private Boolean soloLinguaItaliana;

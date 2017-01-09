@@ -26,13 +26,14 @@ import lombok.Setter;
 @Setter
 @Entity
 public class AzioneRuoliEventoFSC extends BaseEntity {
+	@Column(columnDefinition = "text")
 	private String azione;
 
 	@Column(name="obiettivo_formativo")
 	@Enumerated(EnumType.STRING)
 	private ObiettiviFormativiFSCEnum obiettivoFormativo;
 
-	@Column(name="risultati_attesi")
+	@Column(name="risultati_attesi", columnDefinition = "text")
 	private String risultatiAttesi;
 
 	@ElementCollection
