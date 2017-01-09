@@ -819,16 +819,20 @@ public class EventoServiceImpl implements EventoService {
 	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, Integer numeroPartecipanti, RiepilogoRES riepilogoRES){
 		float crediti = 0.0f;
 		float oreFrontale = 0f;
+		long minutiFrontale = 0;
 		float oreInterattiva = 0f;
+		long minutiInterattiva = 0;
 
 		riepilogoRES.clear();
 
 		for(EventoRESProgrammaGiornalieroWrapper progrGio : programma) {
 			for(DettaglioAttivitaRES a : progrGio.getProgramma().getProgramma()){
 				if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
-					oreFrontale += a.getOreAttivita();
+//					oreFrontale += a.getOreAttivita();
+					minutiFrontale += a.getMinutiAttivita();
 				}else if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA){
-					oreInterattiva += a.getOreAttivita();
+//					oreInterattiva += a.getOreAttivita();
+					minutiInterattiva += a.getMinutiAttivita();
 				}
 
 				//popolo la lista di obiettivi formativi utilizzati
@@ -846,6 +850,11 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 		}
+
+		oreFrontale = (float) minutiFrontale / 60;
+		oreFrontale = Utils.getRoundedFloatValue(oreFrontale, 2);
+		oreInterattiva = (float) minutiInterattiva / 60;
+		oreInterattiva = Utils.getRoundedFloatValue(oreInterattiva, 2);
 
 		riepilogoRES.setTotaleOreFrontali(oreFrontale);
 		riepilogoRES.setTotaleOreInterattive(oreInterattiva);
