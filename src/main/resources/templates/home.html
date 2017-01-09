@@ -207,6 +207,17 @@
 						</div>
 					</div>
 
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('eventi/CREDITI_NON_CONFERMATI/list')">
+							<div class="icon"><i class="fa fa-pencil-square-o"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.eventiCreditiNonConfermati}"></div>
+			                	<h3 class="tile-h3" th:text="#{label.eventi}"></h3>
+			                	<p class="count-text" th:text="${homeWrapper.eventiCreditiNonConfermati == 1} ? #{label.evento_con_crediti_non_confermati} :  #{label.eventi_con_crediti_non_confermati}"></p>
+							</div>
+						</div>
+					</div>
+
 				</div>
 
 				<!-- COMMISSIONE -->

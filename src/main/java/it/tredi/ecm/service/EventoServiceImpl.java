@@ -1822,4 +1822,18 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug("Conteggio eventi del provider: " + id + ", in stato: " + stato);
 		return eventoRepository.countAllByProviderIdAndStato(id, stato);
 	}
+
+	@Override
+	public Set<Evento> getEventiCreditiNonConfermati() {
+		LOGGER.debug("Recupero eventi che non hanno confermato i crediti");
+		//prendiamo solo quelli accreditati...quando l'evento viene rendicontato non rientra piu nella vaschetta
+		return eventoRepository.findAllByConfermatiCreditiFalseAndStato(EventoStatoEnum.VALIDATO);
+	}
+
+	@Override
+	public Integer countAllEventiCreditiNonConfermati() {
+		LOGGER.debug("Conteggio eventi che non hanno confermato i crediti");
+		//prendiamo solo quelli accreditati...quando l'evento viene rendicontato non rientra piu nella vaschetta
+		return eventoRepository.countAllByConfermatiCreditiFalseAndStato(EventoStatoEnum.VALIDATO);
+	}
 }
