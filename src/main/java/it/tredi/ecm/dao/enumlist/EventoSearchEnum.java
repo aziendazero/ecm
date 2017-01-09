@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum EventoSearchEnum {
 	SCADENZA_PAGAMENTO(1, "Eventi in scadenza per Pagamento/Rendicontazione"),
 	NON_RAPPORTATI(2, "Eventi scaduti e non rapportati"),
-	BOZZA(3, "Eventi in stato di Bozza");
+	BOZZA(3, "Eventi in stato di Bozza"),
+	CREDITI_NON_CONFERMATI(4, "Eventi con crediti non confermati");
 
 	private int id;
 	private String nome;

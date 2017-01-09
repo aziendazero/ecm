@@ -36,4 +36,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Set<Evento> findAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
 	public Integer countAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
 	public Set<Evento> findAllByProviderIdAndStatoNotAndDataFineAfter(Long providerId, EventoStatoEnum bozza, LocalDate startOfYear);
+
+	public Set<Evento> findAllByConfermatiCreditiFalseAndStato(EventoStatoEnum stato);
+	public Integer countAllByConfermatiCreditiFalseAndStato(EventoStatoEnum stato);
 }

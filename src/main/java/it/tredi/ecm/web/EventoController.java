@@ -1511,6 +1511,34 @@ public class EventoController {
 		}
 	}
 
+	@RequestMapping("/eventi/{search}/list")
+	public String getAllEventiByForGruppo(@PathVariable("search") EventoSearchEnum search, Model model,
+			RedirectAttributes redirectAttrs) throws Exception {
+		LOGGER.info(Utils.getLogMessage("GET /eventi/" + search + "/list"));
+		try {
+
+			Set<Evento> listaEventi = new HashSet<Evento>();
+
+			switch(search){
+				case CREDITI_NON_CONFERMATI : listaEventi = eventoService.getEventiCreditiNonConfermati();
+								break;
+
+				default: break;
+			}
+
+			model.addAttribute("label", search.getNome());
+			model.addAttribute("eventoList", listaEventi);
+			model.addAttribute("canCreateEvento", false);
+			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
+			return LIST;
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /eventi/" + search + "/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
 	@RequestMapping("/evento/ricerca")
 	public String ricercaEventoGlobale(Model model,RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /evento/ricerca"));

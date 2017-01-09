@@ -102,6 +102,7 @@ public class LoginController {
 					wrapper.setDomandeInInsODG(accreditamentoService.countAllAccreditamentiInseribiliInODG());
 					wrapper.setProviderPagamentoNonEffettuatoAllaScadenza(quotaAnnualeService.countProviderNotPagamentoEffettuatoAllaScadenza());
 					wrapper.setProviderPianoFormativoNonInserito(pianoFormativoService.countProviderNotPianoFormativoInseritoPerAnno());
+					wrapper.setEventiCreditiNonConfermati(eventoService.countAllEventiCreditiNonConfermati());
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);

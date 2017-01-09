@@ -62,4 +62,7 @@ public interface EventoService {
 	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode);
 	public Set<Evento> getEventiByProviderIdAndStato(Long id, EventoStatoEnum stato);
 	public Integer countAllEventiByProviderIdAndStato(Long id, EventoStatoEnum stato);
+
+	public Set<Evento> getEventiCreditiNonConfermati();
+	public Integer countAllEventiCreditiNonConfermati();
 }

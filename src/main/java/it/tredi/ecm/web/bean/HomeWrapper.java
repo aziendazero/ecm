@@ -38,6 +38,7 @@ public class HomeWrapper {
 	private Integer domandeInInsODG;
 	private Integer providerPagamentoNonEffettuatoAllaScadenza;
 	private Integer providerPianoFormativoNonInserito;
+	private Integer eventiCreditiNonConfermati;
 
 	//Referee
 	private Boolean isReferee;
