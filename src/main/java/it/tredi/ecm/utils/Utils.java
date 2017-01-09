@@ -235,8 +235,13 @@ public class Utils {
 	public static String formatOrario(float durata){
 		int hh = (int) durata;
 		int mm = (int) (((durata*60) % 60) + 0.5f);
+		//bugfix volante, caso in cui durata era 1.99999 (approssimazione di 2h), scriveva 1:60
+		if(mm == 60) {
+			mm = 0;
+			hh++;
+		}
 
-		return ((hh < 10) ? "0" + hh : hh) + ":" + ((mm < 10) ? "0" + mm : mm);
+		return ((hh < 10) ? ("0" + hh) : hh) + ":" + ((mm < 10) ? ("0" + mm) : mm);
 	}
 
 	public static String formatOrarioFromMinutes(long minuti){
