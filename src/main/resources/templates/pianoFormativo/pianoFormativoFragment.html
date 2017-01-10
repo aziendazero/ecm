@@ -16,6 +16,7 @@
 			showOnly=${mode == 'show' or mode == 'enableField'},
 			enableField=${false}">
 		<div th:if="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventiPianoFormativo)}" th:text="#{label.nessun_evento_piano_formativo}"></div>
+		<h2 th:unless="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventiPianoFormativo)}" th:text="#{label.eventi_inseriti(${__${pianoFormativo}__.eventiPianoFormativo.size()})}"></h2>
 
 				<table th:unless="${(__${pianoFormativo}__ == null) or #lists.isEmpty(__${pianoFormativo}__.eventiPianoFormativo)}" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${'datatable-responsive-evento-'+mode}">
 					<thead>
