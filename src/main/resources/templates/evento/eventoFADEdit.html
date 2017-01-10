@@ -604,8 +604,8 @@
 										<div class='col-md-4 col-sm-4 col-xs-12'></div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
 											<input type="hidden" th:value="${risultato.key}" />
-											<input type="text" class="form-control risultatoPicker"
-														th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+											<textarea rows="3" class="form-control risultatoPicker"
+														th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" th:disabled="${isRiedizione or isEditSemiBloccato}"></textarea>
 													<span th:unless="${isRiedizione or isEditSemiBloccato}" class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}" th:classappend="${row.last ? 'add' : 'remove'}">
 														<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 													</span>

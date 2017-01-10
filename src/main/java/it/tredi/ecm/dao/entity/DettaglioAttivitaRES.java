@@ -55,6 +55,7 @@ public class DettaglioAttivitaRES extends BaseEntity implements Serializable{
 		joinColumns = { @JoinColumn(name = "dettaglio_id") },
 		inverseJoinColumns = { @JoinColumn(name = "docente_id") })
 	private Set<PersonaEvento> docenti = new HashSet<PersonaEvento>();
+	@Column(columnDefinition = "text")
 	private String risultatoAtteso;
 	@Enumerated(EnumType.STRING)
 	private ObiettiviFormativiRESEnum obiettivoFormativo;

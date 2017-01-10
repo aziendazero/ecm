@@ -1,0 +1,32 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170110_text_resAttesiDettaglio_titoloConvegno_descrVerifica.xml">
+	<changeSet author="tiommi" id="1">
+	    <modifyDataType tableName="evento"
+	    				columnName="titolo_convegno"
+	    				newDataType="text" />
+		 <rollback/>
+	</changeSet>
+	<changeSet author="tiommi" id="2">
+	    <modifyDataType tableName="evento"
+	    				columnName="descrizione_verifica_ricadute_formative"
+	    				newDataType="text" />
+		 <rollback/>
+	</changeSet>
+	<changeSet author="tiommi" id="3">
+	    <modifyDataType tableName="dettaglio_attivitares"
+	    				columnName="risultato_atteso"
+	    				newDataType="text" />
+		 <rollback/>
+	</changeSet>
+	<changeSet author="tiommi" id="4">
+	    <modifyDataType tableName="dettaglio_attivitafad"
+	    				columnName="risultato_atteso"
+	    				newDataType="text" />
+		 <rollback/>
+	</changeSet>
+</databaseChangeLog>

@@ -43,6 +43,7 @@ public class EventoRES extends Evento{
 	private TipologiaEventoRESEnum tipologiaEventoRES;
 
 	private Boolean workshopSeminariEcm;
+	@Column(columnDefinition = "text")
 	private String titoloConvegno;
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
@@ -76,6 +77,7 @@ public class EventoRES extends Evento{
 	private Boolean esisteTraduzioneSimultanea;
 
 	private Boolean verificaRicaduteFormative;
+	@Column(columnDefinition = "text")
 	private String descrizioneVerificaRicaduteFormative;
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;

@@ -694,7 +694,7 @@
 												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-												<input type="text" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" disabled="disabled" class="form-control titolo-convegno" th:field="${eventoWrapper.evento.titoloConvegno}" />
+												<textarea rows="3"  th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" disabled="disabled" class="form-control titolo-convegno" th:field="${eventoWrapper.evento.titoloConvegno}"></textarea>
 											</div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.titoloConvegno')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.titoloConvegno')}__}"></div>
 										</div>
@@ -799,8 +799,8 @@
 													<div class='col-md-4 col-sm-4 col-xs-12'></div>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
 														<input type="hidden" th:value="${risultato.key}" />
-														<input type="text" class="form-control risultatoPicker"
-															th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+														<textarea rows="3" class="form-control risultatoPicker"
+															th:field="${eventoWrapper.risultatiAttesiMapTemp[__${risultato.key}__]}" th:disabled="${isRiedizione or isEditSemiBloccato}"></textarea>
 														<span th:unless="${isRiedizione or isEditSemiBloccato}" class="input-group-addon" th:onclick="${row.last ? 'aggiungiRisultatoAtteso(this, ''risultatiAttesiId'')' : 'rimuoviRisultatoAtteso(this, ''risultatiAttesiId'', ' + risultato.key + ')'}" th:classappend="${row.last ? 'add' : 'remove'}">
 															<i th:class="${row.last ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 														</span>
@@ -1170,7 +1170,7 @@
 													<span th:text="#{label.descrizione_verifica_ricadute_formative}">Descrizione</span>
 												</label>
 												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-													<input type="text" id="descrizione-ricaduta-formativa" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" disabled="disabled" class="form-control" th:field="${eventoWrapper.evento.descrizioneVerificaRicaduteFormative}" />
+													<textarea rows="3" id="descrizione-ricaduta-formativa" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" disabled="disabled" class="form-control" th:field="${eventoWrapper.evento.descrizioneVerificaRicaduteFormative}"></textarea>
 												</div>
 											</div>
 											<!-- ALLEGATO VERIFICA RICADUTE FORMATIVE -->

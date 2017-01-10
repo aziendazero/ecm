@@ -1109,8 +1109,8 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti gli eventi del piano formativo rieditabili per il provider: " + providerId));
-		//mostra tutti gli eventi del provider non in bozza che finiscono dopo l'inizio dell'anno corrente
-		return eventoRepository.findAllByProviderIdAndStatoNotAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, LocalDate.of(LocalDate.now().getYear(), 1, 1));
+		//mostra tutti gli eventi del provider non in bozza e già iniziati e che finiscono dopo l'inizio dell'anno corrente
+		return eventoRepository.findAllByProviderIdAndStatoNotAndDataInizioBeforeAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, LocalDate.now(), LocalDate.of(LocalDate.now().getYear(), 1, 1));
 	}
 
 	//trovo ultima edizione di un evento con il determinato prefix
