@@ -173,7 +173,7 @@ public class Evento extends BaseEntity{
 	//true -> dopo pagamento (Provider B) and attachSponsor fatto
 	//true -> dopo fineEvento (Provider A) and attachSponsor fatto
 	//false -> dopo 90gg
-	private Boolean canDoRendicontazione = false;
+//	private Boolean canDoRendicontazione = false;
 
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_scadenza_invio_rendicontazione")//scadenza invio rendicontazione
@@ -454,5 +454,11 @@ public class Evento extends BaseEntity{
 
 	public RendicontazioneInviata getUltimaRendicontazioneInviata() {
 		return inviiRendicontazione.size() == 0? null : inviiRendicontazione.iterator().next();
+	}
+
+	public boolean canSegreteriaShiftData() {
+		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
+			return false;
+		return true;
 	}
 }

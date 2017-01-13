@@ -200,7 +200,7 @@
 									<td th:text="${provider.status.nome}">stato</td>
 
 									<td th:text="${provider.canInsertPianoFormativo() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</td>
-									<td th:text="${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}">abilitato/non abilitato</td>
+									<td th:text="${provider.canInsertEvento() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento() ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertAccreditamentoStandard() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard() ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertRelazioneAnnuale() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertRelazioneAnnuale() ? 'green' : 'red'}">abilitato/non abilitato</td>
 
@@ -216,10 +216,9 @@
 										<a th:href="@{|/provider/${provider.id}/pianoFormativo/list|}" class="btn btn-primary min-icon-width" th:title="#{label.pfa_provider}"><i class="fa fa-calendar-o"> </i></a>
 										<a th:href="@{|/provider/${provider.id}/relazioneAnnuale/list|}" class="btn btn-primary min-icon-width" th:title="#{label.relazione_annuale_provider}"><i class="fa fa-file-text"> </i></a>
 										<a th:href="@{|/provider/${provider.id}/pagamento/list|}" class="btn btn-primary min-icon-width" th:title="#{label.contributo_annuale_provider}"><i class="fa fa-euro"> </i></a>
-										<button type="button" class="btn btn-primary min-icon-width" th:onclick="${'openModalImpostazioni('+provider.id+', '+provider.canInsertPianoFormativo+', '
-											+provider.canInsertEvento+', '+provider.canInsertAccreditamentoStandard+', '
-											+provider.canInsertRelazioneAnnuale+', &apos;'__${provider.status}__'&apos;, '
-											+provider.dataScadenzaInsertPianoFormativo+', '+provider.dataScadenzaInsertAccreditamentoStandard+', '+provider.dataScadenzaInsertRelazioneAnnuale+')'}" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
+										<button type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalImpostazioni(${provider.id}, ${provider.canInsertPianoFormativo}, ${provider.canInsertEvento},
+											${provider.canInsertAccreditamentoStandard}, ${provider.canInsertRelazioneAnnuale}, '${provider.status}', '${provider.dataScadenzaInsertPianoFormativo}', '${provider.dataScadenzaInsertAccreditamentoStandard}',
+											'${provider.dataScadenzaInsertRelazioneAnnuale}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
 									</td>
 								</tr>
 							</tbody>
@@ -241,7 +240,7 @@
 				$(document).ready(function() {
 					$("#datatable-provider").DataTable();
 
-					//setta i nomi dei giorni e dei mesi a seconda delle label i18n anche per le date intermedie
+					//setta i nomi dei giorni e dei mesi a seconda delle label i18n
 					days = getDayNamesShort();
 					months = getMonthNames();
 
@@ -264,7 +263,7 @@
 
 			    function openModalImpostazioni(idProvider,
 						canInsertPF, canInsertEventi, canInsertDomanda, canInsertRelazione,
-						status) {
+						status, dataPF, dataDomanda, dataRelazione) {
 					cleanForm();
 					//action
 					$("#scadenze-provider").modal("show");
@@ -288,9 +287,17 @@
 					else
 						$("#radioRelazione-No").iCheck("check")
 					//status del provider
-					console.log(status);
 					$("#statoSelect").val(status);
 					$("#statoSelect").selectpicker("refresh");
+					//gestione date
+					//parse + format
+					var dataScadenzaPF = moment(dataPF, "YYYY-MM-DD", true).format("DD/MM/YYYY");
+					var dataScadenzaDomanda = moment(dataDomanda, "YYYY-MM-DD", true).format("DD/MM/YYYY");
+					var dataScadenzaRelazione = moment(dataRelazione, "YYYY-MM-DD", true).format("DD/MM/YYYY");
+					$("#dataPF").val(dataScadenzaPF);
+					$("#dataDomanda").val(dataScadenzaDomanda);
+					$("#dataRelazioneAnnuale").val(dataScadenzaRelazione);
+
 
 				}
 
@@ -303,6 +310,10 @@
 					})
 					$("#statoSelect").val("");
 					$("#statoSelect").selectpicker("refresh");
+					$('input.data').each(function(i,d) {
+						$d = $(d);
+						$d.val("");
+					})
 				}
 
 			/*]]>*/

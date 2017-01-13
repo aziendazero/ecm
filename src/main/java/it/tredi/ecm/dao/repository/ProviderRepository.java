@@ -40,8 +40,8 @@ public interface ProviderRepository extends CrudRepository<Provider, Long> {
 //	public boolean canInsertPianoFormativo(@Param("providerId")Long providerId);
 //	@Query("SELECT p.canInsertAccreditamentoStandard FROM Provider p WHERE p.id = :providerId")
 //	public boolean canInsertAccreditamentoStandard(@Param("providerId")Long providerId);
-	@Query("SELECT p.canInsertEvento FROM Provider p WHERE p.id = :providerId")
-	public boolean canInsertEvento(@Param("providerId")Long providerId);
+//	@Query("SELECT p.canInsertEvento FROM Provider p WHERE p.id = :providerId")
+//	public boolean canInsertEvento(@Param("providerId")Long providerId);
 //	@Query("SELECT p.canInsertRelazioneAnnuale FROM Provider p WHERE p.id = :providerId")
 //	public boolean canInsertRelazioneAnnuale(@Param("providerId")Long providerId);
 

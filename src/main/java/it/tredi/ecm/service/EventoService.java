@@ -10,6 +10,7 @@ import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
+import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 
 public interface EventoService {
 	public Evento getEvento(Long id);
@@ -65,4 +66,5 @@ public interface EventoService {
 
 	public Set<Evento> getEventiCreditiNonConfermati();
 	public Integer countAllEventiCreditiNonConfermati();
+	public void updateScadenze(Long eventoId, ScadenzeEventoWrapper wrapper) throws Exception;
 }
