@@ -105,6 +105,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 				provider.setNaturaOrganizzazione("Privata");
 				provider.setNoProfit(false);
 				provider.setCodiceCogeaps("ORG213");
+				provider.setEmailStruttura("provider" + i + "@3di.it");
 
 				provider.setStatus(ProviderStatoEnum.INSERITO);
 				//provider.setAccount(account);
