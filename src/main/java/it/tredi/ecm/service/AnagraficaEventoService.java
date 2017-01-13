@@ -8,5 +8,6 @@ public interface AnagraficaEventoService {
 	public AnagraficaEvento getAnagraficaEvento(Long anagraficaEventoId);
 	public AnagraficaEvento getAnagraficaEventoByCodiceFiscaleForProvider(String codiceFiscale, Long providerId);
 	public Set<AnagraficaEvento> getAllAnagaficheByProvider(Long providerId);
+	public Set<AnagraficaEvento> getAllAnagaficheByProviderJSONVersion(Long providerId);
 	public void save(AnagraficaEvento anagraficaEvento);
 }
