@@ -537,7 +537,7 @@ public class ProviderServiceImpl implements ProviderService {
 		if(provider.isCanInsertAccreditamentoStandard())
 			provider.setDataScadenzaInsertAccreditamentoStandard(wrapper.getDataScadenzaInsertDomandaStandard());
 		if(provider.isCanInsertRelazioneAnnuale())
-			provider.setDataScadenzaInsertAccreditamentoStandard(wrapper.getDataScadenzaInsertRelazioneAnnuale());
+			provider.setDataScadenzaInsertRelazioneAnnuale(wrapper.getDataScadenzaInsertRelazioneAnnuale());
 		//status provider
 		provider.setStatus(wrapper.getStato());
 

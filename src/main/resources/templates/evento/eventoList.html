@@ -7,7 +7,7 @@
 <body>
 	<div layout:fragment="content">
 
-		<div id="scadenze-evento" class="modal fade modal-scadenze-evento" data-model-index="1" role="dialog">
+		<div id="scadenze-evento" th:if="${#authentication.principal.account.isSegreteria()}" class="modal fade modal-scadenze-evento" data-model-index="1" role="dialog">
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -283,7 +283,7 @@
 									</td>
 									<td class="text-full-length">
 										<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
-										<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="${'openModalScadenze('+evento.id+', &apos;'__${evento.dataScadenzaPagamento}__'&apos;, &apos;'__${evento.dataScadenzaInvioRendicontazione}__'&apos;)'}" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
+										<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalScadenze(${evento.id}, '${evento.dataScadenzaPagamento}', '${evento.dataScadenzaInvioRendicontazione}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
 										<!-- TODO DISABILITATO PER LA PRODUZIONE
 										<a class="btn btn-success btn-min-icon-width" th:if="${evento.canDoPagamento()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>
 										-->
