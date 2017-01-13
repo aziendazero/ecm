@@ -1356,11 +1356,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 			if(accreditamento.isProvvisorio()) {
 				provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
-				accreditamento.setDataFineAccreditamento(dataSeduta.plusYears(4));
+				accreditamento.setDataFineAccreditamento(dataSeduta.plusYears(2));
 				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			} else {
 				provider.setStatus(ProviderStatoEnum.ACCREDITATO_STANDARD);
-				accreditamento.setDataFineAccreditamento(dataSeduta.plusYears(2));
+				accreditamento.setDataFineAccreditamento(dataSeduta.plusYears(4));
 				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			}
 			save(accreditamento);
