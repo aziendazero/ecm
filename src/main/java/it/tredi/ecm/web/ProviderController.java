@@ -1,6 +1,5 @@
 package it.tredi.ecm.web;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,12 +50,14 @@ import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.ResponseUsername;
 import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
+import it.tredi.ecm.web.validator.ImpostazioniProviderValidator;
 import it.tredi.ecm.web.validator.ProviderValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
@@ -84,6 +85,8 @@ public class ProviderController {
 
 	@Autowired private TokenService tokenService;
 	@Autowired private PianoFormativoService pianoFormativoService;
+
+	@Autowired private ImpostazioniProviderValidator impostazioniProviderValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -371,6 +374,7 @@ public class ProviderController {
 
 			if(model.asMap().get("providerList") == null)
 				model.addAttribute("providerList", providerService.getAllNotInserito());
+			model.addAttribute("impostazioniProviderWrapper", new ImpostazioniProviderWrapper());
 
 			LOGGER.info(Utils.getLogMessage("VIEW: /provider/providerList"));
 			return "provider/providerList";
@@ -581,9 +585,33 @@ public class ProviderController {
 		}
 	}
 
-	private RicercaProviderWrapper prepareRicercaProviderWrapper(){
+	private RicercaProviderWrapper prepareRicercaProviderWrapper() {
 		RicercaProviderWrapper wrapper = new RicercaProviderWrapper();
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/provider/{providerId}/impostazioni/update", method = RequestMethod.POST)
+	public String updateImpostazioniProvider(@PathVariable Long providerId,
+			@ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper,
+			BindingResult result, RedirectAttributes redirectAttrs, Model model) {
+		try {
+			impostazioniProviderValidator.validate(wrapper, result, "");
+			if(result.hasErrors()) {
+				wrapper.setSubmitError(true);
+				model.addAttribute("impostazioniProviderWrapper", wrapper);
+				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
+				return "provider/providerList";
+			}
+			else {
+				providerService.updateImpostazioni(providerId, wrapper);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.impostazioni_provider_aggiornate", "success"));
+				return "redirect:/provider/list";
+			}
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/"+providerId+"/impostazioni/update"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/provider/list";
+		}
 	}
 
 }

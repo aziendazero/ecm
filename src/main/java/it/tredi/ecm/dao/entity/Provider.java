@@ -119,16 +119,21 @@ public class Provider extends BaseEntity{
 
 	@Column(name ="can_insert_accreditamento_standard")
 	private boolean canInsertAccreditamentoStandard;
-
 	@Column(name = "data_insert_accreditamento_standard")//termine per invio domanda standard dopo attivazione da parte della segreteria (90 gg dall'abilitazione)
 	private LocalDate dataScadenzaInsertAccreditamentoStandard;
 
 	@Column(name ="can_insert_piano_formativo")
 	private boolean canInsertPianoFormativo;
+	@Column(name = "data_insert_piano_formativo")
+	private LocalDate dataScadenzaInsertPianoFormativo;
+
 	@Column(name ="can_insert_evento")
 	private boolean canInsertEvento;
+
 	@Column(name ="can_insert_relazione_annuale")
-	private Boolean canInsertRelazioneAnnuale;
+	private boolean canInsertRelazioneAnnuale;
+	@Column(name = "data_insert_relazione_annuale")
+	private LocalDate dataScadenzaInsertRelazioneAnnuale;
 
 	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;
@@ -216,6 +221,30 @@ public class Provider extends BaseEntity{
 
 		//se flag attivato, controllo la data
 		if(dataScadenzaInsertAccreditamentoStandard != null && LocalDate.now().isBefore(dataScadenzaInsertAccreditamentoStandard))
+			return true;
+
+		return false;
+	}
+
+	public boolean canInsertPianoFormativo(){
+		//se flag disattivato - non permetto l'inserimento
+		if(!canInsertPianoFormativo)
+			return false;
+
+		//se flag attivato, controllo la data
+		if(dataScadenzaInsertPianoFormativo != null && LocalDate.now().isBefore(dataScadenzaInsertPianoFormativo))
+			return true;
+
+		return false;
+	}
+
+	public boolean canInsertRelazioneAnnuale(){
+		//se flag disattivato - non permetto l'inserimento
+		if(!canInsertRelazioneAnnuale)
+			return false;
+
+		//se flag attivato, controllo la data
+		if(dataScadenzaInsertRelazioneAnnuale != null && LocalDate.now().isBefore(dataScadenzaInsertRelazioneAnnuale))
 			return true;
 
 		return false;

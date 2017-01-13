@@ -35,5 +35,6 @@
  	<include file="20170109_cambioType_resAttesi_evento_fad_res.xml" relativeToChangelogFile="true"/>
 
  	<include file="20170110_text_resAttesiDettaglio_titoloConvegno_descrVerifica.xml" relativeToChangelogFile="true"/>
+ 	<include file="20170111_aggiunta_column_date_piano_formativo_relazione_annuale.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

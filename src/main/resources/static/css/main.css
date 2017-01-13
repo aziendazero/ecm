@@ -859,6 +859,42 @@ h2 {
 	opacity: 1;
 }
 
+.item.modalErrorImpostazioniEventi .alert {
+	float: left;
+	margin: 15px 0 0 0;
+	padding: 3px 10px;
+	color: #FFF;
+	border-radius: 4px;
+	background-color: #CE5454;
+	max-width: 170px;
+	white-space: inherit;
+	position: relative;
+	left: -15px;
+	opacity: 0;
+	z-index: 1;
+	transition: 0.15s ease-out;
+}
+
+.item.modalErrorImpostazioniEventi .alert::after {
+	content: '';
+	display: block;
+	height: 0;
+	width: 0;
+	border-color: #CE5454 transparent transparent transparent;
+	border-style: solid;
+	border-left: 11px solid transparent;
+	border-right: 11px solid transparent;
+	border-bottom: 7px solid #CE5454;
+	position: absolute;
+	left: 30px;
+	top: -18px;
+}
+
+.item.bad.modalErrorImpostazioniEventi .alert {
+	left: 0;
+	opacity: 1;
+}
+
 .item.validateAlert .alert {
 	float: left;
 	margin: 15px 0 0 0;

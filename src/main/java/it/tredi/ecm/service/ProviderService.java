@@ -7,6 +7,7 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
+import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 
 public interface ProviderService {
@@ -44,4 +45,8 @@ public interface ProviderService {
 
 	public void abilitaCanInsertAccreditamentoStandard(Long providerId, LocalDate dataFine) throws Exception;
 	public void disabilitaCanInsertAccreditamentoStandard(Long providerId) throws Exception;
+	public void updateImpostazioni(Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception;
+	public void eseguiUpdateDataPianoFormativo();
+	public void eseguiUpdateDataDomandaStandard();
+	public void eseguiUpdateDataRelazioneAnnuale();
 }

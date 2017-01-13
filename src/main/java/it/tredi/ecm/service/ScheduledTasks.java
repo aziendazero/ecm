@@ -9,6 +9,7 @@ import it.tredi.ecm.scheduledtask.InvioCogeapsTask;
 import it.tredi.ecm.scheduledtask.PagamentoTask;
 import it.tredi.ecm.scheduledtask.ProtocolloTask;
 import it.tredi.ecm.scheduledtask.SedutaTask;
+import it.tredi.ecm.scheduledtask.UpdateDateProviderTask;
 import it.tredi.ecm.service.bean.EcmProperties;
 /*
  * Scheduler che esegue i task automatici con periodicità fissata (fixedDelay)
@@ -32,6 +33,7 @@ public class ScheduledTasks {
 	@Autowired private SedutaTask sedutaTask;
 	@Autowired private AlertScadenzeTask alertScadenzeTask;
 	@Autowired private EcmProperties ecmProperties;
+	@Autowired private UpdateDateProviderTask updateDateProviderTask;
 
 	@Scheduled(fixedDelay=60000)
 	public void taskExecutor() throws Exception{
@@ -39,6 +41,7 @@ public class ScheduledTasks {
 		invioCogeapsTask.checkStatoElaborazioneCogeaps();
 		protocolloTask.controllaStatoProtocollazione();
 		sedutaTask.bloccaSedute();
+		updateDateProviderTask.updateDateScadenza();
 		if(ecmProperties.isTaskSendAlertEmail())
 			alertScadenzeTask.inviaAlert();
 	}

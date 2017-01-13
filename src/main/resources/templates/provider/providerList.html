@@ -6,6 +6,165 @@
 </head>
 <body>
 	<div layout:fragment="content">
+
+		<div id="scadenze-provider" class="modal fade modal-scadenze-provider" data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel1" th:text="#{label.impostazioni_attivita_provider}">Impostazioni attività del provider</h4>
+					</div>
+					<div class="modal-body">
+						<form id="form-impostazioni-provider" class="form-horizontal"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+							<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.canInsertPianoFormativo') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertPianoFormativo')} ? 'bad'">
+								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.posticipo_inserimento_piano_formativo}"></label>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+									<div class="col-xs-6">
+										<div class="radio">
+											<label>
+												<input id="radioPF-Si" type="radio" class="flat" th:value="${true}" th:field="${impostazioniProviderWrapper.canInsertPianoFormativo}" />
+												<span th:text="#{label.abilita}">abilita</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input id="radioPF-No" type="radio" class="flat" th:value="${false}" th:field="${impostazioniProviderWrapper.canInsertPianoFormativo}" />
+												<span th:text="#{label.disabilita}">disabilita</span>
+											</label>
+										</div>
+									</div>
+									<label class="control-label col-xs-6" th:text="#{label.scadenza}"></label>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 input-group datapick">
+									<input type="text" id="dataPF" class="form-control data"
+										th:field="${impostazioniProviderWrapper.dataScadenzaInsertPianoFormativo}" />
+									<span class="input-group-addon" id="dataPFButton" onclick="$('#dataPF').click()">
+			 							<i class="glyphicon glyphicon-calendar"></i>
+									</span>
+								</div>
+								<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.canInsertPianoFormativo') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertPianoFormativo')}" class="alert" th:text="#{error.empty}"></div>
+							</div>
+							<div class="divider"></div>
+							<div class="item form-group modalErrorImpostazioniEventi" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.canInsertEventi')} ? 'bad'">
+								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.posticipo_inserimento_eventi}"></label>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+									<div class="col-xs-6">
+										<div class="radio">
+											<label>
+												<input id="radioEventi-Si" type="radio" class="flat" th:value="${true}" th:field="${impostazioniProviderWrapper.canInsertEventi}" />
+												<span th:text="#{label.abilita}">abilita</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input id="radioEventi-No" type="radio" class="flat" th:value="${false}" th:field="${impostazioniProviderWrapper.canInsertEventi}" />
+												<span th:text="#{label.disabilita}">disabilita</span>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.canInsertEventi')}" class="alert" th:text="#{error.empty}"></div>
+							</div>
+							<div class="divider"></div>
+							<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.canInsertDomandaStandard') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertDomandaStandard')} ? 'bad'">
+								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.posticipo_inserimento_domanda_accreditamento_standard}"></label>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+									<div class="col-xs-6">
+										<div class="radio">
+											<label>
+												<input id="radioDomanda-Si" type="radio" class="flat" th:value="${true}" th:field="${impostazioniProviderWrapper.canInsertDomandaStandard}" />
+												<span th:text="#{label.abilita}">abilita</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input id="radioDomanda-No" type="radio" class="flat" th:value="${false}" th:field="${impostazioniProviderWrapper.canInsertDomandaStandard}" />
+												<span th:text="#{label.disabilita}">disabilita</span>
+											</label>
+										</div>
+									</div>
+									<label class="control-label col-xs-6" th:text="#{label.scadenza}"></label>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 input-group datapick">
+									<input type="text" id="dataDomanda" class="form-control data"
+										th:field="${impostazioniProviderWrapper.dataScadenzaInsertDomandaStandard}" />
+									<span class="input-group-addon" id="dataDomandaButton" onclick="$('#dataDomanda').click()">
+			 							<i class="glyphicon glyphicon-calendar"></i>
+									</span>
+								</div>
+								<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.canInsertDomandaStandard') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertDomandaStandard')}" class="alert" th:text="#{error.empty}"></div>
+							</div>
+							<div class="divider"></div>
+							<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.canInsertRelazioneAnnuale') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertRelazioneAnnuale')} ? 'bad'">
+								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.posticipo_inserimento_relazione_annuale}"></label>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+									<div class="col-xs-6">
+										<div class="radio">
+											<label>
+												<input id="radioRelazione-Si" type="radio" class="flat" th:value="${true}" th:field="${impostazioniProviderWrapper.canInsertRelazioneAnnuale}" />
+												<span th:text="#{label.abilita}">abilita</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input id="radioRelazione-No" type="radio" class="flat" th:value="${false}" th:field="${impostazioniProviderWrapper.canInsertRelazioneAnnuale}" />
+												<span th:text="#{label.disabilita}">disabilita</span>
+											</label>
+										</div>
+									</div>
+									<label class="control-label col-xs-6" th:text="#{label.scadenza}"></label>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 input-group datapick">
+									<input type="text" id="dataRelazioneAnnuale" class="form-control data"
+										th:field="${impostazioniProviderWrapper.dataScadenzaInsertRelazioneAnnuale}" />
+									<span class="input-group-addon" id="dataRelazioneAnnualeButton" onclick="$('#dataRelazioneAnnuale').click()">
+			 							<i class="glyphicon glyphicon-calendar"></i>
+									</span>
+								</div>
+								<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.canInsertRelazioneAnnuale') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertRelazioneAnnuale')}" class="alert" th:text="#{error.empty}"></div>
+							</div>
+							<div class="divider"></div>
+							<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.stato')} ? 'bad'">
+								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.stato_del_provider}"></label>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6"></div>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+									<select
+										id="statoSelect"
+										class="selectpicker"
+										th:field="${impostazioniProviderWrapper.stato}"
+										data-width="100%" data-style="btn-primary"
+										data-actions-box="true" data-size="10"
+										data-hide-disabled="false"
+										title="Seleziona uno stato...">
+										<option
+											th:each="stato, row: ${T(it.tredi.ecm.dao.enumlist.ProviderStatoEnum).values()}"
+											th:value="${stato}"
+											th:text="${stato.nome}">
+										</option>
+									</select>
+								</div>
+								<div class="row">
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12"></div>
+									<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.stato')}" class="alert" th:text="#{error.empty}"></div>
+								</div>
+							</div>
+
+							<input id="submitButton" type="submit" style="display: none;" />
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+						</form>
+					</div>
+					<div class="modal-footer">
+						<label for="submitButton" class="btn btn-success pull-right" th:text="#{label.applica}">Applica</label>
+						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -26,6 +185,7 @@
 									<th th:text="#{label.caninsert_piano_formativo}">Inserimento Piano Formativo</th>
 									<th th:text="#{label.caninsert_eventi}">Inserimento Eventi</th>
 									<th th:text="#{label.caninsert_domanda_accreditamento_standard}">Inserimento Domanda Accreditamento Standard</th>
+									<th th:text="#{label.caninsert_relazione_annuale}">Inserimento Relazione Annuale</th>
 
 									<!-- <th th:text="#{label.permessi}">Permessi</th> -->
 
@@ -39,9 +199,10 @@
 									<td th:text="${provider.tipoOrganizzatore.nome}">informatica</td>
 									<td th:text="${provider.status.nome}">stato</td>
 
-									<td th:text="${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</td>
+									<td th:text="${provider.canInsertPianoFormativo() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertAccreditamentoStandard() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard() ? 'green' : 'red'}">abilitato/non abilitato</td>
+									<td th:text="${provider.canInsertRelazioneAnnuale() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertRelazioneAnnuale() ? 'green' : 'red'}">abilitato/non abilitato</td>
 
 									<!-- <td class="text-full-length">
 										<div th:text="#{label.caninsert_piano_formativo} + ' ' + ${provider.canInsertPianoFormativo ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}"></div>
@@ -55,6 +216,10 @@
 										<a th:href="@{|/provider/${provider.id}/pianoFormativo/list|}" class="btn btn-primary min-icon-width" th:title="#{label.pfa_provider}"><i class="fa fa-calendar-o"> </i></a>
 										<a th:href="@{|/provider/${provider.id}/relazioneAnnuale/list|}" class="btn btn-primary min-icon-width" th:title="#{label.relazione_annuale_provider}"><i class="fa fa-file-text"> </i></a>
 										<a th:href="@{|/provider/${provider.id}/pagamento/list|}" class="btn btn-primary min-icon-width" th:title="#{label.contributo_annuale_provider}"><i class="fa fa-euro"> </i></a>
+										<button type="button" class="btn btn-primary min-icon-width" th:onclick="${'openModalImpostazioni('+provider.id+', '+provider.canInsertPianoFormativo+', '
+											+provider.canInsertEvento+', '+provider.canInsertAccreditamentoStandard+', '
+											+provider.canInsertRelazioneAnnuale+', &apos;'__${provider.status}__'&apos;, '
+											+provider.dataScadenzaInsertPianoFormativo+', '+provider.dataScadenzaInsertAccreditamentoStandard+', '+provider.dataScadenzaInsertRelazioneAnnuale+')'}" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
 									</td>
 								</tr>
 							</tbody>
@@ -70,9 +235,75 @@
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 
+				var days;
+				var months;
+
 				$(document).ready(function() {
 					$("#datatable-provider").DataTable();
+
+					//setta i nomi dei giorni e dei mesi a seconda delle label i18n anche per le date intermedie
+					days = getDayNamesShort();
+					months = getMonthNames();
+
+					$('input.data').daterangepicker({
+				        singleDatePicker: true,
+				        autoApply: true,
+				        autoUpdateInput: true,
+				        parentEl: $("#scadenze-provider"),
+				        format: "DD/MM/YYYY",
+				        locale: {
+					        daysOfWeek: days,
+			                monthNames: months,
+				        }
+				    })
+
+				    if([[${impostazioniProviderWrapper != null && impostazioniProviderWrapper.submitError == true}]])
+				    	$("#scadenze-provider").modal("show");
+
 				})
+
+			    function openModalImpostazioni(idProvider,
+						canInsertPF, canInsertEventi, canInsertDomanda, canInsertRelazione,
+						status) {
+					cleanForm();
+					//action
+					$("#scadenze-provider").modal("show");
+					var url = [[@{|/provider/|}]] + idProvider + "/impostazioni/update";
+					$("#form-impostazioni-provider").attr("action", url);
+					//radio impostazioni canInsert
+					if(canInsertPF)
+						$("#radioPF-Si").iCheck("check")
+					else
+						$("#radioPF-No").iCheck("check")
+					if(canInsertEventi)
+						$("#radioEventi-Si").iCheck("check")
+					else
+						$("#radioEventi-No").iCheck("check")
+					if(canInsertDomanda)
+						$("#radioDomanda-Si").iCheck("check")
+					else
+						$("#radioDomanda-No").iCheck("check")
+					if(canInsertRelazione)
+						$("#radioRelazione-Si").iCheck("check")
+					else
+						$("#radioRelazione-No").iCheck("check")
+					//status del provider
+					console.log(status);
+					$("#statoSelect").val(status);
+					$("#statoSelect").selectpicker("refresh");
+
+				}
+
+				function cleanForm() {
+					$("#form-impostazioni-provider")[0].reset();
+					$('input[type="radio"]').each(function(i,r) {
+						$r = $(r);
+						$r.iCheck("uncheck");
+						$r.iCheck("update");
+					})
+					$("#statoSelect").val("");
+					$("#statoSelect").selectpicker("refresh");
+				}
 
 			/*]]>*/
 			</script>

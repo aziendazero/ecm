@@ -185,6 +185,7 @@
 									<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
 									<th th:text="#{label.durata}">label.ore_corso</th>
 									<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
+									<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
 									<th th:text="#{label.azioni}">label.azioni</th>
 								</tr>
 							</thead>
@@ -217,6 +218,15 @@
 									<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario( evento.durata != null ? evento.durata : 0)}"></td>
 									<td th:text="${evento.dataScadenzaPagamento == null} ? '' : ${#temporals.format(evento.dataScadenzaPagamento, 'dd/MM/yyyy')}"></td>
 									<td>
+										<div th:if="${evento.confermatiCrediti != null}">
+											<i class="fa table-icon fa-check green" th:if="${evento.confermatiCrediti}" th:title="#{label.sì}"></i>
+											<i class="fa table-icon fa-remove red" th:unless="${evento.confermatiCrediti}" th:title="#{label.no}"></i>
+										</div>
+										<div th:if="${evento.confermatiCrediti == null}">
+											<i class="fa table-icon fa-question grey" th:title="#{label.non_specificato}"></i>
+										</div>
+									</td>
+									<td>
 										<div class="button-container single">
 											<a class="btn btn-primary btn-table double" th:if="${evento.canEdit()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}"><i class="fa fa-pencil"> </i> <span th:text="#{label.modifica}"> </span></a>
 											<button class="btn btn-danger btn-table double" th:if="${evento.canEdit()}" th:onclick="|confirmDeleteEventoModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}','${evento.stato}')|"><i class="fa fa-trash"></i><span th:text="${evento.stato == T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).BOZZA} ? #{label.elimina} : #{label.annulla}"> </span></button>
@@ -237,11 +247,14 @@
 			/*<![CDATA[*/
 
 				var colonne = []
+				var confermati
 				if([[${#authentication.principal.isSegreteria()}]]) {
-					colonne = [0,1,2,3,5,6,7,8,9,10,11,12]
+					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13]
+					confermati = 12
 				}
 				else {
-					colonne = [0,1,2,4,5,6,7,8,9,10,11]
+					colonne = [0,1,2,4,5,6,7,8,9,10,11,12]
+					confermati = 11
 				}
 
 				$(document).ready(function() {
@@ -251,9 +264,9 @@
 						"bInfo" : false,
 						"bPaginate" : false,
 						 "columnDefs": [
-					                    {"targets": colonne, "width": "1px"},
-					                  ],
-
+					                     {"targets": colonne, "width": "1px"},
+					                     {"targets": confermati, "sClass": "center"}
+					                   ],
 					})
 
 					$(".datatable-responsive-eventi-attuazione").DataTable({

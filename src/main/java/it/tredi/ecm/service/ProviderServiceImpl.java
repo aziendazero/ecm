@@ -1,17 +1,16 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,10 +23,7 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.BaseEntity;
-import it.tredi.ecm.dao.entity.Comunicazione;
-import it.tredi.ecm.dao.entity.Field;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
@@ -42,6 +38,7 @@ import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 
 @Service
@@ -59,6 +56,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Autowired private FileService fileService;
 	@Autowired private AlertEmailService alertEmailService;
 	@PersistenceContext EntityManager entityManager;
+	@Autowired private EcmProperties ecmProperties;
 
 	@Override
 	public Provider getProvider() {
@@ -209,7 +207,8 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	public boolean canInsertPianoFormativo(Long providerId) {
-		return providerRepository.canInsertPianoFormativo(providerId);
+		Provider provider = providerRepository.findOne(providerId);
+		return provider.canInsertPianoFormativo();
 	}
 
 	@Override
@@ -224,14 +223,20 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	public boolean canInsertRelazioneAnnuale(Long providerId) {
-		int annoRiferimento = LocalDate.now().getYear();
-		if(!LocalDate.now().isAfter(LocalDate.of(annoRiferimento, 4, 30)))
-			return true;
-		else{
-			Boolean b = providerRepository.canInsertRelazioneAnnuale(providerId);
-			return (b != null) ? b.booleanValue() : false;
-		}
+		Provider provider = providerRepository.findOne(providerId);
+		return provider.canInsertRelazioneAnnuale();
 	}
+
+//	@Override
+//	public boolean canInsertRelazioneAnnuale(Long providerId) {
+//		int annoRiferimento = LocalDate.now().getYear();
+//		if(!LocalDate.now().isAfter(LocalDate.of(annoRiferimento, 4, 30)))
+//			return true;
+//		else{
+//			Boolean b = providerRepository.canInsertRelazioneAnnuale(providerId);
+//			return (b != null) ? b.booleanValue() : false;
+//		}
+//	}
 
 	@Override
 	public boolean hasAlreadySedeLegaleProvider(Provider provider, Sede sede) {
@@ -510,6 +515,84 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setDataScadenzaInsertAccreditamentoStandard(LocalDate.now());
 
 		save(provider);
+	}
+
+	@Override
+	public void updateImpostazioni(Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception {
+		LOGGER.info("Update delle impostazioni per il Provider: " + providerId);
+
+		Provider provider = getProvider(providerId);
+		if(provider == null){
+			throw new Exception("Provider non trovato");
+		}
+		//flag permessi
+		provider.setCanInsertPianoFormativo(wrapper.getCanInsertPianoFormativo());
+		provider.setCanInsertEvento(wrapper.getCanInsertEventi());
+		provider.setCanInsertAccreditamentoStandard(wrapper.getCanInsertDomandaStandard());
+		provider.setCanInsertRelazioneAnnuale(wrapper.getCanInsertRelazioneAnnuale());
+		//date scadenza permessi
+		if(provider.isCanInsertPianoFormativo())
+			provider.setDataScadenzaInsertPianoFormativo(wrapper.getDataScadenzaInsertPianoFormativo());
+		if(provider.isCanInsertAccreditamentoStandard())
+			provider.setDataScadenzaInsertAccreditamentoStandard(wrapper.getDataScadenzaInsertDomandaStandard());
+		if(provider.isCanInsertRelazioneAnnuale())
+			provider.setDataScadenzaInsertAccreditamentoStandard(wrapper.getDataScadenzaInsertRelazioneAnnuale());
+		//status provider
+		provider.setStatus(wrapper.getStato());
+
+		save(provider);
+	}
+
+	/* Metodo chiamato dal thread per modificare la data di permesso di inserimento
+	 * del piano formativo.
+	 * Prima di ogni cosa calcola la data di default di inserimento del piano formativo, giorno e mese sono settate
+	 * nella property, mentre l'anno è l'anno corrente.
+	 * Se la data di scadenza di insermento del piano formativo dei provider accreditati è null,
+	 * è diversa dalla data di default ed è trascorsa, viene risettata la data di default.
+	 * precendentemente calcolata.
+	 * Ciò garantisce che al passare dell'anno ogni data (passata) venga aggiornata.
+	 * */
+	@Override
+	public void eseguiUpdateDataPianoFormativo() {
+
+		int currentYear = LocalDate.now().getYear();
+		LocalDate defaultDate = LocalDate.of(currentYear, ecmProperties.getPianoFormativoMeseFineModifica(), ecmProperties.getPianoFormativoGiornoFineModifica());
+		Set<ProviderStatoEnum> statiProvider = new HashSet<ProviderStatoEnum>(Arrays.asList(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE, ProviderStatoEnum.ACCREDITATO_STANDARD));
+		Set<Provider> providersUpdate = providerRepository.findAllProviderToUpdateDataPianoFormativo(statiProvider, defaultDate, LocalDate.now());
+		for(Provider p : providersUpdate) {
+			LOGGER.info("Update data inserimento piano formativo per il Provider " + p.getId());
+			p.setDataScadenzaInsertPianoFormativo(defaultDate);
+			save(p);
+		}
+	}
+
+	@Override
+	public void eseguiUpdateDataDomandaStandard() {
+
+		Set<ProviderStatoEnum> statiProvider = new HashSet<ProviderStatoEnum>(Arrays.asList(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE, ProviderStatoEnum.ACCREDITATO_STANDARD));
+		Set<Provider> providersUpdate = providerRepository.findAllProviderToUpdateDataDomandaStandard(statiProvider, LocalDate.now());
+		for(Provider p : providersUpdate) {
+			LOGGER.info("Reset data inserimento domanda standard per il Provider " + p.getId());
+			p.setDataScadenzaInsertAccreditamentoStandard(null);
+			p.setCanInsertAccreditamentoStandard(false);
+			save(p);
+		}
+
+	}
+
+	@Override
+	public void eseguiUpdateDataRelazioneAnnuale() {
+
+		int currentYear = LocalDate.now().getYear();
+		LocalDate defaultDate = LocalDate.of(currentYear, ecmProperties.getRelazioneAnnualeMeseFineModifica(), ecmProperties.getRelazioneAnnualeGiornoFineModifica());
+		Set<ProviderStatoEnum> statiProvider = new HashSet<ProviderStatoEnum>(Arrays.asList(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE, ProviderStatoEnum.ACCREDITATO_STANDARD));
+		Set<Provider> providersUpdate = providerRepository.findAllProviderToUpdateDataRelazioneAnnuale(statiProvider, defaultDate, LocalDate.now());
+		for(Provider p : providersUpdate) {
+			LOGGER.info("Update data inserimento relazione annuale per il Provider " + p.getId());
+			p.setDataScadenzaInsertRelazioneAnnuale(defaultDate);
+			save(p);
+		}
+
 	}
 
 }

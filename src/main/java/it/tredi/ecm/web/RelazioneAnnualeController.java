@@ -34,21 +34,21 @@ import it.tredi.ecm.web.validator.RelazioneAnnualeValidator;
 @Controller
 public class RelazioneAnnualeController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(RelazioneAnnualeController.class);
-	
+
 	private final String LIST = "relazioneAnnuale/relazioneAnnualeList";
 	private final String EDIT = "relazioneAnnuale/relazioneAnnualeEdit";
 	private final String SHOW = "relazioneAnnuale/relazioneAnnualeShow";
-	
+
 	@Autowired private RelazioneAnnualeService relazioneAnnualeService;
 	@Autowired private ProviderService providerService;
 	@Autowired private RelazioneAnnualeValidator relazioneAnnualeValidator;
 	@Autowired private FileService fileService;
-	
+
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
     }
-	
+
 	@ModelAttribute("relazioneAnnualeWrapper")
 	public RelazioneAnnualeWrapper getRelazioneAnnuale(@RequestParam(name = "editId", required = false) Long id) throws Exception{
 		if(id != null){
@@ -56,7 +56,7 @@ public class RelazioneAnnualeController {
 		}
 		return new RelazioneAnnualeWrapper();
 	}
-	
+
 	@RequestMapping("/provider/relazioneAnnuale/list")
 	public String getListRelazioniAnnualiForCurrentProvider(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/relazioneAnnuale/list"));
@@ -71,7 +71,7 @@ public class RelazioneAnnualeController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/relazioneAnnuale/list")
 	public String getListRelazioniAnnualiForProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
@@ -89,7 +89,7 @@ public class RelazioneAnnualeController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/relazioneAnnuale/insert")
 	public String inserisciRelazioniAnnualiForProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
@@ -109,7 +109,7 @@ public class RelazioneAnnualeController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/relazioneAnnuale/{relazioneAnnualeId}/edit")
 	public String editRelazioniAnnualiForProvider(@PathVariable Long providerId, @PathVariable Long relazioneAnnualeId, Model model, RedirectAttributes redirectAttrs){
@@ -124,7 +124,7 @@ public class RelazioneAnnualeController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/relazioneAnnuale/{relazioneAnnualeId}/show")
 	public String showRelazioniAnnualiForProvider(@PathVariable Long providerId, @PathVariable Long relazioneAnnualeId, Model model, RedirectAttributes redirectAttrs){
@@ -139,19 +139,19 @@ public class RelazioneAnnualeController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping(value = "/provider/{providerId}/relazioneAnnuale/save", method=RequestMethod.POST)
 	public String saveRelazioniAnnualiForProvider(@PathVariable Long providerId, @ModelAttribute("relazioneAnnualeWrapper") RelazioneAnnualeWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/relazioneAnnuale/save"));
 		try {
-			
+
 			if (wrapper.getRelazioneFinale().getId() != null) {
 				wrapper.getRelazioneAnnuale().setRelazioneFinale(fileService.getFile(wrapper.getRelazioneFinale().getId()));
 			}
-			
+
 			relazioneAnnualeValidator.validate(wrapper.getRelazioneAnnuale(), result, "relazioneAnnuale.", providerId);
-			
+
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
@@ -170,7 +170,7 @@ public class RelazioneAnnualeController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	private RelazioneAnnualeWrapper prepareWrapperNew(RelazioneAnnuale relazioneAnnuale){
 		RelazioneAnnualeWrapper wrapper = new RelazioneAnnualeWrapper();
 		relazioneAnnuale.setAnnoRiferimento(LocalDate.now().getYear());
@@ -179,26 +179,26 @@ public class RelazioneAnnualeController {
 		wrapper.setRelazioneFinale(relazioneAnnuale.getRelazioneFinale());
 		return wrapper;
 	}
-	
+
 	private RelazioneAnnualeWrapper prepareWrapperEdit(RelazioneAnnuale relazioneAnnuale){
 		RelazioneAnnualeWrapper wrapper = new RelazioneAnnualeWrapper();
-		
+
 		wrapper.setProviderId(relazioneAnnuale.getProvider().getId());
 		wrapper.setRelazioneAnnuale(relazioneAnnuale);
 		wrapper.setRelazioneFinale(relazioneAnnuale.getRelazioneFinale());
 		return wrapper;
 	}
-	
+
 	private RelazioneAnnualeWrapper prepareWrapperShow(RelazioneAnnuale relazioneAnnuale){
 		RelazioneAnnualeWrapper wrapper = new RelazioneAnnualeWrapper();
-		
+
 		wrapper.setProviderId(relazioneAnnuale.getProvider().getId());
 		wrapper.setRelazioneAnnuale(relazioneAnnuale);
 		wrapper.setRelazioneFinale(relazioneAnnuale.getRelazioneFinale());
-		
+
 		return wrapper;
 	}
-	
+
 	private String goToNew(Model model, RelazioneAnnualeWrapper wrapper) {
 		model.addAttribute("relazioneAnnualeWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
@@ -216,12 +216,12 @@ public class RelazioneAnnualeController {
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 }

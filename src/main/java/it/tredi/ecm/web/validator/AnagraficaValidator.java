@@ -81,7 +81,6 @@ public class AnagraficaValidator {
 	}
 
 	//validator anagrafica docenti/tutor e responsabili evento (Gestione Anagrafiche Ruoli Evento)
-	//non controllo univocità del cf perchè non è modificabile
 	public void validateAnagraficaEvento(Object target, Errors errors, String prefix, Long providerId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione AnagraficaEvento Base"));
 		AnagraficaEvento anagraficaEvento = (AnagraficaEvento) target;
@@ -95,7 +94,12 @@ public class AnagraficaValidator {
 		if(anagraficaEvento.getAnagrafica().getCodiceFiscale() == null || anagraficaEvento.getAnagrafica().getCodiceFiscale().isEmpty()){
 			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
 		}
-
+		else {
+			AnagraficaEvento old = anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaEvento.getAnagrafica().getCodiceFiscale(), providerId);
+			if(old != null && old.getId() != anagraficaEvento.getId()) {
+				errors.rejectValue(prefix + "codiceFiscale", "error.cf_duplicated");
+			}
+		}
 		if(!fileValidator.validateFirmaCF(anagraficaEvento.getAnagrafica().getCv(), providerId))
 			errors.rejectValue(prefix + "cv", "error.codiceFiscale.firmatario");
 	}
