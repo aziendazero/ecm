@@ -84,7 +84,8 @@
 							<span th:text="#{label.programma_del}" class="text-uppercase">Programma del</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<label class="control-label" th:text="${programmaGiornaliero.giorno}"> </label>
+							<!-- label class="control-label" th:text="${programmaGiornaliero.giorno}"> </label-->
+							<label class="control-label" th:text="${#temporals.format(programmaGiornaliero.giorno, 'dd/MM/yyyy')}"> </label>
 						</div>
 					</div>
 					<div class="item form-group">
