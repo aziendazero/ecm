@@ -249,4 +249,16 @@ public class Provider extends BaseEntity{
 
 		return false;
 	}
+
+	public boolean canInsertEvento(){
+		//se flag disattivato - non permetto l'inserimento
+		if(!canInsertEvento)
+			return false;
+
+		//se flag attivato, controllo la stato del provider
+		if(status != ProviderStatoEnum.CANCELLATO && status != ProviderStatoEnum.SOSPESO)
+			return true;
+
+		return false;
+	}
 }

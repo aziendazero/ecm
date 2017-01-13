@@ -218,7 +218,8 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 	@Override
 	public boolean canInsertEvento(Long providerId) {
-		return providerRepository.canInsertEvento(providerId);
+		Provider provider = providerRepository.findOne(providerId);
+		return provider.canInsertEvento();
 	}
 
 	@Override

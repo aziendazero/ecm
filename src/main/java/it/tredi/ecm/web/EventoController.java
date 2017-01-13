@@ -1,11 +1,7 @@
 package it.tredi.ecm.web;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -59,7 +54,6 @@ import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.Professione;
-import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
@@ -96,10 +90,12 @@ import it.tredi.ecm.web.bean.ErrorsAjaxWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
+import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 import it.tredi.ecm.web.bean.SponsorWrapper;
 import it.tredi.ecm.web.validator.AnagraficaValidator;
 import it.tredi.ecm.web.validator.EventoValidator;
 import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
+import it.tredi.ecm.web.validator.ScadenzeEventoValidator;
 
 @Controller
 @SessionAttributes("eventoWrapper")
@@ -128,6 +124,8 @@ public class EventoController {
 
 	@Autowired private PdfEventoService pdfEventoService;
 	@Autowired private AlertEmailService alertEmailService;
+
+	@Autowired private ScadenzeEventoValidator scadenzeEventoValidator;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -171,6 +169,10 @@ public class EventoController {
 				model.addAttribute("eventoList", eventoService.getAllEventi());
 
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
+
+			if(Utils.getAuthenticatedUser().isSegreteria())
+				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
+
 			return LIST;
 		}
 		catch (Exception ex) {
@@ -230,6 +232,8 @@ public class EventoController {
 		model.addAttribute("providerId", providerId);
 		model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
 		model.addAttribute("canRieditEvento", eventoService.canRieditEvento(Utils.getAuthenticatedUser().getAccount()));
+		if(Utils.getAuthenticatedUser().isSegreteria())
+			model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
 		LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 		return LIST;
 	}
@@ -1502,6 +1506,8 @@ public class EventoController {
 			model.addAttribute("eventoList", listaEventi);
 			model.addAttribute("canCreateEvento", false);
 			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
+			if(Utils.getAuthenticatedUser().isSegreteria())
+				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
 			return LIST;
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/eventi/" + search + "/list"),ex);
@@ -1530,6 +1536,8 @@ public class EventoController {
 			model.addAttribute("eventoList", listaEventi);
 			model.addAttribute("canCreateEvento", false);
 			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
+			if(Utils.getAuthenticatedUser().isSegreteria())
+				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
 			return LIST;
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /eventi/" + search + "/list"),ex);
@@ -1599,4 +1607,36 @@ public class EventoController {
 		wrapper.setObiettiviRegionaliList(obiettivoService.getObiettiviRegionali());
 		return wrapper;
 	}
+
+
+	@RequestMapping(value = "/evento/{eventoId}/proroga/scadenze", method = RequestMethod.POST)
+	public String prorogaScadenzeEvento(@PathVariable("eventoId") Long eventoId,
+			@ModelAttribute("scadenzeEventoWrapper") ScadenzeEventoWrapper wrapper,
+			BindingResult result, RedirectAttributes redirectAttrs, Model model){
+		LOGGER.info(Utils.getLogMessage("POST /evento/"+eventoId+"/proroga/scadenze"));
+		try {
+			scadenzeEventoValidator.validate(wrapper, result, "");
+			if(result.hasErrors()) {
+				wrapper.setSubmitScadenzeError(true);
+				model.addAttribute("scadenzeEventoWrapper", wrapper);
+				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
+				return LIST;
+			}
+			else {
+				eventoService.updateScadenze(eventoId, wrapper);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.scadenze_evento_aggiornate", "success"));
+				return "redirect:"+wrapper.getReturnLink();
+			}
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /evento/"+eventoId+"/proroga/scadenze"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			try {
+				return "redirect:"+wrapper.getReturnLink();
+			}
+			catch (Exception ex2) {
+				return "redirect:/home";
+			}
+		}
+	}
+
 }

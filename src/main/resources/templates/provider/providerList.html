@@ -200,7 +200,7 @@
 									<td th:text="${provider.status.nome}">stato</td>
 
 									<td th:text="${provider.canInsertPianoFormativo() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</td>
-									<td th:text="${provider.canInsertEvento ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento ? 'green' : 'red'}">abilitato/non abilitato</td>
+									<td th:text="${provider.canInsertEvento() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento() ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertAccreditamentoStandard() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard() ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertRelazioneAnnuale() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertRelazioneAnnuale() ? 'green' : 'red'}">abilitato/non abilitato</td>
 
@@ -241,7 +241,7 @@
 				$(document).ready(function() {
 					$("#datatable-provider").DataTable();
 
-					//setta i nomi dei giorni e dei mesi a seconda delle label i18n anche per le date intermedie
+					//setta i nomi dei giorni e dei mesi a seconda delle label i18n
 					days = getDayNamesShort();
 					months = getMonthNames();
 

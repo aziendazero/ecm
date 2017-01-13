@@ -52,6 +52,7 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -85,6 +86,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
+import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 import it.tredi.ecm.web.validator.FileValidator;
 
 @Service
@@ -256,7 +258,7 @@ public class EventoServiceImpl implements EventoService {
 
 	@Override
 	public boolean canCreateEvento(Account account) {
-		return account.isSegreteria() || account.getProvider().isCanInsertEvento();
+		return account.isSegreteria() || account.getProvider().canInsertEvento();
 	}
 
 	//evento rieditabile solo prima del 20/12 dell'anno corrente
@@ -1452,7 +1454,7 @@ public class EventoServiceImpl implements EventoService {
 		//riedizione.setCanDoPagamento(false);
 		riedizione.setSponsorUploaded(false);
 		riedizione.setDataScadenzaInvioRendicontazione(null);
-		riedizione.setCanDoRendicontazione(false);
+//		riedizione.setCanDoRendicontazione(false);
 		riedizione.setValidatorCheck(false);
 		riedizione.setReportPartecipantiXML(null);
 		riedizione.setReportPartecipantiCSV(null);
@@ -1846,5 +1848,20 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug("Conteggio eventi che non hanno confermato i crediti");
 		//prendiamo solo quelli accreditati...quando l'evento viene rendicontato non rientra piu nella vaschetta
 		return eventoRepository.countAllByConfermatiCreditiFalseAndStato(EventoStatoEnum.VALIDATO);
+	}
+
+	@Override
+	public void updateScadenze(Long eventoId, ScadenzeEventoWrapper wrapper) throws Exception {
+		LOGGER.info("Update delle scadenze per l'Evento: " + eventoId);
+
+		Evento evento = getEvento(eventoId);
+		if(evento == null){
+			throw new Exception("Evento non trovato");
+		}
+		//date scadenza permessi
+		evento.setDataScadenzaPagamento(wrapper.getDataScadenzaPagamento());
+		evento.setDataScadenzaInvioRendicontazione(wrapper.getDataScadenzaRendicontazione());
+
+		save(evento);
 	}
 }
