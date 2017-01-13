@@ -131,7 +131,7 @@ public class Provider extends BaseEntity{
 	private boolean canInsertEvento;
 
 	@Column(name ="can_insert_relazione_annuale")
-	private boolean canInsertRelazioneAnnuale;
+	private boolean canInsertRelazioneAnnuale = true;
 	@Column(name = "data_insert_relazione_annuale")
 	private LocalDate dataScadenzaInsertRelazioneAnnuale;
 
