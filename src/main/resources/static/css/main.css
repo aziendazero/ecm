@@ -1379,3 +1379,7 @@ li.listStyle-elenco > label{
 .show-calendar {
 	z-index: 99999;
 }
+
+.link {
+	text-decoration: underline !important;
+}

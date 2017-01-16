@@ -177,6 +177,18 @@
 										</div>
 									</div>
 
+									<div class="linkevento-container item comunicazioneAlert form-group" style="display: none;" th:classappend="${#fields.hasErrors('comunicazioneWrapper.idEventoLink')} ? 'bad'">
+										<div class="col-sm-1 col-xs-2 text-right">
+											<label class="control-label" th:text="#{label.id_evento_link}"></label>
+										</div>
+										<div class="col-xs-5 col-sm-3 col-md-2">
+											<div class="no-padding">
+												<input class="form-control" th:field="${comunicazioneWrapper.idEventoLink}" id="linkEvento" />
+											</div>
+											<div th:if="${#fields.hasErrors('comunicazioneWrapper.idEventoLink')}" class="alert" th:errors="${comunicazioneWrapper.idEventoLink}"></div>
+										</div>
+									</div>
+
 									<div class="tipologia-container item comunicazioneAlert form-group" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.tipologia')} ? 'bad'">
 										<div class="col-sm-1 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.tipologia}"></label>
@@ -292,6 +304,10 @@
 							moveToRightOptions($('option[value="'+ destinatariIds[i].id +'"]'));
 						}
 					}
+
+					if([[${#fields.hasErrors('comunicazioneWrapper.idEventoLink')}]]) {
+						$(".linkevento-container").show();
+					}
 				});
 
 				function removeAlerts() {
@@ -312,6 +328,14 @@
 					});
 					$("#tipologiaSelect").selectpicker('deselectAll');
 					$("#tipologiaSelect").selectpicker("refresh");
+
+					//se seleziono eventi abilito anche la possibilità di inserire l'id di riferimento
+					if($("#ambitoSelect").val() == "EVENTI") {
+						$(".linkevento-container").slideDown("slow");
+					}
+					else {
+						$(".linkevento-container").slideUp("slow");
+					}
 				}
 
 				//mostra nasconde le tipologia al doc ready se ambito non è null

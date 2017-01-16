@@ -111,6 +111,9 @@ public class ComunicazioneController {
 			Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("POST: /comunicazione/send"));
 		try {
+			//calcolo link evento
+			String link = comunicazioneService.findEventoToLink(comunicazioneWrapper, result);
+
 			//validazione del provider
 			comunicazioneValidator.validate(comunicazioneWrapper.getComunicazione(), result, "comunicazione.");
 
@@ -120,7 +123,7 @@ public class ComunicazioneController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + NEW));
 				return NEW;
 			}else{
-				comunicazioneService.send(comunicazioneWrapper.getComunicazione(), comunicazioneWrapper.getAllegatoComunicazione());
+				comunicazioneService.send(comunicazioneWrapper.getComunicazione(), comunicazioneWrapper.getAllegatoComunicazione(), link);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.comunicazione_inviata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
 				return "redirect:/comunicazione/dashboard";
@@ -263,18 +266,18 @@ public class ComunicazioneController {
 		LOGGER.info(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"));
 		try {
 			Provider provider = providerService.getProvider(providerId);
-			
+
 			if(model.asMap().get("listaComunicazioni") == null){
 				model.addAttribute("listaComunicazioni", comunicazioneService.getAllComunicazioniByProvider(provider));
 			}
 
 			model.addAttribute("tipologiaLista", "label.comunicazioni_con_provider");
-			
+
 			if(Utils.getAuthenticatedUser().isSegreteria())
 				model.addAttribute("returnLink", "/provider/list");
 			else
 				model.addAttribute("returnLink", "/home");
-				
+
 			return LIST;
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"),ex);
@@ -316,20 +319,20 @@ public class ComunicazioneController {
 		LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
 		return SHOW;
 	}
-	
+
 	@RequestMapping("/comunicazione/ricerca")
 	public String ricercaComunicazione(Model model,RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /comunicazione/ricerca"));
 		try {
 			RicercaComunicazioneWrapper wrapper = prepareRicercaComunicazioneWrapper();
-			
+
 			CurrentUser currentUser = Utils.getAuthenticatedUser();
 			if(currentUser.isProvider()){
 				wrapper.setProviderId(currentUser.getAccount().getProvider().getId());
 			}else{
 				wrapper.setProviderId(null);
 			}
-			
+
 			model.addAttribute("ricercaComunicazioneWrapper", wrapper);
 			LOGGER.info(Utils.getLogMessage("VIEW: " + RICERCA));
 			return RICERCA;
@@ -340,7 +343,7 @@ public class ComunicazioneController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@RequestMapping(value = "/comunicazione/ricerca", method = RequestMethod.POST)
 	public String executeRicercaComunicazione(@ModelAttribute("ricercaComunicazioneWrapper") RicercaComunicazioneWrapper wrapper,
 									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
@@ -348,20 +351,20 @@ public class ComunicazioneController {
 		try {
 
 			String returnRedirect = "";
-			
+
 			if(wrapper.getProviderId() != null){
 				wrapper.setCampoIdProvider(wrapper.getProviderId());
 				returnRedirect = "redirect:/provider/" + wrapper.getProviderId() + "/comunicazione/list";
 			}else{
 				returnRedirect = "redirect:/comunicazione/cerca/list";
 			}
-			
-			
+
+
 			Set<Comunicazione> listaComunicazioni = new HashSet<>();
 			listaComunicazioni.addAll(comunicazioneService.cerca(wrapper));
-			
+
 			redirectAttrs.addFlashAttribute("listaComunicazioni", listaComunicazioni);
-	
+
 			return returnRedirect;
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /comunicazione/ricerca"),ex);
@@ -369,7 +372,7 @@ public class ComunicazioneController {
 			return "redirect:/comunicazione/ricerca";
 		}
 	}
-	
+
 	private RicercaComunicazioneWrapper prepareRicercaComunicazioneWrapper(){
 		RicercaComunicazioneWrapper wrapper = new RicercaComunicazioneWrapper();
 		return wrapper;

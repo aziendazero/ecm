@@ -7,10 +7,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -21,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
@@ -32,6 +32,7 @@ import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.ComunicazioneRepository;
 import it.tredi.ecm.dao.repository.ComunicazioneResponseRepository;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.ComunicazioneWrapper;
 import it.tredi.ecm.web.bean.RicercaComunicazioneWrapper;
 
 @Service
@@ -41,6 +42,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	@Autowired private AccountService accountService;
 	@Autowired private ComunicazioneRepository comunicazioneRepository;
 	@Autowired private ComunicazioneResponseRepository comunicazioneResponseRepository;
+	@Autowired private EventoService eventoService;
 	@PersistenceContext EntityManager entityManager;
 
 	@Override
@@ -131,7 +133,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	//salvataggio comunicazione, controllo mittente, se è provider aggiungo i segretari ai destinatari
 	//aggiungo anche la data di invio
 	@Override
-	public void send(Comunicazione comunicazione, File allegato) {
+	public void send(Comunicazione comunicazione, File allegato, String link) {
 		if(comunicazione.getMittente().isProvider()) {
 			comunicazione.setDestinatari(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 		}
@@ -145,6 +147,8 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		comunicazione.setDataUltimaModifica(LocalDateTime.now());
 		if (allegato != null && !allegato.isNew())
 			comunicazione.setAllegatoComunicazione(allegato);
+		if(link != null && !link.isEmpty())
+			comunicazione.setLinkEvento(link);
 		comunicazioneRepository.save(comunicazione);
 	}
 
@@ -306,5 +310,23 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		List<Comunicazione> result = q.getResultList();
 
 		return result;
+	}
+
+	//funzione che calcola il link all'evento di cui parla la comunicazione, se è stato passato come parametro il codice identificativo.
+	//restituisce un alert di errore solo nel caso l'evento NON è stato trovato
+	@Override
+	public String findEventoToLink(ComunicazioneWrapper wrapper, BindingResult result) {
+		if(wrapper.getIdEventoLink() == null || wrapper.getIdEventoLink().isEmpty())
+			return null;
+		else {
+			Evento evento = eventoService.getEventoByCodiceIdentificativo(wrapper.getIdEventoLink());
+			if(evento == null) {
+				result.rejectValue("idEventoLink", "error.evento_non_trovato");
+				return null;
+			}
+			else {
+				return "/provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + "/show";
+			}
+		}
 	}
 }

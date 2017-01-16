@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.validation.BindingResult;
+
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.web.bean.ComunicazioneWrapper;
 import it.tredi.ecm.web.bean.RicercaComunicazioneWrapper;
 
 public interface ComunicazioneService {
@@ -22,7 +25,7 @@ public interface ComunicazioneService {
 	List<Comunicazione> getUltimi10MessaggiNonLetti(Long id);
 	long countAllMessaggiNonLetti(Long id);
 	Map<String, Set<Account>> getAllDestinatariDisponibili(Long id);
-	void send(Comunicazione comunicazione, File allegato);
+	void send(Comunicazione comunicazione, File allegato, String link);
 	boolean canAccountRespondToComunicazione(Account account, Comunicazione comunicazione);
 	boolean canAccountCloseComunicazione(Account account, Comunicazione comunicazione);
 	void contrassegnaComeLetta(Long id);
@@ -35,7 +38,8 @@ public interface ComunicazioneService {
 	int countAllComunicazioniByAccountId(Long currentAccountId);
 	Set<Comunicazione> getAllComunicazioniByAccount(Account user);
 	Set<Comunicazione> getAllComunicazioniByProvider(Provider provider);
-	
+
 	List<Comunicazione> cerca(RicercaComunicazioneWrapper wrapper);
+	String findEventoToLink(ComunicazioneWrapper comunicazioneWrapper, BindingResult result);
 
 }

@@ -206,6 +206,11 @@
 												<strong th:text="#{label.ambito}"></strong>
 												<span th:text="${comunicazioneWrapper.comunicazione.ambito.nome}"></span>
 												<br/>
+												<th:block th:if="${comunicazioneWrapper.comunicazione.linkEvento != null}" >
+													<strong th:text="#{label.evento_link}"></strong>
+													<a class="link" th:href="@{|${comunicazioneWrapper.comunicazione.linkEvento}|}" th:text="#{label.vai_all_evento}"></a>
+													<br/>
+												</th:block>
 												<strong th:text="#{label.tipologia}"></strong>
 												<span th:text="${comunicazioneWrapper.comunicazione.tipologia.nome}"></span>
 											</div>

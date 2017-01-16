@@ -38,4 +38,6 @@
  	<include file="20170111_aggiunta_column_date_piano_formativo_relazione_annuale.xml" relativeToChangelogFile="true"/>
  	<include file="20170113_Update_Can_Insert_relazione_annuale.xml" relativeToChangelogFile="true"/>
 
+ 	<include file="20170116_create_linkEventoComunicazione_drop_canDoRendicontazione.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

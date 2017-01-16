@@ -67,4 +67,7 @@ public interface EventoService {
 	public Set<Evento> getEventiCreditiNonConfermati();
 	public Integer countAllEventiCreditiNonConfermati();
 	public void updateScadenze(Long eventoId, ScadenzeEventoWrapper wrapper) throws Exception;
+	public Evento getEventoByPrefix(String idEventoLink);
+	Evento getEventoByPrefixAndEdizione(String prefix, int edizione);
+	public Evento getEventoByCodiceIdentificativo(String idEventoLink);
 }

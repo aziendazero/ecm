@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import it.tredi.ecm.cogeaps.CogeapsCaricaResponse;
 import it.tredi.ecm.cogeaps.CogeapsStatoElaborazioneResponse;
@@ -1863,5 +1864,48 @@ public class EventoServiceImpl implements EventoService {
 		evento.setDataScadenzaInvioRendicontazione(wrapper.getDataScadenzaRendicontazione());
 
 		save(evento);
+	}
+
+	@Override
+	public Evento getEventoByPrefix(String prefix) {
+		LOGGER.info("Ricerca dell'Evento con prefisso: " + prefix);
+		return eventoRepository.findOneByPrefix(prefix);
+	}
+
+	@Override
+	public Evento getEventoByPrefixAndEdizione(String prefix, int edizione) {
+		LOGGER.info("Ricerca dell'Evento con prefix: " + prefix + " e edizione: " + edizione);
+		return eventoRepository.findOneByPrefixAndEdizione(prefix, edizione);
+	}
+
+	//funzione che parsa la stringa e divide in prefisso e edizione (se presente) e sulla base di questi
+	// cerca l'evento
+	@Override
+	public Evento getEventoByCodiceIdentificativo(String codiceId) {
+		LOGGER.info("Ricerca dell'Evento con codice identificativo: " + codiceId);
+		if(codiceId == null || codiceId.isEmpty())
+			return null;
+		// un solo "-" -> l'evento non è un evento rieditato, si procede con la ricerca by prefix e edizione 1
+		else {
+			if(StringUtils.countOccurrencesOf(codiceId, "-") < 2)
+				return getEventoByPrefixAndEdizione(codiceId, 1);
+			// si suppone che l'evento sia una riedizione
+			else {
+				try {
+					int edizione = -1;
+					String prefix = "";
+					int lastPartIndex = codiceId.lastIndexOf("-");
+					if(lastPartIndex != -1) {
+						edizione = Integer.parseInt(codiceId.substring(lastPartIndex+1));
+						prefix = codiceId.substring(0, lastPartIndex);
+					}
+					return getEventoByPrefixAndEdizione(prefix, edizione);
+				}
+				catch (NumberFormatException ex) {
+					return null;
+				}
+			}
+		}
+
 	}
 }

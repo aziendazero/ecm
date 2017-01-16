@@ -39,4 +39,6 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
 	public Set<Evento> findAllByConfermatiCreditiFalseAndStato(EventoStatoEnum stato);
 	public Integer countAllByConfermatiCreditiFalseAndStato(EventoStatoEnum stato);
+	public Evento findOneByPrefix(String prefix);
+	public Evento findOneByPrefixAndEdizione(String prefix, int edizione);
 }

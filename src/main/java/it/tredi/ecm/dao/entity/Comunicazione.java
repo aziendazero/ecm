@@ -44,7 +44,7 @@ import lombok.Setter;
 //			})
 //			}
 //	)
-//	
+//
 //})
 public class Comunicazione extends BaseEntity{
 
@@ -75,6 +75,7 @@ public class Comunicazione extends BaseEntity{
 	private boolean chiusa = false;
 	@OneToMany(mappedBy="comunicazione")
 	private Set<ComunicazioneResponse> risposte = new HashSet<ComunicazioneResponse>();
+	private String linkEvento;
 
 	//set di id che devono ancora leggere la comunicazione
 	@Column(name="utenti_che_devono_leggere")
