@@ -291,14 +291,21 @@
 					$("#statoSelect").selectpicker("refresh");
 					//gestione date
 					//parse + format
-					var dataScadenzaPF = moment(dataPF, "YYYY-MM-DD", true).format("DD/MM/YYYY");
-					var dataScadenzaDomanda = moment(dataDomanda, "YYYY-MM-DD", true).format("DD/MM/YYYY");
-					var dataScadenzaRelazione = moment(dataRelazione, "YYYY-MM-DD", true).format("DD/MM/YYYY");
-					$("#dataPF").val(dataScadenzaPF);
-					$("#dataDomanda").val(dataScadenzaDomanda);
-					$("#dataRelazioneAnnuale").val(dataScadenzaRelazione);
 
+					if(dataPF != "null" && dataPF != "undefined"){
+						var dataScadenzaPF = moment(dataPF, "YYYY-MM-DD", true).format("DD/MM/YYYY");
+						$("#dataPF").val(dataScadenzaPF);
+					}
 
+					if(dataDomanda != "null" && dataDomanda != "undefined"){
+						var dataScadenzaDomanda = moment(dataDomanda, "YYYY-MM-DD", true).format("DD/MM/YYYY");
+						$("#dataDomanda").val(dataScadenzaDomanda);
+					}
+
+					if(dataRelazione != "null" && dataRelazione != "undefined"){
+						var dataScadenzaRelazione = moment(dataRelazione, "YYYY-MM-DD", true).format("DD/MM/YYYY");
+						$("#dataRelazioneAnnuale").val(dataScadenzaRelazione);
+					}
 				}
 
 				function cleanForm() {

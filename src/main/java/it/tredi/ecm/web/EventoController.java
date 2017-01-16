@@ -254,6 +254,12 @@ public class EventoController {
 				return goToNew(model, wrapper);
 			}
 		}
+		catch (AccreditamentoNotFoundException ex){
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/new"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -271,6 +277,12 @@ public class EventoController {
 			EventoWrapper wrapper = prepareEventoWrapperAttuazione(eventoPianoFormativo, providerId);
 			return goToEdit(model, wrapper);
 		}
+		catch (AccreditamentoNotFoundException ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/eventoPianoFormativo/" + eventoPianoFormativoId +"/fulfill"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/eventoPianoFormativo/" + eventoPianoFormativoId +"/fulfill"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -287,6 +299,12 @@ public class EventoController {
 			Evento evento = eventoService.getEvento(eventoId);
 			EventoWrapper wrapper = prepareEventoWrapperRiedizione(evento, providerId);
 			return goToEdit(model, wrapper);
+		}
+		catch (AccreditamentoNotFoundException ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId +"/re-edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId +"/re-edit"),ex);
@@ -410,6 +428,12 @@ public class EventoController {
 				((EventoFAD) evento).getProgrammaFAD().size(); //workarounda pure Barduz
 			EventoWrapper wrapper = prepareEventoWrapperEdit(evento, true);
 			return goToEdit(model, wrapper);
+		}
+		catch (AccreditamentoNotFoundException ex){
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/edit"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/edit"),ex);

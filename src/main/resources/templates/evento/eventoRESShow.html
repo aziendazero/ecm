@@ -156,7 +156,8 @@
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div th:if="${eventoWrapper.evento.dateIntermedie != null and !#lists.isEmpty(eventoWrapper.evento.dateIntermedie)}" th:each="data, row : ${eventoWrapper.evento.dateIntermedie}">
-								<div class="value" th:text="${data}"></div>
+								<!-- div class="value" th:text="${data}"></div -->
+								<div class="value" th:text="${#temporals.format(data, 'dd/MM/yyyy')}"></div>
 							</div>
 							<div th:unless="${eventoWrapper.evento.dateIntermedie != null and !#lists.isEmpty(eventoWrapper.evento.dateIntermedie)}" class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>

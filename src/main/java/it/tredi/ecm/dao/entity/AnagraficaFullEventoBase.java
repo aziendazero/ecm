@@ -20,12 +20,12 @@ public class AnagraficaFullEventoBase implements Serializable{
 	private String email;
 	private String telefono;
 	private String cellulare;
-	
+
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		AnagraficaFullEventoBase aB = (AnagraficaFullEventoBase) super.clone();
 		return aB;
 	}
-	
+
 	//TODO procedura che al salvataggio dell'anagrafica va ad aggiornare i campi delle PersonaFullEvento che sono negli eventi ancora modificabili
 }

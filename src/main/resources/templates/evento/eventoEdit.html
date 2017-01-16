@@ -1651,7 +1651,8 @@
 							<span th:text="#{label.programma_del}" class="text-uppercase">Programma del</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" >
-							<label class="control-label" th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno}"> </label>
+							<!-- label class="control-label" th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno}"> </label -->
+							<label class="control-label" th:text="${#temporals.format(eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno, 'dd/MM/yyyy')}"> </label>
 						</div>
 						<input type="hidden" th:value="${data.key}" />
 					</div>

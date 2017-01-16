@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
@@ -65,8 +68,8 @@ public class AnagraficaEventoController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/anagraficaEventoList")
 	@ResponseBody
-	public Set<AnagraficaEvento>getAnagraficheEventoDelProvider(@PathVariable Long providerId){
-		Set<AnagraficaEvento> lista = anagraficaEventoService.getAllAnagaficheByProvider(providerId);
+	public Set<AnagraficaEvento> getAnagraficheEventoDelProvider(@PathVariable Long providerId) throws JsonProcessingException{
+		Set<AnagraficaEvento> lista = anagraficaEventoService.getAllAnagaficheByProviderJSONVersion(providerId);
 		return lista;
 	}
 
@@ -74,7 +77,7 @@ public class AnagraficaEventoController {
 	@RequestMapping("/provider/{providerId}/anagraficaFullEventoList")
 	@ResponseBody
 	public Set<AnagraficaFullEvento>getAnagraficheFullEventoDelProvider(@PathVariable Long providerId){
-		Set<AnagraficaFullEvento> lista = anagraficaFullEventoService.getAllAnagraficheFullEventoByProvider(providerId);
+		Set<AnagraficaFullEvento> lista = anagraficaFullEventoService.getAllAnagraficheFullEventoByProviderJSONVersion(providerId);
 		return lista;
 	}
 
