@@ -46,6 +46,8 @@ public class EventoWrapper {
 	private EventoWrapperModeEnum wrapperMode;
 	private float creditiProposti;
 
+	private float creditiOld;
+
 	//parte rendicontazione
 	private File reportPartecipanti;
 

@@ -72,25 +72,25 @@
 											<div class="col-xs-10 col-sm-7 col-md-4">
 												<div class="checkbox col-xs-6">
 													<label>
-														<input type="checkbox" class="flat" name="filtroProvider" value="A"/>
+														<input type="checkbox" class="flat" name="filtroProviderGruppo" value="A" id="gruppoA"/>
 														<span th:text="#{label.provider_gruppoA}"></span>
 													</label>
 												</div>
 												<div class="checkbox col-xs-6">
 													<label>
-														<input type="checkbox" class="flat" name="filtroProvider" value="B"/>
+														<input type="checkbox" class="flat" name="filtroProviderGruppo" value="B" id="gruppoB"/>
 														<span th:text="#{label.provider_gruppoB}"></span>
 													</label>
 												</div>
 												<div class="checkbox col-xs-6">
 													<label>
-														<input type="checkbox" class="flat" name="filtroProvider" value="ACCREDITATO_STANDARD"/>
+														<input type="checkbox" class="flat" name="filtroProviderTipo" value="ACCREDITATO_STANDARD" id="tipoStandard"/>
 														<span th:text="#{label.provider_standard}"></span>
 													</label>
 												</div>
 												<div class="checkbox col-xs-6">
 													<label>
-														<input type="checkbox" class="flat" name="filtroProvider" value="ACCREDITATO_PROVVISORIAMENTE"/>
+														<input type="checkbox" class="flat" name="filtroProviderTipo" value="ACCREDITATO_PROVVISORIAMENTE" id="tipoProvvisorio"/>
 														<span th:text="#{label.provider_provvisorio}"></span>
 													</label>
 												</div>
@@ -227,7 +227,7 @@
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 				var destinatariIds = [[${comunicazioneWrapper.comunicazione.destinatari}]];
-				var filtriProvider = []
+				var filtriProvider = {gruppo:"", tipo:""};
 				$(document).ready(function() {
 					$("#optgroup").multiselect({
 						keepRenderingSort: true,
@@ -250,6 +250,38 @@
 						});
 					});
 
+					//simula il comportamento delle radio sui campi esclusivi e aggiorna il filtro
+					$("#gruppoA").on("ifChecked", function() {
+						$("#gruppoB").iCheck("uncheck");
+						filtriProvider.gruppo = "A";
+						applyFilters(filtriProvider);
+					})
+					$("#gruppoB").on("ifChecked", function() {
+						$("#gruppoA").iCheck("uncheck");
+						filtriProvider.gruppo = "B";
+						applyFilters(filtriProvider);
+					})
+					$("#tipoProvvisorio").on("ifChecked", function() {
+						$("#tipoStandard").iCheck("uncheck");
+						filtriProvider.tipo = "ACCREDITATO_PROVVISORIAMENTE";
+						applyFilters(filtriProvider);
+					})
+					$("#tipoStandard").on("ifChecked", function() {
+						$("#tipoProvvisorio").iCheck("uncheck");
+						filtriProvider.tipo = "ACCREDITATO_STANDARD";
+						applyFilters(filtriProvider);
+					})
+
+					//rimuove i filtri se uncheckati e aggiorna il filtro
+					$("input[name=filtroProviderGruppo]").on("ifUnchecked", function() {
+						filtriProvider.gruppo = "";
+						applyFilters(filtriProvider);
+					})
+					$("input[name=filtroProviderTipo]").on("ifUnchecked", function() {
+						filtriProvider.tipo = "";
+						applyFilters(filtriProvider);
+					})
+
 					if([[${comunicazioneWrapper.comunicazione.ambito}]]) {
 						initTipologia();
 					}
@@ -260,20 +292,6 @@
 							moveToRightOptions($('option[value="'+ destinatariIds[i].id +'"]'));
 						}
 					}
-
-					$('input[name="filtroProvider"]').on("ifChecked", function() {
-						filtriProvider.push(this.value);
-						applyFilters(filtriProvider);
-					})
-					$('input[name="filtroProvider"]').on("ifUnchecked", function() {
-						var filterValue = this.value
-						//rimuove elemento dalla lista
-						filtriProvider = $.grep(filtriProvider, function(value) {
-							return value != filterValue;
-						});
-						applyFilters(filtriProvider);
-					})
-
 				});
 
 				function removeAlerts() {
@@ -384,24 +402,30 @@
 					}
 				}
 
-				function applyFilters(criteria) {
-					console.log(criteria);
+				function applyFilters(descrittoreFiltro) {
+					console.log(descrittoreFiltro);
 					hideAllProviders();
-					if(criteria.length == 0) {
+					if(descrittoreFiltro.tipo == "" && descrittoreFiltro.gruppo == "") {
 						showAllProviders();
 					}
 					else {
 						var $providers = $('#optgroup > optgroup[label="Provider"] > option');
-						$.each(criteria, function(index, filter) {
-							$providers.each(function(i, provider) {
-								var $provider = $(provider);
-								if($provider.attr("gruppo") == filter) {
+						$providers.each(function(i, provider) {
+							var $provider = $(provider);
+							//condizione di ricerca in AND
+							if(descrittoreFiltro.gruppo != "" && descrittoreFiltro.tipo != "") {
+								if(descrittoreFiltro.gruppo == $provider.attr("gruppo") && descrittoreFiltro.tipo == $provider.attr("tipo")) {
 									$provider.show().prop("disabled", false).removeClass("hidden");
 								}
-								else if($provider.attr("tipo") == filter) {
+							}
+							else {
+								if($provider.attr("gruppo") != "" && descrittoreFiltro.gruppo == $provider.attr("gruppo")) {
 									$provider.show().prop("disabled", false).removeClass("hidden");
 								}
-							})
+								if($provider.attr("tipo") != "" && descrittoreFiltro.tipo == $provider.attr("tipo")) {
+									$provider.show().prop("disabled", false).removeClass("hidden");
+								}
+							}
 						})
 					}
 				}
@@ -419,7 +443,6 @@
 						$(provider).show().prop("disabled", false).removeClass("hidden");
 					})
 				}
-
 
 			/*]]>*/
 			</script>

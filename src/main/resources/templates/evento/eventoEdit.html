@@ -7,6 +7,31 @@
 <body>
 	<div layout:fragment="content">
 
+		<div th:if="${#authentication.principal.account.isSegreteria() and creditiModificati != null and creditiModificati == true}" id="modale-conferma-segreteria" class="modal fade modal-conferma" data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel1" th:text="#{label.richiesta_conferma}">Richiesta di conferma</h4>
+					</div>
+					<div class="modal-body">
+						<div th:if="${eventoWrapper.evento.confermatiCrediti}">
+							<label class="value" th:text="#{label.richiesta_conferma_cambio_crediti(${oldValueCrediti}, ${newValueCrediti})}"></label>
+						</div>
+						<div th:unless="${eventoWrapper.evento.confermatiCrediti}">
+							<label class="value" th:if="${oldValueCrediti != newValueCrediti}" th:text="#{label.notifica_cambio_crediti(${oldValueCrediti}, ${newValueCrediti}, ${creditiProposti})}"></label>
+							<label class="value" th:if="${oldValueCrediti == newValueCrediti}" th:text="#{label.notifica_non_cambio_crediti(${newValueCrediti}, ${creditiProposti})}"></label>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success pull-right" th:text="#{label.salva}" onclick="submitConfirm()"></button>
+						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- finestra modale di lookup delle anagrafiche -->
 		<div id="lookup-persona-modal" class="modal fade modal-lookup-persona" data-model-index="1" role="dialog">
 			<div class="modal-dialog modal-lg">
@@ -477,6 +502,10 @@
 			});
 
 			$(document).ready(function() {
+
+				//modale conferma modifiche crediti segreteria
+				if([[${creditiModificati != null and creditiModificati == true}]])
+					$("#modale-conferma-segreteria").modal("show");
 
 				//init datatable responsabili scientifici
 			    tables['responsabiliScientifici'] =  $('#responsabiliScientifici').DataTable({
@@ -1272,6 +1301,11 @@
 			function submitValidate(){
 				//cambia l'action del form
 				$(".form-evento").attr("action", [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/validate|}]]);
+				$("#submitButton").click();
+			}
+
+			function submitConfirm(){
+				$(".form-evento").attr("action", [[@{|/provider/${eventoWrapper.providerId}/evento/validate/confirm|}]]);
 				$("#submitButton").click();
 			}
 

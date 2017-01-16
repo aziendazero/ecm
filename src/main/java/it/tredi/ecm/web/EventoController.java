@@ -335,14 +335,54 @@ public class EventoController {
 				eventoWrapper.setMappaErroriValidazione(prepareMappaErroriValutazione(result));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
-			}else{
-				evento.setStato(EventoStatoEnum.VALIDATO);
-				evento.setValidatorCheck(true);
-				evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
-				eventoService.save(evento);
-				alertEmailService.creaAlertForEvento(evento);
-				LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 			}
+			else {
+				if(Utils.getAuthenticatedUser().isSegreteria() &&
+						(eventoWrapper.getCreditiOld() !=  evento.getCrediti() || evento.getConfermatiCrediti() == false)) {
+					//la segreteria potrebbe aver modificato i crediti dell'evento e va notificato
+					model.addAttribute("creditiModificati", true);
+					model.addAttribute("oldValueCrediti", eventoWrapper.getCreditiOld());
+					model.addAttribute("newValueCrediti", evento.getCrediti());
+					model.addAttribute("creditiProposti", eventoWrapper.getCreditiProposti());
+					eventoWrapper.setEvento(evento);
+					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+					return EDIT;
+				}
+				else {
+					evento.setStato(EventoStatoEnum.VALIDATO);
+					evento.setValidatorCheck(true);
+					evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
+					eventoService.save(evento);
+					alertEmailService.creaAlertForEvento(evento);
+					LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
+				}
+			}
+
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_validato_e_salvato_success", "success"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
+			return "redirect:/provider/{providerId}/evento/list";
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
+	@RequestMapping(value= "/provider/{providerId}/evento/validate/confirm", method = RequestMethod.POST)
+	public String validaEventoConfirm(@ModelAttribute EventoWrapper eventoWrapper, BindingResult result, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate/confirm"));
+		try {
+			Evento evento = eventoWrapper.getEvento();
+
+			evento.setStato(EventoStatoEnum.VALIDATO);
+			evento.setValidatorCheck(true);
+			evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
+			eventoService.save(evento);
+			alertEmailService.creaAlertForEvento(evento);
+			LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_validato_e_salvato_success", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
@@ -713,6 +753,8 @@ public class EventoController {
 		eventoWrapper.setEditSemiBloccato(eventoService.isEditSemiBloccato(evento));
 		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
 		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
+		//flag per capire se la segreteria fa modifiche che toccano il numero dei crediti
+		eventoWrapper.setCreditiOld(evento.getCrediti());
 		return eventoWrapper;
 	}
 
