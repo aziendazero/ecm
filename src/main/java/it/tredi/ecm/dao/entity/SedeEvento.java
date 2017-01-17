@@ -11,16 +11,16 @@ import lombok.Setter;
 @Setter
 public class SedeEvento implements Serializable{
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -1418164019707534287L;
 	private String provincia; //TODO da lista
 	private String comune; //TODO da lista
 	private String indirizzo;//campo libero
 	private String luogo;//campo libero
-	
+
 	public SedeEvento() {
-		
+
 	}
 
 	public SedeEvento(SedeEvento sedeEvento) {
@@ -45,7 +45,7 @@ public class SedeEvento implements Serializable{
 			this.provincia = sedeEvento.provincia;
 		}
 	}
-	
+
 	public boolean isEmpty() {
 		return (comune == null || comune.isEmpty())
 		&& (indirizzo == null || indirizzo.isEmpty())
@@ -58,7 +58,7 @@ public class SedeEvento implements Serializable{
 			return true;
 		return o.isEmpty();
 	}
-	
+
 	public static boolean compare(SedeEvento o1, SedeEvento o2) {
 		if (o1 == o2)
 			return true;
@@ -66,7 +66,7 @@ public class SedeEvento implements Serializable{
 		if (isEmpty(o1) && isEmpty(o2))
 			return true;
 		//a questo punto le sedi != null con l'altra sede null sono sicuramente non empty
-		if ((o1 == null && o2 != null) || o2 == null && o1 != null) 
+		if ((o1 == null && o2 != null) || o2 == null && o1 != null)
 			return false;
 		//ora sono entrambe non null
 		return Objects.equals(o1.comune, o2.comune) &&
@@ -74,5 +74,4 @@ public class SedeEvento implements Serializable{
 		Objects.equals(o1.luogo, o2.luogo) &&
 		Objects.equals(o1.provincia, o2.provincia);
 	}
-	
 }

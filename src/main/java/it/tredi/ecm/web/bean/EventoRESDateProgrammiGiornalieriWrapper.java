@@ -5,7 +5,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import java.util.TreeSet;
 
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.SedeEvento;
 
 public class EventoRESDateProgrammiGiornalieriWrapper {
@@ -160,6 +160,8 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 	public void addProgrammaGiornalieroIntermedio(LocalDate dataInt) {
 		ProgrammaGiornalieroRES pgAdd = new ProgrammaGiornalieroRES();
 		pgAdd.setGiorno(dataInt);
+		pgAdd.setSede(new SedeEvento());
+		pgAdd.getSede().copiaDati(this.eventoRES.getSedeEvento());
 		index++;
 		programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.INTERMEDIA, pgAdd)));
 		pgLocalDate.add(dataInt);
@@ -193,6 +195,7 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 			//
 			this.sedeUltimoAggiornamento.copiaDati(this.eventoRES.getSedeEvento());
 		}
+
 
 		/*
 		//Controllo se un dato è stato inserito nella sede
