@@ -2,16 +2,20 @@ package it.tredi.ecm.web.validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
+import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.utils.Utils;
 
 @Component
 public class ComunicazioneValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComunicazioneValidator.class);
+
+	@Autowired private EventoService eventoService;
 
 	public void validate(Object target, Errors errors, String prefix){
 		LOGGER.info(Utils.getLogMessage("Validazione Comunicazione"));
@@ -25,6 +29,8 @@ public class ComunicazioneValidator {
 			errors.rejectValue(prefix + "oggetto", "error.empty");
 		if(comunicazione.getMittente().isSegreteria() && (comunicazione.getDestinatari() == null || comunicazione.getDestinatari().isEmpty()))
 			errors.rejectValue(prefix + "destinatari", "error.empty");
+		if(eventoService.getEventoByCodiceIdentificativo(comunicazione.getCodiceEventoLink()) == null)
+			errors.rejectValue(prefix + "codiceEventoLink", "error.evento_non_trovato");
 
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}

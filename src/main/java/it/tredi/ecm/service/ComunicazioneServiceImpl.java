@@ -133,7 +133,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	//salvataggio comunicazione, controllo mittente, se è provider aggiungo i segretari ai destinatari
 	//aggiungo anche la data di invio
 	@Override
-	public void send(Comunicazione comunicazione, File allegato, String link) {
+	public void send(Comunicazione comunicazione, File allegato) {
 		if(comunicazione.getMittente().isProvider()) {
 			comunicazione.setDestinatari(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 		}
@@ -147,8 +147,6 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		comunicazione.setDataUltimaModifica(LocalDateTime.now());
 		if (allegato != null && !allegato.isNew())
 			comunicazione.setAllegatoComunicazione(allegato);
-		if(link != null && !link.isEmpty())
-			comunicazione.setLinkEvento(link);
 		comunicazioneRepository.save(comunicazione);
 	}
 
@@ -312,21 +310,4 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		return result;
 	}
 
-	//funzione che calcola il link all'evento di cui parla la comunicazione, se è stato passato come parametro il codice identificativo.
-	//restituisce un alert di errore solo nel caso l'evento NON è stato trovato
-	@Override
-	public String findEventoToLink(ComunicazioneWrapper wrapper, BindingResult result) {
-		if(wrapper.getIdEventoLink() == null || wrapper.getIdEventoLink().isEmpty())
-			return null;
-		else {
-			Evento evento = eventoService.getEventoByCodiceIdentificativo(wrapper.getIdEventoLink());
-			if(evento == null) {
-				result.rejectValue("idEventoLink", "error.evento_non_trovato");
-				return null;
-			}
-			else {
-				return "/provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + "/show";
-			}
-		}
-	}
 }

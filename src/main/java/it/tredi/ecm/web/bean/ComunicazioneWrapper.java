@@ -33,7 +33,6 @@ public class ComunicazioneWrapper {
 	private ComunicazioneResponse risposta;
 	private File allegatoComunicazione;
 	private File allegatoRisposta;
-	private String idEventoLink;
 
 	//comparator tra date per il sorting
 	private Comparator<ComunicazioneResponse> responseComparator = new Comparator<ComunicazioneResponse>() {

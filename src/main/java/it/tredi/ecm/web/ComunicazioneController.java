@@ -24,8 +24,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.ComunicazioneService;
+import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SecurityAccessService;
 import it.tredi.ecm.service.bean.CurrentUser;
@@ -49,6 +51,7 @@ public class ComunicazioneController {
 	@Autowired private ComunicazioneValidator comunicazioneValidator;
 	@Autowired private SecurityAccessService securityAccessService;
 	@Autowired private ProviderService providerService;
+	@Autowired private EventoService eventoService;
 
 	@ModelAttribute("comunicazioneWrapper")
 	public ComunicazioneWrapper getComunicazioneWrapperPreRequest(@RequestParam(value="editId", required = false) Long id){
@@ -111,9 +114,6 @@ public class ComunicazioneController {
 			Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("POST: /comunicazione/send"));
 		try {
-			//calcolo link evento
-			String link = comunicazioneService.findEventoToLink(comunicazioneWrapper, result);
-
 			//validazione del provider
 			comunicazioneValidator.validate(comunicazioneWrapper.getComunicazione(), result, "comunicazione.");
 
@@ -123,7 +123,7 @@ public class ComunicazioneController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + NEW));
 				return NEW;
 			}else{
-				comunicazioneService.send(comunicazioneWrapper.getComunicazione(), comunicazioneWrapper.getAllegatoComunicazione(), link);
+				comunicazioneService.send(comunicazioneWrapper.getComunicazione(), comunicazioneWrapper.getAllegatoComunicazione());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.comunicazione_inviata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
 				return "redirect:/comunicazione/dashboard";
@@ -377,5 +377,27 @@ public class ComunicazioneController {
 		RicercaComunicazioneWrapper wrapper = new RicercaComunicazioneWrapper();
 		return wrapper;
 	}
+
+	@RequestMapping("/comunicazione/{comunicazioneId}/evento/{codiceEvento}/redirect")
+	public String gotoEventoFromComunicazione(@PathVariable("comunicazioneId") Long comunicazioneId,
+			@PathVariable("codiceEvento") String codiceEvento, @ModelAttribute("comunicazioneWrapper") ComunicazioneWrapper wrapper, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /comunicazione/"+comunicazioneId+"/evento/"+codiceEvento+"/redirect"));
+		try {
+			Evento evento = eventoService.getEventoByCodiceIdentificativo(codiceEvento);
+			if(evento == null) {
+				model.addAttribute("message", new Message("message.errore", "message.errore_evento_non_esiste", "error"));
+				return goToShowComunicazione(model, prepareComunicazioneWrapperShow(comunicazioneService.getComunicazioneById(comunicazioneId)));
+			}
+			else {
+				return "redirect:/provider/"+evento.getProvider().getId()+"/evento/"+evento.getId()+"/show";
+			}
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /comunicazione/"+comunicazioneId+"/evento/"+codiceEvento+"/redirect"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/comunicazione/dashboard";
+		}
+	}
+
 }
 

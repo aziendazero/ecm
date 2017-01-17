@@ -25,7 +25,7 @@ public interface ComunicazioneService {
 	List<Comunicazione> getUltimi10MessaggiNonLetti(Long id);
 	long countAllMessaggiNonLetti(Long id);
 	Map<String, Set<Account>> getAllDestinatariDisponibili(Long id);
-	void send(Comunicazione comunicazione, File allegato, String link);
+	void send(Comunicazione comunicazione, File allegato);
 	boolean canAccountRespondToComunicazione(Account account, Comunicazione comunicazione);
 	boolean canAccountCloseComunicazione(Account account, Comunicazione comunicazione);
 	void contrassegnaComeLetta(Long id);
@@ -40,6 +40,5 @@ public interface ComunicazioneService {
 	Set<Comunicazione> getAllComunicazioniByProvider(Provider provider);
 
 	List<Comunicazione> cerca(RicercaComunicazioneWrapper wrapper);
-	String findEventoToLink(ComunicazioneWrapper comunicazioneWrapper, BindingResult result);
 
 }

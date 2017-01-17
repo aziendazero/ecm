@@ -206,9 +206,9 @@
 												<strong th:text="#{label.ambito}"></strong>
 												<span th:text="${comunicazioneWrapper.comunicazione.ambito.nome}"></span>
 												<br/>
-												<th:block th:if="${comunicazioneWrapper.comunicazione.linkEvento != null}" >
+												<th:block th:if="${comunicazioneWrapper.comunicazione.codiceEventoLink != null}" >
 													<strong th:text="#{label.evento_link}"></strong>
-													<a class="link" th:href="@{|${comunicazioneWrapper.comunicazione.linkEvento}|}" th:text="#{label.vai_all_evento}"></a>
+													<a class="link" target="_blank" th:href="@{|/comunicazione/${comunicazioneWrapper.comunicazione.id}/evento/${comunicazioneWrapper.comunicazione.codiceEventoLink}/redirect|}" th:text="${comunicazioneWrapper.comunicazione.codiceEventoLink}"></a>
 													<br/>
 												</th:block>
 												<strong th:text="#{label.tipologia}"></strong>

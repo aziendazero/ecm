@@ -177,15 +177,15 @@
 										</div>
 									</div>
 
-									<div class="linkevento-container item comunicazioneAlert form-group" style="display: none;" th:classappend="${#fields.hasErrors('comunicazioneWrapper.idEventoLink')} ? 'bad'">
+									<div class="linkevento-container item comunicazioneAlert form-group" style="display: none;" th:classappend="${#fields.hasErrors('comunicazioneWrapper.comunicazione.codiceEventoLink')} ? 'bad'">
 										<div class="col-sm-1 col-xs-2 text-right">
 											<label class="control-label" th:text="#{label.id_evento_link}"></label>
 										</div>
 										<div class="col-xs-5 col-sm-3 col-md-2">
 											<div class="no-padding">
-												<input class="form-control" th:field="${comunicazioneWrapper.idEventoLink}" id="linkEvento" />
+												<input class="form-control" th:field="${comunicazioneWrapper.comunicazione.codiceEventoLink}" id="linkEvento" />
 											</div>
-											<div th:if="${#fields.hasErrors('comunicazioneWrapper.idEventoLink')}" class="alert" th:errors="${comunicazioneWrapper.idEventoLink}"></div>
+											<div th:if="${#fields.hasErrors('comunicazioneWrapper.comunicazione.codiceEventoLink')}" class="alert" th:errors="${comunicazioneWrapper.comunicazione.codiceEventoLink}"></div>
 										</div>
 									</div>
 
@@ -305,7 +305,7 @@
 						}
 					}
 
-					if([[${#fields.hasErrors('comunicazioneWrapper.idEventoLink')}]]) {
+					if([[${#fields.hasErrors('comunicazioneWrapper.comunicazione.codiceEventoLink')}]]) {
 						$(".linkevento-container").show();
 					}
 				});

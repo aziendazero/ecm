@@ -39,5 +39,6 @@
  	<include file="20170113_Update_Can_Insert_relazione_annuale.xml" relativeToChangelogFile="true"/>
 
  	<include file="20170116_create_linkEventoComunicazione_drop_canDoRendicontazione.xml" relativeToChangelogFile="true"/>
+	<include file="20170117_changeLinkWithId_comunicazioneEventoLink.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -69,5 +69,5 @@ public interface EventoService {
 	public void updateScadenze(Long eventoId, ScadenzeEventoWrapper wrapper) throws Exception;
 	public Evento getEventoByPrefix(String idEventoLink);
 	Evento getEventoByPrefixAndEdizione(String prefix, int edizione);
-	public Evento getEventoByCodiceIdentificativo(String idEventoLink);
+	public Evento getEventoByCodiceIdentificativo(String codiceIdentificativo);
 }
