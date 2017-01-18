@@ -209,7 +209,7 @@
 
 								<!-- TITOLO EVENTO -->
 								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="titoloEvento">
+									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="titoloEvento">
 										<span th:text="#{label.titolo} + ${' '} + #{label.evento}">Provider</span>
 									</label>
 
@@ -218,14 +218,12 @@
 									</div>
 								</div>
 
-
-
 								<!-- OBIETTIVO NAZIONALE -->
 								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="obiettivoNazionale">
+									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="obiettivoNazionale">
 										<span th:text="#{label.obiettivo_strategico_nazionale}">Obiettivo Strategico Nazionale</span>
 									</label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<select id="obiettivoNazionale"
 											multiple="multiple" class="selectpicker"
 											th:field="${ricercaEventoWrapper.obiettiviNazionaliSelezionati}"
@@ -374,6 +372,41 @@
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="luogo">
 										<input type="text" class="form-control" th:field="${ricercaEventoWrapper.luogo}" />
+									</div>
+								</div>
+
+								<div class="divider-dashed"></div>
+
+								<!-- DOCENTI -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="docenti">
+										<h2 th:text="#{label.docenti}">Docenti</h2>
+									</label>
+								</div>
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-12" for="nome">
+										<span th:text="#{label.nome}">nome</span>
+									</label>
+									<div class="col-sm-3 col-md-3 col-xs-12 col-lg-2">
+										<input type="text" id="nome" class="form-control" />
+										<div id="error-nome" class="alert-js" th:text="#{error.empty}" style="display:none;"></div>
+										<div id="error-inserito" class="alert-js" th:text="#{error.docente_gia_inserito}" style="display:none;"></div>
+									</div>
+									<label class="control-label col-sm-1 col-md-1 col-lg-1 col-xs-12" for="cognome">
+										<span th:text="#{label.cognome}">cognome</span>
+									</label>
+									<div class="col-sm-3 col-md-3 col-xs-11 col-lg-2">
+										<input type="text" id="cognome" class="form-control" />
+										<div id="error-cognome" class="alert-js" th:text="#{error.empty}" style="display:none;"></div>
+									</div>
+									<div class="col-xs-1 no-padding">
+										<button type="button" class="btn btn-success pull-left" th:title="#{label.aggiungi}" onclick="aggiungiDocente()"><i class="fa fa-plus"></i></button>
+									</div>
+								</div>
+
+								<div class="personeEvento-container item form-group">
+									<div class="col-sm-offset-1 col-xs-12 col-sm-10 col-md-10 col-lg-10" id="containerDocentiSelezionati">
+										<!-- riepito dinamicamente -->
 									</div>
 								</div>
 
@@ -697,6 +730,78 @@
 
 								$('#dataScadenzaPagamentoStart').val('');
 								$('#dataScadenzaPagamentoEnd').val('');
+							}
+
+							//oggetto js per la gestione dei docenti
+							var docentiHandler = {counter: -1, docenti: []};
+
+							//ricerca per docente
+							function aggiungiDocente() {
+								cleanDocenteInput(false);
+								var errors = false;
+								if(!$("#nome").val()) {
+									$("#error-nome").slideDown("fast");
+									$("#error-nome").parent().addClass("bad");
+									errors = true;
+								}
+								if(!$("#cognome").val()) {
+									$("#error-cognome").slideDown("fast");
+									$("#error-cognome").parent().addClass("bad");
+									errors = true;
+								}
+								if(isDocenteInserito($("#nome").val(), $("#cognome").val())) {
+									$("#error-inserito").slideDown("fast");
+									$("#error-nome").parent().addClass("bad");
+									$("#error-cognome").parent().addClass("bad");
+									errors = true;
+								}
+								if(!errors) {
+									createDocente($("#nome").val(), $("#cognome").val());
+									cleanDocenteInput(true);
+								}
+							}
+
+							function cleanDocenteInput(svuotaInput) {
+								$("#error-nome").slideUp("fast");
+								$("#error-cognome").slideUp("fast");
+								$("#error-inserito").slideUp("fast");
+								$("#error-nome").parent().removeClass("bad");
+								$("#error-cognome").parent().removeClass("bad");
+								if(svuotaInput) {
+									$("#nome").val("");
+									$("#cognome").val("");
+								}
+							}
+
+							function createDocente(nome, cognome) {
+								docentiHandler.counter++;
+								var $nomeSpan = $('<span>'+nome+' </span>');
+								var $nomeInput = $('<input type="hidden" name="docenti['+docentiHandler.counter+'].anagrafica.nome" value="'+nome+'">');
+								var $cognomeSpan = $('<span>'+cognome+'</span>');
+								var $cognomeInput = $('<input type="hidden" name="docenti['+docentiHandler.counter+'].anagrafica.cognome" value="'+cognome+'">');
+								var $closeButton = $('<div class="pull-right clickable delete-element" onclick="deleteDocente(\''+nome+'\', \''+cognome+'\', $(this).parent())"><i class="fa fa-close red"></i></div>');
+								var $docenteDiv = $('<div class="x_panel_list docente"></div>');
+								$docenteDiv.append($nomeSpan, $nomeInput, $cognomeSpan, $cognomeInput, $closeButton);
+								$("#containerDocentiSelezionati").append($docenteDiv);
+								docentiHandler.docenti.push({nome: nome, cognome: cognome});
+							}
+
+							function deleteDocente(nome, cognome, docenteDiv) {
+								$(docenteDiv).remove();
+								for (var i = 0; i < docentiHandler.docenti.length; i++) {
+									if(docentiHandler.docenti[i].nome === nome && docentiHandler.docenti[i].cognome === cognome) {
+										docentiHandler.docenti.splice(i, 1);
+									}
+								}
+							}
+
+							function isDocenteInserito(nome, cognome) {
+								for (var i = 0; i < docentiHandler.docenti.length; i++) {
+									if(docentiHandler.docenti[i].nome === nome && docentiHandler.docenti[i].cognome === cognome) {
+										return true;
+									}
+								}
+								return false;
 							}
 
 						/*]]>*/

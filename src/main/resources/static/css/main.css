@@ -167,6 +167,10 @@ table.datatable-responsive-search-validation-storico thead .sorting_asc:after {
 	visibility: hidden;
 }
 
+table.datatable-responsive-docenti-ricerca thead .sorting_asc:after {
+	visibility: hidden;
+}
+
 .dropdown-header {
 	color: white;
 	font-weight: bold;
@@ -859,6 +863,42 @@ h2 {
 	opacity: 1;
 }
 
+.item .alert-js {
+	float: left;
+	margin: 15px 0 0 0;
+	padding: 3px 10px;
+	color: #FFF;
+	border-radius: 4px;
+	background-color: #CE5454;
+	max-width: 170px;
+	white-space: inherit;
+	position: relative;
+	left: -15px;
+	opacity: 0;
+	z-index: 1;
+	transition: 0.15s ease-out;
+}
+
+.item .alert-js::after {
+	content: '';
+	display: block;
+	height: 0;
+	width: 0;
+	border-color: transparent #CE5454 transparent transparent;
+	border-style: solid;
+	border-left: 11px solid transparent;
+	border-right: 11px solid transparent;
+	border-bottom: 7px solid #CE5454;
+	position: absolute;
+	left: 30px;
+	top: -8px;
+}
+
+.item .alert-js {
+	left: 0;
+	opacity: 1;
+}
+
 .item.modalErrorImpostazioniEventi .alert {
 	float: left;
 	margin: 15px 0 0 0;
@@ -1382,4 +1422,28 @@ li.listStyle-elenco > label{
 
 .link {
 	text-decoration: underline !important;
+}
+
+.x_panel_list {
+  position: relative;
+  width: auto;
+  margin-bottom: 10px;
+  padding: 10px 17px;
+  display: inline-block;
+  background: #fff;
+  border: 1px solid #E6E9ED;
+  -webkit-column-break-inside: avoid;
+  -moz-column-break-inside: avoid;
+  column-break-inside: avoid;
+  opacity: 1;
+  -moz-transition: all .2s ease;
+  -o-transition: all .2s ease;
+  -webkit-transition: all .2s ease;
+  -ms-transition: all .2s ease;
+  transition: all .2s ease;
+  margin-right: 5px;
+}
+
+.delete-element {
+	margin-left: 10px;
 }

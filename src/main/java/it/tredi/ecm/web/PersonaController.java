@@ -807,4 +807,5 @@ public class PersonaController {
 
 		fieldIntegrazioneAccreditamentoService.update(personaWrapper.getFieldIntegrazione(), fieldIntegrazioneList);
 	}
+
 }

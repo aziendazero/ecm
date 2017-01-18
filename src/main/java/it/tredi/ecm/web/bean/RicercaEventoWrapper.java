@@ -2,12 +2,15 @@ package it.tredi.ecm.web.bean;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Obiettivo;
+import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
@@ -68,5 +71,6 @@ public class RicercaEventoWrapper {
 	//campo non di ricerca ma il solito id che mettiamo in hidden per gestire il form
 	private Long providerId;
 
-
+	//docenti
+	private Map<Integer, PersonaEvento> docenti = new HashMap<Integer, PersonaEvento>();
 }

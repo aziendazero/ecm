@@ -1545,11 +1545,11 @@ public class EventoServiceImpl implements EventoService {
 
 		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
 			//devo fare il join con la tabella provider
-			query ="SELECT DISTINCT e FROM Evento e LEFT JOIN e.discipline d LEFT JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
+			query ="SELECT DISTINCT e FROM Evento e LEFT JOIN e.discipline d INNER JOIN e.docenti pe LEFT JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
 			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
 		}else{
 			//posso cercare direttamente su evento
-			query ="SELECT DISTINCT e FROM Evento e LEFT JOIN e.discipline d";
+			query ="SELECT DISTINCT e FROM Evento e LEFT JOIN e.discipline d INNER JOIN e.docenti pe";
 		}
 
 			//PROVIDER ID
@@ -1713,6 +1713,24 @@ public class EventoServiceImpl implements EventoService {
 			if(wrapper.getPagato() != null){
 				query = Utils.QUERY_AND(query, "e.pagato = :pagato");
 				params.put("pagato", wrapper.getPagato().booleanValue());
+			}
+
+			//DOCENTI
+			if(wrapper.getDocenti() != null && !wrapper.getDocenti().isEmpty()) {
+				String queryNomeCognome = "";
+				int counter = 0;
+				Iterator<PersonaEvento> iterator = wrapper.getDocenti().values().iterator();
+				while(iterator.hasNext()) {
+					PersonaEvento pe = (PersonaEvento) iterator.next();
+					queryNomeCognome = queryNomeCognome + "(pe.anagrafica.nome = :nomeDocente"+counter+" AND pe.anagrafica.cognome = :cognomeDocente"+counter+")";
+					params.put("nomeDocente"+counter, pe.getAnagrafica().getNome());
+					params.put("cognomeDocente"+counter, pe.getAnagrafica().getCognome());
+					counter++;
+					if(iterator.hasNext()) {
+						queryNomeCognome = queryNomeCognome + " OR ";
+					}
+				}
+				query = Utils.QUERY_AND(query, "("+queryNomeCognome+")");
 			}
 
 		LOGGER.info(Utils.getLogMessage("Cerca Evento: " + query));

@@ -778,7 +778,8 @@ public class EventoController {
 		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
 		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
 		//flag per capire se la segreteria fa modifiche che toccano il numero dei crediti
-		eventoWrapper.setCreditiOld(evento.getCrediti());
+		if(evento.getCrediti() != null)
+			eventoWrapper.setCreditiOld(evento.getCrediti());
 		return eventoWrapper;
 	}
 
