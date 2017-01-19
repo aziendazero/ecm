@@ -115,6 +115,8 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired private EcmProperties ecmProperties;
 
+	@Autowired private PersonaEventoService personaEventoService;
+
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -1545,11 +1547,11 @@ public class EventoServiceImpl implements EventoService {
 
 		if(wrapper.getDenominazioneLegale() != null && !wrapper.getDenominazioneLegale().isEmpty()){
 			//devo fare il join con la tabella provider
-			query ="SELECT DISTINCT e FROM Evento e LEFT JOIN e.discipline d INNER JOIN e.docenti pe LEFT JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
+			query ="SELECT DISTINCT e FROM Evento e LEFT JOIN e.discipline d LEFT JOIN e.provider p WHERE UPPER(p.denominazioneLegale) LIKE :denominazioneLegale";
 			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
 		}else{
 			//posso cercare direttamente su evento
-			query ="SELECT DISTINCT e FROM Evento e LEFT JOIN e.discipline d INNER JOIN e.docenti pe";
+			query ="SELECT DISTINCT e FROM Evento e LEFT JOIN e.discipline d";
 		}
 
 			//PROVIDER ID
@@ -1717,20 +1719,31 @@ public class EventoServiceImpl implements EventoService {
 
 			//DOCENTI
 			if(wrapper.getDocenti() != null && !wrapper.getDocenti().isEmpty()) {
-				String queryNomeCognome = "";
+				Set<Long> idEventi = new HashSet<Long>();
 				int counter = 0;
-				Iterator<PersonaEvento> iterator = wrapper.getDocenti().values().iterator();
-				while(iterator.hasNext()) {
-					PersonaEvento pe = (PersonaEvento) iterator.next();
-					queryNomeCognome = queryNomeCognome + "(pe.anagrafica.nome = :nomeDocente"+counter+" AND pe.anagrafica.cognome = :cognomeDocente"+counter+")";
-					params.put("nomeDocente"+counter, pe.getAnagrafica().getNome());
-					params.put("cognomeDocente"+counter, pe.getAnagrafica().getCognome());
-					counter++;
-					if(iterator.hasNext()) {
-						queryNomeCognome = queryNomeCognome + " OR ";
+
+				//ATTENZIONE le PersoneEvento nel wrapper non hanno l'id, ma solo il nome e il cognome,
+				//ho bisogno di una query che le vada a prendere
+				Iterator<PersonaEvento> it = wrapper.getDocenti().values().iterator();
+				while(it.hasNext()) {
+					PersonaEvento pe = it.next();
+					if(counter == 0) {
+						idEventi = personaEventoService.getAllEventoIdByNomeAndCognomeDocente(pe.getAnagrafica().getNome(), pe.getAnagrafica().getCognome());
 					}
+					else {
+						if(wrapper.isRicercaEsclusivaDocenti() && idEventi != null) {
+							idEventi.retainAll(personaEventoService.getAllEventoIdByNomeAndCognomeDocente(pe.getAnagrafica().getNome(), pe.getAnagrafica().getCognome()));
+						}
+						else if(!wrapper.isRicercaEsclusivaDocenti()) {
+							idEventi.addAll(personaEventoService.getAllEventoIdByNomeAndCognomeDocente(pe.getAnagrafica().getNome(), pe.getAnagrafica().getCognome()));
+						}
+					}
+					counter++;
 				}
-				query = Utils.QUERY_AND(query, "("+queryNomeCognome+")");
+
+				//a questo punto idEventi conterrà un Set di Id evento con il quale filtrare la ricerca
+				query = Utils.QUERY_AND(query, "e.id IN (:idEventi)");
+				params.put("idEventi", idEventi);
 			}
 
 		LOGGER.info(Utils.getLogMessage("Cerca Evento: " + query));

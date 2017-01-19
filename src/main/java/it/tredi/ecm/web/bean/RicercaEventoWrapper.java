@@ -73,4 +73,5 @@ public class RicercaEventoWrapper {
 
 	//docenti
 	private Map<Integer, PersonaEvento> docenti = new HashMap<Integer, PersonaEvento>();
+	private boolean ricercaEsclusivaDocenti;
 }
