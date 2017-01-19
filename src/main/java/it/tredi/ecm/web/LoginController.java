@@ -81,6 +81,8 @@ public class LoginController {
 					wrapper.setUtentiInAttesaDiAttivazione(1);
 					break;
 				case PROVIDER:
+				case PROVIDERUSERADMIN:
+				case PROVIDER_VISUALIZZATORE:
 					wrapper.setIsProvider(true);
 					wrapper.setProviderId(providerService.getProviderIdByAccountId(currentUser.getAccount().getId()));
 					wrapper.setEventiDaPagare(eventoService.countEventiForProviderIdInScadenzaDiPagamento(currentUser.getAccount().getProvider().getId()));
@@ -91,6 +93,7 @@ public class LoginController {
 					wrapper.setNomeProvider(providerService.getProvider(providerService.getProviderIdByAccountId(currentUser.getAccount().getId())).getDenominazioneLegale()); //TODO fare con query
 					wrapper.setEventiBozza(eventoService.countAllEventiByProviderIdAndStato(currentUser.getAccount().getProvider().getId(), EventoStatoEnum.BOZZA));
 					break;
+				case RESPONSABILE_SEGRETERIA_ECM:
 				case SEGRETERIA:
 					wrapper.setIsSegreteria(true);
 					wrapper.setDomandeNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, true));

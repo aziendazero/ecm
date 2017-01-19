@@ -181,21 +181,23 @@ public class Account extends BaseEntity{
 		return toRet;
 	}
 
-	public boolean isSegreteria() {
+	public boolean isResponsabileSegreteriaEcm() {
 		for (Profile p : profiles){
-			if(p.getProfileEnum().equals(ProfileEnum.SEGRETERIA)){
+			if(p.getProfileEnum().equals(ProfileEnum.RESPONSABILE_SEGRETERIA_ECM)){
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public boolean isProvider() {
-		if(provider != null) {
-			for (Profile p : profiles){
-				if(p.getProfileEnum().equals(ProfileEnum.PROVIDER)){
-					return true;
-				}
+	public boolean isSegreteria() {
+		if (this.isResponsabileSegreteriaEcm())
+			return true;
+
+		for (Profile p : profiles){
+			if(p.getProfileEnum().equals(ProfileEnum.SEGRETERIA)
+					|| p.getProfileEnum().equals(ProfileEnum.RESPONSABILE_SEGRETERIA_ECM)){
+				return true;
 			}
 		}
 		return false;
@@ -238,9 +240,41 @@ public class Account extends BaseEntity{
 	}
 
 	public boolean isProviderUserAdmin() {
-		for (Profile p : profiles){
-			if(p.getProfileEnum().equals(ProfileEnum.PROVIDERUSERADMIN)){
-				return true;
+		if(provider != null) {
+			for (Profile p : profiles){
+				if(p.getProfileEnum().equals(ProfileEnum.PROVIDERUSERADMIN)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean isProvider() {
+		if(this.isProviderUserAdmin())
+			return true;
+
+		if(provider != null) {
+			for (Profile p : profiles){
+				if(p.getProfileEnum().equals(ProfileEnum.PROVIDER)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean isProviderVisualizzatore() {
+		if(this.isProviderUserAdmin())
+			return true;
+		if(this.isProvider())
+			return true;
+
+		if(provider != null) {
+			for (Profile p : profiles){
+				if(p.getProfileEnum().equals(ProfileEnum.PROVIDER_VISUALIZZATORE)){
+					return true;
+				}
 			}
 		}
 		return false;

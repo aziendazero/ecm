@@ -41,4 +41,6 @@
  	<include file="20170116_create_linkEventoComunicazione_drop_canDoRendicontazione.xml" relativeToChangelogFile="true"/>
 	<include file="20170117_changeLinkWithId_comunicazioneEventoLink.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170119_002_applySQL_new_profiles.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

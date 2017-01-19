@@ -22,7 +22,7 @@
 									th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).STANDARD}/new|}"
 									th:text="#{label.nuova_domanda_standard}">label.nuova_domanda_standard</a>
 							<a class="btn btn-primary pull-right"
-									th:href="${providerId != null and !(#authentication.principal.hasProfile('PROVIDER'))} ? @{|/provider/list|} : @{/home}"
+									th:href="${providerId != null and !#authentication.principal.account.isProviderVisualizzatore()} ? @{|/provider/list|} : @{/home}"
 									th:text="#{label.indietro}">Indietro</a>
 						</div>
 						<div class="clearfix"></div>

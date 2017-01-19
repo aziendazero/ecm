@@ -36,10 +36,10 @@
 				<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
 
 					<div class="menu_section">
-						<h3 th:if="${#authentication.principal.hasProfile('PROVIDER')}" class="profile" th:text="${'Provider - ' + #authentication.principal.account.provider.denominazioneLegale + ' (' + #authentication.principal.account.provider.id + ')'}"></h3>
-						<h3 th:unless="${#authentication.principal.hasProfile('PROVIDER')}" class="profile"></h3>
+						<h3 th:if="${#authentication.principal.account.isProviderVisualizzatore()}" class="profile" th:text="${'Provider - ' + #authentication.principal.account.provider.denominazioneLegale + ' (' + #authentication.principal.account.provider.id + ')'}"></h3>
+						<h3 th:unless="${#authentication.principal.account.isProviderVisualizzatore()}" class="profile"></h3>
 						<ul class="nav side-menu">
-							<li id="provider" th:if="${#authentication.principal.hasProfile('PROVIDER')}">
+							<li id="provider" th:if="${#authentication.principal.account.isProviderVisualizzatore()}">
 								<a>
 									<i class="fa fa-home"></i> <span th:text="#{label.provider}">label.provider</span>
 									<span class="fa fa-chevron-down"></span>
@@ -52,13 +52,13 @@
 									<li><a th:href="@{/comunicazione/dashboard}" th:text="#{label.comunicazioni}"></a></li>
 									<li><a th:href="@{/provider/evento/list}" th:text="#{label.eventi}"></a></li>
 
-									<li><a th:href="@{/provider/user/list}" th:text="#{label.utenti}" th:if="${#authentication.principal.hasProfile('PROVIDERUSERADMIN')}">label.utenti</a></li>
+									<li><a th:href="@{/provider/user/list}" th:text="#{label.utenti}" th:if="${#authentication.principal.account.isProviderUserAdmin()}">label.utenti</a></li>
 									<li><a th:href="@{/provider/pagamento/list}" th:text="#{label.contributo_annuale}">label.contributo_annuale</a></li>
 									<li><a th:href="@{/provider/relazioneAnnuale/list}"  th:text="#{label.relazione_annuale}">label.relazione_annuale</a></li>
 								</ul>
 							</li>
 
-							<li id="segreteria" th:if="${#authentication.principal.hasProfile('SEGRETERIA')}">
+							<li id="segreteria" th:if="${#authentication.principal.account.isSegreteria()}">
 								<a>
 									<i class="fa fa-edit"></i> <span th:text="#{label.segreteria}">label.segreteria</span>
 									<span class="fa fa-chevron-down"></span>
@@ -74,7 +74,7 @@
 								</ul>
 							</li>
 
-							<li id="referee" th:if="${#authentication.principal.hasProfile('REFEREE')}">
+							<li id="referee" th:if="${#authentication.principal.account.isReferee()}">
 								<a>
 									<i class="fa fa-edit"></i> <span th:text="#{label.referee}">label.referee</span>
 									<span class="fa fa-chevron-down"></span>
@@ -85,7 +85,7 @@
 								</ul>
 							</li>
 
-							<li id="commissione" th:if="${#authentication.principal.hasProfile('COMMISSIONE')}">
+							<li id="commissione" th:if="${#authentication.principal.account.isCommissioneEcm()}">
 								<a>
 									<i class="fa fa-edit"></i> <span th:text="#{label.commissione}">label.commissione</span>
 									<span class="fa fa-chevron-down"></span>
@@ -96,7 +96,7 @@
 								</ul>
 							</li>
 
-							<li id="osservatori" th:if="${#authentication.principal.hasProfile('COMPONENTE_OSSERVATORIO')}">
+							<li id="osservatori" th:if="${#authentication.principal.account.isComponenteOsservatorioEcm()}">
 								<a>
 									<i class="fa fa-edit"></i> <span th:text="#{label.osservatore_ecm}">label.osservatore_ecm</span>
 									<span class="fa fa-chevron-down"></span>

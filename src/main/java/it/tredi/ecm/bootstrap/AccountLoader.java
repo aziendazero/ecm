@@ -141,8 +141,14 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			/* PROFILE PROVIDERUSERADMIN */
 			Profile profile_providerUserAdmin = profileRepository.findOneByProfileEnum(ProfileEnum.PROVIDERUSERADMIN).orElse(null);
 
+			/* PROFILE PROVIDER VISUALIZZATORE */
+			Profile profile_providerVisualizzatore = profileRepository.findOneByProfileEnum(ProfileEnum.PROVIDER_VISUALIZZATORE).orElse(null);
+
 			/* PROFILE SEGRETERIA */
 			Profile profile_admin = profileRepository.findOneByProfileEnum(ProfileEnum.SEGRETERIA).orElse(null);
+
+			/* PROFILE RESPONSABILE SEGRETERIA ECM */
+			Profile profile_superadmin = profileRepository.findOneByProfileEnum(ProfileEnum.RESPONSABILE_SEGRETERIA_ECM).orElse(null);
 
 			/* PROFILE REFEREE */
 			Profile profile_referee = profileRepository.findOneByProfileEnum(ProfileEnum.REFEREE).orElse(null);
@@ -159,39 +165,17 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			createAccountProviderWithUserNameAndEmail("provider4", "sstagni@3di.it", profile_provider, profile_providerUserAdmin);
 			createAccountProviderWithUserNameAndEmail("provider5", "tiommi@3di.it", profile_provider, profile_providerUserAdmin);
 
-			Account admin = new Account();
-			admin.setUsername("segreteria");
-			admin.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
-			//admin.setPassword("admin");
-			admin.setEmail("dpranteda@3di.it");
-			admin.setChangePassword(false);
-			admin.setEnabled(true);
-			admin.setExpiresDate(null);
-			admin.setLocked(false);
-			admin.setNome("Tizio");
-			admin.setCognome("Caio");
-			admin.getProfiles().add(profile_admin);
-			admin.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
-
-			try {
-				//accountService.save(admin);
-				accountRepository.save(admin);
-				workflowService.saveOrUpdateBonitaUserByAccount(admin);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
 			Account admin1 = new Account();
 			admin1.setUsername("segreteria1");
 			admin1.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
 			//admin.setPassword("admin");
-			admin1.setEmail("segreteriaECM1@ecm.it");
+			admin1.setEmail("dpranteda@3di.it");
 			admin1.setChangePassword(false);
 			admin1.setEnabled(true);
 			admin1.setExpiresDate(null);
 			admin1.setLocked(false);
-			admin1.setNome("Segretario");
-			admin1.setCognome("DiRiserva");
+			admin1.setNome("Tizio");
+			admin1.setCognome("Caio");
 			admin1.getProfiles().add(profile_admin);
 			admin1.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
 
@@ -199,6 +183,28 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				//accountService.save(admin);
 				accountRepository.save(admin1);
 				workflowService.saveOrUpdateBonitaUserByAccount(admin1);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			Account admin2 = new Account();
+			admin2.setUsername("segreteria2");
+			admin2.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+			//admin.setPassword("admin");
+			admin2.setEmail("segreteriaECM1@ecm.it");
+			admin2.setChangePassword(false);
+			admin2.setEnabled(true);
+			admin2.setExpiresDate(null);
+			admin2.setLocked(false);
+			admin2.setNome("Segretario");
+			admin2.setCognome("DiRiserva");
+			admin2.getProfiles().add(profile_admin);
+			admin2.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+
+			try {
+				//accountService.save(admin);
+				accountRepository.save(admin2);
+				workflowService.saveOrUpdateBonitaUserByAccount(admin2);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
