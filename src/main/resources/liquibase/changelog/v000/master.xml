@@ -42,5 +42,6 @@
 	<include file="20170117_changeLinkWithId_comunicazioneEventoLink.xml" relativeToChangelogFile="true"/>
 
 	<include file="20170119_002_applySQL_new_profiles.xml" relativeToChangelogFile="true"/>
+	<include file="20170119_004_applySQL_remove_obiettivi.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
