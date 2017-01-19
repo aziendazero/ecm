@@ -340,7 +340,21 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 	@Override
 	public boolean canCreateEvento(CurrentUser currentUser, Long providerId) {
-		if (isProviderUser(currentUser.getAccount().getId(), providerId) || currentUser.isSegreteria())
+		if ((isProviderUser(currentUser.getAccount().getId(), providerId) && currentUser.isProvider()) || currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean canDeleteEvento(CurrentUser currentUser, Long providerId) {
+		if ((isProviderUser(currentUser.getAccount().getId(), providerId) && currentUser.isProvider()) || currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean canEditEvento(CurrentUser currentUser, Long providerId) {
+		if ((isProviderUser(currentUser.getAccount().getId(), providerId) && currentUser.isProvider()) || currentUser.isSegreteria())
 			return true;
 		return false;
 	}

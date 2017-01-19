@@ -35,7 +35,7 @@
 									<th th:text="#{label.cognome}">Cognome</th>
 									<th th:text="#{label.nome}">Nome</th>
 									<th th:text="#{label.stato_cv}">Cognome</th>
-									<th th:text="#{label.azioni}">Azioni</th>
+									<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isSegreteria() or #authentication.principal.account.isProvider()}">Azioni</th>
 								</tr>
 							</thead>
 							<tbody th:remove="all-but-first">
@@ -49,7 +49,7 @@
 											<span th:unless="${#temporals.createToday().minusYears(1).isAfter(anagraficaEvento.anagrafica?.cv.dataCreazione)}" th:text="#{label.cv_aggiornato}" class="green"></span>
 										</th:block>
 									</td>
-									<td>
+									<td th:if="${#authentication.principal.account.isSegreteria() or #authentication.principal.account.isProvider()}">
 										<a class="btn btn-success" th:text="#{label.modifica}" th:href="@{|/provider/${anagraficaEvento.provider.id}/anagraficaEvento/${anagraficaEvento.id}/edit|}"></a>
 									</td>
 								</tr>
@@ -78,7 +78,7 @@
 									<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
 									<th th:text="#{label.cognome}">Cognome</th>
 									<th th:text="#{label.nome}">Nome</th>
-									<th th:text="#{label.azioni}">Azioni</th>
+									<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isSegreteria() or #authentication.principal.account.isProvider()}">Azioni</th>
 								</tr>
 							</thead>
 							<tbody th:remove="all-but-first">
@@ -86,7 +86,7 @@
 									<td><a th:text="${anagraficaFullEvento.anagrafica.codiceFiscale}" th:href="@{|/provider/${anagraficaFullEvento.provider.id}/anagraficaFullEvento/${anagraficaFullEvento.id}/show|}">Codice fiscale</a></td>
 									<td th:text="${anagraficaFullEvento.anagrafica.cognome}">Cognome</td>
 									<td th:text="${anagraficaFullEvento.anagrafica.nome}">Nome</td>
-									<td>
+									<td th:if="${#authentication.principal.account.isSegreteria() or #authentication.principal.account.isProvider()}">
 										<a class="btn btn-success" th:text="#{label.modifica}" th:href="@{|/provider/${anagraficaFullEvento.provider.id}/anagraficaFullEvento/${anagraficaFullEvento.id}/edit|}"></a>
 									</td>
 								</tr>
@@ -95,19 +95,25 @@
 
 						<script th:inline="javascript">
 						/*<![CDATA[*/
+
 						$(document).ready(function() {
-							$(".datatable-responsive-search-anagrafica-evento-docenti").DataTable({
 
-								"columnDefs": [
-												{"targets": [ 4 ], "width": "1px" }
-							                  ]
-							});
-							$(".datatable-responsive-search-anagrafica-evento").DataTable({
-
-								"columnDefs": [
-												{"targets": [ 3 ], "width": "1px" }
-							                  ]
-							});
+							if([[${#authentication.principal.account.isSegreteria() or #authentication.principal.account.isProvider()}]]) {
+								$(".datatable-responsive-search-anagrafica-evento-docenti").DataTable({
+									"columnDefs": [
+													{"targets": [ 4 ], "width": "1px" }
+								                  ]
+								});
+								$(".datatable-responsive-search-anagrafica-evento").DataTable({
+									"columnDefs": [
+													{"targets": [ 3 ], "width": "1px" }
+								                  ]
+								});
+							}
+							else {
+								$(".datatable-responsive-search-anagrafica-evento-docenti").DataTable();
+								$(".datatable-responsive-search-anagrafica-evento").DataTable();
+							}
 						})
 						/*]]>*/
 						</script>

@@ -241,7 +241,7 @@
 									<th th:text="#{label.durata}">label.ore_corso</th>
 									<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 									<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
-									<th th:text="#{label.azioni}">label.azioni</th>
+									<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 								</tr>
 							</thead>
 							<tbody th:remove="all-but-first">
@@ -281,7 +281,7 @@
 											<i class="fa table-icon fa-question grey" th:title="#{label.non_specificato}"></i>
 										</div>
 									</td>
-									<td class="text-full-length">
+									<td class="text-full-length" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">
 										<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
 										<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalScadenze(${evento.id}, '${evento.dataScadenzaPagamento}', '${evento.dataScadenzaInvioRendicontazione}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
 										<!-- TODO DISABILITATO PER LA PRODUZIONE
@@ -306,8 +306,12 @@
 					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13]
 					confermati = 12
 				}
-				else {
+				else if([[${#authentication.principal.isProvider()}]]){
 					colonne = [0,1,2,4,5,6,7,8,9,10,11,12]
+					confermati = 11
+				}
+				else {
+					colonne = [0,1,2,4,5,6,7,8,9,10,11]
 					confermati = 11
 				}
 				var days;

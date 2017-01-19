@@ -43,8 +43,8 @@ public interface SecurityAccessService {
 	public boolean canShowAllEventiProvider(CurrentUser currentUser, Long providerId);
 	public boolean canCreateEvento(CurrentUser currentUser, Long providerId);
 	public boolean canShowAllProviderUser(CurrentUser currentUser, Long providerId);
-	boolean canProviderEditUser(CurrentUser currentUser, Long providerId, Long userId);
-	boolean canProviderCreateUser(CurrentUser currentUser, Long providerId);
+	public boolean canProviderEditUser(CurrentUser currentUser, Long providerId, Long userId);
+	public boolean canProviderCreateUser(CurrentUser currentUser, Long providerId);
 
 	public boolean canSendComunicazioni(CurrentUser currentUser);
 
@@ -55,4 +55,6 @@ public interface SecurityAccessService {
 	public boolean canShowProtocollo(CurrentUser currentUser);
 
 	public boolean canEditVerbaleAccreditamento(CurrentUser currentUser, Long accreditamentoId);
+	public boolean canDeleteEvento(CurrentUser currentUser, Long providerId);
+	public boolean canEditEvento(CurrentUser currentUser, Long providerId);
 }

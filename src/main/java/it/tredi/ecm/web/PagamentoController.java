@@ -26,14 +26,14 @@ import it.tredi.ecm.web.bean.Message;
 @Controller
 public class PagamentoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(PagamentoController.class);
-	
-	@Autowired private ProviderService providerService;  
+
+	@Autowired private ProviderService providerService;
 	@Autowired private PagamentoService pagamentoService;
 	@Autowired private QuotaAnnualeService quotaAnnualeService;
 	@Autowired private EngineeringServiceImpl engineeringService;
-	
+
 	private final String LIST = "provider/pagamentoList";
-	
+
 	@RequestMapping("/provider/pagamento/list")
 	public String getListPagamentiForCurrentProvider(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/pagamento/list"));
@@ -50,8 +50,8 @@ public class PagamentoController {
 			return "redirect:/home";
 		}
 	}
-	
-	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#id)")
 	@RequestMapping("/provider/{id}/pagamento/list")
 	public String getListPagamenti(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
@@ -68,7 +68,7 @@ public class PagamentoController {
 			return "redirect: /provider/{id}/pagamento/list";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
 	@RequestMapping("/provider/{id}/pagamento/inserisci")
 	public String inserisciPagamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
@@ -84,7 +84,7 @@ public class PagamentoController {
 		}
 		return "redirect:/provider/"+ id + "/pagamento/list";
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
 	@RequestMapping("/provider/{id}/pagamento/{quotaAnnualeId}/paga")
 	public String pagaQuotaAnnuale(@PathVariable Long id, @PathVariable Long quotaAnnualeId, HttpServletRequest request, Model model, RedirectAttributes redirectAttrs){
@@ -96,7 +96,7 @@ public class PagamentoController {
 			if (StringUtils.hasText(url)) {
 				return "redirect:" + url;
 			}
-			
+
 			return "redirect:/provider/"+ id + "/pagamento/list";
 		}
 		catch (Exception ex) {
@@ -105,7 +105,7 @@ public class PagamentoController {
 			return "redirect:/provider/{id}/pagamento/list";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
 	@RequestMapping("/provider/{id}/pagamento/verifica")
 	public String verificaPagamentoProvider(@PathVariable Long id, HttpServletRequest request, Model model, RedirectAttributes redirectAttrs){

@@ -261,7 +261,7 @@ public class EventoServiceImpl implements EventoService {
 
 	@Override
 	public boolean canCreateEvento(Account account) {
-		return account.isSegreteria() || account.getProvider().canInsertEvento();
+		return account.isSegreteria() || (account.isProvider() && account.getProvider().canInsertEvento());
 	}
 
 	//evento rieditabile solo prima del 20/12 dell'anno corrente
@@ -905,6 +905,9 @@ public class EventoServiceImpl implements EventoService {
 			creditiInterattiva = (int) oreInterattiva * 1.5f;
 
 			crediti = creditiFrontale + creditiInterattiva;
+
+			if(crediti > 50f)
+				crediti = 50f;
 		}
 
 		crediti = Utils.getRoundedFloatValue(crediti, 1);
@@ -1066,8 +1069,11 @@ public class EventoServiceImpl implements EventoService {
 			crediti = (int) durata * 1.5f;
 		else
 			crediti = (int) durata * 1.0f;
+		if(crediti > 50f)
+			crediti = 50f;
 
 		crediti = Utils.getRoundedFloatValue(crediti, 1);
+
 		return crediti;
 	}
 

@@ -11,8 +11,8 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.pagamenti_annuali}">Elenco Pagamenti</h2>
-						<a class="btn btn-primary pull-right" th:if="${#authentication.principal.hasProfile('PROVIDER')}" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
-						<a class="btn btn-primary pull-right" th:unless="${#authentication.principal.hasProfile('PROVIDER')}" th:text="#{label.indietro}" th:href="@{|/provider/list|}"></a>
+						<a class="btn btn-primary pull-right" th:if="${#authentication.principal.account.isProviderVisualizzatore()}" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+						<a class="btn btn-primary pull-right" th:unless="${#authentication.principal.account.isProviderVisualizzatore()}" th:text="#{label.indietro}" th:href="@{|/provider/list|}"></a>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">

@@ -420,7 +420,7 @@ public class EventoController {
 		}
 	}
 
-//TODO	@PreAuthorize("@securityAccessServiceImpl.canEditEvento(principal, #providerId")
+	@PreAuthorize("@securityAccessServiceImpl.canEditEvento(principal, #providerId)")
 	@RequestMapping("/provider/{providerId}/evento/{eventoId}/edit")
 	public String editEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
 			Model model, RedirectAttributes redirectAttrs) {
@@ -523,10 +523,7 @@ public class EventoController {
 	}
 
 
-
-
-
-		//TODO	@PreAuthorize("@securityAccessServiceImpl.canDeleteEvento(principal, #providerId")
+		@PreAuthorize("@securityAccessServiceImpl.canDeleteEvento(principal, #providerId)")
 		@RequestMapping("/provider/{providerId}/evento/{eventoId}/delete")
 		public String deleteEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
 				Model model, RedirectAttributes redirectAttrs) {
@@ -1627,7 +1624,7 @@ public class EventoController {
 			RicercaEventoWrapper wrapper = prepareRicercaEventoWrapper();
 
 			CurrentUser currentUser = Utils.getAuthenticatedUser();
-			if(currentUser.isProvider()){
+			if(currentUser.isProviderVisualizzatore()){
 				wrapper.setProviderId(currentUser.getAccount().getProvider().getId());
 			}else{
 				wrapper.setProviderId(null);

@@ -18,16 +18,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RelazioneAnnuale;
-import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
-import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.RelazioneAnnualeService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.ProviderWrapper;
 import it.tredi.ecm.web.bean.RelazioneAnnualeWrapper;
 import it.tredi.ecm.web.validator.RelazioneAnnualeValidator;
 
@@ -78,7 +76,12 @@ public class RelazioneAnnualeController {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/relazioneAnnuale/list"));
 		try {
 			model.addAttribute(providerId);
-			model.addAttribute("canInsertRelazioneAnnuale", providerService.canInsertRelazioneAnnuale(providerId));
+			Account user = Utils.getAuthenticatedUser().getAccount();
+			if(user.isSegreteria() || user.isProvider())
+				model.addAttribute("canInsertRelazioneAnnuale", providerService.canInsertRelazioneAnnuale(providerId));
+			else {
+				model.addAttribute("canInsertRelazioneAnnuale", false);
+			}
 			model.addAttribute("relazioneList", relazioneAnnualeService.getAllRelazioneAnnualeByProviderId(providerId));
 			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 			return LIST;
