@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
@@ -75,6 +76,7 @@ import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AlertEmailService;
 import it.tredi.ecm.service.AnagraficaEventoService;
 import it.tredi.ecm.service.AnagraficaFullEventoService;
+import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
 import it.tredi.ecm.service.EngineeringService;
 import it.tredi.ecm.service.EventoPianoFormativoService;
@@ -126,6 +128,8 @@ public class EventoController {
 	@Autowired private AlertEmailService alertEmailService;
 
 	@Autowired private ScadenzeEventoValidator scadenzeEventoValidator;
+
+	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -224,7 +228,7 @@ public class EventoController {
 		}
 	}
 
-	private String goToList(Model model, Long providerId){
+	private String goToList(Model model, Long providerId) throws AccreditamentoNotFoundException{
 		String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
 		model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
 		model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
@@ -232,6 +236,8 @@ public class EventoController {
 		model.addAttribute("providerId", providerId);
 		model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
 		model.addAttribute("canRieditEvento", eventoService.canRieditEvento(Utils.getAuthenticatedUser().getAccount()));
+		Accreditamento accreditamento =  accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
+		model.addAttribute("proceduraFormativaList", accreditamento.getDatiAccreditamento().getProcedureFormative());
 		if(Utils.getAuthenticatedUser().isSegreteria())
 			model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
 		LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));

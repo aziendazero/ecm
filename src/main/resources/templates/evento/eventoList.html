@@ -80,7 +80,7 @@
 								novalidate="novalidate">
 
 								<div class="item modalAlert">
-									<div class="radio" th:each="proceduraFormativa, row : ${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).values()}" th:classappend="${error == true} ? 'bad'">
+									<div class="radio" th:each="proceduraFormativa, row : ${proceduraFormativaList}" th:classappend="${error == true} ? 'bad'">
 										<label>
 											<input type="radio" class="flat" name="proceduraFormativa" th:value="${proceduraFormativa}"/>
 											<span th:text="${proceduraFormativa.nome}"></span>
