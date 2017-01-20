@@ -49,6 +49,7 @@
 							<thead>
 								<tr>
 									<th th:text="#{label.id}">label.id</th>
+									<th th:text="#{label.descrizione}">label.descrizione</th>
 									<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM - ' + valutazioneWrapper.valutazione.account.getFullNameBase() : 'Referee - ' + valutazioneWrapper.valutazione.account.getFullNameBase()}">Nome</th>
 									<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM' : 'Referee'}">Nome</th>
 								</tr>
@@ -57,6 +58,7 @@
 							<tbody>
 								<tr th:each="field, row : ${#lists.sort(mappa.keySet())}" th:unless="${field.idEcm == -1}">
 									<td th:text="${field.idEcm}">numero idEditabile</td>
+									<td th:text="#{IdFieldEnum_valutazione.__${field}__}">descizione</td>
 									<!-- cerco nella mappa della valutazione la valutazione relativa all'IdField -->
 									<td class="otherValidationCheck">
 										<div>
@@ -94,6 +96,7 @@
 								<thead>
 									<tr>
 										<th th:text="#{label.id}">label.id</th>
+										<th th:text="#{label.descrizione}">label.descrizione</th>
 										<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM - ' + valutazioneWrapper.valutazione.account.getFullNameBase() : 'Referee - ' + valutazioneWrapper.valutazione.account.getFullNameBase()}">Nome</th>
 										<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM' : 'Referee'}">Nome</th>
 									</tr>
@@ -102,6 +105,7 @@
 								<tbody>
 									<tr th:each="field, row : ${#lists.sort(mappa.value.keySet())}" th:unless="${field.idEcm == -1}">
 										<td th:text="${field.idEcm}">numero idEditabile</td>
+										<td th:text="#{IdFieldEnum_valutazione.__${field}__}">descizione</td>
 										<!-- cerco nella mappa della valutazione la valutazione relativa all'IdField -->
 										<td class="otherValidationCheck">
 											<div>
@@ -159,6 +163,7 @@
 						"order": [ 0, 'disabled' ],
 					    "columnDefs": [
 					                   	{"targets": [ '_all' ], "orderable": false, "sClass": "center"},
+					                	{"targets": 0, "width": "1px", "sClass": "center"},
 					                  ]
 					});
 					$('.datatable-responsive-search-validation-storico').DataTable({

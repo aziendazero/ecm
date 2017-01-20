@@ -72,16 +72,16 @@ public class EcmAppConfiguration {
 	private int giorniPrimaBloccoEditGruppoB = 10;
 	@Value("${task.sendAlertEmail}")
 	private boolean taskSendAlertEmail = false;
-
 	@Value("${pianoFormativo.giornoFineModifica}")
 	private int pianoFormativoGiornoFineModifica = 15;
 	@Value("${pianoFormativo.meseFineModifica}")
 	private int pianoFormativoMeseFineModifica = 12;
-
 	@Value("${relazioneAnnuale.giornoFineModifica}")
 	private int relazioneAnnualeGiornoFineModifica = 30;
 	@Value("${relazioneAnnuale.meseFineModifica}")
 	private int relazioneAnnualeMeseFineModifica = 4;
+	@Value("${valutazioni.non.date.limite}")
+	private int valutazioniNonDateLimit = 3;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -115,11 +115,11 @@ public class EcmAppConfiguration {
 		ecmProperties.setGiorniPrimaBloccoEditGruppoA(giorniPrimaBloccoEditGruppoA);
 		ecmProperties.setGiorniPrimaBloccoEditGruppoB(giorniPrimaBloccoEditGruppoB);
 		ecmProperties.setTaskSendAlertEmail(taskSendAlertEmail);
-
 		ecmProperties.setPianoFormativoGiornoFineModifica(pianoFormativoGiornoFineModifica);
 		ecmProperties.setPianoFormativoMeseFineModifica(pianoFormativoMeseFineModifica);
 		ecmProperties.setRelazioneAnnualeGiornoFineModifica(relazioneAnnualeGiornoFineModifica);
 		ecmProperties.setRelazioneAnnualeMeseFineModifica(relazioneAnnualeMeseFineModifica);
+		ecmProperties.setValutazioniNonDateLimit(valutazioniNonDateLimit);
 		return ecmProperties;
 	}
 }

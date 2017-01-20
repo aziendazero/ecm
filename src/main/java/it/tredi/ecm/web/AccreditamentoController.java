@@ -334,7 +334,7 @@ public class AccreditamentoController {
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamento.getId(), Utils.getAuthenticatedUser().getAccount().getId());
 		AccreditamentoWrapper accreditamentoWrapper = prepareAccreditamentoWrapperValidate(accreditamento, valutazione, wrapper, hasErrors);
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
-		model.addAttribute("refereeList", accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
+		model.addAttribute("refereeList", accountService.getRefereeForValutazione());
 		model.addAttribute("numeroReferee", ecmProperties.getNumeroReferee());
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoValidate"));
 		return "accreditamento/accreditamentoValidate";

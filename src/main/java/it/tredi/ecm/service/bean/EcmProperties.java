@@ -35,9 +35,9 @@ public class EcmProperties {
 	private int giorniPrimaBloccoEditGruppoA;
 	private int giorniPrimaBloccoEditGruppoB;
 	private boolean taskSendAlertEmail;
-
 	private int pianoFormativoGiornoFineModifica;
 	private int pianoFormativoMeseFineModifica;
 	private int RelazioneAnnualeGiornoFineModifica;
 	private int RelazioneAnnualeMeseFineModifica;
+	private int valutazioniNonDateLimit;
 }

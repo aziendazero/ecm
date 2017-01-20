@@ -21,4 +21,5 @@ public interface AccountService {
 	public Set<String> getEmailByProfileEnum(ProfileEnum profileEnum);
 	public Long getProviderIdById(Long accountId);
 	public Account getAmministratoreProviderForProvider(Provider provider);
+	public Set<Account> getRefereeForValutazione();
 }
