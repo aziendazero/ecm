@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
+import it.tredi.ecm.dao.enumlist.ComunicazioneAmbitoEnum;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.utils.Utils;
 
@@ -29,8 +30,16 @@ public class ComunicazioneValidator {
 			errors.rejectValue(prefix + "oggetto", "error.empty");
 		if(comunicazione.getMittente().isSegreteria() && (comunicazione.getDestinatari() == null || comunicazione.getDestinatari().isEmpty()))
 			errors.rejectValue(prefix + "destinatari", "error.empty");
-		if(eventoService.getEventoByCodiceIdentificativo(comunicazione.getCodiceEventoLink()) == null)
-			errors.rejectValue(prefix + "codiceEventoLink", "error.evento_non_trovato");
+		if(comunicazione.getAmbito() == ComunicazioneAmbitoEnum.EVENTI) {
+			if((comunicazione.getCodiceEventoLink() == null || comunicazione.getCodiceEventoLink().isEmpty()) && !Utils.getAuthenticatedUser().isSegreteria())
+				errors.rejectValue(prefix + "codiceEventoLink", "error.empty");
+			else {
+				if(comunicazione.getCodiceEventoLink() != null
+						&& !comunicazione.getCodiceEventoLink().isEmpty()
+						&& eventoService.getEventoByCodiceIdentificativo(comunicazione.getCodiceEventoLink()) == null)
+					errors.rejectValue(prefix + "codiceEventoLink", "error.evento_non_trovato");
+			}
+		}
 
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}

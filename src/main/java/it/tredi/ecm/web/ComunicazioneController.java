@@ -383,13 +383,29 @@ public class ComunicazioneController {
 			@PathVariable("codiceEvento") String codiceEvento, @ModelAttribute("comunicazioneWrapper") ComunicazioneWrapper wrapper, Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET /comunicazione/"+comunicazioneId+"/evento/"+codiceEvento+"/redirect"));
 		try {
+			Account user = Utils.getAuthenticatedUser().getAccount();
 			Evento evento = eventoService.getEventoByCodiceIdentificativo(codiceEvento);
 			if(evento == null) {
 				model.addAttribute("message", new Message("message.errore", "message.errore_evento_non_esiste", "error"));
 				return goToShowComunicazione(model, prepareComunicazioneWrapperShow(comunicazioneService.getComunicazioneById(comunicazioneId)));
 			}
 			else {
-				return "redirect:/provider/"+evento.getProvider().getId()+"/evento/"+evento.getId()+"/show";
+				Provider providerEvento = evento.getProvider();
+				Provider providerUser = null;
+				if(user.isProviderVisualizzatore())
+					providerUser = user.getProvider();
+				if(user.isSegreteria() || providerEvento.equals(providerUser)) {
+					LOGGER.info(Utils.getLogMessage("REDIRECT /evento/"+evento.getId()));
+					return "redirect:/evento/"+evento.getId();
+				}
+				else {
+					LOGGER.info(Utils.getLogMessage("REDIRECT /comunicazione/"+comunicazioneId+"/show"));
+					redirectAttrs.addFlashAttribute("message", new Message("message.warning", "message.warning_no_privilegi_necessari_risorsa", "warnign"));
+					return "redirect:/comunicazione/dashboard";
+				}
+
+
+
 			}
 		}
 		catch (Exception ex) {

@@ -1212,6 +1212,16 @@ h2 {
 	font-style: inherit;
 	cursor: text;
 	height: 350px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+pre {
+	overflow: auto;
+  	word-wrap: normal;
+  	white-space: pre-wrap;
+	overflow-x: hidden;
+	overflow-y: scroll;
 }
 
 .risposta-messaggio {

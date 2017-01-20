@@ -1748,6 +1748,10 @@ public class EventoServiceImpl implements EventoService {
 				}
 
 				//a questo punto idEventi conterrà un Set di Id evento con il quale filtrare la ricerca
+				// se il set è vuoto si inserisce un valore dummy -1 per far fallire la ricerca
+				if(idEventi == null || idEventi.isEmpty()) {
+					idEventi.add(-1L);
+				}
 				query = Utils.QUERY_AND(query, "e.id IN (:idEventi)");
 				params.put("idEventi", idEventi);
 			}

@@ -206,7 +206,7 @@
 												<strong th:text="#{label.ambito}"></strong>
 												<span th:text="${comunicazioneWrapper.comunicazione.ambito.nome}"></span>
 												<br/>
-												<th:block th:if="${comunicazioneWrapper.comunicazione.codiceEventoLink != null}" >
+												<th:block th:if="${comunicazioneWrapper.comunicazione.codiceEventoLink != null and !#strings.isEmpty(comunicazioneWrapper.comunicazione.codiceEventoLink)}" >
 													<strong th:text="#{label.evento_link}"></strong>
 													<a class="link" target="_blank" th:href="@{|/comunicazione/${comunicazioneWrapper.comunicazione.id}/evento/${comunicazioneWrapper.comunicazione.codiceEventoLink}/redirect|}" th:text="${comunicazioneWrapper.comunicazione.codiceEventoLink}"></a>
 													<br/>

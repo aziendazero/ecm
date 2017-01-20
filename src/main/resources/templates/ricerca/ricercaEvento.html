@@ -814,7 +814,7 @@
 
 							function isDocenteInserito(nome, cognome) {
 								for (var i = 0; i < docentiHandler.docenti.length; i++) {
-									if(docentiHandler.docenti[i].nome === nome && docentiHandler.docenti[i].cognome === cognome) {
+									if(docentiHandler.docenti[i].nome.toUpperCase() === nome.toUpperCase() && docentiHandler.docenti[i].cognome.toUpperCase() === cognome.toUpperCase()) {
 										return true;
 									}
 								}

@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
@@ -564,6 +565,36 @@ public class EventoController {
 			return "redirect:/provider/" + providerId + "/evento/list";
 		}
 	}
+
+
+		@RequestMapping("/evento/{eventoId}")
+		public String visualizzaEvento(@PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
+			try{
+				LOGGER.info(Utils.getLogMessage("GET /evento/"+eventoId));
+				String returnRedirect = "";
+
+				Account user = Utils.getAuthenticatedUser().getAccount();
+				if(user.isSegreteria()){
+					returnRedirect = "redirect:/evento/list";
+				}else{
+					Long providerId = user.getProvider().getId();
+					returnRedirect = "redirect:/provider/" + providerId + "/evento/list";
+				}
+
+				List<Evento> listaEventi = new ArrayList<Evento>();
+				listaEventi.add(eventoService.getEvento(eventoId));
+
+				redirectAttrs.addFlashAttribute("eventoList", listaEventi);
+
+				return returnRedirect;
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /evento/"+eventoId),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
+				return "redirect:/comunicazione/dashboard";
+			}
+		}
 
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
 		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
