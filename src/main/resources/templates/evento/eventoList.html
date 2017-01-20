@@ -302,17 +302,21 @@
 
 				var colonne = []
 				var confermati
+				var date = []
 				if([[${#authentication.principal.isSegreteria()}]]) {
 					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13]
 					confermati = 12
+					date = [6,7,11]
 				}
 				else if([[${#authentication.principal.isProvider()}]]){
 					colonne = [0,1,2,4,5,6,7,8,9,10,11,12]
 					confermati = 11
+					date = [5,6,10]
 				}
 				else {
 					colonne = [0,1,2,4,5,6,7,8,9,10,11]
 					confermati = 11
+					date = [5,6,10]
 				}
 				var days;
 				var months;
@@ -325,7 +329,8 @@
 						"bPaginate" : false,
 						 "columnDefs": [
 					                     {"targets": colonne, "width": "1px"},
-					                     {"targets": confermati, "sClass": "center"}
+					                     {"targets": confermati, "sClass": "center"},
+					                     { "type": 'date-eu', "targets": date},
 					                   ],
 					})
 
@@ -340,6 +345,7 @@
 					                   	{"targets": [ '_all' ], "orderable": false },
 					                    {"targets": 5, "orderable": false, "width": "1px"},
 					                    {"targets": [ 0 ], "orderData": [ 0, 1 ] }
+
 					                  ],
 					});
 
