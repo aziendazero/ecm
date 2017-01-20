@@ -14,6 +14,6 @@ public interface PersonaEventoRepository extends CrudRepository<PersonaEvento, L
 
 	Set<PersonaEvento> findAllByRuolo(RuoloPersonaEventoEnum docente);
 
-	@Query(value = "SELECT pe.docente_id FROM ecmdb.persona_evento pe WHERE UPPER(pe.nome) = :nome AND UPPER(pe.cognome) = :cognome", nativeQuery = true)
+	@Query(value = "SELECT pe.docente_id FROM ecmdb.persona_evento pe WHERE UPPER(pe.nome) = :nome AND UPPER(pe.cognome) = :cognome AND pe.docente_id IS NOT NULL", nativeQuery = true)
 	Set<BigInteger> findAllEventoIdByNomeAndCognome(@Param("nome") String nome, @Param("cognome") String cognome);
 }
