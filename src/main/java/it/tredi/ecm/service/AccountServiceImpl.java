@@ -201,4 +201,12 @@ public class AccountServiceImpl implements AccountService{
 		}
 		return null;
 	}
+
+	@Override
+	public Set<Account> getRefereeForValutazione() {
+		LOGGER.debug("Cerco tutti i Referee con meno di 3 valutazioni non date");
+		Optional<Profile> profileRef = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.REFEREE);
+		Profile profileReferee =  profileRef.get();
+		return accountRepository.findAllByProfilesContainingAndValutazioniNonDateLessThan(profileReferee, ecmProperties.getValutazioniNonDateLimit());
+	}
 }
