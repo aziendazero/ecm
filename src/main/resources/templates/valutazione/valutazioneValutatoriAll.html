@@ -10,6 +10,7 @@
 			<thead>
 				<tr>
 					<th th:text="#{label.id}">label.id</th>
+					<th th:text="#{label.descrizione}">label.descrizione</th>
 					<th:block th:each="valutatore, row : ${__${wrapper}__.mappaValutatoreValutazioni}">
 						<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutatore.key.isSegreteria() ? 'Segreteria ECM - ' + valutatore.key.getFullName() : 'Referee - ' + valutatore.key.getFullName()}">Nome</th>
 						<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutatore.key.isSegreteria() ? 'Segreteria ECM' : 'Referee'}">Nome</th>
@@ -20,6 +21,7 @@
 			<tbody>
 				<tr th:each="field, row : ${__${wrapper}__.idEditabili}" th:unless="${field.idEcm == -1}">
 					<td th:text="${field.idEcm}">numero idEditabile</td>
+					<td th:text="#{IdFieldEnum_valutazione.__${field}__}">descizione</td>
 					<!-- cerco in ogni mappa delle valutazioni la valutazione relativa all'IdField -->
 					<th:block th:each="mapValutazione, row : ${__${wrapper}__.mappaValutatoreValutazioni}">
 						<td class="otherValidationCheck">
