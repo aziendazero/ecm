@@ -41,9 +41,12 @@
 							</thead>
 							<tbody th:unless="${#lists.isEmpty(sedutaList)}" th:remove="all-but-first">
 								<tr th:each="seduta : ${sedutaList}">
-									<td><a th:href="@{|/seduta/${seduta.id}/show|}" th:text="${#temporals.format(seduta.data, 'dd/MM/yyyy')}">31/08/2016</a></td>
+									<td th:text="${#temporals.format(seduta.data, 'dd/MM/yyyy')}">31/08/2016</td>
 									<td th:text="${seduta.ora}">17:05</td>
-									<td><a class="btn btn-primary btn-table single" th:onclick="'find(\''+${seduta.data}+'\')'"><span class="fa fa-search"></span> <span th:text="#{label.trova}"></span></a></td>
+									<td>
+										<a class="btn btn-primary btn-table double" th:onclick="'find(\''+${seduta.data}+'\')'"><span class="fa fa-search"></span> <span th:text="#{label.trova}"></span></a>
+										<a class="btn btn-success btn-table double" th:href="@{|/seduta/${seduta.id}/show|}"><i class="fa fa-external-link"></i> <span th:text="#{label.visualizza}"></span></a>
+									</td>
 								</tr>
 							</tbody>
 						</table>
@@ -64,11 +67,9 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
-						"columnDefs": [ {
-							"targets": 2,
-							"width": "70px",
-							"sClass": "center"
-						} ],
+						"columnDefs": [
+							{"targets": 2, "width": "210px", "sClass": "center"},
+						],
 					});
 
 					var json = JSON.parse([[${sedutaListJSON}]]);

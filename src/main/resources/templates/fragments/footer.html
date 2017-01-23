@@ -46,6 +46,10 @@
 		<script src="../static/gentella/js/wizard/jquery.smartWizard.js"
 				th:src="@{/gentella/js/wizard/jquery.smartWizard.js}"></script>
 
+		<!-- moment js -->
+		<script src="../static/gentella/js/moment/moment.min.js"
+				th:src="@{/gentella/js/moment/moment.min.js}"></script>
+
 		<!-- DataTable -->
 		<script src="../static/gentella/js/datatables/jquery.dataTables.min.js"
 				th:src="@{/gentella/js/datatables/jquery.dataTables.min.js}"></script>
@@ -59,9 +63,11 @@
 		<!--  DataTable responsive -->
 		<script src="../static/gentella/js/datatables/dataTables.responsive.min.js"
 				th:src="@{/gentella/js/datatables/dataTables.responsive.min.js}"></script>
+<!-- 		<script src="../static/gentella/js/datatables/sorting-date-eu.js" -->
+<!-- 				th:src="@{/gentella/js/datatables/sorting-date-eu.js}"></script> -->
+		<script src="../static/gentella/js/datatables/datetime-moment.js"
+				th:src="@{/gentella/js/datatables/datetime-moment.js}"></script>
 
-		<script src="../static/gentella/js/datatables/sorting-date-eu.js"
-				th:src="@{/gentella/js/datatables/sorting-date-eu.js}"></script>
 
 		<!-- Switch dei form -->
 		<script src="../static/gentella/js/switchery/switchery.min.js"
@@ -107,8 +113,6 @@
 			th:src="@{/backToTop/js/modernizr.js}"></script>
 
 		<!-- calendar -->
-		<script src="../static/gentella/js/moment/moment.min.js"
-				th:src="@{/gentella/js/moment/moment.min.js}"></script>
 		<script src="../static/gentella/js/calendar/fullcalendar.min.js"
 				th:src="@{/gentella/js/calendar/fullcalendar.min.js}"></script>
 
@@ -375,6 +379,11 @@
 				$('body').tooltip({
 				    selector: '[data-toggle="tooltip"]'
 				});
+
+				// date ordering for datatables
+		        $.fn.dataTable.moment('DD/MM/YYYY');
+		        $.fn.dataTable.moment('hh:mm');
+		        $.fn.dataTable.moment('DD/MM/YYYY - HH:mm');
 			});
 
 			//rimuove class bad (errore validazione) dagli input (le select sono gestite su gentella.validator.validator.js unmark)
