@@ -588,8 +588,11 @@ public class AccreditamentoController {
 			accreditamentoWrapper.setComponentiSegreteria(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 			accreditamentoWrapper.setReferentiInformatici(accountService.getUserByProfileEnum(ProfileEnum.REFERENTE_INFORMATICO));
 			accreditamentoWrapper.setSediProvider(accreditamento.getProvider().getSedi());
-			if(!hasVerbaleErrors)
+			if(!hasVerbaleErrors) {
 				accreditamentoWrapper.setVerbaleValutazioneSulCampo(accreditamento.getVerbaleValutazioneSulCampo());
+				accreditamentoWrapper.setCartaIdentita(accreditamento.getVerbaleValutazioneSulCampo().getCartaIdentita());
+				accreditamentoWrapper.setDelegaValutazioneSulCampo(accreditamento.getVerbaleValutazioneSulCampo().getDelegato().getDelega());
+			}
 		}
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
@@ -933,7 +936,12 @@ public class AccreditamentoController {
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		try {
 
+			//attacca gli allegati dal wrapper alla valutazione sul campo
 			VerbaleValutazioneSulCampo verbale = wrapper.getVerbaleValutazioneSulCampo();
+			if(wrapper.getCartaIdentita() != null && !wrapper.getCartaIdentita().isNew())
+				verbale.setCartaIdentita(fileService.getFile(wrapper.getCartaIdentita().getId()));
+			if(wrapper.getDelegaValutazioneSulCampo() != null && !wrapper.getDelegaValutazioneSulCampo().isNew())
+				verbale.getDelegato().setDelega(fileService.getFile(wrapper.getDelegaValutazioneSulCampo().getId()));
 
 			//validazione della valutazioneComplessiva
 			valutazioneValidator.validateEditVerbale(verbale, result, "verbaleValutazioneSulCampo.");

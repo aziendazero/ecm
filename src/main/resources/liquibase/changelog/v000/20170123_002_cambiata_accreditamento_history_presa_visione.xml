@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170123_002_cambiata_accreditamento_history_presa_visione.xml">
+    <changeSet author="tiommi (generated)" id="1485188090243-1">
+        <addColumn tableName="accreditamento_stato_history">
+            <column name="presa_visione" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1485188090243-2">
+        <addColumn tableName="accreditamento_stato_history">
+            <column name="prev_stato" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

@@ -10,5 +10,5 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 public interface AccreditamentoStatoHistoryService {
     public Set<AccreditamentoStatoHistory> getAllByAccreditamentoId(Long accreditamentoId);
     public Set<AccreditamentoStatoHistory> getAllByAccreditamentoIdAndProcessInstanceId(Long accreditamentoId, Long processInstanceId);
-    public void createHistoryFine(Accreditamento accreditamento, Long processInstanceId, AccreditamentoStatoEnum stato, LocalDateTime dataFine);
+	public void createHistoryFine(Accreditamento accreditamento, Long processInstanceId, AccreditamentoStatoEnum stato, AccreditamentoStatoEnum prevStato, LocalDateTime dataFine, boolean presaVisione);
 }

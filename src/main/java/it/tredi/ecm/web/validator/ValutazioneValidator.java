@@ -156,12 +156,14 @@ public class ValutazioneValidator {
 			errors.rejectValue(prefix + "componentiSegreteria", "error.empty");
 		if(verbale.getReferenteInformatico() == null && verbale.getAccreditamento().getDatiAccreditamento().getProcedureFormative().contains(ProceduraFormativa.FAD))
 			errors.rejectValue(prefix + "referenteInformatico", "error.empty");
+
+		validateSottoscriventeValutazioneSulCampo(verbale, errors, prefix);
 	}
 
 	public void validateSottoscriventeValutazioneSulCampo(VerbaleValutazioneSulCampo verbaleValutazioneSulCampo, Errors errors, String prefix) {
-		if(verbaleValutazioneSulCampo.getCartaIdentita() == null || verbaleValutazioneSulCampo.getCartaIdentita().isNew()) {
-			errors.rejectValue(prefix + "cartaIdentita", "error.empty");
-		}
+//		if(verbaleValutazioneSulCampo.getCartaIdentita() == null || verbaleValutazioneSulCampo.getCartaIdentita().isNew()) {
+//			errors.rejectValue(prefix + "cartaIdentita", "error.empty");
+//		}
 		if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() == null) {
 			errors.rejectValue(prefix + "isPresenteLegaleRappresentante", "error.empty");
 		}
@@ -172,8 +174,8 @@ public class ValutazioneValidator {
 				errors.rejectValue(prefix + "delegato.nome", "error.empty");
 			if(verbaleValutazioneSulCampo.getDelegato().getCodiceFiscale().isEmpty())
 				errors.rejectValue(prefix + "delegato.codiceFiscale", "error.empty");
-			if(verbaleValutazioneSulCampo.getDelegato().getDelega() == null || verbaleValutazioneSulCampo.getDelegato().getDelega().isNew())
-				errors.rejectValue(prefix + "delegato.delega", "error.empty");
+//			if(verbaleValutazioneSulCampo.getDelegato().getDelega() == null || verbaleValutazioneSulCampo.getDelegato().getDelega().isNew())
+//				errors.rejectValue(prefix + "delegato.delega", "error.empty");
 		}
 	}
 }

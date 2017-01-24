@@ -461,6 +461,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	public void approvaIntegrazione(Long accreditamentoId) throws Exception{
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Set<FieldValutazioneAccreditamento> fieldValutazioniSegreteria = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoBySegreteriaNotStoricizzato(accreditamentoId);
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
 
@@ -477,6 +478,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					approved.add(field);
 			}
 		});
+
+		//calcolo se mi trovo in una situazione di integrazione o di preavviso di rigetto
+		//guardo la data di inizio del preavviso di rigetto -> se è null devo per forza trovarmi ancora in integrazione
+		if(accreditamento.getDataPreavvisoRigettoInizio() == null)
+			accreditamento.setPresaVisioneIntegrazione(false);
+		else accreditamento.setPresaVisionePreavvisoDiRigetto(false);
 
 		integrazioneService.applyIntegrazioneAccreditamentoAndSave(accreditamentoId, approved);
 		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazione);
@@ -617,6 +624,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
 		accreditamento.setDataInserimentoOdg(LocalDate.now());
+
+		//calcolo se mi trovo in una situazione di presa visione dell'integrazione o del preavviso di rigetto
+		//guardo la data di inizio del preavviso di rigetto -> se è null devo per forza trovarmi ancora in integrazione
+		if(accreditamento.getDataPreavvisoRigettoInizio() == null)
+			accreditamento.setPresaVisioneIntegrazione(true);
+		else accreditamento.setPresaVisionePreavvisoDiRigetto(true);
+
 		accreditamentoRepository.save(accreditamento);
 
 		//rimuovo tutti i fieldIntegrazione
@@ -1273,14 +1287,22 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			emailService.inviaNotificaATeamLeader(accountTeamLeader.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 		}
 
+		//calcolo se la segreteria ha fatto presa visione
+		Boolean presaVisione = false;
+		//sa da valutazione segreteria vado diretto in INS_ODG c'è stata presa visione
+		if(accreditamento.getStato() == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA && stato == AccreditamentoStatoEnum.INS_ODG) {
+			presaVisione =  true;
+		}
+
+		//salvo history
+		accreditamentoStatoHistoryService.createHistoryFine(accreditamento, accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId(), stato, accreditamento.getStato(), LocalDateTime.now(), presaVisione);
+
 		//TODO se si chiama il servizio di protocollazione verrà settato uno stato intermedio di attesa protocollazione
 		//TODO registrazione cronologia degli stati
 		accreditamento.setStato(stato);
 		accreditamentoRepository.save(accreditamento);
 
 		alertEmailService.creaAlertForProvider(accreditamento);
-
-		accreditamentoStatoHistoryService.createHistoryFine(accreditamento, accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId(), stato, LocalDateTime.now());
 	}
 
 	@Override
@@ -1360,7 +1382,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			} else {
 				provider.setStatus(ProviderStatoEnum.ACCREDITATO_STANDARD);
-				accreditamento.setDataFineAccreditamento(dataSeduta.plusYears(4));
+				if(dataSeduta != null)
+					accreditamento.setDataFineAccreditamento(dataSeduta.plusYears(4));
+				else
+					accreditamento.setDataFineAccreditamento(LocalDate.now().plusYears(4));
 				accreditamento.setDataInizioAccreditamento(LocalDate.now());
 			}
 			save(accreditamento);
@@ -1452,6 +1477,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		verbaleToUpdate.setOsservatoreRegionale(verbaleNew.getOsservatoreRegionale());
 		verbaleToUpdate.setReferenteInformatico(verbaleNew.getReferenteInformatico());
 		verbaleToUpdate.setSede(verbaleNew.getSede());
+		verbaleToUpdate.setIsPresenteLegaleRappresentante(verbaleNew.getIsPresenteLegaleRappresentante());
+		verbaleToUpdate.setDelegato(verbaleNew.getDelegato());
+		verbaleToUpdate.setCartaIdentita(verbaleNew.getCartaIdentita());
 		accreditamento.setVerbaleValutazioneSulCampo(verbaleToUpdate);
 		save(accreditamento);
 	}

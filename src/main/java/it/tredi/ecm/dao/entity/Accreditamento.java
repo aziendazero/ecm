@@ -117,6 +117,11 @@ public class Accreditamento extends BaseEntity{
 	@OneToOne
 	private File verbaleValutazioneSulCampoPdf;
 
+	@Column(name = "presa_visione_integrazione")//flag presa visione dell'integrazione
+	private Boolean presaVisioneIntegrazione;
+	@Column(name = "presa_visione_preavviso_di_rigetto")//flag presa visione del preavviso di rigetto
+	private Boolean presaVisionePreavvisoDiRigetto;
+
 	//@OneToOne(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@OneToOne(mappedBy = "accreditamento", cascade=CascadeType.ALL)
 	private VerbaleValutazioneSulCampo verbaleValutazioneSulCampo;

@@ -23,6 +23,8 @@ public class AccreditamentoStatoHistory extends BaseEntity{
 	private Long processInstanceId;
 	@Enumerated(EnumType.STRING)
 	private AccreditamentoStatoEnum stato;
+	@Enumerated(EnumType.STRING)
+	private AccreditamentoStatoEnum prevStato;
 	@Column(name = "data_fine")
 	private LocalDateTime dataFine;
 	@ManyToOne
@@ -30,4 +32,7 @@ public class AccreditamentoStatoHistory extends BaseEntity{
 
 	@Column(name = "data_inizio")
 	private LocalDateTime dataInizio;
+
+	private boolean presaVisione;
+
 }

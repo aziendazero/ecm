@@ -387,14 +387,12 @@ public class AccreditamentoWrapper {
 
 				if(verbaleValutazioneSulCampo != null && verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante() != null) {
 					if(verbaleValutazioneSulCampo.getIsPresenteLegaleRappresentante()) {
-						if(verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
 							sottoscriventeStato = true;
-						else
-							sottoscriventeStato = false;
 					}
 					else {
-						if((verbaleValutazioneSulCampo.getCartaIdentita() != null && !verbaleValutazioneSulCampo.getCartaIdentita().isNew())
-							&& verbaleValutazioneSulCampo.getDelegato() != null) {
+						if(verbaleValutazioneSulCampo.getDelegato().getNome() != null && !verbaleValutazioneSulCampo.getDelegato().getNome().isEmpty()
+								&& verbaleValutazioneSulCampo.getDelegato().getCognome() != null && !verbaleValutazioneSulCampo.getDelegato().getCognome().isEmpty()
+								&& verbaleValutazioneSulCampo.getDelegato().getCodiceFiscale() != null && !verbaleValutazioneSulCampo.getDelegato().getCodiceFiscale().isEmpty()) {
 							sottoscriventeStato = true;
 						}
 						else

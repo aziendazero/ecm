@@ -96,6 +96,7 @@
 								<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.cognome')} ? 'bad'">
 									<label class="control-label col-md-4 col-sm-4 col-xs-12">
 										<span th:text="#{label.cognome}">Cognome</span>
+										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<input type="text" class="form-control" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.cognome}" />
@@ -106,6 +107,7 @@
 								<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.nome')} ? 'bad'">
 									<label class="control-label col-md-4 col-sm-4 col-xs-12">
 										<span th:text="#{label.nome}">Nome</span>
+										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<input type="text" class="form-control" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.nome}" />
@@ -116,6 +118,7 @@
 								<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.codiceFiscale')} ? 'bad'">
 									<label class="control-label col-md-4 col-sm-4 col-xs-12">
 										<span th:text="#{label.codice_fiscale}">Codice Fiscale</span>
+										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<input type="text" class="form-control" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.delegato.codiceFiscale}" />

@@ -251,15 +251,15 @@
 										and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()
 										and accreditamentoWrapper.accreditamento.isStandard()}">
 
-										<div class="item form-group">
-											<div class="col-lg-1 col-xs-12"></div>
-											<label class="control-label col-lg-3 col-md-4 col-sm-4 col-xs-7">
-												<span th:text="#{label.scarica_pdf_verbale}"></span>
-											</label>
-											<a class="btn btn-primary" th:text="#{label.genera_file}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbale/pdf|}"></a>
-										</div>
+<!-- 										<div class="item form-group"> -->
+<!-- 											<div class="col-lg-1 col-xs-12"></div> -->
+<!-- 											<label class="control-label col-lg-3 col-md-4 col-sm-4 col-xs-7"> -->
+<!-- 												<span th:text="#{label.scarica_pdf_verbale}"></span> -->
+<!-- 											</label> -->
+<!-- 											<a class="btn btn-primary" th:text="#{label.genera_file}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbale/pdf|}"></a> -->
+<!-- 										</div> -->
 
-										<div class="divider"></div>
+<!-- 										<div class="divider"></div> -->
 
 										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf')} ? 'bad'">
 											<div class="col-lg-1 col-xs-12"></div>
@@ -324,6 +324,9 @@
 									</th:block>
 									<li class="divider actions" th:if="${accreditamentoWrapper.canConfermaValutazione or accreditamentoWrapper.canPresaVisione}"></li>
 									<li><a th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></a></li>
+									<th:block th:if="${accreditamentoWrapper.accreditamento.isValutazioneSulCampo()}">
+										<li><a th:text="#{label.scarica_pdf_verbale}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbale/pdf|}"></a></li>
+									</th:block>
 								</ul>
 							</div>
 							<div class="dropdown pull-right">

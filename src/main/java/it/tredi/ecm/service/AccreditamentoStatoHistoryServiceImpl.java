@@ -32,14 +32,16 @@ public class AccreditamentoStatoHistoryServiceImpl implements AccreditamentoStat
 	}
 
 	@Override
-	public void createHistoryFine(Accreditamento accreditamento, Long processInstanceId, AccreditamentoStatoEnum stato, LocalDateTime dataFine) {
+	public void createHistoryFine(Accreditamento accreditamento, Long processInstanceId, AccreditamentoStatoEnum stato, AccreditamentoStatoEnum statoPrecedente, LocalDateTime dataInizio, boolean presaVisione) {
 		LOGGER.info("Registrazione history accreditamento");
 		AccreditamentoStatoHistory history = new AccreditamentoStatoHistory();
 		history.setAccreditamento(accreditamento);
 		history.setProcessInstanceId(processInstanceId);
 		history.setStato(stato);
-		history.setDataFine(dataFine);
+		history.setDataInizio(dataInizio);
 		history.setAccount(null);
+		history.setPrevStato(statoPrecedente);
+		history.setPresaVisione(presaVisione);
 		accreditamentoStatoHistoryRepository.save(history);
 	}
 }
