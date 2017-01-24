@@ -133,23 +133,33 @@
 						</div>
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
-							<div class="icon"><i class="fa fa-search"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeValutazioneIntegrazione}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeValutazioneIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_valutare_integrazione}"></p>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('accreditamento/assegnamento/list')">
 							<div class="icon"><i class="fa fa-refresh"></i></div>
 							<div class="col-xs-10">
 			                	<div class="count" th:text="${homeWrapper.domandeAssegnamento}"></div>
 			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeAssegnamento == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
 			                	<p class="count-text" th:text="#{label.da_riassegnare}"></p>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/richiestaIntegrazione/list')">
+							<div class="icon"><i class="fa fa-pencil"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.domandeSbloccoCampiIntegrazione}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeSbloccoCampiIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.di_cui_richiedere_integrazione}"></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
+							<div class="icon"><i class="fa fa-search"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.domandeValutazioneIntegrazione}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeValutazioneIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.da_valutare_integrazione}"></p>
 							</div>
 						</div>
 					</div>
@@ -163,6 +173,7 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('accreditamento/scadenza/list')">
 							<div class="icon"><i class="fa fa-calendar"></i></div>
@@ -173,7 +184,6 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('referee/list')">
 							<div class="icon"><i class="fa fa-eye-slash"></i></div>
@@ -184,7 +194,6 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('provider/list')">
 							<div class="icon"><i class="fa fa-eye-slash"></i></div>
@@ -195,7 +204,6 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('provider/pianoFormativoNotInserito/list')">
 							<div class="icon"><i class="fa fa-calendar-o"></i></div>
@@ -206,7 +214,6 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('eventi/CREDITI_NON_CONFERMATI/list')">
 							<div class="icon"><i class="fa fa-pencil-square-o"></i></div>
@@ -217,7 +224,6 @@
 							</div>
 						</div>
 					</div>
-
 				</div>
 
 				<!-- COMMISSIONE -->

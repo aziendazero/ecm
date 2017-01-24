@@ -826,6 +826,56 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 	}
 
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiByGruppoAndTipoDomanda(String gruppo, AccreditamentoTipoEnum tipo, Boolean filterTaken) {
+		Set<AccreditamentoStatoEnum> stati = AccreditamentoStatoEnum.getAllStatoByGruppo(gruppo);
+		if (tipo != null) {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento del gruppo " + gruppo + " di tipo " + tipo + " NON prese in carica"));
+				return accreditamentoRepository.findAllByStatoInAndTipoDomandaNotTaken(stati, tipo);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento del gruppo " + gruppo + " di tipo " + tipo));
+				return accreditamentoRepository.findAllByStatoInAndTipoDomanda(stati, tipo);
+			}
+		}
+		else {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento del gruppo " + gruppo + " NON prese in carica"));
+				return accreditamentoRepository.findAllByStatoInNotTaken(stati);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Recupero delle domande di accreditamento del gruppo " + gruppo));
+				return accreditamentoRepository.findAllByStatoIn(stati);
+			}
+		}
+	}
+
+	@Override
+	public int countAllAccreditamentiByGruppoAndTipoDomanda(String gruppo, AccreditamentoTipoEnum tipo, Boolean filterTaken) {
+		Set<AccreditamentoStatoEnum> stati = AccreditamentoStatoEnum.getAllStatoByGruppo(gruppo);
+		if (tipo != null) {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento del gruppo " + gruppo + " di tipo " + tipo + " NON prese in carica"));
+				return accreditamentoRepository.countAllByStatoInAndTipoDomandaNotTaken(stati, tipo);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento del gruppo " + gruppo + " di tipo " + tipo));
+				return accreditamentoRepository.countAllByStatoInAndTipoDomanda(stati, tipo);
+			}
+		}
+		else {
+			if (filterTaken != null && filterTaken == true) {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento del gruppo " + gruppo + " NON prese in carica"));
+				return accreditamentoRepository.countAllByStatoInNotTaken(stati);
+			}
+			else {
+				LOGGER.debug(Utils.getLogMessage("Conteggio delle domande di accreditamento del gruppo " + gruppo));
+				return accreditamentoRepository.countAllByStatoIn(stati);
+			}
+		}
+	}
+
 	//recupera tutti gli accreditamenti in stato INS_ODG NON ancora inseriti in NESSUNA seduta NON bloccata
 	@Override
 	public Set<Accreditamento> getAllAccreditamentiInseribiliInODG() {

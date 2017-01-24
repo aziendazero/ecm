@@ -1250,6 +1250,8 @@ public class AccreditamentoController {
 				label = "label.listaDomandeDaValutare" + stringTipo;
 			if (gruppo.equals("valutazione"))
 				label = "label.listaDomandeDaValutareIntegrazione" + stringTipo;
+			if (gruppo.equals("integrazione"))
+				label = "label.listaDomandeIntegrazione" + stringTipo;
 			if (gruppo.equals("richiestaIntegrazione"))
 				label = "label.listaDomandeRichiestaIntegrazione" + stringTipo;
 			if (gruppo.equals("preavvisoRigetto"))

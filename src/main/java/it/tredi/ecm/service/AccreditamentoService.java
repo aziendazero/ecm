@@ -71,6 +71,9 @@ public interface AccreditamentoService{
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Boolean filterTaken);
 	public int countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum stato, AccreditamentoTipoEnum tipo, Boolean filterTaken);
 
+	public Set<Accreditamento> getAllAccreditamentiByGruppoAndTipoDomanda(String gruppo, AccreditamentoTipoEnum tipo, Boolean filterTaken);
+	public int countAllAccreditamentiByGruppoAndTipoDomanda(String gruppo, AccreditamentoTipoEnum tipo, Boolean filterTaken);
+
 	public Set<Accreditamento> getAllAccreditamentiInseribiliInODG();
 	public int countAllAccreditamentiInseribiliInODG();
 
@@ -100,4 +103,5 @@ public interface AccreditamentoService{
 
 	public void inviaEmailConvocazioneValutazioneSulCampo(Long accreditamentoId) throws Exception;
 	public void inviaValutazioneTeamLeader(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
+
 }

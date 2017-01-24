@@ -98,6 +98,7 @@ public class LoginController {
 					wrapper.setIsSegreteria(true);
 					wrapper.setDomandeNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, true));
 					wrapper.setDomandeAssegnamento(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.ASSEGNAMENTO, null, null));
+					wrapper.setDomandeSbloccoCampiIntegrazione(accreditamentoService.countAllAccreditamentiByGruppoAndTipoDomanda("richiestaIntegrazione", null, null));
 					wrapper.setDomandeValutazioneIntegrazione(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, null, null));
 					wrapper.setDomandeInScadenza(accreditamentoService.countAllAccreditamentiInScadenza());
 					wrapper.setBadReferee(accountService.countAllRefereeWithValutazioniNonDate());
