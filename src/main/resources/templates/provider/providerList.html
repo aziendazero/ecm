@@ -98,6 +98,35 @@
 								<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.canInsertDomandaStandard') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertDomandaStandard')}" class="alert" th:text="#{error.empty}"></div>
 							</div>
 							<div class="divider"></div>
+							<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.canInsertDomandaProvvisoria') or #fields.hasErrors('impostazioniProviderWrapper.dataRinnovoInsertDomandaProvvisoria')} ? 'bad'">
+								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.data_rinnovo_inserimento_domanda_accreditamento_provvisorio}"></label>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+									<div class="col-xs-6">
+										<div class="radio">
+											<label>
+												<input id="radioDomandaProv-Si" type="radio" class="flat" th:value="${true}" th:field="${impostazioniProviderWrapper.canInsertDomandaProvvisoria}" />
+												<span th:text="#{label.abilita}">abilita</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input id="radioDomandaProv-No" type="radio" class="flat" th:value="${false}" th:field="${impostazioniProviderWrapper.canInsertDomandaProvvisoria}" />
+												<span th:text="#{label.disabilita}">disabilita</span>
+											</label>
+										</div>
+									</div>
+									<label class="control-label col-xs-6" th:text="#{label.a_partire_da}"></label>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 input-group datapick">
+									<input type="text" id="dataDomandaProv" class="form-control data"
+										th:field="${impostazioniProviderWrapper.dataRinnovoInsertDomandaProvvisoria}" />
+									<span class="input-group-addon" id="dataDomandaProvButton" onclick="$('#dataDomandaProv').click()">
+			 							<i class="glyphicon glyphicon-calendar"></i>
+									</span>
+								</div>
+								<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.canInsertDomandaProvvisoria') or #fields.hasErrors('impostazioniProviderWrapper.dataRinnovoInsertDomandaProvvisoria')}" class="alert" th:text="#{error.empty}"></div>
+							</div>
+							<div class="divider"></div>
 							<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.canInsertRelazioneAnnuale') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertRelazioneAnnuale')} ? 'bad'">
 								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.posticipo_inserimento_relazione_annuale}"></label>
 								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
@@ -217,8 +246,8 @@
 										<a th:href="@{|/provider/${provider.id}/relazioneAnnuale/list|}" class="btn btn-primary min-icon-width" th:title="#{label.relazione_annuale_provider}"><i class="fa fa-file-text"> </i></a>
 										<a th:href="@{|/provider/${provider.id}/pagamento/list|}" class="btn btn-primary min-icon-width" th:title="#{label.contributo_annuale_provider}"><i class="fa fa-euro"> </i></a>
 										<button type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalImpostazioni(${provider.id}, ${provider.canInsertPianoFormativo}, ${provider.canInsertEvento},
-											${provider.canInsertAccreditamentoStandard}, ${provider.canInsertRelazioneAnnuale}, '${provider.status}', '${provider.dataScadenzaInsertPianoFormativo}', '${provider.dataScadenzaInsertAccreditamentoStandard}',
-											'${provider.dataScadenzaInsertRelazioneAnnuale}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
+											${provider.canInsertAccreditamentoStandard}, ${provider.canInsertAccreditamentoProvvisorio}, ${provider.canInsertRelazioneAnnuale}, '${provider.status}', '${provider.dataScadenzaInsertPianoFormativo}', '${provider.dataScadenzaInsertAccreditamentoStandard}',
+											'${provider.dataRinnovoInsertAccreditamentoProvvisorio}', '${provider.dataScadenzaInsertRelazioneAnnuale}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
 									</td>
 								</tr>
 							</tbody>
@@ -262,8 +291,8 @@
 				})
 
 			    function openModalImpostazioni(idProvider,
-						canInsertPF, canInsertEventi, canInsertDomanda, canInsertRelazione,
-						status, dataPF, dataDomanda, dataRelazione) {
+						canInsertPF, canInsertEventi, canInsertDomanda, canInsertDomandaProv, canInsertRelazione,
+						status, dataPF, dataDomanda, dataDomandaProv, dataRelazione) {
 					cleanForm();
 					//action
 					$("#scadenze-provider").modal("show");
@@ -282,6 +311,10 @@
 						$("#radioDomanda-Si").iCheck("check")
 					else
 						$("#radioDomanda-No").iCheck("check")
+					if(canInsertDomandaProv)
+						$("#radioDomandaProv-Si").iCheck("check")
+					else
+						$("#radioDomandaProv-No").iCheck("check")
 					if(canInsertRelazione)
 						$("#radioRelazione-Si").iCheck("check")
 					else
@@ -300,6 +333,11 @@
 					if(dataDomanda != "null" && dataDomanda != "undefined"){
 						var dataScadenzaDomanda = moment(dataDomanda, "YYYY-MM-DD", true).format("DD/MM/YYYY");
 						$("#dataDomanda").val(dataScadenzaDomanda);
+					}
+
+					if(dataDomandaProv != "null" && dataDomandaProv != "undefined"){
+						var dataRinnovoDomandaProv = moment(dataDomandaProv, "YYYY-MM-DD", true).format("DD/MM/YYYY");
+						$("#dataDomandaProv").val(dataRinnovoDomandaProv);
 					}
 
 					if(dataRelazione != "null" && dataRelazione != "undefined"){

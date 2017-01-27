@@ -122,6 +122,11 @@ public class Provider extends BaseEntity{
 	@Column(name = "data_insert_accreditamento_standard")//termine per invio domanda standard dopo attivazione da parte della segreteria (90 gg dall'abilitazione)
 	private LocalDate dataScadenzaInsertAccreditamentoStandard;
 
+	@Column(name ="can_insert_accreditamento_provvisorio")
+	private boolean canInsertAccreditamentoProvvisorio;
+	@Column(name = "data_rinnovo_inster_accreditamento_provvisorio")//data dalla quale è possibile ripresentare una nuova domanda provvisoria (almeno 6mesi da diniego standard)
+	private LocalDate dataRinnovoInsertAccreditamentoProvvisorio;
+
 	@Column(name ="can_insert_piano_formativo")
 	private boolean canInsertPianoFormativo;
 	@Column(name = "data_insert_piano_formativo")
@@ -226,6 +231,18 @@ public class Provider extends BaseEntity{
 		return false;
 	}
 
+	public boolean canInsertAccreditamentoProvvisorio() {
+		//se flag disattivato - non permetto l'inserimento
+		if(!canInsertAccreditamentoProvvisorio)
+			return false;
+
+		//se flag attivato, controllo la data
+		if(dataRinnovoInsertAccreditamentoProvvisorio != null && LocalDate.now().isAfter(dataRinnovoInsertAccreditamentoProvvisorio))
+			return true;
+
+		return false;
+	}
+
 	public boolean canInsertPianoFormativo(){
 		//se flag disattivato - non permetto l'inserimento
 		if(!canInsertPianoFormativo)
@@ -261,4 +278,5 @@ public class Provider extends BaseEntity{
 
 		return false;
 	}
+
 }

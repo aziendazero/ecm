@@ -1,0 +1,17 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170126_001_columns_per_reinserimento_accreditamentoProvvisorio.xml">
+    <changeSet author="tiommi (generated)" id="1485427180683-1">
+        <addColumn tableName="provider">
+            <column name="can_insert_accreditamento_provvisorio" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1485427180683-2">
+        <addColumn tableName="provider">
+            <column name="data_rinnovo_inster_accreditamento_provvisorio" type="date"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

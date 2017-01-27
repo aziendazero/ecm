@@ -1396,7 +1396,7 @@ public class AccreditamentoController {
 			accreditamentoService.approvaIntegrazione(accreditamentoId);
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/presaVisione"),ex);
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/runtimeTest"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 			return "redirect:/accreditamento/{accreditamentoId}/show";

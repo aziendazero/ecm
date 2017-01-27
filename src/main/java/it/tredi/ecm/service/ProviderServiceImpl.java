@@ -174,6 +174,8 @@ public class ProviderServiceImpl implements ProviderService {
 		File delega = providerRegistrationWrapper.getDelega();
 
 		provider.setStatus(ProviderStatoEnum.INSERITO);
+		provider.setCanInsertAccreditamentoProvvisorio(true);
+		provider.setDataRinnovoInsertAccreditamentoProvvisorio(LocalDate.now().minusDays(1));
 		save(provider);
 
 		if(account.getProfiles().isEmpty()){
@@ -215,6 +217,11 @@ public class ProviderServiceImpl implements ProviderService {
 	public boolean canInsertAccreditamentoStandard(Long providerId) {
 		Provider provider = providerRepository.findOne(providerId);
 		return provider.canInsertAccreditamentoStandard();
+	}
+	@Override
+	public boolean canInsertAccreditamentoProvvisorio(Long providerId) {
+		Provider provider = providerRepository.findOne(providerId);
+		return provider.canInsertAccreditamentoProvvisorio();
 	}
 	@Override
 	public boolean canInsertEvento(Long providerId) {
@@ -530,12 +537,15 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setCanInsertPianoFormativo(wrapper.getCanInsertPianoFormativo());
 		provider.setCanInsertEvento(wrapper.getCanInsertEventi());
 		provider.setCanInsertAccreditamentoStandard(wrapper.getCanInsertDomandaStandard());
+		provider.setCanInsertAccreditamentoProvvisorio(wrapper.getCanInsertDomandaProvvisoria());
 		provider.setCanInsertRelazioneAnnuale(wrapper.getCanInsertRelazioneAnnuale());
 		//date scadenza permessi
 		if(provider.isCanInsertPianoFormativo())
 			provider.setDataScadenzaInsertPianoFormativo(wrapper.getDataScadenzaInsertPianoFormativo());
 		if(provider.isCanInsertAccreditamentoStandard())
 			provider.setDataScadenzaInsertAccreditamentoStandard(wrapper.getDataScadenzaInsertDomandaStandard());
+		if(provider.isCanInsertAccreditamentoProvvisorio())
+			provider.setDataRinnovoInsertAccreditamentoProvvisorio(wrapper.getDataRinnovoInsertDomandaProvvisoria());
 		if(provider.isCanInsertRelazioneAnnuale())
 			provider.setDataScadenzaInsertRelazioneAnnuale(wrapper.getDataScadenzaInsertRelazioneAnnuale());
 		//status provider

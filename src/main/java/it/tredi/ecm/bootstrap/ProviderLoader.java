@@ -1,5 +1,6 @@
 package it.tredi.ecm.bootstrap;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -106,6 +107,8 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 				provider.setNoProfit(false);
 				provider.setCodiceCogeaps("ORG213");
 				provider.setEmailStruttura("provider" + i + "@3di.it");
+				provider.setCanInsertAccreditamentoProvvisorio(true);
+				provider.setDataRinnovoInsertAccreditamentoProvvisorio(LocalDate.now().minusDays(1));
 
 				provider.setStatus(ProviderStatoEnum.INSERITO);
 				//provider.setAccount(account);
@@ -118,8 +121,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 				account.setProvider(provider);
 				account.setNome("Amministratore");
 				account.setCognome("Provider");
-				accountRepository.save(account)
-				;
+				accountRepository.save(account);
 
 				Accreditamento accreditamento = null;
 				try{

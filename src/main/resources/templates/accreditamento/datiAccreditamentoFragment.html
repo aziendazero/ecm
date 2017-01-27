@@ -88,6 +88,8 @@
 								<th:block th:if="${valutabile}">
 			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 				              			<div th:text="${datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento}"></div>
+				              			<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__]?.modificatoInIntegrazione == false and
+				              				datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.tipologiaAccreditamento')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 			                    	</div>
 			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 										<div class="radio">
@@ -164,6 +166,8 @@
 			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 				              			<div th:each="proceduraFormativa, row : ${proceduraFormativaList}">
 											<div th:if="${#lists.contains(datiAccreditamentoWrapper.datiAccreditamento.procedureFormative, proceduraFormativa)}" th:text="${proceduraFormativa.nome}"></div>
+											<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.modificatoInIntegrazione == false and
+												datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 										</div>
 			                    	</div>
 			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
@@ -240,6 +244,8 @@
 								<th:block th:if="${valutabile}">
 			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 				              			<div th:text="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento}"></div>
+				              			<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__]?.modificatoInIntegrazione == false and
+				              				datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.professioniAccreditamento')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 			                    	</div>
 			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 										<div class="radio">
@@ -367,12 +373,16 @@
 									<th:block th:if="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
 										<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 											<div th:text="#{label.tutte_le_professioni}"></div>
+											<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.modificatoInIntegrazione == false and
+												datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 										</div>
 									</th:block>
 									<th:block th:unless="${datiAccreditamentoWrapper.datiAccreditamento.professioniAccreditamento == 'Generale'}">
 				                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 					              			<button type="button" class="btn btn-default toggleButtons" th:text="#{label.mostra}" onclick="showTable()"></button>
 					              			<button type="button" class="btn btn-default toggleButtons" style="display: none;" th:text="#{label.nascondi}" onclick="showTable()"></button>
+					              			<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.modificatoInIntegrazione == false and
+					              				datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.discipline')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 				                    	</div>
 				                    </th:block>
 			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
@@ -475,6 +485,8 @@
 			                    		<div>
 				              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoComplessivoValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
 			                    		</div>
+			                    		<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__]?.modificatoInIntegrazione == false and
+			                    			datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoComplessivo')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 			                    	</div>
 			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 										<div class="radio">
@@ -600,6 +612,8 @@
 			                    		<div>
 				              				<span class="bold" th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneAnnoTre} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre != null ? #numbers.formatDecimal(datiAccreditamentoWrapper.datiAccreditamento.datiEconomici.fatturatoFormazioneValoreTre, 1, 'POINT', 2, 'COMMA') : '--'}"></span>
 			                    		</div>
+			                    		<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__]?.modificatoInIntegrazione == false and
+			                    			datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.datiEconomici.fatturatoFormazione')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 			                    	</div>
 			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 										<div class="radio">
@@ -723,6 +737,8 @@
 			                    		<div>
 				              				<span class="bold" th:text="#{label.altro_personale} + ': '"></span><span th:text="${datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneAltro}"></span>
 			                    		</div>
+			                    		<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__]?.modificatoInIntegrazione == false and
+			                    			datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.numeroDipendenti')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 			                    	</div>
 			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 										<div class="radio">

@@ -27,6 +27,7 @@ public interface ProviderService {
 	public boolean canInsertPianoFormativo(Long providerId);
 	public boolean canInsertEvento(Long providerId);
 	public boolean canInsertAccreditamentoStandard(Long providerId);
+	public boolean canInsertAccreditamentoProvvisorio(Long providerId);
 	public boolean canInsertRelazioneAnnuale(Long providerId);
 	public boolean hasAlreadySedeLegaleProvider(Provider provider, Sede sede);
 
@@ -49,4 +50,5 @@ public interface ProviderService {
 	public void eseguiUpdateDataPianoFormativo();
 	public void eseguiUpdateDataDomandaStandard();
 	public void eseguiUpdateDataRelazioneAnnuale();
+
 }

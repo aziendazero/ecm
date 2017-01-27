@@ -23,6 +23,8 @@ public class ImpostazioniProviderValidator {
 			errors.rejectValue(prefix + "canInsertEventi", "error.empty");
 		if(impostazioni.getCanInsertDomandaStandard() == null)
 			errors.rejectValue(prefix + "canInsertDomandaStandard", "error.empty");
+		if(impostazioni.getCanInsertDomandaProvvisoria() == null)
+			errors.rejectValue(prefix + "canInsertDomandaProvvisoria", "error.empty");
 		if(impostazioni.getCanInsertRelazioneAnnuale() == null)
 			errors.rejectValue(prefix + "canInsertRelazioneAnnuale", "error.empty");
 
@@ -35,6 +37,10 @@ public class ImpostazioniProviderValidator {
 				&& impostazioni.getCanInsertDomandaStandard() == true
 				&& impostazioni.getDataScadenzaInsertDomandaStandard() == null)
 			errors.rejectValue(prefix + "dataScadenzaInsertDomandaStandard", "error.empty");
+		if(impostazioni.getCanInsertDomandaProvvisoria() != null
+				&& impostazioni.getCanInsertDomandaProvvisoria() == true
+				&& impostazioni.getDataRinnovoInsertDomandaProvvisoria() == null)
+			errors.rejectValue(prefix + "dataRinnovoInsertDomandaProvvisoria", "error.empty");
 		if(impostazioni.getCanInsertRelazioneAnnuale() != null
 				&& impostazioni.getCanInsertRelazioneAnnuale() == true
 				&& impostazioni.getDataScadenzaInsertRelazioneAnnuale() == null)

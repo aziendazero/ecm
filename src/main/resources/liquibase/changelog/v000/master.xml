@@ -49,4 +49,9 @@
 
 	<include file="20170124_002_applySQL_swap_dataFine_dataInizio.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170126_001_columns_per_reinserimento_accreditamentoProvvisorio.xml" relativeToChangelogFile="true"/>
+	<include file="20170126_002_flag_fieldValutazione_modificato_integrazione.xml" relativeToChangelogFile="true"/>
+
+	<include file="20170127_002_applySQL_update_obiettiviDiSistema.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

@@ -87,6 +87,8 @@
 		                    <th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${providerWrapper.provider.tipoOrganizzatore.nome}"></div>
+			              			<div th:if="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__]?.modificatoInIntegrazione == false and
+			              				providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.tipoOrganizzatore')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -147,6 +149,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${providerWrapper.provider.denominazioneLegale}"></div>
+			              			<div th:if="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__]?.modificatoInIntegrazione == false and
+			              				providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.denominazioneLegale')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -229,6 +233,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${providerWrapper.provider.partitaIva != null ? providerWrapper.provider.partitaIva : 'valore non inserito'}" th:class="${providerWrapper.provider.partitaIva == null ? 'red' : ''}"></div>
+			              			<div th:if="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__]?.modificatoInIntegrazione == false and
+			              				providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.partitaIva')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -290,6 +296,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${providerWrapper.provider.codiceFiscale}"></div>
+			              			<div th:if="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__]?.modificatoInIntegrazione == false and
+			              				providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.codiceFiscale')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -364,6 +372,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${providerWrapper.provider.ragioneSociale}"></div>
+			              			<div th:if="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__]?.modificatoInIntegrazione == false and
+			              				providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.ragioneSociale')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -424,6 +434,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${providerWrapper.provider.emailStruttura}"></div>
+			              			<div th:if="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.emailStruttura')}__]?.modificatoInIntegrazione == false and
+			              				providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.emailStruttura')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -495,6 +507,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${providerWrapper.provider.naturaOrganizzazione}"></div>
+			              			<div th:if="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__]?.modificatoInIntegrazione == false and
+			              				providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.naturaOrganizzazione')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -566,6 +580,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${providerWrapper.provider.noProfit ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+			              			<div th:if="${providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__]?.modificatoInIntegrazione == false and
+			              				providerWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('provider.noProfit')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">

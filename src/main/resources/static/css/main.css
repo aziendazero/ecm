@@ -797,7 +797,6 @@ h2 {
 .margin-valutabile {
 	height: 60px;
 	margin: 0;
-	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
@@ -1458,3 +1457,6 @@ li.listStyle-elenco > label{
 	margin-left: 10px;
 }
 
+.big-icon {
+	font-size: 25px;
+}

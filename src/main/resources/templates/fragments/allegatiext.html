@@ -75,6 +75,8 @@
 	        	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 	            	<div class="" th:unless="${__${wrapper}__.__${propertyName}__.new}"><div><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div></div>
 					<div class="" th:if="${__${wrapper}__.__${propertyName}__.new}"><div class="danger" th:text="#{label.allegato_non_inserito}"></div></div>
+					<div th:if="${__${wrapper}__.mappa[__${idField}__]?.modificatoInIntegrazione == false and
+						__${wrapper}__.mappa[__${idField}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 	            </div>
 	            <div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 					<div class="radio">

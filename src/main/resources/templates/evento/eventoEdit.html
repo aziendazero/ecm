@@ -1320,7 +1320,7 @@
 				<label class="col-xs-offset-4 col-xs-4" th:text="${#lists.size(eventoWrapper.responsabiliScientifici)}"></label>
 				<label class="col-xs-offset-4 col-xs-4" th:text="#{label.nessun_responsabile_registrato}"></label>
 			</th:block> -->
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
@@ -1392,7 +1392,7 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="docenti">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
@@ -1467,7 +1467,7 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="responsabileSegreteria">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
@@ -1530,7 +1530,7 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="sponsors">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
@@ -1578,7 +1578,7 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="partners">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
@@ -1627,7 +1627,7 @@
 	<!-- VISUALIZZAZIONE programmaEventoRES -->
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaRES">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
@@ -1812,7 +1812,7 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaFSC">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
@@ -1911,7 +1911,7 @@
 
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaFAD">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione()},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},

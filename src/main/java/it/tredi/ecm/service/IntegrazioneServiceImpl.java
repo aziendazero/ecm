@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.hibernate.cfg.beanvalidation.GroupsPerOperation;
 import org.hibernate.collection.internal.PersistentSet;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
@@ -595,7 +596,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 	}
 
 	@Override
-	public void checkIfFieldIntegraizoniConfirmedForAccreditamento(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) {
+	public void checkIfFieldIntegrazioniConfirmedForAccreditamento(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) {
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 
 		if(!Utils.getSubset(fieldIntegrazioni, SubSetFieldEnum.PROVIDER).isEmpty())

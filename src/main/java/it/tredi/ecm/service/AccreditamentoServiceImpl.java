@@ -114,8 +114,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				Accreditamento accreditamento = new Accreditamento(tipoDomanda);
 				accreditamento.setProvider(provider);
 				accreditamento.enableAllIdField();
-
 				save(accreditamento);
+
+				//se è la seconda volta che inserisco un provvisorio risetto i dati a default
+				if(tipoDomanda == AccreditamentoTipoEnum.PROVVISORIO) {
+					provider.setCanInsertAccreditamentoProvvisorio(false);
+					provider.setDataRinnovoInsertAccreditamentoProvvisorio(null);
+				}
 
 				if(tipoDomanda == AccreditamentoTipoEnum.STANDARD){
 					try{
@@ -238,18 +243,26 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public boolean canProviderCreateAccreditamento(Long providerId,AccreditamentoTipoEnum tipoTomanda) {
-		boolean canProvider = true;
+	public boolean canProviderCreateAccreditamento(Long providerId, AccreditamentoTipoEnum tipoDomanda) {
 
 		//per le domande standard è innanzitutto necessario che la segreteria abiliti il provider
-		if(tipoTomanda == AccreditamentoTipoEnum.STANDARD){
+		if(tipoDomanda == AccreditamentoTipoEnum.STANDARD){
 			if(!providerService.canInsertAccreditamentoStandard(providerId)){
 				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> " + "Non Abilitato"));
 				return false;
 			}
 		}
 
-		Set<Accreditamento> accreditamentoList = getAllAccreditamentiForProvider(providerId,tipoTomanda);
+		//si può reinserire una domanda provvisoria se la standard è stata diniegata e sono passati almeno 6 mesi
+		if(tipoDomanda == AccreditamentoTipoEnum.PROVVISORIO) {
+			Provider provider = providerService.getProvider(providerId);
+			if(!providerService.canInsertAccreditamentoProvvisorio(providerId)) {
+				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> " + "Non può ancora creare una nuova domanda provvisoria"));
+				return false;
+			}
+		}
+
+		Set<Accreditamento> accreditamentoList = getAllAccreditamentiForProvider(providerId, tipoDomanda);
 		for(Accreditamento accreditamento : accreditamentoList){
 			if(accreditamento.isBozza()){
 				LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di " + accreditamento.getStato().name()));
@@ -263,19 +276,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			//SOLO PER IL PROVVISORIO - se e' già attiva una domanda non facciamo crearne altre
 			//PER LA STD invece si...caso del rinnovo
-			if(tipoTomanda == AccreditamentoTipoEnum.PROVVISORIO){
+			if(tipoDomanda == AccreditamentoTipoEnum.PROVVISORIO){
 				if (accreditamento.isDomandaAttiva()){
 					LOGGER.debug(Utils.getLogMessage("Provider(" + providerId + ") - canProviderCreateAccreditamento: False -> Presente domanda " + accreditamento.getId() + " in stato di Domanda Attiva con scadenza " + accreditamento.getDataFineAccreditamento()));
 					return false;
 				}
 
-				//se esiste solo domande cancellate di fatto si puo creare una nuova domanda
-				if(!accreditamento.isCancellato())
-					return false;
 			}
 		}
 
-		return canProvider;
+		return true;
 	}
 
 	@Override
@@ -469,13 +479,26 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		fieldValutazioniSegreteria.forEach(v -> {
 			FieldIntegrazioneAccreditamento field = null;
-			if(v.getEsito().booleanValue()){
-				if(v.getObjectReference() == -1)
-					field = Utils.getField(fieldIntegrazione, v.getIdField());
-				else
-					field = Utils.getField(fieldIntegrazione,v.getObjectReference(), v.getIdField());
-				if(field != null)
-					approved.add(field);
+			if(v.getIdField().getGruppo().isEmpty()) {
+				if(v.getEsito().booleanValue()){
+					if(v.getObjectReference() == -1)
+						field = Utils.getField(fieldIntegrazione, v.getIdField());
+					else
+						field = Utils.getField(fieldIntegrazione,v.getObjectReference(), v.getIdField());
+					if(field != null)
+						approved.add(field);
+				}
+			}
+			//gestione del raggruppamento (non prevista per i multiinstanza)
+			else {
+				if(v.getEsito().booleanValue()){
+					for(IdFieldEnum id : v.getIdField().getGruppo()) {
+						field = Utils.getField(fieldIntegrazione, id);
+						if(field != null) {
+							approved.add(field);
+						}
+					}
+				}
 			}
 		});
 
@@ -487,6 +510,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		integrazioneService.applyIntegrazioneAccreditamentoAndSave(accreditamentoId, approved);
 		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazione);
+
 	}
 
 
@@ -527,6 +551,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
 		approvaIntegrazione(accreditamentoId);
+
+		//disabilito tutti i filedValutazioneAccreditamento
+		for (FieldValutazioneAccreditamento fva : valutazioneSegreteria.getValutazioni()) {
+			fva.setEnabled(false);
+		}
 
 		//setta la data (per la presa visione)
 		valutazioneSegreteria.setDataValutazione(LocalDateTime.now());
@@ -592,13 +621,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//setta la data (per la presa visione)
 		valutazioneSegreteria.setDataValutazione(LocalDateTime.now());
 
-		//Non dovrebbe servire perche' passando in AssegnazioneCRECM la valutazione della segreteria è già bloccata
-		/*
 		//disabilito tutti i filedValutazioneAccreditamento
 		for (FieldValutazioneAccreditamento fva : valutazioneSegreteria.getValutazioni()) {
 			fva.setEnabled(false);
 		}
-		*/
 
 		//inserisce il commento complessivo
 		valutazioneSegreteria.setValutazioneComplessiva(valutazioneComplessiva);
@@ -684,7 +710,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//controllo quali campi sono stati modificati e quali confermati
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
-		integrazioneService.checkIfFieldIntegraizoniConfirmedForAccreditamento(accreditamentoId, fieldIntegrazioneList);
+		integrazioneService.checkIfFieldIntegrazioniConfirmedForAccreditamento(accreditamentoId, fieldIntegrazioneList);
 		fieldIntegrazioneAccreditamentoService.saveSet(fieldIntegrazioneList);
 
 		//per i campi modificati...elimino i field integrazione su tutte le valutazioni presenti
@@ -703,24 +729,54 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		}
 
-		//se ci sono state delle modifiche elimino i fieldValutazione corrispondenti
+		//setto il flag per vedere se ci sono state modifiche di integrazione nei field valutazioni, elimino la vecchia valutazione e li riabilito
 		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
-		FieldValutazioneAccreditamento field = null;
 		for(Valutazione valutazione : valutazioni){
 			Set<FieldValutazioneAccreditamento> fieldValutazioni = valutazione.getValutazioni();
-			for(FieldIntegrazioneAccreditamento fieldIntegrazione : fieldModificati){
-				if(fieldIntegrazione.isModificato()){
-					LOGGER.debug(Utils.getLogMessage("Eliminazione valutazione per " + fieldIntegrazione.getIdField()));
-					if(fieldIntegrazione.getObjectReference() != -1){
-						//multi-istanza
-						field = Utils.getField(fieldValutazioni, fieldIntegrazione.getObjectReference(), fieldIntegrazione.getIdField());
-					}else{
-						//non multi-istanza
-						field = Utils.getField(fieldValutazioni, fieldIntegrazione.getIdField());
+			for(FieldIntegrazioneAccreditamento fieldIntegrazione : fieldIntegrazioneList){
+				FieldValutazioneAccreditamento field = null;
+				LOGGER.debug(Utils.getLogMessage("Sblocco valutazione per " + fieldIntegrazione.getIdField()));
+				if(fieldIntegrazione.getObjectReference() != -1){
+					//multi-istanza
+					field = Utils.getField(fieldValutazioni, fieldIntegrazione.getObjectReference(), fieldIntegrazione.getIdField());
+				}else{
+					//non multi-istanza
+					field = Utils.getField(fieldValutazioni, fieldIntegrazione.getIdField());
+				}
+				if(field != null){
+					field.setEsito(null);
+					field.setEnabled(true);
+					field.setNote(null);
+					if(fieldIntegrazione.isModificato())
+						field.setModificatoInIntegrazione(true);
+					else
+						field.setModificatoInIntegrazione(false);
+					fieldValutazioni.add(field);
+				}
+			}
+			//ciclo per gli idField enum cercado quelli raggruppati (prendo il padre)
+			for(IdFieldEnum id : IdFieldEnum.values()) {
+				FieldIntegrazioneAccreditamento fieldInteg = null;
+				FieldValutazioneAccreditamento fieldVal = null;
+				boolean modificato = false;
+				if(!id.getGruppo().isEmpty()) {
+					//controllo se ci sono fieldIntegrazione attivi per i figli
+					for(IdFieldEnum idGruppo : id.getGruppo()) {
+						fieldInteg = Utils.getField(fieldIntegrazioneList, idGruppo);
+						if(fieldInteg != null) {
+							//se ci sono mi faccio dare il fieldValutazione del padre
+							fieldVal = Utils.getField(fieldValutazioni, id);
+							if(fieldVal != null && fieldInteg.isModificato()) {
+								modificato = true;
+							}
+						}
 					}
-					if(field != null){
-						fieldValutazioni.remove(field);
-						fieldValutazioneAccreditamentoService.delete(field.getId());
+					//modifico di conseguenza il fieldValutazione del padre
+					if(fieldVal != null) {
+						fieldVal.setEsito(null);
+						fieldVal.setEnabled(true);
+						fieldVal.setNote(null);
+						fieldVal.setModificatoInIntegrazione(modificato);
 					}
 				}
 			}
@@ -1440,8 +1496,24 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 			save(accreditamento);
 		}
-		if(stato == AccreditamentoStatoEnum.DINIEGO)
+		if(stato == AccreditamentoStatoEnum.DINIEGO) {
 			provider.setStatus(ProviderStatoEnum.DINIEGO);
+			//se la domanda diniegata è standard setta il necessario per ripresentare una nuova domanda provvisoria
+			Set<Accreditamento> accreditamentiProvvisori = getAllAccreditamentiForProvider(provider.getId(), AccreditamentoTipoEnum.PROVVISORIO);
+			//controllo se c'è un accreditamento provvisorio attivo e se la sua data di scadenza è > a 6 mesi da oggi
+			for(Accreditamento a : accreditamentiProvvisori) {
+				if(a.isDomandaAttiva() && a.getDataFineAccreditamento().isAfter(LocalDate.now().plusMonths(6))) {
+					//in questo caso la data di inserimento nuovo provvisorio  = data fine accreditamento della domanda attiva
+					provider.setCanInsertAccreditamentoProvvisorio(true);
+					provider.setDataRinnovoInsertAccreditamentoProvvisorio(a.getDataFineAccreditamento());
+				}
+				else {
+					//altrimenti la data per il nuovo accreditamento provvisorio è fra 6 mesi da oggi
+					provider.setCanInsertAccreditamentoProvvisorio(true);
+					provider.setDataRinnovoInsertAccreditamentoProvvisorio(LocalDate.now().plusMonths(6));
+				}
+			}
+		}
 		providerService.save(provider);
 		if(stato == AccreditamentoStatoEnum.ACCREDITATO)
 			quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);

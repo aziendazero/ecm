@@ -13,7 +13,7 @@ public interface IntegrazioneService {
 	 * Il detach viene applicato a tutte le entity presenti all'interno attraverso l'introspezione e la reflection
 	 * */
 	public <T> void detach(T obj) throws Exception;
-	
+
 	/**
 	 * Verifica sel'entity è in sessione hibernate o è detached
 	 * Il controllo viene applicato a tutte le entity presenti all'interno attraverso l'introspezione e la reflection
@@ -46,14 +46,14 @@ public interface IntegrazioneService {
 	 * Setting del valore <param>fieldValue</param> specificato da <param>fieldName</param> nell'oggetto <param>dst</param>
 	 * */
 	public void setField(Object dst, String fieldName, Object fieldValue) throws Exception;
-	
+
 	public RichiestaIntegrazioneWrapper prepareRichiestaIntegrazioneWrapper(Long accreditamentoId, SubSetFieldEnum subset, Long objRef);
 	public void saveEnableField(RichiestaIntegrazioneWrapper wrapper);
-	
+
 	/*
 	 * Controlla se le integrazioni contengono effettivamente nuovi valori o sono conferma dei vecchi valori
 	 * Aggiorna i fieldIntegrazioneAccreditamento settando il flag
 	 * */
-	public void checkIfFieldIntegraizoniConfirmedForAccreditamento(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni);
+	public void checkIfFieldIntegrazioniConfirmedForAccreditamento(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni);
 
 }

@@ -159,6 +159,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.persona.anagrafica.cognome}"></div>
+			              			<div th:if="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__]?.modificatoInIntegrazione == false and
+			              				personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -220,6 +222,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.persona.anagrafica.nome}"></div>
+			              			<div th:if="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.nome',personaWrapper.ruolo)}__]?.modificatoInIntegrazione == false and
+			              				personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.nome',personaWrapper.ruolo)}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -281,6 +285,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.persona.anagrafica.codiceFiscale}"></div>
+			              			<div th:if="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.codiceFiscale',personaWrapper.ruolo)}__]?.modificatoInIntegrazione == false and
+			              				personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.codiceFiscale',personaWrapper.ruolo)}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -342,6 +348,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.persona.anagrafica.telefono}"></div>
+			              			<div th:if="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.telefono',personaWrapper.ruolo)}__]?.modificatoInIntegrazione == false and
+			              				personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.telefono',personaWrapper.ruolo)}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -404,6 +412,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.persona.anagrafica.cellulare}"></div>
+			              			<div th:if="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__]?.modificatoInIntegrazione == false and
+			              				personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -467,6 +477,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.persona.anagrafica.email}"></div>
+			              			<div th:if="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.email',personaWrapper.ruolo)}__]?.modificatoInIntegrazione == false and
+			              				personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.email',personaWrapper.ruolo)}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -529,6 +541,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.persona.anagrafica.pec}"></div>
+			              			<div th:if="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__]?.modificatoInIntegrazione == false and
+			              				personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -597,6 +611,8 @@
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.persona.professione.nome}"></div>
+			              			<div th:if="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.professione',personaWrapper.ruolo)}__]?.modificatoInIntegrazione == false and
+			              				personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.professione',personaWrapper.ruolo)}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">

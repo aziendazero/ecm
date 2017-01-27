@@ -14,12 +14,15 @@ public class ImpostazioniProviderWrapper {
 	private Boolean canInsertPianoFormativo;
 	private Boolean canInsertEventi;
 	private Boolean canInsertDomandaStandard;
+	private Boolean canInsertDomandaProvvisoria;
 	private Boolean canInsertRelazioneAnnuale;
 
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate dataScadenzaInsertPianoFormativo;
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate dataScadenzaInsertDomandaStandard;
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
+	private LocalDate dataRinnovoInsertDomandaProvvisoria;
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate dataScadenzaInsertRelazioneAnnuale;
 
