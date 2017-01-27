@@ -364,6 +364,12 @@ public class ProviderServiceImpl implements ProviderService {
 			params.put("tipoOrganizzatoreSelezionati", wrapper.getTipoOrganizzatoreSelezionati());
 		}
 
+		//STATO DEL PROVIDER
+		if(wrapper.getStatoProvider() != null && !wrapper.getStatoProvider().isEmpty()){
+			query = Utils.QUERY_AND(query, "p.status IN :statiProviderSelezionati");
+			params.put("statiProviderSelezionati", wrapper.getStatoProvider());
+		}
+
 		/* INFO RELATIVE ALL'ACCREDITAMENTO */
 		String query_accreditamento ="";
 		HashMap<String, Object> query_accreditamento_params = new HashMap<String, Object>();

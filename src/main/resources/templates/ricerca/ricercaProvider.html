@@ -22,36 +22,36 @@
 					</div>
 
 				<th:block th:fragment="ricercaProvider">
-			
+
 					<div class="x_content">
-			
+
 						<form id="formRicercaEvento" class="form-horizontal form-label-left form-evento"
 							th:action="@{|/provider/ricerca|}"
 							method="post" enctype="multipart/form-data"
 							novalidate="novalidate">
-							
+
 								<!-- ID PROVIDER -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="providerId">
 										<span th:text="${'ID '} + #{label.provider}">Provider</span>
 									</label>
-			
+
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="providerId">
 										<input type="text" pattern="numeric" class="form-control" th:field="${ricercaProviderWrapper.campoIdProvider}" />
 									</div>
 								</div>
-							
+
 								<!-- DENOMINAZIONE LEGALE PROVIDER -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
 										<span th:text="#{label.denominazione_legale} + ${' '}  + #{label.provider}">Provider</span>
 									</label>
-			
+
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneLegale">
 										<input type="text" class="form-control" th:field="${ricercaProviderWrapper.denominazioneLegale}" />
 									</div>
 								</div>
-								
+
 								<!-- TIPO EVENTO -->
 								<div class="item form-group select-tipoOrganizzatore">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoOrganizzatore">
@@ -59,7 +59,7 @@
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<select id="tipoOrganizzatore" 
+										<select id="tipoOrganizzatore"
 											multiple="multiple"
 											class="selectpicker"
 											th:field="${ricercaProviderWrapper.TipoOrganizzatoreSelezionati}"
@@ -75,7 +75,7 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<!-- PROVINCIA  -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="provincia">
@@ -96,22 +96,44 @@
 										</select>
 									</div>
 								</div>
-								
+
+								<!-- STATUS PROVIDER -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="providerStato">
+										<span th:text="#{label.stato_provider}">Provincia</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<select id="providerStato"
+											multiple="multiple" class="selectpicker"
+											th:field="${ricercaProviderWrapper.statoProvider}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona uno stato del Provider...">
+											<option
+												th:each="stato, row: ${T(it.tredi.ecm.dao.enumlist.ProviderStatoEnum).values()}"
+												th:value="${stato}"
+												th:text="${stato.nome}">
+											</option>
+										</select>
+									</div>
+								</div>
+
 								<div class="divider-dashed"></div>
-								
+
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataFineAccreditamento">
 										<h2 th:text="#{label.info_accreditamento}"></h2>
 									</label>
 								</div>
-								
+
 								<!-- PROCEDURA FORMATIVA -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="proceduraFormativa">
 										<span th:text="#{label.tipologia}">Tipologia</span>
 									</label>
 								</div>
-								
+
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia"></label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="proceduraFormativa">
@@ -123,14 +145,14 @@
 										</div>
 									</div>
 								</div>
-								
+
 								<!-- TIPO ACCREDITAMENTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoAccreditamento">
-										<span th:text="#{label.tipo_accreditamento}">tipoAccreditamento</span>
+										<span th:text="#{label.tipo_accreditamento}">tipoAccreditamento</span><span>:</span>
 									</label>
 								</div>
-								
+
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipoAccreditamento"></label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipoAccreditamento">
@@ -142,7 +164,7 @@
 										</div>
 									</div>
 								</div>
-								
+
 								<!-- STATO ACCREDITAMENTO -->
 								<div class="item form-group select-statoAccreditamento">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="statoAccreditamento">
@@ -150,7 +172,7 @@
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<select id="statoAccreditamento" 
+										<select id="statoAccreditamento"
 											multiple="multiple"
 											class="selectpicker"
 											th:field="${ricercaProviderWrapper.accreditamentoStatoSelezionati}"
@@ -166,9 +188,9 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<div class="divider-dashed"></div>
-								
+
 								<!-- DATA FINE ACCREDITAMENTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataFineAccreditamento">
@@ -197,16 +219,16 @@
 										</span>
 									</div>
 								</div>
-								
+
 								<div class="divider-dashed"></div>
-									
+
 								<!-- PAGAMENTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dataFineAccreditamento">
 										<h2 th:text="#{label.contributo_annuale}"></h2>
 									</label>
 								</div>
-								
+
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="quotaAnnuale"></label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="quotaAnnuale">
@@ -222,17 +244,17 @@
 										</div>
 									</div>
 								</div>
-								
+
 							<input id="submitButton" type="submit" style="display: none;" />
-			
+
 						</form>
-			
+
 						<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
 						<script th:inline="javascript">
 						/*<![CDATA[*/
 						     var days;
-							 var months;    
-						           
+							 var months;
+
 						    $(document).ready(function() {
 								//init selecpicker
 							    $('select').selectpicker({
@@ -240,7 +262,7 @@
 									deselectAllText : 'Deseleziona tutti',
 									countSelectedText : '{0} selezionate'
 								});
-								
+
 							    days = getDayNamesShort();
 								months = getMonthNames();
 
@@ -265,16 +287,16 @@
 						                monthNames: months,
 							        }
 							    })
-							    
-								
+
+
 								initProvinciaComune('provincia', 'comune');
 
-							});       
-						           
+							});
+
 							function submitCerca(){
 								$("#submitButton").click();
 							}
-							
+
 							function pulisci(){
 								$('#providerId input').val('');
 								$('#denominazioneLegale input').val('');
@@ -286,13 +308,13 @@
 								$('#dataFineAccreditamentoEnd').val('')
 								$('input[type="radio"]').removeAttr('checked').iCheck('update');
 							}
-							
+
 						/*]]>*/
 						</script>
-			
-			
+
+
 					</div>
-			
+
 				</th:block>
 			</div>
 		</div>
