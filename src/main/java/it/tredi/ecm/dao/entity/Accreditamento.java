@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -132,7 +133,7 @@ public class Accreditamento extends BaseEntity{
 	@Embedded
 	private WorkflowInfo workflowInfoAccreditamento = null;
 
-	@Embedded
+	@ElementCollection
 	private List<WorkflowInfo> workflowInfo = new ArrayList<WorkflowInfo>();
 
 

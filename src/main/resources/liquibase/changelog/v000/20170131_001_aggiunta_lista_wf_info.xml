@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170131_001_aggiunta_lista_wf_info.xml">
+    <changeSet author="tiommi (generated)" id="1485864805025-1">
+        <createTable tableName="accreditamento_workflow_info">
+            <column name="accreditamento_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="wf_data_avvio" type="date"/>
+            <column name="wf_process_definition_id" type="BIGINT"/>
+            <column name="wf_process_definition_name" type="VARCHAR(255)"/>
+            <column name="wf_process_definition_version" type="VARCHAR(255)"/>
+            <column name="wf_process_instance_id" type="BIGINT"/>
+            <column name="wf_stato" type="VARCHAR(255)"/>
+            <column name="wf_tipo" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1485864805025-2">
+        <addForeignKeyConstraint baseColumnNames="accreditamento_id" baseTableName="accreditamento_workflow_info" constraintName="FK_7vjwhk5q1upc3tsswhjgsvi51" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento"/>
+    </changeSet>
+</databaseChangeLog>

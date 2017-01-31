@@ -56,4 +56,6 @@
 
 	<include file="20170130_001_stato_wf_variazioneDati.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170131_001_aggiunta_lista_wf_info.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
