@@ -20,12 +20,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
+import org.javers.core.metamodel.annotation.ShallowReference;
+import org.javers.core.metamodel.annotation.TypeName;
+
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("EventoRES")
 @Entity
 @Getter
 @Setter
@@ -48,6 +52,7 @@ public class EventoRES extends Evento{
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="docente_id")
+	@OrderBy("id")
 	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
 	@Column(columnDefinition="text")
@@ -79,6 +84,7 @@ public class EventoRES extends Evento{
 	private Boolean verificaRicaduteFormative;
 	@Column(columnDefinition = "text")
 	private String descrizioneVerificaRicaduteFormative;
+	@ShallowReference
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
 

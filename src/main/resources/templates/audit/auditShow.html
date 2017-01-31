@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+
+</head>
+<body>
+	<!-- coincide settato a false perchè non importante -->
+	<div layout:fragment="content" th:with="coincide=false">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.visualizzazione}">label.info_sede</h2>
+						<div class="pull-right buttons-header">
+							<a th:if="${false and mode == null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/show|}"></a>
+							<a th:if="${false and mode != null}" class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${sedeWrapper.accreditamentoId}/${mode}|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<div id="toModal">
+						<th:block th:include="audit/auditFragment :: audit('show')"></th:block>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

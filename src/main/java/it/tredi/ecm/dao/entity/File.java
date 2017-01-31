@@ -17,6 +17,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.aspectj.weaver.NewFieldTypeMunger;
+import org.javers.core.metamodel.annotation.DiffIgnore;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -67,6 +68,7 @@ public class File extends BaseEntity{
 	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="file_id")
+	@DiffIgnore
 	private List<FileData> fileData;
 
 	@JsonIgnore public void setData(byte[] dataArray){

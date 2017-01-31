@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.javers.core.metamodel.annotation.TypeName;
+import org.javers.core.metamodel.annotation.ValueObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@TypeName("PersonaEvento")
 public class PersonaEvento extends BaseEntity implements Serializable{
 	/**
 	 *
