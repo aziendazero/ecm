@@ -3,6 +3,7 @@ package it.tredi.ecm.web.bean;
 import java.util.HashSet;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
@@ -24,6 +25,8 @@ public class PersonaWrapper extends Wrapper {
 	private File attoNomina;
 	private File cv;
 	private File delega;
+
+	private Accreditamento accreditamento;
 
 	//per gestione sostituzione full in integrazione
 	private FieldIntegrazioneAccreditamento fullIntegrazione;

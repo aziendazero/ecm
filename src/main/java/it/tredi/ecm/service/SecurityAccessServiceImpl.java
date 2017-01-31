@@ -269,7 +269,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 	@Override
 	public boolean canEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception {
-		return accreditamentoService.canUserEnableField(currentUser, accreditamentoId);
+		return accreditamentoService.canUserEnableField(accreditamentoId, currentUser) || accreditamentoService.canUserStartVariazioneDati(accreditamentoId, currentUser);
 	}
 
 	@Override
@@ -285,7 +285,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 	@Override
 	public boolean canSendIntegrazione(CurrentUser currentUser, Long accreditamentoId) throws Exception{
-		return accreditamentoService.canUserInviaIntegrazione(accreditamentoId, currentUser);
+		return accreditamentoService.canUserInviaIntegrazione(accreditamentoId, currentUser) || accreditamentoService.canUserInviaVariazioneDati(accreditamentoId, currentUser);
 	}
 
 	@Override

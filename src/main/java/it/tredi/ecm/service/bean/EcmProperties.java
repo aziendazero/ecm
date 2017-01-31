@@ -40,4 +40,5 @@ public class EcmProperties {
 	private int RelazioneAnnualeGiornoFineModifica;
 	private int RelazioneAnnualeMeseFineModifica;
 	private int valutazioniNonDateLimit;
+	public int giorniVariazioneDatiAccreditamento;
 }

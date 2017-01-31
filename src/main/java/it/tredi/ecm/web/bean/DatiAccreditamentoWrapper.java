@@ -3,6 +3,7 @@ package it.tredi.ecm.web.bean;
 import java.util.HashSet;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
@@ -17,6 +18,8 @@ public class DatiAccreditamentoWrapper extends Wrapper{
 	private Long providerId;
 	//private Provider provider;
 	private int sezione;
+
+	private Accreditamento accreditamento;
 
 	private File estrattoBilancioComplessivo;
 	private File estrattoBilancioFormazione;

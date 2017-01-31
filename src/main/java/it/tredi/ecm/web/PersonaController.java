@@ -140,8 +140,12 @@ public class PersonaController {
 	//nel secondo caso non riapplico le eventuali integrazioni altrimenti mi ritroverei delle entity attached me mi danno errore.
 	//Distinguo inoltre il prepareWrapper in funzione dello stato della domanda
 	private PersonaWrapper prepareWrapperForReloadByEditId(Persona persona, Long accreditamentoId, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento, AccreditamentoWrapperModeEnum wrapperMode) throws Exception{
-		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
-			return preparePersonaWrapperEdit(persona, isLookup, statoAccreditamento, true);
+		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT) {
+			if(accreditamentoId != null)
+				return preparePersonaWrapperEdit(persona, accreditamentoId, 0L, isLookup, statoAccreditamento, true);
+			else
+				return preparePersonaWrapperEdit(persona, isLookup, statoAccreditamento, true);
+		}
 		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
 			return preparePersonaWrapperValidate(persona, accreditamentoId, 0L, statoAccreditamento, false);
 
@@ -306,8 +310,8 @@ public class PersonaController {
 
 			//Ri-effettuo il detach..non sarebbe indispensabile...ma e' una precauzione a eventuali modifiche future
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
-			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(personaWrapper.getAccreditamentoId());
-			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {
 				for(File file : personaWrapper.getFiles()){
 					if(file != null && !file.isNew()){
 						file.getData().toString();
@@ -328,7 +332,7 @@ public class PersonaController {
 					return EDIT;
 				}else{
 
-					if(personaWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || personaWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+					if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {
 						integraPersona(personaWrapper,false);
 					}else{
 						savePersona(personaWrapper);
@@ -541,9 +545,12 @@ public class PersonaController {
 	 * */
 	private PersonaWrapper preparePersonaWrapperEdit(Persona persona, long accreditamentoId, long providerId, boolean isLookup, AccreditamentoStatoEnum statoAccreditamento,  boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperEdit(" + persona.getId() + "," + accreditamentoId +","+ providerId + "," + isLookup + "," + statoAccreditamento +") - entering"));
+
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		PersonaWrapper personaWrapper = new PersonaWrapper(persona, persona.getRuolo(), accreditamentoId, providerId, AccreditamentoWrapperModeEnum.EDIT);
 		personaWrapper.setStatoAccreditamento(statoAccreditamento);
 		personaWrapper.setIsLookup(isLookup);
+		personaWrapper.setAccreditamento(accreditamento);
 
 		SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
 
@@ -553,14 +560,14 @@ public class PersonaController {
 			}else{
 				if(persona.isComponenteComitatoScientifico()){
 					//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
-					if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+					if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && !(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()))
 						personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 					else
 						personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
 					//personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(accreditamentoId, persona.getId()), subset));
 				}else{
 					//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
-					if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+					if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && !(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()))
 						personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 					else
 						personaWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
@@ -569,7 +576,7 @@ public class PersonaController {
 			}
 		}
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()){
 			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId);
 		}
 

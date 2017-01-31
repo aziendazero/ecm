@@ -28,6 +28,7 @@
 							<input type="hidden" name="editId" th:value="${personaWrapper.persona.id}" />
 							<input type="hidden" name="editId_Anagrafica" th:value="${personaWrapper.persona.anagrafica.id}" />
 							<input type="hidden" th:field="${personaWrapper.accreditamentoId}" />
+							<input th:if="${editabile}" type="hidden" th:field="${personaWrapper.accreditamento}" />
 							<input type="hidden" th:field="${personaWrapper.providerId}" />
 							<input type="hidden" th:field="${personaWrapper.ruolo}" />
 							<input type="hidden" th:field="${personaWrapper.idEditabili}" />
@@ -43,7 +44,7 @@
 						</th:block>
 
 						<!-- info -->
-						<h2 th:if="${personaWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
+						<h2 th:if="${editabile and (personaWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE or personaWrapper.accreditamento.isVariazioneDati())}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
 
 						<div th:if="${valutabile and isFULL}" class="item validateAlert form-group" th:classappend="${#fields.hasErrors('personaWrapper')} ? 'bad'">
 							<th:block>

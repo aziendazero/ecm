@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
@@ -34,6 +35,8 @@ public class AccreditamentoAllegatiWrapper extends Wrapper{
 	private Long pianoQualitaModel;
 	private Long dichiarazioneLegaleModel;
 	private Long dichiarazioneEsclusioneModel;
+
+	private Accreditamento accreditamento;
 
 	public AccreditamentoAllegatiWrapper(){
 		setAttoCostitutivo(new File(FileEnum.FILE_ATTO_COSTITUTIVO));

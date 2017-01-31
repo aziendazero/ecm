@@ -133,6 +133,9 @@ public class AccreditamentoWrapper {
 	private boolean canConfermaValutazione;
 	private boolean canPresaVisione;
 	private boolean canEnableField;
+	private boolean canVariazioneDati;
+	private boolean canSendVariazioneDati;
+
 
 	//flag per vedere se la segreteria può editare
 	private boolean canSegreteriaEdit;

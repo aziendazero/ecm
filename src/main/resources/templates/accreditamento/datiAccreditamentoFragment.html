@@ -27,6 +27,7 @@
 						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${datiAccreditamentoWrapper.datiAccreditamento.id}" />
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.accreditamentoId}" />
+							<input th:if="${editabile}" type="hidden" th:field="${datiAccreditamentoWrapper.accreditamento}" />
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.providerId}" />
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.idEditabili}" />
 							<input type="hidden" th:field="${datiAccreditamentoWrapper.sezione}" />
@@ -42,6 +43,10 @@
 						</th:block>
 
 						<div th:classappend="${datiAccreditamentoWrapper.sezione == 1} ? 'show' : 'hide'">
+
+							<!-- info -->
+							<h2 th:if="${editabile and (datiAccreditamentoWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE or datiAccreditamentoWrapper.accreditamento.isVariazioneDati())}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
+
 							<!-- TIPOLOGIA ACCREDITAMENTO -->
 							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.tipologiaAccreditamento')} ? 'bad'">
 								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.tipologiaAccreditamento') : ''}"></label>
@@ -436,6 +441,10 @@
 						</div>
 
 						<div th:classappend="${datiAccreditamentoWrapper.sezione == 2} ? 'show' : 'hide'">
+
+							<!-- info -->
+							<h2 th:if="${editabile and (datiAccreditamentoWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE or datiAccreditamentoWrapper.accreditamento.isVariazioneDati())}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
+
 							<!-- FATTURATO COMPLESSIVO -->
 							<div th:class="${enableField} ? 'row' : ''">
 								<div class="item">
@@ -691,6 +700,10 @@
 						</div>
 
 						<div th:classappend="${datiAccreditamentoWrapper.sezione == 3} ? 'show' : 'hide'">
+
+							<!-- info -->
+							<h2 th:if="${editabile and (datiAccreditamentoWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE or datiAccreditamentoWrapper.accreditamento.isVariazioneDati())}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
+
 							<!-- NUMERO DIPENDENTI -->
 							<div th:class="${enableField} ? 'row' : ''">
 								<div class="item">
