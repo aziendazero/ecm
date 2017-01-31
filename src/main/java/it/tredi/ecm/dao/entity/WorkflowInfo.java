@@ -4,6 +4,11 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class WorkflowInfo {
-	//data = "20160429" operatore = "regione" ora = "10:11:58" processdefinition_id = "6857662985868768081" 
+	//data = "20160429" operatore = "regione" ora = "10:11:58" processdefinition_id = "6857662985868768081"
 	//processdefinition_name = "Autorizzazione" processdefinition_version = "1.5_test_02" processinstance_id = "26001"
 	@Column(name = "wf_data_avvio")
 	private LocalDate dataAvvio;
@@ -23,4 +28,10 @@ public class WorkflowInfo {
 	private String processDefinitionVersion;
 	@Column(name = "wf_process_instance_id")
 	private Long processInstanceId;
+	@Column(name = "wf_tipo")
+	@Enumerated(EnumType.STRING)
+	private TipoWorkflowEnum tipo;
+	@Column(name = "wf_stato")
+	@Enumerated(EnumType.STRING)
+	private StatoWorkflowEnum stato;
 }

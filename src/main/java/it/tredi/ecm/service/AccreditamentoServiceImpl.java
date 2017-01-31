@@ -38,6 +38,7 @@ import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
@@ -1171,7 +1172,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	/*
 	 * L'utente (segreteria) può abilitare i campi per eventuale modifica
 	 */
-	public boolean canUserEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception {
+	public boolean canUserEnableField(Long accreditamentoId, CurrentUser currentUser) throws Exception {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		if(currentUser.isSegreteria() && (accreditamento.isRichiestaIntegrazione() || accreditamento.isRichiestaPreavvisoRigetto())){
 			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
@@ -1187,7 +1188,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception {
-		return canUserEnableField(currentUser,accreditamentoId);
+		return canUserEnableField(accreditamentoId, currentUser) || canUserInviaCampiVariazioneDati(accreditamentoId, currentUser);
 	}
 
 	@Override
@@ -1209,6 +1210,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					return true;
 				}
 				return false;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canUserInviaVariazioneDati(Long accreditamentoId, CurrentUser currentUser) {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(accreditamento.isModificaDati() && currentUser.isProvider()){
+			Long providerId = getProviderIdForAccreditamento(accreditamentoId);
+			if(currentUser.getAccount().getProvider() != null &&  currentUser.getAccount().getProvider().getId().equals(providerId)){
+				return true;
 			}
 		}
 		return false;
@@ -1632,6 +1645,45 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			dst.add(verbale.getReferenteInformatico().getEmail());
 
 		emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
+	}
+
+	@Override
+	public boolean canUserStartVariazioneDati(Long accreditamentoId, CurrentUser currentUser) {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria()
+				&& accreditamento.isAccreditato()
+				&& (accreditamento.getStatoVariazioneDati() == null
+				|| accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE))
+			return true;
+		else return false;
+	}
+
+	@Override
+	public void avviaFlussoVariazioneDati(Accreditamento accreditamento) {
+		LOGGER.info("Avvio del flusso di Variazione dei Dati dell'Accreditamento: " + accreditamento.getId());
+		//TODO avvia flusso Bonita ABILITAZIONI_CAMPI - togliere riga seguente
+		accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE);
+		save(accreditamento);
+	}
+
+	@Override
+	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId) {
+		LOGGER.info("Invio dei campi sbloccati in Variazione dei Dati dell'Accreditamento: " + accreditamentoId);
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		//i giorni per modificare la domanda sono 10
+		int giorniPerModifica = ecmProperties.getGiorniVariazioneDatiAccreditamento();
+		Long timerModificaVariazioneDati = giorniPerModifica * millisecondiInGiorno;
+		//TODO manda avanti flusso Bonita a MODIFICA - togliere riga seguente
+		accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.INTEGRAZIONE);
+		save(accreditamento);
+	}
+
+	@Override
+	public boolean canUserInviaCampiVariazioneDati(Long accreditamentoId, CurrentUser currentUser) {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE)
+			return true;
+		else return false;
 	}
 
 }

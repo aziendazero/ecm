@@ -1,8 +1,8 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +24,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.VariazioneDatiStatoEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,6 +38,8 @@ public class Accreditamento extends BaseEntity{
 	private AccreditamentoTipoEnum tipoDomanda;
 	@Enumerated(EnumType.STRING)
 	private AccreditamentoStatoEnum stato;
+	@Enumerated(EnumType.STRING)
+	private AccreditamentoStatoEnum statoVariazioneDati;
 	@Column(name = "data_invio")//invio alla segreteria (domanda non più in BOZZA)
 	private LocalDate dataInvio;
 	@Column(name = "data_scadenza")//limite di 180 gg per completare il procedimento
@@ -128,6 +131,11 @@ public class Accreditamento extends BaseEntity{
 
 	@Embedded
 	private WorkflowInfo workflowInfoAccreditamento = null;
+
+	@Embedded
+	private List<WorkflowInfo> workflowInfo = new ArrayList<WorkflowInfo>();
+
+
 
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){
@@ -264,6 +272,18 @@ public class Accreditamento extends BaseEntity{
 
 	public boolean isCancellato(){
 		return stato == AccreditamentoStatoEnum.CANCELLATO;
+	}
+
+	public boolean isVariazioneDati(){
+		return statoVariazioneDati != null && stato == AccreditamentoStatoEnum.ACCREDITATO;
+	}
+
+	public boolean isModificaDati() {
+		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.INTEGRAZIONE;
+	}
+
+	public boolean isAbilitaCampiDati(){
+		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE;
 	}
 
 	public boolean isProcedimentoAttivo(){
