@@ -29,6 +29,8 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.WorkflowTipoEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
@@ -233,7 +235,6 @@ public class WorkflowServiceImpl implements WorkflowService {
 	@Override
 	public WorkflowInfo createWorkflowAccreditamentoProvvisorio(CurrentUser user, Accreditamento accreditamento) throws Exception {
 		//Carico il processDefinition tramite processDefinitionName
-		WorkflowInfo workflowInfo = null;
 		List<ProcessDefinitionDataModel> listProc = bonitaAPIWrapper.getProcessDefinitionCanBeStartedByUser(user.getWorkflowUserDataModel(), WorkflowTipoEnum.ACCREDITAMENTOPROVVISORIO.getNome(), null);
 		if(listProc.size() != 1)
 			throw new Exception("Trovati " + listProc.size() + " process definition con nome " + WorkflowTipoEnum.ACCREDITAMENTOPROVVISORIO.name() + " invece di 1.");
@@ -251,15 +252,16 @@ public class WorkflowServiceImpl implements WorkflowService {
 		workFlowInfo.setProcessDefinitionName(processDefinition.getName());
 		workFlowInfo.setProcessDefinitionVersion(processDefinition.getVersion());
 		workFlowInfo.setProcessInstanceId(processInstanceDataModel.getId());
+		workFlowInfo.setStato(StatoWorkflowEnum.IN_CORSO);
+		workFlowInfo.setTipo(TipoWorkflowEnum.ACCREDITAMENTO);
 		accreditamento.setWorkflowInfoAccreditamento(workFlowInfo);
 		accreditamentoRepository.save(accreditamento);
-		return workflowInfo;
+		return workFlowInfo;
 	}
 
 	@Override
 	public WorkflowInfo createWorkflowAccreditamentoStandard(CurrentUser user, Accreditamento accreditamento) throws Exception {
 		//Carico il processDefinition tramite processDefinitionName
-		WorkflowInfo workflowInfo = null;
 		List<ProcessDefinitionDataModel> listProc = bonitaAPIWrapper.getProcessDefinitionCanBeStartedByUser(user.getWorkflowUserDataModel(), WorkflowTipoEnum.ACCREDITAMENTOSTANDARD.getNome(), null);
 		if(listProc.size() != 1)
 			throw new Exception("Trovati " + listProc.size() + " process definition con nome " + WorkflowTipoEnum.ACCREDITAMENTOSTANDARD.name() + " invece di 1.");
@@ -277,9 +279,79 @@ public class WorkflowServiceImpl implements WorkflowService {
 		workFlowInfo.setProcessDefinitionName(processDefinition.getName());
 		workFlowInfo.setProcessDefinitionVersion(processDefinition.getVersion());
 		workFlowInfo.setProcessInstanceId(processInstanceDataModel.getId());
+		workFlowInfo.setStato(StatoWorkflowEnum.IN_CORSO);
+		workFlowInfo.setTipo(TipoWorkflowEnum.ACCREDITAMENTO);
 		accreditamento.setWorkflowInfoAccreditamento(workFlowInfo);
 		accreditamentoRepository.save(accreditamento);
+		return workFlowInfo;
+	}
+
+	@Override
+	public WorkflowInfo createWorkflowAccreditamentoVariazioneDati(CurrentUser user, Accreditamento accreditamento) throws Exception {
+		//Carico il processDefinition tramite processDefinitionName
+		List<ProcessDefinitionDataModel> listProc = bonitaAPIWrapper.getProcessDefinitionCanBeStartedByUser(user.getWorkflowUserDataModel(), WorkflowTipoEnum.ACCREDITAMENTOVARIAZIONEDATI.getNome(), null);
+		if(listProc.size() != 1)
+			throw new Exception("Trovati " + listProc.size() + " process definition con nome " + WorkflowTipoEnum.ACCREDITAMENTOVARIAZIONEDATI.name() + " invece di 1.");
+		ProcessDefinitionDataModel processDefinition = listProc.get(0);
+		Map<String, Object> variables = new HashMap<String, Object>();
+		variables.put("idProvider", accreditamento.getProvider().getId());
+		variables.put("idAccreditamento", accreditamento.getId());
+
+		long processDefinitionId = bonitaAPIWrapper.getProcessDefinitionId(processDefinition.getName(), processDefinition.getVersion());
+
+		ProcessInstanceDataModel processInstanceDataModel = bonitaAPIWrapper.startProcessInstance(processDefinitionId, user.getWorkflowUserDataModel(), variables);
+		WorkflowInfo workflowInfo = new WorkflowInfo();
+		workflowInfo.setDataAvvio(LocalDate.now());
+		workflowInfo.setProcessDefinitionId(processDefinitionId);
+		workflowInfo.setProcessDefinitionName(processDefinition.getName());
+		workflowInfo.setProcessDefinitionVersion(processDefinition.getVersion());
+		workflowInfo.setProcessInstanceId(processInstanceDataModel.getId());
+		workflowInfo.setStato(StatoWorkflowEnum.IN_CORSO);
+		workflowInfo.setTipo(TipoWorkflowEnum.VARIAZIONE_DATI);
+		accreditamento.getWorkflowInfo().size();
+		List<WorkflowInfo> wfi = accreditamento.getWorkflowInfo();
+		wfi.add(workflowInfo);
+		//accreditamento.getWorkflowInfos().add(workflowInfo);
+		accreditamento.setWorkflowInfo(wfi);
+		accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE);
+
+		accreditamentoRepository.save(accreditamento);
 		return workflowInfo;
+	}
+
+	@Override
+	public WorkflowInfo createWorkflowAccreditamentoConclusioneProcedimento(CurrentUser user, Accreditamento accreditamento) throws Exception {
+		//Carico il processDefinition tramite processDefinitionName
+		List<ProcessDefinitionDataModel> listProc = bonitaAPIWrapper.getProcessDefinitionCanBeStartedByUser(user.getWorkflowUserDataModel(), WorkflowTipoEnum.ACCREDITAMENTOCONCLUSIONEPROCEDIMENTO.getNome(), null);
+		if(listProc.size() != 1)
+			throw new Exception("Trovati " + listProc.size() + " process definition con nome " + WorkflowTipoEnum.ACCREDITAMENTOCONCLUSIONEPROCEDIMENTO.name() + " invece di 1.");
+		ProcessDefinitionDataModel processDefinition = listProc.get(0);
+
+		//Controllo se e' attivo un flusso di accreditamento
+		if(accreditamento.getWorkflowInfoAccreditamento() != null && accreditamento.getWorkflowInfoAccreditamento().getStato() == StatoWorkflowEnum.IN_CORSO) {
+			//Annullo il workflow
+			bonitaAPIWrapper.cancelProcessInstance(accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId());
+			accreditamento.getWorkflowInfoAccreditamento().setStato(StatoWorkflowEnum.ANNULLATO);
+		}
+
+		Map<String, Object> variables = new HashMap<String, Object>();
+		variables.put("idProvider", accreditamento.getProvider().getId());
+		variables.put("idAccreditamento", accreditamento.getId());
+
+		long processDefinitionId = bonitaAPIWrapper.getProcessDefinitionId(processDefinition.getName(), processDefinition.getVersion());
+
+		ProcessInstanceDataModel processInstanceDataModel = bonitaAPIWrapper.startProcessInstance(processDefinitionId, user.getWorkflowUserDataModel(), variables);
+		WorkflowInfo workFlowInfo = new WorkflowInfo();
+		workFlowInfo.setDataAvvio(LocalDate.now());
+		workFlowInfo.setProcessDefinitionId(processDefinitionId);
+		workFlowInfo.setProcessDefinitionName(processDefinition.getName());
+		workFlowInfo.setProcessDefinitionVersion(processDefinition.getVersion());
+		workFlowInfo.setProcessInstanceId(processInstanceDataModel.getId());
+		workFlowInfo.setStato(StatoWorkflowEnum.IN_CORSO);
+		workFlowInfo.setTipo(TipoWorkflowEnum.DECADENZA);
+		accreditamento.getWorkflowInfo().add(workFlowInfo);
+		accreditamentoRepository.save(accreditamento);
+		return workFlowInfo;
 	}
 
 	@Override
