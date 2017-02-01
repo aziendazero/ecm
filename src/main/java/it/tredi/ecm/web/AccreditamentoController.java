@@ -596,7 +596,6 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setCanPresaVisione(accreditamentoService.canUserPresaVisione(accreditamento.getId(), user));
 		//controllo se il provider (accreditato) può aver chiesto una variazione dei dati
 		accreditamentoWrapper.setCanVariazioneDati(accreditamentoService.canUserStartVariazioneDati(accreditamento.getId(), user));
-
 		//controllo se l'utente può visualizzare la valutazione
 		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), user));
 
@@ -643,7 +642,7 @@ public class AccreditamentoController {
 		else
 			accreditamentoWrapper.setAllAccreditamento(accreditamento);
 
-		if(accreditamento.getStato() == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
 		}
 
@@ -939,6 +938,23 @@ public class AccreditamentoController {
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));
+					return "redirect:/accreditamento/{accreditamentoId}/show";
+				}
+			}
+			else if(accreditamento.isValutazioneSegreteriaVariazioneDati()) {
+
+				valutazioneValidator.validateValutazioneVariazioneDati(wrapper, result);
+
+				if(result.hasErrors()){
+					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+					model.addAttribute("confirmErrors", true);
+
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else {
+					accreditamentoService.inviaValutazioneVariazioneDati(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getDestinazioneVariazioneDati(), wrapper.getRefereeVariazioneDati());
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+					redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_variazione_dati_salvata", "success"));
 					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 			}

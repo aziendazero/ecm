@@ -467,6 +467,7 @@ public class SedeController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.SEDE;
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		SedeWrapper sedeWrapper = new SedeWrapper();
 
 		//carico la valutazione per l'utente
@@ -494,7 +495,7 @@ public class SedeController {
 		sedeWrapper.setStatoAccreditamento(statoAccreditamento);
 		sedeWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId);
 		}
 

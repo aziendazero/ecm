@@ -647,6 +647,7 @@ public class PersonaController {
 
 		SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		PersonaWrapper personaWrapper = new PersonaWrapper(persona, persona.getRuolo(), accreditamentoId, providerId, AccreditamentoWrapperModeEnum.VALIDATE);
 		personaWrapper.setStatoAccreditamento(statoAccreditamento);
 		personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
@@ -674,7 +675,7 @@ public class PersonaController {
 		personaWrapper.setMappa(mappa);
 
 		//solo se la valutazione è della segretaeria dopo l'INTEGRAZIONE
-		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId);
 		}
 

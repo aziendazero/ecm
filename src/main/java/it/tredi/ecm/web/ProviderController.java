@@ -516,6 +516,7 @@ public class ProviderController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.PROVIDER;
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
 		providerWrapper.setStatoAccreditamento(statoAccreditamento);
 		providerWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
@@ -537,7 +538,7 @@ public class ProviderController {
 		providerWrapper.setIdEditabili(idEditabili);
 
 		//solo se la valutazione è della segretaeria dopo l'INTEGRAZIONE
-		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(providerWrapper, subset, reloadByEditId);
 		}
 

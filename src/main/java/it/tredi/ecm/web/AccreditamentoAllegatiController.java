@@ -511,7 +511,7 @@ public class AccreditamentoAllegatiController {
 		wrapper.setIdEditabili(idEditabili);
 		wrapper.setMappa(mappa);
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 
