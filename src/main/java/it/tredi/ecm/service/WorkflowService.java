@@ -17,6 +17,8 @@ public interface WorkflowService {
 	public void saveOrUpdateBonitaUserByAccount(Account account) throws Exception;
 	public WorkflowInfo createWorkflowAccreditamentoProvvisorio(CurrentUser user, Accreditamento accreditamento) throws Exception;
 	public WorkflowInfo createWorkflowAccreditamentoStandard(CurrentUser user, Accreditamento accreditamento) throws Exception;
+	public WorkflowInfo createWorkflowAccreditamentoConclusioneProcedimento(CurrentUser user, Accreditamento accreditamento) throws Exception;
+	public WorkflowInfo createWorkflowAccreditamentoVariazioneDati(CurrentUser user, Accreditamento accreditamento) throws Exception;
 	public ProcessInstanceDataModelComplete getProcessInstanceDataModelComplete(long processInstanceId, UserDataModel user) throws Exception;
 	public List<AccreditamentoStatoEnum> getInserimentoEsitoOdgStatiPossibiliAccreditamento(long processInstanceId) throws Exception;
 	public TaskInstanceDataModel currentUserGetTaskForState(Accreditamento accreditamento) throws Exception;

@@ -1,37 +1,21 @@
 package it.tredi.ecm;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.FileInputStream;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.ModelAndView;
 
 import it.tredi.bonita.api.model.ActivityDataModel;
 import it.tredi.bonita.api.model.ProcessInstanceDataModel;
@@ -41,32 +25,25 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
-import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
-import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
-import it.tredi.ecm.dao.enumlist.FileEnum;
-import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
-import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
+import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
-import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.dao.repository.ProfileRepository;
-import it.tredi.ecm.dao.repository.ProviderRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.CurrentUserDetailsService;
-import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.WorkflowService;
-import it.tredi.ecm.service.WorkflowServiceImpl;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.ProcessInstanceDataModelComplete;
-import it.tredi.ecm.web.bean.PersonaWrapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 @Ignore
 @ActiveProfiles("dev")
+//@ActiveProfiles("abarducci")
 @WithUserDetails("segreteria")
 @Rollback(false)
 public class WorkflowTest {
@@ -216,10 +193,21 @@ public class WorkflowTest {
 	@Ignore
 	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
 	public void CreateWorkflowAccreditamentoProvvisorio() throws Exception {
-		CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("provider");
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(306L);
+		CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("provider1");
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(1344L);
 		if(currentUser != null) {
 			workflowService.createWorkflowAccreditamentoProvvisorio(currentUser, accreditamento);
+		}
+	}
+
+	@Test
+	@Ignore
+	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
+	public void CreateWorkflowAccreditamentoVariazioneDati() throws Exception {
+		CurrentUser currentUser = currentUserDetailsService.loadUserByUsername("provider1");
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(1225L);
+		if(currentUser != null) {
+			workflowService.createWorkflowAccreditamentoVariazioneDati(currentUser, accreditamento);
 		}
 	}
 
