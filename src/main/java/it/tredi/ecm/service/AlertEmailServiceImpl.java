@@ -19,6 +19,7 @@ import it.tredi.ecm.dao.entity.AlertEmail;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AlertTipoEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.repository.AlertEmailRepository;
@@ -61,9 +62,9 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 	}
 
 	@Override
-	public void creaAlertForProvider(Accreditamento accreditamento) {
+	public void creaAlertForProvider(Accreditamento accreditamento, WorkflowInfo workflowInCorso) {
 		LOGGER.info("Creazione Alert per Accreditamento");
-		if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
+		if(workflowInCorso.getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
 			if(accreditamento.isPreavvisoRigetto() || accreditamento.isIntegrazione()){
 				LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(LocalDate.now().plusDays(accreditamento.getGiorniIntegrazione()));
 				dataScadenza = dataScadenza.minusDays(2);
@@ -99,9 +100,9 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 				if(!checkIfExistForProvider(tipo, accreditamento.getProvider().getId(), dataScadenza))
 					creaAlertForProvider(tipo, accreditamento.getProvider(), dataScadenza);
 			}
-		} else if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
+		} else if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
 			if(accreditamento.isIntegrazione()){
-				LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(LocalDate.now().plusDays(accreditamento.getWorkflowInCorso().getGiorniIntegrazione()));
+				LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(LocalDate.now().plusDays(workflowInCorso.getGiorniIntegrazione()));
 				dataScadenza = dataScadenza.minusDays(2);
 
 				AlertTipoEnum tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_VARIAZIONE_DATI;

@@ -619,6 +619,36 @@ public class WorkflowServiceImpl implements WorkflowService {
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
 	}
 
+	@Override
+	public void eseguiTaskValutazioneVariazioneDatiForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste, AccreditamentoStatoEnum stato) throws Exception {
+		//Ricavo l'utente corrente
+		CurrentUser user = Utils.getAuthenticatedUser();
+		eseguiTaskValutazioneVariazioneDatiForUser(user, accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste, stato);
+	}
+
+	private void eseguiTaskValutazioneVariazioneDatiForUser(CurrentUser user, Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste, AccreditamentoStatoEnum stato) throws Exception {
+		if(accreditamento.getStatoForWorkflow() != AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
+			LOGGER.error("Non è possibile eseguire il task Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+			throw new Exception("Non è possibile eseguire il task Assegnazione Crecm per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task Valutazione Segreteria Variazione Dati non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task Valutazione Segreteria Variazione Dati non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
+		if(usernameWorkflowValutatoriCrecm != null)
+			bonitaAPIWrapper.setTaskVariable(task.getId(), "usernameListValutazioneCrecm", (Serializable)usernameWorkflowValutatoriCrecm);
+		if(numeroValutazioniCrecmRichieste != null)
+			bonitaAPIWrapper.setTaskVariable(task.getId(), "numeroValutazioniCrecmRichieste", (Serializable)numeroValutazioniCrecmRichieste);
+		if(stato != null)
+			bonitaAPIWrapper.setTaskVariable(task.getId(), "stato", (Serializable)(stato.name()));
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
 	public void eseguiTaskRichiestaIntegrazioneForCurrentUser(Accreditamento accreditamento, Long timerIntegrazioneRigetto) throws Exception {
 		//Ricavo l'utente corrente
 		CurrentUser user = Utils.getAuthenticatedUser();

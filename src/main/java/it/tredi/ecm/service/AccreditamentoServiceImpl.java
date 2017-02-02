@@ -41,7 +41,6 @@ import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
-import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
@@ -738,9 +737,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					}
 				}
 			}
-			else {
-				//cerca una valutazione della segreteria
-			}
 		}
 
 		//setto il flag per vedere se ci sono state modifiche di integrazione nei field valutazioni, elimino la vecchia valutazione e li riabilito
@@ -810,9 +806,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			workflowService.eseguiTaskPreavvisoRigettoForCurrentUser(accreditamento);
 		}
 		else if(accreditamento.isModificaDati()){
-			//TODO manda avanti flusso bonita - variazione dei dati
-			accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA);
-			save(accreditamento);
+			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
 		}
 	}
 
@@ -1512,9 +1506,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.setStato(stato);
 		}
 
-
 		//salvo history
-		accreditamentoStatoHistoryService.createHistoryFine(accreditamento, workflowInCorso.getProcessInstanceId(), stato, accreditamento.getStato(), LocalDateTime.now(), presaVisione);
+		if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI)
+			accreditamentoStatoHistoryService.createHistoryFine(accreditamento, workflowInCorso.getProcessInstanceId(), stato, accreditamento.getStatoVariazioneDati(), LocalDateTime.now(), presaVisione);
+		else
+			accreditamentoStatoHistoryService.createHistoryFine(accreditamento, workflowInCorso.getProcessInstanceId(), stato, accreditamento.getStato(), LocalDateTime.now(), presaVisione);
+
 
 		//TODO se si chiama il servizio di protocollazione verrà settato uno stato intermedio di attesa protocollazione
 		//TODO registrazione cronologia degli stati
@@ -1528,7 +1525,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		}
 
-		alertEmailService.creaAlertForProvider(accreditamento);
+		alertEmailService.creaAlertForProvider(accreditamento, workflowInCorso);
 	}
 
 	@Override
@@ -1776,11 +1773,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public void avviaFlussoVariazioneDati(Accreditamento accreditamento) {
+	public void avviaFlussoVariazioneDati(Accreditamento accreditamento) throws Exception {
 		LOGGER.info("Avvio del flusso di Variazione dei Dati dell'Accreditamento: " + accreditamento.getId());
 		Account segreteria = Utils.getAuthenticatedUser().getAccount();
-		//TODO avvia flusso Bonita ABILITAZIONI_CAMPI - togliere riga seguente
-		accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE);
+		workflowService.createWorkflowAccreditamentoVariazioneDati(Utils.getAuthenticatedUser(), accreditamento);
+
 		//si crea già anche la valutazione per la segreteria che sancisce la presa in carico
 		Valutazione valutazioneSegreteria = new Valutazione();
 		valutazioneSegreteria.setAccount(segreteria);
@@ -1796,14 +1793,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId) {
+	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId) throws Exception {
 		LOGGER.info("Invio dei campi sbloccati in Variazione dei Dati dell'Accreditamento: " + accreditamentoId);
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		//i giorni per modificare la domanda sono 10
 		int giorniPerModifica = ecmProperties.getGiorniVariazioneDatiAccreditamento();
-		Long timerModificaVariazioneDati = giorniPerModifica * millisecondiInGiorno;
-		//TODO manda avanti flusso Bonita a MODIFICA - togliere riga seguente
-		accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.INTEGRAZIONE);
+		Long timerIntegrazioneRigetto = giorniPerModifica * millisecondiInGiorno;
+
+		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
 		save(accreditamento);
 	}
 
@@ -1850,9 +1847,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		if(user.isSegreteria()) {
 
-			if(destinazioneVariazioneDati == AccreditamentoStatoEnum.ACCREDITATO) {
-				//TODO chiamata a Bonita che completa il flusso di Variazione dei dati e dei documenti
-				accreditamento.setStatoVariazioneDati(null);
+			if(destinazioneVariazioneDati == AccreditamentoStatoEnum.CONCLUSO) {
+				workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, null, null, destinazioneVariazioneDati);
 				//elimino le vecchie valutazioni
 				Set<Valutazione> valutazioniVariazioneDati = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamento.getId());
 				for(Valutazione v : valutazioniVariazioneDati) {
@@ -1860,8 +1856,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				}
 			}
 			else {
-				//TODO chiamata a Bonita che assegna il task al referee selezionato e manda lo stato in VALUTAZIONE_CRECM
-				accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
+				List<String> valutatore = new ArrayList<String>();
+				valutatore.add(refereeVariazioneDati.getUsername());
+				workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, valutatore, 1, destinazioneVariazioneDati);
+
 				//creo la valutazione per il referee
 				Valutazione valutazioneReferee = new Valutazione();
 				valutazioneReferee.setAccount(refereeVariazioneDati);
@@ -1879,12 +1877,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		}
 		else {
-			//TODO referee manda avanti flusso in INS_ODG
-			accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.INS_ODG);
+			workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
 		}
-
-		save(accreditamento);
-
 	}
 
 	private Set<IdFieldEnum> getIdEnumDaEditare(Long accreditamentoId) {

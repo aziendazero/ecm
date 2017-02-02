@@ -58,4 +58,5 @@ public interface WorkflowService {
 	//public void eseguiTaskValutazioneSegreteriaForUser(CurrentUser user, Accreditamento accreditamento, Boolean presaVisione) throws Exception;
 
 	public void eseguiTaskValutazioneTeamLeaderForCurrentUser(Accreditamento accreditamento) throws Exception;
+	public void eseguiTaskValutazioneVariazioneDatiForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste, AccreditamentoStatoEnum stato) throws Exception;
 }

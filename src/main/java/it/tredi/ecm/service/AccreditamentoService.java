@@ -107,7 +107,7 @@ public interface AccreditamentoService{
 
 	public void inviaEmailConvocazioneValutazioneSulCampo(Long accreditamentoId) throws Exception;
 	public void inviaValutazioneTeamLeader(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
-	public void avviaFlussoVariazioneDati(Accreditamento accreditamento);
-	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId);
+	public void avviaFlussoVariazioneDati(Accreditamento accreditamento) throws Exception;
+	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId) throws Exception;
 	public void inviaValutazioneVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception;
 }

@@ -122,12 +122,6 @@ public class AccreditamentoController {
 			LOGGER.error(msg);
 			return new ResponseState(true, msg);
 		}
-		//modifico lo stato
-		if(eseguitoDaUtente != null){
-			accreditamentoService.changeState(accreditamentoId, stato, eseguitoDaUtente);
-		} else {
-			accreditamentoService.changeState(accreditamentoId, stato);
-		}
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO) {
@@ -151,7 +145,12 @@ public class AccreditamentoController {
 			}
 		}
 
-
+		//modifico lo stato
+		if(eseguitoDaUtente != null){
+			accreditamentoService.changeState(accreditamentoId, stato, eseguitoDaUtente);
+		} else {
+			accreditamentoService.changeState(accreditamentoId, stato);
+		}
 
 		return new ResponseState(false, "Stato modificato");
 
