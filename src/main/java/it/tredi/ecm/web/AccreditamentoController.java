@@ -591,13 +591,12 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setCanPrendiInCarica(accreditamentoService.canUserPrendiInCarica(accreditamento.getId(), user));
 		accreditamentoWrapper.setCanValutaDomanda(accreditamentoService.canUserValutaDomanda(accreditamento.getId(), user));
 		accreditamentoWrapper.setCanShowValutazioneRiepilogo(accreditamentoService.canUserValutaDomandaShowRiepilogo(accreditamento.getId(), user));
+		accreditamentoWrapper.setCanShowValutazioneStorico(accreditamentoService.canUserValutaDomandaShowStorico(accreditamento.getId(), user));
 		accreditamentoWrapper.setCanEnableField(accreditamentoService.canUserEnableField(accreditamento.getId(), user));
 		//controllo se devo mostrare i pulsanti presa visione/rimanda in valutazione da parte dello stesso crecm
 		accreditamentoWrapper.setCanPresaVisione(accreditamentoService.canUserPresaVisione(accreditamento.getId(), user));
 		//controllo se il provider (accreditato) può aver chiesto una variazione dei dati
-		accreditamentoWrapper.setCanVariazioneDati(accreditamentoService.canUserStartVariazioneDati(accreditamento.getId(), user));
-		//controllo se l'utente può visualizzare la valutazione
-		accreditamentoWrapper.setCanShowValutazione(accreditamentoService.canUserValutaDomandaShow(accreditamento.getId(), user));
+		accreditamentoWrapper.setCanVariazioneDati(accreditamentoService.canUserAbilitaVariazioneDati(accreditamento.getId(), user));
 
 		//controllo se devo mostrare il pulsante per riassegnare i referee crecm e in caso quanti
 		if(accreditamentoService.canRiassegnaGruppo(accreditamento.getId(), user)) {
@@ -958,6 +957,14 @@ public class AccreditamentoController {
 					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 			}
+			else if(accreditamento.isValutazioneCrecmVariazioneDati()) {
+				accreditamentoService.inviaValutazioneVariazioneDati(accreditamentoId, wrapper.getValutazioneComplessiva(), null, null);
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+				redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_variazione_dati_salvata", "success"));
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+
 
 			return goToAccreditamentoValidate(model, accreditamento, wrapper);
 		}

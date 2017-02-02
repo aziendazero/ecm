@@ -59,10 +59,11 @@ public interface AccreditamentoService{
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserPresaVisione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
-	public boolean canUserStartVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canUserAbilitaVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserEnableField(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserInviaCampiVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserInviaVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canUserValutaDomandaShowStorico(Long accreditamentoId, CurrentUser currentUser);
 
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception;
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception;
