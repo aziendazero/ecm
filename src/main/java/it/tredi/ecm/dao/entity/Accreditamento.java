@@ -241,6 +241,10 @@ public class Accreditamento extends BaseEntity{
 		return stato == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE;
 	}
 
+	public boolean isValutazioneCommissioneVariazioneDati() {
+		return statoVariazioneDati == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE;
+	}
+
 	public boolean isIntegrazione() {
 		return stato == AccreditamentoStatoEnum.INTEGRAZIONE;
 	}

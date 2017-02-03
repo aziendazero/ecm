@@ -135,7 +135,7 @@ public class SedutaServiceImpl implements SedutaService {
 
 		//se la domanda era in valutazione commissione e setto lo stato in ins_odg
 		Accreditamento accreditamento = val.getAccreditamento();
-		if(accreditamento.isValutazioneCommissione())
+		if(accreditamento.isValutazioneCommissione() || accreditamento.isValutazioneCommissioneVariazioneDati())
 			workflowService.eseguiTaskInserimentoEsitoOdgForCurrentUser(accreditamento, AccreditamentoStatoEnum.INS_ODG);
 	}
 
@@ -162,7 +162,7 @@ public class SedutaServiceImpl implements SedutaService {
 		for (ValutazioneCommissione vc : seduta.getValutazioniCommissione()) {
 			Set<AccreditamentoStatoEnum> value = new HashSet<AccreditamentoStatoEnum>();
 
-			List<AccreditamentoStatoEnum> possibiliStati = workflowService.getInserimentoEsitoOdgStatiPossibiliAccreditamento(vc.getAccreditamento().getWorkflowInfoAccreditamento().getProcessInstanceId());
+			List<AccreditamentoStatoEnum> possibiliStati = workflowService.getInserimentoEsitoOdgStatiPossibiliAccreditamento(vc.getAccreditamento().getWorkflowInCorso().getProcessInstanceId());
 			value.addAll(possibiliStati);
 
 			value.remove(AccreditamentoStatoEnum.INS_ODG);
