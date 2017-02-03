@@ -26,7 +26,7 @@ public interface SedutaService {
 	public Map<Long, Set<AccreditamentoStatoEnum>> prepareMappaStatiValutazione(Seduta seduta) throws Exception;
 	public void addValutazioneCommissioneToSeduta(String motivazioneDaInserire, Long idAccreditamentoDaInserire, Seduta seduta);
 	public void removeValutazioneCommissioneFromSeduta(Long valutazioneCommissioneId);
-	public 	Seduta getNextSeduta();
+	public Seduta getNextSeduta();
 	public void inviaMailACommissioneEcm() throws Exception;
 	public void bloccaSeduta(Long sedutaId) throws Exception;
 	public void eseguiBloccoSeduteDaBloccare();

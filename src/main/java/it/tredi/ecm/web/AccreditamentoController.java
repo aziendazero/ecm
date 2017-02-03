@@ -297,7 +297,7 @@ public class AccreditamentoController {
 			}
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(id);
 			//avvia il flusso di variazione dei dati se non è ancora stato avviato
-			if(accreditamento.getStatoVariazioneDati() == null)
+			if(accreditamento.getStatoVariazioneDati() == null || accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.CONCLUSO)
 				accreditamentoService.avviaFlussoVariazioneDati(accreditamento);
 			return goToAccreditamentoEnableField(model, accreditamento, tab);
 		}catch (Exception ex){

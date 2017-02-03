@@ -56,8 +56,8 @@
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.id + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
 							<button type="button" class="btn btn-primary" th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></button>
-							<a th:text="#{label.invia_richiesta_integrazione}" class="btn btn-success btn-primary" th:if="${userCanSendRichiestaIntegrazione and !accreditamentoWrapper.accreditamento.isVariazioneDati()}" data-toggle="modal" data-target=".modal-integrazione"></a>
-							<a th:text="#{label.invia_richiesta_integrazione}" class="btn btn-success btn-primary" th:if="${userCanSendRichiestaIntegrazione and accreditamentoWrapper.accreditamento.isVariazioneDati()}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sendRichiestaIntegrazione|}"></a>
+							<a th:text="#{label.invia_richiesta_integrazione}" class="btn btn-success" th:if="${userCanSendRichiestaIntegrazione and !accreditamentoWrapper.accreditamento.isVariazioneDati()}" data-toggle="modal" data-target=".modal-integrazione"></a>
+							<a th:text="#{label.invia_richiesta_integrazione}" class="btn btn-success" th:if="${userCanSendRichiestaIntegrazione and accreditamentoWrapper.accreditamento.isVariazioneDati()}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/sendRichiestaIntegrazione|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>

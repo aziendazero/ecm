@@ -55,14 +55,14 @@
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
 										<label th:class="${!canValutaDomanda} or ${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__]?.enabled == false} ? 'label-disabled'">
-											<input type="radio" class="flat full" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											<input type="radio" class="flat full" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].esito}" value="true" th:disabled="${!canValutaDomanda} or
 											${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
 										<label th:class="${!canValutaDomanda or !sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat full" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											<input type="radio" class="flat full" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].esito}" value="false" th:disabled="${!canValutaDomanda or
 											!sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].enabled}"  />
 											<span th:text="#{label.no}">No</span>
 										</label>
@@ -634,11 +634,12 @@
 			<script th:inline="javascript">
 				$(document).ready(function() {
 					$(".full").on("ifChecked", function() {
-						selezionaTuttiSi();
+						console.log('pippo');
+						//selezionaTuttiSi();
 					});
 
-					handleFull();
-			});
+					//handleFull();
+				});
 
 				function handleFull(){
 					if($(".full").val() == 'true' || $(".full").val() == 'false')

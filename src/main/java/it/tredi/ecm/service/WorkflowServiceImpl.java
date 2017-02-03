@@ -313,7 +313,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 		wfi.add(workflowInfo);
 		//accreditamento.getWorkflowInfos().add(workflowInfo);
 		accreditamento.setWorkflowInfo(wfi);
-		accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE);
+//		accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE);
 
 		accreditamentoRepository.save(accreditamento);
 		return workflowInfo;

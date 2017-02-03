@@ -1518,7 +1518,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamentoRepository.save(accreditamento);
 
 		//se lo stato è DINIEGO o ACCREDITATO cancello le valutazioni attive per la domanda
-		if(stato == AccreditamentoStatoEnum.ACCREDITATO || stato == AccreditamentoStatoEnum.DINIEGO) {
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO || stato == AccreditamentoStatoEnum.DINIEGO || stato == AccreditamentoStatoEnum.CONCLUSO) {
 			Set<Valutazione> valutazioniAttive = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 			for(Valutazione v : valutazioniAttive) {
 				valutazioneService.delete(v);
@@ -1591,7 +1591,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception{
 		workflowService.eseguiTaskInserimentoEsitoOdgForCurrentUser(getAccreditamento(accreditamentoId), stato);
-		settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(seduta.getData(), accreditamentoId, stato);
+		if(!getAccreditamento(accreditamentoId).isVariazioneDati())
+			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(seduta.getData(), accreditamentoId, stato);
 	}
 
 	@Override
@@ -1757,6 +1758,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(currentUser.isSegreteria()
 				&& accreditamento.isAccreditato()
 				&& (accreditamento.getStatoVariazioneDati() == null
+				|| accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.CONCLUSO
 				|| accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE)
 				&& isNotVariazioneDatiPresaInCaricoDaAltri(accreditamento, currentUser.getAccount()))
 			return true;
@@ -1789,7 +1791,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		valutazioneSegreteria.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, valutazioneSegreteria.getAccreditamento()));
 
 		valutazioneService.save(valutazioneSegreteria);
-		save(accreditamento);
 	}
 
 	@Override
@@ -1801,7 +1802,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Long timerIntegrazioneRigetto = giorniPerModifica * millisecondiInGiorno;
 
 		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
-		save(accreditamento);
 	}
 
 	@Override
