@@ -506,11 +506,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		});
 
-		//calcolo se mi trovo in una situazione di integrazione o di preavviso di rigetto
-		//guardo la data di inizio del preavviso di rigetto -> se è null devo per forza trovarmi ancora in integrazione
-		if(accreditamento.getDataPreavvisoRigettoInizio() == null)
-			accreditamento.setPresaVisioneIntegrazione(false);
-		else accreditamento.setPresaVisionePreavvisoDiRigetto(false);
+		if(!accreditamento.isVariazioneDati()) {
+			//calcolo se mi trovo in una situazione di integrazione o di preavviso di rigetto
+			//guardo la data di inizio del preavviso di rigetto -> se è null devo per forza trovarmi ancora in integrazione
+			if(accreditamento.getDataPreavvisoRigettoInizio() == null)
+				accreditamento.setPresaVisioneIntegrazione(false);
+			else accreditamento.setPresaVisionePreavvisoDiRigetto(false);
+		}
 
 		integrazioneService.applyIntegrazioneAccreditamentoAndSave(accreditamentoId, approved);
 		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazione);
@@ -726,14 +728,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//se ci sono state delle modifiche ri-abilito la valutazione cancellando la data
 		if(fieldModificati != null && !fieldModificati.isEmpty()){
-			//elimina data valutazione
-
-			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
-			for(Valutazione valutazione : valutazioni){
-				if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
-					valutazione.setDataValutazione(null);
-					valutazioneService.save(valutazione);
+			//elimina data valutazione se flusso di accreditamento
+			if(!accreditamento.isVariazioneDati()) {
+				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+				for(Valutazione valutazione : valutazioni){
+					if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
+						valutazione.setDataValutazione(null);
+						valutazioneService.save(valutazione);
+					}
 				}
+			}
+			else {
+				//cerca una valutazione della segreteria
 			}
 		}
 
@@ -802,6 +808,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		else if(accreditamento.isPreavvisoRigetto()){
 			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), true, accreditamento.getProvider());
 			workflowService.eseguiTaskPreavvisoRigettoForCurrentUser(accreditamento);
+		}
+		else if(accreditamento.isModificaDati()){
+			//TODO manda avanti flusso bonita - variazione dei dati
+			accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA);
+			save(accreditamento);
 		}
 	}
 
@@ -1092,12 +1103,17 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		if( ((accreditamento.isValutazioneSegreteriaAssegnamento() || accreditamento.isValutazioneSulCampo() || accreditamento.isValutazioneSegreteria()) && currentUser.isSegreteria()) ||
 			(accreditamento.isValutazioneCrecm() && currentUser.isReferee()) ||
-			(accreditamento.isValutazioneTeamLeader() && currentUser.isReferee()) ){
+			(accreditamento.isValutazioneTeamLeader() && currentUser.isReferee()) ||
+			(accreditamento.isValutazioneSegreteriaVariazioneDati() && currentUser.isSegreteria()) ||
+			(accreditamento.isValutazioneCrecmVariazioneDati() && currentUser.isReferee())){
 			Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, currentUser.getAccount().getId());
 			if(valutazione != null && valutazione.getDataValutazione() == null){
 				TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
 				//TODO rimuovere il seguente "if" quando si avrà il flusso STANDARD
 				if(accreditamento.isStandard())
+					return true;
+				//TODO rimuovere il seguente "if" quando si avrà il flusso VARIAZIONE DATI E DOCUMENTI
+				if(accreditamento.isVariazioneDati())
 					return true;
 				if(task == null){
 					return false;
@@ -1137,6 +1153,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser) {
 		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm()){
 			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+			return !valutazioni.isEmpty();
+		}
+		return false;
+	}
+
+	@Override
+	/*
+	 * L'utente (segreteria | commissioneECM) può visualizzare tutte le valutazioni inviate
+	 */
+	public boolean canUserValutaDomandaShowStorico(Long accreditamentoId, CurrentUser currentUser) {
+		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm() || currentUser.isReferee()){
+			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
 			return !valutazioni.isEmpty();
 		}
 		return false;
@@ -1492,6 +1520,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//TODO registrazione cronologia degli stati
 		accreditamentoRepository.save(accreditamento);
 
+		//se lo stato è DINIEGO o ACCREDITATO cancello le valutazioni attive per la domanda
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO || stato == AccreditamentoStatoEnum.DINIEGO) {
+			Set<Valutazione> valutazioniAttive = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+			for(Valutazione v : valutazioniAttive) {
+				valutazioneService.delete(v);
+			}
+		}
+
 		alertEmailService.creaAlertForProvider(accreditamento);
 	}
 
@@ -1719,21 +1755,43 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public boolean canUserStartVariazioneDati(Long accreditamentoId, CurrentUser currentUser) {
+	public boolean canUserAbilitaVariazioneDati(Long accreditamentoId, CurrentUser currentUser) {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		if(currentUser.isSegreteria()
 				&& accreditamento.isAccreditato()
 				&& (accreditamento.getStatoVariazioneDati() == null
-				|| accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE))
+				|| accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE)
+				&& isNotVariazioneDatiPresaInCaricoDaAltri(accreditamento, currentUser.getAccount()))
 			return true;
 		else return false;
+	}
+
+	//funzione che controlla se la variazione dati può essere presa in carico
+	private boolean isNotVariazioneDatiPresaInCaricoDaAltri(Accreditamento accreditamento, Account user) {
+		Valutazione valutazioneSegreteriaVariazioneDati = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamento.getId());
+		if(valutazioneSegreteriaVariazioneDati == null || valutazioneSegreteriaVariazioneDati.getAccount().equals(user))
+			return true;
+		else
+			return false;
 	}
 
 	@Override
 	public void avviaFlussoVariazioneDati(Accreditamento accreditamento) {
 		LOGGER.info("Avvio del flusso di Variazione dei Dati dell'Accreditamento: " + accreditamento.getId());
+		Account segreteria = Utils.getAuthenticatedUser().getAccount();
 		//TODO avvia flusso Bonita ABILITAZIONI_CAMPI - togliere riga seguente
 		accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE);
+		//si crea già anche la valutazione per la segreteria che sancisce la presa in carico
+		Valutazione valutazioneSegreteria = new Valutazione();
+		valutazioneSegreteria.setAccount(segreteria);
+		valutazioneSegreteria.setAccreditamento(accreditamento);
+		valutazioneSegreteria.setAccreditamentoStatoValutazione(null);
+		valutazioneSegreteria.setTipoValutazione(ValutazioneTipoEnum.SEGRETERIA_ECM);
+		valutazioneSegreteria.setStoricizzato(false);
+		//setta tutti gli esiti a true e bloccati
+		valutazioneSegreteria.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, valutazioneSegreteria.getAccreditamento()));
+
+		valutazioneService.save(valutazioneSegreteria);
 		save(accreditamento);
 	}
 
@@ -1757,4 +1815,84 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		else return false;
 	}
 
+	@Override
+	public void inviaValutazioneVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception {
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		Account user = Utils.getAuthenticatedUser().getAccount();
+		Set<IdFieldEnum> idDaValutare = new HashSet<IdFieldEnum>();
+
+		//se l'utente è segreteria mi salvo tutti gli idField relativi ai fieldIntegrazione prima che questi
+		//vengano cancellati e poi approvo l'integrazione
+		if(user.isSegreteria()) {
+			idDaValutare = getIdEnumDaEditare(accreditamentoId);
+			//applica modifiche
+			approvaIntegrazione(accreditamentoId);
+		}
+
+		//disabilito tutti i filedValutazioneAccreditamento
+		for (FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
+			fva.setEnabled(false);
+		}
+
+		//setta la data
+		valutazione.setDataValutazione(LocalDateTime.now());
+
+		//inserisce il commento complessivo
+		valutazione.setValutazioneComplessiva(valutazioneComplessiva);
+
+		valutazione.setAccreditamentoStatoValutazione(null);
+
+		valutazioneService.saveAndFlush(valutazione);
+
+		//detacha e copia: da questo momento valutazione si riferisce alla copia storicizzata
+		valutazioneService.copiaInStorico(valutazione);
+
+		if(user.isSegreteria()) {
+
+			if(destinazioneVariazioneDati == AccreditamentoStatoEnum.ACCREDITATO) {
+				//TODO chiamata a Bonita che completa il flusso di Variazione dei dati e dei documenti
+				accreditamento.setStatoVariazioneDati(null);
+				//elimino le vecchie valutazioni
+				Set<Valutazione> valutazioniVariazioneDati = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamento.getId());
+				for(Valutazione v : valutazioniVariazioneDati) {
+					valutazioneService.delete(v);
+				}
+			}
+			else {
+				//TODO chiamata a Bonita che assegna il task al referee selezionato e manda lo stato in VALUTAZIONE_CRECM
+				accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.VALUTAZIONE_CRECM);
+				//creo la valutazione per il referee
+				Valutazione valutazioneReferee = new Valutazione();
+				valutazioneReferee.setAccount(refereeVariazioneDati);
+				valutazioneReferee.setAccreditamento(accreditamento);
+				valutazioneReferee.setAccreditamentoStatoValutazione(null);
+				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+				valutazioneReferee.setStoricizzato(false);
+				//setta tutti gli esiti a true e bloccati
+				valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, accreditamento));
+				//sblocca e setta a null l'esito dei campi che dovrà valutare
+				valutazioneService.resetEsitoAndEnabledForSubset(valutazioneReferee, idDaValutare);
+
+				valutazioneService.save(valutazioneReferee);
+				emailService.inviaNotificaAReferee(refereeVariazioneDati.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
+			}
+		}
+		else {
+			//TODO referee manda avanti flusso in INS_ODG
+			accreditamento.setStatoVariazioneDati(AccreditamentoStatoEnum.INS_ODG);
+		}
+
+		save(accreditamento);
+
+	}
+
+	private Set<IdFieldEnum> getIdEnumDaEditare(Long accreditamentoId) {
+		Set<IdFieldEnum> idDaValutare = new HashSet<IdFieldEnum>();
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
+		for(FieldIntegrazioneAccreditamento fia : fieldIntegrazione) {
+			idDaValutare.add(fia.getIdField());
+		}
+		return idDaValutare;
+	}
 }

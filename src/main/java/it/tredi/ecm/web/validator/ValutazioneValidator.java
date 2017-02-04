@@ -19,6 +19,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 
 @Component
 public class ValutazioneValidator {
@@ -176,6 +177,16 @@ public class ValutazioneValidator {
 				errors.rejectValue(prefix + "delegato.codiceFiscale", "error.empty");
 //			if(verbaleValutazioneSulCampo.getDelegato().getDelega() == null || verbaleValutazioneSulCampo.getDelegato().getDelega().isNew())
 //				errors.rejectValue(prefix + "delegato.delega", "error.empty");
+		}
+	}
+
+	public void validateValutazioneVariazioneDati(AccreditamentoWrapper wrapper, Errors errors) {
+
+		if(wrapper.getDestinazioneVariazioneDati() == null)
+			errors.rejectValue("destinazioneVariazioneDati", "error.empty");
+		else {
+			if(wrapper.getDestinazioneVariazioneDati() == AccreditamentoStatoEnum.VALUTAZIONE_CRECM && wrapper.getRefereeVariazioneDati() == null)
+				errors.rejectValue("refereeVariazioneDati", "error.empty");
 		}
 	}
 }

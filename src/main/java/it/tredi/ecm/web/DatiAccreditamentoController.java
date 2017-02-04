@@ -522,6 +522,7 @@ public class DatiAccreditamentoController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId, accreditamentoService.getProviderIdForAccreditamento(accreditamentoId));
 //		wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
 		wrapper.setStatoAccreditamento(statoAccreditamento);
@@ -547,7 +548,7 @@ public class DatiAccreditamentoController {
 		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		wrapper.setMappa(mappa);
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 

@@ -289,6 +289,14 @@ public class Accreditamento extends BaseEntity{
 		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE;
 	}
 
+	public boolean isValutazioneSegreteriaVariazioneDati() {
+		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA;
+	}
+
+	public boolean isValutazioneCrecmVariazioneDati() {
+		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.VALUTAZIONE_CRECM;
+	}
+
 	public boolean isProcedimentoAttivo(){
 		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;

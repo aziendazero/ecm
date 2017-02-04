@@ -320,7 +320,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Override
 	public Set<Valutazione> getAllValutazioniStoricizzateForAccreditamentoId(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le valutazioni Storicizzate per l'accreditamento id: " + accreditamentoId));
-		return valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoTrueOrderByDataValutazioneAsc(accreditamentoId);
+		return valutazioneRepository.findAllByAccreditamentoIdAndStoricizzatoTrueAndAccreditamentoStatoValutazioneNotNullOrderByDataValutazioneAsc(accreditamentoId);
 	}
 
 	@Override
@@ -406,5 +406,18 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 			accreditamento.setVerbaleValutazioneSulCampo(verbale);
 			accreditamentoService.save(accreditamento);
 		}
+	}
+
+	//sblocca i campi e attiva i fieldValutazione per il subset passato
+	@Override
+	public void resetEsitoAndEnabledForSubset(Valutazione valutazioneReferee, Set<IdFieldEnum> subset) {
+		for(FieldValutazioneAccreditamento fva : valutazioneReferee.getValutazioni()) {
+			if(subset.contains(fva.getIdField())) {
+				fva.setEsito(null);
+				fva.setEnabled(true);
+				fieldValutazioneAccreditamentoService.save(fva);
+			}
+		}
+
 	}
 }

@@ -135,6 +135,8 @@ public class AccreditamentoWrapper {
 	private boolean canEnableField;
 	private boolean canVariazioneDati;
 	private boolean canSendVariazioneDati;
+	private boolean canValutaVariazioneDati;
+	private boolean canShowValutazioneStorico;
 
 
 	//flag per vedere se la segreteria può editare
@@ -162,6 +164,9 @@ public class AccreditamentoWrapper {
 
 	//Gruppo dei referee
 	private Set<Account> refereeGroup = new HashSet<Account>();
+
+	//Referee per la variazione dati
+	private Account refereeVariazioneDati;
 
 	//Valutazione Complessiva
 	private String valutazioneComplessiva;
@@ -198,6 +203,9 @@ public class AccreditamentoWrapper {
 
 	//info di destinazione della domanda standard
 	private AccreditamentoStatoEnum destinazioneStatoDomandaStandard;
+
+	//info di destinazione della variazione dati
+	private AccreditamentoStatoEnum destinazioneVariazioneDati;
 
 	public AccreditamentoWrapper(){};
 	public AccreditamentoWrapper(Accreditamento accreditamento){
@@ -414,14 +422,14 @@ public class AccreditamentoWrapper {
 			//check valutazione dei multistanza
 			for (Persona p : componentiComitatoScientifico) {
 				boolean fullValutato = (
-					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME).getEsito() != null) &&
-					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME).getEsito() != null) &&
-					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE).getEsito() != null) &&
-					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO).getEsito() != null) &&
-					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL).getEsito() != null) &&
-					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE).getEsito() != null) &&
-					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA).getEsito() != null) &&
-					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV).getEsito() != null)
+					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) && mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME).getEsito() != null) &&
+					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) && mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME).getEsito() != null) &&
+					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) && mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE).getEsito() != null) &&
+					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO) && mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO).getEsito() != null) &&
+					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL) && mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL).getEsito() != null) &&
+					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE) && mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE).getEsito() != null) &&
+					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA) && mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA).getEsito() != null) &&
+					(mappaComponenti.get(p.getId()).containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV) && mappaComponenti.get(p.getId()).get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV).getEsito() != null)
 				);
 				if(mappaComponenti.get(p.getId()) != null && fullValutato)
 					componentiComitatoScientificoStati.replace(p.getId(), true);
@@ -429,32 +437,42 @@ public class AccreditamentoWrapper {
 
 			for (Sede s : sedi) {
 				boolean fullValutato = (
-					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__PROVINCIA) && mappa.get(IdFieldEnum.SEDE__PROVINCIA).getEsito() != null) &&
-					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__COMUNE) && mappa.get(IdFieldEnum.SEDE__COMUNE).getEsito() != null) &&
-					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__INDIRIZZO) && mappa.get(IdFieldEnum.SEDE__INDIRIZZO).getEsito() != null) &&
-					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__CAP) && mappa.get(IdFieldEnum.SEDE__CAP).getEsito() != null) &&
-					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__TELEFONO) && mappa.get(IdFieldEnum.SEDE__TELEFONO).getEsito() != null) &&
-					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__FAX) && mappa.get(IdFieldEnum.SEDE__FAX).getEsito() != null) &&
-					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__EMAIL) && mappa.get(IdFieldEnum.SEDE__EMAIL).getEsito() != null)
+					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__PROVINCIA) && mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__PROVINCIA).getEsito() != null) &&
+					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__COMUNE) && mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__COMUNE).getEsito() != null) &&
+					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__INDIRIZZO) && mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__INDIRIZZO).getEsito() != null) &&
+					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__CAP) && mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__CAP).getEsito() != null) &&
+					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__TELEFONO) && mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__TELEFONO).getEsito() != null) &&
+					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__FAX) && mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__FAX).getEsito() != null) &&
+					(mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__EMAIL) && mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__EMAIL).getEsito() != null)
 				);
 				if(mappaSedi.get(s.getId()) != null && fullValutato)
 					sediStati.replace(s.getId(), true);
 			};
 
 			boolean coordinatoreFullValutato = (
-				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME).getEsito() != null) &&
-				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME).getEsito() != null) &&
-				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE).getEsito() != null) &&
-				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO).getEsito() != null) &&
-				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL).getEsito() != null) &&
-				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE).getEsito() != null) &&
-				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA).getEsito() != null) &&
-				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV) && mappa.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV).getEsito() != null)
+				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME) && mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__COGNOME).getEsito() != null) &&
+				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME) && mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__NOME).getEsito() != null) &&
+				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE) && mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CODICEFISCALE).getEsito() != null) &&
+				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO) && mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__TELEFONO).getEsito() != null) &&
+				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL) && mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__EMAIL).getEsito() != null) &&
+				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE) && mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE).getEsito() != null) &&
+				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA) && mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__ATTO_NOMINA).getEsito() != null) &&
+				(mappaCoordinatore.containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV) && mappaCoordinatore.get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__CV).getEsito() != null)
 			);
+
+			boolean sedeLegaleFullValutato = (
+				(mappaSedeLegale.containsKey(IdFieldEnum.SEDE__PROVINCIA) && mappaSedeLegale.get(IdFieldEnum.SEDE__PROVINCIA).getEsito() != null) &&
+				(mappaSedeLegale.containsKey(IdFieldEnum.SEDE__COMUNE) && mappaSedeLegale.get(IdFieldEnum.SEDE__COMUNE).getEsito() != null) &&
+				(mappaSedeLegale.containsKey(IdFieldEnum.SEDE__INDIRIZZO) && mappaSedeLegale.get(IdFieldEnum.SEDE__INDIRIZZO).getEsito() != null) &&
+				(mappaSedeLegale.containsKey(IdFieldEnum.SEDE__CAP) && mappaSedeLegale.get(IdFieldEnum.SEDE__CAP).getEsito() != null) &&
+				(mappaSedeLegale.containsKey(IdFieldEnum.SEDE__TELEFONO) && mappaSedeLegale.get(IdFieldEnum.SEDE__TELEFONO).getEsito() != null) &&
+				(mappaSedeLegale.containsKey(IdFieldEnum.SEDE__FAX) && mappaSedeLegale.get(IdFieldEnum.SEDE__FAX).getEsito() != null) &&
+				(mappaSedeLegale.containsKey(IdFieldEnum.SEDE__EMAIL) && mappaSedeLegale.get(IdFieldEnum.SEDE__EMAIL).getEsito() != null)
+			);
+
 			coordinatoreComitatoScientificoStato = (mappaCoordinatore != null && coordinatoreFullValutato) ? true : false;
 
-			//controllo anche la sede legale N.B. stesso discorso delle sedi
-			sedeLegaleStato = (mappaSedeLegale != null && !mappaSedeLegale.isEmpty()) ? true : false;
+			sedeLegaleStato = (mappaSedeLegale != null && sedeLegaleFullValutato) ? true : false;
 
 			//ciclo la mappa degli stati dei componenti (tuttiComponentiValutati default == true)
 			componentiComitatoScientificoStati.forEach((k,v) -> {
