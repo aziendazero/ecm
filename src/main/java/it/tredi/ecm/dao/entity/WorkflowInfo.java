@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
@@ -34,4 +36,15 @@ public class WorkflowInfo {
 	@Column(name = "wf_stato")
 	@Enumerated(EnumType.STRING)
 	private StatoWorkflowEnum stato;
+
+	@Column(name = "wf_integrazione_eseguita_da_provider")
+	private Boolean integrazioneEseguitaDaProvider;
+	@Column(name = "wf_giorni_integrazione")
+	private Long giorniIntegrazione;
+
+	//Da aggiungere se viene richiesta la creazione di file nei procedimenti di "Variazione Dati" e "Conclusione Procedimento"
+//	@OneToOne
+//	@JoinColumn(name = "wf_richiesta_variazione_dati_id")
+//	private File richiestaVariazioneDati;
+
 }
