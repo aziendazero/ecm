@@ -24,7 +24,9 @@ import javax.persistence.OneToOne;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.VariazioneDatiStatoEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -339,6 +341,23 @@ public class Accreditamento extends BaseEntity{
 			if(f.isDICHIARAZIONELEGALE())
 				return f;
 		return null;
+	}
+
+	public WorkflowInfo getWorkflowInCorso() {
+		if(getWorkflowInfoAccreditamento() != null && getWorkflowInfoAccreditamento().getStato() == StatoWorkflowEnum.IN_CORSO)
+			return getWorkflowInfoAccreditamento();
+		for(WorkflowInfo wf : getWorkflowInfo()){
+			if(wf.getStato() == StatoWorkflowEnum.IN_CORSO)
+				return wf;
+		}
+		return null;
+	}
+
+	public AccreditamentoStatoEnum getStatoForWorkflow() {
+		WorkflowInfo wfi = getWorkflowInCorso();
+		if(wfi.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI)
+			return getStatoVariazioneDati();
+		return getStato();
 	}
 
 	@Override

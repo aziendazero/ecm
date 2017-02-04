@@ -58,4 +58,5 @@
 
 	<include file="20170131_001_aggiunta_lista_wf_info.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170201_modifiche_workflowinfo.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

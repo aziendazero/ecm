@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170201_modifiche_workflowinfo.xml">
+    <changeSet author="abarducci (generated)" id="1486029334688-1">
+        <addColumn tableName="accreditamento">
+            <column name="wf_giorni_integrazione" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1486029334688-2">
+        <addColumn tableName="accreditamento_workflow_info">
+            <column name="wf_giorni_integrazione" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1486029334688-3">
+        <addColumn tableName="accreditamento">
+            <column name="wf_integrazione_eseguita_da_provider" type="boolean"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="abarducci (generated)" id="1486029334688-4">
+        <addColumn tableName="accreditamento_workflow_info">
+            <column name="wf_integrazione_eseguita_da_provider" type="boolean"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

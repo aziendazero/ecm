@@ -169,6 +169,20 @@ public class PdfServiceImpl implements PdfService {
 		return file;
 	}
 
+	@Override
+	public File creaPdfAccreditamentoVariazioneDatiIntegrazione(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception {
+        ByteArrayOutputStream byteArrayOutputStreamAccreditata = new ByteArrayOutputStream();
+        writePdfAccreditamentoVariazioneDatiIntegrazione(byteArrayOutputStreamAccreditata, integrazioneInfo);
+
+		File file = new File();
+		file.setData(byteArrayOutputStreamAccreditata.toByteArray());
+		file.setDataCreazione(LocalDate.now());
+		file.setNomeFile(FileEnum.FILE_VARIAZIONEDATI_INTEGRAZIONE.getNome() + ".pdf");
+		file.setTipo(FileEnum.FILE_VARIAZIONEDATI_INTEGRAZIONE);
+		fileService.save(file);
+		return file;
+	}
+
 	private void writePdfAccreditamentoProvvisiorioPreavvisoRigetto(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception {
         try {
             Document document = new Document();
@@ -1767,6 +1781,152 @@ public class PdfServiceImpl implements PdfService {
 
         } catch (Exception e) {
         	LOGGER.error("writePdfAccreditamentoProvvisiorioAccreditato impossibile creare il pdf", e);
+            throw e;
+        }
+
+    }
+
+	private void writePdfAccreditamentoVariazioneDatiIntegrazione(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception {
+        try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, outputStream);
+
+            document.open();
+            //Info documento
+            document.addAuthor("Ecm");
+            document.addCreationDate();
+            document.addCreator("Ecm");
+            document.addTitle("Richiesta integrazione");
+
+            //DENOMINAZIONE PROVIDER
+            Paragraph parDenominazioneProvider = new Paragraph();
+            parDenominazioneProvider.setAlignment(Element.ALIGN_RIGHT);
+            parDenominazioneProvider.setFont(fontDenominazioneProvider);
+            parDenominazioneProvider.add(integrazioneInfo.getProviderInfo().getProviderDenominazione());
+            document.add(parDenominazioneProvider);
+
+            //INDIRIZZO PROVIDER
+            Paragraph parIndirizzoProvider = new Paragraph();
+            parIndirizzoProvider.setAlignment(Element.ALIGN_RIGHT);
+            parIndirizzoProvider.setFont(fontIndirizzoProvider);
+            parIndirizzoProvider.add(integrazioneInfo.getProviderInfo().getProviderIndirizzo());
+            document.add(parIndirizzoProvider);
+
+            //CAP – COMUNE – PROVINCIA PROVIDER
+            Paragraph parCapComuneProvincia = new Paragraph();
+            parCapComuneProvincia.setAlignment(Element.ALIGN_RIGHT);
+            parCapComuneProvincia.setFont(fontIndirizzoProvider);
+            MessageFormat msgFormat = new MessageFormat("{0} - {1} - {2}");
+            Object[] values = {integrazioneInfo.getProviderInfo().getProviderCap(), integrazioneInfo.getProviderInfo().getProviderComune(), integrazioneInfo.getProviderInfo().getProviderProvincia()};
+            parCapComuneProvincia.add(msgFormat.format(values));
+            document.add(parCapComuneProvincia);
+
+            //Linea vuota
+            Paragraph parLineaVuota = new Paragraph();
+            parLineaVuota.setAlignment(Element.ALIGN_RIGHT);
+            parLineaVuota.setFont(fontIndirizzoProvider);
+            parLineaVuota.add(" ");
+            document.add(parLineaVuota);
+
+            //Alla c.a.:     NOME e COGNOME LR PROVIDER
+            Paragraph parNomeCognome = new Paragraph();
+            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
+            parNomeCognome.setFont(fontDenominazioneProvider);
+            msgFormat = new MessageFormat("Alla c.a.: {0} {1}");
+            Object[] valuesNomCognProv = {integrazioneInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), integrazioneInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
+            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
+            parNomeCognome.setSpacingAfter(spacingAfter);
+            document.add(parNomeCognome);
+
+            //PEC: INDIRIZZO PEC PROVIDER
+            Paragraph parPec = new Paragraph();
+            parPec.setAlignment(Element.ALIGN_LEFT);
+            parPec.setFont(fontDenominazioneProvider);
+            msgFormat = new MessageFormat("PEC: {0}");
+            Object[] valuesPec = {integrazioneInfo.getProviderInfo().getProviderPec()};
+            parPec.add(msgFormat.format(valuesPec));
+            parPec.setSpacingAfter(spacingAfter);
+            document.add(parPec);
+
+            //Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento standard
+            Paragraph parOggetto = new Paragraph();
+            parOggetto.setAlignment(Element.ALIGN_LEFT);
+            parOggetto.setFont(fontDenominazioneProvider);
+            parOggetto.add("Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento standard");
+            parOggetto.setSpacingAfter(spacingAfter);
+            //Interlinea OK
+            //parOggetto.setMultipliedLeading(5);
+            //Interlinea da provare
+            //parOggetto.setLeading(0F, 2F);
+            document.add(parOggetto);
+
+            //Corpo
+            //In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
+            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il {0} (protocollo n° {1} del {2}), "
+            		+ "sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia, si rappresenta "
+            		+ "che il referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 "
+            		+ "nel corso della visita in loco del {3}, ha rilevato le seguenti criticità:");
+            Object[] valuesCorpo = {integrazioneInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), integrazioneInfo.getNumeroProtocolloValidazione(), integrazioneInfo.getDataProtocolloValidazione().format(dateTimeFormatter), integrazioneInfo.getAccreditamentoDataVisita().format(dateTimeFormatter)};
+            addCorpoParagraph(document, false, true, msgFormat.format(valuesCorpo));
+
+            List list;
+            //Elenco numerato
+            if(integrazioneInfo.getListaCriticita() != null && integrazioneInfo.getListaCriticita().size() > 0) {
+	            list = new List(List.ORDERED);
+	            list.setIndentationLeft(indentationLeftList);
+	            for(String criticita : integrazioneInfo.getListaCriticita())
+	            	list.add(getListItem(criticita, fontListItemBold));
+	            document.add(list);
+            }
+            //Note seduta
+            /*
+            //Richiesta
+            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [non inserire nota finale] (pag 4)
+            Paragraph par = new Paragraph(integrazioneInfo.getNoteSedutaDomanda(), fontListItemBold);
+	        par.setAlignment(Element.ALIGN_JUSTIFIED);
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(spacingAfter);
+	        par.setIndentationLeft(indentationLeftList);
+	        document.add(par);
+            */
+
+            //Richiesta
+            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire numero giorni indicati in “entro 30 giorni dal ricevimento della presente nota”] (pag 4)
+            addCorpoParagraph(document, true, true, MessageFormat.format("Al fine di sanare le stesse, si richiede di produrre adeguata documentazione, suddivisa in file, "
+            		+ "debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb, "
+            		+ "tale documentazione deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota.", integrazioneInfo.getGiorniIntegrazionePreavvisoRigetto()));
+
+
+            addCorpoParagraph(document, false, true, "La documentazione oggetto di integrazione sarà verificata dalla Commissione Regionale ECM nella prima riunione utile e, nel caso di esito positivo del riscontro, sarà proposta in valutazione per l’eventuale provvedimento di accreditamento.");
+            addCorpoParagraph(document, false, true, "Nel caso in cui la documentazione richiesta non dovesse essere prodotta nel termine di cui sopra o non sia idonea a sanare le criticità riscontrate, previa valutazione della Commissione Regionale ECM, sarà inviato il preavviso di rigetto della domanda ai sensi dell’art. 10-bis, L. n. 241/1990.");
+
+            //interruzione di pagina
+            document.newPage();
+
+            addCorpoParagraph(document, false, true, "Normativa di riferimento:");
+
+            list = new List(List.ORDERED);
+            //Elimina l'indentazione del testo rispetto al simbolo, occorre vedere come indentare il testo
+            //list.setAutoindent(false);
+            list.setIndentationLeft(indentationLeftList);
+            list.add(getListItem("Legge n. 241/1990 e successive modificazioni ed integrazioni;", fontListItem));
+            list.add(getListItem("Raccomandazione della Comunità Europea n. 11/03/2002/236/CE;", fontListItem));
+            list.add(getListItem("Accordo tra il Governo, le Regioni e le Province autonome di Trento e di Bolzano del 01/08/2007, concernente il “Riordino del sistema di Formazione continua in Medicina” (L. 244/2007);", fontListItem));
+            list.add(getListItem("Accordo del 05/11/2009, concernente il nuovo sistema di formazione continua in medicina – Accreditamento dei Provider ECM, formazione a distanza, obiettivi formativi, valutazione della qualità del sistema formativo sanitario, attività formative realizzate all’estero, liberi professionisti (D.P.C.M. 26 luglio 2010);", fontListItem));
+            list.add(getListItem("Deliberazione della Giunta Regionale n. 2215 del 20 dicembre 2011. Programma regionale d’Educazione Continua in Medicina (ECM) anno 2011. Approvazione dei requisiti e delle procedure di accreditamento dei Provider regionali.", fontListItem));
+            list.add(getListItem("Accordo del 19/04/2012 recante “Il nuovo sistema di formazione continua in medicina – Linee guida per i Manuali di accreditamento dei provider, albo nazionale dei provider, crediti formativi triennio 2011/2013, federazioni, ordini, collegi e associazioni professionali, sistema di verifiche, controlli e monitoraggio della qualità, liberi professionisti”.", fontListItem));
+            list.add(getListItem("Deliberazione della Giunta Regionale n. 1969 del 02 ottobre 2012. Programma regionale d’Educazione Continua in Medicina (ECM) anno 2012. Recepimento dell’Accordo Stato/Regioni del 19 aprile 2012, rep. 101/CSR “Il nuovo sistema di formazione continua in medicina – Linee guida per i Manuali di accreditamento dei provider, albo nazionale dei provider, crediti formativi triennio 2011/2013, federazioni, ordini, collegi e associazioni professionali, sistema di verifiche, controlli e monitoraggio della qualità, liberi professionisti”", fontListItem));
+            //list.add(getListItem("Deliberazione della Giunta Regionale n. 1236 del 16 ottobre 2013 “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali – Agenas e la Regione Veneto finalizzato alla gestione del sistema di formazione Continua”.", fontListItem));
+            list.add(getListItem("Deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti).", fontListItem));
+            list.add(getListItem("Deliberazione della Giunta Regionale n. 1247 del 28/09/2015 “Programma regionale per la formazione continua. Definizione delle evidenze documentali per la verifica dei requisiti dei Provider regionali di formazione pubblici e privati, previste nell’ambito del processo di accreditamento standard ai sensi della DGR n. 1753/2014. Proroga delle attività degli organismi di governance dell’ECM. Disciplina delle attività di monitoraggio presso le sedi dei Provider ECM”.", fontListItem));
+
+            document.add(list);
+
+            document.close();
+            outputStream.close();
+
+        } catch (Exception e) {
+        	LOGGER.error("writePdfAccreditamentoProvvisiorioIntegrazione impossibile creare il pdf", e);
             throw e;
         }
 
