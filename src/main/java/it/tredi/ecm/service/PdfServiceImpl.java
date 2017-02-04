@@ -169,19 +169,19 @@ public class PdfServiceImpl implements PdfService {
 		return file;
 	}
 
-	@Override
-	public File creaPdfAccreditamentoVariazioneDatiIntegrazione(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception {
-        ByteArrayOutputStream byteArrayOutputStreamAccreditata = new ByteArrayOutputStream();
-        writePdfAccreditamentoVariazioneDatiIntegrazione(byteArrayOutputStreamAccreditata, integrazioneInfo);
-
-		File file = new File();
-		file.setData(byteArrayOutputStreamAccreditata.toByteArray());
-		file.setDataCreazione(LocalDate.now());
-		file.setNomeFile(FileEnum.FILE_VARIAZIONEDATI_INTEGRAZIONE.getNome() + ".pdf");
-		file.setTipo(FileEnum.FILE_VARIAZIONEDATI_INTEGRAZIONE);
-		fileService.save(file);
-		return file;
-	}
+//	@Override
+//	public File creaPdfAccreditamentoVariazioneDatiIntegrazione(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception {
+//        ByteArrayOutputStream byteArrayOutputStreamAccreditata = new ByteArrayOutputStream();
+//        writePdfAccreditamentoVariazioneDatiIntegrazione(byteArrayOutputStreamAccreditata, integrazioneInfo);
+//
+//		File file = new File();
+//		file.setData(byteArrayOutputStreamAccreditata.toByteArray());
+//		file.setDataCreazione(LocalDate.now());
+//		file.setNomeFile(FileEnum.FILE_VARIAZIONEDATI_INTEGRAZIONE.getNome() + ".pdf");
+//		file.setTipo(FileEnum.FILE_VARIAZIONEDATI_INTEGRAZIONE);
+//		fileService.save(file);
+//		return file;
+//	}
 
 	private void writePdfAccreditamentoProvvisiorioPreavvisoRigetto(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception {
         try {

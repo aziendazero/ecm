@@ -19,5 +19,5 @@ public interface PdfService {
 	public File creaPdfAccreditamentoStandardDiniego(PdfAccreditamentoProvvisorioRigettoInfo diniegoInfo) throws Exception;
 	public File creaPdfAccreditamentoStandardAccreditato(PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo) throws Exception;
 
-	public File creaPdfAccreditamentoVariazioneDatiIntegrazione(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception;
+	//public File creaPdfAccreditamentoVariazioneDatiIntegrazione(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception;
 }
