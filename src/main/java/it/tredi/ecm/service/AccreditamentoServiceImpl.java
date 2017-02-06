@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -514,6 +516,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 
 		integrazioneService.applyIntegrazioneAccreditamentoAndSave(accreditamentoId, approved);
+		valutazioneService.cancelObjectNotApproved(accreditamentoId, fieldValutazioniSegreteria);
+		
 		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazione);
 
 	}
@@ -1817,12 +1821,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Account user = Utils.getAuthenticatedUser().getAccount();
-		Set<IdFieldEnum> idDaValutare = new HashSet<IdFieldEnum>();
+		Map<IdFieldEnum, Long> campiDaValutare = new HashMap<IdFieldEnum, Long>();
 
 		//se l'utente è segreteria mi salvo tutti gli idField relativi ai fieldIntegrazione prima che questi
 		//vengano cancellati e poi approvo l'integrazione
 		if(user.isSegreteria()) {
-			idDaValutare = getIdEnumDaEditare(accreditamentoId);
+			campiDaValutare = getIdEnumDaEditare(accreditamentoId);
 			//applica modifiche
 			approvaIntegrazione(accreditamentoId);
 		}
@@ -1870,7 +1874,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//setta tutti gli esiti a true e bloccati
 				valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, accreditamento));
 				//sblocca e setta a null l'esito dei campi che dovrà valutare
-				valutazioneService.resetEsitoAndEnabledForSubset(valutazioneReferee, idDaValutare);
+				valutazioneService.resetEsitoAndEnabledForSubset(valutazioneReferee, campiDaValutare);
 
 				valutazioneService.save(valutazioneReferee);
 				emailService.inviaNotificaAReferee(refereeVariazioneDati.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
@@ -1881,12 +1885,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 	}
 
-	private Set<IdFieldEnum> getIdEnumDaEditare(Long accreditamentoId) {
-		Set<IdFieldEnum> idDaValutare = new HashSet<IdFieldEnum>();
+	private Map<IdFieldEnum, Long> getIdEnumDaEditare(Long accreditamentoId) {
+		Map<IdFieldEnum, Long> campiDaValutare = new HashMap<IdFieldEnum, Long>();
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
 		for(FieldIntegrazioneAccreditamento fia : fieldIntegrazione) {
-			idDaValutare.add(fia.getIdField());
+			campiDaValutare.put(fia.getIdField(), fia.getObjectReference());
 		}
-		return idDaValutare;
+		return campiDaValutare;
 	}
 }

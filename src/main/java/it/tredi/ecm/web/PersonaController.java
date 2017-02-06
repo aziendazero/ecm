@@ -385,7 +385,7 @@ public class PersonaController {
 				if(personaWrapper.getMappa() != null && personaWrapper.getMappa().containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL)){
 					Boolean esitoFull = personaWrapper.getMappa().get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL).getEsito();
 					if(esitoFull != null){
-						personaWrapper.getMappa().forEach((k, v) -> {v.setEsito(true);});
+						personaWrapper.getMappa().forEach((k, v) -> {v.setEsito(esitoFull.booleanValue());});
 					}
 				}
 

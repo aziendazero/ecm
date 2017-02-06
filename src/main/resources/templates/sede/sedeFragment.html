@@ -634,19 +634,23 @@
 			<script th:inline="javascript">
 				$(document).ready(function() {
 					$(".full").on("ifChecked", function() {
-						console.log('pippo');
-						//selezionaTuttiSi();
+						if($(this).val() == 'true')
+							selezionaTuttiSi();
+						else
+							selezionaTuttiNo();
 					});
 
-					//handleFull();
+					handleFull();
 				});
 
 				function handleFull(){
-					if($(".full").val() == 'true' || $(".full").val() == 'false')
+					if($(".full:checked").val() == 'true')
 						selezionaTuttiSi();
+					else if($(".full:checked").val() == 'false')
+						selezionaTuttiNo();
 				}
 
-		</script>
+			</script>
 		</th:block>
 	</th:block>
 

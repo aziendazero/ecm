@@ -2,7 +2,6 @@ package it.tredi.ecm.service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -20,8 +19,8 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
@@ -49,6 +48,8 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private AlertEmailService alertEmailService;
 	@PersistenceContext EntityManager entityManager;
 	@Autowired private MessageSource messageSource;
+	@Autowired private SedeService sedeService;
+	@Autowired private PersonaService personaService;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -410,14 +411,27 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 
 	//sblocca i campi e attiva i fieldValutazione per il subset passato
 	@Override
-	public void resetEsitoAndEnabledForSubset(Valutazione valutazioneReferee, Set<IdFieldEnum> subset) {
+	public void resetEsitoAndEnabledForSubset(Valutazione valutazioneReferee, Map<IdFieldEnum, Long> subset) {
 		for(FieldValutazioneAccreditamento fva : valutazioneReferee.getValutazioni()) {
-			if(subset.contains(fva.getIdField())) {
+			if(subset.containsKey(fva.getIdField()) && subset.get(fva.getIdField()) == fva.getObjectReference()) {
 				fva.setEsito(null);
 				fva.setEnabled(true);
 				fieldValutazioneAccreditamentoService.save(fva);
 			}
 		}
 
+	}
+
+	@Override
+	//cancella tutti gli oggetti non approvati in integrazione
+	public void cancelObjectNotApproved(Long accreditamentoId, Set<FieldValutazioneAccreditamento> fieldValutazioniSegreteria) {
+		for(FieldValutazioneAccreditamento fva : fieldValutazioniSegreteria) {
+			if(fva.getIdField() == IdFieldEnum.SEDE__FULL) {
+				sedeService.delete(fva.getObjectReference());
+			}
+			else if(fva.getIdField() == IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL) {
+				personaService.delete(fva.getObjectReference());
+			}
+		}
 	}
 }

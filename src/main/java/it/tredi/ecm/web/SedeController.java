@@ -327,7 +327,7 @@ public class SedeController {
 				if(sedeWrapper.getMappa() != null && sedeWrapper.getMappa().containsKey(IdFieldEnum.SEDE__FULL)){
 					Boolean esitoFull = sedeWrapper.getMappa().get(IdFieldEnum.SEDE__FULL).getEsito();
 					if(esitoFull != null){
-						sedeWrapper.getMappa().forEach((k, v) -> {v.setEsito(true);});
+						sedeWrapper.getMappa().forEach((k, v) -> {v.setEsito(esitoFull.booleanValue());});
 					}
 				}
 

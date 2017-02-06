@@ -678,19 +678,24 @@
 				</div>
 			</div>
 			<script th:inline="javascript">
-			$(document).ready(function() {
-				$(".full").on("ifChecked", function() {
-					selezionaTuttiSi();
+				$(document).ready(function() {
+					$(".full").on("ifChecked", function() {
+						if($(this).val() == 'true')
+							selezionaTuttiSi();
+						else
+							selezionaTuttiNo();
+					});
+
+					handleFull();
 				});
 
-				handleFull();
-			});
-
-			function handleFull(){
-				if($(".full").val() == 'true' || $(".full").val() == 'false')
-					selezionaTuttiSi();
-			}
-		</script>
+				function handleFull(){
+					if($(".full:checked").val() == 'true')
+						selezionaTuttiSi();
+					else if($(".full:checked").val() == 'false')
+						selezionaTuttiNo();
+				}
+			</script>
 		</th:block>
 	</th:block>
 </body>

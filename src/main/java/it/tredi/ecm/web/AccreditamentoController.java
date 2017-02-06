@@ -614,7 +614,10 @@ public class AccreditamentoController {
 			if(!hasVerbaleErrors) {
 				accreditamentoWrapper.setVerbaleValutazioneSulCampo(accreditamento.getVerbaleValutazioneSulCampo());
 				accreditamentoWrapper.setCartaIdentita(accreditamento.getVerbaleValutazioneSulCampo().getCartaIdentita());
-				accreditamentoWrapper.setDelegaValutazioneSulCampo(accreditamento.getVerbaleValutazioneSulCampo().getDelegato().getDelega());
+				if(accreditamento.getVerbaleValutazioneSulCampo().getDelegato() != null)
+					accreditamentoWrapper.setDelegaValutazioneSulCampo(accreditamento.getVerbaleValutazioneSulCampo().getDelegato().getDelega());
+				else
+					accreditamentoWrapper.setDelegaValutazioneSulCampo(null);
 			}
 		}
 
