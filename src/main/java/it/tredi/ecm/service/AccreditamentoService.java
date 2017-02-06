@@ -49,7 +49,7 @@ public interface AccreditamentoService{
 	//invia domanda
 	public boolean canUserPrendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserValutaDomanda(Long accreditamentoId, CurrentUser currentUser) throws Exception;
-	public boolean canUserValutaDomandaShow(Long id, CurrentUser authenticatedUser);
+	public boolean canUserValutaDomandaShow(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserValutaDomandaShowRiepilogo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserInviaAValutazioneCommissione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 
@@ -59,6 +59,11 @@ public interface AccreditamentoService{
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserPresaVisione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	public boolean canUserAbilitaVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canUserEnableField(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	public boolean canUserInviaCampiVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canUserInviaVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
+	public boolean canUserValutaDomandaShowStorico(Long accreditamentoId, CurrentUser currentUser);
 
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception;
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception;
@@ -91,7 +96,6 @@ public interface AccreditamentoService{
 	public Set<Accreditamento> getAllAccreditamentiInviati();
 	public int countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum stato, Long providerId);
-	boolean canUserEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception;
 
 	public void saveFileNoteOsservazioni(Long fileId, Long accreditamentoId);
 	public Set<Accreditamento> getAllDomandeNonValutateByRefereeId(Long refereeId);
@@ -103,5 +107,7 @@ public interface AccreditamentoService{
 
 	public void inviaEmailConvocazioneValutazioneSulCampo(Long accreditamentoId) throws Exception;
 	public void inviaValutazioneTeamLeader(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
-
+	public void avviaFlussoVariazioneDati(Accreditamento accreditamento) throws Exception;
+	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId) throws Exception;
+	public void inviaValutazioneVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception;
 }

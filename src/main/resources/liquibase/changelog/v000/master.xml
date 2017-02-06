@@ -54,4 +54,9 @@
 
 	<include file="20170127_002_applySQL_update_obiettiviDiSistema.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170130_001_stato_wf_variazioneDati.xml" relativeToChangelogFile="true"/>
+
+	<include file="20170131_001_aggiunta_lista_wf_info.xml" relativeToChangelogFile="true"/>
+
+	<include file="20170201_modifiche_workflowinfo.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

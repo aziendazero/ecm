@@ -288,9 +288,13 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		return defaults;
 	}
 
-	//debug mode
 	@Override
 	public Set<FieldValutazioneAccreditamento> createAllFieldValutazioneAndSetEsito(boolean b, Accreditamento accreditamento) {
+		return createAllFieldValutazioneAndSetEsitoAndEnabled(b, true, accreditamento);
+	}
+
+	@Override
+	public Set<FieldValutazioneAccreditamento> createAllFieldValutazioneAndSetEsitoAndEnabled(boolean b, boolean c, Accreditamento accreditamento) {
 		Set<FieldValutazioneAccreditamento> allFieldsValutazione = new HashSet<FieldValutazioneAccreditamento>();
 		for(IdFieldEnum id : IdFieldEnum.values()) {
 			//gestisco i ripetibili a parte
@@ -314,6 +318,7 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 			field.setAccreditamento(accreditamento);
 			field.setEsito(b);
+			field.setEnabled(c);
 			field.setIdField(id);
 			save(field);
 			allFieldsValutazione.add(field);
@@ -324,7 +329,8 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 				if(idFESede.getIdEcm() != -1) {
 					FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 					field.setAccreditamento(accreditamento);
-					field.setEsito(true);
+					field.setEsito(b);
+					field.setEnabled(c);
 					field.setIdField(idFESede);
 					field.setObjectReference(sede.getId());
 					save(field);
@@ -336,7 +342,8 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 			for(IdFieldEnum idFECompScie : IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO)) {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
-				field.setEsito(true);
+				field.setEsito(b);
+				field.setEnabled(c);
 				field.setIdField(idFECompScie);
 				field.setObjectReference(persona.getId());
 				save(field);
@@ -345,4 +352,5 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		}
 		return allFieldsValutazione;
 	}
+
 }

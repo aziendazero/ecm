@@ -104,7 +104,10 @@ public class DatiAccreditamentoController {
 	private DatiAccreditamentoWrapper prepareWrapperForReloadByEditId(DatiAccreditamento datiAccreditamento, Long accreditamentoId,
 				AccreditamentoStatoEnum statoAccreditamento, AccreditamentoWrapperModeEnum wrapperMode, int sezione) throws Exception{
 		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
-			return prepareDatiAccreditamentoWrapperEdit(datiAccreditamento, statoAccreditamento, true, sezione);
+			if(accreditamentoId != null)
+				return prepareDatiAccreditamentoWrapperEdit(datiAccreditamento, accreditamentoId, statoAccreditamento, true, sezione);
+			else
+				return prepareDatiAccreditamentoWrapperEdit(datiAccreditamento, statoAccreditamento, true, sezione);
 		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
 			return prepareDatiAccreditamentoWrapperValidate(datiAccreditamento, accreditamentoId, statoAccreditamento, false, sezione);
 
@@ -273,9 +276,8 @@ public class DatiAccreditamentoController {
 
 			//Ri-effettuo il detach..non sarebbe indispensabile...ma e' una precauzione a eventuali modifiche future
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
-			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(wrapper.getAccreditamentoId());
-			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
-				/*
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {				/*
 				 * 20161216 abarducci
 				 * correzzione bug POST /accreditamento/3445/dati/save
 				 * org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: it.tredi.ecm.dao.entity.File.fileData, could not initialize proxy - no Session
@@ -308,7 +310,7 @@ public class DatiAccreditamentoController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				if(wrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+				if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {
 					integra(wrapper);
 				}else{
 					salva(wrapper);
@@ -459,20 +461,21 @@ public class DatiAccreditamentoController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId, accreditamentoService.getProviderIdForAccreditamento(accreditamentoId));
 		//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
-		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && !(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()))
 			wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 		else
 			wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
 		wrapper.setStatoAccreditamento(statoAccreditamento);
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
 		wrapper.setSezione(sezione);
+		wrapper.setAccreditamento(accreditamento);
 
 //TODO - TEST
 
 		if(datiAccreditamento.isNew()){
-			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 //			wrapper.setProvider(accreditamento.getProvider());
 		}else{
 //			wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
@@ -480,7 +483,7 @@ public class DatiAccreditamentoController {
 				wrapper.setFiles(wrapper.getDatiAccreditamento().getFiles());
 		}
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 
@@ -519,6 +522,7 @@ public class DatiAccreditamentoController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.DATI_ACCREDITAMENTO;
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		DatiAccreditamentoWrapper wrapper = new DatiAccreditamentoWrapper(datiAccreditamento, accreditamentoId, accreditamentoService.getProviderIdForAccreditamento(accreditamentoId));
 //		wrapper.setProvider(datiAccreditamento.getAccreditamento().getProvider());
 		wrapper.setStatoAccreditamento(statoAccreditamento);
@@ -544,7 +548,7 @@ public class DatiAccreditamentoController {
 		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		wrapper.setMappa(mappa);
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 

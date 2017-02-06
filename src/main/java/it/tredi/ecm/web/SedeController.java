@@ -154,7 +154,7 @@ public class SedeController {
 	private SedeWrapper prepareWrapperForReloadByEditId(Sede sede, Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento,
 			AccreditamentoWrapperModeEnum wrapperMode) throws Exception{
 		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
-			return prepareSedeWrapperEdit(sede,accreditamentoId, sede.getProvider().getId(), statoAccreditamento, true);
+			return prepareSedeWrapperEdit(sede, accreditamentoId, sede.getProvider().getId(), statoAccreditamento, true);
 		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
 			return prepareSedeWrapperValidate(sede, accreditamentoId, sede.getProvider().getId(), statoAccreditamento,false);
 
@@ -262,7 +262,8 @@ public class SedeController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				if(sedeWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || sedeWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+				if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {
 					integra(sedeWrapper, false);
 				}else{
 					saveSede(sedeWrapper, providerService.getProvider(providerId));
@@ -326,7 +327,7 @@ public class SedeController {
 				if(sedeWrapper.getMappa() != null && sedeWrapper.getMappa().containsKey(IdFieldEnum.SEDE__FULL)){
 					Boolean esitoFull = sedeWrapper.getMappa().get(IdFieldEnum.SEDE__FULL).getEsito();
 					if(esitoFull != null){
-						sedeWrapper.getMappa().forEach((k, v) -> {v.setEsito(true);});
+						sedeWrapper.getMappa().forEach((k, v) -> {v.setEsito(esitoFull.booleanValue());});
 					}
 				}
 
@@ -403,25 +404,27 @@ public class SedeController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.SEDE;
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		SedeWrapper sedeWrapper = new SedeWrapper();
 		sedeWrapper.setSede(sede);
 		sedeWrapper.setAccreditamentoId(accreditamentoId);
 		sedeWrapper.setProviderId(providerId);
 		sedeWrapper.setStatoAccreditamento(statoAccreditamento);
 		sedeWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
+		sedeWrapper.setAccreditamento(accreditamento);
 
 		if(sede.isNew()){
 			sedeWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 		}else{
 			//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
-			if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+			if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && !(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()))
 				sedeWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 			else
 				sedeWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamentoAndObject(accreditamentoId, sede.getId()), subset));
 			//sedeWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(accreditamentoId, sede.getId()), subset));
 		}
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()){
 			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId);
 		}
 
@@ -464,6 +467,7 @@ public class SedeController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.SEDE;
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		SedeWrapper sedeWrapper = new SedeWrapper();
 
 		//carico la valutazione per l'utente
@@ -491,7 +495,7 @@ public class SedeController {
 		sedeWrapper.setStatoAccreditamento(statoAccreditamento);
 		sedeWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId);
 		}
 

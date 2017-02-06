@@ -82,6 +82,8 @@ public class EcmAppConfiguration {
 	private int relazioneAnnualeMeseFineModifica = 4;
 	@Value("${valutazioni.non.date.limite}")
 	private int valutazioniNonDateLimit = 3;
+	@Value("${giorni.variazione.dati.accreditamento}")
+	private int giorniVariazioneDatiAccreditamento = 10;
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -120,6 +122,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setRelazioneAnnualeGiornoFineModifica(relazioneAnnualeGiornoFineModifica);
 		ecmProperties.setRelazioneAnnualeMeseFineModifica(relazioneAnnualeMeseFineModifica);
 		ecmProperties.setValutazioniNonDateLimit(valutazioniNonDateLimit);
+		ecmProperties.setGiorniVariazioneDatiAccreditamento(giorniVariazioneDatiAccreditamento);
 		return ecmProperties;
 	}
 }

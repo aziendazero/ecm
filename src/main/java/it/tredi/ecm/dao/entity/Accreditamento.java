@@ -1,8 +1,8 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -23,7 +24,10 @@ import javax.persistence.OneToOne;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
+import it.tredi.ecm.dao.enumlist.VariazioneDatiStatoEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,6 +41,8 @@ public class Accreditamento extends BaseEntity{
 	private AccreditamentoTipoEnum tipoDomanda;
 	@Enumerated(EnumType.STRING)
 	private AccreditamentoStatoEnum stato;
+	@Enumerated(EnumType.STRING)
+	private AccreditamentoStatoEnum statoVariazioneDati;
 	@Column(name = "data_invio")//invio alla segreteria (domanda non più in BOZZA)
 	private LocalDate dataInvio;
 	@Column(name = "data_scadenza")//limite di 180 gg per completare il procedimento
@@ -128,6 +134,11 @@ public class Accreditamento extends BaseEntity{
 
 	@Embedded
 	private WorkflowInfo workflowInfoAccreditamento = null;
+
+	@ElementCollection
+	private List<WorkflowInfo> workflowInfo = new ArrayList<WorkflowInfo>();
+
+
 
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){
@@ -230,6 +241,10 @@ public class Accreditamento extends BaseEntity{
 		return stato == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE;
 	}
 
+	public boolean isValutazioneCommissioneVariazioneDati() {
+		return statoVariazioneDati == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE;
+	}
+
 	public boolean isIntegrazione() {
 		return stato == AccreditamentoStatoEnum.INTEGRAZIONE;
 	}
@@ -264,6 +279,26 @@ public class Accreditamento extends BaseEntity{
 
 	public boolean isCancellato(){
 		return stato == AccreditamentoStatoEnum.CANCELLATO;
+	}
+
+	public boolean isVariazioneDati(){
+		return statoVariazioneDati != null && stato == AccreditamentoStatoEnum.ACCREDITATO;
+	}
+
+	public boolean isModificaDati() {
+		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.INTEGRAZIONE;
+	}
+
+	public boolean isAbilitaCampiDati(){
+		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE;
+	}
+
+	public boolean isValutazioneSegreteriaVariazioneDati() {
+		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA;
+	}
+
+	public boolean isValutazioneCrecmVariazioneDati() {
+		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.VALUTAZIONE_CRECM;
 	}
 
 	public boolean isProcedimentoAttivo(){
@@ -318,6 +353,23 @@ public class Accreditamento extends BaseEntity{
 			if(f.isDICHIARAZIONELEGALE())
 				return f;
 		return null;
+	}
+
+	public WorkflowInfo getWorkflowInCorso() {
+		if(getWorkflowInfoAccreditamento() != null && getWorkflowInfoAccreditamento().getStato() == StatoWorkflowEnum.IN_CORSO)
+			return getWorkflowInfoAccreditamento();
+		for(WorkflowInfo wf : getWorkflowInfo()){
+			if(wf.getStato() == StatoWorkflowEnum.IN_CORSO)
+				return wf;
+		}
+		return null;
+	}
+
+	public AccreditamentoStatoEnum getStatoForWorkflow() {
+		WorkflowInfo wfi = getWorkflowInCorso();
+		if(wfi.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI)
+			return getStatoVariazioneDati();
+		return getStato();
 	}
 
 	@Override

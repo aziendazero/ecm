@@ -19,7 +19,9 @@ import it.tredi.ecm.dao.entity.AlertEmail;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AlertTipoEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.repository.AlertEmailRepository;
 import it.tredi.ecm.utils.Utils;
 
@@ -60,42 +62,53 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 	}
 
 	@Override
-	public void creaAlertForProvider(Accreditamento accreditamento) {
+	public void creaAlertForProvider(Accreditamento accreditamento, WorkflowInfo workflowInCorso) {
 		LOGGER.info("Creazione Alert per Accreditamento");
-		if(accreditamento.isPreavvisoRigetto() || accreditamento.isIntegrazione()){
-			LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(LocalDate.now().plusDays(accreditamento.getGiorniIntegrazione()));
-			dataScadenza = dataScadenza.minusDays(2);
+		if(workflowInCorso.getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
+			if(accreditamento.isPreavvisoRigetto() || accreditamento.isIntegrazione()){
+				LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(LocalDate.now().plusDays(accreditamento.getGiorniIntegrazione()));
+				dataScadenza = dataScadenza.minusDays(2);
 
-			AlertTipoEnum tipo;
-			if(accreditamento.isStandard()){
-				if(accreditamento.isPreavvisoRigetto()){
-					tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_STANDARD;
+				AlertTipoEnum tipo;
+				if(accreditamento.isStandard()){
+					if(accreditamento.isPreavvisoRigetto()){
+						tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_STANDARD;
+					}else{
+						tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_STANDARD;
+					}
 				}else{
-					tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_STANDARD;
+					if(accreditamento.isPreavvisoRigetto()){
+						tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_PROVVISORIO;
+					}else{
+						tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_PROVVISORIO;
+					}
 				}
-			}else{
-				if(accreditamento.isPreavvisoRigetto()){
-					tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_PROVVISORIO;
+
+				if(!checkIfExistForProvider(tipo, accreditamento.getProvider().getId(), dataScadenza))
+					creaAlertForProvider(tipo, accreditamento.getProvider(), dataScadenza);
+			}else if(accreditamento.isAccreditato()){
+				LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(accreditamento.getDataFineAccreditamento());
+				dataScadenza = dataScadenza.minusDays(90);
+
+				AlertTipoEnum tipo;
+				if(accreditamento.isStandard()){
+					tipo = AlertTipoEnum.SCADENZA_ACCREDITAMENTO_STANDARD;
 				}else{
-					tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_PROVVISORIO;
+					tipo = AlertTipoEnum.SCADENZA_ACCREDITAMENTO_PROVVISORIO;
 				}
+
+				if(!checkIfExistForProvider(tipo, accreditamento.getProvider().getId(), dataScadenza))
+					creaAlertForProvider(tipo, accreditamento.getProvider(), dataScadenza);
 			}
+		} else if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
+			if(accreditamento.isIntegrazione()){
+				LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(LocalDate.now().plusDays(workflowInCorso.getGiorniIntegrazione()));
+				dataScadenza = dataScadenza.minusDays(2);
 
-			if(!checkIfExistForProvider(tipo, accreditamento.getProvider().getId(), dataScadenza))
-				creaAlertForProvider(tipo, accreditamento.getProvider(), dataScadenza);
-		}else if(accreditamento.isAccreditato()){
-			LocalDateTime dataScadenza = Utils.convertLocalDateToLocalDateTime(accreditamento.getDataFineAccreditamento());
-			dataScadenza = dataScadenza.minusDays(90);
-
-			AlertTipoEnum tipo;
-			if(accreditamento.isStandard()){
-				tipo = AlertTipoEnum.SCADENZA_ACCREDITAMENTO_STANDARD;
-			}else{
-				tipo = AlertTipoEnum.SCADENZA_ACCREDITAMENTO_PROVVISORIO;
+				AlertTipoEnum tipo = AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_VARIAZIONE_DATI;
+				if(!checkIfExistForProvider(tipo, accreditamento.getProvider().getId(), dataScadenza))
+					creaAlertForProvider(tipo, accreditamento.getProvider(), dataScadenza);
 			}
-
-			if(!checkIfExistForProvider(tipo, accreditamento.getProvider().getId(), dataScadenza))
-				creaAlertForProvider(tipo, accreditamento.getProvider(), dataScadenza);
 		}
 	}
 

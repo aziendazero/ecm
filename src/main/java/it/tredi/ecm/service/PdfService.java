@@ -18,4 +18,6 @@ public interface PdfService {
 	public File creaPdfAccreditamentoStandardPreavvisoRigetto(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception;
 	public File creaPdfAccreditamentoStandardDiniego(PdfAccreditamentoProvvisorioRigettoInfo diniegoInfo) throws Exception;
 	public File creaPdfAccreditamentoStandardAccreditato(PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo) throws Exception;
+
+	//public File creaPdfAccreditamentoVariazioneDatiIntegrazione(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception;
 }

@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -32,11 +34,14 @@ import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
+import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
@@ -502,13 +507,17 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		});
 
-		//calcolo se mi trovo in una situazione di integrazione o di preavviso di rigetto
-		//guardo la data di inizio del preavviso di rigetto -> se è null devo per forza trovarmi ancora in integrazione
-		if(accreditamento.getDataPreavvisoRigettoInizio() == null)
-			accreditamento.setPresaVisioneIntegrazione(false);
-		else accreditamento.setPresaVisionePreavvisoDiRigetto(false);
+		if(!accreditamento.isVariazioneDati()) {
+			//calcolo se mi trovo in una situazione di integrazione o di preavviso di rigetto
+			//guardo la data di inizio del preavviso di rigetto -> se è null devo per forza trovarmi ancora in integrazione
+			if(accreditamento.getDataPreavvisoRigettoInizio() == null)
+				accreditamento.setPresaVisioneIntegrazione(false);
+			else accreditamento.setPresaVisionePreavvisoDiRigetto(false);
+		}
 
 		integrazioneService.applyIntegrazioneAccreditamentoAndSave(accreditamentoId, approved);
+		valutazioneService.cancelObjectNotApproved(accreditamentoId, fieldValutazioniSegreteria);
+		
 		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazione);
 
 	}
@@ -675,7 +684,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Provider"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-		accreditamento.setGiorniIntegrazione(giorniTimer);
+		if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
+			accreditamento.setGiorniIntegrazione(giorniTimer);
+		} else {
+			accreditamento.getWorkflowInCorso().setGiorniIntegrazione(giorniTimer);
+		}
 		accreditamentoRepository.save(accreditamento);
 
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
@@ -718,13 +731,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//se ci sono state delle modifiche ri-abilito la valutazione cancellando la data
 		if(fieldModificati != null && !fieldModificati.isEmpty()){
-			//elimina data valutazione
-
-			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
-			for(Valutazione valutazione : valutazioni){
-				if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
-					valutazione.setDataValutazione(null);
-					valutazioneService.save(valutazione);
+			//elimina data valutazione se flusso di accreditamento
+			if(!accreditamento.isVariazioneDati()) {
+				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+				for(Valutazione valutazione : valutazioni){
+					if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
+						valutazione.setDataValutazione(null);
+						valutazioneService.save(valutazione);
+					}
 				}
 			}
 		}
@@ -794,6 +808,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		else if(accreditamento.isPreavvisoRigetto()){
 			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), true, accreditamento.getProvider());
 			workflowService.eseguiTaskPreavvisoRigettoForCurrentUser(accreditamento);
+		}
+		else if(accreditamento.isModificaDati()){
+			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
 		}
 	}
 
@@ -1084,12 +1101,17 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		if( ((accreditamento.isValutazioneSegreteriaAssegnamento() || accreditamento.isValutazioneSulCampo() || accreditamento.isValutazioneSegreteria()) && currentUser.isSegreteria()) ||
 			(accreditamento.isValutazioneCrecm() && currentUser.isReferee()) ||
-			(accreditamento.isValutazioneTeamLeader() && currentUser.isReferee()) ){
+			(accreditamento.isValutazioneTeamLeader() && currentUser.isReferee()) ||
+			(accreditamento.isValutazioneSegreteriaVariazioneDati() && currentUser.isSegreteria()) ||
+			(accreditamento.isValutazioneCrecmVariazioneDati() && currentUser.isReferee())){
 			Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, currentUser.getAccount().getId());
 			if(valutazione != null && valutazione.getDataValutazione() == null){
 				TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
 				//TODO rimuovere il seguente "if" quando si avrà il flusso STANDARD
 				if(accreditamento.isStandard())
+					return true;
+				//TODO rimuovere il seguente "if" quando si avrà il flusso VARIAZIONE DATI E DOCUMENTI
+				if(accreditamento.isVariazioneDati())
 					return true;
 				if(task == null){
 					return false;
@@ -1136,6 +1158,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	/*
+	 * L'utente (segreteria | commissioneECM) può visualizzare tutte le valutazioni inviate
+	 */
+	public boolean canUserValutaDomandaShowStorico(Long accreditamentoId, CurrentUser currentUser) {
+		if(currentUser.isSegreteria() || currentUser.isCommissioneEcm() || currentUser.isReferee()){
+			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
+			return !valutazioni.isEmpty();
+		}
+		return false;
+	}
+
+	@Override
+	/*
 	 * L'utente (segreteria) può riassegnare l'accreditamento ad un altro gruppo di referee crecm
 	 */
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser) {
@@ -1171,7 +1205,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	/*
 	 * L'utente (segreteria) può abilitare i campi per eventuale modifica
 	 */
-	public boolean canUserEnableField(CurrentUser currentUser, Long accreditamentoId) throws Exception {
+	public boolean canUserEnableField(Long accreditamentoId, CurrentUser currentUser) throws Exception {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		if(currentUser.isSegreteria() && (accreditamento.isRichiestaIntegrazione() || accreditamento.isRichiestaPreavvisoRigetto())){
 			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
@@ -1187,7 +1221,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception {
-		return canUserEnableField(currentUser,accreditamentoId);
+		return canUserEnableField(accreditamentoId, currentUser) || canUserInviaCampiVariazioneDati(accreditamentoId, currentUser);
 	}
 
 	@Override
@@ -1215,6 +1249,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
+	public boolean canUserInviaVariazioneDati(Long accreditamentoId, CurrentUser currentUser) {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(accreditamento.isModificaDati() && currentUser.isProvider()){
+			Long providerId = getProviderIdForAccreditamento(accreditamentoId);
+			if(currentUser.getAccount().getProvider() != null &&  currentUser.getAccount().getProvider().getId().equals(providerId)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception  {
 		changeState(accreditamentoId, stato, null);
 	}
@@ -1223,192 +1269,267 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception  {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
 
+		WorkflowInfo workflowInCorso = accreditamento.getWorkflowInCorso();
+		if(workflowInCorso == null)
+			throw new Exception("AccreditamentoService - changeState: Impossibile ricavare il workflow in corso per l'accreaditamento id: " + accreditamento.getId());
+		Boolean presaVisione = false;
 		//In alcuni stati devono essere effettuate altre operazioni
 		//Creazione pdf
-		if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) {
-			accreditamento.startRestartConteggio();
-		} else if(stato == AccreditamentoStatoEnum.INTEGRAZIONE) {
-			accreditamento.standbyConteggio();
-			accreditamento.setDataIntegrazioneInizio(LocalDate.now());
-		} else if(stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
-			accreditamento.standbyConteggio();
-			accreditamento.setDataPreavvisoRigettoInizio(LocalDate.now());
-		} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
-			//Ricavo la seduta
-			Seduta seduta = null;
-			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
-				//TODO nel caso vengano agganciati piu' flussi alla domanda occorre prendere l'ultima ValutazioneCommissionew
-				if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
-					seduta = valCom.getSeduta();
+		if(workflowInCorso.getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
+			if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) {
+				accreditamento.startRestartConteggio();
+			} else if(stato == AccreditamentoStatoEnum.INTEGRAZIONE) {
+				accreditamento.standbyConteggio();
+				accreditamento.setDataIntegrazioneInizio(LocalDate.now());
+			} else if(stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
+				accreditamento.standbyConteggio();
+				accreditamento.setDataPreavvisoRigettoInizio(LocalDate.now());
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
+				//Ricavo la seduta
+				Seduta seduta = null;
+				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
+					//TODO nel caso vengano agganciati piu' flussi alla domanda occorre prendere l'ultima ValutazioneCommissionew
+					if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
+						seduta = valCom.getSeduta();
+					}
 				}
-			}
-			Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
-			List<String> listaCriticita = new ArrayList<String>();
-			fieldEditabiliAccreditamento.forEach(v -> {
-	            //Richiesta
-	            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire singole note sui campi] (pag 4)
-				if(v.getNota() == null || v.getNota().isEmpty())
+				Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
+				List<String> listaCriticita = new ArrayList<String>();
+				fieldEditabiliAccreditamento.forEach(v -> {
+		            //Richiesta
+		            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire singole note sui campi] (pag 4)
+					if(v.getNota() == null || v.getNota().isEmpty())
+						listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
+					else
+						listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()) + "\n" + v.getNota());
+				});
+				PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
+				integrazioneInfo.setGiorniIntegrazionePreavvisoRigetto(accreditamento.getGiorniIntegrazione());
+				File file = null;
+				if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
+					file = pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
+				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+					file = pdfService.creaPdfAccreditamentoStandardIntegrazione(integrazioneInfo);
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
+				accreditamento.setRichiestaIntegrazione(file);
+				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+				//protocollo il file
+			} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
+				//mi sono spostato da INTEGRAZIONE o PREAVVISO_RIGETTO a VALUTAZIONE_SEGRETERIA quindi rimuovo i fieldEditabili
+				accreditamento.startRestartConteggio();
+				if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE) {
+					accreditamento.setDataIntegrazioneFine(LocalDate.now());
+					accreditamento.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
+				} else if(accreditamento.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
+					accreditamento.setDataPreavvisoRigettoFine(LocalDate.now());
+					accreditamento.setPreavvisoRigettoEseguitoDaProvider(eseguitoDaUtente);
+				}
+				fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
+				//Ricavo la seduta
+				Seduta seduta = null;
+				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
+					if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
+						seduta= valCom.getSeduta();
+					}
+				}
+				Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
+				List<String> listaCriticita = new ArrayList<String>();
+				fieldEditabiliAccreditamento.forEach(v -> {
+					listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()) + " - " + v.getNota());
+				});
+				PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
+				preavvisoRigettoInfo.setGiorniIntegrazionePreavvisoRigetto(accreditamento.getGiorniPreavvisoRigetto());
+				File file = null;
+				if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
+					file = pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
+				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+					file = pdfService.creaPdfAccreditamentoStandardPreavvisoRigetto(preavvisoRigettoInfo);
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
+				accreditamento.setRichiestaPreavvisoRigetto(file);
+				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
+				//Ricavo la seduta
+				Seduta sedutaRigetto = null;
+				Seduta sedutaIntegrazione = null;
+				Seduta sedutaPreavvisoRigetto = null;
+				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
+					if(valCom.getStato() == AccreditamentoStatoEnum.DINIEGO) {
+						sedutaRigetto = valCom.getSeduta();
+					} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
+						sedutaIntegrazione = valCom.getSeduta();
+					} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
+						sedutaPreavvisoRigetto = valCom.getSeduta();
+					}
+				}
+				/*
+				Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
+				List<String> listaCriticita = new ArrayList<String>();
+				fieldIntegrazioneAccreditamento.forEach(v -> {
 					listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
-				else
-					listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()) + "\n" + v.getNota());
-			});
-			PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
-			integrazioneInfo.setGiorniIntegrazionePreavvisoRigetto(accreditamento.getGiorniIntegrazione());
-			File file = null;
-			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
-				file = pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
-			else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
-				file = pdfService.creaPdfAccreditamentoStandardIntegrazione(integrazioneInfo);
-			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
-			accreditamento.setRichiestaIntegrazione(file);
-			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
-			//protocollo il file
-		} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
-			//mi sono spostato da INTEGRAZIONE o PREAVVISO_RIGETTO a VALUTAZIONE_SEGRETERIA quindi rimuovo i fieldEditabili
-			accreditamento.startRestartConteggio();
-			if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE)
-				accreditamento.setDataIntegrazioneFine(LocalDate.now());
-			else if(accreditamento.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
-				accreditamento.setDataPreavvisoRigettoFine(LocalDate.now());
-			fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
-		} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
-			//Ricavo la seduta
-			Seduta seduta = null;
-			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
-				if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
-					seduta= valCom.getSeduta();
+				});*/
+				PdfAccreditamentoProvvisorioRigettoInfo rigettoInfo = new PdfAccreditamentoProvvisorioRigettoInfo(accreditamento, sedutaRigetto, sedutaIntegrazione, sedutaPreavvisoRigetto);
+				File file = null;
+				if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
+					file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
+				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+					file = pdfService.creaPdfAccreditamentoStandardDiniego(rigettoInfo);
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
+				accreditamento.setDecretoDiniego(file);
+				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
+				//Setto il flusso come concluso
+				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
+			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE) {
+				//Ricavo la seduta
+				Seduta sedutaAccreditamento = null;
+				Seduta sedutaIntegrazione = null;
+				Seduta sedutaPreavvisoRigetto = null;
+				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
+					if(valCom.getStato() == AccreditamentoStatoEnum.ACCREDITATO) {
+						sedutaAccreditamento = valCom.getSeduta();
+					} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
+						sedutaIntegrazione = valCom.getSeduta();
+					} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
+						sedutaPreavvisoRigetto = valCom.getSeduta();
+					}
 				}
-			}
-			Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
-			List<String> listaCriticita = new ArrayList<String>();
-			fieldEditabiliAccreditamento.forEach(v -> {
-				listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()) + " - " + v.getNota());
-			});
-			PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
-			preavvisoRigettoInfo.setGiorniIntegrazionePreavvisoRigetto(accreditamento.getGiorniPreavvisoRigetto());
-			File file = null;
-			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
-				file = pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
-			else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
-				file = pdfService.creaPdfAccreditamentoStandardPreavvisoRigetto(preavvisoRigettoInfo);
-			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
-			accreditamento.setRichiestaPreavvisoRigetto(file);
-			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
-		} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
-			//Ricavo la seduta
-			Seduta sedutaRigetto = null;
-			Seduta sedutaIntegrazione = null;
-			Seduta sedutaPreavvisoRigetto = null;
-			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
-				if(valCom.getStato() == AccreditamentoStatoEnum.DINIEGO) {
-					sedutaRigetto = valCom.getSeduta();
-				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
-					sedutaIntegrazione = valCom.getSeduta();
-				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
-					sedutaPreavvisoRigetto = valCom.getSeduta();
+				//Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
+				PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo(accreditamento, sedutaAccreditamento, sedutaIntegrazione, sedutaPreavvisoRigetto);
+				File file = null;
+				if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
+					file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
+				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+					file = pdfService.creaPdfAccreditamentoStandardAccreditato(accreditatoInfo);
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
+				accreditamento.setDecretoAccreditamento(file);
+				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO) {
+				//Setto il flusso come concluso
+				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
+			} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
+				//Cancelliamo le Valutazioni non completate dei referee e del team leader
+				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+				for(Valutazione v : valutazioni){
+					if((v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE || v.getTipoValutazione() == ValutazioneTipoEnum.TEAM_LEADER) && v.getDataValutazione() == null){
+						valutazioneService.delete(v);
+					}
 				}
-			}
-			/*
-			Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
-			List<String> listaCriticita = new ArrayList<String>();
-			fieldIntegrazioneAccreditamento.forEach(v -> {
-				listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
-			});*/
-			PdfAccreditamentoProvvisorioRigettoInfo rigettoInfo = new PdfAccreditamentoProvvisorioRigettoInfo(accreditamento, sedutaRigetto, sedutaIntegrazione, sedutaPreavvisoRigetto);
-			File file = null;
-			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
-				file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
-			else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
-				file = pdfService.creaPdfAccreditamentoStandardDiniego(rigettoInfo);
-			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
-			accreditamento.setDecretoDiniego(file);
-			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
-		} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE) {
-			//Ricavo la seduta
-			Seduta sedutaAccreditamento = null;
-			Seduta sedutaIntegrazione = null;
-			Seduta sedutaPreavvisoRigetto = null;
-			for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
-				if(valCom.getStato() == AccreditamentoStatoEnum.ACCREDITATO) {
-					sedutaAccreditamento = valCom.getSeduta();
-				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
-					sedutaIntegrazione = valCom.getSeduta();
-				} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
-					sedutaPreavvisoRigetto = valCom.getSeduta();
-				}
-			}
-			//Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
-			PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo(accreditamento, sedutaAccreditamento, sedutaIntegrazione, sedutaPreavvisoRigetto);
-			File file = null;
-			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
-				file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
-			else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
-				file = pdfService.creaPdfAccreditamentoStandardAccreditato(accreditatoInfo);
-			protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
-			accreditamento.setDecretoAccreditamento(file);
-			accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
-		} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
-			//Cancelliamo le Valutazioni non completate dei referee e del team leader
-			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
-			for(Valutazione v : valutazioni){
-				if((v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE || v.getTipoValutazione() == ValutazioneTipoEnum.TEAM_LEADER) && v.getDataValutazione() == null){
-					valutazioneService.delete(v);
-				}
-			}
-		} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
-			if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE)
-				accreditamento.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
-			else if(accreditamento.getStato() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
-				accreditamento.setPreavvisoRigettoEseguitoDaProvider(eseguitoDaUtente);
-		} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER) {
-			Account accountTeamLeader = accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader();
-			String usernameWorkflowTeamLeader = accountTeamLeader.getUsernameWorkflow();
-			//controllo se ho gia la valutazione per lutente corrente
-			Valutazione valutazioneTL = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, accountTeamLeader.getId());
+			} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER) {
+				Account accountTeamLeader = accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader();
+				String usernameWorkflowTeamLeader = accountTeamLeader.getUsernameWorkflow();
+				//controllo se ho gia la valutazione per lutente corrente
+				Valutazione valutazioneTL = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, accountTeamLeader.getId());
 
-			if(valutazioneTL != null) {
-				//Ricavo la valutazione della segreteria perche' contiene i field editabili
-				Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
-				//ATTENZIONE la valutazioe restituita è detachata me è sempre lo stesso oggetto valutazioneSegreteria
-				valutazioneTL = valutazioneService.detachValutazione(valutazioneSegreteria);
-				valutazioneService.cloneDetachedValutazione(valutazioneTL);
-				//valutazioneService.setEsitoForEnabledFields(valutazioneTL, null);
+				if(valutazioneTL == null) {
+					//Ricavo la valutazione della segreteria perche' contiene i field editabili
+					Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
+					//ATTENZIONE la valutazioe restituita è detachata me è sempre lo stesso oggetto valutazioneSegreteria
+					valutazioneTL = valutazioneService.detachValutazione(valutazioneSegreteria);
+					valutazioneService.cloneDetachedValutazione(valutazioneTL);
+					//valutazioneService.setEsitoForEnabledFields(valutazioneTL, null);
 
-				valutazioneTL.setStoricizzato(false);
-				valutazioneTL.setDataValutazione(null);
-				valutazioneTL.setAccount(accountTeamLeader);
-				valutazioneTL.setAccreditamento(accreditamento);
-				valutazioneTL.setTipoValutazione(ValutazioneTipoEnum.TEAM_LEADER);
+					valutazioneTL.setStoricizzato(false);
+					valutazioneTL.setDataValutazione(null);
+					valutazioneTL.setAccount(accountTeamLeader);
+					valutazioneTL.setAccreditamento(accreditamento);
+					valutazioneTL.setTipoValutazione(ValutazioneTipoEnum.TEAM_LEADER);
+				}
+
+				//rimuovo i field editabili per quelli isEnabled=true
+				Iterator<FieldValutazioneAccreditamento> iterator = valutazioneTL.getValutazioni().iterator();
+				while (iterator.hasNext()) {
+					FieldValutazioneAccreditamento fval = iterator.next();
+					if(fval.isEnabled()) {
+				        iterator.remove();
+				    }
+				}
+				valutazioneService.save(valutazioneTL);
+				emailService.inviaNotificaATeamLeader(accountTeamLeader.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			}
 
-			//rimuovo i field editabili per quelli isEnabled=true
-			Iterator<FieldValutazioneAccreditamento> iterator = valutazioneTL.getValutazioni().iterator();
-			while (iterator.hasNext()) {
-				FieldValutazioneAccreditamento fval = iterator.next();
-				if(fval.isEnabled()) {
-			        iterator.remove();
-			    }
+			//calcolo se la segreteria ha fatto presa visione
+			//sa da valutazione segreteria vado diretto in INS_ODG c'è stata presa visione
+			if(accreditamento.getStato() == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA && stato == AccreditamentoStatoEnum.INS_ODG) {
+				presaVisione =  true;
 			}
-			valutazioneService.save(valutazioneTL);
-			emailService.inviaNotificaATeamLeader(accountTeamLeader.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
-		}
-
-		//calcolo se la segreteria ha fatto presa visione
-		Boolean presaVisione = false;
-		//sa da valutazione segreteria vado diretto in INS_ODG c'è stata presa visione
-		if(accreditamento.getStato() == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA && stato == AccreditamentoStatoEnum.INS_ODG) {
-			presaVisione =  true;
+			accreditamento.setStato(stato);
+		} else if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
+			if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
+				//Ricavo la seduta
+				Seduta seduta = null;
+				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
+					//Prendo la seduta con data maggiore della data di avvio del flusso
+					if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
+						if(valCom.getSeduta().getData().isAfter(workflowInCorso.getDataAvvio()))
+							seduta = valCom.getSeduta();
+					}
+				}
+				Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
+				List<String> listaCriticita = new ArrayList<String>();
+				fieldEditabiliAccreditamento.forEach(v -> {
+		            //Richiesta
+		            //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire singole note sui campi] (pag 4)
+					if(v.getNota() == null || v.getNota().isEmpty())
+						listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
+					else
+						listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()) + "\n" + v.getNota());
+				});
+				//Da aggiungere se viene richiesta la creazione di file nel procedimento di "Variazione Dati"
+//				PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
+//				integrazioneInfo.setGiorniIntegrazionePreavvisoRigetto(workflowInCorso.getGiorniIntegrazione());
+//				File file = null;
+//				//creaPdfAccreditamentoVariazioneDatiIntegrazione va modificato e' una copi di creaPdfAccreditamentoIntegrazione
+//				file = pdfService.creaPdfAccreditamentoVariazioneDatiIntegrazione(integrazioneInfo);
+//				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
+//				workflowInCorso.setRichiestaVariazioneDati(file);
+				//protocollo il file
+			} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
+				//mi sono spostato da INTEGRAZIONE a VALUTAZIONE_SEGRETERIA quindi rimuovo i fieldEditabili
+				fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
+				workflowInCorso.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
+			} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
+				//Cancelliamo le Valutazioni non completate dei referee e del team leader
+				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+				for(Valutazione v : valutazioni){
+					if((v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE) && v.getDataValutazione() == null){
+						valutazioneService.delete(v);
+					}
+				}
+			} else if(stato == AccreditamentoStatoEnum.CONCLUSO) {
+				//Setto il flusso come concluso
+				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
+			}
+			accreditamento.setStatoVariazioneDati(stato);
+			//non e' prevista la presa visione della segreteria
+		} else if(workflowInCorso.getTipo() == TipoWorkflowEnum.DECADENZA) {
+			if(stato == AccreditamentoStatoEnum.CANCELLATO) {
+				//Setto il flusso come concluso
+				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
+			}
+			accreditamento.setStato(stato);
 		}
 
 		//salvo history
-		accreditamentoStatoHistoryService.createHistoryFine(accreditamento, accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId(), stato, accreditamento.getStato(), LocalDateTime.now(), presaVisione);
+		if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI)
+			accreditamentoStatoHistoryService.createHistoryFine(accreditamento, workflowInCorso.getProcessInstanceId(), stato, accreditamento.getStatoVariazioneDati(), LocalDateTime.now(), presaVisione);
+		else
+			accreditamentoStatoHistoryService.createHistoryFine(accreditamento, workflowInCorso.getProcessInstanceId(), stato, accreditamento.getStato(), LocalDateTime.now(), presaVisione);
+
 
 		//TODO se si chiama il servizio di protocollazione verrà settato uno stato intermedio di attesa protocollazione
 		//TODO registrazione cronologia degli stati
-		accreditamento.setStato(stato);
 		accreditamentoRepository.save(accreditamento);
 
-		alertEmailService.creaAlertForProvider(accreditamento);
+		//se lo stato è DINIEGO o ACCREDITATO cancello le valutazioni attive per la domanda
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO || stato == AccreditamentoStatoEnum.DINIEGO || stato == AccreditamentoStatoEnum.CONCLUSO) {
+			Set<Valutazione> valutazioniAttive = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+			for(Valutazione v : valutazioniAttive) {
+				valutazioneService.delete(v);
+			}
+		}
+
+		alertEmailService.creaAlertForProvider(accreditamento, workflowInCorso);
 	}
 
 	@Override
@@ -1474,7 +1595,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception{
 		workflowService.eseguiTaskInserimentoEsitoOdgForCurrentUser(getAccreditamento(accreditamentoId), stato);
-		settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(seduta.getData(), accreditamentoId, stato);
+		if(!getAccreditamento(accreditamentoId).isVariazioneDati())
+			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(seduta.getData(), accreditamentoId, stato);
 	}
 
 	@Override
@@ -1634,4 +1756,141 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
 	}
 
+	@Override
+	public boolean canUserAbilitaVariazioneDati(Long accreditamentoId, CurrentUser currentUser) {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria()
+				&& accreditamento.isAccreditato()
+				&& (accreditamento.getStatoVariazioneDati() == null
+				|| accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.CONCLUSO
+				|| accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE)
+				&& isNotVariazioneDatiPresaInCaricoDaAltri(accreditamento, currentUser.getAccount()))
+			return true;
+		else return false;
+	}
+
+	//funzione che controlla se la variazione dati può essere presa in carico
+	private boolean isNotVariazioneDatiPresaInCaricoDaAltri(Accreditamento accreditamento, Account user) {
+		Valutazione valutazioneSegreteriaVariazioneDati = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamento.getId());
+		if(valutazioneSegreteriaVariazioneDati == null || valutazioneSegreteriaVariazioneDati.getAccount().equals(user))
+			return true;
+		else
+			return false;
+	}
+
+	@Override
+	public void avviaFlussoVariazioneDati(Accreditamento accreditamento) throws Exception {
+		LOGGER.info("Avvio del flusso di Variazione dei Dati dell'Accreditamento: " + accreditamento.getId());
+		Account segreteria = Utils.getAuthenticatedUser().getAccount();
+		workflowService.createWorkflowAccreditamentoVariazioneDati(Utils.getAuthenticatedUser(), accreditamento);
+
+		//si crea già anche la valutazione per la segreteria che sancisce la presa in carico
+		Valutazione valutazioneSegreteria = new Valutazione();
+		valutazioneSegreteria.setAccount(segreteria);
+		valutazioneSegreteria.setAccreditamento(accreditamento);
+		valutazioneSegreteria.setAccreditamentoStatoValutazione(null);
+		valutazioneSegreteria.setTipoValutazione(ValutazioneTipoEnum.SEGRETERIA_ECM);
+		valutazioneSegreteria.setStoricizzato(false);
+		//setta tutti gli esiti a true e bloccati
+		valutazioneSegreteria.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, valutazioneSegreteria.getAccreditamento()));
+
+		valutazioneService.save(valutazioneSegreteria);
+	}
+
+	@Override
+	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId) throws Exception {
+		LOGGER.info("Invio dei campi sbloccati in Variazione dei Dati dell'Accreditamento: " + accreditamentoId);
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		//i giorni per modificare la domanda sono 10
+		int giorniPerModifica = ecmProperties.getGiorniVariazioneDatiAccreditamento();
+		Long timerIntegrazioneRigetto = giorniPerModifica * millisecondiInGiorno;
+
+		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
+	}
+
+	@Override
+	public boolean canUserInviaCampiVariazioneDati(Long accreditamentoId, CurrentUser currentUser) {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.getStatoVariazioneDati() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE)
+			return true;
+		else return false;
+	}
+
+	@Override
+	public void inviaValutazioneVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception {
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		Account user = Utils.getAuthenticatedUser().getAccount();
+		Map<IdFieldEnum, Long> campiDaValutare = new HashMap<IdFieldEnum, Long>();
+
+		//se l'utente è segreteria mi salvo tutti gli idField relativi ai fieldIntegrazione prima che questi
+		//vengano cancellati e poi approvo l'integrazione
+		if(user.isSegreteria()) {
+			campiDaValutare = getIdEnumDaEditare(accreditamentoId);
+			//applica modifiche
+			approvaIntegrazione(accreditamentoId);
+		}
+
+		//disabilito tutti i filedValutazioneAccreditamento
+		for (FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
+			fva.setEnabled(false);
+		}
+
+		//setta la data
+		valutazione.setDataValutazione(LocalDateTime.now());
+
+		//inserisce il commento complessivo
+		valutazione.setValutazioneComplessiva(valutazioneComplessiva);
+
+		valutazione.setAccreditamentoStatoValutazione(null);
+
+		valutazioneService.saveAndFlush(valutazione);
+
+		//detacha e copia: da questo momento valutazione si riferisce alla copia storicizzata
+		valutazioneService.copiaInStorico(valutazione);
+
+		if(user.isSegreteria()) {
+
+			if(destinazioneVariazioneDati == AccreditamentoStatoEnum.CONCLUSO) {
+				workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, null, null, destinazioneVariazioneDati);
+				//elimino le vecchie valutazioni
+				Set<Valutazione> valutazioniVariazioneDati = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamento.getId());
+				for(Valutazione v : valutazioniVariazioneDati) {
+					valutazioneService.delete(v);
+				}
+			}
+			else {
+				List<String> valutatore = new ArrayList<String>();
+				valutatore.add(refereeVariazioneDati.getUsername());
+				workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, valutatore, 1, destinazioneVariazioneDati);
+
+				//creo la valutazione per il referee
+				Valutazione valutazioneReferee = new Valutazione();
+				valutazioneReferee.setAccount(refereeVariazioneDati);
+				valutazioneReferee.setAccreditamento(accreditamento);
+				valutazioneReferee.setAccreditamentoStatoValutazione(null);
+				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+				valutazioneReferee.setStoricizzato(false);
+				//setta tutti gli esiti a true e bloccati
+				valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, accreditamento));
+				//sblocca e setta a null l'esito dei campi che dovrà valutare
+				valutazioneService.resetEsitoAndEnabledForSubset(valutazioneReferee, campiDaValutare);
+
+				valutazioneService.save(valutazioneReferee);
+				emailService.inviaNotificaAReferee(refereeVariazioneDati.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
+			}
+		}
+		else {
+			workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
+		}
+	}
+
+	private Map<IdFieldEnum, Long> getIdEnumDaEditare(Long accreditamentoId) {
+		Map<IdFieldEnum, Long> campiDaValutare = new HashMap<IdFieldEnum, Long>();
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
+		for(FieldIntegrazioneAccreditamento fia : fieldIntegrazione) {
+			campiDaValutare.put(fia.getIdField(), fia.getObjectReference());
+		}
+		return campiDaValutare;
+	}
 }

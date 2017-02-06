@@ -68,9 +68,9 @@ public interface AccreditamentoRepository extends CrudRepository<Accreditamento,
 		public int countAllByStatoInAndTipoDomandaNotTaken(@Param("stati") Set<AccreditamentoStatoEnum> stati, @Param("tipo") AccreditamentoTipoEnum tipo);
 
 		//query e count domande inseribili in Seduta (in stato INS_ODG non già inserite in nessuna seduta non bloccata)
-		@Query("SELECT a FROM Accreditamento a WHERE a.stato = 'INS_ODG' AND a NOT IN (SELECT vc.accreditamento FROM ValutazioneCommissione vc WHERE vc.seduta.id IN (SELECT s.id FROM Seduta s WHERE s.locked = FALSE))")
+		@Query("SELECT a FROM Accreditamento a WHERE a.stato = 'INS_ODG' OR a.statoVariazioneDati = 'INS_ODG' AND a NOT IN (SELECT vc.accreditamento FROM ValutazioneCommissione vc WHERE vc.seduta.id IN (SELECT s.id FROM Seduta s WHERE s.locked = FALSE))")
 		public Set<Accreditamento> findAllAccreditamentiInseribiliInODG();
-		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.stato = 'INS_ODG' AND a NOT IN (SELECT vc.accreditamento FROM ValutazioneCommissione vc WHERE vc.seduta.id IN (SELECT s.id FROM Seduta s WHERE s.locked = FALSE))")
+		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.stato = 'INS_ODG' OR a.statoVariazioneDati = 'INS_ODG' AND a NOT IN (SELECT vc.accreditamento FROM ValutazioneCommissione vc WHERE vc.seduta.id IN (SELECT s.id FROM Seduta s WHERE s.locked = FALSE))")
 		public int countAllAccreditamentiInseribiliInODG();
 
 		//query e count domande accreditamento a seconda dello stato assegnate al valutatore id

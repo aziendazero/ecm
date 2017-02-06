@@ -41,6 +41,7 @@ public interface ValutazioneService {
 	public Map<String, Map<IdFieldEnum, FieldValutazioneAccreditamento>> getMapAllValutazioneSingoli(Valutazione valutazione, Accreditamento accreditamento);
 	public Map<String, FieldValutazioniRipetibiliWrapper> getMapAllValutazioneRipetibili(Valutazione valutazione, Accreditamento accreditamento);
 	public void setEsitoForEnabledFields(Valutazione valutazione, Boolean esito) throws Exception;
-	//debug mode
 	public void valutaTuttiSi(Accreditamento accreditamento, Account account);
+	public void resetEsitoAndEnabledForSubset(Valutazione valutazioneReferee, Map<IdFieldEnum, Long> campiDaValutare);
+	public void cancelObjectNotApproved(Long accreditamentoId, Set<FieldValutazioneAccreditamento> fieldValutazioniSegreteria);
 }

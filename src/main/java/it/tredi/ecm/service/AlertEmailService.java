@@ -9,13 +9,14 @@ import it.tredi.ecm.dao.entity.AlertEmail;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 
 public interface AlertEmailService {
 	public Set<AlertEmail> getAll();
 	public Set<AlertEmail> getAllNotInviati();
 	public void save(AlertEmail alertMail);
 
-	public void creaAlertForProvider(Accreditamento accreditamento);
+	public void creaAlertForProvider(Accreditamento accreditamento, WorkflowInfo workflowInCorso);
 	public void creaAlertInvioDomandaStandardForProvider(Provider provider);
 	public void creaAlertContributoAnnuoForProvider(QuotaAnnuale quota);
 	public void creaAlertForReferee(Set<Account> refereeGroup, Provider provider, LocalDateTime dataScadenza);

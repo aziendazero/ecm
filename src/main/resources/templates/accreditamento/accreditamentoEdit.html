@@ -134,6 +134,7 @@
 								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
 									<li th:if="${accreditamentoWrapper.canSendIntegrazione}"><a th:text="#{label.invia_integrazione}" data-toggle="modal" data-target=".modal-fileIntegrazione"></a></li>
+									<li th:if="${accreditamentoWrapper.canSendVariazioneDati}"><a th:text="#{label.invia_variazione_dati}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sendIntegrazione|}"></a></li>
 									<li th:if="${accreditamentoWrapper.canSend}"><a th:text="#{label.invia_domanda}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/send|}"></a></li>
 									<li class="divider actions" th:if="${accreditamentoWrapper.canSendIntegrazione or accreditamentoWrapper.canSend}"></li>
 									<li><a th:text="#{label.torna_in_visualizzazione}" onclick="switchMode('show')"></a></li>

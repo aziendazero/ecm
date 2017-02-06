@@ -111,8 +111,12 @@ public class ProviderController {
 	//nel secondo caso non riapplico le eventuali integrazioni altrimenti mi ritroverei delle entity attached me mi danno errore.
 	//Distinguo inoltre il prepareWrapper in funzione dello stato della domanda
 	private ProviderWrapper prepareWrapperForReloadByEditId(Provider provider, Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, AccreditamentoWrapperModeEnum wrapperMode) throws Exception{
-		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT)
-			return prepareProviderWrapperEdit(provider, statoAccreditamento, true);
+		if(wrapperMode == AccreditamentoWrapperModeEnum.EDIT) {
+			if(accreditamentoId != null)
+				return prepareProviderWrapperEdit(provider, accreditamentoId, statoAccreditamento, true);
+			else
+				return prepareProviderWrapperEdit(provider, statoAccreditamento, true);
+		}
 		if(wrapperMode == AccreditamentoWrapperModeEnum.VALIDATE)
 			return prepareProviderWrapperValidate(provider, accreditamentoId, statoAccreditamento, false);
 
@@ -286,13 +290,12 @@ public class ProviderController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-
-				if(providerWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || providerWrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+				if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {
 					integra(providerWrapper);
 				}else{
 					salva(providerWrapper);
 				}
-
 				redirectAttrs.addAttribute("accreditamentoId", providerWrapper.getAccreditamentoId());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.provider_salvato", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/edit"));
@@ -444,16 +447,18 @@ public class ProviderController {
 	private ProviderWrapper prepareProviderWrapperEdit(Provider provider, Long accreditamentoId, AccreditamentoStatoEnum statoAccreditamento, boolean reloadByEditId) throws Exception{
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEdit("+ provider.getId() + "," + accreditamentoId +") - entering"));
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
 		//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
-		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && !(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()))
 			providerWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER));
 		else
 			providerWrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileAccreditamenoService.getAllFieldEditabileForAccreditamento(accreditamentoId), SubSetFieldEnum.PROVIDER));
 		providerWrapper.setStatoAccreditamento(statoAccreditamento);
 		providerWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
+		providerWrapper.setAccreditamento(accreditamento);
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {
 			prepareApplyIntegrazione(providerWrapper, SubSetFieldEnum.PROVIDER, reloadByEditId);
 		}
 
@@ -511,6 +516,7 @@ public class ProviderController {
 
 		SubSetFieldEnum subset = SubSetFieldEnum.PROVIDER;
 
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
 		providerWrapper.setStatoAccreditamento(statoAccreditamento);
 		providerWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
@@ -532,7 +538,7 @@ public class ProviderController {
 		providerWrapper.setIdEditabili(idEditabili);
 
 		//solo se la valutazione è della segretaeria dopo l'INTEGRAZIONE
-		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(providerWrapper, subset, reloadByEditId);
 		}
 

@@ -270,9 +270,8 @@ public class AccreditamentoAllegatiController {
 
 			//Ri-effettuo il detach..non sarebbe indispensabile...ma e' una precauzione a eventuali modifiche future
 			//ci assicuriamo che effettivamente qualsiasi modifica alla entity in INTEGRAZIONE non venga flushata su DB
-			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(wrapper.getAccreditamentoId());
-			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
-				/*
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {				/*
 				 * 20161216 abarducci
 				 * correzzione ERROR - it.tredi.ecm.web.AccreditamentoAllegatiController - [provider4] - POST /accreditamento/3445/allegati/save
 				 * org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: it.tredi.ecm.dao.entity.File.fileData, could not initialize proxy - no Session
@@ -309,7 +308,7 @@ public class AccreditamentoAllegatiController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				if(wrapper.getStatoAccreditamento() == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+				if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {
 					integra(wrapper);
 				}else{
 					LOGGER.debug(Utils.getLogMessage("Salvataggio allegati al provider"));
@@ -446,14 +445,15 @@ public class AccreditamentoAllegatiController {
 		wrapper.setDatiAccreditamento(accreditamento.getDatiAccreditamento());
 		wrapper.setModelIds(fileService.getModelFileIds());
 		//la Segreteria se non è in uno stato di integrazione/preavviso rigetto può sempre modificare
-		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && statoAccreditamento != AccreditamentoStatoEnum.INTEGRAZIONE && statoAccreditamento != AccreditamentoStatoEnum.PREAVVISO_RIGETTO)
+		if (Utils.getAuthenticatedUser().getAccount().isSegreteria() && !(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()))
 			wrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
 		else
 			wrapper.setIdEditabili(Utils.getSubsetOfIdFieldEnum(fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId), subset));
 		wrapper.setStatoAccreditamento(statoAccreditamento);
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.EDIT);
+		wrapper.setAccreditamento(accreditamento);
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE || statoAccreditamento == AccreditamentoStatoEnum.PREAVVISO_RIGETTO){
+		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 
@@ -511,7 +511,7 @@ public class AccreditamentoAllegatiController {
 		wrapper.setIdEditabili(idEditabili);
 		wrapper.setMappa(mappa);
 
-		if(statoAccreditamento == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA){
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
 		}
 

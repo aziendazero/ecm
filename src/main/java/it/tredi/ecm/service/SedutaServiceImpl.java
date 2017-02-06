@@ -135,7 +135,7 @@ public class SedutaServiceImpl implements SedutaService {
 
 		//se la domanda era in valutazione commissione e setto lo stato in ins_odg
 		Accreditamento accreditamento = val.getAccreditamento();
-		if(accreditamento.isValutazioneCommissione())
+		if(accreditamento.isValutazioneCommissione() || accreditamento.isValutazioneCommissioneVariazioneDati())
 			workflowService.eseguiTaskInserimentoEsitoOdgForCurrentUser(accreditamento, AccreditamentoStatoEnum.INS_ODG);
 	}
 
@@ -145,7 +145,7 @@ public class SedutaServiceImpl implements SedutaService {
 	public void chiudiSeduta(Long sedutaId) throws Exception {
 		Seduta seduta =  sedutaRepository.findOne(sedutaId);
 		for(ValutazioneCommissione val : seduta.getValutazioniCommissione()){
-			if(val.getAccreditamento().getStato() == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE)
+			if(val.getAccreditamento().getStato() == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE || val.getAccreditamento().getStatoVariazioneDati() == AccreditamentoStatoEnum.VALUTAZIONE_COMMISSIONE)
 				accreditamentoService.inviaValutazioneCommissione(seduta, val.getAccreditamento().getId(), val.getStato());
 		}
 
@@ -162,7 +162,7 @@ public class SedutaServiceImpl implements SedutaService {
 		for (ValutazioneCommissione vc : seduta.getValutazioniCommissione()) {
 			Set<AccreditamentoStatoEnum> value = new HashSet<AccreditamentoStatoEnum>();
 
-			List<AccreditamentoStatoEnum> possibiliStati = workflowService.getInserimentoEsitoOdgStatiPossibiliAccreditamento(vc.getAccreditamento().getWorkflowInfoAccreditamento().getProcessInstanceId());
+			List<AccreditamentoStatoEnum> possibiliStati = workflowService.getInserimentoEsitoOdgStatiPossibiliAccreditamento(vc.getAccreditamento().getWorkflowInCorso().getProcessInstanceId());
 			value.addAll(possibiliStati);
 
 			value.remove(AccreditamentoStatoEnum.INS_ODG);
@@ -234,11 +234,11 @@ public class SedutaServiceImpl implements SedutaService {
 			//Processo solo gli accreditamenti nello stato corretto perche' si potrebbe verificare un errore su un accreditamento e non verificarsi su un altro
 			//quindi il secondo cambierebbe restituendo errore per tutte le chiamate successive rendendo impossibile eseguire il bloccaSeduta
 			if(
-					(a.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO && a.getStato() == AccreditamentoStatoEnum.INS_ODG)
+					(a.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO && (a.getStato() == AccreditamentoStatoEnum.INS_ODG || a.getStatoVariazioneDati() == AccreditamentoStatoEnum.INS_ODG))
 					||
 					//TODO controllare se anche per la standard lo stato e' INS_ODG e quindi il metodo da chiamare resta inserisciInValutazioneCommissioneForCurrentUser
-					(a.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD && a.getStato() == AccreditamentoStatoEnum.INS_ODG)
-				) {
+					(a.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD && (a.getStato() == AccreditamentoStatoEnum.INS_ODG || a.getStatoVariazioneDati() == AccreditamentoStatoEnum.INS_ODG)))
+			{
 				try {
 					accreditamentoService.inserisciInValutazioneCommissioneForSystemUser(a.getId());
 				} catch (Exception ex) {

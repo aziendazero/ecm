@@ -28,6 +28,7 @@
 						<th:block th:unless="${showOnly}">
 							<input type="hidden" name="editId" th:value="${sedeWrapper.sede.id}" />
 							<input type="hidden" th:field="${sedeWrapper.accreditamentoId}" />
+							<input th:if="${editabile}" type="hidden" th:field="${sedeWrapper.accreditamento}" />
 							<input type="hidden" th:field="${sedeWrapper.idEditabili}" />
 							<input type="hidden" th:field="${sedeWrapper.statoAccreditamento}" />
 							<input type="hidden" th:field="${sedeWrapper.fieldIntegrazione}" />
@@ -40,7 +41,7 @@
 						</th:block>
 
 						<!-- info -->
-						<h2 th:if="${sedeWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
+						<h2 th:if="${editabile and (sedeWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE or sedeWrapper.accreditamento.isVariazioneDati())}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
 
 						<div th:if="${valutabile and isFULL}" class="item validateAlert form-group" th:classappend="${#fields.hasErrors('sedeWrapper')} ? 'bad'">
 							<th:block>
@@ -54,14 +55,14 @@
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
 										<label th:class="${!canValutaDomanda} or ${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__]?.enabled == false} ? 'label-disabled'">
-											<input type="radio" class="flat full" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											<input type="radio" class="flat full" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].esito}" value="true" th:disabled="${!canValutaDomanda} or
 											${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
 										<label th:class="${!canValutaDomanda or !sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat full" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											<input type="radio" class="flat full" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].esito}" value="false" th:disabled="${!canValutaDomanda or
 											!sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sedi')}__].enabled}"  />
 											<span th:text="#{label.no}">No</span>
 										</label>
@@ -252,6 +253,7 @@
 										data-hide-disabled="false"
 										onchange="sendAjaxRequestCAP()"
 										title="Seleziona un comune..."
+										th:attr="data-editabile=${#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune'))}"
 										th:disabled="${!#lists.contains(sedeWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune'))}">
 										<option th:value="${sedeWrapper.sede.comune}"
 											th:text="${sedeWrapper.sede.comune}"/>
@@ -632,18 +634,23 @@
 			<script th:inline="javascript">
 				$(document).ready(function() {
 					$(".full").on("ifChecked", function() {
-						selezionaTuttiSi();
+						if($(this).val() == 'true')
+							selezionaTuttiSi();
+						else
+							selezionaTuttiNo();
 					});
 
 					handleFull();
-			});
+				});
 
 				function handleFull(){
-					if($(".full").val() == 'true' || $(".full").val() == 'false')
+					if($(".full:checked").val() == 'true')
 						selezionaTuttiSi();
+					else if($(".full:checked").val() == 'false')
+						selezionaTuttiNo();
 				}
 
-		</script>
+			</script>
 		</th:block>
 	</th:block>
 

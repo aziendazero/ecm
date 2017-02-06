@@ -6,6 +6,7 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -25,4 +26,5 @@ public interface FieldValutazioneAccreditamentoService {
 	public Set<FieldValutazioneAccreditamento> getValutazioniDefault(Accreditamento accreditamento);
 	//debug mode
 	public Set<FieldValutazioneAccreditamento> createAllFieldValutazioneAndSetEsito(boolean b, Accreditamento accreditamento);
+	public Set<FieldValutazioneAccreditamento> createAllFieldValutazioneAndSetEsitoAndEnabled(boolean b, boolean c, Accreditamento accreditamento);
 }

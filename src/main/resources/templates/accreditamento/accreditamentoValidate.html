@@ -292,6 +292,61 @@
 
 									</th:block>
 
+									<th:block th:if="${#authentication.principal.hasProfile('SEGRETERIA')
+										and accreditamentoWrapper.accreditamento.isValutazioneSegreteriaVariazioneDati()}">
+
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.destinazioneVariazioneDati')} ? 'bad'">
+											<label class="control-label col-md-4 col-sm-4 col-xs-12">
+												<span th:text="#{label.esito_della_valutazione_variazione_dati}">label.esito_della_valutazione_variazione_dati</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<div class="radio">
+													<label>
+														<input type="radio" class="flat selezioneEsistoVariazioneDati" th:field="${accreditamentoWrapper.destinazioneVariazioneDati}" th:value="${T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).CONCLUSO}" />
+														<span th:text="#{label.conferma_variazione_dati}"></span>
+													</label>
+												</div>
+												<div class="radio">
+													<label>
+														<input type="radio" class="flat selezioneEsistoVariazioneDati" th:field="${accreditamentoWrapper.destinazioneVariazioneDati}" th:value="${T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).VALUTAZIONE_CRECM}" />
+														<span th:text="#{label.assegna_valutazione_referee}"></span>
+													</label>
+												</div>
+											</div>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.destinazioneVariazioneDati')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.destinazioneVariazioneDati}"></div>
+										</div>
+
+										<div class="listaReferee" style="display: none;">
+
+											<div class="divider"></div>
+
+											<div>
+												<h4 th:text="#{label.seleziona_referee_variazione_dati}"></h4>
+												<div class="item modalAlert" th:classappend="${#fields.hasErrors('accreditamentoWrapper.refereeVariazioneDati')} ? 'bad'">
+													<div class="col-xs-10 col-xs-offset-1">
+														<select id="referee"
+															class="selectpicker required"
+															data-width="100%" data-style="btn-primary"
+															th:field="${accreditamentoWrapper.refereeVariazioneDati}"
+															data-actions-box="false" data-size="10"
+															data-hide-disabled="false"
+															title="Seleziona il referee..."
+															th:remove="all-but-first">
+															<option
+																th:each="referee, row: ${refereeList}"
+																th:value="${referee.id}"
+																th:text="${referee.getFullNameBase()}">
+															</option>
+														</select>
+														<div th:if="${#fields.hasErrors('accreditamentoWrapper.refereeVariazioneDati')}" class="alert" th:errors="${accreditamentoWrapper.refereeVariazioneDati}"></div>
+													</div>
+												</div>
+											</div>
+
+										</div>
+
+									</th:block>
+
 									<input id="submitButtonModal" type="submit" style="display: none;" />
 									<input type="hidden" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.accreditamento}" />
 
@@ -396,9 +451,15 @@
 
 				    mostraNascondiLegaleDelegato($(".radioLegale:checked").val());
 
+					mostraNascondiRefereeVariazioneDati($(".selezioneEsistoVariazioneDati:checked").val());
+
 					$(".radioLegale").on("ifChecked", function() {
 						mostraNascondiLegaleDelegato($(this).val());
 					});
+
+					$(".selezioneEsistoVariazioneDati").on("ifChecked", function() {
+						mostraNascondiRefereeVariazioneDati($(this).val());
+					})
 
 					$('#componentiSegreteria').selectpicker({
 						selectAllText : 'Seleziona tutti',
@@ -433,6 +494,16 @@
 					else if(value == 'false') {
 						$('.showDelegato').slideDown("slow");
 						$('.showLegale').slideUp("fast");
+					}
+				}
+
+				function mostraNascondiRefereeVariazioneDati(value) {
+					console.log(value);
+					if(value === "ACCREDITATO") {
+						$(".listaReferee").slideUp("fast");
+					}
+					if(value === "VALUTAZIONE_CRECM") {
+						$(".listaReferee").slideDown("slow");
 					}
 				}
 
