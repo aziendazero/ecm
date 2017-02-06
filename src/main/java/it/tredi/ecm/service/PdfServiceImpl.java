@@ -850,11 +850,12 @@ public class PdfServiceImpl implements PdfService {
 
 	        //Togliere nei casi:
 	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
-	        if(accreditatoInfo.getIntegrazioneInfo() != null) {
+	        //abarducci 2017-02-06 richiesta modifica si deve vedere sempre indipendentemente se passato da integrazione e preavviso rigetto
+	        //if(accreditatoInfo.getIntegrazioneInfo() != null) {
 				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento provvisorio;");
 	            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
 	            addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
-	        }
+	        //}
 
             addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. n. 382498 del 13 settembre 2013, con la quale codesta Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S. all’adempimento delle procedure formali della fase istruttoria dell’accreditamento provvisorio dei Provider e alla sottoscrizione della richiesta di documentazione integrativa ai sensi della L.241/1990 e ss.mm.ii;");
 
@@ -1641,11 +1642,12 @@ public class PdfServiceImpl implements PdfService {
 
 	        //Togliere nei casi:
 	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
-	        if(accreditatoInfo.getIntegrazioneInfo() != null) {
+	        //abarducci 2017-02-06 richiesta modifica si deve vedere sempre indipendentemente se passato da integrazione e preavviso rigetto
+	        //if(accreditatoInfo.getIntegrazioneInfo() != null) {
 				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento standard;");
 	            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
 	            addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
-	        }
+	        //}
 	        addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. 220017 del 21 maggio 2014 con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei Provider e della sottoscrizione della richiesta di documentazione integrativa, ai sensi della L.241/1990 e ss.mm.ii;");
 	        msgFormat = new MessageFormat("TENUTO CONTO dell’esito della visita in loco, effettuata in data {0} presso la sede del Provider {1}, il cui verbale è agli atti della scrivente Direzione;");
             Object[] valuesDataVisitaNomeProv = {accreditatoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione()};
