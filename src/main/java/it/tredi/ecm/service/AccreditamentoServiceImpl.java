@@ -1417,7 +1417,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//controllo se ho gia la valutazione per lutente corrente
 				Valutazione valutazioneTL = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, accountTeamLeader.getId());
 
-				if(valutazioneTL != null) {
+				if(valutazioneTL == null) {
 					//Ricavo la valutazione della segreteria perche' contiene i field editabili
 					Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
 					//ATTENZIONE la valutazioe restituita è detachata me è sempre lo stesso oggetto valutazioneSegreteria
