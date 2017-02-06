@@ -1802,11 +1802,11 @@ public class EventoServiceImpl implements EventoService {
 		else return false;
 	}
 
-	/* Evento iniziato e completamente bloccato */
+	/* Evento iniziato e completamente bloccato N.B. prima aveva anche la condizione che now() == dataInizio, ma è stata fatta togliere */
 	@Override
 	public boolean isEventoIniziato(Evento evento) {
 		if(evento.getStato() != EventoStatoEnum.BOZZA) {
-			if(LocalDate.now().isEqual(evento.getDataInizio()) || LocalDate.now().isAfter(evento.getDataInizio()))
+			if(LocalDate.now().isAfter(evento.getDataInizio()))
 				return true;
 			else
 				return false;
@@ -1814,24 +1814,24 @@ public class EventoServiceImpl implements EventoService {
 		else return false;
 	}
 
-	/* Ritorna un booleano per il blocco della modifica della data di inizio */
-	@Override
-	public boolean hasDataInizioRestrictions(Evento evento) {
-		if(evento.getStato() != EventoStatoEnum.BOZZA) {
-			if(evento.isRiedizione() || evento.getProvider().isGruppoA()) {
-				return false;
-			}
-			//gruppo B
-			else {
-				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniMinEventoProviderB())))
-					return true;
-				else
-					return false;
-			}
-		}
-		else
-			return false;
-	}
+//	/* Ritorna un booleano per il blocco della modifica della data di inizio */
+//	@Override
+//	public boolean hasDataInizioRestrictions(Evento evento) {
+//		if(evento.getStato() != EventoStatoEnum.BOZZA) {
+//			if(evento.isRiedizione() || evento.getProvider().isGruppoA()) {
+//				return false;
+//			}
+//			//gruppo B
+//			else {
+//				if(LocalDate.now().isAfter(evento.getDataInizio().minusDays(ecmProperties.getGiorniMinEventoProviderB())))
+//					return true;
+//				else
+//					return false;
+//			}
+//		}
+//		else
+//			return false;
+//	}
 
 	@Override
 	public Sponsor getSponsorById(Long sponsorId) {

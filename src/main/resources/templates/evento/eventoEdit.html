@@ -1323,8 +1323,7 @@
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="responsabiliScientifici" class="datatable-responsive-responsabili table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabili')} ? 'bad-table'">
 				<thead>
@@ -1395,8 +1394,7 @@
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="docenti" class="datatable-responsive-docenti table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.docenti')} ? 'bad-table'">
 				<thead>
@@ -1470,8 +1468,7 @@
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="responsabileSegreteria" class="datatable-responsive-responsabileSegreteria table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabileSegreteria')} ? 'bad-table'">
 				<thead>
@@ -1533,8 +1530,7 @@
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="sponsors" class="datatable-responsive-sponsors table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')} ? 'bad-table'">
 				<thead>
@@ -1581,8 +1577,7 @@
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="partners" class="datatable-responsive-partners table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.partners')} ? 'bad-table'">
 				<thead>
@@ -1630,8 +1625,7 @@
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaRES">
 				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12"
 						th:each="data , status : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
@@ -1815,8 +1809,7 @@
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaFSC">
 				<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}"  th:with="fase=${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro}">
 
@@ -1914,8 +1907,7 @@
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaFAD" th:if="${eventoWrapper.programmaEventoFAD != null}">
 				<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad'">
 					<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>

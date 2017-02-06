@@ -810,7 +810,7 @@ public class EventoController {
 		//editabilità
 		eventoWrapper.setEditSemiBloccato(eventoService.isEditSemiBloccato(evento));
 		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
-		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
+//		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
 		//flag per capire se la segreteria fa modifiche che toccano il numero dei crediti
 		if(evento.getCrediti() != null)
 			eventoWrapper.setCreditiOld(evento.getCrediti());
@@ -890,7 +890,7 @@ public class EventoController {
 		//editabilità
 		eventoWrapper.setEditSemiBloccato(eventoService.isEditSemiBloccato(evento));
 		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
-		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
+//		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperRiedizione(" + evento.getId() + ") - exiting"));
 		return eventoWrapper;
 	}

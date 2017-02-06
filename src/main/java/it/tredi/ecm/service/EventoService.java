@@ -58,7 +58,7 @@ public interface EventoService {
 
 	public boolean isEditSemiBloccato(Evento evento);
 	public boolean isEventoIniziato(Evento evento);
-	public boolean hasDataInizioRestrictions(Evento evento);
+//	public boolean hasDataInizioRestrictions(Evento evento);
 	public Sponsor getSponsorById(Long sponsorId);
 	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode);
 	public Set<Evento> getEventiByProviderIdAndStato(Long id, EventoStatoEnum stato);

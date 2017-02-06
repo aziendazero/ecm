@@ -27,8 +27,7 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 									<!-- AZIONE -->
 									<div id="container-azione" class="item form-group">
@@ -260,8 +259,7 @@
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- DENOMINAZIONE LEGALE PROVIDER -->
 								<div class="item form-group">
@@ -470,11 +468,11 @@
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 										<input type="text" id="dataInizio" class="form-control"
-												name="data" th:field="${eventoWrapper.evento.dataInizio}" th:disabled="${hasDataInizioRestrictions or isEditSemiBloccato}" />
-											<span th:unless="${hasDataInizioRestrictions or isEditSemiBloccato}"  class="input-group-addon" id="dataInizio" onclick="$('#dataInizio').click()">
+												name="data" th:field="${eventoWrapper.evento.dataInizio}" th:disabled="${isEditSemiBloccato}" />
+											<span th:unless="${isEditSemiBloccato}"  class="input-group-addon" id="dataInizio" onclick="$('#dataInizio').click()">
 					 							<i class="glyphicon glyphicon-calendar"></i>
 											</span>
-											<span th:if="${hasDataInizioRestrictions or isEditSemiBloccato}" class="input-group-addon disabled-addon" id="dataInizio">
+											<span th:if="${isEditSemiBloccato}" class="input-group-addon disabled-addon" id="dataInizio">
 				 							<i class="glyphicon glyphicon-calendar"></i>
 										</span>
 									</div>
@@ -744,8 +742,7 @@
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- DESCRIZIONE DEL PROGETTO -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.descrizioneProgetto')} ? 'bad'">
@@ -827,8 +824,7 @@
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										hasDataInizioRestrictions=${eventoWrapper.hasDataInizioRestrictions and !#authentication.principal.hasProfile('SEGRETERIA')}">
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- RUOLI COINVOLTI -->
 								<div class="item form-group">
