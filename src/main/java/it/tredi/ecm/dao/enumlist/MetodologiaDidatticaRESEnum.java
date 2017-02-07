@@ -7,7 +7,7 @@ public enum MetodologiaDidatticaRESEnum {
 
 	_1(1,"Lezione Frontale/Relazione (metodologia frontale)",TipoMetodologiaEnum.FRONTALE),
 	_2(2,"Lezione Frontale/Relazione con dibattito (metodologia frontale)",TipoMetodologiaEnum.FRONTALE),
-	_3(3,"Tavola rotonda con disussione tra esperti (metodologia frontale)",TipoMetodologiaEnum.FRONTALE),
+	_3(3,"Tavola rotonda con discussione tra esperti (metodologia frontale)",TipoMetodologiaEnum.FRONTALE),
 	_4(4,"Lezione Frontale con l'uso di videoconferenza (metodologia frontale)",TipoMetodologiaEnum.FRONTALE),
 	_5(5,"Dimostrazione senza esecuzione diretta da parte dei Partecipanti (metodologia frontale)",TipoMetodologiaEnum.FRONTALE),
 	_6(6,"Esecuzione diretta da parte di tutti i partecipanti di attività pratiche nell'uso di strumenti, di tecniche e di metodologie (metodologia interattiva)",TipoMetodologiaEnum.INTERATTIVA),

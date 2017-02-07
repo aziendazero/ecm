@@ -754,7 +754,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="descrizione_progetto">
-											<input type="text" class="form-control" th:field="${eventoWrapper.evento.descrizioneProgetto}" th:disabled="${isRiedizione or isEditSemiBloccato}"/>
+										<textarea rows="3" class="form-control" th:field="${eventoWrapper.evento.descrizioneProgetto}" th:disabled="${isRiedizione or isEditSemiBloccato}"></textarea>
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.descrizioneProgetto')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.descrizioneProgetto')}__}"></div>
 								</div>

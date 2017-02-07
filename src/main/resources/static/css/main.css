@@ -1460,3 +1460,10 @@ li.listStyle-elenco > label{
 .big-icon {
 	font-size: 25px;
 }
+
+/* fix all'ordering delle datatables scrollable */
+.dataTables_scrollBody thead {
+	visibility: hidden;
+}
+
+

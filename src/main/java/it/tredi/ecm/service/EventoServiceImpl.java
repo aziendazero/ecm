@@ -1947,6 +1947,5 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 		}
-
 	}
 }

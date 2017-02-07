@@ -42,7 +42,7 @@
 						<h4 class="modal-title" id="myModalLabel1" th:text="#{label.cerca_persona}">Cerca anagrafica</h4>
 					</div>
 					<div class="modal-body">
-						<table id="tabella-modale" class="datatable-responsive-search table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<table id="tabella-modale" class="datatable-responsive-search-anagrafica-evento table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
 									<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
@@ -502,6 +502,17 @@
 			});
 
 			$(document).ready(function() {
+
+				$('.datatable-responsive-search-anagrafica-evento').DataTable({
+					"bInfo" : false,
+					"bPaginate" : false,
+					scrollY: 300,
+					"bScrollCollapse": true,
+				    scroller: true,
+					//colonna del pulsante seleziona
+// 				    "order": [[ 0, 'asc' ], [ 1, 'asc' ]],
+				    "columnDefs": [ {"targets": 3, "orderable": false, "width": "1px"} ],
+				});
 
 				//modale conferma modifiche crediti segreteria
 				if([[${creditiModificati != null and creditiModificati == true}]])

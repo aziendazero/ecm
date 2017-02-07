@@ -2,6 +2,7 @@ package it.tredi.ecm.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -120,13 +121,27 @@ public class DatiAccreditamentoController {
 	}
 
 	@ModelAttribute("professioneList")
-	public Set<Professione> getAllProfessioni(){
-		return professioneService.getAllProfessioni();
+	public List<Professione> getAllProfessioni(){
+		List<Professione> professioneList = new ArrayList<Professione>();
+		professioneList.addAll(professioneService.getAllProfessioni());
+		professioneList.sort(new Comparator<Professione>() {
+			 public int compare(Professione p1, Professione p2) {
+				 return (p1.getNome().compareTo(p2.getNome()));
+			 }
+		});
+		return professioneList;
 	}
 
 	@ModelAttribute("disciplinaList")
-	public Set<Disciplina> getAllDiscipline(){
-		return disciplinaService.getAllDiscipline();
+	public List<Disciplina> getAllDiscipline(){
+		List<Disciplina> disciplinaList = new ArrayList<Disciplina>();
+		disciplinaList.addAll(disciplinaService.getAllDiscipline());
+		disciplinaList.sort(new Comparator<Disciplina>() {
+			 public int compare(Disciplina d1, Disciplina d2) {
+				 return (d1.getNome().compareTo(d2.getNome()));
+			 }
+		});
+		return disciplinaList;
 	}
 
 	/*** NEW ***/

@@ -1,7 +1,10 @@
 package it.tredi.ecm.web;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.elasticsearch.common.mustache.Iteration;
@@ -23,9 +26,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.BaseEntity;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PianoFormativo;
+import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -662,8 +667,23 @@ public class EventoPianoFormativoController {
 	private void populateListFromAccreditamento(Model model, long accreditamentoId) throws Exception{
 		DatiAccreditamento datiAccreditamento = accreditamentoService.getDatiAccreditamentoForAccreditamentoId(accreditamentoId);
 		model.addAttribute("proceduraFormativaList", datiAccreditamento.getProcedureFormative());
-		model.addAttribute("professioneList", datiAccreditamento.getProfessioniSelezionate());
-		model.addAttribute("disciplinaList", datiAccreditamento.getDiscipline());
+
+		List<Professione> professioneList = new ArrayList<Professione>();
+		professioneList.addAll(datiAccreditamento.getProfessioniSelezionate());
+		professioneList.sort(new Comparator<Professione>() {
+			 public int compare(Professione p1, Professione p2) {
+				 return (p1.getNome().compareTo(p2.getNome()));
+			 }
+		});
+		List<Disciplina> disciplinaList = new ArrayList<Disciplina>();
+		disciplinaList.addAll(datiAccreditamento.getDiscipline());
+		disciplinaList.sort(new Comparator<Disciplina>() {
+			 public int compare(Disciplina d1, Disciplina d2) {
+				 return (d1.getNome().compareTo(d2.getNome()));
+			 }
+		});
+		model.addAttribute("professioneList", professioneList);
+		model.addAttribute("disciplinaList", disciplinaList);
 	}
 
 	private String goToEdit(Model model, EventoPianoFormativoWrapper wrapper, RedirectAttributes redirectAttrs){

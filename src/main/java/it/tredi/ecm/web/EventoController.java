@@ -46,6 +46,7 @@ import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
+import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
@@ -842,7 +843,14 @@ public class EventoController {
 			 }
 		});
 		eventoWrapper.setProfessioneList(professioneList);
-		eventoWrapper.setDisciplinaList(datiAccreditamento.getDiscipline());
+		List<Disciplina> disciplinaList = new ArrayList<Disciplina>();
+		disciplinaList.addAll(datiAccreditamento.getDiscipline());
+		disciplinaList.sort(new Comparator<Disciplina>() {
+			 public int compare(Disciplina d1, Disciplina d2) {
+				 return (d1.getNome().compareTo(d2.getNome()));
+			 }
+		});
+		eventoWrapper.setDisciplinaList(disciplinaList);
 		eventoWrapper.setWrapperMode(EventoWrapperModeEnum.EDIT);
 		eventoWrapper.setMappaErroriValidazione(new HashMap<String, String>());
 		return eventoWrapper;
