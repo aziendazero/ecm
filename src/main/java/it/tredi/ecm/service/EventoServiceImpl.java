@@ -1806,7 +1806,7 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public boolean isEventoIniziato(Evento evento) {
 		if(evento.getStato() != EventoStatoEnum.BOZZA) {
-			if(LocalDate.now().isAfter(evento.getDataInizio()))
+			if(LocalDate.now().isEqual(evento.getDataInizio()) || LocalDate.now().isAfter(evento.getDataInizio()))
 				return true;
 			else
 				return false;

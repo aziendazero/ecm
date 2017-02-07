@@ -1466,4 +1466,16 @@ li.listStyle-elenco > label{
 	visibility: hidden;
 }
 
+.evento-table-button {
+/* 	display: inline; */
+	white-space: nowrap;
+	width: 45px !important;
+}
 
+.evento-button-container {
+	width: 110px;
+}
+
+.no-order th::after {
+	visibility: hidden;
+}

@@ -1260,6 +1260,18 @@
 						countSelectedText : '{0} selezionate'
 					});
 
+					$(".datatable-responsive-programma").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [{
+							"targets": 6,
+							"width": "1px",
+							"sClass": "center"
+						}]
+					})
+
 				    //onchange su tipologiaEvento
 					updateObiettivoFormativo($("#tipologia_evento").val())
 
@@ -1438,6 +1450,7 @@
 						.done(function(data) {
 						  	$('#'+target).html(data);
 						  	closeModaleAddAttivitaTo();
+						  	reInitDataTableByClass("datatable-responsive-programma");
 						  })
 					  	.fail(function() {
 					  		//TODO mostra error sui campi mancanti
@@ -1446,17 +1459,19 @@
 				}
 
 				function removeAttivitaFrom(target,caller){
-					var rowIndex = $(caller).parent().parent().data('row-id');
-					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					var rowIndex = $(caller).closest("tr").data('row-id');
+					var removeAttivitaFrom = $(caller).closest("div.div-programma-id").data('programma-id');
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
 
-					$("#" + target).load(url);
+					$("#" + target).load(url, function() {
+						reInitDataTableByClass("datatable-responsive-programma");
+					});
 				}
 
 				//modifica Attivita
 				function modificaAttivitaFrom(target,caller){
-					var modificaElemento = $(caller).parent().parent().data('row-id');
-					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					var modificaElemento = $(caller).closest("tr").data('row-id');
+					var programmaIndex = $(caller).closest("div.div-programma-id").data('programma-id');
 					if(modificaElemento == undefined)
 						modificaElemento = 0;
 
@@ -1605,14 +1620,14 @@
 					initAll();
 					initAllCommon();
 					switch (sectionIndex) {
-						case '1': 	reInitDataTable('docenti');
-									reInitDataTable('responsabiliScientifici');
+						case '1': 	reInitDataTableById('docenti');
+									reInitDataTableById('responsabiliScientifici');
 									break;
-						case '2':  	//TODO
+						case '2':  	reInitDataTableByClass('datatable-responsive-programma')
 									break;
-						case '3':	reInitDataTable('responsabileSegreteria');
-									reInitDataTable('sponsors');
-									reInitDataTable('partners');
+						case '3':	reInitDataTableById('responsabileSegreteria');
+									reInitDataTableById('sponsors');
+									reInitDataTableById('partners');
 									break;
 						default: 	break;
 					}

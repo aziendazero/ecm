@@ -842,7 +842,7 @@
 									<div class="item form-group" style="clear:both; padding:2px;"></div>
 									<div class="item form-group" style="clear:both">
 										<div class="col-xs-offset-1 col-xs-10">
-											<table id="tabellaRuoliFSC" class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+											<table id="tabellaRuoliFSC" class="datatable-responsive-ruoliFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 												th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.riepilogoRuoli')} ? 'bad-table'">
 												<thead>
 													<tr>
@@ -1371,7 +1371,21 @@
 
 					$('#addRuoloOreFSC-ruolo').prop('disabled',true);
 
+					$(".datatable-responsive-programmaFSC").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [{
+							"targets": 5,
+							"width": "1px",
+							"sClass": "center",
+							"responsivePriority": 1
+						}]
+					});
+
 					initAll();
+
 				});
 
 				function initAll(){
@@ -1512,15 +1526,14 @@
 				//se l'utente accetta o meno i crediti proposti
 				function abilitaDisabilitaCreditiInseritiUtente(value) {
 					if($(".crediti-proposti").attr("data-editabile") === 'true') {
-					if(value) {
-						$(".crediti-proposti").val('');
-						$(".crediti-proposti").prop("disabled", true);
+						if(value) {
+							$(".crediti-proposti").val('');
+							$(".crediti-proposti").prop("disabled", true);
+						}
+						else {
+							$(".crediti-proposti").prop("disabled", false);
+						}
 					}
-					else {
-						$(".crediti-proposti").prop("disabled", false);
-					}
-
-				}
 				}
 
 		/* 		function updateSelectRuoliOre(){
@@ -1655,6 +1668,7 @@
 						.done(function(data) {
 						  	$('#'+target).html(data);
 						  	closeModaleAddAttivitaTo();
+							reInitDataTableByClass('datatable-responsive-programmaFSC');
 						  })
 					  	.fail(function() {
 					  		//TODO mostra error sui campi mancanti
@@ -1664,19 +1678,21 @@
 
 				/*parametrizzabile - è identica a RES*/
 				function removeAttivitaFrom(target,caller){
-					var rowIndex = $(caller).parent().parent().data('row-id');
-					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('fase-id');
+					var rowIndex = $(caller).closest("tr").data('row-id');
+					var removeAttivitaFrom = $(caller).closest("div.div-fase-id").data('fase-id');
 					console.log("parent() di parent()" + removeAttivitaFrom);
 					console.log("parents()" + $(caller).parents().data('fase-id'));
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
 
-					$("#" + target).load(url);
+					$("#" + target).load(url, function() {
+						reInitDataTableByClass('datatable-responsive-programmaFSC');
+					});
 				}
 
 				//modifica Attivita
 				function modificaAttivitaFrom(target,caller){
-					var modificaElemento = $(caller).parent().parent().data('row-id');
-					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('fase-id');
+					var modificaElemento = $(caller).closest("tr").data('row-id');
+					var programmaIndex = $(caller).closest("div.div-fase-id").data('fase-id');
 					if(modificaElemento == undefined)
 						modificaElemento = 0;
 
@@ -1731,13 +1747,13 @@
 					initAll();
 					initAllCommon();
 					switch (sectionIndex) {
-					case '1': 	reInitDataTable('responsabiliScientifici');
+					case '1': 	reInitDataTableById('responsabiliScientifici');
 								break;
-					case '2':  	//TODO
+					case '2':  	reInitDataTableByClass('datatable-responsive-programmaFSC');
 								break;
-					case '3':	reInitDataTable('responsabileSegreteria');
-								reInitDataTable('sponsors');
-								reInitDataTable('partners');
+					case '3':	reInitDataTableById('responsabileSegreteria');
+								reInitDataTableById('sponsors');
+								reInitDataTableById('partners');
 								break;
 					default: 	break;
 				}
