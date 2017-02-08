@@ -842,7 +842,7 @@
 									<div class="item form-group" style="clear:both; padding:2px;"></div>
 									<div class="item form-group" style="clear:both">
 										<div class="col-xs-offset-1 col-xs-10">
-											<table id="tabellaRuoliFSC" class="datatable-responsive-ruoliFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+											<table id="dt-riepilogoFSC" class="datatable-responsive-riepilogo no-order table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 												th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.riepilogoRuoli')} ? 'bad-table'">
 												<thead>
 													<tr>
@@ -1384,6 +1384,13 @@
 						}]
 					});
 
+					$("#dt-riepilogoFSC").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+					});
+
 					initAll();
 
 				});
@@ -1754,6 +1761,7 @@
 					case '3':	reInitDataTableById('responsabileSegreteria');
 								reInitDataTableById('sponsors');
 								reInitDataTableById('partners');
+								reInitDataTableById('dt-riepilogoFSC');
 								break;
 					default: 	break;
 				}

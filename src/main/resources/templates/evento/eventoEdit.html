@@ -585,20 +585,6 @@
 					}]
 			    });
 
-			  	//init datatable tabella riepilogo fsc
-			  	$('#tabellaRuoliFSC').DataTable({
-			  		"bFilter" : false,
-					"bInfo" : false,
-					"bPaginate" : false,
-					"ordering" : false,
-					"columnDefs": [{
-						"targets": 2,
-						"width": "1px",
-						"sClass": "center",
-						"responsivePriority": 1
-					}]
-			    });
-
 			    initAllCommon();
 			});
 
@@ -885,19 +871,32 @@
 					break;
 					case "partners": buttonColumn = 2;
 					break;
+					case "dt-riepilogoFSC": buttonColumn = 2;
+					break;
+					default: buttonColumn = -1;
 				}
-				$('#'+target).DataTable({
-					"bFilter" : false,
-					"bInfo" : false,
-					"bPaginate" : false,
-					"ordering" : false,
-					"columnDefs": [{
-						"targets": buttonColumn,
-						"width": "1px",
-						"sClass": "center",
-						"responsivePriority": 1
-					}]
-			    });
+				if(buttonColumn > -1) {
+					$('#'+target).DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [{
+							"targets": buttonColumn,
+							"width": "1px",
+							"sClass": "center",
+							"responsivePriority": 1
+						}]
+				    });
+				}
+				else {
+					$('#'+target).DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+				    });
+				}
 		  	}
 
 			//reinizializzazione delle datatable multiple by class
@@ -909,10 +908,11 @@
  				});
 				var buttonColumn;
 				switch(target) {
-					case "datatable-responsive-programma": buttonColumn = 6;
+					case "datatable-responsive-programmaFAD": buttonColumn = 6;
 					break;
 					case "datatable-responsive-programmaFSC": buttonColumn = 5;
 					break;
+					case "datatable-responsive-programmaRES": buttonColumn = 8;
 				}
 				$('.'+target).DataTable({
 					"bFilter" : false,
@@ -1736,8 +1736,8 @@
 						<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
 						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.programma')}__}"></div>
 						<div class="item form-group" style="clear:both; padding:2px;"></div>
-						<div th:attr="data-programma-id=__${data.key}__" class="item form-group" style="clear:both">
-							<table class="datatable-responsive-programma table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+						<div th:attr="data-programma-id=__${data.key}__" class="item div-programma-id form-group" style="clear:both">
+							<table class="datatable-responsive-programmaRES table table-striped no-order table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 								th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad-table'">
 								<thead>
 									<tr>
@@ -1750,30 +1750,32 @@
 										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
 										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
 										<th>
-											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
-												<span><i class="fa fa-plus"></i></span>
-											</a>
-											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
-												<span><i class="fa fa-pause-circle-o"></i></span>
-											</a>
-											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
-												<span><i class="fa fa-pencil"></i></span>
-											</a>
-											<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success" th:title="#{label.inserisci_registrazione_partecipanti}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'REGISTRAZIONE PARTECIPANTI\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
-												<span><i class="fa fa-group"></i></span>
-											</a>
-											<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
-												<span><i class="fa fa-plus"></i></span>
-											</a>
-											<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success disabled" th:title="#{label.inserisci_pausa}">
-												<span><i class="fa fa-pause-circle-o"></i></span>
-											</a>
-											<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success disabled" th:title="#{label.inserisci_valutazione_apprendimento}">
-												<span><i class="fa fa-pencil"></i></span>
-											</a>
-											<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success disabled" th:title="#{label.inserisci_registrazione_partecipanti}">
-												<span><i class="fa fa-group"></i></span>
-											</a>
+											<div class="evento-button-container">
+												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+													<span><i class="fa fa-plus"></i></span>
+												</a>
+												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success evento-table-button" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+													<span><i class="fa fa-pause-circle-o"></i></span>
+												</a>
+												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success evento-table-button" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+													<span><i class="fa fa-pencil"></i></span>
+												</a>
+												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success evento-table-button" th:title="#{label.inserisci_registrazione_partecipanti}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'REGISTRAZIONE PARTECIPANTI\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+													<span><i class="fa fa-group"></i></span>
+												</a>
+												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_attivita}">
+													<span><i class="fa fa-plus"></i></span>
+												</a>
+												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_pausa}">
+													<span><i class="fa fa-pause-circle-o"></i></span>
+												</a>
+												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_valutazione_apprendimento}">
+													<span><i class="fa fa-pencil"></i></span>
+												</a>
+												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_registrazione_partecipanti}">
+													<span><i class="fa fa-group"></i></span>
+												</a>
+											</div>
 										</th>
 									</tr>
 								</thead>
@@ -1928,7 +1930,7 @@
 					<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.programmaFAD')}__}"></div>
 					<div class="item form-group" style="clear:both; padding:2px;"></div>
 					<div data-programma-id="0" class="item form-group div-programma-id" style="clear:both">
-						<table class="datatable-responsive-programma table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+						<table class="datatable-responsive-programmaFAD table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 							th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad-table'">
 							<thead>
 								<tr>

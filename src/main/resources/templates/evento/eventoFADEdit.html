@@ -737,7 +737,7 @@
 				 					<div class="item form-group" style="clear:both; padding:2px;"></div>
 									<div class="item form-group" style="clear:both">
 										<div class="col-xs-offset-1 col-xs-10">
-											<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+											<table id="dt-riepilogoFAD" class="datatable-responsive-riepilogo table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 												<thead>
 													<tr>
 														<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
@@ -1260,7 +1260,7 @@
 						countSelectedText : '{0} selezionate'
 					});
 
-					$(".datatable-responsive-programma").DataTable({
+					$(".datatable-responsive-programmaFAD").DataTable({
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
@@ -1270,6 +1270,13 @@
 							"width": "1px",
 							"sClass": "center"
 						}]
+					})
+
+					$("#dt-riepilogoFAD").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
 					})
 
 				    //onchange su tipologiaEvento
@@ -1450,7 +1457,7 @@
 						.done(function(data) {
 						  	$('#'+target).html(data);
 						  	closeModaleAddAttivitaTo();
-						  	reInitDataTableByClass("datatable-responsive-programma");
+						  	reInitDataTableByClass("datatable-responsive-programmaFAD");
 						  })
 					  	.fail(function() {
 					  		//TODO mostra error sui campi mancanti
@@ -1464,7 +1471,7 @@
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
 
 					$("#" + target).load(url, function() {
-						reInitDataTableByClass("datatable-responsive-programma");
+						reInitDataTableByClass("datatable-responsive-programmaFAD");
 					});
 				}
 
@@ -1623,11 +1630,12 @@
 						case '1': 	reInitDataTableById('docenti');
 									reInitDataTableById('responsabiliScientifici');
 									break;
-						case '2':  	reInitDataTableByClass('datatable-responsive-programma')
+						case '2':  	reInitDataTableByClass('datatable-responsive-programmaFAD')
 									break;
 						case '3':	reInitDataTableById('responsabileSegreteria');
 									reInitDataTableById('sponsors');
 									reInitDataTableById('partners');
+									reInitDataTableById('dt-riepilogoFAD')
 									break;
 						default: 	break;
 					}

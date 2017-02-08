@@ -1473,7 +1473,9 @@ li.listStyle-elenco > label{
 }
 
 .evento-button-container {
-	width: 110px;
+	min-width:110px;
+	width: auto !important;
+	width: 110px
 }
 
 .no-order th::after {

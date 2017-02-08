@@ -537,19 +537,19 @@ public class EventoServiceImpl implements EventoService {
 		Evento evento = eventoWrapper.getEvento();
 
 		if(evento instanceof EventoRES){
-			//date intermedie
-			Long key = 1L;
-			Map<Long, String> dateIntermedieTemp = new LinkedHashMap<Long, String>();
-			for (LocalDate d : ((EventoRES) evento).getDateIntermedie()) {
-				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-				String dataToString = d.format(dtf);
-				dateIntermedieTemp.put(key++, dataToString);
-			}
-			if(dateIntermedieTemp.size() == 0)
-				dateIntermedieTemp.put(key, null);
+//			//date intermedie
+//			Long key = 1L;
+//			Map<Long, String> dateIntermedieTemp = new LinkedHashMap<Long, String>();
+//			for (LocalDate d : ((EventoRES) evento).getDateIntermedie()) {
+//				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//				String dataToString = d.format(dtf);
+//				dateIntermedieTemp.put(key++, dataToString);
+//			}
+//			if(dateIntermedieTemp.size() == 0)
+//				dateIntermedieTemp.put(key, null);
 
 			//risultati attesi
-			key = 1L;
+			Long key = 1L;
 			Map<Long, String> risultatiAttesiTemp = new LinkedHashMap<Long, String>();
 			for (String s : ((EventoRES) evento).getRisultatiAttesi()) {
 				risultatiAttesiTemp.put(key++, s);

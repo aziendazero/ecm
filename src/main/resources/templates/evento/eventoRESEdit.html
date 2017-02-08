@@ -921,39 +921,43 @@
 						 					</label>
 			 								<div class="item form-group" style="clear:both; padding:2px;"></div>
 											<div class="item form-group" style="clear:both">
-												<table class="datatable-responsive-programmaFSC table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-													<thead>
-														<tr>
-															<th th:text="#{label.metodologia_didattica}">OBIETTIVO FORMATIVO</th>
-															<th th:text="#{label.metodologia_frontale}">RISULTATAO ATTESO</th>
-															<th th:text="#{label.metodologia_interattiva}">METODO DI LAVORO</th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr th:each="metodologia, row : ${eventoWrapper.evento.riepilogoRES.metodologie}">
-															<td th:text="${metodologia.key.nome}"></td>
-															<td>
-																<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).FRONTALE}"
-																	th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(metodologia.value)}"></span>
-															</td>
-															<td>
-																<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).INTERATTIVA}"
-																	th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(metodologia.value)}"></span>
-															</td>
-														</tr>
-														<tr>
-															<td>
-																<strong><span class="text-uppercase" th:text="#{label.totale_ore}"></span></strong>
-															</td>
-															<td>
-																<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.riepilogoRES.totaleOreFrontali)}"></span></strong>
-															</td>
-															<td>
-																<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.riepilogoRES.totaleOreInterattive)}"></span></strong>
-															</td>
-														</tr>
-													</tbody>
-												</table>
+												<div class="col-xs-1"></div>
+												<div class="col-xs-10">
+													<table id="dt-riepilogoRES" class="datatable-responsive-riepilogo table table-striped no-order table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+														<thead>
+															<tr>
+																<th th:text="#{label.metodologia_didattica}">OBIETTIVO FORMATIVO</th>
+																<th th:text="#{label.metodologia_frontale}">RISULTATAO ATTESO</th>
+																<th th:text="#{label.metodologia_interattiva}">METODO DI LAVORO</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr th:each="metodologia, row : ${eventoWrapper.evento.riepilogoRES.metodologie}">
+																<td th:text="${metodologia.key.nome}"></td>
+																<td>
+																	<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).FRONTALE}"
+																		th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(metodologia.value)}"></span>
+																</td>
+																<td>
+																	<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).INTERATTIVA}"
+																		th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(metodologia.value)}"></span>
+																</td>
+															</tr>
+															<tr>
+																<td>
+																	<strong><span class="text-uppercase" th:text="#{label.totale_ore}"></span></strong>
+																</td>
+																<td>
+																	<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.riepilogoRES.totaleOreFrontali)}"></span></strong>
+																</td>
+																<td>
+																	<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.riepilogoRES.totaleOreInterattive)}"></span></strong>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div class="col-xs-1"></div>
 						 					</div>
 						 				</div>
 
@@ -1518,6 +1522,26 @@
 
 				    $("#addAttivitaRES-metodolgieDidattiche").prop('disabled',true);
 
+				    $(".datatable-responsive-programmaRES").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+						"columnDefs": [{
+							"targets": 8,
+							"width": "1px",
+							"sClass": "center",
+							"responsivePriority": 1
+						}]
+					});
+
+				    $("#dt-riepilogoRES").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : false,
+						"ordering" : false,
+					});
+
 					initAll();
 				});
 
@@ -2040,6 +2064,7 @@
 						  	$('#'+target).html(data);
 						  	reInitComponents();
 						  	closeModaleAddAttivitaTo();
+						  	reInitDataTableByClass("datatable-responsive-programmaRES");
 						  })
 					  	.fail(function() {
 					  		//TODO mostra error sui campi mancanti
@@ -2048,18 +2073,21 @@
 				}
 
 				function removeAttivitaFrom(target,caller){
-					var rowIndex = $(caller).parent().parent().data('row-id');
-					var removeAttivitaFrom = $(caller).parent().parent().parent().parent().parent().data('programma-id');
+					var rowIndex = $(caller).closest("tr").data('row-id');
+					var removeAttivitaFrom = $(caller).closest("div.div-programma-id").data('programma-id');
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeAttivitaFrom/|}]] + target + "/" + removeAttivitaFrom + "/" + rowIndex;
 
-					$("#" + target).load(url);
+					$("#" + target).load(url, function() {
+						reInitComponents();
+						reInitDataTableByClass("datatable-responsive-programmaRES");
+					});
 				}
 
 				//modifica Attivita
 				function modificaAttivitaFrom(target,caller){
-					var modificaElemento = $(caller).parent().parent().data('row-id');
-					var programmaIndex = $(caller).parent().parent().parent().parent().parent().data('programma-id');
-					var extraType = $(caller).parent().parent().data('extra-type');
+					var modificaElemento = $(caller).closest("tr").data('row-id');
+					var programmaIndex = $(caller).closest("div.div-programma-id").data('programma-id');
+					var extraType = $(caller).closest("tr").data('extra-type');
 					if(modificaElemento == undefined)
 						modificaElemento = 0;
 
@@ -2148,14 +2176,16 @@
 					initAll();
 					initAllCommon();
 					switch (sectionIndex) {
-						case '1': 	reInitDataTable('docenti');
-									reInitDataTable('responsabiliScientifici');
+						case '1': 	reInitDataTableById('docenti');
+									reInitDataTableById('responsabiliScientifici');
 									break;
 						case '2':  	substituteAllToSelectAttivitaRES("addAttivitaRES-risultatiAttesi", "risultatoPicker");
+									reInitDataTableByClass("datatable-responsive-programmaRES");
 									break;
-						case '3':	reInitDataTable('responsabileSegreteria');
-									reInitDataTable('sponsors');
-									reInitDataTable('partners');
+						case '3':	reInitDataTableById('responsabileSegreteria');
+									reInitDataTableById('sponsors');
+									reInitDataTableById('partners');
+									reInitDataTableById('dt-riepilogoRES')
 									break;
 						default: 	break;
 					}

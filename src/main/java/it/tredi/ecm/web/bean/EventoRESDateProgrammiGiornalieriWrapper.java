@@ -47,7 +47,7 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 					dataInizioKey = index;
 					pgLocalDate.add(pg.getGiorno());
 					hasDataInizio = true;
-				} else if(this.eventoRES.getDataFine() != null && pg.getGiorno().compareTo(this.eventoRES.getDataFine()) == 0 && hasDataFine == false) {
+				} else if(this.eventoRES.getDataFine() != null && pg.getGiorno().compareTo(this.eventoRES.getDataFine()) == 0 && hasDataFine == false && !this.eventoRES.getDataFine().equals(this.eventoRES.getDataInizio())) {
 					//DATAFINE
 					index++;
 					programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.FINE, pg)));
