@@ -417,8 +417,10 @@ public class SedutaController {
 		wrapper.setCanBloccaSeduta(true);
 
 		if(!seduta.isNew()){
-			Set<Accreditamento> listaAccreditamentiInSeduta = sedutaService.getAccreditamentiInSeduta(seduta.getId());
-			for(Accreditamento a : listaAccreditamentiInSeduta){
+			//Set<Accreditamento> listaAccreditamentiInSeduta = sedutaService.getAccreditamentiInSeduta(seduta.getId());
+			//for(Accreditamento a : listaAccreditamentiInSeduta){
+			for(ValutazioneCommissione vc : seduta.getValutazioniCommissione()){
+				Accreditamento a = vc.getAccreditamento();
 				if(a.isValutazioneCommissione()){
 					wrapper.setCanBloccaSeduta(false);
 				}

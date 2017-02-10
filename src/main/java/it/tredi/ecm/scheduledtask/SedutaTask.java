@@ -17,7 +17,6 @@ public class SedutaTask {
 	@Autowired private SedutaService sedutaService;
 
 	@Async
-	@Transactional
 	public void bloccaSedute(){
 		LOGGER.info(Thread.currentThread().getName());
 		LOGGER.info("bloccaSedute - entering");

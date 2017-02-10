@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+
 import org.hibernate.validator.internal.util.privilegedactions.SetAccessibility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +77,7 @@ public class SedutaServiceImpl implements SedutaService {
 	//se la data è passata e NON è già stata valutata la seduta può essere valutata
 	@Override
 	public boolean canBeEvaluated(Seduta seduta) {
-		if(!seduta.isNew() &&
+		if(seduta.isEseguitoTaskInsOdgAccreditamenti() && !seduta.isNew() &&
 				(seduta.getData().isBefore(LocalDate.now()) || (seduta.getData().isEqual(LocalDate.now()) && seduta.getOra().isBefore(LocalTime.now()))) &&
 				!seduta.isLocked())
 			return true;
@@ -85,6 +89,7 @@ public class SedutaServiceImpl implements SedutaService {
 	public boolean canBeLocked(Seduta seduta) {
 		if (!(seduta.getValutazioniCommissione() == null) && !seduta.getValutazioniCommissione().isEmpty() && !seduta.isLocked()) {
 			boolean value = true;
+			//Controllo se sono state date le valutazioni a tutte le domande
 			for (ValutazioneCommissione vc : seduta.getValutazioniCommissione()) {
 				if (vc.getStato() == null || vc.getValutazioneCommissione() == null || vc.getValutazioneCommissione().isEmpty())
 					value = false;
@@ -217,6 +222,7 @@ public class SedutaServiceImpl implements SedutaService {
 	}
 
 	@Override
+	@Transactional
 	public void eseguiBloccoSeduteDaBloccare() {
 		//Ricavo la lista delle sedute da bloccare
 		//Occorre settare la seduta come
@@ -228,7 +234,10 @@ public class SedutaServiceImpl implements SedutaService {
 	}
 
 	private void bloccaSeduta(Seduta seduta) {
-		Set<Accreditamento> listaInOdg = getAccreditamentiInSeduta(seduta.getId());
+		//Set<Accreditamento> listaInOdg = getAccreditamentiInSeduta(seduta.getId());
+		Set<Accreditamento> listaInOdg = new HashSet<Accreditamento>();
+		for(ValutazioneCommissione vc : seduta.getValutazioniCommissione())
+			listaInOdg.add(vc.getAccreditamento());
 		boolean error = false;
 		for(Accreditamento a : listaInOdg){
 			//Processo solo gli accreditamenti nello stato corretto perche' si potrebbe verificare un errore su un accreditamento e non verificarsi su un altro
