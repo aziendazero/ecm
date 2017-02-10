@@ -9,6 +9,10 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,6 +27,34 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NamedEntityGraphs({
+
+	@NamedEntityGraph(name="graph.seduta.dabloccare",
+			attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("data"),
+					@NamedAttributeNode("ora"), @NamedAttributeNode("locked"),
+					@NamedAttributeNode("numeroVerbale"), @NamedAttributeNode("eseguitoTaskInsOdgAccreditamenti"),
+					@NamedAttributeNode("dataoraSeduta"),
+					@NamedAttributeNode(value="valutazioniCommissione", subgraph="valutazioniCommissione")},
+			subgraphs = {@NamedSubgraph(name="valutazioniCommissione", attributeNodes={
+					@NamedAttributeNode("id"),
+					@NamedAttributeNode("valutazioneCommissione"),
+					@NamedAttributeNode("stato"),
+					@NamedAttributeNode("oggettoDiscussione"),
+					@NamedAttributeNode(value="accreditamento", subgraph="accreditamento")
+					}),
+					@NamedSubgraph(name="accreditamento", attributeNodes={
+							@NamedAttributeNode("id"),
+							@NamedAttributeNode("stato"),
+							@NamedAttributeNode("statoVariazioneDati")
+							})
+					}
+	)
+//	,
+//	@NamedEntityGraph(name="graph.seduta.dabloccare",
+//	attributeNodes = {@NamedAttributeNode("id"), @NamedAttributeNode("denominazioneLegale"),
+//			})
+
+})
 public class Seduta extends BaseEntity{
 	@JsonView(JsonViewModel.Seduta.class)
 	@JsonProperty("start")
