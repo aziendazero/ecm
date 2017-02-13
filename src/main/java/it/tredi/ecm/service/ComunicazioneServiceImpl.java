@@ -136,6 +136,10 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	public void send(Comunicazione comunicazione, File allegato) {
 		if(comunicazione.getMittente().isProvider()) {
 			comunicazione.setDestinatari(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
+			comunicazione.setInviatoAllaSegreteria(true);
+		}
+		else if(comunicazione.getMittente().isSegreteria()){
+			comunicazione.setInviatoAllaSegreteria(false);
 		}
 		//inserisco gli id dei destinatari tra gli utenti che non hanno ancora letto la comunicazione
 		Set<Long> utentiCheDevonoLeggere =  new HashSet<Long>();
@@ -185,14 +189,18 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			risposta.setAllegatoRisposta(allegato);
 		risposte.add(risposta);
 		Set<Long> utentiCheDevonoLeggere = comunicazione.getUtentiCheDevonoLeggere();
-		utentiCheDevonoLeggere.add(comunicazione.getMittente().getId());
-		//aggiungo tutti i destinatari alla lista degli id utente che devono rileggere la comunicazione
-		for (Account a : comunicazione.getDestinatari()) {
-			utentiCheDevonoLeggere.add(a.getId());
+		if(!risposta.getMittente().isSegreteria()) {
+			risposta.setInviatoAllaSegreteria(true);
+			for(Account a : accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA))
+				utentiCheDevonoLeggere.add(a.getId());
 		}
-		//rimuovo l'utente che ha creato la risposta
+		else{
+			risposta.setInviatoAllaSegreteria(false);
+			for(Account a : risposta.getDestinatari())
+				utentiCheDevonoLeggere.add(a.getId());
+		}
+		//rimuove se stesso dagli utenti che devono leggere
 		utentiCheDevonoLeggere.remove(Utils.getAuthenticatedUser().getAccount().getId());
-		//e salvo
 		comunicazioneResponseRepository.save(risposta);
 		comunicazione.setRisposte(risposte);
 		comunicazioneRepository.save(comunicazione);

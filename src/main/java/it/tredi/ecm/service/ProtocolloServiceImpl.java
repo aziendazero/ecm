@@ -559,6 +559,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 							}
 						}
 					}
+					//TODO mettere qui logica del diniego
 				}
 			}
 		}

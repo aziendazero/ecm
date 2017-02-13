@@ -1602,7 +1602,7 @@
 					if(clean) {
 						var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/resettaAttivita/|}]] + target;
 						$.get(url).done(function(data) {
-							$('#container-' + target).html(data);
+							$('#container-' + target).empty().html(data);
 							reInitModaleAddAttivita();
 							$("#add-attivitaFSC-modal").modal("show");
 							openAddAttivitaTo(target,programmaIndex,modificaElemento,false);
@@ -1656,7 +1656,7 @@
 
 					$('#add-attivitaFSC-modal input[type="checkbox"]').removeAttr('checked').iCheck('update');
 
-					$('#ruoloOreFSC').html("");
+					$('#ruoloOreFSC').empty().html("");
 
 				}
 
@@ -1673,8 +1673,8 @@
 					var programmaIndex = $('#addAttivitaTo').val();
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaFSC').serialize())
 						.done(function(data) {
-						  	$('#'+target).html(data);
-						  	closeModaleAddAttivitaTo();
+						  	$('#'+target).empty().html(data);
+							closeModaleAddAttivitaTo();
 							reInitDataTableByClass('datatable-responsive-programmaFSC');
 						  })
 					  	.fail(function() {
@@ -1709,7 +1709,7 @@
 				function sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento){
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
 					$.get(url).done(function(data) {
-						$('#container-' + target).html(data);
+						$('#container-' + target).empty().html(data);
 						reInitModaleAddAttivita();
 						$("#add-attivitaFSC-modal").modal("show");
 						openAddAttivitaTo(target,programmaIndex,modificaElemento,false);
@@ -1735,7 +1735,7 @@
 				function sendAjaxReloadSection(sectionIndex){
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoFSC').serialize())
 					.done(function(data) {
-					  	$('#section-' + sectionIndex).html(data);
+					  	$('#section-' + sectionIndex).empty().html(data);
 					  	reInitComponents(sectionIndex);
 					  })
 				  	.fail(function() {
@@ -1771,7 +1771,7 @@
 					var $form = $('#addRuoloOreFSC');
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRuoloOreToTemp|}]], $('#addRuoloOreFSC').serialize())
 					.done(function(data) {
-						$('#container-ruoloOreFSC').html(data);
+						$('#container-ruoloOreFSC').empty().html(data);
 					  	closeModaleAddRuoloOreFSCTo();
 					  })
 				  	.fail(function() {

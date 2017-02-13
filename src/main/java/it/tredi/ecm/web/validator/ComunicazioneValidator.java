@@ -51,6 +51,9 @@ public class ComunicazioneValidator {
 		if(response.getMessaggio() == null || response.getMessaggio().isEmpty())
 			errors.rejectValue(prefix + "messaggio", "error.empty");
 
+		if(response.getMittente().isSegreteria() && (response.getDestinatari() == null || response.getDestinatari().isEmpty()))
+			errors.rejectValue(prefix + "destinatari", "error.empty");
+
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 

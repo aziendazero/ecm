@@ -489,13 +489,13 @@
 
 			//Contatore caratteri titolo evento
 			var text_max = 3000;
-			$('#counter').html(text_max + ' '+[[#{label.caratteri_rimanenti}]]);
+			$('#counter').empty().html(text_max + ' '+[[#{label.caratteri_rimanenti}]]);
 
 			$('#title').keyup(function() {
 			  var text_length = $('#title').val().length;
 			  var text_remaining = text_max - text_length;
 
-			  $('#counter').html(text_remaining + ' '+[[#{label.caratteri_rimanenti}]]);
+			  $('#counter').empty().html(text_remaining + ' '+[[#{label.caratteri_rimanenti}]]);
 			});
 
 			$(document).ready(function() {
@@ -894,7 +894,7 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
-						"ordering" : false,
+						"ordering" : false
 				    });
 				}
 		  	}
@@ -936,7 +936,7 @@
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/setNewAnagraficaEvento/|}]] + type;
 					if(type == 'Full'){
 						$.get(url).done(function(data) {
-							$('#container-addPersonaFullTo').html(data);
+							$('#container-addPersonaFullTo').empty().html(data);
 							openAddPersonaTo(target,type,fromLookup,modificaElemento,false);
 						  })
 					  	.fail(function() {
@@ -944,7 +944,7 @@
 					 	 })
 					}else{
 						$.get(url).done(function(data) {
-							$('#container-addPersonaTo').html(data);
+							$('#container-addPersonaTo').empty().html(data);
 							reInitModaleAddPersona();
 							openAddPersonaTo(target,type,fromLookup,modificaElemento,false);
 						})
@@ -1063,7 +1063,7 @@
 				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modifica/|}]] + target + '/' + modificaElemento;
 				if(type == 'Full'){
 					$.get(url).done(function(data) {
-						$('#container-addPersonaFullTo').html(data);
+						$('#container-addPersonaFullTo').empty().html(data);
 						$('#add-personaFull-modal').modal("show");
 						openAddPersonaTo(target,type,true,modificaElemento,false);
 					  })
@@ -1072,7 +1072,7 @@
 				 	 })
 				}else{
 					$.get(url).done(function(data) {
-						$('#container-addPersonaTo').html(data);
+						$('#container-addPersonaTo').empty().html(data);
 						reInitModaleAddPersona();
 						$('#add-persona-modal').modal("show");
 						openAddPersonaTo(target,type,true,modificaElemento,false);
@@ -1096,7 +1096,7 @@
 							})
 						}
 						else {
-						  	$('#'+target).html(data);
+						  	$('#'+target).empty().html(data);
 						  	closeModaleAddPersona();
 						  	console.log(target);
 						  	if([[${eventoWrapper.evento instanceof T(it.tredi.ecm.dao.entity.EventoRES)}]])
@@ -1125,7 +1125,10 @@
 							})
 						}
 						else {
-						  	$('#'+target).html(data);
+							//tocca mettere empty() completamente a caso
+							//(nonostante .html() sostituisca TUTTO il contenuto)
+							//perchè sennò EXPLODER si offende malamente ( -.-)
+						  	$('#'+target).empty().html(data);
 						  	closeModaleAddPersonaFull();
 						  	reInitDataTableById(target);
 						}
@@ -1152,7 +1155,7 @@
 			function sendAjaxAddSponsorTo(){
 				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addSponsorTo|}]], $('#addSponsorTo').serialize())
 					.done(function(data) {
-						$('#sponsors').html(data);
+						$('#sponsors').empty().html(data);
 						closeModaleAddSponsor();
 						reInitDataTableById('sponsors');
 					})
@@ -1166,7 +1169,7 @@
 			function sendAjaxAddPartnerTo(){
 				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPartnerTo|}]], $('#addPartnerTo').serialize())
 					.done(function(data) {
-						$('#partners').html(data);
+						$('#partners').empty().html(data);
 						closeModaleAddPartner();
 						reInitDataTableById('partners');
 					})
@@ -1250,7 +1253,7 @@
 				if(type == 'Full'){
 					$.get(url).done(function(data) {
 						closeModaleLookupPersona();
-						$('#container-addPersonaFullTo').html(data);
+						$('#container-addPersonaFullTo').empty().html(data);
 						$('#add-personaFull-modal').modal("show");
 						openAddPersonaTo(target,type,true,undefined,false);
 					  })
@@ -1260,7 +1263,7 @@
 				}else{
 					$.get(url).done(function(data) {
 						closeModaleLookupPersona();
-						$('#container-addPersonaTo').html(data);
+						$('#container-addPersonaTo').empty().html(data);
 						reInitModaleAddPersona();
 						$('#add-persona-modal').modal("show");
 						openAddPersonaTo(target,type,true,undefined,false);

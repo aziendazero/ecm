@@ -601,7 +601,7 @@ public class PersonaController {
 		else{
 			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(personaWrapper.getAccreditamentoId());
 			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
-			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL));
+			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, Utils.getFullFromRuolo(personaWrapper.getPersona().getRuolo())));
 		}
 
 		//detach dei files...fatto qui perchè altrimenti hibernate segnala che è stato modificato l'ID di una entity (file) e durante un salvataggio da errore.
@@ -674,7 +674,7 @@ public class PersonaController {
 		personaWrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		personaWrapper.setMappa(mappa);
 
-		//solo se la valutazione è della segretaeria dopo l'INTEGRAZIONE
+		//solo se la valutazione è della segreteria dopo l'INTEGRAZIONE
 		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
 			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId);
 		}

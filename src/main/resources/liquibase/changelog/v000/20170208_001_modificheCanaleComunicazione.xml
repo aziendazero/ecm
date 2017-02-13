@@ -1,0 +1,36 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170208_001_modificheCanaleComunicazione.xml">
+    <changeSet author="tiommi (generated)" id="1486567838653-1">
+        <createTable tableName="comunicazione_response_destinatari">
+            <column name="comunicazione_response_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1486567838653-2">
+        <addColumn tableName="comunicazione">
+            <column name="inviato_alla_segreteria" type="boolean"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1486567838653-3">
+        <addColumn tableName="comunicazione_response">
+            <column name="inviato_alla_segreteria" type="boolean"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1486567838653-4">
+        <addPrimaryKey columnNames="comunicazione_response_id, account_id" tableName="comunicazione_response_destinatari"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1486567838653-5">
+        <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="comunicazione_response_destinatari" constraintName="FK_5xlyj5q1rd11ejqcfgklb58yw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1486567838653-6">
+        <addForeignKeyConstraint baseColumnNames="comunicazione_response_id" baseTableName="comunicazione_response_destinatari" constraintName="FK_b78k82m3ys3fqeu4r04jeprih" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="comunicazione_response"/>
+    </changeSet>
+</databaseChangeLog>

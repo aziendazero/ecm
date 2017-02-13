@@ -1638,13 +1638,13 @@
 							if(el.nodeName.toLowerCase() === 'div') {
 								//alert(el.nodeName);
 								//alert($(el).find('#' + target).length);
-								alert($(el).find('#' + target).html());
+								alert($(el).find('#' + target).empty().html());
 								//alert($(el).find('#' + target)[0].outerHTML);
 							}
 						});
 					  	*/
-						$('#' + target).html( $(htmlObj[0]).find('#' + target).html() );
-					  	$('#section-2').html( $(htmlObj[0]).find('#section-2').html() );
+						$('#' + target).empty().html( $(htmlObj[0]).find('#' + target).empty().html() );
+					  	$('#section-2').empty().html( $(htmlObj[0]).find('#section-2').empty().html() );
 					  	reInitComponents();
 					  })
 				  	.fail(function() {
@@ -1657,7 +1657,7 @@
 						.append($("<div class='col-md-4 col-sm-4 col-xs-12'></div>"))
 						.append($(caller).parent().clone())
 						.appendTo(".date-intermedie-container");
-					console.log(cloned.html());
+					console.log(cloned.empty().html());
 					cloned.children(".datapicker-intermedia").val("");
 					$(caller).children().toggleClass('fa-plus fa-minus');
 					$(caller).attr("onclick", "rimuoviDataIntermedia(this)");
@@ -1681,8 +1681,8 @@
 					.done(function(data) {
 						//alert(data);
 						var htmlObj = $.parseHTML($.trim(data));
-						$('#' + target).html( $(htmlObj[0]).find('#' + target).html() );
-					  	$('#section-2').html( $(htmlObj[0]).find('#section-2').html() );
+						$('#' + target).empty().html( $(htmlObj[0]).find('#' + target).empty().html() );
+					  	$('#section-2').empty().html( $(htmlObj[0]).find('#section-2').empty().html() );
 					 	reInitComponents();
 					  })
 				  	.fail(function() {
@@ -1691,7 +1691,7 @@
 				 	 })
 
 					/*
-					console.log($(caller).closest(".item").html());
+					console.log($(caller).closest(".item").empty().html());
 					$(caller).closest(".item").remove();
 					*/
 				}
@@ -1864,7 +1864,7 @@
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRisultatoAtteso/|}]] + target, $('#formEventoRES').serialize())
 					.done(function(data) {
 						//alert(data);
-					  	$('#' + target).html(data);
+					  	$('#' + target).empty().html(data);
 					  	//risale al valore della input
 					  	var value = $(caller).prev().val();
 					  	reInitComponents();
@@ -1880,7 +1880,7 @@
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeRisultatoAtteso/|}]] + key + '/' + target, $('#formEventoRES').serialize())
 					.done(function(data) {
 						//alert(data);
-					  	$('#' + target).html(data);
+					  	$('#' + target).empty().html(data);
 						var value = $(caller).prev().val();
 					  	removeFromSelectAttivitaRES("addAttivitaRES-risultatiAttesi", value);
 					  	reInitComponents();
@@ -1956,7 +1956,7 @@
 					if(clean) {
 						var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/resettaAttivita/|}]] + target;
 						$.get(url).done(function(data) {
-							$('#container-' + target).html(data);
+							$('#container-' + target).empty().html(data);
 							reInitModaleAddAttivita();
 							$("#add-attivitaRES-modal").modal("show");
 							openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento,false);
@@ -2061,7 +2061,7 @@
 					var programmaIndex = $('#addAttivitaTo').val();
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaRES').serialize())
 						.done(function(data) {
-						  	$('#'+target).html(data);
+						  	$('#'+target).empty().html(data);
 						  	reInitComponents();
 						  	closeModaleAddAttivitaTo();
 						  	reInitDataTableByClass("datatable-responsive-programmaRES");
@@ -2100,7 +2100,7 @@
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
 					$.get(url).done(function(data) {
 						console.log(data);
-						$('#container-' + target).html(data);
+						$('#container-' + target).empty().html(data);
 						reInitModaleAddAttivita();
 // 						$('#add-attivita').click();
 						openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento,false);
@@ -2157,7 +2157,7 @@
 					//alert('sendAjaxReloadSection - sectionIndex: ' + sectionIndex);
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoRES').serialize())
 					.done(function(data) {
-					  	$('#section-' + sectionIndex).html(data);
+					  	$('#section-' + sectionIndex).empty().html(data);
 					  	reInitComponents(sectionIndex);
 					  })
 				  	.fail(function() {

@@ -1387,7 +1387,7 @@
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRisultatoAtteso/|}]] + target, $('#formEventoFAD').serialize())
 					.done(function(data) {
 						//alert(data);
-					  	$('#' + target).html(data);
+					  	$('#' + target).empty().html(data);
 					  	//risale al valore della input
 					  	var value = $(caller).prev().val();
 					  	substituteAllToSelectAttivitaFAD("addAttivitaFAD-risultatiAttesi", "risultatoPicker");
@@ -1404,7 +1404,7 @@
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeRisultatoAtteso/|}]] + key + '/' + target, $('#formEventoFAD').serialize())
 					.done(function(data) {
 						//alert(data);
-					  	$('#' + target).html(data);
+					  	$('#' + target).empty().html(data);
 						var value = $(caller).prev().val();
 					  	removeFromSelectAttivitaFAD("addAttivitaFAD-risultatiAttesi", value);
 					  	reInitComponents();
@@ -1420,7 +1420,7 @@
 					if(clean) {
 						var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/resettaAttivita/|}]] + target;
 						$.get(url).done(function(data) {
-							$('#container-' + target).html(data);
+							$('#container-' + target).empty().html(data);
 							reInitModaleAddAttivita();
 							$("#add-attivitaFAD-modal").modal("show");
 							openAddAttivitaTo(target,modificaElemento,false);
@@ -1455,7 +1455,7 @@
 					$('#addAttivitaTo').val('0'); //dummy
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaFAD').serialize())
 						.done(function(data) {
-						  	$('#'+target).html(data);
+						  	$('#'+target).empty().empty().html(data);
 						  	closeModaleAddAttivitaTo();
 						  	reInitDataTableByClass("datatable-responsive-programmaFAD");
 						  })
@@ -1488,7 +1488,7 @@
 				function sendAjaxModificaAttivitaTo(target,programmaIndex,modificaElemento){
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/modificaAttivita/|}]] + target + '/' + programmaIndex + '/' + modificaElemento;
 					$.get(url).done(function(data) {
-						$('#container-' + target).html(data);
+						$('#container-' + target).empty().html(data);
 						reInitModaleAddAttivita();
 						openAddAttivitaTo(target,modificaElemento,false);
 					  })
@@ -1608,7 +1608,7 @@
 				function sendAjaxReloadSection(sectionIndex){
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoFAD').serialize())
 					.done(function(data) {
-					  	$('#section-' + sectionIndex).html(data);
+					  	$('#section-' + sectionIndex).empty().html(data);
 					  	reInitComponents(sectionIndex);
 					  })
 				  	.fail(function() {

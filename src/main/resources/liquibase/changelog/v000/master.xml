@@ -59,4 +59,9 @@
 	<include file="20170131_001_aggiunta_lista_wf_info.xml" relativeToChangelogFile="true"/>
 
 	<include file="20170201_modifiche_workflowinfo.xml" relativeToChangelogFile="true"/>
+
+	<include file="20170208_001_modificheCanaleComunicazione.xml" relativeToChangelogFile="true"/>
+
+	<include file="20170210_002_applySQLComunicazioni.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

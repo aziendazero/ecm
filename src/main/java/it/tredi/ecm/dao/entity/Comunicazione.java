@@ -61,6 +61,7 @@ public class Comunicazione extends BaseEntity{
 				inverseJoinColumns={@JoinColumn(name="account_id")}
 	)
 	private Set<Account> destinatari;
+	private Boolean inviatoAllaSegreteria;
 	@Column(name="data_creazione")
 	private LocalDateTime dataCreazione;
 	@Column(name="data_ultima_modifica")
