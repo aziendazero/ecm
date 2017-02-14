@@ -5,6 +5,30 @@
 <head lang="it">
 </head>
 <body>
+
+		<!-- modale conferma chiusura procedimento -->
+<!-- 	<div id="conclusione-conferma" class="modal fade modal-confirm-conclusione" -->
+<!-- 		data-model-index="1" role="dialog"> -->
+<!-- 		<div class="modal-dialog modal-sm"> -->
+<!-- 			<div class="modal-content"> -->
+<!-- 				<div class="modal-header"> -->
+<!-- 					<h3 class="modal-title" id="myModalLabel" -->
+<!-- 						th:text="#{label.attenzione}">Attenzione!</h3> -->
+<!-- 				</div> -->
+<!-- 				<div class="modal-body"> -->
+
+<!-- 					<div class="panel-title" th:text="#{label.conferma_conclusione_del_procedimento}"></div> -->
+
+<!-- 				</div> -->
+<!-- 				<div class="modal-footer"> -->
+<!-- 					<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/conclusioneProcedimento|}" class="btn btn-success pull-right" th:text="#{label.Ok}">Ok</a> -->
+<!-- 					<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+
+
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-xs-12">
@@ -13,17 +37,37 @@
 						<h2 th:text="${label == null} ? #{label.accreditamenti_lista} : #{__${label}__}">Lista degli
 							accreditamenti</h2>
 						<div class="pull-right buttons-header">
+<!-- 							<a class="btn btn-primary pull-right" -->
+<!-- 									th:if="${((#authentication.principal.account.isProvider() AND canProviderCreateAccreditamentoProvvisorio) OR #authentication.principal.account.isSegreteria()) AND providerId != null}" -->
+<!-- 									th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).PROVVISORIO}/new|}" -->
+<!-- 									th:text="#{label.nuova_domanda_provvisoria}">label.nuova_domanda_provvisoria</a> -->
+<!-- 							<a class="btn btn-primary pull-right" -->
+<!-- 									th:if="${((#authentication.principal.account.isProvider() AND canProviderCreateAccreditamentoStandard) OR #authentication.principal.account.isSegreteria()) AND providerId != null}" -->
+<!-- 									th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).STANDARD}/new|}" -->
+<!-- 									th:text="#{label.nuova_domanda_standard}">label.nuova_domanda_standard</a> -->
+							<div class="dropdown pull-right">
+  								<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" th:if="${((#authentication.principal.account.isProvider()
+  									AND (canProviderCreateAccreditamentoProvvisorio OR canProviderCreateAccreditamentoStandard))
+  									OR #authentication.principal.account.isSegreteria()) AND providerId != null}">
+									<span th:text="#{label.nuova_domanda}"></span>
+									<span class="caret"></span>
+								</button>
+								<!-- menù raggruppato per segreteria -->
+								<ul class="dropdown-menu actions">
+									<li><a th:if="${((#authentication.principal.account.isProvider() AND canProviderCreateAccreditamentoProvvisorio) OR #authentication.principal.account.isSegreteria()) AND providerId != null}"
+										th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).PROVVISORIO}/new|}"
+										th:text="#{label.nuova_domanda_provvisoria}">label.nuova_domanda_provvisoria</a></li>
+									<li><a th:if="${((#authentication.principal.account.isProvider() AND canProviderCreateAccreditamentoStandard) OR #authentication.principal.account.isSegreteria()) AND providerId != null}"
+										th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).STANDARD}/new|}"
+										th:text="#{label.nuova_domanda_standard}">label.nuova_domanda_standard</a></li>
+								</ul>
+							</div>
 							<a class="btn btn-primary pull-right"
-									th:if="${((#authentication.principal.hasProfile('PROVIDER') AND canProviderCreateAccreditamentoProvvisorio) OR #authentication.principal.hasProfile('SEGRETERIA')) AND providerId != null}"
-									th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).PROVVISORIO}/new|}"
-									th:text="#{label.nuova_domanda_provvisoria}">label.nuova_domanda_provvisoria</a>
-							<a class="btn btn-primary pull-right"
-									th:if="${((#authentication.principal.hasProfile('PROVIDER') AND canProviderCreateAccreditamentoStandard) OR #authentication.principal.hasProfile('SEGRETERIA')) AND providerId != null}"
-									th:href="@{|/provider/${providerId}/accreditamento/${T(it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum).STANDARD}/new|}"
-									th:text="#{label.nuova_domanda_standard}">label.nuova_domanda_standard</a>
-							<a class="btn btn-primary pull-right"
-									th:href="${providerId != null and !#authentication.principal.account.isProviderVisualizzatore()} ? @{|/provider/list|} : @{/home}"
-									th:text="#{label.indietro}">Indietro</a>
+								th:href="${providerId != null and !#authentication.principal.account.isProviderVisualizzatore()} ? @{|/provider/list|} : @{/home}"
+								th:text="#{label.indietro}">Indietro</a>
+<!-- 							<a class="btn btn-danger pull-right" -->
+<!-- 								th:if="${#authentication.principal.account.isSegreteria()}" -->
+<!-- 								th:text="#{label.conclusione_del_procedimento}" data-toggle="modal" data-target=".modal-confirm-conclusione"></a> -->
 						</div>
 						<div class="clearfix"></div>
 					</div>

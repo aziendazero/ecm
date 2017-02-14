@@ -1,12 +1,12 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -43,5 +43,4 @@ public interface ValutazioneService {
 	public void setEsitoForEnabledFields(Valutazione valutazione, Boolean esito) throws Exception;
 	public void valutaTuttiSi(Accreditamento accreditamento, Account account);
 	public void resetEsitoAndEnabledForSubset(Valutazione valutazioneReferee, Map<IdFieldEnum, Long> campiDaValutare);
-	public void cancelObjectNotApproved(Long accreditamentoId, Set<FieldValutazioneAccreditamento> fieldValutazioniSegreteria);
 }

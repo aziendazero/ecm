@@ -64,4 +64,6 @@
 
 	<include file="20170210_002_applySQLComunicazioni.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170214_001_dropColumnPausaEValutazioneApprendimento.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

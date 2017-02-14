@@ -15,4 +15,5 @@ public interface FieldIntegrazioneAccreditamentoRepository extends CrudRepositor
 	@Query("select f.objectReference from FieldIntegrazioneAccreditamento f where f.accreditamento.id = :accreditamentoId and f.tipoIntegrazioneEnum = :tipo")
 	public Set<Long> findAllByAccreditamentoIdAndTipoIntegrazioneEnum(@Param("accreditamentoId") Long accreditamentoId, @Param("tipo")TipoIntegrazioneEnum tipo);
 	public Set<FieldIntegrazioneAccreditamento> findAllByAccreditamentoIdAndModificato(Long accreditamentoId, boolean modificato);
+	public void deleteAllByAccreditamentoId(Long accreditamentoId);
 }

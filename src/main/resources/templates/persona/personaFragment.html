@@ -55,28 +55,54 @@
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.FullIntegrazione.tipoIntegrazioneEnum}"></div>
 		                    	</div>
-		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
-									<div class="radio">
-										<label th:class="${!canValutaDomanda} or ${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__]?.enabled == false} ? 'label-disabled'">
-											<input type="radio" class="flat full" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
-											${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__]?.enabled == false}" />
-											<span th:text="#{label.sì}">Sì</span>
-										</label>
+		                    	<th:block th:if="${personaWrapper.persona.coordinatoreComitatoScientifico} or ${personaWrapper.persona.componenteComitatoScientifico}">
+			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+										<div class="radio">
+											<label th:class="${!canValutaDomanda} or ${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__]?.enabled == false} ? 'label-disabled'">
+												<input type="radio" class="flat full" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+												${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__]?.enabled == false}" />
+												<span th:text="#{label.sì}">Sì</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label th:class="${!canValutaDomanda or !personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].enabled} ? 'label-disabled'">
+												<input type="radio" class="flat full" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+												!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].enabled}"  />
+												<span th:text="#{label.no}">No</span>
+											</label>
+										</div>
 									</div>
-									<div class="radio">
-										<label th:class="${!canValutaDomanda or !personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat full" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
-											!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].enabled}"  />
-											<span th:text="#{label.no}">No</span>
-										</label>
+									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+										<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].note}" th:disabled="${!canValutaDomanda or
+										!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].enabled}"></textarea>
 									</div>
-								</div>
-								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].note}" th:disabled="${!canValutaDomanda or
-									!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].enabled}"></textarea>
-								</div>
-								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].id}" />
-								<div th:if="${#fields.hasErrors('personaWrapper')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper}"></div>
+									<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('comitatoScientifico')}__].id}" />
+									<div th:if="${#fields.hasErrors('personaWrapper')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper}"></div>
+								</th:block>
+								<th:block th:unless="${personaWrapper.persona.coordinatoreComitatoScientifico} or ${personaWrapper.persona.componenteComitatoScientifico}">
+			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+										<div class="radio">
+											<label th:class="${!canValutaDomanda} or ${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica', personaWrapper.ruolo)}__]?.enabled == false} ? 'label-disabled'">
+												<input type="radio" class="flat full" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica', personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+												${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica', personaWrapper.ruolo)}__]?.enabled == false}" />
+												<span th:text="#{label.sì}">Sì</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label th:class="${!canValutaDomanda or !personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica', personaWrapper.ruolo)}__].enabled} ? 'label-disabled'">
+												<input type="radio" class="flat full" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica', personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+												!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica', personaWrapper.ruolo)}__].enabled}"  />
+												<span th:text="#{label.no}">No</span>
+											</label>
+										</div>
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+										<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica', personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda or
+										!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica', personaWrapper.ruolo)}__].enabled}"></textarea>
+									</div>
+									<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica', personaWrapper.ruolo)}__].id}" />
+									<div th:if="${#fields.hasErrors('personaWrapper')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper}"></div>
+								</th:block>
 	                   		</th:block>
 	                    </div>
 	                    <div th:if="${valutabile and isFULL}" class="divider"></div>
@@ -84,10 +110,12 @@
 						<!-- CHECKBOX FLAG COORDINATORE -->
 						<div th:if="(${personaWrapper.persona.coordinatoreComitatoScientifico} or
 									${personaWrapper.persona.componenteComitatoScientifico}) and
-									${!valutabile and !showOnly}"
-							class="item form-group" th:classappend="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12" for="isCoordinatore_comitato">
-								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${editabile ? #messages.msg('label.is_coordinatore') : #messages.msg('label.inserito_come_coordinatore')}">Inserisci come Coordinatore del Comitato Scientifico</span>
+									${!showOnly}"
+							th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="coordinatore_persona">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${editabile ? #messages.msg('label.is_coordinatore') : #messages.msg('label.inserito_come_coordinatore')}">Cognome</span>
+								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -97,11 +125,39 @@
 									</div>
 								</div>
 							</th:block>
-							<th:block th:if="${showOnly}">
-								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<div class="value" th:text="${personaWrapper.persona.coordinatoreComitatoScientifico ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+<!-- 							<th:block th:if="${showOnly}"> -->
+<!-- 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"> -->
+<!-- 									<div class="value" th:text="${personaWrapper.persona.coordinatoreComitatoScientifico ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div> -->
+<!-- 								</div> -->
+<!-- 							</th:block> -->
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${personaWrapper.persona.coordinatoreComitatoScientifico ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+			              			<div th:if="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__]?.modificatoInIntegrazione == false and
+			              				personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or ${isFULL} or
+											${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__]?.enabled == false}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or isFULL or
+											!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__].enabled}" />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
 								</div>
-							</th:block>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__].note}" th:disabled="${!canValutaDomanda or isFULL or
+									!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__].enabled}"></textarea>
+								</div>
+								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore')}__].id}" />
+		                    </th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.coordinatoreComitatoScientifico}"></div>
 						</div>
 						<th:block th:if="${enableField and personaWrapper.ruolo != T(it.tredi.ecm.dao.enumlist.Ruolo).COMPONENTE_COMITATO_SCIENTIFICO}">
@@ -124,9 +180,12 @@
 									</div>
 								</div>
 		                    </div>
+		                    <div class="divider"></div>
 						</th:block>
+						<div th:if="(${personaWrapper.persona.coordinatoreComitatoScientifico} or
+									${personaWrapper.persona.componenteComitatoScientifico}) and
+									${!showOnly}" class="divider"></div>
 
-						<div th:if="${enableField}" class="divider"></div>
 						<!-- COGNOME -->
 						<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('persona.anagrafica.cognome',personaWrapper.ruolo) : ''}"></label>
@@ -419,21 +478,21 @@
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
 										<label th:class="${!canValutaDomanda} or ${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__]?.enabled == false} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or ${isFull} or
 											${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
 										<label th:class="${!canValutaDomanda or !personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda} or ${isFULL} or
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or isFULL or
 											!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].enabled}" />
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>
 								</div>
 								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda} or ${isFULL} or
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda or isFULL or
 									!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].enabled}"></textarea>
 								</div>
 								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cellulare',personaWrapper.ruolo)}__].id}" />
@@ -548,21 +607,21 @@
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
 										<label th:class="${!canValutaDomanda} or ${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__]?.enabled == false} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or ${isFULL} or
 											${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
 									</div>
 									<div class="radio">
 										<label th:class="${!canValutaDomanda or !personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].enabled} ? 'label-disabled'">
-											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda} or ${isFULL} or
+											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or isFULL or
 											!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].enabled}" />
 											<span th:text="#{label.no}">No</span>
 										</label>
 									</div>
 								</div>
 								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
-									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda} or ${isFULL} or
+									<textarea th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].note}" th:disabled="${!canValutaDomanda or isFULL or
 									!personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].enabled}"></textarea>
 								</div>
 								<input type="hidden" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.pec',personaWrapper.ruolo)}__].id}" />

@@ -274,6 +274,21 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 
 	}
 
+	@Override
+	//cancella tutti gli oggetti creati non approvati in integrazione
+	public void cancelObjectNotApproved(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> notApproved) {
+		for(FieldIntegrazioneAccreditamento fia : notApproved) {
+			if(fia.getTipoIntegrazioneEnum() == TipoIntegrazioneEnum.CREAZIONE) {
+				if(fia.getIdField() == IdFieldEnum.SEDE__FULL) {
+					sedeService.delete(fia.getObjectReference());
+				}
+				else if(fia.getIdField() == IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL) {
+					personaService.delete(fia.getObjectReference());
+				}
+			}
+		}
+	}
+
 	private void setFieldAndSave(Object dst, String fieldName, Object fieldValue) throws Exception{
 		setField(dst, fieldName, fieldValue);
 		saveEntity(dst.getClass(), dst);

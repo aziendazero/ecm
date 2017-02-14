@@ -173,15 +173,13 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		//sedi
 		for(Sede sede : accreditamento.getProvider().getSedi()) {
 			for(IdFieldEnum idFESede : IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE)) {
-				if(idFESede.getIdEcm() != -1) {
-					FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-					field.setAccreditamento(accreditamento);
-					field.setEsito(true);
-					field.setIdField(idFESede);
-					field.setObjectReference(sede.getId());
-					save(field);
-					defaults.add(field);
-				}
+				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+				field.setAccreditamento(accreditamento);
+				field.setEsito(true);
+				field.setIdField(idFESede);
+				field.setObjectReference(sede.getId());
+				save(field);
+				defaults.add(field);
 			}
 		}
 		//dati accreditamento
@@ -242,6 +240,15 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 				save(field);
 				defaults.add(field);
 			}
+			//aggiunge anche il flag isCoordinatore
+			IdFieldEnum idFlagCoordinatore = IdFieldEnum.getIdField("persona.coordinatore");
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setEsito(true);
+			field.setIdField(idFlagCoordinatore);
+			field.setObjectReference(persona.getId());
+			save(field);
+			defaults.add(field);
 		}
 
 		/*ALLEGATI*/
@@ -326,16 +333,14 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		//ripetibili
 		for(Sede sede : accreditamento.getProvider().getSedi()) {
 			for(IdFieldEnum idFESede : IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE)) {
-				if(idFESede.getIdEcm() != -1) {
-					FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-					field.setAccreditamento(accreditamento);
-					field.setEsito(b);
-					field.setEnabled(c);
-					field.setIdField(idFESede);
-					field.setObjectReference(sede.getId());
-					save(field);
-					allFieldsValutazione.add(field);
-				}
+				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+				field.setAccreditamento(accreditamento);
+				field.setEsito(b);
+				field.setEnabled(c);
+				field.setIdField(idFESede);
+				field.setObjectReference(sede.getId());
+				save(field);
+				allFieldsValutazione.add(field);
 			}
 		}
 		for(Persona persona : accreditamento.getProvider().getComponentiComitatoScientifico()) {

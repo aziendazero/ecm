@@ -35,7 +35,9 @@ public class DettaglioAttivitaRES extends BaseEntity implements Serializable{
 	 */
 	private static final long serialVersionUID = -1084979219782048226L;
 
+	@Transient
 	private final String PAUSA = "PAUSA";
+	@Transient
 	private final String VALUTAZIONE_APPRENDIMENTO = "VALUTAZIONE APPRENDIMENTO";
 	@Transient
 	private final String REGISTRAZIONE_PARTECIPANTI = "REGISTRAZIONE PARTECIPANTI";

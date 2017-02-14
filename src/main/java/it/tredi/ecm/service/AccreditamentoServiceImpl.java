@@ -45,6 +45,7 @@ import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
+import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
@@ -88,6 +89,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AlertEmailService alertEmailService;
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 	@Autowired private AccreditamentoStatoHistoryService accreditamentoStatoHistoryService;
+
+	@Autowired private ValutazioneCommissioneRepository valutazioneCommissioneRepository;
+	@Autowired private SedutaService sedutaService;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -481,6 +485,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
 
 		Set<FieldIntegrazioneAccreditamento> approved = new HashSet<FieldIntegrazioneAccreditamento>();
+		Set<FieldIntegrazioneAccreditamento> notApproved = new HashSet<FieldIntegrazioneAccreditamento>();
 
 		fieldValutazioniSegreteria.forEach(v -> {
 			FieldIntegrazioneAccreditamento field = null;
@@ -493,6 +498,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					if(field != null)
 						approved.add(field);
 				}
+				else {
+					if(v.getObjectReference() == -1)
+						field = Utils.getField(fieldIntegrazione, v.getIdField());
+					else
+						field = Utils.getField(fieldIntegrazione,v.getObjectReference(), v.getIdField());
+					if(field != null)
+						notApproved.add(field);
+				}
 			}
 			//gestione del raggruppamento (non prevista per i multiinstanza)
 			else {
@@ -501,6 +514,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 						field = Utils.getField(fieldIntegrazione, id);
 						if(field != null) {
 							approved.add(field);
+						}
+					}
+				}
+				else {
+					for(IdFieldEnum id : v.getIdField().getGruppo()) {
+						field = Utils.getField(fieldIntegrazione, id);
+						if(field != null) {
+							notApproved.add(field);
 						}
 					}
 				}
@@ -516,8 +537,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 
 		integrazioneService.applyIntegrazioneAccreditamentoAndSave(accreditamentoId, approved);
-		valutazioneService.cancelObjectNotApproved(accreditamentoId, fieldValutazioniSegreteria);
-		
+		integrazioneService.cancelObjectNotApproved(accreditamentoId, notApproved);
+
 		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazione);
 
 	}
@@ -1507,8 +1528,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
 			}
+			if(stato == AccreditamentoStatoEnum.INS_ODG)
+				gestioneChiusuraAccreditamento(accreditamento);
 			accreditamento.setStato(stato);
 		}
+
 
 		//salvo history
 		if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI)
@@ -1530,6 +1554,27 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 
 		alertEmailService.creaAlertForProvider(accreditamento, workflowInCorso);
+	}
+
+	//metodo che gestisce le procedure lasciate in sospeso da un accreditamento da concludere
+	private void gestioneChiusuraAccreditamento(Accreditamento accreditamento) {
+		//rimuove la valutazione commissione dell'accreditamento inserito in una seduta APERTA
+		if(accreditamento.isInsOdg()) {
+			valutazioneCommissioneRepository.deleteOneByAccreditamentoAndSedutaLockedFalse(accreditamento);
+		}
+		//cancellazione dei field integrazione ed editabili
+		else if(accreditamento.isModificaDati() || accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto()) {
+			fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamento.getId());
+			fieldIntegrazioneAccreditamentoService.removeAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
+		}
+		//in ogni caso chiudo le valutazioni esistenti come storicizzate e stato cancellato
+		Set<Valutazione> valutazioniAttive = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamento.getId());
+		for(Valutazione v : valutazioniAttive) {
+			v.setStoricizzato(true);
+			v.setDataValutazione(LocalDateTime.now());
+			v.setAccreditamentoStatoValutazione(AccreditamentoStatoEnum.CANCELLATO);
+			valutazioneService.save(v);
+		}
 	}
 
 	@Override
@@ -1892,5 +1937,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			campiDaValutare.put(fia.getIdField(), fia.getObjectReference());
 		}
 		return campiDaValutare;
+	}
+
+	//interrompe il flusso di accreditamento e avvia la procedura di conclusione
+	@Override
+	public void conclusioneProcedimento(Accreditamento accreditamento, CurrentUser currentUser) throws Exception {
+		//chiamata a Bonita che annulla il vecchio flusso e apre il nuovo
+		workflowService.createWorkflowAccreditamentoConclusioneProcedimento(currentUser, accreditamento);
 	}
 }

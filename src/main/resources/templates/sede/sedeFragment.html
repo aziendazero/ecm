@@ -79,9 +79,11 @@
 	                    <div th:if="${valutabile and isFULL}" class="divider"></div>
 
 						<!-- RADIO FLAG SEDELEGALE -->
-						<div th:if="${!valutabile and !showOnly}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.sedeLegale')} ? 'bad'">
-							<label class="control-label col-md-4 col-sm-4 col-xs-12">
-								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${editabile ? #messages.msg('label.is_sede_legale') : #messages.msg('label.inserita_come_sede_legale')}">Inserisci come Sede Legale</span>
+						<div th:if="${!showOnly}" th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.sedeLegale')} ? 'bad'">
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}"></label>
+							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="provincia_sede">
+								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${editabile ? #messages.msg('label.is_sede_legale') : #messages.msg('label.inserita_come_sede_legale')}">Inserisci come Sede Operativa</span>
+								<span th:if="${editabile}" class="required">*</span>
 							</label>
 							<th:block th:if="${editabile}">
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -115,16 +117,46 @@
 									</div>
 								</div>
 							</th:block>
+							<th:block th:if="${valutabile}">
+		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+			              			<div th:text="${sedeWrapper.sede.sedeOperativa ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]?.modificatoInIntegrazione == false and
+			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+		                    	</div>
+		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+									<div class="radio">
+										<label th:class="${!canValutaDomanda} or ${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]?.enabled == false} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+											${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]?.enabled == false or isFULL}" />
+											<span th:text="#{label.sì}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label th:class="${!canValutaDomanda or !sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__].enabled} ? 'label-disabled'">
+											<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+											!sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__].enabled or isFULL}"  />
+											<span th:text="#{label.no}">No</span>
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+									<textarea th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__].note}" th:disabled="${!canValutaDomanda or
+									!sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__].enabled or isFULL}"></textarea>
+								</div>
+								<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__].id}" />
+		                    </th:block>
 							<div th:if="${#fields.hasErrors('sedeWrapper.sede.sedeLegale')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.sedeLegale}"></div>
 						</div>
 
 						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- RADIO FLAG SEDEOPERATIVA -->
-						<div th:if="${!valutabile and !showOnly}" id="operativaRadioContainer" th:classappend="${(sedeWrapper.sede.sedeLegale == false and !enableField) ? 'hidden' : ''}">
+						<div th:if="${!showOnly}" id="operativaRadioContainer" th:classappend="${(sedeWrapper.sede.sedeLegale == false and !enableField) ? 'hidden' : ''}">
 							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.sedeOperativa')} ? 'bad'">
-								<label class="control-label col-md-4 col-sm-4 col-xs-12">
+								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}"></label>
+								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="provincia_sede">
 									<span th:class="${showOnly ? 'label-show' : ''}" th:text="${editabile ? #messages.msg('label.is_sede_operativa') : #messages.msg('label.inserita_come_sede_operativa')}">Inserisci come Sede Operativa</span>
+									<span th:if="${editabile}" class="required">*</span>
 								</label>
 								<th:block th:if="${editabile}">
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -158,6 +190,34 @@
 										</div>
 									</div>
 								</th:block>
+								<th:block th:if="${valutabile}">
+			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
+				              			<div th:text="${sedeWrapper.sede.sedeOperativa ? #messages.msg('label.sì') : #messages.msg('label.No')}"></div>
+				              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]?.modificatoInIntegrazione == false and
+				              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+			                    	</div>
+			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
+										<div class="radio">
+											<label th:class="${!canValutaDomanda} or ${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]?.enabled == false} ? 'label-disabled'">
+												<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or
+												${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]?.enabled == false or isFULL}" />
+												<span th:text="#{label.sì}">Sì</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label th:class="${!canValutaDomanda or !sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__].enabled} ? 'label-disabled'">
+												<input type="radio" class="flat" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or
+												!sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__].enabled or isFULL}"  />
+												<span th:text="#{label.no}">No</span>
+											</label>
+										</div>
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-10 col-xs-9">
+										<textarea th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__].note}" th:disabled="${!canValutaDomanda or
+										!sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__].enabled or isFULL}"></textarea>
+									</div>
+									<input type="hidden" th:field="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__].id}" />
+			                    </th:block>
 								<div th:if="${#fields.hasErrors('sedeWrapper.sede.sedeOperativa')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${sedeWrapper.sede.sedeOperativa}"></div>
 							</div>
 						</div>

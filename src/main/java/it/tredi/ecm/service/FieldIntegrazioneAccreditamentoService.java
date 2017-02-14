@@ -13,7 +13,8 @@ public interface FieldIntegrazioneAccreditamentoService {
 	public void saveSet(Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList);
 	public void delete(Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList);
 	public void update(Set<FieldIntegrazioneAccreditamento> toRemove, List<FieldIntegrazioneAccreditamento> toInsert);
-	
+
 	public Set<Long> getAllObjectIdByTipoIntegrazione(Long accreditamentoId, TipoIntegrazioneEnum tipo);
 	public Set<FieldIntegrazioneAccreditamento> getModifiedFieldIntegrazioneForAccreditamento(Long accreditamentoId);
+	public void removeAllFieldIntegrazioneForAccreditamento(Long accreditamentoId);
 }

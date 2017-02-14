@@ -401,4 +401,11 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 		}
 		return false;
 	}
+
+	@Override
+	public boolean canConclusioneProcedimento(CurrentUser currentUser, Long accreditamentoId) {
+		if(currentUser.getAccount().isSegreteria() && accreditamentoService.getAccreditamento(accreditamentoId).isDomandaInRichiestaAccreditamento())
+			return true;
+		return false;
+	}
 }

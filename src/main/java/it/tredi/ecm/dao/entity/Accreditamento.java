@@ -313,6 +313,14 @@ public class Accreditamento extends BaseEntity{
 		return false;
 	}
 
+	public boolean isDomandaInRichiestaAccreditamento() {
+		if(this.getWorkflowInfoAccreditamento() != null 
+				&& this.getWorkflowInfoAccreditamento().getStato() == StatoWorkflowEnum.IN_CORSO 
+				&& this.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO)
+			return true;
+		return false;
+	}
+
 	public boolean hasPianoFormativo(){
 		return (pianoFormativo != null && !pianoFormativo.isNew());
 	}

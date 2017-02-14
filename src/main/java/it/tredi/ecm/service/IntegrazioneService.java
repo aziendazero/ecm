@@ -26,8 +26,9 @@ public interface IntegrazioneService {
 	 * */
 	public <T> void attach(T obj) throws Exception;
 
-	public void applyIntegrazioneAccreditamentoAndSave(Long accreditamentoId,
-			Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception;
+	public void applyIntegrazioneAccreditamentoAndSave(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception;
+
+	public void cancelObjectNotApproved(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> notApproved);
 
 	/**
 	 * Applica le integrazioni all'oggetto passato

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Seduta;
 
 public interface SedutaRepository extends CrudRepository<Seduta, Long> {
@@ -26,4 +27,5 @@ public interface SedutaRepository extends CrudRepository<Seduta, Long> {
 	Seduta findFirstByDataAfterOrderByDataAsc(LocalDate date);
 
 	Seduta findFirstByDataAndOraAfterOrderByOraAsc(LocalDate date, LocalTime time);
+
 }

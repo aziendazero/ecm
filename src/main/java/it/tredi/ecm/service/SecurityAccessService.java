@@ -57,4 +57,6 @@ public interface SecurityAccessService {
 	public boolean canEditVerbaleAccreditamento(CurrentUser currentUser, Long accreditamentoId);
 	public boolean canDeleteEvento(CurrentUser currentUser, Long providerId);
 	public boolean canEditEvento(CurrentUser currentUser, Long providerId);
+
+	public boolean canConclusioneProcedimento(CurrentUser currentUser, Long accreditamentoId);
 }

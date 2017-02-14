@@ -13,7 +13,7 @@
 				<th:block th:include="fragments/modaleStoricoValutazioni :: modaleStoricoValutazioni"></th:block>
 
 				<!-- modale modifica verbale  -->
-				<th:block th:if="${#authentication.principal.hasProfile('SEGRETERIA')
+				<th:block th:if="${#authentication.principal.account.isSegreteria()
 					and accreditamentoWrapper.accreditamento.isValutazioneSulCampo()
 					and accreditamentoWrapper.accreditamento.isStandard()}">
 					<div id="verbale-edit-modal" class="modal fade modal-verbale-edit"
@@ -397,6 +397,28 @@
 					</div>
 				</div>
 
+				<!-- modale conferma chiusura procedimento -->
+				<div id="conclusione-conferma" class="modal fade modal-confirm-conclusione"
+					data-model-index="1" role="dialog">
+					<div class="modal-dialog modal-sm">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h3 class="modal-title" id="myModalLabel"
+									th:text="#{label.attenzione}">Attenzione!</h3>
+							</div>
+							<div class="modal-body">
+
+								<div class="panel-title" th:text="#{label.conferma_conclusione_del_procedimento}"></div>
+
+							</div>
+							<div class="modal-footer">
+								<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/conclusioneProcedimento|}" class="btn btn-success pull-right" th:text="#{label.Ok}">Ok</a>
+								<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<!-- Modale per riepilogo valutazione -->
 				<th:block th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" th:include="fragments/modaleRiepilogoValutazioni :: modaleRiepilogoValutazioni"></th:block>
 
@@ -423,6 +445,8 @@
 									<li><a th:if="${accreditamentoWrapper.canPrendiInCarica}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/takeCharge|}" th:text="#{label.prendi_in_carica}"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canPresaVisione}" th:text="#{label.presa_visione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/presaVisione|}"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canAssegnaNuovoGruppo}" th:text="#{label.assegna_nuovo_gruppo}" data-toggle="modal" data-target=".modal-reassign"></a></li>
+									<li class="divider actions" th:if="${#authentication.principal.account.isSegreteria() and accreditamentoWrapper.accreditamento.isDomandaInRichiestaAccreditamento()}"></li>
+									<li><a th:if="${#authentication.principal.account.isSegreteria() and accreditamentoWrapper.accreditamento.isDomandaInRichiestaAccreditamento()}" th:text="#{label.conclusione_del_procedimento}" data-toggle="modal" data-target=".modal-confirm-conclusione"></a></li>
 								</ul>
 							</div>
 

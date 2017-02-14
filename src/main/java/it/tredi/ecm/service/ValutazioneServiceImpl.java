@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
@@ -27,6 +28,7 @@ import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ValutazioneRepository;
@@ -420,18 +422,5 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 			}
 		}
 
-	}
-
-	@Override
-	//cancella tutti gli oggetti non approvati in integrazione
-	public void cancelObjectNotApproved(Long accreditamentoId, Set<FieldValutazioneAccreditamento> fieldValutazioniSegreteria) {
-		for(FieldValutazioneAccreditamento fva : fieldValutazioniSegreteria) {
-			if(fva.getIdField() == IdFieldEnum.SEDE__FULL) {
-				sedeService.delete(fva.getObjectReference());
-			}
-			else if(fva.getIdField() == IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL) {
-				personaService.delete(fva.getObjectReference());
-			}
-		}
 	}
 }

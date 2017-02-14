@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170214_001_dropColumnPausaEValutazioneApprendimento.xml">
+    <changeSet author="tiommi (generated)" id="1487070914945-1">
+        <dropColumn columnName="pausa" tableName="dettaglio_attivitares"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1487070914945-2">
+        <dropColumn columnName="valutazione_apprendimento" tableName="dettaglio_attivitares"/>
+    </changeSet>
+</databaseChangeLog>

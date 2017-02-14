@@ -1532,4 +1532,18 @@ public class AccreditamentoController {
 		}
 		return "redirect:/accreditamento/{accreditamentoId}/validate";
 	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canConclusioneProcedimento(principal, #accreditamentoId)")
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/conclusioneProcedimento", method = RequestMethod.GET)
+	public String conclusioneProcedimento(@PathVariable Long accreditamentoId, @PathVariable Long providerId,
+			Model model, RedirectAttributes redirectAttr) {
+		try {
+			accreditamentoService.conclusioneProcedimento(accreditamentoService.getAccreditamento(accreditamentoId), Utils.getAuthenticatedUser());
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/conclusioneProcedimento"),ex);
+			redirectAttr.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+		}
+		return "redirect:/accreditamento/{accreditamentoId}/show";
+	}
 }
