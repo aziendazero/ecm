@@ -1,5 +1,10 @@
 package it.tredi.ecm.dao.enumlist;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.Getter;
 
 @Getter
@@ -18,5 +23,17 @@ public enum ProviderStatoEnum {
 	private ProviderStatoEnum(int id, String nome){
 		this.id = id;
 		this.nome = nome;
+	}
+
+	public static Set<ProviderStatoEnum> getAllStatiByFlagAttivi(boolean attivi) {
+		// prende tutti gli stati a seconda del flag
+		Set<ProviderStatoEnum> stati = null;
+		if(attivi) {
+			stati = new HashSet<ProviderStatoEnum>(Arrays.asList(INSERITO, VALIDATO, SOSPESO));
+		}
+		else {
+			stati = new HashSet<ProviderStatoEnum>(Arrays.asList(ACCREDITATO_PROVVISORIAMENTE, ACCREDITATO_STANDARD, DINIEGO, CANCELLATO));
+		}
+		return stati;
 	}
 }

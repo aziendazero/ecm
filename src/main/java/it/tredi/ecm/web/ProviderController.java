@@ -47,6 +47,7 @@ import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.QuotaAnnualeService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
@@ -87,6 +88,7 @@ public class ProviderController {
 	@Autowired private PianoFormativoService pianoFormativoService;
 
 	@Autowired private ImpostazioniProviderValidator impostazioniProviderValidator;
+	@Autowired private QuotaAnnualeService quotaAnnualeService;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -390,19 +392,25 @@ public class ProviderController {
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
-	@RequestMapping("/provider/pianoFormativoNotInserito/list")
-	public String showAllPianoFormativoNotInserito(Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET: /provider/pianoFormativoNotInserito/list"));
+	@RequestMapping("/provider/{stato}/list")
+	public String showAllPianoFormativoNotInserito(@PathVariable String stato, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET: /provider/"+ stato + "/list"));
 		try {
 			String returnRedirect = "redirect:/provider/list";
 
 			Set<Provider> listaProvider = new HashSet<Provider>();
-			listaProvider.addAll(pianoFormativoService.getAllProviderNotPianoFormativoInseritoPerAnno());
+			switch(stato) {
+			case "pianoFormativoNotInserito":
+				listaProvider.addAll(pianoFormativoService.getAllProviderNotPianoFormativoInseritoPerAnno());
+			case "domandaScaduta":
+				listaProvider.addAll(providerService.getAllProviderInadempienti());
+			case "mancatoPagamentoAnnuale":
+				listaProvider.addAll(quotaAnnualeService.getAllProviderNotPagamentoEffettuatoAllaScadenza());
+			}
 			redirectAttrs.addFlashAttribute("providerList", listaProvider);
-
 			return returnRedirect;
 		}catch (Exception ex) {
-			LOGGER.error(Utils.getLogMessage("GET: /provider/pianoFormativoNotInserito/list"),ex);
+			LOGGER.error(Utils.getLogMessage("GET: /provider/"+stato+"/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";

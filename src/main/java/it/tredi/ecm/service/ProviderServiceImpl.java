@@ -619,4 +619,11 @@ public class ProviderServiceImpl implements ProviderService {
 		//query su tutte le domande di accreditamento attive scadute il cui provider non è già stato bloccato
 		return accreditamentoService.countAllDomandeAttiveScaduteAndProviderNonBloccato();
 	}
+
+	@Override
+	public Set<Provider> getAllProviderInadempienti() {
+		LOGGER.info("Recupero i provider che non hanno completato da domanda di accreditamento in tempo");
+		//query su tutte le domande di accreditamento attive scadute il cui provider non è già stato bloccato
+		return accreditamentoService.getAllProviderFromDomandeAttiveScaduteAndProviderNonBloccato();
+	}
 }

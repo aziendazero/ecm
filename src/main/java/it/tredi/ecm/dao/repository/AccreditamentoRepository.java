@@ -9,8 +9,10 @@ import org.springframework.data.repository.query.Param;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 
 public interface AccreditamentoRepository extends CrudRepository<Accreditamento, Long> {
 	public Set<Accreditamento> findByProviderId(Long providerId);
@@ -111,6 +113,10 @@ public interface AccreditamentoRepository extends CrudRepository<Accreditamento,
 		public Set<Accreditamento> findAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
 		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.dataScadenza BETWEEN :oggi AND :dateScadenza")
 		public int countAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
-	//
+
+//		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.dataScadenza > :oggi AND a.provider.status IN (:statiAttivi)") @Param("oggi") @Param("statiAttivi")
+		public int countAllByDataScadenzaBeforeAndProviderStatusIn(LocalDate oggi, Set<ProviderStatoEnum> statiAttivi);
+		@Query("SELECT a.provider FROM Accreditamento a WHERE a.dataScadenza < :oggi AND a.provider.status IN (:statiAttivi)")
+		public Set<Provider> findAllProviderByDataScadenzaBeforeAndProviderStatusIn( @Param("oggi") LocalDate oggi,  @Param("statiAttivi") Set<ProviderStatoEnum> statiAttivi);
 
 }

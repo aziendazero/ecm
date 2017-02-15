@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -51,5 +52,6 @@ public interface ProviderService {
 	public void eseguiUpdateDataDomandaStandard();
 	public void eseguiUpdateDataRelazioneAnnuale();
 	public int countAllProviderInadempienti();
+	public Set<Provider> getAllProviderInadempienti();
 
 }

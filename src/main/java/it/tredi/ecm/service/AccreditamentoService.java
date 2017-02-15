@@ -7,6 +7,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
@@ -112,4 +113,5 @@ public interface AccreditamentoService{
 	public void inviaValutazioneVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception;
 	public void conclusioneProcedimento(Accreditamento accreditamento, CurrentUser currentUser) throws Exception;
 	public int countAllDomandeAttiveScaduteAndProviderNonBloccato();
+	public Set<Provider> getAllProviderFromDomandeAttiveScaduteAndProviderNonBloccato();
 }

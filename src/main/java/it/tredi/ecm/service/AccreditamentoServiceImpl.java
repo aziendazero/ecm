@@ -1945,4 +1945,20 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//chiamata a Bonita che annulla il vecchio flusso e apre il nuovo
 		workflowService.createWorkflowAccreditamentoConclusioneProcedimento(currentUser, accreditamento);
 	}
+
+	//conta tutte le domande attive scadute che hanno un provider non bloccato
+	@Override
+	public int countAllDomandeAttiveScaduteAndProviderNonBloccato() {
+		//prende il set di stati attivi
+		Set<ProviderStatoEnum> statiAttivi = ProviderStatoEnum.getAllStatiByFlagAttivi(true);
+		return accreditamentoRepository.countAllByDataScadenzaBeforeAndProviderStatusIn(LocalDate.now(), statiAttivi);
+	}
+
+	//prende set di provider che hanno domanda attiva scaduta e non sono bloccati
+	@Override
+	public Set<Provider> getAllProviderFromDomandeAttiveScaduteAndProviderNonBloccato() {
+		//prende il set di stati attivi
+		Set<ProviderStatoEnum> statiAttivi = ProviderStatoEnum.getAllStatiByFlagAttivi(true);
+		return accreditamentoRepository.findAllProviderByDataScadenzaBeforeAndProviderStatusIn(LocalDate.now(), statiAttivi);
+	}
 }
