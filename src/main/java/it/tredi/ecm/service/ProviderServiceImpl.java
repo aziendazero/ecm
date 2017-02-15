@@ -51,6 +51,7 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Autowired private ProviderRepository providerRepository;
 	@Autowired private PersonaService personaService;
+	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProfileAndRoleService profileAndRoleService;
 	@Autowired private AccountService accountService;
 	@Autowired private FileService fileService;
@@ -612,4 +613,10 @@ public class ProviderServiceImpl implements ProviderService {
 
 	}
 
+	@Override
+	public int countAllProviderInadempienti() {
+		LOGGER.info("Conteggio dei provider che non hanno completato da domanda di accreditamento in tempo");
+		//query su tutte le domande di accreditamento attive scadute il cui provider non è già stato bloccato
+		return accreditamentoService.countAllDomandeAttiveScaduteAndProviderNonBloccato();
+	}
 }

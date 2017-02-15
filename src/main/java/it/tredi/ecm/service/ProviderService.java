@@ -50,5 +50,6 @@ public interface ProviderService {
 	public void eseguiUpdateDataPianoFormativo();
 	public void eseguiUpdateDataDomandaStandard();
 	public void eseguiUpdateDataRelazioneAnnuale();
+	public int countAllProviderInadempienti();
 
 }

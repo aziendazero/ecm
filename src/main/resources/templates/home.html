@@ -173,7 +173,6 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('accreditamento/scadenza/list')">
 							<div class="icon"><i class="fa fa-calendar"></i></div>
@@ -181,26 +180,6 @@
 			                	<div class="count" th:text="${homeWrapper.domandeInScadenza}"></div>
 			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInScadenza == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
 			                	<p class="count-text" th:text="#{label.in_scadenza}"></p>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('referee/list')">
-							<div class="icon"><i class="fa fa-eye-slash"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.badReferee}"></div>
-			                	<h3 class="tile-h3" th:text="#{label.referee}"></h3>
-			                	<p class="count-text" th:text="${homeWrapper.badReferee == 1} ? #{label.non_ha_valutato} :  #{label.non_hanno_valutato}"></p>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('provider/list')">
-							<div class="icon"><i class="fa fa-eye-slash"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza}"></div>
-			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
-			                	<p class="count-text" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza == 1} ? #{label.non_ha_pagato_quota_annuale} :  #{label.non_hanno_pagato_quota_annuale}"></p>
 							</div>
 						</div>
 					</div>
@@ -215,12 +194,42 @@
 						</div>
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('provider/domandaScaduta/list')">
+							<div class="icon"><i class="fa fa-calendar-times-o"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.providerInadempienti}"></div>
+			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+			                	<p class="count-text" th:text="${homeWrapper.providerInadempienti == 1} ? #{label.non_ha_completato_domanda_accreditamento_in_tempo} :  #{label.non_hanno_completato_domanda_accreditamento_in_tempo}"></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('provider/list')">
+							<div class="icon"><i class="fa fa-credit-card"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza}"></div>
+			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+			                	<p class="count-text" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza == 1} ? #{label.non_ha_pagato_quota_annuale} :  #{label.non_hanno_pagato_quota_annuale}"></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('eventi/CREDITI_NON_CONFERMATI/list')">
 							<div class="icon"><i class="fa fa-pencil-square-o"></i></div>
 							<div class="col-xs-10">
 			                	<div class="count" th:text="${homeWrapper.eventiCreditiNonConfermati}"></div>
-			                	<h3 class="tile-h3" th:text="#{label.eventi}"></h3>
-			                	<p class="count-text" th:text="${homeWrapper.eventiCreditiNonConfermati == 1} ? #{label.evento_con_crediti_non_confermati} :  #{label.eventi_con_crediti_non_confermati}"></p>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiCreditiNonConfermati == 1} ? #{label.evento} : #{label.eventi}"></h3>
+			                	<p class="count-text" th:text="#{label.con_crediti_non_confermati}"></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('referee/list')">
+							<div class="icon"><i class="fa fa-eye-slash"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.badReferee}"></div>
+			                	<h3 class="tile-h3" th:text="#{label.referee}"></h3>
+			                	<p class="count-text" th:text="${homeWrapper.badReferee == 1} ? #{label.non_ha_valutato} :  #{label.non_hanno_valutato}"></p>
 							</div>
 						</div>
 					</div>
