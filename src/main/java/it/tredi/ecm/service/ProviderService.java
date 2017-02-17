@@ -53,5 +53,6 @@ public interface ProviderService {
 	public void eseguiUpdateDataRelazioneAnnuale();
 	public int countAllProviderInadempienti();
 	public Set<Provider> getAllProviderInadempienti();
+	public void bloccaProvider(Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception;
 
 }

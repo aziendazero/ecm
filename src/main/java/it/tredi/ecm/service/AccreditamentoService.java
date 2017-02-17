@@ -112,6 +112,5 @@ public interface AccreditamentoService{
 	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId) throws Exception;
 	public void inviaValutazioneVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception;
 	public void conclusioneProcedimento(Accreditamento accreditamento, CurrentUser currentUser) throws Exception;
-	public int countAllDomandeAttiveScaduteAndProviderNonBloccato();
-	public Set<Provider> getAllProviderFromDomandeAttiveScaduteAndProviderNonBloccato();
+	public Accreditamento getLastAccreditamentoForProviderId(Long providerId);
 }

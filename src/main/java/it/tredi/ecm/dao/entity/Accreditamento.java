@@ -28,6 +28,7 @@ import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.VariazioneDatiStatoEnum;
+import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -138,7 +139,8 @@ public class Accreditamento extends BaseEntity{
 	@ElementCollection
 	private List<WorkflowInfo> workflowInfo = new ArrayList<WorkflowInfo>();
 
-
+	@OneToOne
+	private File fileDecadenza;
 
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){
@@ -314,8 +316,8 @@ public class Accreditamento extends BaseEntity{
 	}
 
 	public boolean isDomandaInRichiestaAccreditamento() {
-		if(this.getWorkflowInfoAccreditamento() != null 
-				&& this.getWorkflowInfoAccreditamento().getStato() == StatoWorkflowEnum.IN_CORSO 
+		if(this.getWorkflowInfoAccreditamento() != null
+				&& this.getWorkflowInfoAccreditamento().getStato() == StatoWorkflowEnum.IN_CORSO
 				&& this.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO)
 			return true;
 		return false;
@@ -323,6 +325,18 @@ public class Accreditamento extends BaseEntity{
 
 	public boolean hasPianoFormativo(){
 		return (pianoFormativo != null && !pianoFormativo.isNew());
+	}
+
+	public boolean canEdit() {
+		Account user = Utils.getAuthenticatedUser().getAccount();
+		if(user.isSegreteria() ||
+				(user.isProvider() && (this.isBozza()
+					|| this.isIntegrazione()
+					|| this.isPreavvisoRigetto()
+					|| this.isModificaDati())
+					&& !this.getProvider().isBloccato()))
+			return true;
+		return false;
 	}
 
 	public int getDurataProcedimento(){

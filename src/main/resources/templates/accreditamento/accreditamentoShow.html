@@ -463,14 +463,9 @@
 								</ul>
 							</div>
 
-							<a th:if="${@ecmProperties.debugTestMode}" class="btn btn-warning" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbale/pdf|}" >asd</a>
-
 							<!-- menù a pulsanti separati per il provider -->
 							<th:block th:if="${#authentication.principal.isProvider()}">
-								<a th:if="${accreditamentoWrapper.accreditamento.isBozza() or
-									accreditamentoWrapper.accreditamento.isIntegrazione() or
-									accreditamentoWrapper.accreditamento.isPreavvisoRigetto() or
-									accreditamentoWrapper.accreditamento.isModificaDati()}" class="btn btn-success" th:text="#{label.modifica}" onclick="switchMode('edit')"></a>
+								<a th:if="${accreditamentoWrapper.accreditamento.canEdit()}" class="btn btn-success" th:text="#{label.modifica}" onclick="switchMode('edit')"></a>
 							</th:block>
 							<!-- menù a pulsanti separati per il referee -->
 							<th:block th:if="${#authentication.principal.isReferee()}">

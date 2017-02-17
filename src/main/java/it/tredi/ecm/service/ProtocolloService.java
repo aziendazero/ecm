@@ -5,6 +5,7 @@ import java.util.Set;
 import it.rve.protocollo.xsd.protocolla_arrivo.Mittente;
 import it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari;
 import it.tredi.ecm.dao.entity.Protocollo;
+import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
 
 public interface ProtocolloService {
 
@@ -18,4 +19,5 @@ public interface ProtocolloService {
 	//metodi da richiamare nei TASK SCHEDULER
 	public void protoBatchLog() throws Exception;
 	public void getStatoSpedizione() throws Exception;
+	public void protocollaBloccoProviderInUscita(Long providerId, Long fileId, MotivazioneDecadenzaEnum motivazione) throws Exception;
 }

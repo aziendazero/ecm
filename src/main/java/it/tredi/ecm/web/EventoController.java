@@ -230,16 +230,23 @@ public class EventoController {
 		}
 	}
 
-	private String goToList(Model model, Long providerId) throws AccreditamentoNotFoundException{
+	private String goToList(Model model, Long providerId) {
 		String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
 		model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
 		model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
 		model.addAttribute("denominazioneProvider", denominazioneProvider);
 		model.addAttribute("providerId", providerId);
-		model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
-		model.addAttribute("canRieditEvento", eventoService.canRieditEvento(Utils.getAuthenticatedUser().getAccount()));
-		Accreditamento accreditamento =  accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
-		model.addAttribute("proceduraFormativaList", accreditamento.getDatiAccreditamento().getProcedureFormative());
+		try {
+			Accreditamento accreditamento =  accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
+			model.addAttribute("proceduraFormativaList", accreditamento.getDatiAccreditamento().getProcedureFormative());
+			model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
+			model.addAttribute("canRieditEvento", eventoService.canRieditEvento(Utils.getAuthenticatedUser().getAccount()));
+		}
+		catch (Exception ex) {
+			model.addAttribute("proceduraFormativaList", null);
+			model.addAttribute("canCreateEvento", false);
+			model.addAttribute("canRieditEvento", false);
+		}
 		if(Utils.getAuthenticatedUser().isSegreteria())
 			model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
 		LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));

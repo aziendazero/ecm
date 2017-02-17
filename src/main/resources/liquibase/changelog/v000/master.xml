@@ -66,4 +66,6 @@
 
 	<include file="20170214_001_dropColumnPausaEValutazioneApprendimento.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170217_001_fileDecadenza.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

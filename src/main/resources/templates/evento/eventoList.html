@@ -263,8 +263,9 @@
 									<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
 									<td>
 										<div th:text="${evento.stato.nome}"></div>
-										<div th:if="${evento.pagato}"><span class="label-pagato" th:text="#{label.pagato}"></span></div>
-										<div th:unless="${evento.pagato}">
+										<div th:if="${evento.pagato and !evento.isCancellato()}"><span class="label-pagato" th:text="#{label.pagato}"></span></div>
+										<div th:if="${evento.isCancellato()}"><span class="label-non-pagato" th:text="#{label.cancellato}"></span></div>
+										<div th:if="${!evento.pagato and !evento.isCancellato()}">
 											<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>
 											<span th:unless="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.da_pagare}"></span>
 										</div>

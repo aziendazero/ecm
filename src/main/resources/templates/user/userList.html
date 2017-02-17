@@ -10,7 +10,7 @@
 			<div class="x_panel">
 				<div class="x_title">
 					<h2 class="text-uppercase" th:text="#{label.utenti}"></h2>
-					<th:block th:if="${#authentication.principal.hasProfile('PROVIDER')}">
+					<th:block th:if="${#authentication.principal.hasProfile('PROVIDER') and canInsertUser}">
 					<a class="btn btn-primary pull-right" th:href="@{/provider/user/new}"
 						th:text="#{label.nuovo_utente}">label.nuovo_utente</a>
 					</th:block>
@@ -43,7 +43,8 @@
 									<td><a th:href="@{|/user/${account.id}/edit|}"
 										th:text="${account.username}" th:unless="${#authentication.principal.hasProfile('PROVIDER')}"></a>
 										<a th:href="@{|/provider/user/${account.id}/edit|}"
-										th:text="${account.username}" th:if="${#authentication.principal.hasProfile('PROVIDER')}"></a></td>
+										th:text="${account.username}" th:if="${#authentication.principal.hasProfile('PROVIDER') and canInsertUser}"></a>
+										<span th:text="${account.username}" th:if="${#authentication.principal.hasProfile('PROVIDER') and !canInsertUser}"></span></td>
 									<td th:text="${account.fullName}"></td>
 									<td th:text="${account.email}"></td>
 

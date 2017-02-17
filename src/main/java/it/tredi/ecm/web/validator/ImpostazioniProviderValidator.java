@@ -3,6 +3,7 @@ package it.tredi.ecm.web.validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.utils.Utils;
@@ -49,6 +50,17 @@ public class ImpostazioniProviderValidator {
 		//select stato
 		if(impostazioni.getStato() == null)
 			errors.rejectValue(prefix + "stato", "error.empty");
+
+		Utils.logDebugErrorFields(LOGGER, errors);
+	}
+
+	public void validateBloccoProvider(Object target, Errors errors, String prefix) {
+		ImpostazioniProviderWrapper impostazioni = (ImpostazioniProviderWrapper) target;
+
+		if(impostazioni.getMotivazioneDecadenza() == null)
+			errors.rejectValue(prefix + "motivazioneDecadenza", "error.empty");
+		if(impostazioni.getAllegatoDecadenza() == null || impostazioni.getAllegatoDecadenza().isNew())
+			errors.rejectValue(prefix +  "allegatoDecadenza", "error.empty");
 
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}

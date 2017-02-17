@@ -1,9 +1,14 @@
 package it.tredi.ecm.web.bean;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,5 +33,11 @@ public class ImpostazioniProviderWrapper {
 
 	private ProviderStatoEnum stato;
 
+	private MotivazioneDecadenzaEnum motivazioneDecadenza;
+
+	private File allegatoDecadenza;
+
 	private boolean submitError = false;
+	private boolean motivazioneError = false;
+
 }

@@ -220,7 +220,7 @@ public class AccountController{
 				if(providerProfile.isPresent())
 					account.getProfiles().add(providerProfile.get());
 			}
-			
+
 			accountValidator.validate(account, result);
 			if(result.hasErrors()){
 				LOGGER.debug(Utils.getLogMessage("Validazione fallita"));
@@ -316,7 +316,7 @@ public class AccountController{
 		}
 		return "redirect:/login";
 	}
-	
+
 	/**
 	 * Lista account per provider
 	 **/
@@ -340,7 +340,7 @@ public class AccountController{
 			return "redirect:/home";
 		}
 	}
-		
+
 	/**
 	 * Lista account per provider
 	 **/
@@ -350,6 +350,7 @@ public class AccountController{
 		try {
 			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/user/list"));
 			model.addAttribute("accountList", accountService.findAllByProviderId(providerId));
+			model.addAttribute("canInsertUser", !providerService.getProvider(providerId).isBloccato());
 			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 			return LIST;
 		}catch (Exception ex){
@@ -358,7 +359,7 @@ public class AccountController{
 			return "redirect:/home";
 		}
 	}
-	
+
 
 	private String goToEdit(Model model, Account account){
 		model.addAttribute("account", account);

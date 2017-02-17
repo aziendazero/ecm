@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.BaseEntity;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
@@ -58,6 +59,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Autowired private AlertEmailService alertEmailService;
 	@PersistenceContext EntityManager entityManager;
 	@Autowired private EcmProperties ecmProperties;
+	@Autowired private ProtocolloService protocolloService;
 
 	@Override
 	public Provider getProvider() {
@@ -610,20 +612,35 @@ public class ProviderServiceImpl implements ProviderService {
 			p.setDataScadenzaInsertRelazioneAnnuale(defaultDate);
 			save(p);
 		}
-
 	}
 
 	@Override
 	public int countAllProviderInadempienti() {
 		LOGGER.info("Conteggio dei provider che non hanno completato da domanda di accreditamento in tempo");
-		//query su tutte le domande di accreditamento attive scadute il cui provider non è già stato bloccato
-		return accreditamentoService.countAllDomandeAttiveScaduteAndProviderNonBloccato();
+		//query sui provider se hanno data scadenza can insert domanda standard ed è scaduta sono inadempienti
+		return providerRepository.countAllProviderInadempienti(LocalDate.now());
 	}
 
 	@Override
 	public Set<Provider> getAllProviderInadempienti() {
 		LOGGER.info("Recupero i provider che non hanno completato da domanda di accreditamento in tempo");
-		//query su tutte le domande di accreditamento attive scadute il cui provider non è già stato bloccato
-		return accreditamentoService.getAllProviderFromDomandeAttiveScaduteAndProviderNonBloccato();
+		//query sui provider se hanno data scadenza can insert domanda standard ed è scaduta sono inadempienti
+		return providerRepository.getAllProviderInadempienti(LocalDate.now());
+	}
+
+
+	//salva il file
+	@Override
+	public void bloccaProvider(Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception {
+
+		protocolloService.protocollaBloccoProviderInUscita(providerId, wrapper.getAllegatoDecadenza().getId(), wrapper.getMotivazioneDecadenza());
+
+		//allega il file di decadenza
+		Accreditamento accreditamento = accreditamentoService.getLastAccreditamentoForProviderId(providerId);
+		accreditamento.setFileDecadenza(wrapper.getAllegatoDecadenza());
+		accreditamentoService.save(accreditamento);
+
+
+
 	}
 }

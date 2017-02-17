@@ -194,6 +194,57 @@
 			</div>
 		</div>
 
+		<div id="blocca-provider" class="modal fade modal-blocca-provider" data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel1" th:text="#{label.conferma_decadenza_provider}"></h4>
+					</div>
+					<div class="modal-body">
+						<form id="form-blocca-provider" class="form-horizontal"
+							method="post" enctype="multipart/form-data"
+							novalidate="novalidate">
+
+							<div class="item form-group" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.motivazioneDecadenza')} ? 'bad'">
+								<label class="control-label col-lg-3 col-md-4 col-sm-5 col-xs-12" for="radioDecadenza">
+									<span th:text="#{label.motivazione}"></span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-6 col-md-5 col-sm-4 col-xs-12">
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat decadenza-radio" th:field="${impostazioniProviderWrapper.motivazioneDecadenza}" th:value="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).SCADENZA_INSERIMENTO_DOMANDA_STANDARD}" />
+											<span th:text="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).SCADENZA_INSERIMENTO_DOMANDA_STANDARD.nome}">Sì</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat decadenza-radio" th:field="${impostazioniProviderWrapper.motivazioneDecadenza}" th:value="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).MANCATO_PAGAMENTO_QUOTA_ANNUALE}" />
+											<span th:text="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).MANCATO_PAGAMENTO_QUOTA_ANNUALE.nome}">No</span>
+										</label>
+									</div>
+								</div>
+								<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.motivazioneDecadenza')}" class="alert" th:errors="${impostazioniProviderWrapper.motivazioneDecadenza}"></div>
+							</div>
+							<div class="divider"></div>
+							<div class="item form-group with-margin-top" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.allegatoDecadenza')} ? 'bad'">
+								<th:block th:include="fragments/allegatiext :: allegatiext(impostazioniProviderWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DECADENZA}', allegatoDecadenza, null, null, null, true, 'edit', true)"></th:block>
+							</div>
+
+							<input id="submitButtonBlocca" type="submit" style="display: none;" />
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+						</form>
+					</div>
+					<div class="modal-footer">
+						<label for="submitButtonBlocca" class="btn btn-success pull-right" th:text="#{label.applica}">Applica</label>
+						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -227,7 +278,6 @@
 									<td><a th:text="${provider.denominazioneLegale}" th:href="@{|/provider/${provider.id}/accreditamento/list|}">3d informatica</a></td>
 									<td th:text="${provider.tipoOrganizzatore.nome}">informatica</td>
 									<td th:text="${provider.status.nome}">stato</td>
-
 									<td th:text="${provider.canInsertPianoFormativo() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertPianoFormativo ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertEvento() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertEvento() ? 'green' : 'red'}">abilitato/non abilitato</td>
 									<td th:text="${provider.canInsertAccreditamentoStandard() ? #messages.msg('label.abilitato') : #messages.msg('label.non_abilitato')}" th:class="${provider.canInsertAccreditamentoStandard() ? 'green' : 'red'}">abilitato/non abilitato</td>
@@ -248,6 +298,7 @@
 										<button type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalImpostazioni(${provider.id}, ${provider.canInsertPianoFormativo}, ${provider.canInsertEvento},
 											${provider.canInsertAccreditamentoStandard}, ${provider.canInsertAccreditamentoProvvisorio}, ${provider.canInsertRelazioneAnnuale}, '${provider.status}', '${provider.dataScadenzaInsertPianoFormativo}', '${provider.dataScadenzaInsertAccreditamentoStandard}',
 											'${provider.dataRinnovoInsertAccreditamentoProvvisorio}', '${provider.dataScadenzaInsertRelazioneAnnuale}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
+										<button type="button" class="btn btn-danger min-icon-width" th:onclick="|openModalConfermaBloccoProvider(${provider.id})|" th:title="#{label.blocca}"><i class="fa fa-times-circle"> </i></button>
 									</td>
 								</tr>
 							</tbody>
@@ -287,6 +338,10 @@
 
 				    if([[${impostazioniProviderWrapper != null && impostazioniProviderWrapper.submitError == true}]])
 				    	$("#scadenze-provider").modal("show");
+
+					 if([[${impostazioniProviderWrapper != null && impostazioniProviderWrapper.motivazioneError == true}]])
+					    $("#blocca-provider").modal("show");
+
 
 				})
 
@@ -344,6 +399,17 @@
 						var dataScadenzaRelazione = moment(dataRelazione, "YYYY-MM-DD", true).format("DD/MM/YYYY");
 						$("#dataRelazioneAnnuale").val(dataScadenzaRelazione);
 					}
+				}
+
+				function openModalConfermaBloccoProvider(idProvider) {
+					$("#form-blocca-provider").attr("action", [[@{|/provider/|}]] + idProvider + "/blocca");
+					$("#form-blocca-provider")[0].reset();
+					$('input[type="radio"]').each(function(i,r) {
+						$r = $(r);
+						$r.iCheck("uncheck");
+						$r.iCheck("update");
+					})
+					$("#blocca-provider").modal("show");
 				}
 
 				function cleanForm() {

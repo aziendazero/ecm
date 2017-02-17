@@ -350,6 +350,8 @@ public class Evento extends BaseEntity{
 	}
 
 	public boolean canEdit(){
+		if(provider.isBloccato() && !Utils.getAuthenticatedUser().isSegreteria())
+			return false;
 		if(stato == EventoStatoEnum.BOZZA)
 			return true;
 
@@ -418,6 +420,14 @@ public class Evento extends BaseEntity{
 		if(dataFine != null && LocalDate.now().isAfter(dataFine))
 			return true;
 
+		return false;
+	}
+
+	// evento cancellato
+
+	public boolean isCancellato() {
+		if(stato == EventoStatoEnum.CANCELLATO)
+			return true;
 		return false;
 	}
 

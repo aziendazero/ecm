@@ -307,11 +307,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.setDataInvio(LocalDate.now());
 		accreditamento.setDataScadenza(accreditamento.getDataInvio().plusDays(180));
 
-		//TODO RIMUOVERE quando ci sarà il flusso STANDARD
-		if(accreditamento.isStandard())
-			accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
-
 		accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
+
+		if(accreditamento.isStandard()) {
+			//accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
+			accreditamento.getProvider().setCanInsertAccreditamentoStandard(false);
+			accreditamento.getProvider().setDataScadenzaInsertAccreditamentoStandard(null);
+		}
 
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 
@@ -1946,19 +1948,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		workflowService.createWorkflowAccreditamentoConclusioneProcedimento(currentUser, accreditamento);
 	}
 
-	//conta tutte le domande attive scadute che hanno un provider non bloccato
 	@Override
-	public int countAllDomandeAttiveScaduteAndProviderNonBloccato() {
-		//prende il set di stati attivi
-		Set<ProviderStatoEnum> statiAttivi = ProviderStatoEnum.getAllStatiByFlagAttivi(true);
-		return accreditamentoRepository.countAllByDataScadenzaBeforeAndProviderStatusIn(LocalDate.now(), statiAttivi);
+	public Accreditamento getLastAccreditamentoForProviderId(Long providerId) {
+		LOGGER.info("Cerco l'ultimo accreditamento del Provider: " + providerId);
+		return accreditamentoRepository.findFirstByProviderIdOrderByDataScadenzaDesc(providerId);
 	}
 
-	//prende set di provider che hanno domanda attiva scaduta e non sono bloccati
-	@Override
-	public Set<Provider> getAllProviderFromDomandeAttiveScaduteAndProviderNonBloccato() {
-		//prende il set di stati attivi
-		Set<ProviderStatoEnum> statiAttivi = ProviderStatoEnum.getAllStatiByFlagAttivi(true);
-		return accreditamentoRepository.findAllProviderByDataScadenzaBeforeAndProviderStatusIn(LocalDate.now(), statiAttivi);
-	}
 }

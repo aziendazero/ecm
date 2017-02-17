@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,6 +64,7 @@ import it.tredi.ecm.web.validator.ProviderValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
+@SessionAttributes("providerList")
 public class ProviderController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Provider.class);
 
@@ -98,7 +100,7 @@ public class ProviderController {
 	/*** GLOBAL MODEL ATTRIBUTES***/
 
 	@ModelAttribute("providerWrapper")
-	public ProviderWrapper getProvider(@RequestParam(name = "editId", required = false) Long id,
+	public ProviderWrapper getProviderWrapper(@RequestParam(name = "editId", required = false) Long id,
 			@RequestParam(value="statoAccreditamento",required = false) AccreditamentoStatoEnum statoAccreditamento,
 			@RequestParam(value="wrapperMode",required = false) AccreditamentoWrapperModeEnum wrapperMode,
 			@RequestParam(value="accreditamentoId",required = false) Long accreditamentoId) throws Exception{
@@ -107,6 +109,11 @@ public class ProviderController {
 			return prepareWrapperForReloadByEditId(providerService.getProvider(id), accreditamentoId, statoAccreditamento, wrapperMode);
 		}
 		return new ProviderWrapper();
+	}
+
+	@ModelAttribute("providerList")
+	public Set<Provider> getProvider() {
+		return providerService.getAllNotInserito();
 	}
 
 	//Distinguo il prepareWrapper dalla verisione chiamata in caricamento della View da quella chiamata per il reload e merge con il form
@@ -377,14 +384,33 @@ public class ProviderController {
 		LOGGER.info(Utils.getLogMessage("GET: /provider/list"));
 		try {
 
-			if(model.asMap().get("providerList") == null)
-				model.addAttribute("providerList", providerService.getAllNotInserito());
+//			if(model.asMap().get("providerList") == null)
+//				model.addAttribute("providerList", providerService.getAllNotInserito());
 			model.addAttribute("impostazioniProviderWrapper", new ImpostazioniProviderWrapper());
 
 			LOGGER.info(Utils.getLogMessage("VIEW: /provider/providerList"));
 			return "provider/providerList";
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET: /provider/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
+	@RequestMapping("/provider/list/all")
+	public String showAllNotInserito(Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET: /provider/list/all"));
+		try {
+
+			model.addAttribute("providerList", providerService.getAllNotInserito());
+			model.addAttribute("impostazioniProviderWrapper", new ImpostazioniProviderWrapper());
+
+			LOGGER.info(Utils.getLogMessage("VIEW: /provider/providerList"));
+			return "provider/providerList";
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET: /provider/list/all"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";
@@ -606,8 +632,7 @@ public class ProviderController {
 
 	@RequestMapping(value = "/provider/{providerId}/impostazioni/update", method = RequestMethod.POST)
 	public String updateImpostazioniProvider(@PathVariable Long providerId,
-			@ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper,
-			BindingResult result, RedirectAttributes redirectAttrs, Model model) {
+			@ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper, BindingResult result, RedirectAttributes redirectAttrs, Model model) {
 		try {
 			impostazioniProviderValidator.validate(wrapper, result, "");
 			if(result.hasErrors()) {
@@ -623,6 +648,30 @@ public class ProviderController {
 			}
 		}catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/"+providerId+"/impostazioni/update"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/provider/list";
+		}
+	}
+
+//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
+	@RequestMapping(value = "/provider/{providerId}/blocca", method = RequestMethod.POST)
+	public String bloccaProvider(@PathVariable Long providerId, @ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper,
+			BindingResult result, RedirectAttributes redirectAttrs, Model model) {
+		try {
+			impostazioniProviderValidator.validateBloccoProvider(wrapper, result, "");
+			if(result.hasErrors()) {
+				wrapper.setMotivazioneError(true);
+				model.addAttribute("impostazioniProviderWrapper", wrapper);
+				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
+				return "provider/providerList";
+			}
+			else {
+				providerService.bloccaProvider(providerId, wrapper);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.provider_bloccato_success", "success"));
+				return "redirect:/provider/list";
+			}
+		}catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/"+providerId+"/blocca"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/provider/list";
 		}

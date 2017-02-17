@@ -29,10 +29,10 @@ public enum ProviderStatoEnum {
 		// prende tutti gli stati a seconda del flag
 		Set<ProviderStatoEnum> stati = null;
 		if(attivi) {
-			stati = new HashSet<ProviderStatoEnum>(Arrays.asList(INSERITO, VALIDATO, SOSPESO));
+			stati = new HashSet<ProviderStatoEnum>(Arrays.asList(INSERITO, VALIDATO, SOSPESO, ACCREDITATO_PROVVISORIAMENTE, ACCREDITATO_STANDARD));
 		}
 		else {
-			stati = new HashSet<ProviderStatoEnum>(Arrays.asList(ACCREDITATO_PROVVISORIAMENTE, ACCREDITATO_STANDARD, DINIEGO, CANCELLATO));
+			stati = new HashSet<ProviderStatoEnum>(Arrays.asList(DINIEGO, CANCELLATO));
 		}
 		return stati;
 	}

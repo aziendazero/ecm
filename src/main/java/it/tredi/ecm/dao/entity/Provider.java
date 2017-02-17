@@ -279,4 +279,10 @@ public class Provider extends BaseEntity{
 		return false;
 	}
 
+	public boolean isBloccato() {
+		if(status == ProviderStatoEnum.CANCELLATO || status == ProviderStatoEnum.SOSPESO)
+			return true;
+		return false;
+	}
+
 }

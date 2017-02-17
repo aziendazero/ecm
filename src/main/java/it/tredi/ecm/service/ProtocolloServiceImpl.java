@@ -59,6 +59,8 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
+import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
+import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.repository.ProtoBatchLogRepository;
 import it.tredi.ecm.dao.repository.ProtocolloRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
@@ -74,6 +76,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	@Autowired private EngineeringProperties engineeringProperties;
 
 	@Autowired private AccreditamentoService accreditamentoService;
+	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
 
 	@Autowired private WorkflowService workflowService;
@@ -559,9 +562,63 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 							}
 						}
 					}
-					//TODO mettere qui logica del diniego
+					else if(p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.MANCATO_PAGAMENTO_QUOTA || p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD) {
+						LOGGER.info("ProtocolloID: " + p.getId() + " - Blocco del provider: " + p.getAccreditamento().getProvider());
+						Provider provider = p.getAccreditamento().getProvider();
+						bloccaProvider(provider);
+						provider.setStatus(ProviderStatoEnum.CANCELLATO);
+						providerService.save(provider);
+					}
 				}
 			}
 		}
+	}
+
+	private void bloccaProvider(Provider provider) {
+		provider.setCanInsertAccreditamentoProvvisorio(false);
+		provider.setCanInsertAccreditamentoStandard(false);
+		provider.setCanInsertEvento(false);
+		provider.setCanInsertPianoFormativo(false);
+		provider.setCanInsertRelazioneAnnuale(false);
+	}
+
+	@Override
+	@Transactional
+	public void protocollaBloccoProviderInUscita(Long providerId, Long fileId, MotivazioneDecadenzaEnum motivazione) throws Exception {
+		LOGGER.info(Utils.getLogMessage("Richiesta Protocollazione In Uscita per il file " + fileId + " del provider " + providerId));
+
+		Provider provider = providerService.getProvider(providerId);
+		//prende sempre l'ultimo accreditamento del provider a prescindere dallo stato
+		Accreditamento accreditamento = accreditamentoService.getLastAccreditamentoForProviderId(providerId);
+		File file = fileService.getFile(fileId);
+
+		if(file.isProtocollato()){
+			throw new Exception("File già protocollato");
+		}
+
+		Protocollo protocollo = new Protocollo();
+		protocollo.setFile(file);
+		protocollo.setAccreditamento(accreditamento);
+		if(motivazione == MotivazioneDecadenzaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD)
+			protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD);
+		else if(motivazione == MotivazioneDecadenzaEnum.MANCATO_PAGAMENTO_QUOTA_ANNUALE)
+			protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.MANCATO_PAGAMENTO_QUOTA);
+
+		Sede sedeLegale = provider.getSedeLegale();
+		Persona legaleRappresentante = provider.getLegaleRappresentante();
+
+		Destinatario destinatario = new Destinatario();
+		destinatario.setNominativo(provider.getDenominazioneLegale());
+		destinatario.setPEC(legaleRappresentante.getAnagrafica().getPec());
+		destinatario.setTipoVettore(it.rve.protocollo.xsd.richiesta_protocollazione.Vettore.PEC);
+		if(sedeLegale != null){
+			destinatario.setIndirizzo(sedeLegale.getIndirizzo());
+			destinatario.setCap(sedeLegale.getCap());
+			destinatario.setCitta(sedeLegale.getComune());
+		}
+
+		it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
+		destinatari.getDestinatario().add(destinatario);
+		protocollaInUscita(protocollo, destinatari);
 	}
 }

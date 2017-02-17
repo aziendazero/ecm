@@ -69,6 +69,8 @@ public enum FileEnum {
 	FILE_RICHIESTA_ACCREDITAMENTO_STANDARD(53, "Richista di accreditamento standard"),
 	FILE_RELAZIONE_ATTIVITA_FORMATIVA(54, "Relazione sull'attività formativa"),
 
+	FILE_DECADENZA (55, "Documento di decadenza"),
+
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 

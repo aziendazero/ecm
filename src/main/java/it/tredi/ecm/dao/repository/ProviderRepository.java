@@ -53,4 +53,9 @@ public interface ProviderRepository extends CrudRepository<Provider, Long> {
 
 	@Query("SELECT p FROM Provider p WHERE p.status IN :statiAccreditati AND (p.dataScadenzaInsertRelazioneAnnuale is null OR (p.dataScadenzaInsertRelazioneAnnuale <> :defaultDate AND p.dataScadenzaInsertRelazioneAnnuale < :today))")
 	public Set<Provider> findAllProviderToUpdateDataRelazioneAnnuale(@Param("statiAccreditati")Set<ProviderStatoEnum> statiProvider, @Param("defaultDate")LocalDate defaultDate, @Param("today")LocalDate today);
+
+	@Query("SELECT COUNT (p) FROM Provider p WHERE p.canInsertAccreditamentoStandard IS true AND p.dataScadenzaInsertAccreditamentoStandard IS NOT null and p.dataScadenzaInsertAccreditamentoStandard < :now")
+	public int countAllProviderInadempienti(@Param("now") LocalDate now);
+	@Query("SELECT p FROM Provider p WHERE p.canInsertAccreditamentoStandard IS true AND p.dataScadenzaInsertAccreditamentoStandard IS NOT null and p.dataScadenzaInsertAccreditamentoStandard < :now")
+	public Set<Provider> getAllProviderInadempienti(@Param("now") LocalDate now);
 }
