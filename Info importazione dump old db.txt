@@ -23,3 +23,9 @@ comuni
 6) importazione del plain dump del punto 2)
 7) impostazione del hibernate_sequence
 8) esportazione del db ottenuto in formtao common
+
+- Importare dati da file formato sql da pgadmin
+	1) In pgAdmin, select the required target scheme in object tree
+	2) Click on Plugins/PSQL Console
+	3) Write \i /path/to/yourfile.sql (in windows se il file è in C:\database.backup usare \i /database.backup)
+	4) Press enter
