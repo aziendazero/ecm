@@ -30,7 +30,7 @@ public class Helper {
 
 	public static Map<String, String> createEventoDataMapFromEvento(Evento evento) {
 		Map<String, String> dbEventoDataMap = new HashMap<String, String>();
-		dbEventoDataMap.put("cod_evento", Long.toString(evento.getId()));
+		dbEventoDataMap.put("cod_evento", evento.getCodiceIdentificativo());
 		dbEventoDataMap.put("cod_edi", Integer.toString(evento.getEdizione()));
 		dbEventoDataMap.put("cod_org", evento.getProvider().getCodiceCogeaps());
 		dbEventoDataMap.put("cod_accr", CODICE_ENTE_ACCREDITANTE);
