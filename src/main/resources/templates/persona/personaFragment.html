@@ -50,7 +50,7 @@
 							<th:block>
 								<label class="margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1" th:text="${''}"></label>
 								<label class="margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4" for="comitatoScientifico">
-									<span th:text="${'Sostituzione completa'}">Provincia</span>
+									<span th:text="${'Sostituzione completa'}"></span>
 								</label>
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.FullIntegrazione.tipoIntegrazioneEnum}"></div>
@@ -111,7 +111,7 @@
 						<div th:if="(${personaWrapper.persona.coordinatoreComitatoScientifico} or
 									${personaWrapper.persona.componenteComitatoScientifico}) and
 									${!showOnly}"
-							th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.anagrafica.cognome')} ? 'bad'">
+							th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')} ? 'bad'">
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}"></label>
 							<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="coordinatore_persona">
 								<span th:class="${showOnly ? 'label-show' : ''}" th:text="${editabile ? #messages.msg('label.is_coordinatore') : #messages.msg('label.inserito_come_coordinatore')}">Cognome</span>
@@ -130,6 +130,21 @@
 <!-- 									<div class="value" th:text="${personaWrapper.persona.coordinatoreComitatoScientifico ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div> -->
 <!-- 								</div> -->
 <!-- 							</th:block> -->
+							<th:block th:if="${enableField}">
+		                    	<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10">
+			              			<div class="value-edit" th:text="${personaWrapper.persona.coordinatoreComitatoScientifico ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+		                    	</div>
+			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+			                    	<div class="row">
+				                    	<div class="col-xs-1">
+				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore',personaWrapper.ruolo)}" />
+				                    	</div>
+										<div class="col-xs-11">
+											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.coordinatore',personaWrapper.ruolo)}__]}"></textarea>
+										</div>
+									</div>
+								</div>
+							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 			              			<div th:text="${personaWrapper.persona.coordinatoreComitatoScientifico ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
@@ -160,6 +175,8 @@
 		                    </th:block>
 							<div th:if="${#fields.hasErrors('personaWrapper.persona.coordinatoreComitatoScientifico')}" class="alert" th:classappend="${valutabile} ? 'col-xs-12'" th:errors="${personaWrapper.persona.coordinatoreComitatoScientifico}"></div>
 						</div>
+
+						<!-- FULL - sostituzione anagrafica -->
 						<th:block th:if="${enableField and personaWrapper.ruolo != T(it.tredi.ecm.dao.enumlist.Ruolo).COMPONENTE_COMITATO_SCIENTIFICO}">
 							<div class="item form-group">
 								<label class="control-label col-xs-1" th:text="${''}"></label>

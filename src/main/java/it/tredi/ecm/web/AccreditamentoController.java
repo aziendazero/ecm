@@ -769,6 +769,12 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setNoteOsservazioniIntegrazione(accreditamentoWrapper.getAccreditamento().getNoteOsservazioniIntegrazione());
 		accreditamentoWrapper.setNoteOsservazioniPreavvisoRigetto(accreditamentoWrapper.getAccreditamento().getNoteOsservazioniPreavvisoRigetto());
 
+		String componentiComitatoErrorMsg = providerService.controllaComitato(providerService.getProvider(providerId).getComponentiComitatoScientifico());
+		if(componentiComitatoErrorMsg == null)
+			accreditamentoWrapper.setComitatoScientificoStato(true);
+		else accreditamentoWrapper.setComitatoScientificoStato(false);
+		accreditamentoWrapper.setComitatoScientificoErrorMessage(componentiComitatoErrorMsg);
+
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO COMPONENTI: " + numeroComponentiComitatoScientifico));
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONISTI SANITARI: " + numeroProfessionistiSanitarie));
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI DISTINTE: " + elencoProfessioniDeiComponenti.size()));
@@ -852,10 +858,15 @@ public class AccreditamentoController {
 
 				//validazione della valutazioneComplessiva
 				valutazioneValidator.validateValutazioneComplessiva(wrapper.getRefereeGroup(), wrapper.getValutazioneComplessiva(), AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA, result);
+				String[] errori = accreditamentoService.controllaValidazioneIntegrazione(accreditamentoId);
 
 				if(result.hasErrors()){
 					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 					model.addAttribute("confirmErrors", true);
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else if(errori[0] != null || errori[1] != null) {
+					String errorMsg = errori[0] != null ? errori[0] : errori[1];
+					model.addAttribute("message",new Message("message.warning", errorMsg, "warning"));
 					return goToAccreditamentoValidate(model, accreditamento, wrapper);
 				}else {
 					accreditamentoService.assegnaStessoGruppoCrecm(accreditamentoId, wrapper.getValutazioneComplessiva());
@@ -871,10 +882,15 @@ public class AccreditamentoController {
 
 				//validazione della valutazioneComplessiva
 				valutazioneValidator.validateValutazioneComplessivaTeamLeader(wrapper.getValutazioneComplessiva(), result);
+				String[] errori = accreditamentoService.controllaValidazioneIntegrazione(accreditamentoId);
 
 				if(result.hasErrors()){
 					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 					model.addAttribute("confirmErrors", true);
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else if(errori[0] != null || errori[1] != null) {
+					String errorMsg = errori[0] != null ? errori[0] : errori[1];
+					model.addAttribute("message",new Message("message.warning", errorMsg, "warning"));
 					return goToAccreditamentoValidate(model, accreditamento, wrapper);
 				}else {
 					accreditamentoService.assegnaTeamLeader(accreditamentoId, wrapper.getValutazioneComplessiva());
@@ -948,11 +964,16 @@ public class AccreditamentoController {
 			else if(accreditamento.isValutazioneSegreteriaVariazioneDati()) {
 
 				valutazioneValidator.validateValutazioneVariazioneDati(wrapper, result);
+				String[] errori = accreditamentoService.controllaValidazioneIntegrazione(accreditamentoId);
 
 				if(result.hasErrors()){
 					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 					model.addAttribute("confirmErrors", true);
 
+					return goToAccreditamentoValidate(model, accreditamento, wrapper);
+				}else if(errori[0] != null || errori[1] != null) {
+					String errorMsg = errori[0] != null ? errori[0] : errori[1];
+					model.addAttribute("message",new Message("message.warning", errorMsg, "warning"));
 					return goToAccreditamentoValidate(model, accreditamento, wrapper);
 				}else {
 					accreditamentoService.inviaValutazioneVariazioneDati(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getDestinazioneVariazioneDati(), wrapper.getRefereeVariazioneDati());

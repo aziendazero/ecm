@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
@@ -54,5 +55,7 @@ public interface ProviderService {
 	public int countAllProviderInadempienti();
 	public Set<Provider> getAllProviderInadempienti();
 	public void bloccaProvider(Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception;
+	public String controllaComitato(Set<Persona> componentiComitatoScientifico);
+	public String controllaSedi(Set<Sede> sedi);
 
 }

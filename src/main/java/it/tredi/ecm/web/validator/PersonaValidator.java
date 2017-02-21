@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.utils.Utils;
@@ -23,14 +24,13 @@ public class PersonaValidator {
 	@Autowired private FileValidator fileValidator;
 	@Autowired private PersonaService personaService;
 
-	public void validate(Object target, Errors errors, String prefix, Set<File> files, Long providerId) throws Exception{
-		LOGGER.info(Utils.getLogMessage("Validazione Persona"));
-		validatePersona(target, errors, prefix);
+	public void validate(Object target, Errors errors, String prefix, Set<File> files, Long providerId, Boolean flagIntegrazione) throws Exception {
+		validatePersona(target, errors, prefix, flagIntegrazione);
 		validateFiles(files, errors, "", ((Persona)target).getRuolo(), providerId);
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
-	private void validatePersona(Object target, Errors errors, String prefix){
+	private void validatePersona(Object target, Errors errors, String prefix, Boolean flagIntegrazione){
 		Persona persona = (Persona)target;
 		validateBase(persona, errors, prefix);
 
@@ -72,7 +72,9 @@ public class PersonaValidator {
 			if(cfPresente)
 				errors.rejectValue(prefix + "anagrafica.codiceFiscale", "error.componente_presente");
 
-			if(coordinatorePresente && persona.isCoordinatoreComitatoScientifico())
+			if(coordinatorePresente &&
+					persona.isCoordinatoreComitatoScientifico()
+					&& !flagIntegrazione)
 				errors.rejectValue(prefix + "coordinatoreComitatoScientifico", "error.coordinatore_presente");
 		}
 	}

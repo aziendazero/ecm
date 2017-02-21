@@ -22,6 +22,8 @@ import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.PropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -347,8 +349,12 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 			}else{
 				return newValue;
 			}
+		}else{
+			PropertyAccessor myAccessor = PropertyAccessorFactory.forDirectFieldAccess(dst);
+			return myAccessor.getPropertyValue(fieldName);
 		}
-		return null;
+
+		//return null;
 	}
 
 	private boolean isFull(String fieldName){
@@ -386,6 +392,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				m.invoke(dst, f);
 			}
 		}else {
+
 			/****	se è modifica a campi singoli 	****/
 			//se fieldName è composto (campo1.camp2) applico ricorsivamente fino a ricondurmi al caso semplice
 			//individuando l'oggetto campo1 su cui leggere campo2
@@ -401,6 +408,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 			//se fieldName e' una Collection distinguo i 2 casi:
 			//	caso1: collection di BaseEntity -> fieldValue contiene la lista di ID degli oggetti da caricare e assegnare
 			//	caso2: collection di valori semplici -> assegno la Collection
+
 			Method method = getSetterMethodFor(dst.getClass(), fieldName);
 			if(method != null){
 				Class<?> clazz = method.getParameterTypes()[0];
@@ -424,6 +432,9 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				else{
 					method.invoke(dst, fieldValue);
 				}
+			}else{
+				PropertyAccessor myAccessor = PropertyAccessorFactory.forDirectFieldAccess(dst);
+				myAccessor.setPropertyValue(fieldName, fieldValue);
 			}
 		}
 	}

@@ -643,4 +643,37 @@ public class ProviderServiceImpl implements ProviderService {
 
 
 	}
+
+	@Override
+	public String controllaComitato(Set<Persona> componentiComitatoScientifico) {
+		if(componentiComitatoScientifico.size() < 5)
+			return "error.numero_comitato_integrazione";
+		int counterCoordinatori = 0;
+		int counterProfessioniSanitarie = 0;
+		for(Persona p : componentiComitatoScientifico) {
+			if(p.isCoordinatoreComitatoScientifico()) {
+				counterCoordinatori++;
+			}
+			if(p.getProfessione().isSanitaria())
+				counterProfessioniSanitarie++;
+		}
+		if(counterCoordinatori != 1)
+			return "error.numero_coordinatore_integrazione";
+		if(counterProfessioniSanitarie < 5) {
+			return "error.numero_professionisti_sanitari_integrazione";
+		}
+		return null;
+	}
+
+	@Override
+	public String controllaSedi(Set<Sede> sedi) {
+		int counterSediLegali = 0;
+		for(Sede s : sedi) {
+			if(s.isSedeLegale())
+				counterSediLegali++;
+		}
+		if(counterSediLegali != 1)
+			return "error.sede_legale_integrazione";
+		return null;
+	}
 }

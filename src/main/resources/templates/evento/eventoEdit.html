@@ -48,6 +48,7 @@
 									<th th:text="#{label.codice_fiscale}">Codice fiscale</th>
 									<th th:text="#{label.nome}">Nome</th>
 									<th th:text="#{label.cognome}">Cognome</th>
+									<th th:text="#{label.id}" class="hidden">Id</th>
 									<th></th>
 								</tr>
 							</thead>
@@ -1224,23 +1225,56 @@
 			}
 
 			//modale di lookup della persona
+// 			function openLookupPersona(target,type){
+// 				var table = $('#tabella-modale').DataTable();
+// 				table.clear().draw();
+// 				var startUrl = [[@{|/provider/${eventoWrapper.evento.provider.id}/|}]];
+// 				urlGet =  type == 'Full' ? startUrl + "anagraficaFullEventoList" : startUrl + "anagraficaEventoList";
+
+// 				$.get( urlGet, function(data){
+// 					for(var item = 0; item < data.length; item++){
+// 						var obj = data[item];
+// 						table.row.add([
+// 							obj.anagrafica.codiceFiscale,
+// 							obj.anagrafica.nome,
+// 							obj.anagrafica.cognome,
+// 							'<a class="btn btn-primary btn-lookup" onclick="setLookupAnagraficaEvento(\''+ target + '\',\'' + type + '\',' + obj.id + ')">'+[[#{label.seleziona}]]+'</a>'
+// 						]).draw(false);
+// 					}
+// 				});
+// 			}
+
 			function openLookupPersona(target,type){
-				var table = $('#tabella-modale').DataTable();
-				table.clear().draw();
 				var startUrl = [[@{|/provider/${eventoWrapper.evento.provider.id}/|}]];
-				urlGet =  type == 'Full' ? startUrl + "anagraficaFullEventoList" : startUrl + "anagraficaEventoList";
-				$.get( urlGet, function(data){
-					for(var item = 0; item < data.length; item++){
-						var obj = data[item];
-						table.row.add([
-							obj.anagrafica.codiceFiscale,
-							obj.anagrafica.nome,
-							obj.anagrafica.cognome,
-							'<a class="btn btn-primary btn-lookup" onclick="setLookupAnagraficaEvento(\''+ target + '\',\'' + type + '\',' + obj.id + ')">'+[[#{label.seleziona}]]+'</a>'
-						]).draw(false);
-					}
+				urlGet =  type == 'Full' ? startUrl + 'anagraficaFullEventoList' : startUrl + 'anagraficaEventoList';
+				$('#tabella-modale').DataTable().destroy();
+				$('#tabella-modale').DataTable({
+					bInfo: false,
+					bPaginate: false,
+					scrollY: 300,
+					bScrollCollapse: true,
+				    scroller: true,
+				    ajax: {
+				        url: urlGet,
+				        dataSrc: ''
+				    },
+				    columns: [
+				    	{data: 'anagrafica.codiceFiscale'},
+				    	{data: 'anagrafica.nome'},
+				    	{data: 'anagrafica.cognome'},
+				    	{data: 'id'},
+				    	{render: function (data, type, full, meta) {
+				                     return '<button onclick="setLookupAnagraficaEvento(\''+ target + '\',\'' + type + '\',' + full.id + ')" class="btn btn-primary">'+[[#{label.seleziona}]]+'</button>';
+		                 		}
+				    	}
+				    ],
+				    columnDefs: [
+				    	{targets: 3, sClass: "hidden", visible: false},
+				    	{targets: 4, orderable: false, width: "1%", sClass: "center"}
+				    ],
 				});
 			}
+
 
 			//chiusura modale lookup persona
 			function closeModaleLookupPersona(){

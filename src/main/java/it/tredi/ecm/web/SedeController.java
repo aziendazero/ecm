@@ -256,13 +256,14 @@ public class SedeController {
 			Model model, @PathVariable Long providerId, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/save"));
 		try{
-			sedeValidator.validate(sedeWrapper.getSede(), providerService.getProvider(providerId), result, "sede.");
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			boolean flagIntegrazione = (accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) ? true : false;
+			sedeValidator.validate(sedeWrapper.getSede(), providerService.getProvider(providerId), result, "sede.", flagIntegrazione);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 				if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {
 					integra(sedeWrapper, false);
 				}else{

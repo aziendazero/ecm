@@ -113,4 +113,6 @@ public interface AccreditamentoService{
 	public void inviaValutazioneVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception;
 	public void conclusioneProcedimento(Accreditamento accreditamento, CurrentUser currentUser) throws Exception;
 	public Accreditamento getLastAccreditamentoForProviderId(Long providerId);
+
+	public String[] controllaValidazioneIntegrazione(Long accreditamentoId) throws Exception;
 }

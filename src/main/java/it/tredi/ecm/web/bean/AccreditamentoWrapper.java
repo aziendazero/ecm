@@ -286,7 +286,7 @@ public class AccreditamentoWrapper {
 			responsabileSistemaInformaticoStato = (responsabileSistemaInformatico != null && !responsabileSistemaInformatico.isNew()) ? true : false;
 			responsabileQualitaStato = (responsabileQualita != null && !responsabileQualita.isNew()) ? true : false;
 
-			checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe);
+//			checkComitatoScientifico_fromDB(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe);
 			setFilesStato(filesDelProvider);
 
 			sezione1Stato = (providerStato && sedeLegaleStato && legaleRappresentanteStato && tipologiaFormativaStato && datiEconomiciStato && datiStrutturaStato) ? true : false;
@@ -703,6 +703,8 @@ public class AccreditamentoWrapper {
 					canValidateSede = true;
 				else {
 					canValidateSede = ((mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__FULL) && mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__FULL).isEnabled()) ||
+						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__IS_LEGALE) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__IS_LEGALE).isEnabled() ||
+						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__IS_OPERATIVA) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__IS_OPERATIVA).isEnabled() ||
 						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__PROVINCIA) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__PROVINCIA).isEnabled() ||
 						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__COMUNE) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__COMUNE).isEnabled() ||
 						!mappaSedi.get(s.getId()).containsKey(IdFieldEnum.SEDE__INDIRIZZO) || mappaSedi.get(s.getId()).get(IdFieldEnum.SEDE__INDIRIZZO).isEnabled() ||
@@ -719,6 +721,8 @@ public class AccreditamentoWrapper {
 					canValidateSede = true;
 				else {
 					canValidateSede = ((mappaSedeLegale.containsKey(IdFieldEnum.SEDE__PROVINCIA) && mappaSedeLegale.get(IdFieldEnum.SEDE__PROVINCIA).isEnabled()) ||
+						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__IS_LEGALE) || mappaSedeLegale.get(IdFieldEnum.SEDE__IS_LEGALE).isEnabled() ||
+						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__IS_OPERATIVA) || mappaSedeLegale.get(IdFieldEnum.SEDE__IS_OPERATIVA).isEnabled() ||
 						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__PROVINCIA) || mappaSedeLegale.get(IdFieldEnum.SEDE__PROVINCIA).isEnabled() ||
 						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__COMUNE) || mappaSedeLegale.get(IdFieldEnum.SEDE__COMUNE).isEnabled() ||
 						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__INDIRIZZO) || mappaSedeLegale.get(IdFieldEnum.SEDE__INDIRIZZO).isEnabled() ||
@@ -760,13 +764,13 @@ public class AccreditamentoWrapper {
 	 * [D] Se settato "Settoriale" -> Almeno 2 professioni analoghe a quelle selezionate (almeno che non sia stata selezionate solo 1 professione)
 	 * [D-bis] Se Selezionata solo 1 professione -> deve conicidere con quella e UNICA dei componenti del comitato scientifico
 	 * */
-	public void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitari, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe){
+	private void checkComitatoScientifico_fromDB(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitari, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe){
 		comitatoScientificoStato = true;
 
 //		int professioniDeiComponenti = elencoProfessioniDeiComponenti.size();
 
 		//[A]
-		if(numeroComponentiComitatoScientifico < 4 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
+		if(numeroComponentiComitatoScientifico < 5 || (coordinatoreComitatoScientifico == null || coordinatoreComitatoScientifico.isNew())){
 			comitatoScientificoStato = false;
 			comitatoScientificoErrorMessage = "error.numero_minimo_comitato";
 		}//[B]

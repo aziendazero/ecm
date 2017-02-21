@@ -64,11 +64,11 @@ import it.tredi.ecm.service.PersonaService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
-@WithUserDetails("admin")
+@ActiveProfiles("tom")
+@WithUserDetails("segreteria1")
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING) // ordina i test in base al nome crescente
 @Rollback(false)
-@Ignore
+//@Ignore
 public class FieldIntegrazioneTest {
 
 	@Autowired
@@ -81,7 +81,7 @@ public class FieldIntegrazioneTest {
 	@Autowired private FieldIntegrazioneAccreditamentoRepository repoIntegrazione;
 	@Autowired private ProfessioneRepository professioneRepository;
 	@Autowired private AnagraficaRepository anagraficaRepository;
-	
+
 	@Autowired private IntegrazioneService integrazioneService;
 
 	@Autowired
@@ -145,7 +145,7 @@ public class FieldIntegrazioneTest {
 	public void applyFieldIntegrazioneProvider() throws Exception{
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = repoIntegrazione.findAllByAccreditamentoId(304L);
 		Provider provider = new Provider();
-		
+
 		integrazioneService.applyIntegrazioneObject(provider, fieldIntegrazioneList);
 
 		print(provider, null);
@@ -180,7 +180,7 @@ public class FieldIntegrazioneTest {
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = repoIntegrazione.findAllByAccreditamentoId(416L);
 		//DatiAccreditamento dati = datiAccreditamentoService.getDatiAccreditamento(396L);
 		DatiAccreditamento dati = datiAccreditamentoService.getDatiAccreditamento(118L);
-		
+
 		integrazioneService.applyIntegrazioneObject(dati, fieldIntegrazioneList);
 
 		datiAccreditamentoService.save(dati, dati.getAccreditamento().getId());
@@ -212,23 +212,24 @@ public class FieldIntegrazioneTest {
 	public void applyFieldPersona() throws Exception{
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = repoIntegrazione.findAllByAccreditamentoId(416L);
 		Persona persona = personaService.getPersona(534L);
-		
+
 		integrazioneService.applyIntegrazioneObject(persona, fieldIntegrazioneList);
 
 		print(persona, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE.getNameRef());
 
 		personaService.save(persona);
 	}
-	
+
+	@Ignore
 	@Test
 	public void test(){
 		Anagrafica a = anagraficaRepository.findOne(585L);
 		a.setCognome("Stronzo");
-		
+
 		Persona p = personaService.getPersona(699L);
 		p.setRuolo(Ruolo.RICHIEDENTE);
 		p.setAnagrafica(a);
-		
+
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(416L);
 		FieldIntegrazioneAccreditamento d = new FieldIntegrazioneAccreditamento(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__ATTO_NOMINA, accreditamento, null, TipoIntegrazioneEnum.MODIFICA);
 		repoIntegrazione.save(d);
@@ -242,7 +243,14 @@ public class FieldIntegrazioneTest {
 				System.out.println(pd.getName() + ": " + pd.getReadMethod().invoke(obj));
 		}
 	}
-	
+
+	@Ignore
+	@Test
+	public void queryProva() throws Exception {
+		Long accreditamentoId = 1228L;
+		accreditamentoService.controllaValidazioneIntegrazione(accreditamentoId);
+	}
+
 
 //	private Class getFirstGenericParameterTypesOfFirstParameter(Method method) throws Exception{
 //		Type[] genericParameterTypes = method.getGenericParameterTypes();
@@ -267,5 +275,5 @@ public class FieldIntegrazioneTest {
 //
 //		return null;
 //	}
-	
+
 }

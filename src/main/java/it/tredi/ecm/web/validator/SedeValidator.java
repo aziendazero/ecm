@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
 
@@ -17,12 +18,14 @@ public class SedeValidator {
 
 	@Autowired private ProviderService providerService;
 
-	public void validate(Object target, Object providerTarget, Errors errors, String prefix){
+	public void validate(Object target, Object providerTarget, Errors errors, String prefix, Boolean flagIntegrazione){
 		LOGGER.info(Utils.getLogMessage("Validazione Sede"));
 		Sede sede = (Sede)target;
 		Provider provider = (Provider)providerTarget;
 
-		if(sede.isSedeLegale() && providerService.hasAlreadySedeLegaleProvider(provider, sede))
+		if(sede.isSedeLegale()
+				&& providerService.hasAlreadySedeLegaleProvider(provider, sede)
+				&& !flagIntegrazione)
 			errors.rejectValue(prefix + "sedeLegale", "error.sede_legale_gia_inserita");
 		if(sede.getProvincia() == null || sede.getProvincia().isEmpty())
 			errors.rejectValue(prefix + "provincia", "error.empty");

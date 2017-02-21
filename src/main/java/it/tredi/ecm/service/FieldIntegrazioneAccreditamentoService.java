@@ -17,4 +17,6 @@ public interface FieldIntegrazioneAccreditamentoService {
 	public Set<Long> getAllObjectIdByTipoIntegrazione(Long accreditamentoId, TipoIntegrazioneEnum tipo);
 	public Set<FieldIntegrazioneAccreditamento> getModifiedFieldIntegrazioneForAccreditamento(Long accreditamentoId);
 	public void removeAllFieldIntegrazioneForAccreditamento(Long accreditamentoId);
+
+	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneApprovedBySegreteria(Long accreditamentoId);
 }

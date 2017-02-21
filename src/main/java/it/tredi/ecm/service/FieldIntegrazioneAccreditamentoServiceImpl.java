@@ -80,4 +80,9 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 		LOGGER.debug(Utils.getLogMessage("Rimozione oggetti integrazione per accreditamento " + accreditamentoId));
 		fieldIntegrazioneAccreditamentoRepository.deleteAllByAccreditamentoId(accreditamentoId);
 	}
+	@Override
+	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneApprovedBySegreteria(Long accreditamentoId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero tutti i field integrazione approvati dalla segreteria dell'accreditamento: " + accreditamentoId));
+		return fieldIntegrazioneAccreditamentoRepository.findAllApprovedBySegreteria(accreditamentoId);
+	}
 }

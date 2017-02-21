@@ -321,8 +321,8 @@ public class PersonaController {
 				LOGGER.debug(Utils.getLogMessage("MANAGED ENTITY: PersonaSave:__AFTER SET__"));
 				integrazioneService.isManaged(personaWrapper.getPersona());
 			}
-
-			personaValidator.validate(personaWrapper.getPersona(), result, "persona.", personaWrapper.getFiles(), providerId);
+			boolean flagIntegrazione = (accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) ? true : false;
+			personaValidator.validate(personaWrapper.getPersona(), result, "persona.", personaWrapper.getFiles(), providerId, flagIntegrazione);
 
 			try{
 				if(result.hasErrors()){

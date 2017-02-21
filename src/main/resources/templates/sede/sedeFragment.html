@@ -119,7 +119,7 @@
 							</th:block>
 							<th:block th:if="${valutabile}">
 		                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-			              			<div th:text="${sedeWrapper.sede.sedeOperativa ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
+			              			<div th:text="${sedeWrapper.sede.sedeLegale ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
 			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]?.modificatoInIntegrazione == false and
 			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 		                    	</div>
@@ -151,7 +151,7 @@
 						<div th:if="${valutabile or enableField}" class="divider"></div>
 
 						<!-- RADIO FLAG SEDEOPERATIVA -->
-						<div th:if="${!showOnly}" id="operativaRadioContainer" th:classappend="${(sedeWrapper.sede.sedeLegale == false and !enableField) ? 'hidden' : ''}">
+						<div th:if="${!showOnly}" id="operativaRadioContainer" th:classappend="${!enableField and !valutabile ? 'hidden' : ''}">
 							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('sedeWrapper.sede.sedeOperativa')} ? 'bad'">
 								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'control-label col-xs-1'}"></label>
 								<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'control-label col-md-3 col-sm-3 col-xs-11'}" for="provincia_sede">
@@ -192,7 +192,7 @@
 								</th:block>
 								<th:block th:if="${valutabile}">
 			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
-				              			<div th:text="${sedeWrapper.sede.sedeOperativa ? #messages.msg('label.sì') : #messages.msg('label.No')}"></div>
+				              			<div th:text="${sedeWrapper.sede.sedeOperativa ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
 				              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]?.modificatoInIntegrazione == false and
 				              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
 			                    	</div>

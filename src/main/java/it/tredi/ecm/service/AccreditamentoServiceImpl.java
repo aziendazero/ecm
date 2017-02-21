@@ -28,8 +28,10 @@ import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
@@ -39,8 +41,10 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
@@ -92,6 +96,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private ValutazioneCommissioneRepository valutazioneCommissioneRepository;
 	@Autowired private SedutaService sedutaService;
+
+	@Autowired private PersonaService personaService;
+	@Autowired private SedeService sedeService;
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -482,6 +489,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	public void approvaIntegrazione(Long accreditamentoId) throws Exception{
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Set<FieldValutazioneAccreditamento> fieldValutazioniSegreteria = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoBySegreteriaNotStoricizzato(accreditamentoId);
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
@@ -581,7 +589,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Riassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
 		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-
+//
+//		if(!controllaValidazioneIntegrazione(accreditamentoId)) {
+//			return;
+//		}
 		approvaIntegrazione(accreditamentoId);
 
 		//disabilito tutti i filedValutazioneAccreditamento
@@ -1954,4 +1965,77 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamentoRepository.findFirstByProviderIdOrderByDataScadenzaDesc(providerId);
 	}
 
+	/* Metodo che applica l'integrazione (ma non salva le modifiche) in modo in cui sia possibile fare un controllo sullo stato del DB
+	 * a fine della valutazione della segreteria (ovvero subito prima di applicare le modifiche)
+	 * Restituisce un array di String dove il primo elemento riguarda gli errori sul comitato e il secondo sulle sedi
+	 */
+	@Override
+	public String[] controllaValidazioneIntegrazione(Long accreditamentoId) throws Exception {
+		String erroreMsgComitato = null;
+		String erroreMsgSedi = null;
+
+		Provider provider = providerService.getProvider(getProviderIdForAccreditamento(accreditamentoId));
+		/* Verifichiamo che non vengano approvate modifiche al comitato scientifico che violino i vincoli della domanda */
+		Set<Persona> componentiComitato = provider.getComponentiComitatoScientifico();
+		/* e verifichiamo che non vengano approvate modifiche alle sedi che violino i vincoli della domanda */
+		Set<Sede> sedi = provider.getSedi();
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneApprovedBySegreteria(accreditamentoId);
+		if(fieldIntegrazione == null || fieldIntegrazione.isEmpty()) {
+			erroreMsgComitato = null;
+			erroreMsgSedi = null;
+		}
+		else {
+			Set<FieldIntegrazioneAccreditamento> fieldComponente = null;
+			Iterator<Persona> personaIter = componentiComitato.iterator();
+			while(personaIter.hasNext()) {
+				Persona p = personaIter.next();
+				fieldComponente = Utils.getSubset(fieldIntegrazione, p.getId(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO);
+				if(fieldComponente != null && !fieldComponente.isEmpty()) {
+					integrazioneService.applyIntegrazioneObject(p, fieldComponente);
+					fieldIntegrazione.removeAll(fieldComponente);
+				}
+				fieldComponente = Utils.getSubset(fieldIntegrazione, p.getId(), SubSetFieldEnum.FULL);
+				if(fieldComponente != null && !fieldComponente.isEmpty()) {
+					if(fieldComponente.iterator().next().getTipoIntegrazioneEnum() == TipoIntegrazioneEnum.ELIMINAZIONE) {
+						personaIter.remove();
+						fieldIntegrazione.removeAll(fieldComponente);
+					}
+				}
+			}
+			IdFieldEnum comitatoFull = Utils.getFullFromRuolo(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
+			for(FieldIntegrazioneAccreditamento fia : fieldIntegrazione) {
+				if(fia.getIdField() == comitatoFull) {
+					componentiComitato.add(personaService.getPersona(fia.getObjectReference()));
+				}
+			}
+			erroreMsgComitato = providerService.controllaComitato(componentiComitato);
+
+			Set<FieldIntegrazioneAccreditamento> fieldSede = null;
+			Iterator<Sede> sedeIter = sedi.iterator();
+			while(sedeIter.hasNext()) {
+				Sede s = sedeIter.next();
+				fieldSede = Utils.getSubset(fieldIntegrazione, s.getId(), SubSetFieldEnum.SEDE);
+				if(fieldSede != null && !fieldSede.isEmpty()) {
+					integrazioneService.applyIntegrazioneObject(s, fieldSede);
+					fieldIntegrazione.removeAll(fieldSede);
+				}
+				fieldSede = Utils.getSubset(fieldIntegrazione, s.getId(), SubSetFieldEnum.FULL);
+				if(fieldSede != null && !fieldSede.isEmpty()) {
+					if(fieldSede.iterator().next().getTipoIntegrazioneEnum() == TipoIntegrazioneEnum.ELIMINAZIONE) {
+						sedeIter.remove();
+						fieldIntegrazione.removeAll(fieldSede);
+					}
+				}
+			}
+			IdFieldEnum sedeFull = IdFieldEnum.SEDE__FULL;
+			for(FieldIntegrazioneAccreditamento fia : fieldIntegrazione) {
+				if(fia.getIdField() == sedeFull) {
+					sedi.add(sedeService.getSede(fia.getObjectReference()));
+				}
+			}
+			erroreMsgSedi = providerService.controllaSedi(sedi);
+
+		}
+		return new String[] {erroreMsgComitato, erroreMsgSedi};
+	}
 }
