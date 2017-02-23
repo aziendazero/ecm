@@ -31,13 +31,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.ColumnDefault;
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.ShallowReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
-
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
@@ -133,8 +132,10 @@ public class Evento extends BaseEntity{
 	@Column(name="anno_piano_formativo")
 	private Integer pianoFormativo;
 
+	@DiffIgnore
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;
+	@DiffIgnore
 	@ManyToOne @JoinColumn(name = "accreditamento_id")
 	private Accreditamento accreditamento;
 
@@ -157,6 +158,7 @@ public class Evento extends BaseEntity{
 	/**	Fine sezione in comune con EventoPianoFormativo	**/
 
 	/**	Inizio sezione Eventi	**/
+	@DiffIgnore
 	@OneToOne
 	private Evento eventoPadre;//valorizzato solo se è una riedizione di un evento
 	public boolean isRiedizione(){
@@ -193,8 +195,10 @@ public class Evento extends BaseEntity{
 	private Boolean pagInCorso = false;
 
 	/**	Utilizzati per invio Cogeaps	**/
+	@ShallowReference
 	@OneToOne
 	private File reportPartecipantiXML;
+	@ShallowReference
 	@OneToOne
 	private File reportPartecipantiCSV;
 
@@ -250,15 +254,18 @@ public class Evento extends BaseEntity{
 	@Column(name = "data_scadenza_pagamento")//data scadenza pagamento
 	private LocalDate dataScadenzaPagamento;
 
+	@DiffIgnore
 	@Column(name = "data_ultima_modifica")//data ultima_modifica
 	private LocalDateTime dataUltimaModifica;
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="responsabile_id")
+	@OrderBy("id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
 
 	protected Integer numeroPartecipanti;
 
+	@ShallowReference
 	@OneToOne
 	private File brochureEvento;
 
@@ -269,7 +276,7 @@ public class Evento extends BaseEntity{
 
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="responsabile_segreteria_id")
-	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();
+	private PersonaFullEvento responsabileSegreteria;
 
 	@NumberFormat(pattern = "0.00")
 	private BigDecimal quotaPartecipazione;
@@ -283,14 +290,18 @@ public class Evento extends BaseEntity{
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();
 
 	private Boolean eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia;
+	@ShallowReference
 	@OneToOne
 	private File autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia;
+	@ShallowReference
 	@OneToOne
 	private File autocertificazioneAutorizzazioneMinisteroSalute;
 
 	private Boolean altreFormeFinanziamento;
+	@ShallowReference
 	@OneToOne
 	private File autocertificazioneAssenzaFinanziamenti;
+	@ShallowReference
 	@OneToOne
 	private File contrattiAccordiConvenzioni;
 
@@ -299,6 +310,7 @@ public class Evento extends BaseEntity{
 	@JoinColumn(name="evento_id")
 	private Set<Partner> partners = new HashSet<Partner>();
 
+	@ShallowReference
 	@OneToOne
 	private File dichiarazioneAssenzaConflittoInteresse;
 

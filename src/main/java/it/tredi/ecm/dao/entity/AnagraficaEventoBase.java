@@ -5,8 +5,8 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToOne;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.javers.core.metamodel.annotation.ShallowReference;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +25,7 @@ public class AnagraficaEventoBase implements Serializable{
 	@JsonIgnore
 	private Boolean straniero = false;
 	@JsonIgnore
+	@ShallowReference
 	@OneToOne(cascade=CascadeType.REMOVE)
 	private File cv;
 
