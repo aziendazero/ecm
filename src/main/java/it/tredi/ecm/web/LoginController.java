@@ -111,7 +111,8 @@ public class LoginController {
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);
-					wrapper.setDomandeDaValutareNotDone(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId(), true));
+					wrapper.setDomandeDaValutareNotDone(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId(), true)
+							+ accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER, null, Utils.getAuthenticatedUser().getAccount().getId(), true));
 					wrapper.setDomandeNonValutateConsecutivamente(accountService.getUserById(currentUser.getAccount().getId()).getValutazioniNonDate());
 					break;
 				case COMMISSIONE:

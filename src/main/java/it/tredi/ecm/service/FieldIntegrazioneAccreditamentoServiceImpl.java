@@ -1,5 +1,7 @@
 package it.tredi.ecm.service;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -11,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneHistoryContainer;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
+import it.tredi.ecm.dao.repository.FieldIntegrazioneHistoryContainerRepository;
 import it.tredi.ecm.utils.Utils;
 
 @Service
@@ -21,17 +26,31 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	private static final Logger LOGGER = LoggerFactory.getLogger(FieldIntegrazioneAccreditamentoServiceImpl.class);
 
 	@Autowired private FieldIntegrazioneAccreditamentoRepository fieldIntegrazioneAccreditamentoRepository;
+	@Autowired private FieldIntegrazioneHistoryContainerRepository fieldIntegrazioneHistoryContainerRepository;
+	@Autowired private AccreditamentoService accreditamentoService;
 
 	@Override
-	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneForAccreditamento(Long accreditamentoId) {
+	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneForAccreditamentoByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di FieldIntegrazioneAccreditamento per Domanda Accreditamento: " + accreditamentoId));
-		return fieldIntegrazioneAccreditamentoRepository.findAllByAccreditamentoId(accreditamentoId);
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, workFlowProcessInstanceId, stato);
+		if(container != null)
+			return container.getIntegrazioni();
+		else return null;
 	}
 	@Override
-	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneForAccreditamentoAndObject(Long accreditamentoId,
-			Long objectReference) {
+	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneForAccreditamentoAndObjectByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, Long objectReference) {
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di FieldIntegrazioneAccreditamento per Domanda Accreditamento: " + accreditamentoId + " riferiti all'oggetto: " + objectReference));
-		return fieldIntegrazioneAccreditamentoRepository.findAllByAccreditamentoIdAndObjectReference(accreditamentoId, objectReference);
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, workFlowProcessInstanceId, stato);
+		if(container != null) {
+			Set<FieldIntegrazioneAccreditamento> allFieldIntegrazioneList = container.getIntegrazioni();
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new HashSet<FieldIntegrazioneAccreditamento>();
+			for(FieldIntegrazioneAccreditamento fia : allFieldIntegrazioneList) {
+				if(fia.getObjectReference() == objectReference)
+					fieldIntegrazioneList.add(fia);
+			}
+			return fieldIntegrazioneList;
+		}
+		else return null;
 	}
 
 	@Override
@@ -59,30 +78,98 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 
 	@Override
 	@Transactional
-	public void update(Set<FieldIntegrazioneAccreditamento> toRemove, List<FieldIntegrazioneAccreditamento> toInsert) {
+	public void update(Set<FieldIntegrazioneAccreditamento> toRemove, List<FieldIntegrazioneAccreditamento> toInsert, Long accreditamentoId, Long processInstanceId, AccreditamentoStatoEnum stato) {
+		LOGGER.debug(Utils.getLogMessage("Recupero container history field Integrazione dell'accreditamento " + accreditamentoId + ", nello stato "+ stato + " agganciato al flusso" + processInstanceId + " per l'aggiornamento dei field integrazione"));
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, processInstanceId, stato);
+		container.getIntegrazioni().removeAll(toRemove);
 		delete(toRemove);
 		save(toInsert);
+		container.getIntegrazioni().addAll(toInsert);
+		saveContainer(container);
 	}
 
 	@Override
-	public Set<Long> getAllObjectIdByTipoIntegrazione(Long accreditamentoId, TipoIntegrazioneEnum tipo) {
+	public Set<Long> getAllObjectIdByTipoIntegrazione(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, TipoIntegrazioneEnum tipo) {
 		LOGGER.debug(Utils.getLogMessage("Recupero oggetti integrazione di tipo " + tipo + " per accreditamento " + accreditamentoId));
-		return fieldIntegrazioneAccreditamentoRepository.findAllByAccreditamentoIdAndTipoIntegrazioneEnum(accreditamentoId,tipo);
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, workFlowProcessInstanceId, stato);
+		if(container != null) {
+			Set<FieldIntegrazioneAccreditamento> allFieldIntegrazioneList = container.getIntegrazioni();
+			Set<Long> objectIdList = new HashSet<Long>();
+			for(FieldIntegrazioneAccreditamento fia : allFieldIntegrazioneList) {
+				if(fia.getTipoIntegrazioneEnum() == tipo)
+					objectIdList.add(fia.getObjectReference());
+			}
+			return objectIdList;
+		}
+		else return null;
 	}
 
 	@Override
-	public Set<FieldIntegrazioneAccreditamento> getModifiedFieldIntegrazioneForAccreditamento(Long accreditamentoId) {
+	public Set<FieldIntegrazioneAccreditamento> getModifiedFieldIntegrazioneForAccreditamento(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero oggetti integrazione modificati per accreditamento " + accreditamentoId));
-		return fieldIntegrazioneAccreditamentoRepository.findAllByAccreditamentoIdAndModificato(accreditamentoId, true);
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, workFlowProcessInstanceId, stato);
+		if(container != null) {
+			Set<FieldIntegrazioneAccreditamento> allFieldIntegrazioneList = container.getIntegrazioni();
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new HashSet<FieldIntegrazioneAccreditamento>();
+			for(FieldIntegrazioneAccreditamento fia : allFieldIntegrazioneList) {
+				if(fia.isModificato())
+					fieldIntegrazioneList.add(fia);
+			}
+			return fieldIntegrazioneList;
+		}
+		else return null;
 	}
+	//2017-02-24 tiommi: non serve più viene settato flag nel container history come già applicati
+//	@Override
+//	public void removeAllFieldIntegrazioneForAccreditamento(Long accreditamentoId) {
+//		LOGGER.debug(Utils.getLogMessage("Rimozione oggetti integrazione per accreditamento " + accreditamentoId));
+//		fieldIntegrazioneAccreditamentoRepository.deleteAllByAccreditamentoId(accreditamentoId);
+//	}
+
 	@Override
-	public void removeAllFieldIntegrazioneForAccreditamento(Long accreditamentoId) {
-		LOGGER.debug(Utils.getLogMessage("Rimozione oggetti integrazione per accreditamento " + accreditamentoId));
-		fieldIntegrazioneAccreditamentoRepository.deleteAllByAccreditamentoId(accreditamentoId);
-	}
-	@Override
-	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneApprovedBySegreteria(Long accreditamentoId) {
+	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneApprovedBySegreteria(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti i field integrazione approvati dalla segreteria dell'accreditamento: " + accreditamentoId));
-		return fieldIntegrazioneAccreditamentoRepository.findAllApprovedBySegreteria(accreditamentoId);
+		return fieldIntegrazioneAccreditamentoRepository.findAllApprovedBySegreteria(accreditamentoId, stato.getNome(), workFlowProcessInstanceId);
+	}
+
+	@Override
+	public void createFieldIntegrazioneHistoryContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId) {
+		LOGGER.debug(Utils.getLogMessage("Creo il container per il Field Integrazione per l'accreditamento " + accreditamentoId + " in " + stato + " del workflow: " + processInstanceId));
+		FieldIntegrazioneHistoryContainer container = new FieldIntegrazioneHistoryContainer(accreditamentoId, stato, processInstanceId);
+		fieldIntegrazioneHistoryContainerRepository.save(container);
+	}
+
+	@Override
+	public void saveContainer(FieldIntegrazioneHistoryContainer container) {
+		LOGGER.debug(Utils.getLogMessage("Salvataggio container per il Field Integrazione"));
+		fieldIntegrazioneHistoryContainerRepository.save(container);
+	}
+
+	@Override
+	public void applyIntegrazioneInContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId) {
+		LOGGER.debug(Utils.getLogMessage("Segno il container dei Field Integrazione come applicato"));
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, processInstanceId, stato);
+		container.setApplicato(true);
+		saveContainer(container);
+	}
+
+	@Override
+	public void removeFieldIntegrazioneByObjectReferenceAndContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, Long objectId) {
+		LOGGER.debug(Utils.getLogMessage("Eliminazione dei Field Integrazione dal container relativo all'accreditamento " + accreditamentoId + " in stato " + stato + " relativi all'oggetto " + objectId));
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, workFlowProcessInstanceId, stato);
+		Iterator<FieldIntegrazioneAccreditamento> iterator = container.getIntegrazioni().iterator();
+		while(iterator.hasNext()) {
+			FieldIntegrazioneAccreditamento fia = iterator.next();
+			if(fia.getObjectReference() == objectId) {
+				iterator.remove();
+				delete(fia);
+			}
+		}
+	}
+
+	@Override
+	public void delete(FieldIntegrazioneAccreditamento fia) {
+		LOGGER.debug(Utils.getLogMessage("Eliminazione FieldIntegrazioneAccreditamento: " + fia.getId()));
+		fieldIntegrazioneAccreditamentoRepository.delete(fia);
 	}
 }

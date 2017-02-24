@@ -33,6 +33,7 @@ import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
@@ -331,8 +332,8 @@ public class AccreditamentoAllegatiController {
 	@Transactional
 	private void integra(AccreditamentoAllegatiWrapper wrapper) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Integrazione allegati accreditamento"));
-		Accreditamento accreditamento = new Accreditamento();
-		accreditamento.setId(wrapper.getAccreditamentoId());
+		Accreditamento accreditamento = wrapper.getAccreditamento();
+		WorkflowInfo workflowInCorso = accreditamento.getWorkflowInCorso();
 
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(IdFieldEnum idField : wrapper.getIdEditabili()){
@@ -344,7 +345,11 @@ public class AccreditamentoAllegatiController {
 			}
 		}
 
-		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);
+		AccreditamentoStatoEnum stato = null;
+		if(accreditamento.isVariazioneDati())
+			stato = accreditamento.getStatoVariazioneDati();
+		else stato = accreditamento.getStato();
+		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList, accreditamento.getId(), workflowInCorso.getProcessInstanceId(), stato);
 	}
 
 	/***	 SAVE VALUTAZIONE ALLEGATI ACCREDITAMENTO
@@ -454,7 +459,9 @@ public class AccreditamentoAllegatiController {
 		wrapper.setAccreditamento(accreditamento);
 
 		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()){
-			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
+			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+			AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+			prepareApplyIntegrazione(wrapper, subset, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
 
 		//set dei files sul wrapper, per allinearmi nel caso ci fossero dei fieldIntegrazione relativi a files
@@ -468,8 +475,9 @@ public class AccreditamentoAllegatiController {
 		return wrapper;
 	}
 
-	private void prepareApplyIntegrazione(AccreditamentoAllegatiWrapper wrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
-		wrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(wrapper.getAccreditamentoId()), subset));
+	private void prepareApplyIntegrazione(AccreditamentoAllegatiWrapper wrapper, SubSetFieldEnum subset, boolean reloadByEditId,
+			Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) throws Exception{
+		wrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId), subset));
 		wrapper.getDatiAccreditamento().getFiles().size();
 		integrazioneService.detach(wrapper.getDatiAccreditamento());
 		//se stiamo ricaricando il wrapper per andare in save...non ha senso riapplicare le integrazioni
@@ -490,6 +498,8 @@ public class AccreditamentoAllegatiController {
 		wrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+		AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
 		wrapper.setDatiAccreditamento(accreditamento.getDatiAccreditamento());
 
 		//carico la valutazione per l'utente
@@ -512,7 +522,8 @@ public class AccreditamentoAllegatiController {
 		wrapper.setMappa(mappa);
 
 		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
-			prepareApplyIntegrazione(wrapper, subset, reloadByEditId);
+			stato = accreditamento.getStatoUltimaIntegrazione();
+			prepareApplyIntegrazione(wrapper, subset, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
 
 		wrapper.setFiles(wrapper.getDatiAccreditamento().getFiles());

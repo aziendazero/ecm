@@ -15,9 +15,9 @@ import it.tredi.ecm.dao.enumlist.Ruolo;
 public interface PersonaRepository extends CrudRepository<Persona, Long> {
 	public Persona findOneByRuoloAndProviderId(Ruolo ruolo, Long providerId);
 	public Persona findOneByRuoloAndAnagraficaIdAndProviderId(Ruolo ruolo, Long anagraficaId, Long providerId);
-	public Persona findOneByRuoloAndCoordinatoreComitatoScientificoAndProviderId(Ruolo ruolo, boolean coordinatoreComitatoScientifico, Long providerId);
+	public Persona findOneByRuoloAndCoordinatoreComitatoScientificoAndProviderIdAndDirtyFalse(Ruolo ruolo, boolean b, Long providerId);
 	public Set<Persona> findAllByRuoloAndProviderId(Ruolo ruolo, Long providerId);
-	
+
 	public int countByRuoloAndProviderId(Ruolo ruolo, Long providerId);
 	public int countByRuoloAndProviderIdAndProfessioneSanitaria(Ruolo ruolo, Long providerId, boolean sanitaria);
 	@Query("select count(distinct p.professione) from Persona p where p.ruolo = :ruolo and p.provider.id = :providerId")
@@ -26,7 +26,7 @@ public interface PersonaRepository extends CrudRepository<Persona, Long> {
 	public int countDistinctProfessioneByRuoloAndProviderIdInProfessioniSelezionate(@Param("ruolo")Ruolo ruolo, @Param("providerId") Long providerId,@Param("professioniSelezionate") Set<Professione> professioniSelezionate);
 	@Query("select distinct p.professione from Persona p where p.ruolo = :ruolo and p.provider.id = :providerId")
 	public Set<Professione> findDistinctProfessioneByRuoloAndProviderId(@Param("ruolo")Ruolo ruolo, @Param("providerId")Long providerId);
-	
+
 	//TODO @EntityGraph al momento non funziona...sarebbe utile investigare per capire perchè
 	@EntityGraph(value = "graph.persona.files", type = EntityGraphType.FETCH)
 	@Override

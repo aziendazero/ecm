@@ -68,4 +68,6 @@
 
 	<include file="20170217_001_fileDecadenza.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170223_001_aggiunta_entity_history_accreditamento.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

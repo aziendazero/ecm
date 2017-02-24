@@ -491,8 +491,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void approvaIntegrazione(Long accreditamentoId) throws Exception{
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+		//NB sono in valutazione
+		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
+
 		Set<FieldValutazioneAccreditamento> fieldValutazioniSegreteria = fieldValutazioneAccreditamentoService.getAllFieldValutazioneForAccreditamentoBySegreteriaNotStoricizzato(accreditamentoId);
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId);
 
 		Set<FieldIntegrazioneAccreditamento> approved = new HashSet<FieldIntegrazioneAccreditamento>();
 		Set<FieldIntegrazioneAccreditamento> notApproved = new HashSet<FieldIntegrazioneAccreditamento>();
@@ -549,7 +553,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		integrazioneService.applyIntegrazioneAccreditamentoAndSave(accreditamentoId, approved);
 		integrazioneService.cancelObjectNotApproved(accreditamentoId, notApproved);
 
-		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazione);
+		fieldIntegrazioneAccreditamentoService.applyIntegrazioneInContainer(accreditamentoId, stato, workFlowProcessInstanceId);
 
 	}
 
@@ -589,10 +593,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Riassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
 		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-//
-//		if(!controllaValidazioneIntegrazione(accreditamentoId)) {
-//			return;
-//		}
+
 		approvaIntegrazione(accreditamentoId);
 
 		//disabilito tutti i filedValutazioneAccreditamento
@@ -702,9 +703,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		accreditamentoRepository.save(accreditamento);
 
-		//rimuovo tutti i fieldIntegrazione
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
-		fieldIntegrazioneAccreditamentoService.delete(fieldIntegrazioneList);
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+		AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+
+		//setto il container dei field integrazione ad applicati
+		fieldIntegrazioneAccreditamentoService.applyIntegrazioneInContainer(accreditamentoId, stato, workFlowProcessInstanceId);
 
 		if(accreditamento.isProvvisorio())
 			workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, true, null);
@@ -754,14 +757,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Integrazione della domanda " + accreditamentoId + " inviata alla segreteria per essere valutata"));
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+		AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
 
 		//controllo quali campi sono stati modificati e quali confermati
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId);
 		integrazioneService.checkIfFieldIntegrazioniConfirmedForAccreditamento(accreditamentoId, fieldIntegrazioneList);
 		fieldIntegrazioneAccreditamentoService.saveSet(fieldIntegrazioneList);
 
 		//per i campi modificati...elimino i field integrazione su tutte le valutazioni presenti
-		Set<FieldIntegrazioneAccreditamento> fieldModificati = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId);
+		Set<FieldIntegrazioneAccreditamento> fieldModificati = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId, stato, workFlowProcessInstanceId);
 
 		//se ci sono state delle modifiche ri-abilito la valutazione cancellando la data
 		if(fieldModificati != null && !fieldModificati.isEmpty()){
@@ -779,6 +784,26 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//setto il flag per vedere se ci sono state modifiche di integrazione nei field valutazioni, elimino la vecchia valutazione e li riabilito
 		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+		sbloccaValutazioniByFieldIntegrazioneList(valutazioni, fieldIntegrazioneList);
+
+		//TODO non spacca niente???
+		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
+
+		if(accreditamento.isIntegrazione()){
+			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), false, accreditamento.getProvider());
+			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
+		}
+		else if(accreditamento.isPreavvisoRigetto()){
+			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), true, accreditamento.getProvider());
+			workflowService.eseguiTaskPreavvisoRigettoForCurrentUser(accreditamento);
+		}
+		else if(accreditamento.isModificaDati()){
+			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
+		}
+	}
+
+	//metodo che gestisce l'abilitazione dei fieldValutazione a seconda dei fieldIntegrazione
+	private void sbloccaValutazioniByFieldIntegrazioneList(Set<Valutazione> valutazioni, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) {
 		for(Valutazione valutazione : valutazioni){
 			Set<FieldValutazioneAccreditamento> fieldValutazioni = valutazione.getValutazioni();
 			for(FieldIntegrazioneAccreditamento fieldIntegrazione : fieldIntegrazioneList){
@@ -830,21 +855,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 			valutazione.setValutazioni(fieldValutazioni);
 			valutazioneService.save(valutazione);
-		}
-
-		//TODO non spacca niente???
-		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
-
-		if(accreditamento.isIntegrazione()){
-			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), false, accreditamento.getProvider());
-			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
-		}
-		else if(accreditamento.isPreavvisoRigetto()){
-			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), true, accreditamento.getProvider());
-			workflowService.eseguiTaskPreavvisoRigettoForCurrentUser(accreditamento);
-		}
-		else if(accreditamento.isModificaDati()){
-			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
 		}
 	}
 
@@ -1222,7 +1232,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			//disabilitato per consentire ad ogni utente segreteria di fare "presa visione"
 //			Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountId(accreditamentoId, currentUser.getAccount().getId());
 //			if(valutazione != null && valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM && valutazione.getDataValutazione() != null){
-			Set<FieldIntegrazioneAccreditamento> fields = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId);
+			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+			AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
+			Set<FieldIntegrazioneAccreditamento> fields = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId, stato, workFlowProcessInstanceId);
 			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
 			if(task == null){
 				return false;
@@ -1455,6 +1467,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//controllo se ho gia la valutazione per lutente corrente
 				Valutazione valutazioneTL = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, accountTeamLeader.getId());
 
+				//valutazione creata per la prima volta (valutazione integrazione)
 				if(valutazioneTL == null) {
 					//Ricavo la valutazione della segreteria perche' contiene i field editabili
 					Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
@@ -1469,8 +1482,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					valutazioneTL.setAccreditamento(accreditamento);
 					valutazioneTL.setTipoValutazione(ValutazioneTipoEnum.TEAM_LEADER);
 				}
+				//mi trovo in valutazione del preavviso di rigetto
+				else {
+					valutazioneTL.setDataValutazione(null);
+				}
 
-				//rimuovo i field editabili per quelli isEnabled=true
+				//rimuovo i field valutazione per quelli isEnabled=true
 				Iterator<FieldValutazioneAccreditamento> iterator = valutazioneTL.getValutazioni().iterator();
 				while (iterator.hasNext()) {
 					FieldValutazioneAccreditamento fval = iterator.next();
@@ -1546,6 +1563,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.setStato(stato);
 		}
 
+		//indipendentemente dal tipo di workflow se vado in uno stato di integrazione creo il relativo container
+		if(stato == AccreditamentoStatoEnum.INTEGRAZIONE || stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
+			fieldIntegrazioneAccreditamentoService.createFieldIntegrazioneHistoryContainer(accreditamentoId, stato, workflowInCorso.getProcessInstanceId());
+		}
 
 		//salvo history
 		if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI)
@@ -1578,7 +1599,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//cancellazione dei field integrazione ed editabili
 		else if(accreditamento.isModificaDati() || accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto()) {
 			fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamento.getId());
-			fieldIntegrazioneAccreditamentoService.removeAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
+//			fieldIntegrazioneAccreditamentoService.removeAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
 		}
 		//in ogni caso chiudo le valutazioni esistenti come storicizzate e stato cancellato
 		Set<Valutazione> valutazioniAttive = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamento.getId());
@@ -1945,7 +1966,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	private Map<IdFieldEnum, Long> getIdEnumDaEditare(Long accreditamentoId) {
 		Map<IdFieldEnum, Long> campiDaValutare = new HashMap<IdFieldEnum, Long>();
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamentoId);
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessDefinitionId();
+		AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId);
 		for(FieldIntegrazioneAccreditamento fia : fieldIntegrazione) {
 			campiDaValutare.put(fia.getIdField(), fia.getObjectReference());
 		}
@@ -1975,11 +2000,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		String erroreMsgSedi = null;
 
 		Provider provider = providerService.getProvider(getProviderIdForAccreditamento(accreditamentoId));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+		//NB sono in valutazione
+		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
 		/* Verifichiamo che non vengano approvate modifiche al comitato scientifico che violino i vincoli della domanda */
 		Set<Persona> componentiComitato = provider.getComponentiComitatoScientifico();
 		/* e verifichiamo che non vengano approvate modifiche alle sedi che violino i vincoli della domanda */
 		Set<Sede> sedi = provider.getSedi();
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneApprovedBySegreteria(accreditamentoId);
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneApprovedBySegreteria(accreditamentoId, stato, workFlowProcessInstanceId);
 		if(fieldIntegrazione == null || fieldIntegrazione.isEmpty()) {
 			erroreMsgComitato = null;
 			erroreMsgSedi = null;

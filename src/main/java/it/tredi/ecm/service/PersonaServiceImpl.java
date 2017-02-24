@@ -50,7 +50,7 @@ public class PersonaServiceImpl implements PersonaService {
 	@Override
 	public Persona getCoordinatoreComitatoScientifico(Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Persona (" + Ruolo.COMPONENTE_COMITATO_SCIENTIFICO.name() + ") del provider (" + providerId + ")"));
-		Persona persona = personaRepository.findOneByRuoloAndCoordinatoreComitatoScientificoAndProviderId(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, true, providerId);
+		Persona persona = personaRepository.findOneByRuoloAndCoordinatoreComitatoScientificoAndProviderIdAndDirtyFalse(Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, true, providerId);
 		log(persona);
 		return persona;
 	}

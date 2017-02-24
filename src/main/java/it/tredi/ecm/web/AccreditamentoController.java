@@ -13,8 +13,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -319,7 +322,7 @@ public class AccreditamentoController {
 		model.addAttribute("accreditamentoWrapper", accreditamentoWrapper);
 		if(accreditamentoWrapper.isCanAssegnaNuovoGruppo()) {
 			//inserisce una lista di referee che non contiene quelli già assegnati alla domanda
-			Set<Account> refereeList = accountService.getUserByProfileEnum(ProfileEnum.REFEREE);
+			Set<Account> refereeList = accountService.getRefereeForValutazione();
 			Set<Account> oldRefereeList = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamento.getId());
 			refereeList.removeAll(oldRefereeList);
 			//rimuove dalla lista di tutti i referee selezionabili quelli che erano stati precedentemente incaricati di valutare la domanda
@@ -348,6 +351,12 @@ public class AccreditamentoController {
 
 	//passo il wrapper che contiene solo la valutazione complessiva e la lista dei referee selezionati
 	private String goToAccreditamentoValidate(Model model, Accreditamento accreditamento, AccreditamentoWrapper wrapper) throws Exception{
+
+		//refresho il Provider dal DB in caso di valutazione dell'integrazione per non visualizzare il Provider pre-integrato per la valutazione dei vincoli di accreditamento
+		if(accreditamento.isValutazioneSegreteriaVariazioneDati() || accreditamento.isValutazioneSegreteria()) {
+			integrazioneService.reloadObject(accreditamento.getProvider());
+		}
+
 		//check se ci sono errori di validazione per settare opportunamente il wrapper
 		Boolean hasErrors = false;
 		if(model.asMap().get("confirmErrors") != null)
@@ -565,7 +574,7 @@ public class AccreditamentoController {
 
 		//la segreteria ha sempre tutti gli id edit sbloccati, a meno che non sia in stato integrazione o preavviso di rigetto
 		if (Utils.getAuthenticatedUser().getAccount().isSegreteria()
-				&& !accreditamento.isIntegrazione() && !accreditamento.isPreavvisoRigetto()) {
+				&& !accreditamento.isIntegrazione() && !accreditamento.isPreavvisoRigetto() && !accreditamento.isModificaDati()) {
 			accreditamentoWrapper.setCanSegreteriaEdit(true);
 		}
 		else accreditamentoWrapper.setCanSegreteriaEdit(false);
@@ -606,7 +615,7 @@ public class AccreditamentoController {
 		//gestione modifica verbale valutazione sul campo
 		if(accreditamento.isValutazioneSulCampo() && accreditamento.isStandard() && user.isSegreteria()) {
 			//set scelta select
-			accreditamentoWrapper.setComponentiCRECM(accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
+			accreditamentoWrapper.setComponentiCRECM(accountService.getRefereeForValutazione());
 			accreditamentoWrapper.setOsservatoriRegionali(accountService.getUserByProfileEnum(ProfileEnum.COMPONENTE_OSSERVATORIO));
 			accreditamentoWrapper.setComponentiSegreteria(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 			accreditamentoWrapper.setReferentiInformatici(accountService.getUserByProfileEnum(ProfileEnum.REFERENTE_INFORMATICO));
@@ -677,8 +686,8 @@ public class AccreditamentoController {
 		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaComponenti = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
 		Map<Long, Boolean> componentiComitatoScientificoStati = new HashMap<Long, Boolean>();
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappaCoordinatore = new HashMap<IdFieldEnum, FieldValutazioneAccreditamento>();
-		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
-		Map<Long, Boolean> eventiStati = new HashMap<Long, Boolean>();
+//		Map<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>> mappaEventi = new HashMap<Long, Map<IdFieldEnum, FieldValutazioneAccreditamento>>();
+//		Map<Long, Boolean> eventiStati = new HashMap<Long, Boolean>();
 
 		//aggiungo le sedi
 		for(Sede s : accreditamentoWrapper.getSedi()) {
@@ -686,8 +695,10 @@ public class AccreditamentoController {
 			sediStati.put(s.getId(), false);
 		}
 		//aggiungo anche la sede legale
-		Long sedeLegaleId = accreditamentoWrapper.getSedeLegale().getId();
-		mappaSedeLegale = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), sedeLegaleId);
+		if(accreditamentoWrapper.getSedeLegale() != null){
+			Long sedeLegaleId = accreditamentoWrapper.getSedeLegale().getId();
+			mappaSedeLegale = fieldValutazioneAccreditamentoService.filterFieldValutazioneByObjectAsMap(valutazione.getValutazioni(), sedeLegaleId);
+		}
 
 		//aggiungo i componenti del comitato scientifico
 		for(Persona p : accreditamentoWrapper.getComponentiComitatoScientifico()) {
@@ -720,7 +731,7 @@ public class AccreditamentoController {
 		//gestione valutazione sul campo / preparazione verbale valutazione sul campo
 		if(accreditamento.isValutazioneSulCampo() || (accreditamento.isValutazioneSegreteriaAssegnamento() && accreditamento.isStandard())) {
 			//set scelta select
-			accreditamentoWrapper.setComponentiCRECM(accountService.getUserByProfileEnum(ProfileEnum.REFEREE));
+			accreditamentoWrapper.setComponentiCRECM(accountService.getRefereeForValutazione());
 			accreditamentoWrapper.setOsservatoriRegionali(accountService.getUserByProfileEnum(ProfileEnum.COMPONENTE_OSSERVATORIO));
 			accreditamentoWrapper.setComponentiSegreteria(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
 			accreditamentoWrapper.setReferentiInformatici(accountService.getUserByProfileEnum(ProfileEnum.REFERENTE_INFORMATICO));
@@ -781,8 +792,11 @@ public class AccreditamentoController {
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
 
 		Accreditamento accreditamento = accreditamentoWrapper.getAccreditamento();
-		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati())
-			accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode, fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId()));
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()) {
+			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+			AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
+			accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode, fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamento.getId(), stato, workFlowProcessInstanceId));
+		}
 		else accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode, null);
 
 	}
@@ -799,9 +813,17 @@ public class AccreditamentoController {
 			if(p.isDirty())
 				accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
 		}
+		Accreditamento accreditamento = accreditamentoWrapper.getAccreditamento();
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+		AccreditamentoStatoEnum stato;
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
+			stato = accreditamento.getStatoUltimaIntegrazione();
+		}
+		else
+			stato = accreditamento.getCurrentStato();
 
-		accreditamentoWrapper.setAggiunti(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.CREAZIONE));
-		accreditamentoWrapper.setEliminati(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamentoWrapper.getAccreditamento().getId(), TipoIntegrazioneEnum.ELIMINAZIONE));
+		accreditamentoWrapper.setAggiunti(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamento.getId(), stato, workFlowProcessInstanceId, TipoIntegrazioneEnum.CREAZIONE));
+		accreditamentoWrapper.setEliminati(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamento.getId(), stato, workFlowProcessInstanceId, TipoIntegrazioneEnum.ELIMINAZIONE));
 	}
 
 	//PARTE RELATIVA ALLA VALUTAZIONE
@@ -843,7 +865,6 @@ public class AccreditamentoController {
 				if(result.hasErrors()){
 					model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 					model.addAttribute("confirmErrors", true);
-
 					return goToAccreditamentoValidate(model, accreditamento, wrapper);
 				}else {
 					accreditamentoService.inviaValutazioneDomanda(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getRefereeGroup(), null);

@@ -3,6 +3,7 @@ package it.tredi.ecm.service;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 
@@ -56,5 +57,7 @@ public interface IntegrazioneService {
 	 * Aggiorna i fieldIntegrazioneAccreditamento settando il flag
 	 * */
 	public void checkIfFieldIntegrazioniConfirmedForAccreditamento(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni);
+
+	public void reloadObject(Object obj);
 
 }

@@ -32,6 +32,7 @@ import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -288,11 +289,22 @@ public class SedeController {
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/sede/" + sedeId + "/delete"));
 		try{
-			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(accreditamentoId);
-			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
-				integra(new SedeWrapper(sedeService.getSede(sedeId), accreditamentoId), true);
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			Sede sede = sedeService.getSede(sedeId);
+			//passa per l'integrazione solo se la sede NON è stata inserita in fase di integrazione e non ancora approvata (dirty = true)
+			if((accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati())){
+				if(sede.isDirty()) {
+					//rimozione sede multi-istanza dalla Domanda di Accreditamento e relativi IdEditabili e fieldIntegrazione
+					sedeService.delete(sedeId);
+					fieldEditabileAccreditamentoService.removeFieldEditabileForAccreditamento(accreditamentoId, sedeId, SubSetFieldEnum.SEDE);
+					Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+					AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+					fieldIntegrazioneAccreditamentoService.removeFieldIntegrazioneByObjectReferenceAndContainer(accreditamentoId, stato, workFlowProcessInstanceId, sede.getId());
+				}
+				else
+					integra(new SedeWrapper(sedeService.getSede(sedeId), accreditamentoId), true);
 			}else{
-				//rimozione sede multi-istanza dalla Domanda di Accreditamento e relativi IdEditabili
+				//rimozione sede multi-istanza dalla Domanda di Accreditamento e relativi IdEditabili e fieldIntegrazione
 				sedeService.delete(sedeId);
 				fieldEditabileAccreditamentoService.removeFieldEditabileForAccreditamento(accreditamentoId, sedeId, SubSetFieldEnum.SEDE);
 			}
@@ -426,27 +438,29 @@ public class SedeController {
 		}
 
 		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()){
-			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId);
+			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+			AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
 
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperEdit(" + sede.getId() + "," + accreditamentoId + "," + providerId +") - exiting"));
 		return sedeWrapper;
 	}
 
-	private void prepareApplyIntegrazione(SedeWrapper sedeWrapper, SubSetFieldEnum subset, boolean reloadByEditIt) throws Exception{
-		//prendo tutte le integrazioni fatte dal provider
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(sedeWrapper.getAccreditamentoId(), sedeWrapper.getSede().getId());
-		//filtro per quelle del subset sede
-		sedeWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
-
-		//vedo se e' presente il filed FULL e setto la info nel wrapper
-		sedeWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.SEDE__FULL));
-
+	private void prepareApplyIntegrazione(SedeWrapper sedeWrapper, SubSetFieldEnum subset, boolean reloadByEditIt,
+			Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) throws Exception{
 		integrazioneService.detach(sedeWrapper.getSede());
 		//nuova sede
 		if(sedeWrapper.getSede() == null || sedeWrapper.getSede().getId() == null){
 			sedeWrapper.getIdEditabili().addAll(IdFieldEnum.getAllForSubset(subset));
 		}else{
+			//prendo tutte le integrazioni fatte dal provider
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObjectByContainer(accreditamentoId, stato, workFlowProcessInstanceId, sedeWrapper.getSede().getId());
+			//filtro per quelle del subset sede
+			sedeWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
+
+			//vedo se e' presente il filed FULL e setto la info nel wrapper
+			sedeWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.SEDE__FULL));
 			//modifica
 			if(!reloadByEditIt)
 				integrazioneService.applyIntegrazioneObject(sedeWrapper.getSede(), sedeWrapper.getFieldIntegrazione());
@@ -469,6 +483,8 @@ public class SedeController {
 		SubSetFieldEnum subset = SubSetFieldEnum.SEDE;
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+		AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
 		SedeWrapper sedeWrapper = new SedeWrapper();
 
 		//carico la valutazione per l'utente
@@ -497,7 +513,8 @@ public class SedeController {
 		sedeWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
 
 		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
-			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId);
+			stato = accreditamento.getStatoUltimaIntegrazione();
+			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
 
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperValidate(" + sede.getId() + "," + accreditamentoId + "," + providerId +") - exiting"));
@@ -530,8 +547,8 @@ public class SedeController {
 
 	private void integra(SedeWrapper wrapper, boolean eliminazione) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Integrazione sede"));
-		Accreditamento accreditamento = new Accreditamento();
-		accreditamento.setId(wrapper.getAccreditamentoId());
+		Accreditamento accreditamento = wrapper.getAccreditamento() != null ? wrapper.getAccreditamento() : accreditamentoService.getAccreditamento(wrapper.getAccreditamentoId());
+		WorkflowInfo workflowInCorso = accreditamento.getWorkflowInCorso();
 
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 		IdFieldEnum idFieldFull = IdFieldEnum.SEDE__FULL;
@@ -556,6 +573,10 @@ public class SedeController {
 			fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idFieldFull, accreditamento, wrapper.getSede().getId(), wrapper.getSede().getId(), TipoIntegrazioneEnum.ELIMINAZIONE));
 		}
 
-		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);
+		AccreditamentoStatoEnum stato = null;
+		if(accreditamento.isVariazioneDati())
+			stato = accreditamento.getStatoVariazioneDati();
+		else stato = accreditamento.getStato();
+		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList, accreditamento.getId(), workflowInCorso.getProcessInstanceId(), stato);
 	}
 }

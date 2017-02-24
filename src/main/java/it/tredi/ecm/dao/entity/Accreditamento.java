@@ -394,6 +394,20 @@ public class Accreditamento extends BaseEntity{
 		return getStato();
 	}
 
+	public AccreditamentoStatoEnum getCurrentStato() {
+		if(this.isVariazioneDati()) {
+			return this.getStatoVariazioneDati();
+		}
+		else return this.getStato();
+	}
+
+	public AccreditamentoStatoEnum getStatoUltimaIntegrazione() {
+		if(this.getDataPreavvisoRigettoFine() == null || this.isVariazioneDati())
+			return AccreditamentoStatoEnum.INTEGRAZIONE;
+		else
+			return AccreditamentoStatoEnum.PREAVVISO_RIGETTO;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

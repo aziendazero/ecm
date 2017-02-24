@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.hibernate.cfg.beanvalidation.GroupsPerOperation;
 import org.hibernate.collection.internal.PersistentSet;
@@ -311,6 +312,7 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				if(f.getTipo() == FileEnum.valueOf(fieldName.substring(6)))
 					return f.getId();
 			}
+			return null;
 		}
 
 		//se fieldName è composto (campo1.camp2) applico ricorsivamente fino a ricondurmi al caso semplice
@@ -701,11 +703,12 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 
 	private void checkIfFieldIntegraizoniConfirmed(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList){
 		for(FieldIntegrazioneAccreditamento field : fieldIntegrazioneList){
-			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE){
+			if(field.getTipoIntegrazioneEnum() == TipoIntegrazioneEnum.MODIFICA){
 				try{
 					if(field.getIdField().getGruppo().isEmpty()){
 						if(field.getNewValue().equals(getField(dst, field.getIdField().getNameRef()))){
 							field.setModificato(false);
+
 							LOGGER.info(Utils.getLogMessage(field.getIdField() + " CONFERMATO"));
 						}else{
 							field.setModificato(true);
@@ -720,5 +723,11 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 				LOGGER.info(Utils.getLogMessage(field.getIdField() + " AGGIORNATO"));
 			}
 		}
+	}
+
+	@Transactional
+	@Override
+	public void reloadObject(Object obj) {
+		entityManager.refresh(obj);
 	}
 }

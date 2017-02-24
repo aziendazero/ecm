@@ -36,6 +36,7 @@ import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -493,18 +494,21 @@ public class ProviderController {
 		providerWrapper.setAccreditamento(accreditamento);
 
 		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) {
-			prepareApplyIntegrazione(providerWrapper, SubSetFieldEnum.PROVIDER, reloadByEditId);
+			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+			AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+			prepareApplyIntegrazione(providerWrapper, SubSetFieldEnum.PROVIDER, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
 
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperEdit("+ provider.getId() + "," + accreditamentoId +") - exiting"));
 		return providerWrapper;
 	}
 
-	private void prepareApplyIntegrazione(ProviderWrapper providerWrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
+	private void prepareApplyIntegrazione(ProviderWrapper providerWrapper, SubSetFieldEnum subset, boolean reloadByEditId,
+			Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) throws Exception{
 		//providerWrapper.getProvider().getFiles().size();
 		providerWrapper.getProvider().getComponentiComitatoScientifico().size();
 		integrazioneService.detach(providerWrapper.getProvider());
-		providerWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(providerWrapper.getAccreditamentoId()), SubSetFieldEnum.PROVIDER));
+		providerWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId), SubSetFieldEnum.PROVIDER));
 		if(!reloadByEditId)
 			integrazioneService.applyIntegrazioneObject(providerWrapper.getProvider(), providerWrapper.getFieldIntegrazione());
 	}
@@ -519,15 +523,19 @@ public class ProviderController {
 	@Transactional
 	private void integra(ProviderWrapper wrapper) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Integrazione provider"));
-		Accreditamento accreditamento = new Accreditamento();
-		accreditamento.setId(wrapper.getAccreditamentoId());
+		Accreditamento accreditamento = wrapper.getAccreditamento();
+		WorkflowInfo workflowInCorso = accreditamento.getWorkflowInCorso();
 
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 		for(IdFieldEnum idField : wrapper.getIdEditabili()){
 			fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idField, accreditamento, integrazioneService.getField(wrapper.getProvider(), idField.getNameRef()), TipoIntegrazioneEnum.MODIFICA));
 		}
 
-		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList);
+		AccreditamentoStatoEnum stato = null;
+		if(accreditamento.isVariazioneDati())
+			stato = accreditamento.getStatoVariazioneDati();
+		else stato = accreditamento.getStato();
+		fieldIntegrazioneAccreditamentoService.update(wrapper.getFieldIntegrazione(), fieldIntegrazioneList, accreditamento.getId(), workflowInCorso.getProcessInstanceId(), stato);
 	}
 
 	@Transactional
@@ -551,6 +559,8 @@ public class ProviderController {
 		SubSetFieldEnum subset = SubSetFieldEnum.PROVIDER;
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+		AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
 		ProviderWrapper providerWrapper = new ProviderWrapper(provider, accreditamentoId);
 		providerWrapper.setStatoAccreditamento(statoAccreditamento);
 		providerWrapper.setWrapperMode(AccreditamentoWrapperModeEnum.VALIDATE);
@@ -573,7 +583,8 @@ public class ProviderController {
 
 		//solo se la valutazione è della segretaeria dopo l'INTEGRAZIONE
 		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
-			prepareApplyIntegrazione(providerWrapper, subset, reloadByEditId);
+			stato = accreditamento.getStatoUltimaIntegrazione();
+			prepareApplyIntegrazione(providerWrapper, subset, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
 
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperValidate("+ provider.getId() + "," + accreditamentoId +") - exiting"));

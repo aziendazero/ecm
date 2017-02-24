@@ -720,7 +720,7 @@ public class AccreditamentoWrapper {
 				if(!sedeLegaleStato)
 					canValidateSede = true;
 				else {
-					canValidateSede = ((mappaSedeLegale.containsKey(IdFieldEnum.SEDE__PROVINCIA) && mappaSedeLegale.get(IdFieldEnum.SEDE__PROVINCIA).isEnabled()) ||
+					canValidateSede = ((mappaSedeLegale.containsKey(IdFieldEnum.SEDE__FULL) && mappaSedeLegale.get(IdFieldEnum.SEDE__FULL).isEnabled()) ||
 						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__IS_LEGALE) || mappaSedeLegale.get(IdFieldEnum.SEDE__IS_LEGALE).isEnabled() ||
 						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__IS_OPERATIVA) || mappaSedeLegale.get(IdFieldEnum.SEDE__IS_OPERATIVA).isEnabled() ||
 						!mappaSedeLegale.containsKey(IdFieldEnum.SEDE__PROVINCIA) || mappaSedeLegale.get(IdFieldEnum.SEDE__PROVINCIA).isEnabled() ||

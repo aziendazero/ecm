@@ -40,6 +40,7 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
@@ -443,10 +444,19 @@ public class PersonaController {
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + personaId + "/delete"));
 		try{
-			AccreditamentoStatoEnum statoAccreditamento = accreditamentoService.getStatoAccreditamento(accreditamentoId);
-			if(statoAccreditamento == AccreditamentoStatoEnum.INTEGRAZIONE){
-				Persona persona = personaService.getPersona(personaId);
-				integraPersona(new PersonaWrapper(persona, persona.getRuolo(), accreditamentoId, providerId, AccreditamentoWrapperModeEnum.EDIT), true);
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			Persona persona = personaService.getPersona(personaId);
+			if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()){
+				if(persona.isDirty()) {
+					//rimozione persona multi-istanza dalla Domanda di Accreditamento e relativi IdEditabili
+					personaService.delete(personaId);
+					fieldEditabileAccreditamentoService.removeFieldEditabileForAccreditamento(accreditamentoId, personaId, SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO);
+					Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+					AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+					fieldIntegrazioneAccreditamentoService.removeFieldIntegrazioneByObjectReferenceAndContainer(accreditamentoId, stato, workFlowProcessInstanceId, persona.getId());
+				}
+				else
+					integraPersona(new PersonaWrapper(persona, persona.getRuolo(), accreditamentoId, providerId, AccreditamentoWrapperModeEnum.EDIT), true);
 			}else{
 				//rimozione persona multi-istanza dalla Domanda di Accreditamento e relativi IdEditabili
 				personaService.delete(personaId);
@@ -576,8 +586,10 @@ public class PersonaController {
 			}
 		}
 
-		if(accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()){
-			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId);
+		if((accreditamento.isIntegrazione() || accreditamento.isPreavvisoRigetto() || accreditamento.isModificaDati()) && persona != null && !persona.isNew()){
+			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+			AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
 
 		//set dei files sul wrapper, per allinearmi nel caso ci fossero dei fieldIntegrazione relativi a files
@@ -592,14 +604,15 @@ public class PersonaController {
 		return personaWrapper;
 	}
 
-	private void prepareApplyIntegrazione(PersonaWrapper personaWrapper, SubSetFieldEnum subset, boolean reloadByEditId) throws Exception{
+	private void prepareApplyIntegrazione(PersonaWrapper personaWrapper, SubSetFieldEnum subset, boolean reloadByEditId,
+			Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) throws Exception{
 		if(personaWrapper.getPersona().isComponenteComitatoScientifico()){
-			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObject(personaWrapper.getAccreditamentoId(), personaWrapper.getPersona().getId());
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObjectByContainer(accreditamentoId, stato, workFlowProcessInstanceId, personaWrapper.getPersona().getId());
 			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
 			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL));
 		}
 		else{
-			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(personaWrapper.getAccreditamentoId());
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId);
 			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
 			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, Utils.getFullFromRuolo(personaWrapper.getPersona().getRuolo())));
 		}
@@ -648,6 +661,8 @@ public class PersonaController {
 		SubSetFieldEnum subset = Utils.getSubsetFromRuolo(persona.getRuolo());
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+		AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
 		PersonaWrapper personaWrapper = new PersonaWrapper(persona, persona.getRuolo(), accreditamentoId, providerId, AccreditamentoWrapperModeEnum.VALIDATE);
 		personaWrapper.setStatoAccreditamento(statoAccreditamento);
 		personaWrapper.setIdEditabili(IdFieldEnum.getAllForSubset(subset));
@@ -676,7 +691,8 @@ public class PersonaController {
 
 		//solo se la valutazione è della segreteria dopo l'INTEGRAZIONE
 		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
-			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId);
+			stato = accreditamento.getStatoUltimaIntegrazione();
+			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
 
 		personaWrapper.setFiles(persona.getFiles());
@@ -756,8 +772,8 @@ public class PersonaController {
 	@Transactional
 	private void integraPersona(PersonaWrapper personaWrapper, boolean eliminazione) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Integrazione persona"));
-		Accreditamento accreditamento = new Accreditamento();
-		accreditamento.setId(personaWrapper.getAccreditamentoId());
+		Accreditamento accreditamento = personaWrapper.getAccreditamento() != null ? personaWrapper.getAccreditamento() : accreditamentoService.getAccreditamento(personaWrapper.getAccreditamentoId());
+		WorkflowInfo workflowInCorso = accreditamento.getWorkflowInCorso();
 
 		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new ArrayList<FieldIntegrazioneAccreditamento>();
 		IdFieldEnum idFieldFull = Utils.getFullFromRuolo(personaWrapper.getPersona().getRuolo());
@@ -813,7 +829,11 @@ public class PersonaController {
 			fieldIntegrazioneList.add(new FieldIntegrazioneAccreditamento(idFieldFull, accreditamento, personaWrapper.getPersona().getId(), personaWrapper.getPersona().getId(), TipoIntegrazioneEnum.ELIMINAZIONE));
 		}
 
-		fieldIntegrazioneAccreditamentoService.update(personaWrapper.getFieldIntegrazione(), fieldIntegrazioneList);
+		AccreditamentoStatoEnum stato = null;
+		if(accreditamento.isVariazioneDati())
+			stato = accreditamento.getStatoVariazioneDati();
+		else stato = accreditamento.getStato();
+		fieldIntegrazioneAccreditamentoService.update(personaWrapper.getFieldIntegrazione(), fieldIntegrazioneList, accreditamento.getId(), workflowInCorso.getProcessInstanceId(), stato);
 	}
 
 }

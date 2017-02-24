@@ -134,6 +134,23 @@ public class Utils {
 	}
 
 	/**
+	 * Mi restituisce la sottolista di {@code <T extends Field>} a partire da una lista di idFieldEnum
+	 *
+	 * @param src lista di {@code <T extends Field>}
+	 * @param ids lista di idFieldEnum
+	 * */
+	public static <T extends Field> Set<T> getIntersection(Set<T> src, Set<IdFieldEnum> ids){
+		Set<T> dst = new HashSet<T>();
+
+		src.forEach(f -> {
+			if(ids.contains(f.getIdField()))
+				dst.add(f);
+		});
+
+		return dst;
+	}
+
+	/**
 	 * Mi restituisce la sottolista di {@code <T extends Field>} a partire da una lista di {@code <T extends Field>} fornendo il SubSetFieldEnum
 	 *
 	 * @param src lista di {@code <T extends Field>}
