@@ -298,7 +298,8 @@
 										<button type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalImpostazioni(${provider.id}, ${provider.canInsertPianoFormativo}, ${provider.canInsertEvento},
 											${provider.canInsertAccreditamentoStandard}, ${provider.canInsertAccreditamentoProvvisorio}, ${provider.canInsertRelazioneAnnuale}, '${provider.status}', '${provider.dataScadenzaInsertPianoFormativo}', '${provider.dataScadenzaInsertAccreditamentoStandard}',
 											'${provider.dataRinnovoInsertAccreditamentoProvvisorio}', '${provider.dataScadenzaInsertRelazioneAnnuale}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
-										<button type="button" class="btn btn-danger min-icon-width" th:onclick="|openModalConfermaBloccoProvider(${provider.id})|" th:title="#{label.blocca}"><i class="fa fa-times-circle"> </i></button>
+										<button type="button" class="btn btn-danger min-icon-width" th:onclick="|openModalConfermaBloccoProvider(${provider.id})|" th:title="#{label.blocca}" th:unless="${provider.isBloccato()}"><i class="fa fa-times-circle"> </i></button>
+										<button type="button" class="btn btn-danger min-icon-width disabled" th:title="#{label.blocca}" th:if="${provider.isBloccato()}"><i class="fa fa-times-circle"> </i></button>
 									</td>
 								</tr>
 							</tbody>

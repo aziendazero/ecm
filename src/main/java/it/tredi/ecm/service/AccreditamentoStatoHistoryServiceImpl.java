@@ -44,4 +44,10 @@ public class AccreditamentoStatoHistoryServiceImpl implements AccreditamentoStat
 		history.setPresaVisione(presaVisione);
 		accreditamentoStatoHistoryRepository.save(history);
 	}
+
+	@Override
+	public Set<AccreditamentoStatoHistory> getAllByAccreditamentoIdAndProcessInstanceIdIn(Long accreditamentoId, Set<Long> processInstanceIdList) {
+		LOGGER.info("Recupero history accreditamento " + accreditamentoId + " per il set di workflow process instance id: " + processInstanceIdList);
+		return accreditamentoStatoHistoryRepository.findAllByAccreditamentoIdAndProcessInstanceIdInOrderByDataFine(accreditamentoId, processInstanceIdList);
+	}
 }

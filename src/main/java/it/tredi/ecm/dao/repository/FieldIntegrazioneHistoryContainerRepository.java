@@ -14,4 +14,6 @@ public interface FieldIntegrazioneHistoryContainerRepository extends CrudReposit
 
 	FieldIntegrazioneHistoryContainer findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStato(Long accreditamentoId, Long processInstanceId, AccreditamentoStatoEnum stato);
 
+	FieldIntegrazioneHistoryContainer findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoTrue(Long accreditamentoId, Long processInstanceId, AccreditamentoStatoEnum stato);
+
 }

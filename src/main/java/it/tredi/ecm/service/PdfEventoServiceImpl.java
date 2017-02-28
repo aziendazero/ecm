@@ -63,6 +63,7 @@ import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Service
@@ -200,7 +201,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 			document.add(tableTemp);
 		addCellLabelCampoValore("label.brochure_evento", evento.getBrochureEvento(), tableFields);
 		addCellLabelCampoValore("label.verifica_apprendimento_partecipanti", eventoFAD.getVerificaApprendimento(), tableFields);
-		addCellLabelCampoValore("label.durata", evento.getDurata(), tableFields);
+		addCellLabelCampoValore("label.durata", Utils.formatOrario(evento.getDurata()), tableFields);
 		addCellLabelCampoValore("label.tipologia_obiettivi_formativi", eventoFAD.getRiepilogoFAD().getObiettivi(), tableFields);
 		addCellLabelCampoValore("label.metodologie_didattiche", eventoFAD.getRiepilogoFAD().getMetodologie(), tableFields);
 		addCellLabelCampoValore("label.supporto_disciplinare_fad", eventoFAD.getSupportoSvoltoDaEsperto(), tableFields);
@@ -287,7 +288,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValore("label.brochure_evento", evento.getBrochureEvento(), tableFields);
 		tableFields = addTableRiepilogoRuoli(document, tableFields, eventoFSC.getRiepilogoRuoli());
 		addCellLabelCampoValore("label.numero_partecipanti", evento.getNumeroPartecipanti(), tableFields);
-		addCellLabelCampoValore("label.durata", evento.getDurata(), tableFields);
+		addCellLabelCampoValore("label.durata", Utils.formatOrario(evento.getDurata()), tableFields);
 		addCellLabelCampoValoreZeroComeNonInserito("label.crediti_formativi_attribuiti_evento", evento.getCrediti(), tableFields);
 		addCellLabelCampoValore("label.verifica_presenza_partecipanti", eventoFSC.getVerificaPresenzaPartecipanti(), tableFields);
 		addCellLabelCampoValore("label.verifica_apprendimento_partecipanti", eventoFSC.getVerificaApprendimento(), tableFields);
@@ -379,7 +380,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		tableFields = addTableProgrammaRES(document, tableFields, eventoRES.getProgramma());
 		addCellLabelCampoValore("label.brochure_evento", evento.getBrochureEvento(), tableFields);
 		addCellLabelCampoValore("label.verifica_apprendimento_partecipanti", eventoRES.getVerificaApprendimento(), tableFields);
-		addCellLabelCampoValore("label.durata", evento.getDurata(), tableFields);
+		addCellLabelCampoValore("label.durata", Utils.formatOrario(evento.getDurata()), tableFields);
 		addCellLabelCampoValore("label.tipologia_obiettivi_formativi", eventoRES.getRiepilogoRES().getObiettivi(), tableFields);
 		//<!-- METODOLOGIE DIDATTICHE -->
 		addCellLabelRiepilogoMetodologieRES("label.metodologie_didattiche", eventoRES.getRiepilogoRES(), tableFields);

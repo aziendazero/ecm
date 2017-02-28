@@ -263,7 +263,15 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 					setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
 				}else{
 					if(field.getNewValue() != null){
-						removeEntityFromRepo(dst.getClass(), field.getNewValue());
+						//se mi trovo nella valutazione di un accreditamento standard la sede potrebbe essere referenziata
+						//nel verbale e gestisco il caso a parte
+						Accreditamento accreditamento = accreditamentoService.getAccreditamento(field.getAccreditamento().getId());
+						if(field.getIdField() == IdFieldEnum.SEDE__FULL &&
+								accreditamento.isStandard() &&
+								accreditamento.getVerbaleValutazioneSulCampo().getSede().getId() == field.getObjectReference())
+							sganciaSede(field.getObjectReference());
+						else
+							removeEntityFromRepo(dst.getClass(), field.getNewValue());
 					}else{
 						setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
 
@@ -277,9 +285,16 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 
 	}
 
+	private void sganciaSede(long sedeId) {
+		Sede sedeVerbale = sedeService.getSede(sedeId);
+		sedeVerbale.setProvider(null);
+		sedeService.save(sedeVerbale);
+	}
+
 	@Override
 	//cancella tutti gli oggetti creati non approvati in integrazione
 	public void cancelObjectNotApproved(Long accreditamentoId, Set<FieldIntegrazioneAccreditamento> notApproved) {
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		for(FieldIntegrazioneAccreditamento fia : notApproved) {
 			if(fia.getTipoIntegrazioneEnum() == TipoIntegrazioneEnum.CREAZIONE) {
 				if(fia.getIdField() == IdFieldEnum.SEDE__FULL) {

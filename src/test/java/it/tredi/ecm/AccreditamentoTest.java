@@ -16,22 +16,25 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.SedeService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
+@ActiveProfiles("tom")
 //@WithUserDetails("provider")
-@Ignore
+//@Ignore
 public class AccreditamentoTest {
 
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 
 	@Autowired AccreditamentoService accreditamentoService;
+	@Autowired SedeService sedeService;
 
 	private MockMvc mockMvc;
 
@@ -41,6 +44,7 @@ public class AccreditamentoTest {
 	}
 
 	@Test
+	@Ignore
 	public void testAccreditamentoQuery() throws Exception {
 
 		System.out.println("pippo");
@@ -50,6 +54,22 @@ public class AccreditamentoTest {
 		for (Accreditamento a : set) {
 			System.out.println("id: " + a.getId());
 		}
+	}
+
+	@Test
+	@Ignore
+	public void testSgancioSede() {
+
+		System.out.println("begin");
+
+		Long sedeId = 1702L;
+
+		Sede sedeVerbale = sedeService.getSede(sedeId);
+		sedeVerbale.setProvider(null);
+		sedeService.save(sedeVerbale);
+
+		System.out.println("end");
+
 	}
 
 

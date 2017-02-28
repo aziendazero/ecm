@@ -48,6 +48,7 @@ import it.tredi.ecm.service.SedeService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.bean.SedeWrapper;
 import it.tredi.ecm.web.validator.SedeValidator;
@@ -447,6 +448,11 @@ public class SedeController {
 		return sedeWrapper;
 	}
 
+	private void prepareValutazioneIntegrazioneReferee(SedeWrapper sedeWrapper, Long accreditamentoId,
+			AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, SubSetFieldEnum subset) {
+		prepareWrapperIntegrazioneFullSede(sedeWrapper, stato, accreditamentoId, workFlowProcessInstanceId, subset);
+	}
+
 	private void prepareApplyIntegrazione(SedeWrapper sedeWrapper, SubSetFieldEnum subset, boolean reloadByEditIt,
 			Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) throws Exception{
 		integrazioneService.detach(sedeWrapper.getSede());
@@ -454,17 +460,21 @@ public class SedeController {
 		if(sedeWrapper.getSede() == null || sedeWrapper.getSede().getId() == null){
 			sedeWrapper.getIdEditabili().addAll(IdFieldEnum.getAllForSubset(subset));
 		}else{
-			//prendo tutte le integrazioni fatte dal provider
-			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObjectByContainer(accreditamentoId, stato, workFlowProcessInstanceId, sedeWrapper.getSede().getId());
-			//filtro per quelle del subset sede
-			sedeWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
-
-			//vedo se e' presente il filed FULL e setto la info nel wrapper
-			sedeWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.SEDE__FULL));
+			prepareWrapperIntegrazioneFullSede(sedeWrapper, stato, accreditamentoId, workFlowProcessInstanceId,subset);
 			//modifica
 			if(!reloadByEditIt)
 				integrazioneService.applyIntegrazioneObject(sedeWrapper.getSede(), sedeWrapper.getFieldIntegrazione());
 		}
+	}
+
+	private void prepareWrapperIntegrazioneFullSede(SedeWrapper sedeWrapper, AccreditamentoStatoEnum stato, Long accreditamentoId, Long workFlowProcessInstanceId, SubSetFieldEnum subset) {
+		//prendo tutte le integrazioni fatte dal provider
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObjectByContainer(accreditamentoId, stato, workFlowProcessInstanceId, sedeWrapper.getSede().getId());
+		//filtro per quelle del subset sede
+		sedeWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
+
+		//vedo se e' presente il filed FULL e setto la info nel wrapper
+		sedeWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.SEDE__FULL));
 	}
 
 	private SedeWrapper prepareSedeWrapperShow(Sede sede, long accreditamentoId, long providerId){
@@ -516,6 +526,11 @@ public class SedeController {
 			stato = accreditamento.getStatoUltimaIntegrazione();
 			prepareApplyIntegrazione(sedeWrapper, subset, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
+
+		//solo se la valutazione è del crecm / team leader dopo l'INTEGRAZIONE
+		if(accreditamento.getStatoUltimaIntegrazione() != null && (accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneTeamLeader() || accreditamento.isValutazioneCrecmVariazioneDati()))
+			stato = accreditamento.getStatoUltimaIntegrazione();
+			prepareValutazioneIntegrazioneReferee(sedeWrapper, accreditamentoId, stato, workFlowProcessInstanceId, subset);
 
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperValidate(" + sede.getId() + "," + accreditamentoId + "," + providerId +") - exiting"));
 		return sedeWrapper;

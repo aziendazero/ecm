@@ -333,6 +333,12 @@ public class AccreditamentoController {
 		if(accreditamento.getWorkflowInfoAccreditamento() != null)
 			model.addAttribute("accreditamentoHistoryList", accreditamentoStatoHistoryService.getAllByAccreditamentoIdAndProcessInstanceId(accreditamento.getId(), accreditamento.getWorkflowInfoAccreditamento().getProcessInstanceId()));
 
+		if(accreditamento.getStatoVariazioneDati() != null)
+			model.addAttribute("accreditamentoHistoryVariazioneDatiList", accreditamentoStatoHistoryService.getAllByAccreditamentoIdAndProcessInstanceIdIn(accreditamento.getId(), accreditamento.getAllWorkflowProcessInstanceIdVariazioneDati()));
+
+		//controllo sempre per verificare se sono in cancellazione (nel template viene controllato se questa lista è null o empty)
+		model.addAttribute("accreditamentoHistoryDecadenzaList", accreditamentoStatoHistoryService.getAllByAccreditamentoIdAndProcessInstanceIdIn(accreditamento.getId(), accreditamento.getAllWorkflowProcessInstanceIdTermineProcedimento()));
+
 		LOGGER.info(Utils.getLogMessage("VIEW: /accreditamento/accreditamentoShow"));
 		return "accreditamento/accreditamentoShow";
 	}
@@ -792,7 +798,10 @@ public class AccreditamentoController {
 //		LOGGER.debug(Utils.getLogMessage("<*>NUMERO PROFESSIONI ANALOGHE: " + professioniDeiComponentiAnaloghe));
 
 		Accreditamento accreditamento = accreditamentoWrapper.getAccreditamento();
-		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()) {
+		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati() ||
+				//caso in cui un referee valuta dopo approvazione integrazione/preavviso di rigetto della Segreteria
+				((accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneCrecmVariazioneDati() || accreditamento.isValutazioneTeamLeader())
+						&& accreditamento.getStatoUltimaIntegrazione() != null)) {
 			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
 			AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
 			accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie, elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode, fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamento.getId(), stato, workFlowProcessInstanceId));

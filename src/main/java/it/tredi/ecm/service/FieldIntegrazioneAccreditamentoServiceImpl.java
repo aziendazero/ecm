@@ -32,7 +32,7 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	@Override
 	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneForAccreditamentoByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di FieldIntegrazioneAccreditamento per Domanda Accreditamento: " + accreditamentoId));
-		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, workFlowProcessInstanceId, stato);
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStato(accreditamentoId, workFlowProcessInstanceId, stato);
 		if(container != null)
 			return container.getIntegrazioni();
 		else return null;
@@ -40,7 +40,7 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	@Override
 	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneForAccreditamentoAndObjectByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, Long objectReference) {
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di FieldIntegrazioneAccreditamento per Domanda Accreditamento: " + accreditamentoId + " riferiti all'oggetto: " + objectReference));
-		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, workFlowProcessInstanceId, stato);
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStato(accreditamentoId, workFlowProcessInstanceId, stato);
 		if(container != null) {
 			Set<FieldIntegrazioneAccreditamento> allFieldIntegrazioneList = container.getIntegrazioni();
 			Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new HashSet<FieldIntegrazioneAccreditamento>();
@@ -129,7 +129,7 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	@Override
 	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneApprovedBySegreteria(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti i field integrazione approvati dalla segreteria dell'accreditamento: " + accreditamentoId));
-		return fieldIntegrazioneAccreditamentoRepository.findAllApprovedBySegreteria(accreditamentoId, stato.getNome(), workFlowProcessInstanceId);
+		return fieldIntegrazioneAccreditamentoRepository.findAllApprovedBySegreteria(accreditamentoId, stato.name(), workFlowProcessInstanceId);
 	}
 
 	@Override

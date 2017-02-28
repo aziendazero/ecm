@@ -1415,7 +1415,7 @@
 											<div class="clearfix"></div>
 										</div>
 										<div class="x_content">
-											<table id="tableStorico" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+											<table id="tableStorico" class="table tableStorico table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 												<thead>
 													<tr>
 														<th th:text="#{label.data_inizio}">Data Inizio</th>
@@ -1425,6 +1425,58 @@
 												</thead>
 												<tbody>
 													<tr th:each="history, row : ${accreditamentoHistoryList}">
+														<td th:text="${history.dataInizio != null} ? ${#temporals.format(history.dataInizio,'dd/MM/yyyy - HH:mm')} : ''"></td>
+														<td th:unless="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome}"></td>
+														<td th:if="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome + ' ' + (history?.presaVisione ? #messages.msg('label.presa_visione_segreteria') : '')}"></td>
+														<!-- td th:text="${history?.account?.username}"></td -->
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									<div class="x_panel" th:if="${accreditamentoWrapper.accreditamento.statoVariazioneDati != null}">
+										<div class="x_title">
+											<h2 th:text="#{label.flusso_variazione_dati}"></h2>
+											<div class="clearfix"></div>
+										</div>
+										<div class="x_content">
+											<table id="tableStoricoVarizioneDati" class="table tableStorico table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+												<thead>
+													<tr>
+														<th th:text="#{label.data_inizio}">Data Inizio</th>
+														<th th:text="#{label.stato}">Stato</th>
+														<!--  th th:text="#{label.eseguito_da}">Account</th -->
+													</tr>
+												</thead>
+												<tbody>
+													<tr th:each="history, row : ${accreditamentoHistoryVariazioneDatiList}">
+														<td th:text="${history.dataInizio != null} ? ${#temporals.format(history.dataInizio,'dd/MM/yyyy - HH:mm')} : ''"></td>
+														<td th:unless="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome}"></td>
+														<td th:if="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome + ' ' + (history?.presaVisione ? #messages.msg('label.presa_visione_segreteria') : '')}"></td>
+														<!-- td th:text="${history?.account?.username}"></td -->
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									<div class="x_panel" th:if="${accreditamentoHistoryDecadenzaList != null and !#lists.isEmpty(accreditamentoHistoryDecadenzaList)}">
+										<div class="x_title">
+											<h2 th:text="#{label.flusso_conclusione_procedimento}"></h2>
+											<div class="clearfix"></div>
+										</div>
+										<div class="x_content">
+											<table id="tableStoricoDecadenza" class="table tableStorico table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+												<thead>
+													<tr>
+														<th th:text="#{label.data_inizio}">Data Inizio</th>
+														<th th:text="#{label.stato}">Stato</th>
+														<!--  th th:text="#{label.eseguito_da}">Account</th -->
+													</tr>
+												</thead>
+												<tbody>
+													<tr th:each="history, row : ${accreditamentoHistoryDecadenzaList}">
 														<td th:text="${history.dataInizio != null} ? ${#temporals.format(history.dataInizio,'dd/MM/yyyy - HH:mm')} : ''"></td>
 														<td th:unless="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome}"></td>
 														<td th:if="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome + ' ' + (history?.presaVisione ? #messages.msg('label.presa_visione_segreteria') : '')}"></td>
@@ -1660,7 +1712,7 @@
 					});
 
 					//table storico
-					$('#tableStorico').DataTable({
+					$('.tableStorico').DataTable({
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,

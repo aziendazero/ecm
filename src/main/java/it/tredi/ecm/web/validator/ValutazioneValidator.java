@@ -106,6 +106,7 @@ public class ValutazioneValidator {
 			case "datiAccreditamento.datiEconomici.fatturatoComplessivo": return "datiAccreditamento.datiEconomici.fatturatoComplessivoValoreUno";
 			case "datiAccreditamento.datiEconomici.fatturatoFormazione": return "datiAccreditamento.datiEconomici.fatturatoFormazioneValoreUno";
 			case "datiAccreditamento.numeroDipendenti": return "datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato";
+			case "persona.anagrafica": return ""; //caso sostituzione (full)
 			default: return key;
 		}
 	}

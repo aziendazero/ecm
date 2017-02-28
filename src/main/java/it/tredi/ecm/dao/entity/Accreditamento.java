@@ -419,5 +419,21 @@ public class Accreditamento extends BaseEntity{
 		Accreditamento entitapiatta = (Accreditamento) o;
 		return Objects.equals(id, entitapiatta.id);
 	}
+	public Set<Long> getAllWorkflowProcessInstanceIdVariazioneDati() {
+		Set<Long> allWorkflowProcessInstanceIdVariazioneDati = new HashSet<Long>();
+		for(WorkflowInfo wfi : this.getWorkflowInfo()) {
+			if(wfi.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI)
+				allWorkflowProcessInstanceIdVariazioneDati.add(wfi.getProcessInstanceId());
+		}
+		return allWorkflowProcessInstanceIdVariazioneDati;
+	}
+	public Set<Long> getAllWorkflowProcessInstanceIdTermineProcedimento() {
+		Set<Long> allWorkflowProcessInstanceIdTermineProcedimento = new HashSet<Long>();
+		for(WorkflowInfo wfi : this.getWorkflowInfo()) {
+			if(wfi.getTipo() == TipoWorkflowEnum.DECADENZA)
+				allWorkflowProcessInstanceIdTermineProcedimento.add(wfi.getProcessInstanceId());
+		}
+		return allWorkflowProcessInstanceIdTermineProcedimento;
+	}
 
 }

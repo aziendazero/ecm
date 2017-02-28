@@ -198,9 +198,11 @@ public class PersonaController {
 			}
 			if(anagraficaId == null){
 				persona.setAnagrafica(new Anagrafica());
+				persona.getFiles().clear();
 				isLookup = false;
 			}else{
 				persona.setAnagrafica(anagraficaService.getAnagrafica(anagraficaId));
+				persona.getFiles().clear();
 				isLookup = true;
 			}
 			return goToEdit(model, preparePersonaWrapperEdit(persona, accreditamentoId, providerId, isLookup, accreditamentoService.getStatoAccreditamento(accreditamentoId),false));
@@ -604,18 +606,15 @@ public class PersonaController {
 		return personaWrapper;
 	}
 
+	private void prepareValutazioneIntegrazioneReferee(PersonaWrapper personaWrapper, Long accreditamentoId,
+			AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, SubSetFieldEnum subset) {
+		prepareWrapperIntegrazioneFullPersona(personaWrapper, accreditamentoId, stato, workFlowProcessInstanceId, subset);
+	}
+
 	private void prepareApplyIntegrazione(PersonaWrapper personaWrapper, SubSetFieldEnum subset, boolean reloadByEditId,
 			Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) throws Exception{
-		if(personaWrapper.getPersona().isComponenteComitatoScientifico()){
-			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObjectByContainer(accreditamentoId, stato, workFlowProcessInstanceId, personaWrapper.getPersona().getId());
-			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
-			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL));
-		}
-		else{
-			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId);
-			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
-			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, Utils.getFullFromRuolo(personaWrapper.getPersona().getRuolo())));
-		}
+
+		prepareWrapperIntegrazioneFullPersona(personaWrapper, accreditamentoId, stato, workFlowProcessInstanceId, subset);
 
 		//detach dei files...fatto qui perchè altrimenti hibernate segnala che è stato modificato l'ID di una entity (file) e durante un salvataggio da errore.
 		//Inoltre una volta fatto il detach non è possibile cariare i LazyField...quindi facciamo una chiamata prima per caricarli
@@ -644,6 +643,20 @@ public class PersonaController {
 				if(!reloadByEditId)
 					integrazioneService.applyIntegrazioneObject(personaWrapper.getPersona(), personaWrapper.getFieldIntegrazione());
 			}
+		}
+	}
+
+	private void prepareWrapperIntegrazioneFullPersona(PersonaWrapper personaWrapper, Long accreditamentoId,
+			AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, SubSetFieldEnum subset) {
+		if(personaWrapper.getPersona().isComponenteComitatoScientifico()){
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoAndObjectByContainer(accreditamentoId, stato, workFlowProcessInstanceId, personaWrapper.getPersona().getId());
+			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
+			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL));
+		}
+		else{
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId);
+			personaWrapper.setFieldIntegrazione(Utils.getSubset(fieldIntegrazione, subset));
+			personaWrapper.setFullIntegrazione(Utils.getField(fieldIntegrazione, Utils.getFullFromRuolo(personaWrapper.getPersona().getRuolo())));
 		}
 	}
 
@@ -694,6 +707,11 @@ public class PersonaController {
 			stato = accreditamento.getStatoUltimaIntegrazione();
 			prepareApplyIntegrazione(personaWrapper, subset, reloadByEditId, accreditamentoId, stato, workFlowProcessInstanceId);
 		}
+
+		//solo se la valutazione è del crecm / team leader dopo l'INTEGRAZIONE
+		if(accreditamento.getStatoUltimaIntegrazione() != null && (accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneTeamLeader() || accreditamento.isValutazioneCrecmVariazioneDati()))
+			stato = accreditamento.getStatoUltimaIntegrazione();
+			prepareValutazioneIntegrazioneReferee(personaWrapper, accreditamentoId, stato, workFlowProcessInstanceId, subset);
 
 		personaWrapper.setFiles(persona.getFiles());
 
