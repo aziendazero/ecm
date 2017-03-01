@@ -709,10 +709,11 @@ public class PersonaController {
 		}
 
 		//solo se la valutazione è del crecm / team leader dopo l'INTEGRAZIONE
-		if(accreditamento.getStatoUltimaIntegrazione() != null && (accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneTeamLeader() || accreditamento.isValutazioneCrecmVariazioneDati()))
+		if(accreditamento.getStatoUltimaIntegrazione() != null && (accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneTeamLeader() || accreditamento.isValutazioneCrecmVariazioneDati())){
 			stato = accreditamento.getStatoUltimaIntegrazione();
 			prepareValutazioneIntegrazioneReferee(personaWrapper, accreditamentoId, stato, workFlowProcessInstanceId, subset);
-
+		}
+		
 		personaWrapper.setFiles(persona.getFiles());
 
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - exiting"));
