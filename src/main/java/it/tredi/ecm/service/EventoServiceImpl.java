@@ -1848,7 +1848,7 @@ public class EventoServiceImpl implements EventoService {
 			if(fileId != sponsorFile.getId()){
 				sponsor.setSponsorFile(null);
 				sponsorRepository.save(sponsor);
-				fileService.deleteById(fileId);
+				//fileService.deleteById(fileId);
 			}
 		}
 		sponsor.setSponsorFile(sponsorFile);

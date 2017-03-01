@@ -80,8 +80,8 @@ public class FileServiceImpl implements FileService{
 		else return null;
 	}
 
-	@Override
-	public void deleteById(Long id) {
-		fileRepository.delete(id);
-	}
+//	@Override
+//	public void deleteById(Long id) {
+//		fileRepository.delete(id);
+//	}
 }
