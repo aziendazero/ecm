@@ -1244,9 +1244,9 @@
 // 				});
 // 			}
 
-			function openLookupPersona(target,type){
+			function openLookupPersona(target,anagraficaType){
 				var startUrl = [[@{|/provider/${eventoWrapper.evento.provider.id}/|}]];
-				urlGet =  type == 'Full' ? startUrl + 'anagraficaFullEventoList' : startUrl + 'anagraficaEventoList';
+				urlGet =  anagraficaType == 'Full' ? startUrl + 'anagraficaFullEventoList' : startUrl + 'anagraficaEventoList';
 				$('#tabella-modale').DataTable().destroy();
 				$('#tabella-modale').DataTable({
 					bInfo: false,
@@ -1264,7 +1264,9 @@
 				    	{data: 'anagrafica.cognome'},
 				    	{data: 'id'},
 				    	{render: function (data, type, full, meta) {
-				                     return '<button onclick="setLookupAnagraficaEvento(\''+ target + '\',\'' + type + '\',' + full.id + ')" class="btn btn-primary">'+[[#{label.seleziona}]]+'</button>';
+				                    console.log('anagraficaType:' + anagraficaType);
+				                    console.log('meta:' + meta);
+				    				return '<button onclick="setLookupAnagraficaEvento(\''+ target + '\',\'' + anagraficaType + '\',' + full.id + ')" class="btn btn-primary">'+[[#{label.seleziona}]]+'</button>';
 		                 		}
 				    	}
 				    ],
