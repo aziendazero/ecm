@@ -70,7 +70,7 @@
 								Verbale
 							</a>
 						</li>
-						<li th:if="${showOnly and accreditamentoWrapper.accreditamento.workflowInfoAccreditamento?.processInstanceId != null}" class="presentation">
+						<li th:if="${showOnly and accreditamentoWrapper.accreditamento.isStoriaFlussoPresente()}" class="presentation">
 							<a href="#tab_content8" role="tab" id="tab8" data-toggle="tab" aria-expanded="false" th:text="#{label.flusso_accreditamento}">
 								Flusso Accreditamento
 							</a>
@@ -1403,7 +1403,7 @@
 							<!-- /TAB 7 -->
 						</div>
 						<!-- TAB 8 -->
-						<div th:if="${showOnly and accreditamentoWrapper.accreditamento.workflowInfoAccreditamento?.processInstanceId != null}" role="tabpanel" class="tab-pane fade" id="tab_content8" aria-labelledby="tab8">
+						<div th:if="${showOnly and accreditamentoWrapper.accreditamento.isStoriaFlussoPresente()}" role="tabpanel" class="tab-pane fade" id="tab_content8" aria-labelledby="tab8">
 							<!--  TAB 7 -->
 							<div class="row">
 								<div class="col-xs-12">

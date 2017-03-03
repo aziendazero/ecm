@@ -440,4 +440,14 @@ public class Accreditamento extends BaseEntity{
 		return allWorkflowProcessInstanceIdTermineProcedimento;
 	}
 
+	public boolean isStoriaFlussoPresente(){
+		if(workflowInfoAccreditamento != null && workflowInfoAccreditamento.getProcessInstanceId() != null)
+			return true;
+
+		if(workflowInfo != null && !workflowInfo.isEmpty())
+			return true;
+
+		return false;
+	}
+
 }
