@@ -89,9 +89,17 @@
 
 						<th:block th:if="${accreditamentoAllegatiWrapper.datiAccreditamento.accreditamento.isStandard()}">
 							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+							<div th:if="${editabile}" class="model-link" id="esempio_richiesta_accreditamento">
+								<i class="fa fa-file-text"></i>
+								<a id="esempio_richiesta_accreditamento_link" target="_blank" th:text="#{label.esempio_modello}" href="TODO"></a>
+							</div>
 							<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_RICHIESTA_ACCREDITAMENTO_STANDARD}', richiestaAccreditamentoStandard,  ${!showOnly ? 'richiestaAccreditamentoStandard' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
+							<div th:if="${editabile}" class="model-link" id="esempio_relazione_attivita_formativa">
+								<i class="fa fa-file-text"></i>
+								<a id="esempio_relazione_attivita_formativa_link" target="_blank" th:text="#{label.esempio_modello}" href="TODO"></a>
+							</div>
 							<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_RELAZIONE_ATTIVITA_FORMATIVA}', relazioneAttivitaFormativa,  ${!showOnly ? 'relazioneAttivitaFormativa' : null}, null, null, true, ${mode}, true)" ></th:block>
 						</th:block>
 
