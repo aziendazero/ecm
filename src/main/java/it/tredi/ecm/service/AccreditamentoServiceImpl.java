@@ -1242,7 +1242,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				return false;
 			}
 
-			if(fields.isEmpty())
+			if(fields == null || fields.isEmpty())
 				return true;
 		}
 //		}

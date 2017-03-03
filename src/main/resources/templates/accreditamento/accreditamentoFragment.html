@@ -391,7 +391,7 @@
 															</span>
 														</td>
 														<td th:if="${valutabile}">
-															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/validate/3|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda and accreditamentoWrapper.canValidateDatiStruttura ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda and accreditamentoWrapper.canValidateDatiEconomici} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/validate/3|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda and accreditamentoWrapper.canValidateDatiStruttura ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda and accreditamentoWrapper.canValidateDatiStruttura} ? #{label.valuta} : #{label.mostra}">Valuta/Mostra</span></a>
 														</td>
 														<td th:if="${enableField}">
 															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/dati/${accreditamentoWrapper.datiAccreditamento.id}/enableField/3|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${'fa-pencil'}"></i> <span th:text="#{label.abilita_campi}">Abilita campi</span></a>
