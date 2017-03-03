@@ -151,8 +151,12 @@ public class Accreditamento extends BaseEntity{
 	public void enableAllIdField(){
 		//PROVIDER FIELD
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER)){
-			if((id != IdFieldEnum.PROVIDER__CODICE_FISCALE) && !(id == IdFieldEnum.PROVIDER__PARTITA_IVA && this.getProvider().isHasPartitaIVA()))
-				idEditabili.add(new FieldEditabileAccreditamento(id, this));
+			if((id != IdFieldEnum.PROVIDER__CODICE_FISCALE) && !(id == IdFieldEnum.PROVIDER__PARTITA_IVA && this.getProvider().isHasPartitaIVA())){
+				if(this.tipoDomanda == AccreditamentoTipoEnum.PROVVISORIO ||
+						(this.tipoDomanda == AccreditamentoTipoEnum.STANDARD && id != IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE && id != IdFieldEnum.PROVIDER__PARTITA_IVA)){
+					idEditabili.add(new FieldEditabileAccreditamento(id, this));
+				}
+			}
 		}
 
 		//SEDI
