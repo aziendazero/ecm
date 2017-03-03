@@ -128,8 +128,11 @@ public class EventoServiceImpl implements EventoService {
 	public void save(Evento evento) {
 		LOGGER.debug("Salvataggio evento");
 		if(evento.isNew()) {
+			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
 			eventoRepository.saveAndFlush(evento);
 			evento.buildPrefix();
+		}else{
+			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + " - Salvataggio"));
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		eventoRepository.save(evento);
