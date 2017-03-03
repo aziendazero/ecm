@@ -17,7 +17,7 @@
 							<span class="label-show" th:text="#{label.denominazione_legale_provider}">Denominazione Legale del Provider</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:text="${eventoWrapper.evento.provider.denominazioneLegale}"></div>
+							<div class="value" th:text="${eventoWrapperShow.evento.provider.denominazioneLegale}"></div>
 						</div>
 					</div>
 
@@ -27,7 +27,7 @@
 							<span class="label-show" th:text="#{label.id_provider}">Id del Provider</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:text="${eventoWrapper.evento.provider.id}"></div>
+							<div class="value" th:text="${eventoWrapperShow.evento.provider.id}"></div>
 						</div>
 					</div>
 
@@ -37,7 +37,7 @@
 							<span class="label-show" th:text="#{label.procedure_formative_tipologia}">Id del Provider</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:text="${eventoWrapper.evento.proceduraFormativa}"></div>
+							<div class="value" th:text="${eventoWrapperShow.evento.proceduraFormativa}"></div>
 						</div>
 					</div>
 
@@ -50,10 +50,10 @@
 						</label>
 
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div th:if="${eventoWrapper.evento.destinatariEvento != null and !#lists.isEmpty(eventoWrapper.evento.destinatariEvento)}" th:each="destinatario, row : ${eventoWrapper.evento.destinatariEvento}">
+							<div th:if="${eventoWrapperShow.evento.destinatariEvento != null and !#lists.isEmpty(eventoWrapperShow.evento.destinatariEvento)}" th:each="destinatario, row : ${eventoWrapperShow.evento.destinatariEvento}">
 								<div class="value" th:text="${destinatario.nome}"></div>
 							</div>
-							<div th:unless="${eventoWrapper.evento.destinatariEvento != null and !#lists.isEmpty(eventoWrapper.evento.destinatariEvento)}" class="value danger" th:text="#{label.dato_non_inserito}"></div>
+							<div th:unless="${eventoWrapperShow.evento.destinatariEvento != null and !#lists.isEmpty(eventoWrapperShow.evento.destinatariEvento)}" class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -65,8 +65,8 @@
 							<span class="label-show" th:text="#{label.evento_contenuti}">L'evento formativo prevedere i seguenti contenuti?</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.contenutiEvento != null}" th:text="${eventoWrapper.evento.contenutiEvento.nome}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.contenutiEvento != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.contenutiEvento != null}" th:text="${eventoWrapperShow.evento.contenutiEvento.nome}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.contenutiEvento != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -78,8 +78,8 @@
 							<span class="label-show" th:text="#{label.titolo}">Titolo</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.titolo != null and !#strings.isEmpty(eventoWrapper.evento.titolo)}" th:text="${eventoWrapper.evento.titolo}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.titolo != null and !#strings.isEmpty(eventoWrapper.evento.titolo)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.titolo != null and !#strings.isEmpty(eventoWrapperShow.evento.titolo)}" th:text="${eventoWrapperShow.evento.titolo}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.titolo != null and !#strings.isEmpty(eventoWrapperShow.evento.titolo)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -91,8 +91,8 @@
 							<span class="label-show" th:text="#{label.provincia}">Provincia</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.sedeEvento.provincia != null and !#strings.isEmpty(eventoWrapper.evento.sedeEvento.provincia)}" th:text="${eventoWrapper.evento.sedeEvento.provincia}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.sedeEvento.provincia != null and !#strings.isEmpty(eventoWrapper.evento.sedeEvento.provincia)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.sedeEvento.provincia != null and !#strings.isEmpty(eventoWrapperShow.evento.sedeEvento.provincia)}" th:text="${eventoWrapperShow.evento.sedeEvento.provincia}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.sedeEvento.provincia != null and !#strings.isEmpty(eventoWrapperShow.evento.sedeEvento.provincia)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- COMUNE -->
@@ -101,8 +101,8 @@
 							<span class="label-show" th:text="#{label.comune}">Comune</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.sedeEvento.comune != null and !#strings.isEmpty(eventoWrapper.evento.sedeEvento.comune)}" th:text="${eventoWrapper.evento.sedeEvento.comune}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.sedeEvento.comune != null and !#strings.isEmpty(eventoWrapper.evento.sedeEvento.comune)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.sedeEvento.comune != null and !#strings.isEmpty(eventoWrapperShow.evento.sedeEvento.comune)}" th:text="${eventoWrapperShow.evento.sedeEvento.comune}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.sedeEvento.comune != null and !#strings.isEmpty(eventoWrapperShow.evento.sedeEvento.comune)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- INDIRIZZO -->
@@ -111,8 +111,8 @@
 							<span class="label-show" th:text="#{label.indirizzo}">Indirizzo</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.sedeEvento.indirizzo != null and !#strings.isEmpty(eventoWrapper.evento.sedeEvento.indirizzo)}" th:text="${eventoWrapper.evento.sedeEvento.indirizzo}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.sedeEvento.indirizzo != null and !#strings.isEmpty(eventoWrapper.evento.sedeEvento.indirizzo)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.sedeEvento.indirizzo != null and !#strings.isEmpty(eventoWrapperShow.evento.sedeEvento.indirizzo)}" th:text="${eventoWrapperShow.evento.sedeEvento.indirizzo}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.sedeEvento.indirizzo != null and !#strings.isEmpty(eventoWrapperShow.evento.sedeEvento.indirizzo)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- LUOGO -->
@@ -121,8 +121,8 @@
 							<span class="label-show" th:text="#{label.luogo}">Luogo</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="luogo">
-							<div class="value" th:if="${eventoWrapper.evento.sedeEvento.luogo != null and !#strings.isEmpty(eventoWrapper.evento.sedeEvento.luogo)}" th:text="${eventoWrapper.evento.sedeEvento.luogo}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.sedeEvento.luogo != null and !#strings.isEmpty(eventoWrapper.evento.sedeEvento.luogo)}" th:text="#{label.dato_non_inserito}"></div>									</div>
+							<div class="value" th:if="${eventoWrapperShow.evento.sedeEvento.luogo != null and !#strings.isEmpty(eventoWrapperShow.evento.sedeEvento.luogo)}" th:text="${eventoWrapperShow.evento.sedeEvento.luogo}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.sedeEvento.luogo != null and !#strings.isEmpty(eventoWrapperShow.evento.sedeEvento.luogo)}" th:text="#{label.dato_non_inserito}"></div>									</div>
 					</div>
 
 					<div class="divider-dashed"></div>
@@ -133,8 +133,8 @@
 							<span class="label-show" th:text="#{label.data_inizio}">Data inizio</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.dataInizio != null and !#strings.isEmpty(eventoWrapper.evento.dataInizio)}" th:text="${#temporals.format(eventoWrapper.evento.dataInizio, 'dd/MM/yyyy')}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.dataInizio != null and !#strings.isEmpty(eventoWrapper.evento.dataInizio)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.dataInizio != null and !#strings.isEmpty(eventoWrapperShow.evento.dataInizio)}" th:text="${#temporals.format(eventoWrapperShow.evento.dataInizio, 'dd/MM/yyyy')}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.dataInizio != null and !#strings.isEmpty(eventoWrapperShow.evento.dataInizio)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -144,8 +144,8 @@
 							<span class="label-show" th:text="#{label.data_fine}">Data fine</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.dataFine != null and !#strings.isEmpty(eventoWrapper.evento.dataFine)}" th:text="${#temporals.format(eventoWrapper.evento.dataFine, 'dd/MM/yyyy')}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.dataFine != null and !#strings.isEmpty(eventoWrapper.evento.dataFine)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.dataFine != null and !#strings.isEmpty(eventoWrapperShow.evento.dataFine)}" th:text="${#temporals.format(eventoWrapperShow.evento.dataFine, 'dd/MM/yyyy')}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.dataFine != null and !#strings.isEmpty(eventoWrapperShow.evento.dataFine)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -155,11 +155,11 @@
 							<span class="label-show" th:text="#{label.date_intermedie}">Data intermedie</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div th:if="${eventoWrapper.evento.dateIntermedie != null and !#lists.isEmpty(eventoWrapper.evento.dateIntermedie)}" th:each="data, row : ${eventoWrapper.evento.dateIntermedie}">
+							<div th:if="${eventoWrapperShow.evento.dateIntermedie != null and !#lists.isEmpty(eventoWrapperShow.evento.dateIntermedie)}" th:each="data, row : ${eventoWrapperShow.evento.dateIntermedie}">
 								<!-- div class="value" th:text="${data}"></div -->
 								<div class="value" th:text="${#temporals.format(data, 'dd/MM/yyyy')}"></div>
 							</div>
-							<div th:unless="${eventoWrapper.evento.dateIntermedie != null and !#lists.isEmpty(eventoWrapper.evento.dateIntermedie)}" class="value danger" th:text="#{label.dato_non_inserito}"></div>
+							<div th:unless="${eventoWrapperShow.evento.dateIntermedie != null and !#lists.isEmpty(eventoWrapperShow.evento.dateIntermedie)}" class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -169,8 +169,8 @@
 							<span class="label-show" th:text="#{label.obiettivo_strategico_nazionale}">Obiettivo Strategico Nazionale</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-							<div class="value" th:if="${eventoWrapper.evento.obiettivoNazionale != null}" th:text="${eventoWrapper.evento.obiettivoNazionale.nome}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.obiettivoNazionale != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.obiettivoNazionale != null}" th:text="${eventoWrapperShow.evento.obiettivoNazionale.nome}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.obiettivoNazionale != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -180,8 +180,8 @@
 							<span class="label-show" th:text="#{label.obiettivo_strategico_regionale}">Obiettivo Strategico Regionale</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.obiettivoRegionale != null}" th:text="${eventoWrapper.evento.obiettivoRegionale.nome}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.obiettivoRegionale != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.obiettivoRegionale != null}" th:text="${eventoWrapperShow.evento.obiettivoRegionale.nome}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.obiettivoRegionale != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -190,7 +190,7 @@
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.professioni_discipline}">Professioni / Discipline</span>
 						</label>
-						<div th:if="${eventoWrapper.evento.discipline != null and !#sets.isEmpty(eventoWrapper.evento.discipline)}">
+						<div th:if="${eventoWrapperShow.evento.discipline != null and !#sets.isEmpty(eventoWrapperShow.evento.discipline)}">
 							<div class="item form-group" style="clear:both; padding:2px;"></div>
 							<div class="item form-group" style="clear:both">
 								<div class="col-md-3 col-sm-3 col-xs-11"></div>
@@ -204,7 +204,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr th:each="disciplina, row: ${eventoWrapper.evento.discipline}">
+											<tr th:each="disciplina, row: ${eventoWrapperShow.evento.discipline}">
 												<td th:text="${disciplina.professione.nome}"></td>
 												<td th:text="${disciplina.nome}"></td>
 											</tr>
@@ -213,7 +213,7 @@
 								</div>
 							</div>
 						</div>
-						<div th:unless="${eventoWrapper.evento.discipline != null and !#sets.isEmpty(eventoWrapper.evento.discipline)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div th:unless="${eventoWrapperShow.evento.discipline != null and !#sets.isEmpty(eventoWrapperShow.evento.discipline)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
@@ -226,29 +226,29 @@
 						</label>
 
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.tipologiaEventoRES != null}" th:text="${eventoWrapper.evento.tipologiaEventoRES.nome}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.tipologiaEventoRES != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.tipologiaEventoRES != null}" th:text="${eventoWrapperShow.evento.tipologiaEventoRES.nome}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.tipologiaEventoRES != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- WORKSHOP/SEMINARI (attivo se selezionato convegno/congresso) -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.tipologiaEventoRES == T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).CONVEGNO_CONGRESSO}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoRES == T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).CONVEGNO_CONGRESSO}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.workshop_radio_text}"></span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.workshopSeminariEcm != null and eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="${eventoWrapper.evento.workshopSeminariEcm} ? #{label.sì} : #{label.no}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.workshopSeminariEcm != null and eventoWrapper.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapper.evento.workshopSeminariEcm)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.workshopSeminariEcm != null and eventoWrapperShow.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapperShow.evento.workshopSeminariEcm)}" th:text="${eventoWrapperShow.evento.workshopSeminariEcm} ? #{label.sì} : #{label.no}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.workshopSeminariEcm != null and eventoWrapperShow.evento.workshopSeminariEcm and !#strings.isEmpty(eventoWrapperShow.evento.workshopSeminariEcm)}" th:text="#{label.dato_non_inserito}"></div>
 
 						</div>
 					</div>
 					<!-- TITOLO CONVEGNO (attivo se selezionato workshop/seminario) -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.tipologiaEventoRES == T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).WORKSHOP_SEMINARIO}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoRES == T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).WORKSHOP_SEMINARIO}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.titolo_convegno}"></span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.titoloConvegno != null and !#strings.isEmpty(eventoWrapper.evento.titoloConvegno)}" th:text="${eventoWrapper.evento.titoloConvegno}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.titoloConvegno != null and !#strings.isEmpty(eventoWrapper.evento.titoloConvegno)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.titoloConvegno != null and !#strings.isEmpty(eventoWrapperShow.evento.titoloConvegno)}" th:text="${eventoWrapperShow.evento.titoloConvegno}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.titoloConvegno != null and !#strings.isEmpty(eventoWrapperShow.evento.titoloConvegno)}" th:text="#{label.dato_non_inserito}"></div>
 							</div>
 					</div>
 
@@ -258,8 +258,8 @@
 							<span class="label-show" th:text="#{label.numero_partecipanti}">Numero dei partecipanti</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.numeroPartecipanti != null and eventoWrapper.evento.numeroPartecipanti != 0}" th:text="${eventoWrapper.evento.numeroPartecipanti}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.numeroPartecipanti != null and eventoWrapper.evento.numeroPartecipanti != 0}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.numeroPartecipanti != null and eventoWrapperShow.evento.numeroPartecipanti != 0}" th:text="${eventoWrapperShow.evento.numeroPartecipanti}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.numeroPartecipanti != null and eventoWrapperShow.evento.numeroPartecipanti != 0}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -268,7 +268,7 @@
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.responsabili_scientifici}">Responsabili scientifici</span>
 						</label>
-						<div th:if="${eventoWrapper.evento.responsabili != null and !#sets.isEmpty(eventoWrapper.evento.responsabili)}">
+						<div th:if="${eventoWrapperShow.evento.responsabili != null and !#sets.isEmpty(eventoWrapperShow.evento.responsabili)}">
 							<div class="item form-group" style="clear:both; padding:2px;"></div>
 							<div class="item form-group" style="clear:both">
 								<div class="col-md-3 col-sm-3 col-xs-11"></div>
@@ -284,7 +284,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.evento.responsabili}">
+											<tr th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapperShow.evento.responsabili}">
 												<td th:text="${persona.anagrafica.cognome}"></td>
 												<td th:text="${persona.anagrafica.nome}"></td>
 												<td th:text="${persona.anagrafica.codiceFiscale}"></td>
@@ -299,7 +299,7 @@
 								</div>
 							</div>
 						</div>
-						<div th:unless="${eventoWrapper.evento.responsabili != null and !#sets.isEmpty(eventoWrapper.evento.responsabili)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div th:unless="${eventoWrapperShow.evento.responsabili != null and !#sets.isEmpty(eventoWrapperShow.evento.responsabili)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
@@ -309,7 +309,7 @@
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
 						</label>
-						<div th:if="${eventoWrapper.evento.docenti != null and !#sets.isEmpty(eventoWrapper.evento.docenti)}">
+						<div th:if="${eventoWrapperShow.evento.docenti != null and !#sets.isEmpty(eventoWrapperShow.evento.docenti)}">
 							<div class="item form-group" style="clear:both; padding:2px;"></div>
 							<div class="item form-group" style="clear:both">
 								<div class="col-md-3 col-sm-3 col-xs-11"></div>
@@ -326,7 +326,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr th:if="${#lists.size(eventoWrapper.evento.docenti) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapper.evento.docenti}">
+											<tr th:if="${#lists.size(eventoWrapperShow.evento.docenti) > 0}" th:attr="data-row-id=${__${status.index}__}" th:each="persona, status : ${eventoWrapperShow.evento.docenti}">
 												<td th:text="${persona.anagrafica.cognome}"></td>
 												<td th:text="${persona.anagrafica.nome}"></td>
 												<td th:text="${persona.anagrafica.codiceFiscale}"></td>
@@ -342,7 +342,7 @@
 								</div>
 							</div>
 						</div>
-						<div th:unless="${eventoWrapper.evento.docenti != null and !#sets.isEmpty(eventoWrapper.evento.docenti)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div th:unless="${eventoWrapperShow.evento.docenti != null and !#sets.isEmpty(eventoWrapperShow.evento.docenti)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
@@ -362,8 +362,8 @@
 							<span class="label-show" th:text="#{label.razionale}">Razionale</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="razionale">
-							<div class="value" th:if="${eventoWrapper.evento.razionale != null and !#strings.isEmpty(eventoWrapper.evento.razionale)}" th:text="${eventoWrapper.evento.razionale}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.razionale != null and !#strings.isEmpty(eventoWrapper.evento.razionale)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.razionale != null and !#strings.isEmpty(eventoWrapperShow.evento.razionale)}" th:text="${eventoWrapperShow.evento.razionale}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.razionale != null and !#strings.isEmpty(eventoWrapperShow.evento.razionale)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- RISULTATI ATTESI -->
@@ -372,10 +372,10 @@
 							<span class="label-show" th:text="#{label.risultati_attesi}">Risultati attesi</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div th:if="${eventoWrapper.evento.risultatiAttesi != null and !#lists.isEmpty(eventoWrapper.evento.risultatiAttesi)}" th:each="risultato, row : ${eventoWrapper.evento.risultatiAttesi}">
+							<div th:if="${eventoWrapperShow.evento.risultatiAttesi != null and !#lists.isEmpty(eventoWrapperShow.evento.risultatiAttesi)}" th:each="risultato, row : ${eventoWrapperShow.evento.risultatiAttesi}">
 								<div class="value" th:text="${risultato}"></div>
 							</div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.risultatiAttesi != null and !#lists.isEmpty(eventoWrapper.evento.risultatiAttesi)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.risultatiAttesi != null and !#lists.isEmpty(eventoWrapperShow.evento.risultatiAttesi)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -391,8 +391,8 @@
 							<span class="label-show" th:text="#{label.brochure_evento}">Brochure dell'evento</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.brochureEvento != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.brochureEvento.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.brochureEvento.id}|}"></a></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.brochureEvento != null}" th:text="#{label.allegato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.brochureEvento != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.brochureEvento.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.brochureEvento.id}|}"></a></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.brochureEvento != null}" th:text="#{label.allegato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -402,10 +402,10 @@
 							<span class="label-show" th:text="#{label.verifica_apprendimento_partecipanti}">Verifica Apprendimento partecipanti</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-							<div th:if="${eventoWrapper.evento.verificaApprendimento != null and !#lists.isEmpty(eventoWrapper.evento.verificaApprendimento)}" th:each="verifica, row : ${eventoWrapper.evento.verificaApprendimento}">
+							<div th:if="${eventoWrapperShow.evento.verificaApprendimento != null and !#lists.isEmpty(eventoWrapperShow.evento.verificaApprendimento)}" th:each="verifica, row : ${eventoWrapperShow.evento.verificaApprendimento}">
 								<div class="value" th:text="${verifica.nome}"></div>
 							</div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.verificaApprendimento != null and !#lists.isEmpty(eventoWrapper.evento.verificaApprendimento)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.verificaApprendimento != null and !#lists.isEmpty(eventoWrapperShow.evento.verificaApprendimento)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -415,7 +415,7 @@
 	 						<span class="label-show" th:text="#{label.durata}">Durata</span>
 	 					</label>
 	 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-	 						<div class="value" th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.durata)}"></div>
+	 						<div class="value" th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapperShow.evento.durata)}"></div>
 	 					</div>
 	 				</div>
 
@@ -428,7 +428,7 @@
 	 					<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tipologiaObiettiviFormativi">
 	 						<div class="value">
 	 							<ul>
-									<li class="listStyle-elenco" th:each="obiettivo, row : ${eventoWrapper.evento.riepilogoRES.obiettivi}">
+									<li class="listStyle-elenco" th:each="obiettivo, row : ${eventoWrapperShow.evento.riepilogoRES.obiettivi}">
 										<label th:text="${obiettivo.nome}"></label>
 									</li>
 	 							</ul>
@@ -453,7 +453,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr th:each="metodologia, row : ${eventoWrapper.evento.riepilogoRES.metodologie}">
+									<tr th:each="metodologia, row : ${eventoWrapperShow.evento.riepilogoRES.metodologie}">
 										<td th:text="${metodologia.key.nome}"></td>
 										<td>
 											<span th:if="${metodologia.key.metodologia == T(it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum).FRONTALE}"
@@ -469,10 +469,10 @@
 											<strong><span class="text-uppercase" th:text="#{label.totale_ore}"></span></strong>
 										</td>
 										<td>
-											<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.riepilogoRES.totaleOreFrontali)}"></span></strong>
+											<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapperShow.evento.riepilogoRES.totaleOreFrontali)}"></span></strong>
 										</td>
 										<td>
-											<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.evento.riepilogoRES.totaleOreInterattive)}"></span></strong>
+											<strong><span th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapperShow.evento.riepilogoRES.totaleOreInterattive)}"></span></strong>
 										</td>
 									</tr>
 								</tbody>
@@ -486,16 +486,16 @@
 							<span class="label-show" th:text="#{label.crediti_formativi_attribuiti_evento}">Crediti attribuiti all'evento</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div th:if="${eventoWrapper.evento.crediti != null and eventoWrapper.evento.crediti != 0}" class="value" th:text="${eventoWrapper.evento.crediti}"></div>
-							<div th:unless="${eventoWrapper.evento.crediti != null and eventoWrapper.evento.crediti != 0}" class="value danger" th:text="#{label.dato_non_inserito}"></div>
+							<div th:if="${eventoWrapperShow.evento.crediti != null and eventoWrapperShow.evento.crediti != 0}" class="value" th:text="${eventoWrapperShow.evento.crediti}"></div>
+							<div th:unless="${eventoWrapperShow.evento.crediti != null and eventoWrapperShow.evento.crediti != 0}" class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
-					<div class="item form-group" th:if="${eventoWrapper.evento.crediti != null and eventoWrapper.evento.crediti != 0}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.crediti != null and eventoWrapperShow.evento.crediti != 0}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.provider_confermato_crediti}">Il provider ha confermato i crediti formativi?</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:text="${eventoWrapper.evento.confermatiCrediti} ? #{label.sì} : #{label.no}"></div>
+							<div class="value" th:text="${eventoWrapperShow.evento.confermatiCrediti} ? #{label.sì} : #{label.no}"></div>
 						</div>
 					</div>
 
@@ -504,7 +504,7 @@
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.responsabile_segreteria_organizzativa}">Responsabile segreteria organizzativa</span>
 						</label>
-						<div th:if="${eventoWrapper.evento.responsabileSegreteria != null and !#sets.isEmpty(eventoWrapper.evento.responsabileSegreteria) and eventoWrapper.evento.responsabileSegreteria.anagrafica != null}">
+						<div th:if="${eventoWrapperShow.evento.responsabileSegreteria != null and !#sets.isEmpty(eventoWrapperShow.evento.responsabileSegreteria) and eventoWrapperShow.evento.responsabileSegreteria.anagrafica != null}">
 							<div class="item form-group" style="clear:both; padding:2px;"></div>
 							<div class="item form-group" style="clear:both">
 								<div class="col-md-3 col-sm-3 col-xs-11"></div>
@@ -521,20 +521,20 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr th:if="${eventoWrapper.evento.responsabileSegreteria != null and eventoWrapper.evento.responsabileSegreteria.anagrafica != null}">
-												<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.cognome}"></td>
-												<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.nome}"></td>
-												<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.codiceFiscale}"></td>
-												<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.email}"></td>
-												<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.telefono}"></td>
-												<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.cellulare}"></td>
+											<tr th:if="${eventoWrapperShow.evento.responsabileSegreteria != null and eventoWrapperShow.evento.responsabileSegreteria.anagrafica != null}">
+												<td th:text="${eventoWrapperShow.evento.responsabileSegreteria.anagrafica.cognome}"></td>
+												<td th:text="${eventoWrapperShow.evento.responsabileSegreteria.anagrafica.nome}"></td>
+												<td th:text="${eventoWrapperShow.evento.responsabileSegreteria.anagrafica.codiceFiscale}"></td>
+												<td th:text="${eventoWrapperShow.evento.responsabileSegreteria.anagrafica.email}"></td>
+												<td th:text="${eventoWrapperShow.evento.responsabileSegreteria.anagrafica.telefono}"></td>
+												<td th:text="${eventoWrapperShow.evento.responsabileSegreteria.anagrafica.cellulare}"></td>
 											</tr>
 										</tbody>
 									</table>
 								</div>
 							</div>
 						</div>
-						<div th:unless="${eventoWrapper.evento.responsabileSegreteria != null and !#sets.isEmpty(eventoWrapper.evento.responsabileSegreteria) and eventoWrapper.evento.responsabileSegreteria.anagrafica != null}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div th:unless="${eventoWrapperShow.evento.responsabileSegreteria != null and !#sets.isEmpty(eventoWrapperShow.evento.responsabileSegreteria) and eventoWrapperShow.evento.responsabileSegreteria.anagrafica != null}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
@@ -545,8 +545,8 @@
 							<span class="label-show" th:text="#{label.tipo_materiale_rilasciato}">Tipo materiale durevole rilasciato ai partecipanti</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-							<div class="value" th:if="${eventoWrapper.evento.materialeDurevoleRilasciatoAiPratecipanti != null and !#strings.isEmpty(eventoWrapper.evento.materialeDurevoleRilasciatoAiPratecipanti)}" th:text="${eventoWrapper.evento.materialeDurevoleRilasciatoAiPratecipanti}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.materialeDurevoleRilasciatoAiPratecipanti != null and !#strings.isEmpty(eventoWrapper.evento.materialeDurevoleRilasciatoAiPratecipanti)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.materialeDurevoleRilasciatoAiPratecipanti != null and !#strings.isEmpty(eventoWrapperShow.evento.materialeDurevoleRilasciatoAiPratecipanti)}" th:text="${eventoWrapperShow.evento.materialeDurevoleRilasciatoAiPratecipanti}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.materialeDurevoleRilasciatoAiPratecipanti != null and !#strings.isEmpty(eventoWrapperShow.evento.materialeDurevoleRilasciatoAiPratecipanti)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -556,8 +556,8 @@
 							<span class="label-show" th:text="#{label.quota_partecipazione}">Quota di partecipazione</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-							<div class="value" th:if="${eventoWrapper.evento.quotaPartecipazione != null}" th:text="${#numbers.formatDecimal(eventoWrapper.evento.quotaPartecipazione, 1, 'POINT', 2, 'COMMA')+'€'}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.quotaPartecipazione != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.quotaPartecipazione != null}" th:text="${#numbers.formatDecimal(eventoWrapperShow.evento.quotaPartecipazione, 1, 'POINT', 2, 'COMMA')+'€'}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.quotaPartecipazione != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -570,28 +570,28 @@
 							<span class="label-show" th:text="#{label.solo_lingua_italiana}"></span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.soloLinguaItaliana != null}" th:text="${eventoWrapper.evento.soloLinguaItaliana} ? #{label.sì} : #{label.no}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.soloLinguaItaliana != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.soloLinguaItaliana != null}" th:text="${eventoWrapperShow.evento.soloLinguaItaliana} ? #{label.sì} : #{label.no}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.soloLinguaItaliana != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- LINGUA STRANIERA -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.soloLinguaItaliana == false}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.soloLinguaItaliana == false}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.lingua_straniera_utilizzata}">Lingua straniera utilizzata</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.linguaStranieraUtilizzata != null and !#strings.isEmpty(eventoWrapper.evento.linguaStranieraUtilizzata)}" th:text="${eventoWrapper.evento.linguaStranieraUtilizzata}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.linguaStranieraUtilizzata != null and !#strings.isEmpty(eventoWrapper.evento.linguaStranieraUtilizzata)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.linguaStranieraUtilizzata != null and !#strings.isEmpty(eventoWrapperShow.evento.linguaStranieraUtilizzata)}" th:text="${eventoWrapperShow.evento.linguaStranieraUtilizzata}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.linguaStranieraUtilizzata != null and !#strings.isEmpty(eventoWrapperShow.evento.linguaStranieraUtilizzata)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- TRADUZIONE RADIO -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.soloLinguaItaliana == false}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.soloLinguaItaliana == false}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.esiste_traduzione}">Esiste un sistema di traduzione simultanea</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.esisteTraduzioneSimultanea != null}" th:text="${eventoWrapper.evento.esisteTraduzioneSimultanea} ? #{label.sì} : #{label.no}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.esisteTraduzioneSimultanea != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.esisteTraduzioneSimultanea != null}" th:text="${eventoWrapperShow.evento.esisteTraduzioneSimultanea} ? #{label.sì} : #{label.no}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.esisteTraduzioneSimultanea != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -603,10 +603,10 @@
 							<span class="label-show" th:text="#{label.verifica_presenza_partecipanti}">Verifica presenza partecipanti</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div th:if="${eventoWrapper.evento.verificaPresenzaPartecipanti != null and !#lists.isEmpty(eventoWrapper.evento.verificaPresenzaPartecipanti)}" th:each="modalita, row : ${eventoWrapper.evento.verificaPresenzaPartecipanti}">
+							<div th:if="${eventoWrapperShow.evento.verificaPresenzaPartecipanti != null and !#lists.isEmpty(eventoWrapperShow.evento.verificaPresenzaPartecipanti)}" th:each="modalita, row : ${eventoWrapperShow.evento.verificaPresenzaPartecipanti}">
 								<div class="value" th:text="${modalita.nome}"></div>
 							</div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.verificaPresenzaPartecipanti != null and !#lists.isEmpty(eventoWrapper.evento.verificaPresenzaPartecipanti)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.verificaPresenzaPartecipanti != null and !#lists.isEmpty(eventoWrapperShow.evento.verificaPresenzaPartecipanti)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -619,28 +619,28 @@
 							<span class="label-show" th:text="#{label.verifica_distanza_ricadute_formative}"></span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.verificaRicaduteFormative != null}" th:text="${eventoWrapper.evento.verificaRicaduteFormative} ? #{label.sì} : #{label.no}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.verificaRicaduteFormative != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.verificaRicaduteFormative != null}" th:text="${eventoWrapperShow.evento.verificaRicaduteFormative} ? #{label.sì} : #{label.no}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.verificaRicaduteFormative != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- DESCRIZIONE -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.verificaRicaduteFormative == true}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.verificaRicaduteFormative == true}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.descrizione_verifica_ricadute_formative}">Descrizione</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.descrizioneVerificaRicaduteFormative != null and !#strings.isEmpty(eventoWrapper.evento.descrizioneVerificaRicaduteFormative)}" th:text="${eventoWrapper.evento.descrizioneVerificaRicaduteFormative}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.descrizioneVerificaRicaduteFormative != null and !#strings.isEmpty(eventoWrapper.evento.descrizioneVerificaRicaduteFormative)}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.descrizioneVerificaRicaduteFormative != null and !#strings.isEmpty(eventoWrapperShow.evento.descrizioneVerificaRicaduteFormative)}" th:text="${eventoWrapperShow.evento.descrizioneVerificaRicaduteFormative}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.descrizioneVerificaRicaduteFormative != null and !#strings.isEmpty(eventoWrapperShow.evento.descrizioneVerificaRicaduteFormative)}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- ALLEGATO VERIFICA RICADUTE FORMATIVE -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.verificaRicaduteFormative}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.verificaRicaduteFormative}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.documento_verifica_ricadute_formative}">Documento di verifica delle ricadute formative</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.documentoVerificaRicaduteFormative != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.documentoVerificaRicaduteFormative.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.documentoVerificaRicaduteFormative.id}|}"></a></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.documentoVerificaRicaduteFormative != null}" th:text="#{label.allegato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.documentoVerificaRicaduteFormative != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.documentoVerificaRicaduteFormative.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.documentoVerificaRicaduteFormative.id}|}"></a></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.documentoVerificaRicaduteFormative != null}" th:text="#{label.allegato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -653,16 +653,16 @@
 							<span class="label-show" th:text="#{label.evento_sponsorizzato_radio}">L'Evento è sponsorizzato?</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.eventoSponsorizzato != null}" th:text="${eventoWrapper.evento.eventoSponsorizzato} ? #{label.sì} : #{label.no}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.eventoSponsorizzato != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.eventoSponsorizzato != null}" th:text="${eventoWrapperShow.evento.eventoSponsorizzato} ? #{label.sì} : #{label.no}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.eventoSponsorizzato != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- SPONSOR INFO -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.eventoSponsorizzato == true}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoSponsorizzato == true}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.sponsors}">Sponsors</span>
 						</label>
-						<div th:if="${eventoWrapper.evento.sponsors != null and !#sets.isEmpty(eventoWrapper.evento.sponsors)}">
+						<div th:if="${eventoWrapperShow.evento.sponsors != null and !#sets.isEmpty(eventoWrapperShow.evento.sponsors)}">
 							<div class="item form-group" style="clear:both; padding:2px;"></div>
 							<div class="item form-group" style="clear:both">
 								<div class="col-md-3 col-sm-3 col-xs-11"></div>
@@ -675,7 +675,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr th:each="sponsor, row : ${eventoWrapper.evento.sponsors}">
+											<tr th:each="sponsor, row : ${eventoWrapperShow.evento.sponsors}">
 												<td th:text="${sponsor.name}"></td>
 												<td th:if="${sponsor.sponsorFile != null}"><a th:href="@{|/file/${sponsor.sponsorFile.id}|}" th:text="${sponsor.sponsorFile.nomeFile}"></a></td>
 												<td th:unless="${sponsor.sponsorFile != null}"><span class="danger" th:text="#{label.allegato_non_inserito}"></span></td>
@@ -685,39 +685,39 @@
 								</div>
 							</div>
 						</div>
-						<div th:unless="${eventoWrapper.evento.sponsors != null and !#sets.isEmpty(eventoWrapper.evento.sponsors)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div th:unless="${eventoWrapperShow.evento.sponsors != null and !#sets.isEmpty(eventoWrapperShow.evento.sponsors)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
-					<th:block th:if="${eventoWrapper.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALIMENTAZIONE_PRIMA_INFANZIA}">
+					<th:block th:if="${eventoWrapperShow.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALIMENTAZIONE_PRIMA_INFANZIA}">
 						<!-- RADIO SPONSOR PRIMA INFANZIA -->
 						<div class="item form-group">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 								<span class="label-show" th:text="#{label.evento_sponsorizzato_infanzia_radio}">L’evento è sponsorizzato da aziende che trattano alimenti per la prima infanzia?</span>
 							</label>
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-								<div class="value" th:if="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null}" th:text="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia} ? #{label.sì} : #{label.no}"></div>
-								<div class="value danger" th:unless="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.dato_non_inserito}"></div>
+								<div class="value" th:if="${eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null}" th:text="${eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia} ? #{label.sì} : #{label.no}"></div>
+								<div class="value danger" th:unless="${eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.dato_non_inserito}"></div>
 							</div>
 						</div>
 						<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->
-						<div class="item form-group" th:if="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null and eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia == true}">
+						<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null and eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia == true}">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 								<span class="label-show" th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
 							</label>
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-								<div class="value" th:if="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.id}|}"></a></div>
-								<div class="value danger" th:unless="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}" th:text="#{label.allegato_non_inserito}"></div>
+								<div class="value" th:if="${eventoWrapperShow.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.autocertificazioneAutorizzazioneMinisteroSalute.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.autocertificazioneAutorizzazioneMinisteroSalute.id}|}"></a></div>
+								<div class="value danger" th:unless="${eventoWrapperShow.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}" th:text="#{label.allegato_non_inserito}"></div>
 							</div>
 						</div>
 						<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
-						<div class="item form-group" th:if="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null and eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia == false}">
+						<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null and eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia == false}">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 								<span class="label-show" th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
 							</label>
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-								<div class="value" th:if="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>
-								<div class="value danger" th:unless="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.allegato_non_inserito}"></div>
+								<div class="value" th:if="${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>
+								<div class="value danger" th:unless="${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.allegato_non_inserito}"></div>
 							</div>
 						</div>
 					</th:block>
@@ -731,28 +731,28 @@
 							<span class="label-show" th:text="#{label.forme_finanziamento_radio}">Sono presenti forme di finanziamento?</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.altreFormeFinanziamento != null}" th:text="${eventoWrapper.evento.altreFormeFinanziamento} ? #{label.sì} : #{label.no}"></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.altreFormeFinanziamento != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.altreFormeFinanziamento != null}" th:text="${eventoWrapperShow.evento.altreFormeFinanziamento} ? #{label.sì} : #{label.no}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.altreFormeFinanziamento != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- ALLEGATO CONTRATTI/ACCORDI/CONVENZIONI -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.altreFormeFinanziamento == true}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.altreFormeFinanziamento == true}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.allegato_contratti_accordi_convenzioni}">Allegato Contratti Accordi Convenzioni</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.contrattiAccordiConvenzioni != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.contrattiAccordiConvenzioni.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.contrattiAccordiConvenzioni.id}|}"></a></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.contrattiAccordiConvenzioni != null}" th:text="#{label.allegato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.contrattiAccordiConvenzioni != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.contrattiAccordiConvenzioni.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.contrattiAccordiConvenzioni.id}|}"></a></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.contrattiAccordiConvenzioni != null}" th:text="#{label.allegato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA FINANZIAMENTI -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.altreFormeFinanziamento == false}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.altreFormeFinanziamento == false}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Allegato autocertificazione assenza finanziamenti</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div th:if="${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti != null}" class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti.id}|}"></a></div>
-							<div th:unless="${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti != null}" class="value danger" th:text="#{label.allegato_non_inserito}"></div>
+							<div th:if="${eventoWrapperShow.evento.autocertificazioneAssenzaFinanziamenti != null}" class="value"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.autocertificazioneAssenzaFinanziamenti.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.autocertificazioneAssenzaFinanziamenti.id}|}"></a></div>
+							<div th:unless="${eventoWrapperShow.evento.autocertificazioneAssenzaFinanziamenti != null}" class="value danger" th:text="#{label.allegato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -765,16 +765,16 @@
 							<span class="label-show" th:text="#{label.si_avvale_di_partner}">L’evento si avvale di partner?</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.eventoAvvalePartner != null}" th:text="${eventoWrapper.evento.eventoAvvalePartner} ? #{label.sì} : #{label.no} "></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.eventoAvvalePartner != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.eventoAvvalePartner != null}" th:text="${eventoWrapperShow.evento.eventoAvvalePartner} ? #{label.sì} : #{label.no} "></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.eventoAvvalePartner != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 					<!-- PARTNER INFO -->
-					<div class="item form-group" th:if="${eventoWrapper.evento.eventoAvvalePartner == true}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoAvvalePartner == true}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.partners}">Partners</span>
 						</label>
-						<div th:if="${eventoWrapper.evento.partners != null and !#sets.isEmpty(eventoWrapper.evento.partners)}">
+						<div th:if="${eventoWrapperShow.evento.partners != null and !#sets.isEmpty(eventoWrapperShow.evento.partners)}">
 							<div class="item form-group" style="clear:both; padding:2px;"></div>
 							<div class="item form-group" style="clear:both">
 								<div class="col-md-3 col-sm-3 col-xs-11"></div>
@@ -787,7 +787,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr th:each="partner, row : ${eventoWrapper.evento.partners}">
+											<tr th:each="partner, row : ${eventoWrapperShow.evento.partners}">
 												<td th:text="${partner.name}"></td>
 												<td><a th:href="@{|/file/${partner.partnerFile.id}|}" th:text="${partner.partnerFile.nomeFile}"></a></td>
 											</tr>
@@ -796,7 +796,7 @@
 								</div>
 							</div>
 						</div>
-						<div th:unless="${eventoWrapper.evento.partners != null and !#sets.isEmpty(eventoWrapper.evento.partners)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+						<div th:unless="${eventoWrapperShow.evento.partners != null and !#sets.isEmpty(eventoWrapperShow.evento.partners)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
@@ -809,8 +809,8 @@
 							<span class="label-show" th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.id}|}"></a></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}" th:text="#{label.allegato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.dichiarazioneAssenzaConflittoInteresse != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.dichiarazioneAssenzaConflittoInteresse.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.dichiarazioneAssenzaConflittoInteresse.id}|}"></a></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.dichiarazioneAssenzaConflittoInteresse != null}" th:text="#{label.allegato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -820,8 +820,8 @@
 							<span class="label-show" th:text="#{label.procedura_verifica_qualita}">E’ prevista una procedura di verifica della qualità percepita</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.proceduraVerificaQualitaPercepita != null}" th:text="${eventoWrapper.evento.proceduraVerificaQualitaPercepita} ? #{label.sì} : #{label.no} "></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.proceduraVerificaQualitaPercepita != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.proceduraVerificaQualitaPercepita != null}" th:text="${eventoWrapperShow.evento.proceduraVerificaQualitaPercepita} ? #{label.sì} : #{label.no} "></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.proceduraVerificaQualitaPercepita != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 
@@ -831,8 +831,8 @@
 							<span class="label-show" th:text="#{label.autorizzazione_privacy}">label.autorizzazione_privacy</span>
 						</label>
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-							<div class="value" th:if="${eventoWrapper.evento.autorizzazionePrivacy != null}" th:text="${eventoWrapper.evento.autorizzazionePrivacy} ? #{label.sì} : #{label.no} "></div>
-							<div class="value danger" th:unless="${eventoWrapper.evento.autorizzazionePrivacy != null}" th:text="#{label.dato_non_inserito}"></div>
+							<div class="value" th:if="${eventoWrapperShow.evento.autorizzazionePrivacy != null}" th:text="${eventoWrapperShow.evento.autorizzazionePrivacy} ? #{label.sì} : #{label.no} "></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.autorizzazionePrivacy != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 				</div>

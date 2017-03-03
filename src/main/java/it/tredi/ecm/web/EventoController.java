@@ -102,7 +102,7 @@ import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
 import it.tredi.ecm.web.validator.ScadenzeEventoValidator;
 
 @Controller
-@SessionAttributes("eventoWrapper")
+@SessionAttributes({"eventoWrapper","eventoWrapperRendiconto"})
 public class EventoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoController.class);
 
@@ -607,7 +607,7 @@ public class EventoController {
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
 		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/validate", method = RequestMethod.POST)
 		public String rendicontoEventoValidate(@PathVariable Long providerId,
-				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+				@PathVariable Long eventoId, @ModelAttribute("eventoWrapperRendiconto") EventoWrapper wrapper, BindingResult result,
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
@@ -636,7 +636,7 @@ public class EventoController {
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"),ex);
 				if (ex instanceof EcmException) //errore gestito
-//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
+					//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
 					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
 				else
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -648,7 +648,7 @@ public class EventoController {
 	//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
 		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/inviaACogeaps", method = RequestMethod.GET)
 		public String rendicontoEventoIviaACogeaps(@PathVariable Long providerId,
-				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+				@PathVariable Long eventoId, @ModelAttribute("eventoWrapperRendiconto") EventoWrapper wrapper, BindingResult result,
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
@@ -672,7 +672,7 @@ public class EventoController {
 		//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
 		@RequestMapping(value = "/provider/{providerId}/evento/{eventoId}/rendiconto/statoElaborazioneCogeaps", method = RequestMethod.GET)
 		public String rendicontoEventoStatoElaborazioneCogeaps(@PathVariable Long providerId,
-				@PathVariable Long eventoId, @ModelAttribute("eventoWrapper") EventoWrapper wrapper, BindingResult result,
+				@PathVariable Long eventoId, @ModelAttribute("eventoWrapperRendiconto") EventoWrapper wrapper, BindingResult result,
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"));
@@ -683,7 +683,7 @@ public class EventoController {
 			catch (Exception ex) {
 				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"),ex);
 				if (ex instanceof EcmException) //errore gestito
-	//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
+					//TODO - l'idea era quella di utilizzare error._free_msg={0} ma non funziona!!!!
 					redirectAttrs.addFlashAttribute("message", new Message(((EcmException) ex).getMessageTitle(), ((EcmException) ex).getMessageDetail(), "alert"));
 				else
 					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -932,13 +932,14 @@ public class EventoController {
 	}
 
 	private String goToShow(Model model, EventoWrapper eventoWrapper) {
-		model.addAttribute("eventoWrapper", eventoWrapper);
+		model.addAttribute("eventoWrapperShow", eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return SHOW;
 	}
 
 	private String goToRendiconto(Model model, EventoWrapper wrapper) {
-		model.addAttribute("eventoWrapper", wrapper);
+		model.addAttribute("eventoWrapperRendiconto", wrapper);
+		model.addAttribute("eventoWrapperShow", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + RENDICONTO));
 		return RENDICONTO;
 	}
