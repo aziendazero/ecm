@@ -29,6 +29,7 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
@@ -645,9 +646,9 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public String controllaComitato(Set<Persona> componentiComitatoScientifico) {
+	public String controllaComitato(Set<Persona> componentiComitatoScientifico, boolean fromValutazioneSegreteria) {
 		if(componentiComitatoScientifico.size() < 5)
-			return "error.numero_comitato_integrazione";
+			return fromValutazioneSegreteria ? "error.numero_minimo_comitato_integrazione" : "error.numero_minimo_comitato";
 		int counterCoordinatori = 0;
 		int counterProfessioniSanitarie = 0;
 		for(Persona p : componentiComitatoScientifico) {
@@ -658,9 +659,9 @@ public class ProviderServiceImpl implements ProviderService {
 				counterProfessioniSanitarie++;
 		}
 		if(counterCoordinatori != 1)
-			return "error.numero_coordinatore_integrazione";
+			return fromValutazioneSegreteria ? "error.numero_coordinatore_integrazione" : "error.numero_coordinatore";
 		if(counterProfessioniSanitarie < 5) {
-			return "error.numero_professionisti_sanitari_integrazione";
+			return fromValutazioneSegreteria ? "error.numero_minimo_professionisti_sanitari_integrazione" : "error.numero_minimo_professionisti_sanitari";
 		}
 		return null;
 	}

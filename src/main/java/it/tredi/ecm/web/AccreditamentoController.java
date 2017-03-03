@@ -786,7 +786,7 @@ public class AccreditamentoController {
 		accreditamentoWrapper.setNoteOsservazioniIntegrazione(accreditamentoWrapper.getAccreditamento().getNoteOsservazioniIntegrazione());
 		accreditamentoWrapper.setNoteOsservazioniPreavvisoRigetto(accreditamentoWrapper.getAccreditamento().getNoteOsservazioniPreavvisoRigetto());
 
-		String componentiComitatoErrorMsg = providerService.controllaComitato(providerService.getProvider(providerId).getComponentiComitatoScientifico());
+		String componentiComitatoErrorMsg = providerService.controllaComitato(providerService.getProvider(providerId).getComponentiComitatoScientifico(), false);
 		if(componentiComitatoErrorMsg == null)
 			accreditamentoWrapper.setComitatoScientificoStato(true);
 		else accreditamentoWrapper.setComitatoScientificoStato(false);

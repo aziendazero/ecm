@@ -2038,7 +2038,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					componentiComitato.add(personaService.getPersona(fia.getObjectReference()));
 				}
 			}
-			erroreMsgComitato = providerService.controllaComitato(componentiComitato);
+			erroreMsgComitato = providerService.controllaComitato(componentiComitato, true);
 
 			Set<FieldIntegrazioneAccreditamento> fieldSede = null;
 			Iterator<Sede> sedeIter = sedi.iterator();
