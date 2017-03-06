@@ -429,10 +429,13 @@ public class ProviderController {
 			switch(stato) {
 			case "pianoFormativoNotInserito":
 				listaProvider.addAll(pianoFormativoService.getAllProviderNotPianoFormativoInseritoPerAnno());
+				break;
 			case "domandaScaduta":
 				listaProvider.addAll(providerService.getAllProviderInadempienti());
+				break;
 			case "mancatoPagamentoAnnuale":
 				listaProvider.addAll(quotaAnnualeService.getAllProviderNotPagamentoEffettuatoAllaScadenza());
+				break;
 			}
 			redirectAttrs.addFlashAttribute("providerList", listaProvider);
 			return returnRedirect;

@@ -320,6 +320,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			//accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
 			accreditamento.getProvider().setCanInsertAccreditamentoStandard(false);
 			accreditamento.getProvider().setDataScadenzaInsertAccreditamentoStandard(null);
+			accreditamento.getProvider().setInviatoAccreditamentoStandard(true);
 		}
 
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);

@@ -143,6 +143,9 @@ public class Provider extends BaseEntity{
 	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;
 
+	@Column(name ="inviato_accreditamento_standard")
+	private Boolean inviatoAccreditamentoStandard;
+
 	/** UTILS **/
 	public void addPersona(Persona persona){
 		this.persone.add(persona);

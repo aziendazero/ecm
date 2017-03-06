@@ -69,7 +69,8 @@
 	<include file="20170217_001_fileDecadenza.xml" relativeToChangelogFile="true"/>
 
 	<include file="20170223_001_aggiunta_entity_history_accreditamento.xml" relativeToChangelogFile="true"/>
-	
+
 	<include file="20170301_001_unique_constraint_codice_fiscale.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170306_001_addColumn_InviatoAccreditamentoStandard.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
