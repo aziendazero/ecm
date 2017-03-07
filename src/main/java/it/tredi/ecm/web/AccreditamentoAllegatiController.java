@@ -529,6 +529,12 @@ public class AccreditamentoAllegatiController {
 		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
 		idEditabili = IdFieldEnum.getAllForSubset(subset);
 
+		//se accreditamento provvisorio filtro i field che sono solo della standard
+		if(accreditamento.isProvvisorio()){
+			idEditabili.remove(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD);
+			idEditabili.remove(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA);
+		}
+
 		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		wrapper.setIdEditabili(idEditabili);
 		wrapper.setMappa(mappa);
