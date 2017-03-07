@@ -40,11 +40,15 @@
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.accreditamentoId}" />
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.subset}" />
 								<input type="hidden" th:field="${richiestaIntegrazioneWrapper.objRef}" />
+								<input type="hidden" th:field="${personaWrapper.persona.id}" />
 							</th:block>
 						</th:block>
 
 						<!-- info -->
 						<h2 th:if="${editabile and (personaWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE or personaWrapper.accreditamento.isVariazioneDati())}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
+
+						<!-- errore in caso di mancata motivazione nell'enableField -->
+						<h2 th:if="${errorMsg}" class="col-xs-12 alert alert-error with-margin-top text-center" th:text="#{__${errorMsg}__}"></h2>
 
 						<div th:if="${valutabile and isFULL}" class="item validateAlert form-group" th:classappend="${#fields.hasErrors('personaWrapper')} ? 'bad'">
 							<th:block>
