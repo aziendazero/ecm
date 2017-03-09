@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -784,15 +785,66 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 		sbloccaValutazioniByFieldIntegrazioneList(valutazioni, fieldIntegrazioneList);
 
+
+		//creo una lista di fieldIntegrazione fittizia, per applicare sui fieldValutazione l'info che un campo abilitato non è stato modificato dal provider
+		//il fieldIntegrazione (che non verrà salvato su db, ma utilizzato solo per richiamare la 'sbloccaValutazioniByFieldIntegrazioneList' è realizzato valorizzando solo
+		//i cmapi: objectReference, idField, isModificato
+		Long id = -1L;
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneListFITTIZIA = new HashSet<FieldIntegrazioneAccreditamento>();
+		Set<FieldEditabileAccreditamento> fieldEditabileList = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId);
+		if(fieldEditabileList != null){
+			for(FieldEditabileAccreditamento fieldEditabile : fieldEditabileList){
+				//per ogni fieldEditabile (abilitato attraverso l'enableField sulla domanda), controllo se NON esiste il fieldIntegrazione creato dal provider
+				FieldIntegrazioneAccreditamento fieldIntegrazione = null;
+				if(fieldEditabile.getObjectReference() != -1){
+					fieldIntegrazione = Utils.getField(fieldIntegrazioneList, fieldEditabile.getObjectReference(), fieldEditabile.getIdField());
+				}else{
+					fieldIntegrazione = Utils.getField(fieldIntegrazioneList, fieldEditabile.getIdField());
+				}
+
+				if(fieldIntegrazione == null){
+					//NON esiste il fieldIntegrazione creato dal provider...creo quello fittizio
+					if(fieldEditabile.getObjectReference() != -1){
+						fieldIntegrazione = new FieldIntegrazioneAccreditamento(fieldEditabile.getIdField(), fieldEditabile.getAccreditamento(), fieldEditabile.getObjectReference(),null,null);
+					}else{
+						fieldIntegrazione = new FieldIntegrazioneAccreditamento(fieldEditabile.getIdField(), fieldEditabile.getAccreditamento(), null,null);
+					}
+					fieldIntegrazione.setModificato(false);
+					fieldIntegrazione.setId(id--);
+
+					fieldIntegrazioneListFITTIZIA.add(fieldIntegrazione);
+				}
+			}
+
+			if(fieldIntegrazioneListFITTIZIA != null && !fieldIntegrazioneListFITTIZIA.isEmpty()){
+				sbloccaValutazioniByFieldIntegrazioneList(valutazioni, fieldIntegrazioneListFITTIZIA);
+				fieldIntegrazioneListFITTIZIA.clear();
+			}
+		}
+
 		//TODO non spacca niente???
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 
 		if(accreditamento.isIntegrazione()){
 			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), false, accreditamento.getProvider());
-			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
 		}
 		else if(accreditamento.isPreavvisoRigetto()){
 			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), true, accreditamento.getProvider());
+		}
+		else if(accreditamento.isModificaDati()){
+			//workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
+		}
+	}
+
+	@Override
+	public void eseguiTaskInviaIntegrazione(Long accreditamentoId) throws Exception{
+		LOGGER.debug(Utils.getLogMessage("Esecuzione Task - Integrazione della domanda " + accreditamentoId));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		if(accreditamento.isIntegrazione()){
+			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
+		}
+		else if(accreditamento.isPreavvisoRigetto()){
 			workflowService.eseguiTaskPreavvisoRigettoForCurrentUser(accreditamento);
 		}
 		else if(accreditamento.isModificaDati()){
@@ -1337,7 +1389,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//Ricavo la seduta
 				Seduta seduta = null;
 				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
-					//TODO nel caso vengano agganciati piu' flussi alla domanda occorre prendere l'ultima ValutazioneCommissionew
+					//TODO nel caso vengano agganciati piu' flussi alla domanda occorre prendere l'ultima ValutazioneCommissione
 					if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
 						seduta = valCom.getSeduta();
 					}
@@ -1373,6 +1425,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					accreditamento.setDataPreavvisoRigettoFine(LocalDate.now());
 					accreditamento.setPreavvisoRigettoEseguitoDaProvider(eseguitoDaUtente);
 				}
+				inviaIntegrazione(accreditamentoId);
 				fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
 				//Ricavo la seduta

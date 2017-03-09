@@ -7,7 +7,6 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
@@ -40,6 +39,7 @@ public interface AccreditamentoService{
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaIntegrazione(Long accreditamentoId) throws Exception;
+	public void eseguiTaskInviaIntegrazione(Long accreditamentoId) throws Exception;
 	public void presaVisione(Long accreditamentoId) throws Exception;
 	public void rivaluta(Long accreditamentoId);
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
