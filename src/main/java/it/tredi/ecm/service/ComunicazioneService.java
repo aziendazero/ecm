@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,26 +20,29 @@ public interface ComunicazioneService {
 	Comunicazione getComunicazioneById(Long id);
 	int countAllComunicazioniRicevuteByAccountId(Long id);
 	int countAllComunicazioniInviateByAccountId(Long id);
-	int countAllComunicazioniBloccateByAccountId(Long id);
-	Comunicazione getUltimaComunicazioneCreata(Long id);
+	int countAllComunicazioniChiuseByAccountId(Long id);
+	int countAllComunicazioniNonRisposteByAccountId(Long id);
 	long getIdUltimaComunicazioneRicevuta(Long id);
 	List<Comunicazione> getUltimi10MessaggiNonLetti(Long id);
 	long countAllMessaggiNonLetti(Long id);
 	Map<String, Set<Account>> getAllDestinatariDisponibili(Long id);
 	void send(Comunicazione comunicazione, File allegato);
 	boolean canAccountRespondToComunicazione(Account account, Comunicazione comunicazione);
+	boolean canAccountSeeResponse(Account account, ComunicazioneResponse response);
 	boolean canAccountCloseComunicazione(Account account, Comunicazione comunicazione);
 	void contrassegnaComeLetta(Long id);
 	void reply(ComunicazioneResponse risposta, Long id, File allegato);
 	Set<Comunicazione> getAllComunicazioniRicevuteByAccount(Account user);
 	Set<Comunicazione> getAllComunicazioniInviateByAccount(Account user);
 	Set<Comunicazione> getAllComunicazioniChiuseByAccount(Account user);
+	Set<Comunicazione> getAllComunicazioniNonRisposteByAccount(Account account);
 	Set<Comunicazione> getAllComunicazioniNonLetteByAccount(Account user);
 	void chiudiComunicazioneById(Long id);
-	int countAllComunicazioniByAccountId(Long currentAccountId);
+	int countAllComunicazioniStoricoByAccountId(Long currentAccountId);
 	Set<Comunicazione> getAllComunicazioniByAccount(Account user);
 	Set<Comunicazione> getAllComunicazioniByProvider(Provider provider);
-
+	Set<Comunicazione> getAllComunicazioniNonRisposteFromProviderBySegreteria(Provider provider);
 	List<Comunicazione> cerca(RicercaComunicazioneWrapper wrapper);
+	HashMap<Long, Boolean> createMappaVisibilitaResponse(Account account, Comunicazione comunicazione);
 
 }

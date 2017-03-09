@@ -15,36 +15,93 @@ import it.tredi.ecm.dao.entity.Comunicazione;
 
 public interface ComunicazioneRepository  extends CrudRepository<Comunicazione, Long> {
 
-	@Query ("SELECT COUNT (c) FROM Comunicazione c WHERE :user IN ELEMENTS(c.destinatari)")
-	int countAllComunicazioniReceivedByAccount(@Param("user") Account user);
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :user MEMBER OF c.destinatari")
+	int countAllComunicazioniRicevuteByAccount(@Param("user") Account user);
 
-	int countAllComunicazioniByMittente(Account user);
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :user MEMBER OF c.destinatari OR :segreteria MEMBER OF c.destinatari")
+	int countAllComunicazioniRicevuteByAccountOrBySegreteria(@Param("user") Account user, @Param("segreteria") Account segreteriaComunicazioni);
 
-	@Query ("SELECT COUNT (c) FROM Comunicazione c WHERE (:user IN ELEMENTS(c.destinatari) OR :user = c.mittente) AND c.chiusa = true")
-	int countAllComunicazioniChiuseForUser(@Param("user") Account user);
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE c.fakeAccountComunicazioni = :accountComunicazioni")
+	int countAllComunicazioniInviateForAccount(@Param("accountComunicazioni") Account accountComunicazioni);
 
-	Comunicazione findFirstByMittenteOrderByDataCreazioneDesc(Account user);
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE (:user MEMBER OF c.destinatari OR :user = c.mittente) AND c.chiusa = true")
+	int countAllComunicazioniChiuseByAccount(@Param("user") Account user);
 
-	@Query("SELECT c FROM Comunicazione c WHERE :userId IN ELEMENTS(c.utentiCheDevonoLeggere) ORDER BY c.dataUltimaModifica DESC")
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE (:accountComunicazioni MEMBER OF c.destinatari OR c.fakeAccountComunicazioni = :accountComunicazioni) AND c.chiusa = true")
+	int countAllComunicazioniChiuseByGroup(@Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE (:user MEMBER OF c.destinatari OR :user = c.mittente OR :accountComunicazioni MEMBER OF c.destinatari OR c.fakeAccountComunicazioni = :accountComunicazioni) AND c.chiusa = true")
+	int countAllComunicazioniChiuseByAccountOrByGroup(@Param("user") Account user, @Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :user MEMBER OF c.destinatari OR :user = c.mittente")
+	int countAllComunicazioniStoricoByAccount(@Param("user") Account user);
+
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :accountComunicazioni MEMBER OF c.destinatari OR c.fakeAccountComunicazioni = :accountComunicazioni")
+	int countAllComunicazioniStoricoByGroup(@Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :user MEMBER OF c.destinatari OR :user = c.mittente OR :accountComunicazioni MEMBER OF c.destinatari OR c.fakeAccountComunicazioni = :accountComunicazioni")
+	int countAllComunicazioniStoricoByAccountOrByGroup(@Param("user") Account user, @Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :user MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.mittente = :user)")
+	int countAllComunicazioniNonRisposteByAccount(@Param("user") Account user);
+
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :accountComunicazioni MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.fakeAccountComunicazioni = :accountComunicazioni)")
+	int countAllComunicazioniNonRisposteByGroup(@Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE (:user MEMBER OF c.destinatari OR :accountComunicazioni MEMBER OF c.destinatari) AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND (cr.mittente = :user OR cr.fakeAccountComunicazioni = :accountComunicazioni))")
+	int countAllComunicazioniNonRisposteByAccountOrByGroup(@Param("user") Account user, @Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE :user MEMBER OF c.destinatari")
+	Set<Comunicazione> findAllComunicazioniRicevuteByAccount(@Param("user") Account user);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE :user MEMBER OF c.destinatari OR :segreteria MEMBER OF c.destinatari")
+	Set<Comunicazione> findAllComunicazioniRicevuteByAccountOrBySegreteria(@Param("user") Account user, @Param("segreteria") Account segreteriaComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE c.fakeAccountComunicazioni = :accountComunicazioni")
+	Set<Comunicazione> findAllComunicazioniInviateForAccount(@Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE (:user MEMBER OF c.destinatari OR :user = c.mittente OR :segreteria MEMBER OF c.destinatari OR c.inviatoAllaSegreteria = false) AND c.chiusa = true")
+	Set<Comunicazione> findAllComunicazioniChiuseByAccountOrBySegreteria(@Param("user") Account user, @Param("segreteria") Account segreteriaComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE (:user MEMBER OF c.destinatari OR :user = c.mittente) AND c.chiusa = true")
+	Set<Comunicazione> findAllComunicazioniChiuseByAccount(@Param("user") Account user);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE (:accountComunicazioni MEMBER OF c.destinatari OR c.fakeAccountComunicazioni = :accountComunicazioni) AND c.chiusa = true")
+	Set<Comunicazione> findAllComunicazioniChiuseByGroup(@Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE (:user MEMBER OF c.destinatari OR :user = c.mittente OR :accountComunicazioni MEMBER OF c.destinatari OR c.fakeAccountComunicazioni = :accountComunicazioni) AND c.chiusa = true")
+	Set<Comunicazione> findAllComunicazioniChiuseByAccountOrByGroup(@Param("user") Account user, @Param("accountComunicazioni") Account segreteriaComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE :user MEMBER OF c.destinatari OR :user = c.mittente")
+	Set<Comunicazione> findAllComunicazioniStoricoByAccount(@Param("user") Account user);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE :accountComunicazioni MEMBER OF c.destinatari OR c.fakeAccountComunicazioni = :accountComunicazioni")
+	Set<Comunicazione> findAllComunicazioniStoricoByGroup(@Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE :user MEMBER OF c.destinatari OR :user = c.mittente OR :accountComunicazioni MEMBER OF c.destinatari OR c.fakeAccountComunicazioni = :accountComunicazioni")
+	Set<Comunicazione> findAllComunicazioniStoricoByAccountOrByGroup(@Param("user") Account user, @Param("accountComunicazioni") Account segreteriaComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE :user MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.mittente = :user)")
+	Set<Comunicazione> findAllComunicazioniNonRisposteByAccount(@Param("user") Account user);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE :accountComunicazioni MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.fakeAccountComunicazioni = :accountComunicazioni)")
+	Set<Comunicazione> findAllComunicazioniNonRisposteByGroup(@Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE (:user MEMBER OF c.destinatari OR :accountComunicazioni MEMBER OF c.destinatari) AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND (cr.mittente = :user OR cr.fakeAccountComunicazioni = :accountComunicazioni))")
+	Set<Comunicazione> findAllComunicazioniNonRisposteByAccountOrByGroup(@Param("user") Account user, @Param("accountComunicazioni") Account accountComunicazioni);
+
+	@Query ("SELECT c FROM Comunicazione c WHERE :accountComunicazioniFrom = c.fakeAccountComunicazioni AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.fakeAccountComunicazioni = :accountComunicazioniTo)")
+	Set<Comunicazione> findAllComunicazioniNonRisposteFromGroupByGroup(@Param("accountComunicazioniFrom") Account accountComunicazioniFrom, @Param("accountComunicazioniTo") Account accountComunicazioniTo);
+
+	@Query("SELECT COUNT (c) FROM Comunicazione c WHERE :userId MEMBER OF c.utentiCheDevonoLeggere")
+	int countAllMessaggiNonLetti(@Param ("userId") Long userId);
+
+	//pageable
+	@Query("SELECT c FROM Comunicazione c WHERE :userId MEMBER OF c.utentiCheDevonoLeggere ORDER BY c.dataUltimaModifica DESC")
 	Page<Comunicazione> findMessaggiNonLettiOrderByDataCreazioneDesc(@Param ("userId") Long userId, Pageable pageable);
 
-	@Query("SELECT COUNT (c) FROM Comunicazione c WHERE :userId IN ELEMENTS(c.utentiCheDevonoLeggere)")
-	long countAllMessaggiNonLetti(@Param ("userId") Long userId);
-
-	@Query ("SELECT c FROM Comunicazione c WHERE :user IN ELEMENTS(c.destinatari)")
-	Set<Comunicazione> findAllComunicazioniByDestinatario(@Param("user") Account user);
-
-	Set<Comunicazione> findAllComunicazioneByMittente(Account user);
-
-	@Query ("SELECT c FROM Comunicazione c WHERE (:user IN ELEMENTS(c.destinatari) OR :user = c.mittente) AND c.chiusa = true")
-	Set<Comunicazione> findAllComunicazioneChiusaByUser(@Param("user") Account user);
-
-	@Query ("SELECT COUNT (c) FROM Comunicazione c WHERE :user IN ELEMENTS(c.destinatari) OR :user = c.mittente")
-	int countAllComunicazioniByAccount(@Param("user") Account user);
-
-	@Query ("SELECT c FROM Comunicazione c WHERE :user IN ELEMENTS(c.destinatari) OR :user = c.mittente")
-	Set<Comunicazione> findAllComunicazioneByUser(@Param("user") Account user);
-
-	@Query("SELECT c FROM Comunicazione c WHERE :userId IN ELEMENTS(c.utentiCheDevonoLeggere) ORDER BY c.dataUltimaModifica DESC")
+	//non pageble
+	@Query("SELECT c FROM Comunicazione c WHERE :userId MEMBER OF c.utentiCheDevonoLeggere ORDER BY c.dataUltimaModifica DESC")
 	Set<Comunicazione> findAllComunicazioneNonLetteOrderByDataCreazioneDesc(@Param("userId") Long userId);
+
 }

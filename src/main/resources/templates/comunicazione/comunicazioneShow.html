@@ -35,8 +35,13 @@
 											<label class="control-label" th:text="#{label.from}"></label>
 										</div>
 										<div class="col-xs-12 col-sm-10">
-											<div class="fixed-value">
-												<div class="comunicazione-input" th:text="${comunicazioneWrapper.risposta.mittente.username} + ' &lt;' + ${comunicazioneWrapper.risposta.mittente.email} + '&gt;' "></div>
+											<div class="fixed-value" th:unless="${#authentication.principal.account.isSegreteria()}">
+												<div class="comunicazione-input" th:text="${comunicazioneWrapper.risposta.mittente.getFullName()} + ' &lt;' + ${comunicazioneWrapper.risposta.mittente.email} + '&gt;' "></div>
+												<input type="hidden" th:field="${comunicazioneWrapper.risposta.mittente}"/>
+											</div>
+											<div class="fixed-value" th:if="${#authentication.principal.account.isSegreteria()}">
+												<span th:text="#{label.segreteria_ecm}"></span>
+												<span th:text="'&lt;' + #{label.segreteria_ecm_mail} + '&gt;'"></span>
 												<input type="hidden" th:field="${comunicazioneWrapper.risposta.mittente}"/>
 											</div>
 										</div>
@@ -56,6 +61,7 @@
 													<th:block th:unless="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
 														<span th:text="${comunicazioneWrapper.comunicazione.mittente.getFullName()}"></span>
 														<span th:text="'&lt;' + ${comunicazioneWrapper.comunicazione.mittente.getEmail()} + '&gt;'"></span>
+														<input type="hidden" th:value="${comunicazioneWrapper.comunicazione.fakeAccountComunicazioni.id}" name="risposta.destinatari" />
 													</th:block>
 													<th:block th:if="${comunicazioneWrapper.comunicazione.mittente.isSegreteria()}">
 														<th:block th:if="${#lists.size(comunicazioneWrapper.comunicazione.destinatari) == 1}">
@@ -163,8 +169,8 @@
 					</div>
 					<div class="x_content">
 						<div class="row">
-
-							<div class="view-response message-container" th:if="${#authentication.principal.account.isSegreteria() or #lists.contains(risposta.destinatari, #authentication.principal.account)}"
+<!-- 								th:if="${risposta.canAccountSeeThisResponse(#authentication.principal.account)}" -->
+							<div class="view-response message-container" th:if="${comunicazioneWrapper.mappaVisibilitaResponse.get(risposta.id)}"
 								th:unless="${#sets.isEmpty(comunicazioneWrapper.comunicazione.risposte)}"
 								th:each="risposta, row : ${#lists.sort(comunicazioneWrapper.comunicazione.risposte, comunicazioneWrapper.responseComparator)}">
 

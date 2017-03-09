@@ -25,12 +25,12 @@ import it.tredi.ecm.web.validator.ProfileValidator;
 @Controller
 public class ProfileController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileController.class);
-	
+
 	private final String EDIT = "user/profileEdit";
-	
+
 	@Autowired private ProfileAndRoleService profileAndRoleService;
 	@Autowired private ProfileValidator profileValidator;
-	
+
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
@@ -41,7 +41,7 @@ public class ProfileController {
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /profile/list"));
 		try {
-			model.addAttribute("profileList", profileAndRoleService.getAllProfile());
+			model.addAttribute("profileList", profileAndRoleService.getAllUsableProfile());
 			LOGGER.info(Utils.getLogMessage("VIEW: /user/profileList"));
 			return "user/profileList";
 		}catch (Exception ex){
@@ -51,7 +51,7 @@ public class ProfileController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	@PreAuthorize("@securityAccessServiceImpl.canCreateUser(principal)")
 	@RequestMapping("/profile/{id}/edit")
 	public String editProfile(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
@@ -68,7 +68,7 @@ public class ProfileController {
 			return "redirect:/profile/list";
 		}
 	}
-	
+
 //	@PreAuthorize("@securityAccessServiceImpl.canCreateUser(principal)")
 //	@RequestMapping("/profile/new")
 //	public String newProfile(Model model, RedirectAttributes redirectAttrs){
@@ -85,7 +85,7 @@ public class ProfileController {
 //			return "redirect:/profile/list";
 //		}
 //	}
-	
+
 	@RequestMapping(value = "profile/save", method = RequestMethod.POST)
 	public String saveProfile(@ModelAttribute("profile") Profile profile, BindingResult result, RedirectAttributes redirectAttrs, Model model){
 		LOGGER.info(Utils.getLogMessage("POST /profile/save"));
@@ -109,7 +109,7 @@ public class ProfileController {
 			return EDIT;
 		}
 	}
-	
+
 	@ModelAttribute("profile")
 	public Profile getProfilePreRequest(@RequestParam(value="editId",required = false) Long id){
 		if(id != null)

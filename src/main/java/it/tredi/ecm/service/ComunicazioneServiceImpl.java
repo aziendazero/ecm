@@ -20,19 +20,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
-import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.ComunicazioneRepository;
 import it.tredi.ecm.dao.repository.ComunicazioneResponseRepository;
 import it.tredi.ecm.utils.Utils;
-import it.tredi.ecm.web.bean.ComunicazioneWrapper;
 import it.tredi.ecm.web.bean.RicercaComunicazioneWrapper;
 
 @Service
@@ -42,7 +39,6 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	@Autowired private AccountService accountService;
 	@Autowired private ComunicazioneRepository comunicazioneRepository;
 	@Autowired private ComunicazioneResponseRepository comunicazioneResponseRepository;
-	@Autowired private EventoService eventoService;
 	@PersistenceContext EntityManager entityManager;
 
 	@Override
@@ -53,25 +49,168 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	@Override
 	public int countAllComunicazioniRicevuteByAccountId(Long id) {
 		Account user = accountService.getUserById(id);
-		return comunicazioneRepository.countAllComunicazioniReceivedByAccount(user);
+		if(user.isProviderVisualizzatore()) {
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+			return comunicazioneRepository.countAllComunicazioniRicevuteByAccount(providerComunicazioni);
+		}
+		if(!user.isSegreteria()) {
+			return comunicazioneRepository.countAllComunicazioniRicevuteByAccount(user);
+		}
+		else {
+			//l'utente è anche segreteria quindi amplio la query con le comunicazioni inviate alla segreteria
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			return comunicazioneRepository.countAllComunicazioniRicevuteByAccountOrBySegreteria(user, segreteriaComunicazioni);
+		}
 	}
 
 	@Override
 	public int countAllComunicazioniInviateByAccountId(Long id) {
 		Account user = accountService.getUserById(id);
-		return comunicazioneRepository.countAllComunicazioniByMittente(user);
+		Account accountComunicazioni = null;
+		if(user.isProviderVisualizzatore()) {
+			accountComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+		}
+		else {
+			//user appartiene alla segreteria dal momento che gli altri utenti possono aprire comunicazioni solo verso la segreteria
+			accountComunicazioni = accountService.getAccountComunicazioniSegretereria();
+		}
+		//non ci sono altri casi poichè le altre tipologia di utenti non possono inviare comunicazioni, ma solo riceverle
+		return comunicazioneRepository.countAllComunicazioniInviateForAccount(accountComunicazioni);
 	}
 
 	@Override
-	public int countAllComunicazioniBloccateByAccountId(Long id) {
+	public int countAllComunicazioniChiuseByAccountId(Long id) {
 		Account user = accountService.getUserById(id);
-		return comunicazioneRepository.countAllComunicazioniChiuseForUser(user);
+		if(user.isProviderVisualizzatore()) {
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+			return comunicazioneRepository.countAllComunicazioniChiuseByGroup(providerComunicazioni);
+		}
+		if(!user.isSegreteria()) {
+			return comunicazioneRepository.countAllComunicazioniChiuseByAccount(user);
+		}
+		else {
+			//l'utente è anche segreteria quindi amplio la query con le comunicazioni inviate alla segreteria
+			//controllo se l'utente è nei destinatari o è il mittente, se il fake della segreteria è nei destinatari o se è stato inviata una comunicazione per suo conto;
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			return comunicazioneRepository.countAllComunicazioniChiuseByAccountOrByGroup(user, segreteriaComunicazioni);
+		}
 	}
 
 	@Override
-	public Comunicazione getUltimaComunicazioneCreata(Long id) {
+	public int countAllComunicazioniStoricoByAccountId(Long id) {
 		Account user = accountService.getUserById(id);
-		return comunicazioneRepository.findFirstByMittenteOrderByDataCreazioneDesc(user);
+		if(user.isProviderVisualizzatore()) {
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+			return comunicazioneRepository.countAllComunicazioniStoricoByGroup(providerComunicazioni);
+		}
+		if(!user.isSegreteria()) {
+			return comunicazioneRepository.countAllComunicazioniStoricoByAccount(user);
+		}
+		else {
+			//l'utente è anche segreteria quindi amplio la query con le comunicazioni inviate alla segreteria
+			//controllo se l'utente è nei destinatari o è il mittente, se il fake della segreteria è nei destinatari o se è stato inviata una comunicazione per suo conto;
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			return comunicazioneRepository.countAllComunicazioniStoricoByAccountOrByGroup(user, segreteriaComunicazioni);
+		}
+	}
+
+	@Override
+	public int countAllComunicazioniNonRisposteByAccountId(Long id) {
+		Account user = accountService.getUserById(id);
+		if(user.isProviderVisualizzatore()) {
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+			return comunicazioneRepository.countAllComunicazioniNonRisposteByGroup(providerComunicazioni);
+		}
+		if(!user.isSegreteria()) {
+			return comunicazioneRepository.countAllComunicazioniNonRisposteByAccount(user);
+		}
+		else {
+			//l'utente è anche segreteria quindi amplio la query con le comunicazioni inviate alla segreteria
+			//controllo se l'utente è nei destinatari o è il mittente, se il fake della segreteria è nei destinatari o se è stato inviata una comunicazione per suo conto;
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			return comunicazioneRepository.countAllComunicazioniNonRisposteByAccountOrByGroup(user, segreteriaComunicazioni);
+		}
+	}
+
+	@Override
+	public Set<Comunicazione> getAllComunicazioniRicevuteByAccount(Account user) {
+		if(user.isProviderVisualizzatore()) {
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+			return comunicazioneRepository.findAllComunicazioniRicevuteByAccount(providerComunicazioni);
+		}
+		if(!user.isSegreteria()) {
+			return comunicazioneRepository.findAllComunicazioniRicevuteByAccount(user);
+		}
+		else {
+			//l'utente è anche segreteria quindi amplio la query con le comunicazioni inviate alla segreteria
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			return comunicazioneRepository.findAllComunicazioniRicevuteByAccountOrBySegreteria(user, segreteriaComunicazioni);
+		}
+	}
+
+	@Override
+	public Set<Comunicazione> getAllComunicazioniInviateByAccount(Account user) {
+		Account accountComunicazioni = null;
+		if(user.isProviderVisualizzatore()) {
+			accountComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+		}
+		else {
+			//user appartiene alla segreteria dal momento che gli altri utenti possono aprire comunicazioni solo verso la segreteria
+			accountComunicazioni = accountService.getAccountComunicazioniSegretereria();
+		}
+		//non ci sono altri casi poichè le altre tipologia di utenti non possono inviare comunicazioni, ma solo riceverle
+		return comunicazioneRepository.findAllComunicazioniInviateForAccount(accountComunicazioni);
+	}
+
+	@Override
+	public Set<Comunicazione> getAllComunicazioniChiuseByAccount(Account user) {
+		if(user.isProviderVisualizzatore()) {
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+			return comunicazioneRepository.findAllComunicazioniChiuseByGroup(providerComunicazioni);
+		}
+		if(!user.isSegreteria()) {
+			return comunicazioneRepository.findAllComunicazioniChiuseByAccount(user);
+		}
+		else {
+			//l'utente è anche segreteria quindi amplio la query con le comunicazioni inviate alla segreteria
+			//controllo se l'utente è nei destinatari o è il mittente, se il fake della segreteria è nei destinatari o se è stato inviata una comunicazione per suo conto;
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			return comunicazioneRepository.findAllComunicazioniChiuseByAccountOrByGroup(user, segreteriaComunicazioni);
+		}
+	}
+
+	@Override
+	public Set<Comunicazione> getAllComunicazioniByAccount(Account user) {
+		if(user.isProviderVisualizzatore()) {
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+			return comunicazioneRepository.findAllComunicazioniStoricoByGroup(providerComunicazioni);
+		}
+		if(!user.isSegreteria()) {
+			return comunicazioneRepository.findAllComunicazioniStoricoByAccount(user);
+		}
+		else {
+			//l'utente è anche segreteria quindi amplio la query con le comunicazioni inviate alla segreteria
+			//controllo se l'utente è nei destinatari o è il mittente, se il fake della segreteria è nei destinatari o se è stato inviata una comunicazione per suo conto;
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			return comunicazioneRepository.findAllComunicazioniStoricoByAccountOrByGroup(user, segreteriaComunicazioni);
+		}
+	}
+
+	@Override
+	public Set<Comunicazione> getAllComunicazioniNonRisposteByAccount(Account user) {
+		if(user.isProviderVisualizzatore()) {
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(user.getProvider());
+			return comunicazioneRepository.findAllComunicazioniNonRisposteByGroup(providerComunicazioni);
+		}
+		if(!user.isSegreteria()) {
+			return comunicazioneRepository.findAllComunicazioniNonRisposteByAccount(user);
+		}
+		else {
+			//l'utente è anche segreteria quindi amplio la query con le comunicazioni inviate alla segreteria
+			//controllo se l'utente è nei destinatari o è il mittente, se il fake della segreteria è nei destinatari o se è stato inviata una comunicazione per suo conto;
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			return comunicazioneRepository.findAllComunicazioniNonRisposteByAccountOrByGroup(user, segreteriaComunicazioni);
+		}
 	}
 
 	@Override
@@ -109,7 +248,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			Set<Account> osservatoriSet = new HashSet<Account>();
 			Set<Account> allUsers = accountService.getAllUsers();
 			for(Account a : allUsers) {
-				if(!a.isSegreteria() && a.isProviderUserAdmin()) {
+				if(!a.isSegreteria() && a.isProviderAccountComunicazioni()) {
 					providerSet.add(a);
 				}
 				if(!a.isSegreteria() && a.isCommissioneEcm()) {
@@ -130,21 +269,59 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		return destinatariDisponibili;
 	}
 
+	//tiommi 06/03/2017 a seguito richiesta MEV in cui le comunicazioni sono gestite per gruppi provider e segreteria
 	//salvataggio comunicazione, controllo mittente, se è provider aggiungo i segretari ai destinatari
 	//aggiungo anche la data di invio
 	@Override
 	public void send(Comunicazione comunicazione, File allegato) {
-		if(comunicazione.getMittente().isProvider()) {
-			comunicazione.setDestinatari(accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA));
-			comunicazione.setInviatoAllaSegreteria(true);
-		}
-		else if(comunicazione.getMittente().isSegreteria()){
-			comunicazione.setInviatoAllaSegreteria(false);
-		}
 		//inserisco gli id dei destinatari tra gli utenti che non hanno ancora letto la comunicazione
 		Set<Long> utentiCheDevonoLeggere =  new HashSet<Long>();
-		for (Account a : comunicazione.getDestinatari()) {
-			utentiCheDevonoLeggere.add(a.getId());
+		//gestioni mittente NON segreteria (possono inviare solo a segreteria)
+		if(!comunicazione.getMittente().isSegreteria()) {
+			//aggiungo ai destinatari il fake account segreteria comunicazioni
+			Set<Account> destinatari = new HashSet<Account>();
+			destinatari.add(accountService.getAccountComunicazioniSegretereria());
+			comunicazione.setDestinatari(destinatari);
+			comunicazione.setInviatoAllaSegreteria(true);
+			//inserisco negli utenti che devono leggere tutti gli utenti segreteria
+			Set<Account> membriSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
+			for(Account s : membriSegreteria)
+				utentiCheDevonoLeggere.add(s.getId());
+			//se ad inviare è un provider aggiungo agli utenti che devono leggere tutti gli altri utenti del provider stesso
+			if(comunicazione.getMittente().isProvider()) {
+				Set<Account> providerUsers = accountService.getAllByProviderId(comunicazione.getMittente().getProvider().getId());
+				for(Account pu : providerUsers) {
+					if(pu.getId() != comunicazione.getMittente().getId() && !pu.isProviderAccountComunicazioni())
+						utentiCheDevonoLeggere.add(pu.getId());
+				}
+				//aggiungo il fake account del provider
+				Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(comunicazione.getMittente().getProvider());
+				comunicazione.setFakeAccountComunicazioni(providerComunicazioni);
+			}
+		}
+		//gestione mittente segreteria
+		else {
+			comunicazione.setInviatoAllaSegreteria(false);
+			for (Account a : comunicazione.getDestinatari()) {
+				Set<Account> membriSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
+				for(Account s : membriSegreteria)
+					if(s.getId() != comunicazione.getMittente().getId())
+						utentiCheDevonoLeggere.add(s.getId());
+				//tiommi 06/03/2017 a seguito richiesta MEV in cui le comunicazioni sono gestite per gruppi provider e segreteria
+				//se trovo un provider aggiungo agli utenti che devono leggere tutti gli utenti del provider
+				//N.B. la segreteria può aprire comunicazioni con il provider solo attraverso fake account comunicazione provider
+				if(a.isProviderAccountComunicazioni()) {
+					Set<Account> providerUsers = accountService.getAllByProviderId(a.getProvider().getId());
+					for(Account pu : providerUsers)
+						if(!pu.isProviderAccountComunicazioni())
+							utentiCheDevonoLeggere.add(pu.getId());
+				}
+				else
+					utentiCheDevonoLeggere.add(a.getId());
+			}
+			//aggiungo il fake account della segreteria
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			comunicazione.setFakeAccountComunicazioni(segreteriaComunicazioni);
 		}
 		comunicazione.setUtentiCheDevonoLeggere(utentiCheDevonoLeggere);
 		comunicazione.setDataCreazione(LocalDateTime.now());
@@ -156,10 +333,38 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 
 	@Override
 	public boolean canAccountRespondToComunicazione(Account account, Comunicazione comunicazione) {
-		if(!comunicazione.isChiusa() && (comunicazione.getDestinatari().contains(account) || comunicazione.getMittente().equals(account)))
+		if(comunicazione.isChiusa())
+			return false;
+		if(account.isSegreteria())
 			return true;
-		else return false;
+		if(account.isProvider()){
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(account.getProvider());
+			Set<Account> providerUsers = accountService.getAllByProviderId(account.getProvider().getId());
+			if(comunicazione.getDestinatari().contains(providerComunicazioni) || providerUsers.contains(comunicazione.getMittente()))
+				return true;
+		}
+		else
+			if(comunicazione.getDestinatari().contains(account) || comunicazione.getMittente().equals(account))
+				return true;
+		return false;
 	}
+
+	@Override
+	public boolean canAccountSeeResponse(Account account, ComunicazioneResponse response) {
+		if(account.isSegreteria())
+			return true;
+		if(account.isProvider()){
+			Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(account.getProvider());
+			Set<Account> providerUsers = accountService.getAllByProviderId(account.getProvider().getId());
+			if(response.getDestinatari().contains(providerComunicazioni) || providerUsers.contains(response.getMittente()))
+				return true;
+		}
+		else
+			if(response.getDestinatari().contains(account) || response.getMittente().equals(account))
+				return true;
+		return false;
+	}
+
 
 	@Override
 	public boolean canAccountCloseComunicazione(Account account, Comunicazione comunicazione) {
@@ -189,36 +394,51 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			risposta.setAllegatoRisposta(allegato);
 		risposte.add(risposta);
 		Set<Long> utentiCheDevonoLeggere = comunicazione.getUtentiCheDevonoLeggere();
+		//risposta di un utente NON segreteria, allerto i membri della segreteria e
+		// se l'utente è un provider gli altri membri del provider
 		if(!risposta.getMittente().isSegreteria()) {
+			//aggiungo ai destinatari il fake account segreteria comunicazioni
+			Set<Account> destinatari = new HashSet<Account>();
+			destinatari.add(accountService.getAccountComunicazioniSegretereria());
+			risposta.setDestinatari(destinatari);
 			risposta.setInviatoAllaSegreteria(true);
 			for(Account a : accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA))
 				utentiCheDevonoLeggere.add(a.getId());
+			if(risposta.getMittente().isProvider()) {
+				for(Account pu : accountService.getAllByProviderId(risposta.getMittente().getProvider().getId())) {
+					if(pu.getId() != risposta.getMittente().getId())
+						utentiCheDevonoLeggere.add(pu.getId());
+				}
+				//aggiungo il fake account del provider
+				Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(risposta.getMittente().getProvider());
+				risposta.setFakeAccountComunicazioni(providerComunicazioni);
+			}
 		}
+		//risposta di un utente segreteria, allerto tutti gli altri utenti segreteria e i destinatari della risposta
+		// se tra questi vi sono provider, allerto tutti gli utenti del provider.
 		else{
 			risposta.setInviatoAllaSegreteria(false);
+			for(Account a : accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA)) {
+				if(a.getId() != risposta.getMittente().getId())
+					utentiCheDevonoLeggere.add(a.getId());
+			}
 			for(Account a : risposta.getDestinatari())
-				utentiCheDevonoLeggere.add(a.getId());
+				if(a.isProviderAccountComunicazioni()) {
+					Set<Account> providerUsers = accountService.getAllByProviderId(a.getProvider().getId());
+					for(Account pu : providerUsers)
+						utentiCheDevonoLeggere.add(pu.getId());
+				}
+				else
+					utentiCheDevonoLeggere.add(a.getId());
+			//aggiungo il fake account della segreteria
+			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
+			risposta.setFakeAccountComunicazioni(segreteriaComunicazioni);
 		}
-		//rimuove se stesso dagli utenti che devono leggere
-		utentiCheDevonoLeggere.remove(Utils.getAuthenticatedUser().getAccount().getId());
+		//tolgo l'utente che ha mandato la risposta dagli utenti che devono leggere
+		comunicazione.getUtentiCheDevonoLeggere().remove(risposta.getMittente().getId());
 		comunicazioneResponseRepository.save(risposta);
 		comunicazione.setRisposte(risposte);
 		comunicazioneRepository.save(comunicazione);
-	}
-
-	@Override
-	public Set<Comunicazione> getAllComunicazioniRicevuteByAccount(Account user) {
-		return comunicazioneRepository.findAllComunicazioniByDestinatario(user);
-	}
-
-	@Override
-	public Set<Comunicazione> getAllComunicazioniInviateByAccount(Account user) {
-		return comunicazioneRepository.findAllComunicazioneByMittente(user);
-	}
-
-	@Override
-	public Set<Comunicazione> getAllComunicazioniChiuseByAccount(Account user) {
-		return comunicazioneRepository.findAllComunicazioneChiusaByUser(user);
 	}
 
 	@Override
@@ -229,27 +449,22 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	}
 
 	@Override
-	public int countAllComunicazioniByAccountId(Long id) {
-		Account user = accountService.getUserById(id);
-		return comunicazioneRepository.countAllComunicazioniByAccount(user);
-	}
-
-	@Override
-	public Set<Comunicazione> getAllComunicazioniByAccount(Account user) {
-		return comunicazioneRepository.findAllComunicazioneByUser(user);
-	}
-
-	@Override
 	public Set<Comunicazione> getAllComunicazioniNonLetteByAccount(Account user) {
 		return comunicazioneRepository.findAllComunicazioneNonLetteOrderByDataCreazioneDesc(user.getId());
 	}
 
 	@Override
 	public Set<Comunicazione> getAllComunicazioniByProvider(Provider provider) {
-		Account adminProvider = accountService.getAmministratoreProviderForProvider(provider);
-		if(adminProvider != null)
-			return comunicazioneRepository.findAllComunicazioneByUser(adminProvider);
-		return null;
+		Account providerComunicazione = accountService.getAccountComunicazioniProviderForProvider(provider);
+		return comunicazioneRepository.findAllComunicazioniStoricoByGroup(providerComunicazione);
+	}
+
+	@Override
+	public Set<Comunicazione> getAllComunicazioniNonRisposteFromProviderBySegreteria(Provider provider) {
+		//lista delle comunicazioni dal provider alla segreteria alle quali la segreteria non ha ancora risposto
+		Account providerComunicazione = accountService.getAccountComunicazioniProviderForProvider(provider);
+		Account segreteriaComunicazione = accountService.getAccountComunicazioniSegretereria();
+		return comunicazioneRepository.findAllComunicazioniNonRisposteFromGroupByGroup(providerComunicazione, segreteriaComunicazione);
 	}
 
 	@Override
@@ -316,6 +531,15 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		List<Comunicazione> result = q.getResultList();
 
 		return result;
+	}
+
+	@Override
+	public HashMap<Long, Boolean> createMappaVisibilitaResponse(Account account, Comunicazione comunicazione) {
+		HashMap<Long, Boolean> mappa = new HashMap<Long, Boolean>();
+		for(ComunicazioneResponse cr : comunicazione.getRisposte()) {
+			mappa.put(cr.getId(), canAccountSeeResponse(account, cr));
+		}
+		return mappa;
 	}
 
 }

@@ -50,7 +50,8 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 
 		Set<Account> accounts = accountRepository.findAll();
 
-		if(accounts.isEmpty()){
+		//tiommi 20170307: cambiato il check sugli account che devono avere l'account fake della segreteria per la gestione delle comunicazioni
+		if(accounts.isEmpty() || accounts.size() == 1){
 			/* ACCREDITAMENTO */
 //			Role role_readAccreditamento = new Role();
 //			role_readAccreditamento.setName(RoleEnum.ACCREDITAMENTO_SHOW.name());
@@ -159,11 +160,20 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 			/* PROFILE OSSERVATORE */
 			Profile profile_osservatore = profileRepository.findOneByProfileEnum(ProfileEnum.COMPONENTE_OSSERVATORIO).orElse(null);
 
+			/* PROFILE REFERENTE INFORMATICO */
+			Profile profile_referente_informatico = profileRepository.findOneByProfileEnum(ProfileEnum.REFERENTE_INFORMATICO).orElse(null);
+
+			/* PROFILE FAKE ACCOUNT COMUNICAZIONI PROVIDER */
+			Profile profile_account_comunicazioni_provider = profileRepository.findOneByProfileEnum(ProfileEnum.PROVIDER_ACCOUNT_COMUNICAZIONI).orElse(null);
+
 			createAccountProviderWithUserNameAndEmail("provider1", "abarducci@3di.it", profile_provider, profile_providerUserAdmin);
 			createAccountProviderWithUserNameAndEmail("provider2", "dpranteda@3di.it", profile_provider, profile_providerUserAdmin);
 			createAccountProviderWithUserNameAndEmail("provider3", "eluconi@3di.it", profile_provider, profile_providerUserAdmin);
 			createAccountProviderWithUserNameAndEmail("provider4", "sstagni@3di.it", profile_provider, profile_providerUserAdmin);
 			createAccountProviderWithUserNameAndEmail("provider5", "tiommi@3di.it", profile_provider, profile_providerUserAdmin);
+
+			//creazione fake account per comunicazioni i provider
+			createAccountComunicazioniProvider(5, profile_account_comunicazioni_provider);
 
 			Account admin1 = new Account();
 			admin1.setUsername("segreteria1");
@@ -314,10 +324,55 @@ public class AccountLoader implements ApplicationListener<ContextRefreshedEvent>
 				e.printStackTrace();
 			}
 
+			Account referente = new Account();
+			referente.setUsername("referente");
+			referente.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+			//commissione.setPassword("admin");
+			referente.setEmail("referenteInformatico@ecm.it");
+			referente.setChangePassword(false);
+			referente.setEnabled(true);
+			referente.setExpiresDate(null);
+			referente.setLocked(false);
+			referente.setNome("Referente");
+			referente.setCognome("Informatico");
+			referente.getProfiles().add(profile_referente_informatico);
+			referente.setDataScadenzaPassword(LocalDate.parse(defaultDataScadenzaPassword));
+			try {
+				//accountService.save(referente);
+				accountRepository.save(referente);
+				workflowService.saveOrUpdateBonitaUserByAccount(referente);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			LOGGER.info("BOOTSTRAP ECM - ACL creata");
 		}else{
 			LOGGER.info("BOOTSTRAP ECM - ACL trovata (" + accounts.size() + ")");
 		}
+	}
+
+	private void createAccountComunicazioniProvider(int numeroProvider, Profile profilo) {
+		for(int i = 1; i <= numeroProvider; i++) {
+			Account accountComunicazioni = new Account();
+			accountComunicazioni.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+			accountComunicazioni.setChangePassword(false);
+			accountComunicazioni.setEnabled(true);
+			accountComunicazioni.setExpiresDate(null);
+			accountComunicazioni.setLocked(false);
+			accountComunicazioni.setNome("Provider");
+			accountComunicazioni.setCognome("Comunicazioni");
+			accountComunicazioni.getProfiles().add(profilo);
+			accountComunicazioni.setDataScadenzaPassword(null);
+			accountComunicazioni.setFakeAccountComunicazioni(true);
+			try {
+				//accountService.save(referente);
+				accountRepository.save(accountComunicazioni);
+				workflowService.saveOrUpdateBonitaUserByAccount(accountComunicazioni);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private void createAccountProviderWithUserNameAndEmail(String userName, String email, Profile profile_provider, Profile profile_providerUserAdmin) {

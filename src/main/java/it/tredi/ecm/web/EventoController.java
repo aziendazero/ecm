@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
@@ -53,6 +55,7 @@ import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
@@ -1754,6 +1757,15 @@ public class EventoController {
 				return "redirect:/home";
 			}
 		}
+	}
+
+	@JsonView(JsonViewModel.EventoLookup.class)
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
+	@RequestMapping("/provider/{providerId}/evento/listaEventiLookup")
+	@ResponseBody
+	public Set<Evento> getListaEventiForLookup(@PathVariable Long providerId){
+		Set<Evento> eventi = eventoService.getAllEventiForProviderId(providerId);
+		return eventi;
 	}
 
 }

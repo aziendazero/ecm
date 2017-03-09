@@ -24,21 +24,21 @@ import lombok.Setter;
 public class Profile extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	private ProfileEnum profileEnum;
-	
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "profile_role",
 			joinColumns = {
-							@JoinColumn(name = "profile_id")}, 
+							@JoinColumn(name = "profile_id")},
 			inverseJoinColumns = {
 							@JoinColumn(name = "role_id")
 				}
 			)
-	private Set<Role> roles = new HashSet<Role>(); 
-	
+	private Set<Role> roles = new HashSet<Role>();
+
 	public String getName(){
 		return profileEnum.name();
 	}
-	
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -50,4 +50,14 @@ public class Profile extends BaseEntity{
         Profile entitapiatta = (Profile) o;
         return Objects.equals(id, entitapiatta.id);
     }
+
+	//metodo che esclude i profili non utilizzabili nell'applicazione,
+	//come ad esempio i profili fake per le comunicazioni
+	public boolean isUsable() {
+		if(this.getProfileEnum() == ProfileEnum.PROVIDER_ACCOUNT_COMUNICAZIONI)
+			return false;
+		if(this.getProfileEnum() == ProfileEnum.SEGRETERIA_ACCOUNT_COMUNICAZIONI)
+			return false;
+		return true;
+	}
 }

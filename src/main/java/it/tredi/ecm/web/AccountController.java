@@ -67,7 +67,7 @@ public class AccountController{
 	public String showAll(Model model, RedirectAttributes redirectAttrs){
 		try {
 			LOGGER.info(Utils.getLogMessage("GET /user/list"));
-			model.addAttribute("accountList", accountService.getAllUsers());
+			model.addAttribute("accountList", accountService.getAllUsersNotFake());
 			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 			return LIST;
 		}catch (Exception ex){
@@ -349,7 +349,7 @@ public class AccountController{
 	public String showAccountForProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		try {
 			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/user/list"));
-			model.addAttribute("accountList", accountService.findAllByProviderId(providerId));
+			model.addAttribute("accountList", accountService.getAllUsersNotFakeByProviderId(providerId));
 			model.addAttribute("canInsertUser", !providerService.getProvider(providerId).isBloccato());
 			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 			return LIST;
@@ -363,7 +363,7 @@ public class AccountController{
 
 	private String goToEdit(Model model, Account account){
 		model.addAttribute("account", account);
-		model.addAttribute("profileList", profileAndRoleService.getAllProfile());
+		model.addAttribute("profileList", profileAndRoleService.getAllUsableProfile());
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}

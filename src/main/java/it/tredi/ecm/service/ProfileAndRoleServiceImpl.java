@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,12 +20,12 @@ import it.tredi.ecm.dao.repository.RoleRepository;
 @Service
 public class ProfileAndRoleServiceImpl implements ProfileAndRoleService{
 	private static Logger LOGGER = LoggerFactory.getLogger(ProfileAndRoleServiceImpl.class);
-	
+
 	@Autowired
 	private ProfileRepository profileRepository;
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Override
 	public Set<Profile> getAllProfile() {
 		return profileRepository.findAll();
@@ -34,7 +35,7 @@ public class ProfileAndRoleServiceImpl implements ProfileAndRoleService{
 	public Profile getProfile(Long id) {
 		return profileRepository.findOne(id);
 	}
-	
+
 	@Override
 	@Transactional
 	public void saveProfile(Profile profile) {
@@ -50,6 +51,17 @@ public class ProfileAndRoleServiceImpl implements ProfileAndRoleService{
 	@Override
 	public Optional<Profile> getProfileByProfileEnum(ProfileEnum profileEnum) {
 		return profileRepository.findOneByProfileEnum(profileEnum);
+	}
+
+	@Override
+	public Set<Profile> getAllUsableProfile() {
+		Set<Profile> allProfiles = profileRepository.findAll();
+		Set<Profile> result = new HashSet<Profile>();
+		for(Profile p : allProfiles) {
+			if(p.isUsable())
+				result.add(p);
+		}
+		return result;
 	}
 
 }

@@ -189,7 +189,8 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public Set<Account> findAllByProviderId(Long providerId) {
+	public Set<Account> getAllByProviderId(Long providerId) {
+		LOGGER.debug("Cerco tutti gli utenti del Provider: " + providerId);
 		return accountRepository.findAllByProviderId(providerId);
 	}
 
@@ -208,5 +209,39 @@ public class AccountServiceImpl implements AccountService{
 		Optional<Profile> profileRef = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.REFEREE);
 		Profile profileReferee =  profileRef.get();
 		return accountRepository.findAllByProfilesContainingAndValutazioniNonDateLessThan(profileReferee, ecmProperties.getValutazioniNonDateLimit());
+	}
+
+	@Override
+	public Set<Account> getAllSegreteria() {
+		LOGGER.debug("Cerco tutti gli utenti con privilegi di Segreteria");
+		Optional<Profile> profileSegreteria = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.SEGRETERIA);
+		Profile segreteriaProfile =  profileSegreteria.get();
+		Optional<Profile> profileRespSegreteria = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.RESPONSABILE_SEGRETERIA_ECM);
+		Profile segreteriaRespProfile =  profileRespSegreteria.get();
+		return accountRepository.findAllSegreteria(segreteriaProfile, segreteriaRespProfile);
+	}
+
+	@Override
+	public Account getAccountComunicazioniProviderForProvider(Provider provider) {
+		LOGGER.debug("Cerco utente fake per gestione comunicazioni del provider: " + provider.getId());
+		return accountRepository.findOneByProviderAndFakeAccountComunicazioniTrue(provider);
+	}
+
+	@Override
+	public Account getAccountComunicazioniSegretereria() {
+		LOGGER.debug("Cerco utente fake per gestione comunicazioni della segreteria");
+		return accountRepository.findOneByUsernameAndFakeAccountComunicazioniTrue("segreteriacomunicazioni");
+	}
+
+	@Override
+	public Set<Account> getAllUsersNotFake() {
+		LOGGER.debug("Cerco tutti gli utenti tranne quelli fake per gestione comunicazioni");
+		return accountRepository.findAllByFakeAccountComunicazioniFalse();
+	}
+
+	@Override
+	public Set<Account> getAllUsersNotFakeByProviderId(Long providerId) {
+		LOGGER.debug("Cerco tutti gli utenti tranne quelli fake per gestione comunicazioni, del provider: " + providerId);
+		return accountRepository.findAllByProviderIdAndFakeAccountComunicazioniFalse(providerId);
 	}
 }
