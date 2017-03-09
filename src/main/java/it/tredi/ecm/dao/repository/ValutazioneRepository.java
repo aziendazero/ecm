@@ -26,7 +26,7 @@ public interface ValutazioneRepository extends JpaRepository<Valutazione, Long>{
 	public Account getAccountSegreteriaValutatoreForAccreditamentoId(@Param("id") Long id, @Param("profileSegreteria") Profile profileSegreteria);
 	@Query("SELECT v.account FROM Valutazione v WHERE v.accreditamento.id = :id AND v.storicizzato = false ORDER BY v.account.id")
 	public Set<Account> getAllAccountValutatoriForAccreditamentoIdOrderByAccount(@Param("id") Long id);
-	public Set<Valutazione> findAllByAccountId(Long accountId);
+	public Set<Valutazione> findAllByAccountIdAndStoricizzatoFalse(Long accountId);
 	public Valutazione findOneByAccreditamentoIdAndTipoValutazioneAndStoricizzatoFalse(Long accreditamentoId, ValutazioneTipoEnum segreteriaEcm);
 	public Set<Valutazione> findAllByAccreditamentoIdAndStoricizzatoTrue(Long accreditamentoId);
 	public Set<Valutazione> findAllByAccreditamentoIdAndStoricizzatoTrueOrderByDataValutazioneAsc(Long accreditamentoId);

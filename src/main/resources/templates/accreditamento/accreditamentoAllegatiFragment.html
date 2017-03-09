@@ -41,6 +41,9 @@
 						<!-- info -->
 						<h2 th:if="${editabile and (accreditamentoAllegatiWrapper.statoAccreditamento == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE or accreditamentoAllegatiWrapper.accreditamento.isVariazioneDati())}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.info_applicazione_integrazione}"></h2>
 
+						<!-- errore in caso di mancata motivazione nell'enableField -->
+						<h2 th:if="${errorMsg}" class="col-xs-12 alert alert-error with-margin-top text-center" th:text="#{__${errorMsg}__}"></h2>
+
 						<!-- allegato 1 (atto costitutivo e statuto) -->
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, attoCostitutivo,  ${!showOnly ? 'attoCostitutivo' : null}, null, null, true, ${mode}, true)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ATTO_COSTITUTIVO}', attoCostitutivo,  ${!showOnly ? 'attoCostitutivo' : null}, null, null, true, ${mode}, true)" ></th:block>

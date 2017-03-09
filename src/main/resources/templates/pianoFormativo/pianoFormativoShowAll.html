@@ -13,7 +13,7 @@
 				<!-- riempito con ciclo di chiamate ajax per gli eventi del piano formativo -->
 				<div class="x_panel">
               		<div class="x_title">
-						<h2 style="display: inline" th:text="#{label.eventi_piano_formativo}">label.eventi_piano_formativo</h2>
+						<h2 style="display: inline" th:text="#{label.eventi_piano_formativo} + ' ' + ${accreditamentoWrapper.accreditamento.pianoFormativo?.annoPianoFormativo != null ? accreditamentoWrapper.accreditamento.pianoFormativo?.annoPianoFormativo : ''}">label.eventi_piano_formativo</h2>
 						<h2 style="display: inline" th:if="${#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventiPianoFormativo)}" class="red-italic" th:text="#{label.dati_non_inseriti}">label.dati_non_inseriti</h2>
 						<ul class="nav navbar-right panel_toolbox" th:unless="${#lists.isEmpty(accreditamentoWrapper.accreditamento.pianoFormativo?.eventiPianoFormativo)}">
 		                    <li><a class="link-collapse-piano"><i class="fa iconToggle fa-chevron-down"></i></a></li>

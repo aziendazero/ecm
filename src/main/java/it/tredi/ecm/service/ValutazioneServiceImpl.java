@@ -243,9 +243,9 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 	@Override
-	public Set<Valutazione> getAllValutazioniForAccount(Long accountId) {
+	public Set<Valutazione> getAllValutazioniForAccountNotStoricizzate(Long accountId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutte le valutazioni per il referee: " + accountId));
-		return valutazioneRepository.findAllByAccountId(accountId);
+		return valutazioneRepository.findAllByAccountIdAndStoricizzatoFalse(accountId);
 	}
 
 	@Override
@@ -254,7 +254,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 
 		Map<Long, LocalDateTime> mappaScadenze = new HashMap<Long, LocalDateTime>();
 
-		Set<Valutazione> valutazioni = getAllValutazioniForAccount(accountId);
+		Set<Valutazione> valutazioni = getAllValutazioniForAccountNotStoricizzate(accountId);
 		for(Valutazione v :  valutazioni){
 			mappaScadenze.put(v.getAccreditamento().getId(), v.getDataOraScadenzaPossibilitaValutazione());
 		}

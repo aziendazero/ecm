@@ -54,6 +54,7 @@ import it.tredi.ecm.web.bean.AccreditamentoAllegatiWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.AccreditamentoAllegatiValidator;
+import it.tredi.ecm.web.validator.EnableFieldValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
@@ -77,6 +78,8 @@ public class AccreditamentoAllegatiController {
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+
+	@Autowired private EnableFieldValidator enableFieldValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -402,8 +405,17 @@ public class AccreditamentoAllegatiController {
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/allegati/enableField"));
 		try{
-			integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
-			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
+			String errorMsg = enableFieldValidator.validate(richiestaIntegrazioneWrapper);
+			if(errorMsg != null){
+				model.addAttribute("accreditamentoAllegatiWrapper", prepareAccreditamentoAllegatiWrapperEnableField(accreditamentoId));
+				model.addAttribute("message", new Message("message.errore", errorMsg, "error"));
+				model.addAttribute("errorMsg", errorMsg);
+				LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
+				return ENABLEFIELD;
+			}else{
+				integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
+			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/allegati/enableField"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -516,6 +528,12 @@ public class AccreditamentoAllegatiController {
 		//prendo tutti gli id del subset
 		Set<IdFieldEnum> idEditabili = new HashSet<IdFieldEnum>();
 		idEditabili = IdFieldEnum.getAllForSubset(subset);
+
+		//se accreditamento provvisorio filtro i field che sono solo della standard
+		if(accreditamento.isProvvisorio()){
+			idEditabili.remove(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD);
+			idEditabili.remove(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA);
+		}
 
 		wrapper.setMappaValutatoreValutazioni(mappaValutatoreValutazioni);
 		wrapper.setIdEditabili(idEditabili);

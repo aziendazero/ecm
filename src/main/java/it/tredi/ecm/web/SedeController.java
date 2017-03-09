@@ -51,6 +51,7 @@ import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.bean.SedeWrapper;
+import it.tredi.ecm.web.validator.EnableFieldValidator;
 import it.tredi.ecm.web.validator.SedeValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
@@ -76,6 +77,8 @@ public class SedeController {
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 	@Autowired private ObjectMapper jacksonObjectMapper;
+
+	@Autowired private EnableFieldValidator enableFieldValidator;
 
 	@RequestMapping("/comuni")
 	@ResponseBody
@@ -373,13 +376,23 @@ public class SedeController {
 
 	/*** 	SAVE  ENABLEFIELD   ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/sede/enableField", method = RequestMethod.POST)
-	public String enableFieldSede(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper,
+	public String enableFieldSede(@ModelAttribute("sedeWrapper") SedeWrapper sedeWrapper,
+									@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper,
 									@PathVariable Long accreditamentoId, @PathVariable Long providerId,
 												Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "sede/enableField"));
 		try{
-			integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
-			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
+			String errorMsg = enableFieldValidator.validate(richiestaIntegrazioneWrapper);
+			if(errorMsg != null){
+				model.addAttribute("sedeWrapper", prepareSedeWrapperEnableField(sedeService.getSede(sedeWrapper.getSede().getId()),sedeWrapper.getAccreditamentoId(),sedeWrapper.getProviderId()));
+				model.addAttribute("message", new Message("message.errore", errorMsg, "error"));
+				model.addAttribute("errorMsg", errorMsg);
+				LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
+				return ENABLEFIELD;
+			}else{
+				integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
+			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "sede/enableField"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));

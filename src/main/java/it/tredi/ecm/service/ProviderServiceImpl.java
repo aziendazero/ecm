@@ -572,9 +572,24 @@ public class ProviderServiceImpl implements ProviderService {
 		if(provider == null){
 			throw new Exception("Provider non trovato");
 		}
+
+		boolean sendAlertInvioDomandaStandard = false;
+
 		//flag permessi
 		provider.setCanInsertPianoFormativo(wrapper.getCanInsertPianoFormativo());
 		provider.setCanInsertEvento(wrapper.getCanInsertEventi());
+
+		if(provider.canInsertAccreditamentoStandard() == false && wrapper.getCanInsertDomandaStandard() == true){
+			//abilito il provider all'inserimento della domanda standard
+			//invio notifica email + setto flag per controllare che alla scadenza l'ha inviata
+			sendAlertInvioDomandaStandard = true;
+			provider.setInviatoAccreditamentoStandard(false);
+		}else if(provider.canInsertAccreditamentoStandard() == true && wrapper.getCanInsertDomandaStandard() == false){
+			//sto disabilitando il provider all'invio della domanda standard
+			//reset del flag per individuarlo come domanda non inviata alla scadenza
+			provider.setInviatoAccreditamentoStandard(null);
+		}
+
 		provider.setCanInsertAccreditamentoStandard(wrapper.getCanInsertDomandaStandard());
 		provider.setCanInsertAccreditamentoProvvisorio(wrapper.getCanInsertDomandaProvvisoria());
 		provider.setCanInsertRelazioneAnnuale(wrapper.getCanInsertRelazioneAnnuale());
@@ -591,6 +606,11 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setStatus(wrapper.getStato());
 
 		save(provider);
+
+		if(sendAlertInvioDomandaStandard){
+			alertEmailService.creaAlertInvioDomandaStandardForProvider(provider);
+
+		}
 	}
 
 	/* Metodo chiamato dal thread per modificare la data di permesso di inserimento
@@ -648,14 +668,14 @@ public class ProviderServiceImpl implements ProviderService {
 	public int countAllProviderInadempienti() {
 		LOGGER.info("Conteggio dei provider che non hanno completato da domanda di accreditamento in tempo");
 		//query sui provider se hanno data scadenza can insert domanda standard ed è scaduta sono inadempienti
-		return providerRepository.countAllProviderInadempienti(LocalDate.now());
+		return providerRepository.countAllProviderInadempienti();
 	}
 
 	@Override
 	public Set<Provider> getAllProviderInadempienti() {
 		LOGGER.info("Recupero i provider che non hanno completato da domanda di accreditamento in tempo");
 		//query sui provider se hanno data scadenza can insert domanda standard ed è scaduta sono inadempienti
-		return providerRepository.getAllProviderInadempienti(LocalDate.now());
+		return providerRepository.getAllProviderInadempienti();
 	}
 
 

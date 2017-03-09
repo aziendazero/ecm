@@ -62,6 +62,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PersonaWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
+import it.tredi.ecm.web.validator.EnableFieldValidator;
 import it.tredi.ecm.web.validator.PersonaValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
@@ -91,6 +92,8 @@ public class PersonaController {
 	@Autowired private IntegrazioneService integrazioneService;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 	@Autowired private ObjectMapper jacksonObjectMapper;
+
+	@Autowired private EnableFieldValidator enableFieldValidator;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -424,12 +427,23 @@ public class PersonaController {
 
 	/*** 	SAVE  ENABLEFIELD   ***/
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/provider/{providerId}/persona/enableField", method = RequestMethod.POST)
-	public String enableFieldPersona(@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId,
+	public String enableFieldPersona(@ModelAttribute("personaWrapper") PersonaWrapper personaWrapper,
+										@ModelAttribute("richiestaIntegrazioneWrapper") RichiestaIntegrazioneWrapper richiestaIntegrazioneWrapper, @PathVariable Long accreditamentoId,
 												Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/persona/enableField"));
 		try{
-			integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
-			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
+			String errorMsg = enableFieldValidator.validate(richiestaIntegrazioneWrapper);
+			if(errorMsg != null){
+				model.addAttribute("personaWrapper", preparePersonaWrapperEnableField(personaService.getPersona(personaWrapper.getPersona().getId()),personaWrapper.getAccreditamentoId(),personaWrapper.getProviderId()));
+				model.addAttribute("message", new Message("message.errore", errorMsg, "error"));
+				model.addAttribute("returnLink", calcolaLink(personaWrapper, "enableField"));
+				model.addAttribute("errorMsg", errorMsg);
+				LOGGER.info(Utils.getLogMessage("VIEW: " + ENABLEFIELD));
+				return ENABLEFIELD;
+			}else{
+				integrazioneService.saveEnableField(richiestaIntegrazioneWrapper);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.campi_salvati", "success"));
+			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/persona/enableField"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));

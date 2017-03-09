@@ -32,7 +32,7 @@ public interface ValutazioneService {
 	public void dataOraScadenzaPossibilitaValutazioneCRECM(Long accreditamentoId, LocalDateTime date) throws Exception;
 	public void dataOraScadenzaPossibilitaValutazione(Long accreditamentoId, LocalDateTime date) throws Exception;
 	public Map<Long,LocalDateTime> getScadenzaValutazioneByValutatoreId(Long id);
-	public Set<Valutazione> getAllValutazioniForAccount(Long accountId);
+	public Set<Valutazione> getAllValutazioniForAccountNotStoricizzate(Long accountId);
 	public Valutazione detachValutazione(Valutazione valutazione) throws Exception;
 	public void cloneDetachedValutazione(Valutazione valStoricizzata);
 	public void copiaInStorico(Valutazione valutazione) throws Exception;
