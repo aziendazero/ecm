@@ -83,7 +83,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 
 				richiedente.setRuolo(Ruolo.RICHIEDENTE);
 				legale.setRuolo(Ruolo.LEGALE_RAPPRESENTANTE);
-				Account account = accountRepository.findOneByUsername(providerName).orElse(null);
+				Account account = accountRepository.findOneByUsernameIgnoreCase(providerName).orElse(null);
 
 				Sede sedeLegale = new Sede();
 				sedeLegale.setProvincia("VENEZIA");

@@ -122,7 +122,7 @@ public class WorkflowTest {
 	@Ignore
 	public void saveOrUpdateBonitaUserByAccount() throws Exception {
 		//lancio salvataggio con errori
-		Account account = accountRepository.findOneByUsername("segreteria").orElse(null);
+		Account account = accountRepository.findOneByUsernameIgnoreCase("segreteria").orElse(null);
 		if(account != null) {
 			workflowService.saveOrUpdateBonitaUserByAccount(account);
 		}

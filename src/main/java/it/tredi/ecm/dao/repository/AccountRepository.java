@@ -13,8 +13,8 @@ import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 
 public interface AccountRepository extends CrudRepository<Account, Long> {
-	Optional<Account> findOneByUsername(String username);
-	Optional<Account> findOneByEmail(String email);
+	Optional<Account> findOneByUsernameIgnoreCase(String username);
+	Optional<Account> findOneByEmailIgnoreCase(String email);
 	Set<Account> findAll();
 	Set<Account> findAllByProfiles(Profile profile);
 	@Query ("SELECT COUNT (a) FROM Account a WHERE a.valutazioniNonDate > 0")
