@@ -202,8 +202,37 @@ public class ProviderServiceImpl implements ProviderService {
 			legale.addFile(delega);
 		}
 
+		//Genero il fake account per la gestione delle comunicazioni
+		generaAccountComunicazioni(provider);
+
 		provider.addPersona(legale);
 		personaService.save(legale);
+	}
+
+	//Genera il fake account per la gestione delle comunicazioni
+	private void generaAccountComunicazioni(Provider provider) throws Exception {
+		Account accountComunicazioni = new Account();
+		accountComunicazioni.setChangePassword(false);
+		accountComunicazioni.setCodiceFiscale(null);
+		accountComunicazioni.setCognome("Provider" + provider.getId());
+		accountComunicazioni.setDataScadenzaPassword(null);
+		accountComunicazioni.setEmail("provider" + provider.getId() + "@comunicazioni.it");
+		accountComunicazioni.setEnabled(true);
+		accountComunicazioni.setExpiresDate(null);
+		accountComunicazioni.setLocked(false);
+		accountComunicazioni.setNome("Comunicazioni");
+		accountComunicazioni.setNote(null);
+		//admin
+		accountComunicazioni.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
+		accountComunicazioni.setUsername("provider" + provider.getId() + "comunicazioni");
+		accountComunicazioni.setUsernameWorkflow("provider" + provider.getId() + "comunicazioni");
+		accountComunicazioni.setValutazioniNonDate(0);
+		accountComunicazioni.setProvider(provider);
+		accountComunicazioni.setFakeAccountComunicazioni(true);
+		Optional<Profile> providerProfile = profileAndRoleService.getProfileByProfileEnum(ProfileEnum.PROVIDER_ACCOUNT_COMUNICAZIONI);
+		if(providerProfile.isPresent())
+			accountComunicazioni.getProfiles().add(providerProfile.get());
+		accountService.save(accountComunicazioni);
 	}
 
 	@Override

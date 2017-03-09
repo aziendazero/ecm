@@ -35,10 +35,10 @@
 								<tbody>
 									<tr th:each="comunicazione, row : ${listaComunicazioni}">
 										<td><a th:text="${comunicazione.oggetto}" th:href="@{|/comunicazione/${comunicazione.id}/show|}"></a></td>
-										<td th:text="${comunicazione.mittente.isSegreteria()} ? #{label.segreteria_ecm} : ${comunicazione.mittente.getFullName()}"></td>
+										<td th:text="${comunicazione.mittente.isSegreteria() and !#authentication.principal.account.isSegreteria()} ? #{label.segreteria_ecm} : ${comunicazione.mittente.getFullName()}"></td>
 										<td>
 											<div th:each="destinatario, row : ${comunicazione.destinatari}" th:if="${row.index &lt; 3}">
-												<span th:text="${destinatario.isSegreteria()} ? #{label.segreteria_ecm} : ${destinatario.getFullName()}"></span>
+												<span th:text="${destinatario.isSegreteria() and !#authentication.principal.account.isSegreteria()} ? #{label.segreteria_ecm} : ${destinatario.getFullName()}"></span>
 											</div>
 											<div th:if="${#sets.size(comunicazione.destinatari) &gt; 3}">
 												<span th:text="#{label.altri_n_destinatari(${#sets.size(comunicazione.destinatari) - 3})}"></span>

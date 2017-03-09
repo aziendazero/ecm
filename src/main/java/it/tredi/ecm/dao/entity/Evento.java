@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
@@ -112,16 +113,22 @@ public class Evento extends BaseEntity{
 	 *
 	 * 		*EVENTO inserito come RIEDIZIONE -> PREFIX dell'evento padre + #edizione
 	 * */
+	@JsonView(JsonViewModel.EventoLookup.class)
 	private String prefix;
+	@JsonView(JsonViewModel.EventoLookup.class)
 	private int edizione = 1;
+	@JsonView(JsonViewModel.EventoLookup.class)
 	public String getCodiceIdentificativo(){
 		if(edizione > 1)
 			return prefix + "-" + edizione;
 		else return prefix;
 	}
 
+	@JsonView(JsonViewModel.EventoLookup.class)
 	@Enumerated(EnumType.STRING)
 	private ProceduraFormativa proceduraFormativa;
+
+	@JsonView(JsonViewModel.EventoLookup.class)
 	@Column(columnDefinition = "text")
 	private String titolo;
 

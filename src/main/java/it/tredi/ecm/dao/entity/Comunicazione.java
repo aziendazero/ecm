@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
@@ -87,4 +88,7 @@ public class Comunicazione extends BaseEntity{
 	//allegato
 	@OneToOne
 	private File allegatoComunicazione;
+
+	@ManyToOne
+	private Account fakeAccountComunicazioni;
 }

@@ -16,7 +16,7 @@ public class BaseEntity implements Cloneable, Serializable{
 	 *
 	 */
 	private static final long serialVersionUID = -6484707207565905889L;
-	@JsonView({JsonViewModel.Integrazione.class, JsonViewModel.ComunicazioniDestinatari.class})
+	@JsonView({JsonViewModel.Integrazione.class, JsonViewModel.ComunicazioniDestinatari.class, JsonViewModel.EventoLookup.class})
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
     protected Long id;
 

@@ -1,0 +1,23 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170308_001_aggiuntaColonna_fake_account_comunicazioni.xml">
+    <changeSet author="tiommi (generated)" id="1488969734207-1">
+        <addColumn tableName="comunicazione">
+            <column name="fake_account_comunicazioni_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1488969734207-2">
+        <addColumn tableName="comunicazione_response">
+            <column name="fake_account_comunicazioni_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1488969734207-3">
+        <addForeignKeyConstraint baseColumnNames="fake_account_comunicazioni_id" baseTableName="comunicazione" constraintName="FK_4tfhvrf3xxreoyk44l8kfhuqi" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1488969734207-4">
+        <addForeignKeyConstraint baseColumnNames="fake_account_comunicazioni_id" baseTableName="comunicazione_response" constraintName="FK_8iyayxh491yxwdt7oyn4rg7hb" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+</databaseChangeLog>

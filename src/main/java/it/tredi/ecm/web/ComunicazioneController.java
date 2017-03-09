@@ -74,8 +74,9 @@ public class ComunicazioneController {
 			model.addAttribute("currentAccountId", currentAccountId);
 			model.addAttribute("numeroComunicazioniRicevute", comunicazioneService.countAllComunicazioniRicevuteByAccountId(currentAccountId));
 			model.addAttribute("numeroComunicazioniInviate", comunicazioneService.countAllComunicazioniInviateByAccountId(currentAccountId));
-			model.addAttribute("numeroComunicazioniBloccate", comunicazioneService.countAllComunicazioniBloccateByAccountId(currentAccountId));
-			model.addAttribute("numeroComunicazioniAll", comunicazioneService.countAllComunicazioniByAccountId(currentAccountId));
+			model.addAttribute("numeroComunicazioniBloccate", comunicazioneService.countAllComunicazioniChiuseByAccountId(currentAccountId));
+			model.addAttribute("numeroComunicazioniAll", comunicazioneService.countAllComunicazioniStoricoByAccountId(currentAccountId));
+			model.addAttribute("numeroComunicazioniNonRisposte", comunicazioneService.countAllComunicazioniNonRisposteByAccountId(currentAccountId));
 			model.addAttribute("ultimiMessaggiNonLetti", comunicazioneService.getUltimi10MessaggiNonLetti(currentAccountId));
 			model.addAttribute("numeroMessaggiNonLetti", comunicazioneService.countAllMessaggiNonLetti(currentAccountId));
 			model.addAttribute("idUltimoMessaggioNonLetto", comunicazioneService.getIdUltimaComunicazioneRicevuta(currentAccountId));
@@ -242,6 +243,10 @@ public class ComunicazioneController {
 					listaComunicazioni = comunicazioneService.getAllComunicazioniNonLetteByAccount(Utils.getAuthenticatedUser().getAccount());
 					tipologiaLista = "label.non_ancora_lette";
 					break;
+				case "nonRisposte":
+					listaComunicazioni = comunicazioneService.getAllComunicazioniNonRisposteByAccount(Utils.getAuthenticatedUser().getAccount());
+					tipologiaLista = "label.non_ancora_lette";
+					break;
 				case "cerca":
 					listaComunicazioni = (Set<Comunicazione>) model.asMap().get("listaComunicazioni");
 					tipologiaLista = "label.esito_ricerca";
@@ -262,16 +267,24 @@ public class ComunicazioneController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canShowComunicazioniProvider(principal)") TODO
 	@RequestMapping("/provider/{providerId}/comunicazione/list")
-	public String listaComunicazioniRicevuteProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs) {
+	public String listaComunicazioniRicevuteProvider(@PathVariable Long providerId, @RequestParam(required = false) Boolean nonRisposte,
+			Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"));
 		try {
 			Provider provider = providerService.getProvider(providerId);
 
 			if(model.asMap().get("listaComunicazioni") == null){
-				model.addAttribute("listaComunicazioni", comunicazioneService.getAllComunicazioniByProvider(provider));
+				if(nonRisposte != null && nonRisposte == true) {
+					model.addAttribute("listaComunicazioni", comunicazioneService.getAllComunicazioniNonRisposteFromProviderBySegreteria(provider));
+					model.addAttribute("tipologiaLista", "label.non_risposte_al_provider");
+				}
+				else {
+					model.addAttribute("listaComunicazioni", comunicazioneService.getAllComunicazioniByProvider(provider));
+					model.addAttribute("tipologiaLista", "label.comunicazioni_con_provider");
+				}
 			}
-
-			model.addAttribute("tipologiaLista", "label.comunicazioni_con_provider");
+			else
+				model.addAttribute("tipologiaLista", "label.comunicazioni_con_provider");
 
 			if(Utils.getAuthenticatedUser().isSegreteria())
 				model.addAttribute("returnLink", "/provider/list");
@@ -310,6 +323,7 @@ public class ComunicazioneController {
 		wrapper.setCanRespond(comunicazioneService.canAccountRespondToComunicazione(currentUser, comunicazione));
 		wrapper.setCanCloseComunicazione(comunicazioneService.canAccountCloseComunicazione(currentUser, comunicazione));
 		wrapper.setRisposta(new ComunicazioneResponse(currentUser, comunicazione));
+		wrapper.setMappaVisibilitaResponse(comunicazioneService.createMappaVisibilitaResponse(currentUser, comunicazione));
 		LOGGER.info(Utils.getLogMessage("prepareComunicazioneWrapperShow() - exiting"));
 		return wrapper;
 	}

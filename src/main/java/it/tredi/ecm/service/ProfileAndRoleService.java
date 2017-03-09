@@ -13,6 +13,7 @@ public interface ProfileAndRoleService {
 	Profile getProfile(Long id);
 	Optional<Profile> getProfileByProfileEnum(ProfileEnum profileEnum);
 	void saveProfile(Profile profile);
-	
+
 	Set<Role> getAllRole();
+	Set<Profile> getAllUsableProfile();
 }

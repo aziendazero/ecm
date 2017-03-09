@@ -1,6 +1,7 @@
 package it.tredi.ecm.web.bean;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +34,8 @@ public class ComunicazioneWrapper {
 	private ComunicazioneResponse risposta;
 	private File allegatoComunicazione;
 	private File allegatoRisposta;
+
+	private HashMap<Long, Boolean> mappaVisibilitaResponse;
 
 	//comparator tra date per il sorting
 	private Comparator<ComunicazioneResponse> responseComparator = new Comparator<ComunicazioneResponse>() {

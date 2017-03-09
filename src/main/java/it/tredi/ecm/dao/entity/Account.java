@@ -76,6 +76,8 @@ public class Account extends BaseEntity{
 	@JoinColumn(name = "provider_id")
 	private Provider provider;
 
+	private boolean fakeAccountComunicazioni = false;
+
 	public boolean isPasswordExpired(){
 		if(dataScadenzaPassword == null || !dataScadenzaPassword.isAfter(LocalDate.now()))
 			return true;
@@ -273,6 +275,30 @@ public class Account extends BaseEntity{
 		if(provider != null) {
 			for (Profile p : profiles){
 				if(p.getProfileEnum().equals(ProfileEnum.PROVIDER_VISUALIZZATORE)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean isProviderAccountComunicazioni() {
+
+		if(provider != null && fakeAccountComunicazioni) {
+			for (Profile p : profiles) {
+				if(p.getProfileEnum().equals(ProfileEnum.PROVIDER_ACCOUNT_COMUNICAZIONI)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean isSegreteriaAccountComunicazioni() {
+
+		if(fakeAccountComunicazioni) {
+			for (Profile p : profiles) {
+				if(p.getProfileEnum().equals(ProfileEnum.SEGRETERIA_ACCOUNT_COMUNICAZIONI)) {
 					return true;
 				}
 			}

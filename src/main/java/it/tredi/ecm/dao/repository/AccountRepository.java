@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Profile;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 
 public interface AccountRepository extends CrudRepository<Account, Long> {
@@ -27,4 +28,13 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
 
 	public Set<Account> findAllByProviderId(Long providerId);
 	Set<Account> findAllByProfilesContainingAndValutazioniNonDateLessThan(Profile profileReferee, int valutazioniNonDateLimit);
+
+	@Query ("SELECT a FROM Account a WHERE :segreteriaProfile IN ELEMENTS(a.profiles) OR :segreteriaRespProfile IN ELEMENTS(a.profiles)")
+	Set<Account> findAllSegreteria(@Param("segreteriaProfile") Profile segreteriaProfile, @Param("segreteriaRespProfile") Profile segreteriaRespProfile);
+	Account findOneByProviderAndFakeAccountComunicazioniTrue(Provider provider);
+	Account findOneByUsernameAndFakeAccountComunicazioniTrue(String string);
+	Set<Account> findAllByFakeAccountComunicazioniFalse();
+	Set<Account> findAllByProviderIdAndFakeAccountComunicazioniFalse(Long providerId);
+	Set<Account> findAllByFakeAccountComunicazioniTrue();
+
 }

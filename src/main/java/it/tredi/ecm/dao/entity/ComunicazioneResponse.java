@@ -55,6 +55,10 @@ public class ComunicazioneResponse extends BaseEntity
 	@OneToOne
 	private File allegatoRisposta;
 
+	@ManyToOne
+	private Account fakeAccountComunicazioni;
+
+
 //	@Override
 //	public int compare(ComunicazioneResponse response1, ComunicazioneResponse response2) {
 //		if(response1.getDataRisposta().isAfter(response2.getDataRisposta()))
@@ -64,4 +68,5 @@ public class ComunicazioneResponse extends BaseEntity
 //		else
 //			return 0;
 //	}
+
 }

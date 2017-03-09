@@ -1,7 +1,9 @@
 package it.tredi.ecm.bootstrap;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -33,6 +35,7 @@ import it.tredi.ecm.dao.repository.SedeRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.DisciplinaService;
+import it.tredi.ecm.service.WorkflowService;
 
 @Component
 @org.springframework.context.annotation.Profile({"simone","abarducci", "tom", "joe19","dev"})
@@ -46,6 +49,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private DisciplinaService disciplinaService;
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
+	@Autowired private WorkflowService workflowService;
 
 	@Override
 	@Transactional
@@ -54,8 +58,10 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 
 		Provider provider = providerRepository.findOneByPartitaIva("00578261201");
 
+		int numeroProvider = 5;
+
 		if(provider == null){
-			for(int i = 1; i<=5; i++) {
+			for(int i = 1; i<=numeroProvider; i++) {
 				String providerName = "provider" + i;
 				String partitaIva = "0057826120" + i;
 				Persona richiedente = new Persona();
@@ -250,5 +256,33 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 		}else{
 			LOGGER.info("BOOTSTRAP ECM - PROVIDER trovato");
 		}
+
+		LOGGER.info("BOOTSTRAP ECM - AGGANCIO account fake per comunicazioni");
+		//creo list di tutti i provider
+		Set<Provider> providerSet = providerRepository.findAll();
+		List<Provider> providerList = new ArrayList<Provider>();
+		providerList.addAll(providerSet);
+		//creo list di tutti gli account fake del provider
+		Set<Account> accountFakeSet = accountRepository.findAllByFakeAccountComunicazioniTrue();
+		//rimuovo il fake della segreteria
+		Account fakeSegreteria = accountRepository.findOneByUsernameAndFakeAccountComunicazioniTrue("segreteriacomunicazioni");
+		accountFakeSet.remove(fakeSegreteria);
+		List<Account> accountFakeList = new ArrayList<Account>();
+		accountFakeList.addAll(accountFakeSet);
+		//per ogni provider assegno un utente fake per la gestione delle comunicazioni
+		for(int i = 0; i <= numeroProvider-1; i++) {
+			Provider p = providerList.get(i);
+			Account a = accountFakeList.get(i);
+			a.setUsername("provider" + p.getId() + "comunicazioni");
+			a.setEmail("provider" + p.getId() + "@comunicazioni.it");
+			a.setProvider(p);
+			try {
+				accountRepository.save(a);
+				workflowService.saveOrUpdateBonitaUserByAccount(a);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		LOGGER.info("BOOTSTRAP ECM - COMPLETATO account fake per comunicazioni");
 	}
 }
