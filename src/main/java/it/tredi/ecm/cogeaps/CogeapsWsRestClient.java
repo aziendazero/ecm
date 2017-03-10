@@ -27,7 +27,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CogeapsWsRestClient {
-	
+
     private String protocol;
     private String host;
     private int port;
@@ -37,13 +37,18 @@ public class CogeapsWsRestClient {
     private String password;
 
     public static final Logger LOGGER = Logger.getLogger(CogeapsWsRestClient.class);
-    
+
     @Autowired private ObjectMapper jacksonObjectMapper;
-    
+
 	public  CogeapsCaricaResponse carica(String reportFileName, byte []xmlReport, String codOrg) throws Exception {
-		String complete_url = protocol + "://" + host + ":" + port +  carica_service + "/" + codOrg;
+		String complete_url = "";
+		if(port != -1)
+			complete_url = protocol + "://" + host + ":" + port +  carica_service + "/" + codOrg;
+		else
+			complete_url = protocol + "://" + host +  carica_service + "/" + codOrg;
+
 		LOGGER.info("Executing cogeaps request: " + complete_url);
-		
+
         HttpHost target = new HttpHost(host, port, protocol);
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), new UsernamePasswordCredentials(username, password));
@@ -60,15 +65,15 @@ public class CogeapsWsRestClient {
             localContext.setAuthCache(authCache);
 
             HttpPost httpPost = new HttpPost(complete_url);
-            
+
             //file allegato
             ByteArrayBody bab = new ByteArrayBody(xmlReport, reportFileName);
             HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", bab).build();
-            httpPost.setEntity(reqEntity);            
+            httpPost.setEntity(reqEntity);
 
             //invio richiesta POST
             CloseableHttpResponse response = httpclient.execute(target, httpPost, localContext);
-            
+
             try {
             	String response_s = EntityUtils.toString(response.getEntity());
             	LOGGER.info("cogeaps http response code: " + response.getStatusLine());
@@ -78,7 +83,7 @@ public class CogeapsWsRestClient {
                 cogeapsCaricaResponse.setResponse(response_s);
                 cogeapsCaricaResponse.setHttpStatusCode(response.getStatusLine().getStatusCode());
                 return cogeapsCaricaResponse;
-            } 
+            }
             finally {
                 response.close();
             }
@@ -86,12 +91,17 @@ public class CogeapsWsRestClient {
         finally {
             httpclient.close();
         }
-	}	
+	}
 
 	public CogeapsStatoElaborazioneResponse statoElaborazione(String fileName) throws Exception {
-		String complete_url = protocol + "://" + host + ":" + port +  stato_elaborazione_service + "?nomeFile=" + fileName;
-		LOGGER.info("Executing cogeaps request: " + complete_url);		
-		
+		String complete_url = "";
+		if(port != -1)
+			complete_url = protocol + "://" + host + ":" + port +  stato_elaborazione_service + "?nomeFile=" + fileName;
+		else
+			complete_url = protocol + "://" + host +  stato_elaborazione_service + "?nomeFile=" + fileName;
+
+		LOGGER.info("Executing cogeaps request: " + complete_url);
+
         HttpHost target = new HttpHost(host, port, protocol);
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), new UsernamePasswordCredentials(username, password));
@@ -108,10 +118,10 @@ public class CogeapsWsRestClient {
             localContext.setAuthCache(authCache);
 
             HttpGet httpGet = new HttpGet(complete_url);
-                
+
             //invio richiesta GET
             CloseableHttpResponse response = httpclient.execute(target, httpGet, localContext);
-            
+
             try {
             	String response_s = EntityUtils.toString(response.getEntity());
             	LOGGER.info("cogeaps http response code: " + response.getStatusLine());
@@ -121,15 +131,15 @@ public class CogeapsWsRestClient {
                 cogeapsStatoElaborazioneResponse.setResponse(response_s);
                 cogeapsStatoElaborazioneResponse.setHttpStatusCode(response.getStatusLine().getStatusCode());
                 return cogeapsStatoElaborazioneResponse;
-            } 
+            }
             finally {
                 response.close();
             }
-        } 
+        }
         finally {
             httpclient.close();
-        }		
+        }
 	}
-	
+
 }
 
