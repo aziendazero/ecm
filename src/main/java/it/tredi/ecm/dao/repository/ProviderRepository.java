@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +16,7 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 
 @Repository
-public interface ProviderRepository extends CrudRepository<Provider, Long> {
+public interface ProviderRepository extends JpaRepository<Provider, Long> {
 	//TODO @EntityGraph al momento non funziona...sarebbe utile investigare per capire perchè
 	//@EntityGraph(value = "graph.provider.files", type = EntityGraphType.FETCH)
 	@EntityGraph(value = "graph.provider.minimal", type = EntityGraphType.FETCH)
@@ -26,7 +27,8 @@ public interface ProviderRepository extends CrudRepository<Provider, Long> {
 
 	public Provider findOneByCodiceFiscale(String codiceFiscale);
 	public Provider findOneByPartitaIva(String partitaIva);
-	public Set<Provider> findAll();
+
+	public List<Provider> findAll();
 
 	//@Query("SELECT p FROM Provider p WHERE p.status <> :status")
 	public Set<Provider> findAllByStatusNot(@Param("status") ProviderStatoEnum status);

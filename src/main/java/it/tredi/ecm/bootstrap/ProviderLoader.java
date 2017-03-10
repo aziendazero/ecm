@@ -259,7 +259,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 
 		LOGGER.info("BOOTSTRAP ECM - AGGANCIO account fake per comunicazioni");
 		//creo list di tutti i provider
-		Set<Provider> providerSet = providerRepository.findAll();
+		Set<Provider> providerSet = new HashSet<Provider>(providerRepository.findAll());
 		List<Provider> providerList = new ArrayList<Provider>();
 		providerList.addAll(providerSet);
 		//creo list di tutti gli account fake del provider

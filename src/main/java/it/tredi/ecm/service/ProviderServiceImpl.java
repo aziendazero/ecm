@@ -103,7 +103,8 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Set<Provider> getAll(){
 		LOGGER.info("Retrieving all Providers");
-		return providerRepository.findAll();
+		Set<Provider> list = new HashSet<Provider>(providerRepository.findAll());
+		return list;
 	}
 
 	@Override
@@ -180,6 +181,8 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setStatus(ProviderStatoEnum.INSERITO);
 		provider.setCanInsertAccreditamentoProvvisorio(true);
 		provider.setDataRinnovoInsertAccreditamentoProvvisorio(LocalDate.now().minusDays(1));
+		providerRepository.saveAndFlush(provider);
+		provider.setCodiceCogeaps(provider.getId().toString());
 		save(provider);
 
 		if(account.getProfiles().isEmpty()){
