@@ -1474,7 +1474,7 @@ public class EventoServiceImpl implements EventoService {
 		riedizione.setDataScadenzaPagamento(null);
 		riedizione.setInviiRendicontazione(new HashSet<RendicontazioneInviata>());
 		riedizione.setAnagrafeRegionaleCrediti(null);
-		riedizione.setPagato(false);
+		riedizione.setPagato(true);
 		riedizione.setPagInCorso(null);
 		riedizione.setProceduraVerificaQualitaPercepita(null);
 		riedizione.setAutorizzazionePrivacy(null);
