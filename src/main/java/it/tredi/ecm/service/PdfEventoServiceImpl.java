@@ -546,7 +546,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 							addCellSubTable(dettAtt.getMetodologiaDidattica().getNome(), tableDettaglioAttivita);
 						else
 							addCellSubTable("", tableDettaglioAttivita);
-						addCellSubTable(floatFormatter.print(dettAtt.getOreAttivita(), Locale.getDefault()), tableDettaglioAttivita);
+						addCellSubTable(Utils.formatOrario(dettAtt.getOreAttivita()), tableDettaglioAttivita);
 					}
 				}
 				document.add(tableDettaglioAttivita);
@@ -800,7 +800,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 				else
 					addCellSubTable("", subTable);
 				if(metodologie.get(dettAtt) != null)
-					addCellSubTable(floatFormatter.print(metodologie.get(dettAtt), Locale.getDefault()) + " h", subTable);
+					addCellSubTable(Utils.formatOrario(metodologie.get(dettAtt)), subTable);
 				else
 					addCellSubTable("", subTable);
 			}
@@ -828,11 +828,11 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 					addCellSubTable("", subTable);
 				if(metodologie.get(dettAtt) != null)
 					if(dettAtt.getMetodologia() == TipoMetodologiaEnum.FRONTALE) {
-						addCellSubTable(floatFormatter.print(metodologie.get(dettAtt), Locale.getDefault()) + " h", subTable, null, true, Element.ALIGN_RIGHT);
+						addCellSubTable(Utils.formatOrario(metodologie.get(dettAtt)), subTable, null, true, Element.ALIGN_RIGHT);
 						addCellSubTable("", subTable);
 					} else {
 						addCellSubTable("", subTable);
-						addCellSubTable(floatFormatter.print(metodologie.get(dettAtt), Locale.getDefault()) + " h", subTable, null, true, Element.ALIGN_RIGHT);
+						addCellSubTable(Utils.formatOrario(metodologie.get(dettAtt)), subTable, null, true, Element.ALIGN_RIGHT);
 					}
 				else {
 					addCellSubTable("", subTable);
@@ -842,8 +842,8 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 			//Totale
 			//addCellIntestaSubTableByLabel("label.totale_ore", subTable);
 			addCellIntestaSubTableByLabel("label.totale_ore", subTable, null, true, Element.ALIGN_LEFT);
-			addCellSubTable(floatFormatter.print(riepilogoRES.getTotaleOreFrontali(), Locale.getDefault()) + " h", subTable, null, true, Element.ALIGN_RIGHT, true);
-			addCellSubTable(floatFormatter.print(riepilogoRES.getTotaleOreInterattive(), Locale.getDefault()) + " h", subTable, null, true, Element.ALIGN_RIGHT, true);
+			addCellSubTable(Utils.formatOrario(riepilogoRES.getTotaleOreFrontali()), subTable, null, true, Element.ALIGN_RIGHT, true);
+			addCellSubTable(Utils.formatOrario(riepilogoRES.getTotaleOreInterattive()), subTable, null, true, Element.ALIGN_RIGHT, true);
 		}
 		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), subTable, table, true);
 	}
@@ -878,13 +878,13 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 
 	private PdfPTable getTableProgrammaFAD(List<DettaglioAttivitaFAD> programma) throws DocumentException {
 		PdfPTable subTable = null;
-		subTable = new PdfPTable(5);
+		subTable = new PdfPTable(6);
 		subTable.setWidthPercentage(100);
-		subTable.setWidths(new float[]{3, 1, 1, 2, 3});
+		subTable.setWidths(new float[]{3, 1, 1, 2, 3, 2});
 		subTable.setSpacingBefore(0);
 		subTable.setSpacingAfter(0);
 		PdfPCell cellEtichetta = getCellEtichettaSubTable(messageSource.getMessage("label.dettaglio_attivita", null, Locale.getDefault()));
-		cellEtichetta.setColspan(5);
+		cellEtichetta.setColspan(6);
 		subTable.addCell(cellEtichetta);
 		if(programma != null && programma.size() > 0) {
 			addCellIntestaSubTableByLabel("label.argomento", subTable);
@@ -892,6 +892,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 			addCellIntestaSubTableByLabel("label.risultato_atteso", subTable);
 			addCellIntestaSubTableByLabel("label.tipologia_obiettivi_formativi", subTable);
 			addCellIntestaSubTableByLabel("label.metodologia_didattica", subTable);
+			addCellIntestaSubTableByLabel("label.ore_attivita", subTable);
 			String docenti;
 			boolean writeDocenti = false;
 			for(DettaglioAttivitaFAD dettAtt : programma) {
@@ -925,6 +926,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 					addCellSubTable(dettAtt.getMetodologiaDidattica().getNome(), subTable);
 				else
 					addCellSubTable("", subTable);
+				addCellSubTable(Utils.formatOrario(dettAtt.getOreAttivita()), subTable);
 			}
 		}
 		return subTable;

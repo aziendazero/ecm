@@ -72,8 +72,10 @@
 
 	<include file="20170301_001_unique_constraint_codice_fiscale.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170305_002_applySQL_fix_updateSQLComunicazioni.xml" relativeToChangelogFile="true"/>
+
 	<include file="20170306_001_addColumn_InviatoAccreditamentoStandard.xml" relativeToChangelogFile="true"/>
-	
+
 	<include file="20170307_001_fake_account_comunicazioni.xml" relativeToChangelogFile="true"/>
 	<include file="20170307_003_applySQL_profili_fake_comunicazioni.xml" relativeToChangelogFile="true"/>
 	<include file="20170307_005_applySQL_aggiunta_account_comunicazioni.xml" relativeToChangelogFile="true"/>
