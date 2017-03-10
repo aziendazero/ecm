@@ -21,4 +21,4 @@ SELECT a.id, '996' FROM account a WHERE a.fake_account_comunicazioni = TRUE AND 
 
 -- inserimento profilo SEGRETERIA_ACCOUNT_COMUNICAZIONI per account comunicazioni segreteria
 INSERT INTO account_profile (account_id, profile_id)
-SELECT a.id, '995' FROM account a WHERE a.fake_account_comunicazioni = TRUE AND a.username <> 'segreteriacomunicazioni';
+SELECT a.id, '995' FROM account a WHERE a.fake_account_comunicazioni = TRUE AND a.provider_id IS NOT NULL;
