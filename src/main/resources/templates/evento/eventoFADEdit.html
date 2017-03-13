@@ -1455,7 +1455,7 @@
 					$('#addAttivitaTo').val('0'); //dummy
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaFAD').serialize())
 						.done(function(data) {
-						  	$('#'+target).empty().empty().html(data);
+						  	$('#'+target).empty().html(data);
 						  	closeModaleAddAttivitaTo();
 						  	reInitDataTableByClass("datatable-responsive-programmaFAD");
 						  })

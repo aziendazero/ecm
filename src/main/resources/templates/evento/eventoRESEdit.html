@@ -1643,8 +1643,8 @@
 							}
 						});
 					  	*/
-						$('#' + target).empty().html( $(htmlObj[0]).find('#' + target).empty().html() );
-					  	$('#section-2').empty().html( $(htmlObj[0]).find('#section-2').empty().html() );
+						$('#' + target).empty().html( $(htmlObj[0]).find('#' + target).html() );
+					  	$('#section-2').empty().html( $(htmlObj[0]).find('#section-2').html() );
 					  	reInitComponents();
 					  })
 				  	.fail(function() {
@@ -1681,8 +1681,8 @@
 					.done(function(data) {
 						//alert(data);
 						var htmlObj = $.parseHTML($.trim(data));
-						$('#' + target).empty().html( $(htmlObj[0]).find('#' + target).empty().html() );
-					  	$('#section-2').empty().html( $(htmlObj[0]).find('#section-2').empty().html() );
+						$('#' + target).empty().html( $(htmlObj[0]).find('#' + target).html() );
+					  	$('#section-2').empty().html( $(htmlObj[0]).find('#section-2').html() );
 					 	reInitComponents();
 					  })
 				  	.fail(function() {
