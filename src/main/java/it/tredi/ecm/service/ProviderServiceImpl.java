@@ -228,7 +228,7 @@ public class ProviderServiceImpl implements ProviderService {
 		//admin
 		accountComunicazioni.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
 		accountComunicazioni.setUsername("provider" + provider.getId() + "comunicazioni");
-		accountComunicazioni.setUsernameWorkflow("provider" + provider.getId() + "comunicazioni");
+		//accountComunicazioni.setUsernameWorkflow("provider" + provider.getId() + "comunicazioni");
 		accountComunicazioni.setValutazioniNonDate(0);
 		accountComunicazioni.setProvider(provider);
 		accountComunicazioni.setFakeAccountComunicazioni(true);

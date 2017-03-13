@@ -80,7 +80,7 @@ public class AccountServiceImpl implements AccountService{
 	@Override
 	@Transactional
 	public void save(Account user) throws Exception{
-		if(user.isNew()){
+		if(user.isNew() && !user.isFakeAccountComunicazioni()){
 			create(user);
 		}else{
 			LOGGER.debug("Saving user: " + user.getUsername());
