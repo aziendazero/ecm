@@ -20,7 +20,7 @@
 						<th th:text="#{label.prima}">label.prima</th>
 						<th th:text="#{label.dopo}">label.dopo</th>
 
-						<th>extra info</th>
+						<!-- th>extra info</th -->
 					</tr>
 				</thead>
 				<tbody>
@@ -29,10 +29,34 @@
 						<td th:text="${prop.account?.fullNameBase}"></td>
 						<td th:text="${prop.dataModifica}"></td>
 						<td th:text="${prop.label}"></td>
-						<td th:text="${prop.previousValue}"></td>
-						<td th:text="${prop.afterValue}"></td>
+						<td>
+							<th:block th:switch="${prop.auditPropertyChangeInfoTypeEnum}">
+							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).VALUE}">
+							     <th:block th:text="${prop.previousValue}" />
+							  </th:block>
+							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).FILE}">
+								<div th:if="${prop.previousId != null}"><i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${prop.previousId}|}">Scarica File</a></div>
+							  </th:block>
+							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).OBJECT}">
+								<div th:if="${prop.previousId != null}"><a th:text="${prop.entity + ' (' + prop.previousId + ')'}" th:href="@{|/audit/entity/${prop.entity}/entityId/${prop.previousId}|}">Mostra</a></div>
+							  </th:block>
+							</th:block>
+						</td>
+						<td>
+							<th:block th:switch="${prop.auditPropertyChangeInfoTypeEnum}">
+							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).VALUE}">
+							     <th:block th:text="${prop.afterValue}" />
+							  </th:block>
+							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).FILE}">
+								<div th:if="${prop.afterId != null}"><i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${prop.afterId}|}">Scarica File</a></div>
+							  </th:block>
+							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).OBJECT}">
+								<div th:if="${prop.afterId != null}"><a th:text="${prop.entity + ' (' + prop.afterId + ')'}" th:href="@{|/audit/entity/${prop.entity}/entityId/${prop.afterId}|}">Mostra</a></div>
+							  </th:block>
+							</th:block>
+						</td>
 
-						<td style="white-space: pre-wrap;" th:text="${prop.extraInfo}"></td>
+						<!-- td style="white-space: pre-wrap;" th:text="${prop.extraInfo}"></td -->
 					</tr>
 				</tbody>
 			</table>

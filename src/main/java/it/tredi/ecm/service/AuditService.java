@@ -5,5 +5,8 @@ import it.tredi.ecm.audit.AuditLabelInfo;
 
 
 public interface AuditService {
-	String getLabelForAuditProperty(List<AuditLabelInfo> auditLabelInfos, String propertyLabel);
+	public String getLabelForAuditProperty(List<AuditLabelInfo> auditLabelInfos, String propertyLabel);
+	public void commitForCurrrentUser(Object entity);
+	public void deleteForCurrrentUser(Object entity);
+	public void deleteByIdForCurrrentUser(Long entityId, Class javaClass);
 }

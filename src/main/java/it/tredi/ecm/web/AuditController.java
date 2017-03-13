@@ -67,7 +67,10 @@ public class AuditController {
 				entityClass = Class.forName(entity);
 			} else {
 				//Classe senza package
-				entityClass = Class.forName("it.tredi.ecm.dao.entity." + entity);
+				if(entity.contains("Audit"))
+					entityClass = Class.forName("it.tredi.ecm.audit.entity." + entity);
+				else
+					entityClass = Class.forName("it.tredi.ecm.dao.entity." + entity);
 			}
 			//Audit entity
 			CommitId commitId = null;

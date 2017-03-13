@@ -195,10 +195,8 @@ public class Evento extends BaseEntity{
 	private Boolean pagInCorso = false;
 
 	/**	Utilizzati per invio Cogeaps	**/
-	@ShallowReference
 	@OneToOne
 	private File reportPartecipantiXML;
-	@ShallowReference
 	@OneToOne
 	private File reportPartecipantiCSV;
 
@@ -265,7 +263,6 @@ public class Evento extends BaseEntity{
 
 	protected Integer numeroPartecipanti;
 
-	@ShallowReference
 	@OneToOne
 	private File brochureEvento;
 
@@ -290,18 +287,14 @@ public class Evento extends BaseEntity{
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();
 
 	private Boolean eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia;
-	@ShallowReference
 	@OneToOne
 	private File autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia;
-	@ShallowReference
 	@OneToOne
 	private File autocertificazioneAutorizzazioneMinisteroSalute;
 
 	private Boolean altreFormeFinanziamento;
-	@ShallowReference
 	@OneToOne
 	private File autocertificazioneAssenzaFinanziamenti;
-	@ShallowReference
 	@OneToOne
 	private File contrattiAccordiConvenzioni;
 
@@ -310,7 +303,6 @@ public class Evento extends BaseEntity{
 	@JoinColumn(name="evento_id")
 	private Set<Partner> partners = new HashSet<Partner>();
 
-	@ShallowReference
 	@OneToOne
 	private File dichiarazioneAssenzaConflittoInteresse;
 

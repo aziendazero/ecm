@@ -22,6 +22,8 @@ import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Where;
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.TypeName;
 
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
@@ -30,6 +32,7 @@ import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("Provider")
 @Entity
 @Getter
 @Setter
@@ -51,6 +54,7 @@ import lombok.Setter;
 })
 public class Provider extends BaseEntity{
 	/*	ACCOUNTS DEL PROVIDER	*/
+	@DiffIgnore
 	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE })
 	Set<Account> accounts;
 

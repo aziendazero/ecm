@@ -8,34 +8,39 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.TypeName;
+
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("Professione")
 @Entity
 @Getter
 @Setter
 public class Professione extends BaseEntity{
 	private String nome;
 	private boolean sanitaria = false;
-	
+
 	@Column(name ="codice_cogeaps")
-	private String codiceCogeaps;	
-	
+	private String codiceCogeaps;
+
+	@DiffIgnore
 	@OneToMany(mappedBy="professione")
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
-	
+
 	public Professione(){}
 	public Professione(String nome, String codiceCogeaps){
 		this.nome = nome;
 		this.codiceCogeaps = codiceCogeaps;
 	}
-	
+
 	/* UTILS */
 	public void addDisciplina(Disciplina d){
 		this.discipline.add(d);
 		d.setProfessione(this);
 	}
-	
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {

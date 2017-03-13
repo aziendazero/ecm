@@ -133,7 +133,7 @@ public class EventoServiceImpl implements EventoService {
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		evento = eventoRepository.saveAndFlush(evento);
-		//eventoRepository.save(evento);
+		eventoRepository.save(evento);
 
 //		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
 //			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();

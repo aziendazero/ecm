@@ -3,6 +3,7 @@ package it.tredi.ecm.audit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.javers.core.diff.changetype.ReferenceChange;
 import org.javers.core.diff.changetype.ValueChange;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import it.tredi.ecm.dao.entity.Account;
 public class AuditPropertyChangeInfo {
 	private static Logger LOGGER = LoggerFactory.getLogger(AuditPropertyChangeInfo.class);
 
+	private AuditPropertyChangeInfoTypeEnum auditPropertyChangeInfoTypeEnum;
 	private String userName;
 	private Account account;
 	private LocalDateTime dataModifica;
@@ -20,10 +22,14 @@ public class AuditPropertyChangeInfo {
 	private String propertyLabelInfo;
 	private String label;
 
+	private String entity;
+	private Long previousId;
+	private Long afterId;
 
 	//Per ora tenere
 	private ValueChange valueChange;
-
+	private ReferenceChange referenceChange;
+	//private ReferenceChange referenceChange;
 
 
 //	JaversType javersType;
@@ -236,5 +242,45 @@ public class AuditPropertyChangeInfo {
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	public ReferenceChange getReferenceChange() {
+		return referenceChange;
+	}
+
+	public void setReferenceChange(ReferenceChange referenceChange) {
+		this.referenceChange = referenceChange;
+	}
+
+	public AuditPropertyChangeInfoTypeEnum getAuditPropertyChangeInfoTypeEnum() {
+		return auditPropertyChangeInfoTypeEnum;
+	}
+
+	public void setAuditPropertyChangeInfoTypeEnum(AuditPropertyChangeInfoTypeEnum auditPropertyChangeInfoTypeEnum) {
+		this.auditPropertyChangeInfoTypeEnum = auditPropertyChangeInfoTypeEnum;
+	}
+
+	public Long getPreviousId() {
+		return previousId;
+	}
+
+	public void setPreviousId(Long previousId) {
+		this.previousId = previousId;
+	}
+
+	public Long getAfterId() {
+		return afterId;
+	}
+
+	public void setAfterId(Long afterId) {
+		this.afterId = afterId;
+	}
+
+	public String getEntity() {
+		return entity;
+	}
+
+	public void setEntity(String entity) {
+		this.entity = entity;
 	}
 }

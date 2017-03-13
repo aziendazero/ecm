@@ -7,11 +7,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.TypeName;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("Sede")
 @Entity
 @Table(name="sede")
 @Getter
@@ -30,10 +34,12 @@ public class Sede extends BaseEntity{
 	private boolean sedeLegale = false;
 	private boolean sedeOperativa = true;
 
+	@DiffIgnore
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;
 
 	//se true significa che non è stato ancora validato dalla segreteria
+	@DiffIgnore
 	@JsonView(JsonViewModel.Integrazione.class)
 	private boolean dirty = false;
 

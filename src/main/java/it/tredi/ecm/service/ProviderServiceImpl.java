@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.audit.entity.ProviderAudit;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.BaseEntity;
@@ -60,6 +61,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@PersistenceContext EntityManager entityManager;
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private ProtocolloService protocolloService;
+	@Autowired private AuditService auditService;
 
 	@Override
 	public Provider getProvider() {
@@ -131,6 +133,7 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 		*/
 		providerRepository.save(provider);
+		auditService.commitForCurrrentUser(new ProviderAudit(provider));
 	}
 
 	@Override

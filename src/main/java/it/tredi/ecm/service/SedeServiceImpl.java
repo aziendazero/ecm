@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.audit.entity.ProviderAudit;
+import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.repository.SedeRepository;
@@ -20,6 +22,7 @@ public class SedeServiceImpl implements SedeService{
 
 	@Autowired private SedeRepository sedeRepository;
 	@Autowired private ProviderService providerService;
+	@Autowired private AuditService auditService;
 
 	@Override
 	public Sede getSede(Long id) {
@@ -31,25 +34,33 @@ public class SedeServiceImpl implements SedeService{
 	@Transactional
 	public void save(Sede sede) {
 		LOGGER.debug("Salvataggio Sede");
-		sedeRepository.save(sede);
+		sedeRepository.saveAndFlush(sede);
+		saveAuditProvider(sede);
 	}
+
+	private void saveAuditProvider(Sede sede) {
+		if(!sede.isDirty() && sede.getProvider() != null)
+			auditService.commitForCurrrentUser(new ProviderAudit(sede.getProvider()));
+	}
+
 
 	@Override
 	@Transactional
 	public void save(Sede sede, Provider provider) {
 		save(sede);
-
 		provider.addSede(sede);
-
 		providerService.save(provider);
 	}
 
 	@Override
 	public void delete(Long sedeId) {
 		LOGGER.debug("Eliminazione Sede");
+		Sede sede = sedeRepository.findOne(sedeId);
 		sedeRepository.delete(sedeId);
+		sedeRepository.flush();
+		saveAuditProvider(sede);
 	}
-	
+
 	@Transactional
 	@Override
 	public void saveFromIntegrazione(Sede sede){
@@ -57,14 +68,14 @@ public class SedeServiceImpl implements SedeService{
 		sede.setDirty(false);
 		save(sede);
 	}
-	
+
 	@Transactional
 	@Override
 	public void deleteFromIntegrazione(Long id){
 		LOGGER.debug("Eliminazione Sede da Integrazione" + id);
 		delete(id);
 	}
-	
+
 	@Override
 	public Set<Sede> getSediFromIntegrazione(Long providerId) {
 		LOGGER.debug("Recupero sedi per approvazione integrazione per il provider:" + providerId);

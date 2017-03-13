@@ -84,7 +84,6 @@ public class EventoRES extends Evento{
 	private Boolean verificaRicaduteFormative;
 	@Column(columnDefinition = "text")
 	private String descrizioneVerificaRicaduteFormative;
-	@ShallowReference
 	@OneToOne
 	private File documentoVerificaRicaduteFormative;
 

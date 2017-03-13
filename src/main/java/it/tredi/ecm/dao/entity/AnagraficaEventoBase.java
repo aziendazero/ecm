@@ -25,7 +25,6 @@ public class AnagraficaEventoBase implements Serializable{
 	@JsonIgnore
 	private Boolean straniero = false;
 	@JsonIgnore
-	@ShallowReference
 	@OneToOne(cascade=CascadeType.REMOVE)
 	private File cv;
 

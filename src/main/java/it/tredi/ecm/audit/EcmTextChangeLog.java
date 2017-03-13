@@ -51,7 +51,7 @@ public class EcmTextChangeLog extends AbstractTextChangeLog {
 
     @Override
     public void onAffectedObject(GlobalId globalId) {
-    	//globalId.getTypeName() restituisce il tipo dell'oggetto nel sia settato caso withTypeName restituisce questo
+    	//globalId.getTypeName() restituisce il tipo dell'oggetto se l'attributo withTypeName non è impostato altrimenti restituisce withTypeName
         appendln("  changed object: globalId.value(): " + globalId.value() + " - globalId.getTypeName(): " + globalId.getTypeName());
     }
 
