@@ -43,6 +43,7 @@ public class HomeWrapper {
 	private Integer providerInadempienti;
 	private Integer eventiAlimentazionePrimaInfanzia;
 	private Integer eventiMedicineNonConvenzionali;
+	private Integer providerNotRelazioneAnnualeRegistrata;
 
 
 	//Referee

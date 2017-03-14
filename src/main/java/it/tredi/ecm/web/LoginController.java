@@ -28,6 +28,7 @@ import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.QuotaAnnualeService;
 import it.tredi.ecm.service.QuotaAnnualeServiceImpl;
+import it.tredi.ecm.service.RelazioneAnnualeService;
 import it.tredi.ecm.service.SedutaService;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
@@ -45,6 +46,7 @@ public class LoginController {
 	@Autowired private QuotaAnnualeService quotaAnnualeService;
 	@Autowired private EventoService eventoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
+	@Autowired private RelazioneAnnualeService relazioneAnnualeService;
 
 	@Autowired private CurrentUserDetailsService currentUserDetailsService;
 
@@ -108,6 +110,7 @@ public class LoginController {
 					wrapper.setProviderPianoFormativoNonInserito(pianoFormativoService.countProviderNotPianoFormativoInseritoPerAnno());
 					wrapper.setEventiCreditiNonConfermati(eventoService.countAllEventiCreditiNonConfermati());
 					wrapper.setProviderInadempienti(providerService.countAllProviderInadempienti());
+					wrapper.setProviderNotRelazioneAnnualeRegistrata(relazioneAnnualeService.countProviderNotRelazioneAnnualeRegistrataAllaScadenza());
 					wrapper.setEventiAlimentazionePrimaInfanzia(eventoService.countAllEventiAlimentazionePrimaInfanzia());
 					wrapper.setEventiMedicineNonConvenzionali(eventoService.countAllEventiMedicineNonConvenzionali());
 					break;
