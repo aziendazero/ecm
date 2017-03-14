@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class AnagrafeRegionaleCrediti extends BaseEntity{
+public class AnagrafeRegionaleCrediti extends BaseEntityDefaultId{
 	private static final long serialVersionUID = 3131358508500753058L;
 
 	private String codiceFiscale;

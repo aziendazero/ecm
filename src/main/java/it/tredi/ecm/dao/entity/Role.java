@@ -11,10 +11,10 @@ import lombok.Setter;
 @Table(name = "role")
 @Getter
 @Setter
-public class Role extends BaseEntity{
+public class Role extends BaseEntityDefaultId{
     private String name;
     private String description;
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

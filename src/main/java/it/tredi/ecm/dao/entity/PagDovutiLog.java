@@ -17,8 +17,8 @@ import lombok.Setter;
 @Table(name="pag_dovuti_log")
 @Getter
 @Setter
-public class PagDovutiLog extends BaseEntity {
-		
+public class PagDovutiLog extends BaseEntityDefaultId {
+
 		@ManyToOne @JoinColumn(name = "pagamento_id")
 		private Pagamento pagamento;
 		private Date dataRichiesta;

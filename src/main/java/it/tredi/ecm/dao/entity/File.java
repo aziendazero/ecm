@@ -29,7 +29,7 @@ import lombok.Setter;
 @Table(name="file")
 @Getter
 @Setter
-public class File extends BaseEntity{
+public class File extends BaseEntityDefaultId{
 	@JsonView(JsonViewModel.Integrazione.class)
 	private String nomeFile;
 

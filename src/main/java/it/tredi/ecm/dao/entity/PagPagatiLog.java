@@ -17,8 +17,8 @@ import lombok.Setter;
 @Table(name="pag_pagati_log")
 @Getter
 @Setter
-public class PagPagatiLog extends BaseEntity {
-	
+public class PagPagatiLog extends BaseEntityDefaultId {
+
 	@ManyToOne @JoinColumn(name = "pagamento_id")
 	private Pagamento pagamento;
 	private String idSession;
@@ -34,7 +34,7 @@ public class PagPagatiLog extends BaseEntity {
 	@Lob
 	@Type(type = "org.hibernate.type.TextType")
 	private String faultDescription;
-	
-	
+
+
 
 }

@@ -20,7 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class DettaglioAttivitaFAD extends BaseEntity implements Serializable{
+public class DettaglioAttivitaFAD extends BaseEntityDefaultId implements Serializable{
 	/**
 	 *
 	 */

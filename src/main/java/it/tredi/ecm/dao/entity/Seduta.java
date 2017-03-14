@@ -55,7 +55,7 @@ import lombok.Setter;
 //			})
 
 })
-public class Seduta extends BaseEntity{
+public class Seduta extends BaseEntityDefaultId{
 	@JsonView(JsonViewModel.Seduta.class)
 	@JsonProperty("start")
 	@DateTimeFormat (pattern = "dd/MM/yyyy")

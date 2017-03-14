@@ -21,7 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class FaseAzioniRuoliEventoFSCTypeA extends BaseEntity {
+public class FaseAzioniRuoliEventoFSCTypeA extends BaseEntityDefaultId {
 	@Enumerated(EnumType.STRING)
 	private FaseDiLavoroFSCEnum faseDiLavoro;
 

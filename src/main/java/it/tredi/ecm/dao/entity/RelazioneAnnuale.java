@@ -34,7 +34,7 @@ import lombok.Setter;
  * Abilitare una modifica ad una relazione già scaduta -> gestita attraverso la posticipazione della data di fine modifica
  *
  * */
-public class RelazioneAnnuale extends BaseEntity{
+public class RelazioneAnnuale extends BaseEntityDefaultId{
 	private Integer annoRiferimento;//anno di riferimento dell'attivita formativa
 
 	@DateTimeFormat (pattern = "dd/MM/yyyy")

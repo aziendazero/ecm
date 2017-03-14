@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class AccreditamentoStatoHistory extends BaseEntity{
+public class AccreditamentoStatoHistory extends BaseEntityDefaultId{
 	private static final long serialVersionUID = -7320175410382130407L;
 
 	@ManyToOne

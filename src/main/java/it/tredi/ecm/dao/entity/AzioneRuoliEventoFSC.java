@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class AzioneRuoliEventoFSC extends BaseEntity {
+public class AzioneRuoliEventoFSC extends BaseEntityDefaultId {
 	@Column(columnDefinition = "text")
 	private String azione;
 

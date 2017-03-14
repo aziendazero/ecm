@@ -16,7 +16,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Protocollo extends BaseEntity {
+public class Protocollo extends BaseEntityDefaultId {
 
 	private LocalDate data;
 	private Integer numero;

@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-public class FieldIntegrazioneHistoryContainer extends BaseEntity {
+public class FieldIntegrazioneHistoryContainer extends BaseEntityDefaultId {
 
 	public FieldIntegrazioneHistoryContainer() {}
 	public FieldIntegrazioneHistoryContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId) {

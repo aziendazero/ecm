@@ -8,11 +8,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +30,12 @@ import lombok.Setter;
 @Setter
 public class EventoPianoFormativo extends BaseEntity{
 	private static Logger LOGGER = LoggerFactory.getLogger(EventoPianoFormativo.class);
+	@SequenceGenerator(name="evento_sequence", sequenceName="evento_sequence", allocationSize=1)
+	@Id @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="evento_sequence")
+    protected Long id;
+	public Long getId() {
+	        return id;
+	    }
 
 	/*
 	 * PREFIX[-edizione]

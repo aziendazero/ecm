@@ -23,21 +23,21 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class PersonaFullEvento extends BaseEntity implements Serializable{
+public class PersonaFullEvento extends BaseEntityDefaultId implements Serializable{
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3024376063379310342L;
 
 	private static Logger LOGGER = LoggerFactory.getLogger(PersonaFullEvento.class);
-	
+
 	@Embedded
 	private AnagraficaFullEventoBase anagrafica;
-	
+
 	public PersonaFullEvento() {
-		
+
 	}
-	
+
 	public PersonaFullEvento(AnagraficaFullEvento anagrafica){
 		try{
 			//this.anagrafica = (AnagraficaFullEventoBase) anagrafica.getAnagrafica().clone();

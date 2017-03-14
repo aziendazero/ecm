@@ -16,7 +16,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Pagamento extends BaseEntity{
+public class Pagamento extends BaseEntityDefaultId{
 	/*
 	 * La logica per il pagamento delle quote annuali e' gestita attraverso la entity QuotaAnnuale
 	 *

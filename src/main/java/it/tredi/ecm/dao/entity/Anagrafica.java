@@ -14,7 +14,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Anagrafica extends BaseEntity{
+public class Anagrafica extends BaseEntityDefaultId{
 	@JsonView(JsonViewModel.Integrazione.class)
 	private String cognome;
 	@JsonView(JsonViewModel.Integrazione.class)

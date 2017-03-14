@@ -23,7 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Valutazione extends BaseEntity{
+public class Valutazione extends BaseEntityDefaultId{
 	@Column(name="data_valutazione")
 	@JsonView(JsonViewModel.Valutazione.class)
 	private LocalDateTime dataValutazione;

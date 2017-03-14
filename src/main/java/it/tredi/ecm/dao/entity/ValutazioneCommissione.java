@@ -13,7 +13,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ValutazioneCommissione extends BaseEntity{
+public class ValutazioneCommissione extends BaseEntityDefaultId{
 	@OneToOne
 	private Seduta seduta;
 	@OneToOne

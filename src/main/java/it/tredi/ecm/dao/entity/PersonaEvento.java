@@ -28,7 +28,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class PersonaEvento extends BaseEntity implements Serializable{
+public class PersonaEvento extends BaseEntityDefaultId implements Serializable{
 	/**
 	 *
 	 */

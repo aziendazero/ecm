@@ -24,7 +24,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class DatiAccreditamento extends BaseEntity {
+public class DatiAccreditamento extends BaseEntityDefaultId {
 	/*** INFO RELATIVE ALLA RICHIESTA ***/
 	private String tipologiaAccreditamento;
 

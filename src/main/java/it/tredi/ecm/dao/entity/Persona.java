@@ -33,7 +33,7 @@ import lombok.Setter;
 					}))
 @Getter
 @Setter
-public class Persona extends BaseEntity{
+public class Persona extends BaseEntityDefaultId{
 	@JsonView(JsonViewModel.Integrazione.class)
 	@JoinColumn(name = "anagrafica_id")
 	@ManyToOne(cascade = {CascadeType.PERSIST , CascadeType.MERGE})
