@@ -61,6 +61,7 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
+import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
@@ -1950,5 +1951,29 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 		}
+	}
+
+	@Override
+	public Set<Evento> getEventiAlimentazionePrimaInfanzia(){
+		LOGGER.debug("Recupero eventi con alimenti prima infanzia");
+		return eventoRepository.findAllByContenutiEvento(ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA);
+	}
+
+	@Override
+	public Integer countAllEventiAlimentazionePrimaInfanzia(){
+		LOGGER.debug("Conteggio eventi con alimenti prima infanzia");
+		return eventoRepository.countAllByContenutiEvento(ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA);
+	}
+
+	@Override
+	public Set<Evento> getEventiMedicineNonConvenzionali(){
+		LOGGER.debug("Recupero eventi con medicine non convenzionali");
+		return eventoRepository.findAllByContenutiEvento(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE);
+	}
+
+	@Override
+	public Integer countAllEventiMedicineNonConvenzionali(){
+		LOGGER.debug("Conteggio eventi con medicine non convenzionali");
+		return eventoRepository.countAllByContenutiEvento(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE);
 	}
 }

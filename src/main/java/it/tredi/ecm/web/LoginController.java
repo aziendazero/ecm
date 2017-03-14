@@ -108,6 +108,8 @@ public class LoginController {
 					wrapper.setProviderPianoFormativoNonInserito(pianoFormativoService.countProviderNotPianoFormativoInseritoPerAnno());
 					wrapper.setEventiCreditiNonConfermati(eventoService.countAllEventiCreditiNonConfermati());
 					wrapper.setProviderInadempienti(providerService.countAllProviderInadempienti());
+					wrapper.setEventiAlimentazionePrimaInfanzia(eventoService.countAllEventiAlimentazionePrimaInfanzia());
+					wrapper.setEventiMedicineNonConvenzionali(eventoService.countAllEventiMedicineNonConvenzionali());
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);
