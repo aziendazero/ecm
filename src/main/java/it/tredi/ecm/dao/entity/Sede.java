@@ -16,7 +16,7 @@ import lombok.Setter;
 @Table(name="sede")
 @Getter
 @Setter
-public class Sede extends BaseEntity{
+public class Sede extends BaseEntityDefaultId{
 	private String provincia;
 	private String comune;
 	private String indirizzo;

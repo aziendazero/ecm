@@ -31,7 +31,7 @@ import lombok.Setter;
 //		)
 @Getter
 @Setter
-public class Account extends BaseEntity{
+public class Account extends BaseEntityDefaultId{
 	private String username;
 
 	@JsonIgnore

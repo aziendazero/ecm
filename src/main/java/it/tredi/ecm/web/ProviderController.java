@@ -50,6 +50,7 @@ import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.QuotaAnnualeService;
+import it.tredi.ecm.service.RelazioneAnnualeService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
@@ -93,6 +94,7 @@ public class ProviderController {
 
 	@Autowired private ImpostazioniProviderValidator impostazioniProviderValidator;
 	@Autowired private QuotaAnnualeService quotaAnnualeService;
+	@Autowired private RelazioneAnnualeService relazioneAnnualeService;
 
 	@Autowired private EnableFieldValidator enableFieldValidator;
 
@@ -453,6 +455,9 @@ public class ProviderController {
 				break;
 			case "mancatoPagamentoAnnuale":
 				listaProvider.addAll(quotaAnnualeService.getAllProviderNotPagamentoEffettuatoAllaScadenza());
+				break;
+			case "providerNotRelazioneAnnualeRegistrata":
+				listaProvider.addAll(relazioneAnnualeService.getAllProviderNotRelazioneAnnualeRegistrataAllaScadenza());
 				break;
 			}
 			redirectAttrs.addFlashAttribute("providerList", listaProvider);

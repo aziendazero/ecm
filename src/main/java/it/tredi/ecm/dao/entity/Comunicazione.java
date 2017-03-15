@@ -47,7 +47,7 @@ import lombok.Setter;
 //	)
 //
 //})
-public class Comunicazione extends BaseEntity{
+public class Comunicazione extends BaseEntityDefaultId{
 
 	public Comunicazione(){}
 	public Comunicazione(Account mittente) {

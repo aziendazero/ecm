@@ -48,6 +48,7 @@ public interface AccreditamentoService{
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaIntegrazione(Long accreditamentoId) throws Exception;
+	public void eseguiTaskInviaIntegrazione(Long accreditamentoId) throws Exception;
 	public void presaVisione(Long accreditamentoId) throws Exception;
 	public void rivaluta(Long accreditamentoId);
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva) throws Exception;

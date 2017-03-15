@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class VerbaleValutazioneSulCampo extends BaseEntity {
+public class VerbaleValutazioneSulCampo extends BaseEntityDefaultId {
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate giorno;
 	@OneToOne

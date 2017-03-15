@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class FileData extends BaseEntity{
-    
+public class FileData extends BaseEntityDefaultId{
+
 	private byte[] data;
 }

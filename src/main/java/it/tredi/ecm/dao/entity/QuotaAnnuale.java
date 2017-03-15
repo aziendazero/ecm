@@ -11,17 +11,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class QuotaAnnuale extends BaseEntity{
+public class QuotaAnnuale extends BaseEntityDefaultId{
 	private Boolean pagato = false;
 	private Boolean pagInCorso = false;
 	private Boolean primoAnno = false;
-	
+
 	@Column(name = "anno_riferimento")
 	private Integer annoRiferimento;
-	
+
 	@ManyToOne
 	private Provider provider;
-	
+
 	@OneToOne(mappedBy="quotaAnnuale")
 	private Pagamento pagamento;
 }

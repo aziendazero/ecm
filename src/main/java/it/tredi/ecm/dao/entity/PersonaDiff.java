@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class PersonaDiff extends BaseEntity{
+public class PersonaDiff extends BaseEntityDefaultId{
 
 	private Long personaId;
 

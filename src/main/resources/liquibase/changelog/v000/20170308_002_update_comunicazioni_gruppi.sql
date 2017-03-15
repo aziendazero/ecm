@@ -58,13 +58,13 @@ WHERE comunicazione_response.id IN (SELECT cr.id FROM comunicazione_response cr 
 UPDATE comunicazione_destinatari
 SET account_id = result.fake_id
 FROM (
-	SELECT fake.id AS fake_id, com_dest.comunicazione_id AS com_dest_id
+	SELECT fake.id AS fake_id, com_dest.comunicazione_id AS com_dest_id, a.id AS account_to_substitute_id
 	FROM comunicazione_destinatari com_dest
 	INNER JOIN account a ON com_dest.account_id = a.id
 	INNER JOIN account fake ON a.provider_id = fake.provider_id
 	WHERE fake.fake_account_comunicazioni = true AND a.fake_account_comunicazioni = false
 ) AS result
-WHERE comunicazione_destinatari.comunicazione_id = result.com_dest_id;
+WHERE comunicazione_destinatari.comunicazione_id = result.com_dest_id AND comunicazione_destinatari.account_id = result.account_to_substitute_id;
 
 --rimuovo dai destinatari tutti gli utenti di tipo segreteria in comunicazione_destinatari
 DELETE FROM comunicazione_destinatari
@@ -85,13 +85,13 @@ SELECT c.id, (SELECT fake.id FROM account fake WHERE fake.username = 'segreteria
 UPDATE comunicazione_response_destinatari
 SET account_id = result.fake_id
 FROM (
-	SELECT fake.id AS fake_id, com_res_dest.account_id AS com_res_dest_id
+	SELECT fake.id AS fake_id, com_res_dest.account_id AS com_res_dest_id, a.id AS account_to_substitute_id
 	FROM comunicazione_response_destinatari com_res_dest
 	INNER JOIN account a ON com_res_dest.account_id = a.id
 	INNER JOIN account fake ON a.provider_id = fake.provider_id
 	WHERE fake.fake_account_comunicazioni = true AND a.fake_account_comunicazioni = false
 ) AS result
-WHERE comunicazione_response_destinatari.comunicazione_response_id = result.com_res_dest_id;
+WHERE comunicazione_response_destinatari.comunicazione_response_id = result.com_res_dest_id AND comunicazione_response_destinatari.account_id = result.account_to_substitute_id;
 
 --rimuovo dai destinatari tutti gli utenti di tipo segreteria in comunicazione_response_destinatari
 DELETE FROM comunicazione_response_destinatari

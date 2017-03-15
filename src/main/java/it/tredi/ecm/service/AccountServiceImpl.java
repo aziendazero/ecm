@@ -46,13 +46,13 @@ public class AccountServiceImpl implements AccountService{
 	@Override
 	public Optional<Account> getUserByUsername(String username) {
 		LOGGER.debug("Getting users with username: " + username);
-		return accountRepository.findOneByUsername(username);
+		return accountRepository.findOneByUsernameIgnoreCase(username);
 	}
 
 	@Override
 	public Optional<Account> getUserByEmail(String email) {
 		LOGGER.debug("Getting users with email: " + email);
-		return accountRepository.findOneByEmail(email);
+		return accountRepository.findOneByEmailIgnoreCase(email);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class AccountServiceImpl implements AccountService{
 	@Override
 	@Transactional
 	public void save(Account user) throws Exception{
-		if(user.isNew()){
+		if(user.isNew() && !user.isFakeAccountComunicazioni()){
 			create(user);
 		}else{
 			LOGGER.debug("Saving user: " + user.getUsername());

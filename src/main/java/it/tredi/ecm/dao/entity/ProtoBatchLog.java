@@ -12,19 +12,19 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ProtoBatchLog extends BaseEntity {
-	
+public class ProtoBatchLog extends BaseEntityDefaultId {
+
 	private Date dtIns;
 	private Date dtUpd;
-	
+
 	private String stato;
 	private String codStato;
-	
+
 	private String log;
-	
+
 	private String nSpedizione;
 	private Date dtSpedizione;
-	
+
 	@ManyToOne @JoinColumn(name = "protocollo_id")
 	private Protocollo protocollo;
 

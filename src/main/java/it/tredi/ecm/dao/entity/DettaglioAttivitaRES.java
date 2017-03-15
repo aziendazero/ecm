@@ -28,7 +28,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class DettaglioAttivitaRES extends BaseEntity implements Serializable{
+public class DettaglioAttivitaRES extends BaseEntityDefaultId implements Serializable{
 
 	/**
 	 *

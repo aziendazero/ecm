@@ -21,7 +21,7 @@ import lombok.Setter;
 @Table(name="profile")
 @Getter
 @Setter
-public class Profile extends BaseEntity{
+public class Profile extends BaseEntityDefaultId{
 	@Enumerated(EnumType.STRING)
 	private ProfileEnum profileEnum;
 

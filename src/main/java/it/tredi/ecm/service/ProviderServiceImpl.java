@@ -103,7 +103,8 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Set<Provider> getAll(){
 		LOGGER.info("Retrieving all Providers");
-		return providerRepository.findAll();
+		Set<Provider> list = new HashSet<Provider>(providerRepository.findAll());
+		return list;
 	}
 
 	@Override
@@ -180,6 +181,8 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setStatus(ProviderStatoEnum.INSERITO);
 		provider.setCanInsertAccreditamentoProvvisorio(true);
 		provider.setDataRinnovoInsertAccreditamentoProvvisorio(LocalDate.now().minusDays(1));
+		providerRepository.saveAndFlush(provider);
+		provider.setCodiceCogeaps(provider.getId().toString());
 		save(provider);
 
 		if(account.getProfiles().isEmpty()){
@@ -225,7 +228,7 @@ public class ProviderServiceImpl implements ProviderService {
 		//admin
 		accountComunicazioni.setPassword("$2a$10$JCx8DPs0l0VNFotVGkfW/uRyJzFfc8HkTi5FQy0kpHSpq7W4iP69.");
 		accountComunicazioni.setUsername("provider" + provider.getId() + "comunicazioni");
-		accountComunicazioni.setUsernameWorkflow("provider" + provider.getId() + "comunicazioni");
+		//accountComunicazioni.setUsernameWorkflow("provider" + provider.getId() + "comunicazioni");
 		accountComunicazioni.setValutazioniNonDate(0);
 		accountComunicazioni.setProvider(provider);
 		accountComunicazioni.setFakeAccountComunicazioni(true);

@@ -70,4 +70,9 @@ public interface EventoService {
 	public Evento getEventoByPrefix(String idEventoLink);
 	public Evento getEventoByPrefixAndEdizione(String prefix, int edizione);
 	public Evento getEventoByCodiceIdentificativo(String codiceIdentificativo);
+
+	public Integer countAllEventiAlimentazionePrimaInfanzia();
+	public Set<Evento> getEventiAlimentazionePrimaInfanzia();
+	public Integer countAllEventiMedicineNonConvenzionali();
+	public Set<Evento> getEventiMedicineNonConvenzionali();
 }

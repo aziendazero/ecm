@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class SedeDiff extends BaseEntity {
+public class SedeDiff extends BaseEntityDefaultId {
 
 	private Long sedeId;
 

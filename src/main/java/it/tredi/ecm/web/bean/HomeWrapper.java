@@ -41,6 +41,10 @@ public class HomeWrapper {
 	private Integer eventiCreditiNonConfermati;
 	private Integer domandeSbloccoCampiIntegrazione;
 	private Integer providerInadempienti;
+	private Integer eventiAlimentazionePrimaInfanzia;
+	private Integer eventiMedicineNonConvenzionali;
+	private Integer providerNotRelazioneAnnualeRegistrata;
+
 
 	//Referee
 	private Boolean isReferee;

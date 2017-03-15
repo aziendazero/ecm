@@ -22,7 +22,7 @@ import lombok.Setter;
 @Table(name="comunicazione_response")
 @Getter
 @Setter
-public class ComunicazioneResponse extends BaseEntity
+public class ComunicazioneResponse extends BaseEntityDefaultId
 //implements Comparator<ComunicazioneResponse>
 {
 

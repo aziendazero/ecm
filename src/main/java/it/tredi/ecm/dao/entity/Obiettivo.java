@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Obiettivo extends BaseEntity{
+public class Obiettivo extends BaseEntityDefaultId{
 	@Column(columnDefinition = "text")
 	private String nome;
 	private boolean nazionale;

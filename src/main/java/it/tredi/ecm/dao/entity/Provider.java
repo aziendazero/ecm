@@ -12,6 +12,9 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -20,6 +23,7 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.Where;
 
@@ -50,6 +54,14 @@ import lombok.Setter;
 
 })
 public class Provider extends BaseEntity{
+
+	@SequenceGenerator(name="provider_sequence", sequenceName="provider_sequence", allocationSize=1)
+	@Id @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="provider_sequence")
+    protected Long id;
+	public Long getId() {
+	        return id;
+	    }
+
 	/*	ACCOUNTS DEL PROVIDER	*/
 	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE })
 	Set<Account> accounts;

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Partner extends BaseEntity{
+public class Partner extends BaseEntityDefaultId{
 	private String name;
 	@OneToOne
 	private File partnerFile;

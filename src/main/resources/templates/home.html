@@ -204,6 +204,36 @@
 						</div>
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('eventi/CREDITI_NON_CONFERMATI/list')">
+							<div class="icon"><i class="fa fa-pencil-square-o"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.eventiCreditiNonConfermati}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiCreditiNonConfermati == 1} ? #{label.evento} : #{label.eventi}"></h3>
+			                	<p class="count-text" th:text="#{label.con_crediti_non_confermati}"></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('eventi/ALIMENTAZIONE_PRIMA_INFANZIA/list')">
+							<div class="icon"><i class="fa fa-pencil-square-o"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.eventiAlimentazionePrimaInfanzia}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiAlimentazionePrimaInfanzia == 1} ? #{label.evento} : #{label.eventi}"></h3>
+			                	<p class="count-text" th:text="#{label.con_alimentazione_prima_infanzia}"></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('eventi/MEDICINE_NON_CONVENZIONALI/list')">
+							<div class="icon"><i class="fa fa-pencil-square-o"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.eventiMedicineNonConvenzionali}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiMedicineNonConvenzionali == 1} ? #{label.evento} : #{label.eventi}"></h3>
+			                	<p class="count-text" th:text="#{label.con_medicine_non_convenzionali}"></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('provider/mancatoPagamentoAnnuale/list')">
 							<div class="icon"><i class="fa fa-credit-card"></i></div>
 							<div class="col-xs-10">
@@ -214,12 +244,12 @@
 						</div>
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('eventi/CREDITI_NON_CONFERMATI/list')">
-							<div class="icon"><i class="fa fa-pencil-square-o"></i></div>
+						<div class="tile-stats clickable" onclick="goTo('provider/providerNotRelazioneAnnualeRegistrata/list')">
+							<div class="icon"><i class="fa fa-file-text"></i></div>
 							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.eventiCreditiNonConfermati}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiCreditiNonConfermati == 1} ? #{label.evento} : #{label.eventi}"></h3>
-			                	<p class="count-text" th:text="#{label.con_crediti_non_confermati}"></p>
+			                	<div class="count" th:text="${homeWrapper.providerNotRelazioneAnnualeRegistrata}"></div>
+			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+			                	<p class="count-text" th:text="${homeWrapper.providerNotRelazioneAnnualeRegistrata == 1} ? #{label.non_ha_inserito_relazione_annuale} :  #{label.non_hanno_inserito_relazione_annuale}"></p>
 							</div>
 						</div>
 					</div>

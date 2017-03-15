@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ProviderDiff extends BaseEntity {
+public class ProviderDiff extends BaseEntityDefaultId {
 
 	@Enumerated(EnumType.STRING)
 	private TipoOrganizzatore tipoOrganizzatore;

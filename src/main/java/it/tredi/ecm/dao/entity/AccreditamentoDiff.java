@@ -15,7 +15,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class AccreditamentoDiff extends BaseEntity {
+public class AccreditamentoDiff extends BaseEntityDefaultId {
 
 	private LocalDateTime dataCreazione;
 

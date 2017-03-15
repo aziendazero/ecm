@@ -26,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class DatiAccreditamentoDiff extends BaseEntity {
+public class DatiAccreditamentoDiff extends BaseEntityDefaultId {
 
 	//generale/settoriale tipologia procedure formative
 	private String tipologiaAccreditamento;

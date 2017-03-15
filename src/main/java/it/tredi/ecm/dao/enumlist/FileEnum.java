@@ -54,8 +54,8 @@ public enum FileEnum {
 	FILE_REQUISITI_HARDWARE_SOFTWARE(43, "Dotazione hardware e software necessaria all'utente per svolgere l'evento"),
 
 	FILE_RELAZIONE_FINALE(44, "Relazione Finale"),
-	FILE_ACCREDITAMENTO_STANDARD(45,"Richiesta di Accreditamento Standard"),
-	FILE_RELAZIONE_ANNUALE(46, "Relazione Annuale"),
+//	FILE_ACCREDITAMENTO_STANDARD(45,"Richiesta di Accreditamento Standard"),
+//	FILE_RELAZIONE_ANNUALE(46, "Relazione Annuale"),
 
 	FILE_DELEGA_VALUTAZIONE_SUL_CAMPO(47, "Delega"),
 	FILE_CARTA_IDENTITA(48, "Carta d'identità"),

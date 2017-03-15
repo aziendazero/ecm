@@ -17,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class PianoFormativo extends BaseEntity{
+public class PianoFormativo extends BaseEntityDefaultId{
 	@Column(name="anno_piano_formativo")
 	private Integer annoPianoFormativo;
 

@@ -20,7 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class ProgrammaGiornalieroRES extends BaseEntity {
+public class ProgrammaGiornalieroRES extends BaseEntityDefaultId {
 	//@ManyToOne
 	//private EventoRES eventoRES;
 

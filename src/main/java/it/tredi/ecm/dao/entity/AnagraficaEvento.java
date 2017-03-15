@@ -16,7 +16,7 @@ import lombok.Setter;
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = {"codiceFiscale", "provider_id"},
 												name="uk_anagraficaevento_codicefiscale_providerid")})
-public class AnagraficaEvento extends BaseEntity{
+public class AnagraficaEvento extends BaseEntityDefaultId{
 	@Embedded
 	private AnagraficaEventoBase anagrafica;
 

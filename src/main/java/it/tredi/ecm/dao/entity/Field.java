@@ -11,7 +11,7 @@ import lombok.Setter;
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class Field extends BaseEntity{
+public abstract class Field extends BaseEntityDefaultId{
 	@Enumerated(EnumType.STRING)
 	private IdFieldEnum idField;
 	private long objectReference = -1;

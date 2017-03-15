@@ -35,7 +35,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Accreditamento extends BaseEntity{
+public class Accreditamento extends BaseEntityDefaultId{
 
 	@Column(name = "tipo_domanda")
 	@Enumerated(EnumType.STRING)

@@ -14,28 +14,28 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Professione extends BaseEntity{
+public class Professione extends BaseEntityDefaultId{
 	private String nome;
 	private boolean sanitaria = false;
-	
+
 	@Column(name ="codice_cogeaps")
-	private String codiceCogeaps;	
-	
+	private String codiceCogeaps;
+
 	@OneToMany(mappedBy="professione")
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
-	
+
 	public Professione(){}
 	public Professione(String nome, String codiceCogeaps){
 		this.nome = nome;
 		this.codiceCogeaps = codiceCogeaps;
 	}
-	
+
 	/* UTILS */
 	public void addDisciplina(Disciplina d){
 		this.discipline.add(d);
 		d.setProfessione(this);
 	}
-	
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {

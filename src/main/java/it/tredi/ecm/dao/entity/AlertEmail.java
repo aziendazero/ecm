@@ -20,7 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class AlertEmail extends BaseEntity{
+public class AlertEmail extends BaseEntityDefaultId{
 
 	@Enumerated(EnumType.STRING)
 	private AlertTipoEnum tipo;

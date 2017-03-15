@@ -1648,6 +1648,10 @@ public class EventoController {
 			switch(search){
 				case CREDITI_NON_CONFERMATI : listaEventi = eventoService.getEventiCreditiNonConfermati();
 								break;
+				case ALIMENTAZIONE_PRIMA_INFANZIA : listaEventi = eventoService.getEventiAlimentazionePrimaInfanzia();
+								break;
+				case MEDICINE_NON_CONVENZIONALI : listaEventi = eventoService.getEventiMedicineNonConvenzionali();
+								break;
 
 				default: break;
 			}

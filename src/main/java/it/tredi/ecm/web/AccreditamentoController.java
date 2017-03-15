@@ -1338,7 +1338,7 @@ public class AccreditamentoController {
 				LOGGER.info(Utils.getLogMessage("Arrivato file note preavviso rigetto id: " + idFilePreavvisoRigetto));
 				accreditamentoService.saveFileNoteOsservazioni(idFilePreavvisoRigetto, accreditamentoId);
 			}
-			accreditamentoService.inviaIntegrazione(accreditamentoId);
+			accreditamentoService.eseguiTaskInviaIntegrazione(accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.invio_integrazione_success", "success"));
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}catch (Exception ex){
