@@ -210,6 +210,11 @@ public class DatiAccreditamentoController {
 		try{
 			//controllo se è possibile modificare la valutazione o meno
 			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+
+			//aggiungo flag per controllo su campi modificati all'inserimento di una nuova domanda
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			if(accreditamento.isStandard() && accreditamento.isValutazioneSegreteriaAssegnamento())
+				model.addAttribute("checkIfAccreditamentoChanged", true);
 			return goToValidate(model, prepareDatiAccreditamentoWrapperValidate(datiAccreditamentoService.getDatiAccreditamento(id), accreditamentoId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false, sezione));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/dati/"+ id +"/validate/" + sezione),ex);

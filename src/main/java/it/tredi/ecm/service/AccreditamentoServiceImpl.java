@@ -23,15 +23,20 @@ import org.springframework.stereotype.Service;
 import it.tredi.bonita.api.model.TaskInstanceDataModel;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.AccreditamentoDiff;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.DatiAccreditamentoDiff;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.PersonaDiff;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.ProviderDiff;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.entity.SedeDiff;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
@@ -48,7 +53,12 @@ import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
+import it.tredi.ecm.dao.repository.AccreditamentoDiffRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
+import it.tredi.ecm.dao.repository.DatiAccreditamentoDiffRepository;
+import it.tredi.ecm.dao.repository.PersonaDiffRepository;
+import it.tredi.ecm.dao.repository.ProviderDiffRepository;
+import it.tredi.ecm.dao.repository.SedeDiffRepository;
 import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
@@ -100,6 +110,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private PersonaService personaService;
 	@Autowired private SedeService sedeService;
 
+	@Autowired private DiffService diffService;
+
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Creazione domanda di accreditamento per il provider corrente"));
@@ -141,6 +153,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				if(tipoDomanda == AccreditamentoTipoEnum.STANDARD){
 					try{
 						Accreditamento ultimoAccreditamento = getAccreditamentoAttivoForProvider(provider.getId());
+
+						diffService.creaAllDiffAccreditamento(ultimoAccreditamento);
+
 						if(ultimoAccreditamento != null && ultimoAccreditamento.getDatiAccreditamento() != null){
 							DatiAccreditamento ultimoDatiAccreditamento = ultimoAccreditamento.getDatiAccreditamento();
 							if(ultimoDatiAccreditamento.isDatiStrutturaInseriti() || ultimoDatiAccreditamento.isTipologiaFormativaInserita()){
@@ -178,7 +193,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 							}
 						}
 					}catch(Exception ex){
-						LOGGER.info(ex.getMessage());
+						ex.printStackTrace();
 					}
 				}
 
@@ -1617,15 +1632,28 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void prendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception{
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
-		//TODO rimuovere il seguente "if" quando si avrà il flusso STANDARD
-		//if(getAccreditamento(accreditamentoId).isProvvisorio()) {
 		workflowService.prendiTaskInCarica(currentUser, accreditamento);
-		//}
 
 		Valutazione valutazione = new Valutazione();
 
-		//setta i campi valutati positivamente di default
-		valutazione.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
+		if(accreditamento.isStandard()) {
+			//prendo l'ultimo diff dell'accreditamento
+			AccreditamentoDiff diffOld = diffService.findLastDiffByProviderId(accreditamento.getProvider().getId());
+			if(diffOld == null)
+				throw new Exception("Ultimo diff per il provider " + accreditamento.getProvider().getId() + " non trovato!");
+			//gestione diff
+			AccreditamentoDiff diffNew = diffService.creaAllDiffAccreditamento(accreditamento);
+			//va a prendere le valutazioni generate durante il diff del nuovo accreditamento col vecchio
+			Set<FieldValutazioneAccreditamento> valutazioniDiff = diffService.confrontaDiffAccreditamento(diffOld, diffNew);
+			//gestione valutazioni di default
+			Set<FieldValutazioneAccreditamento> valutazioniDefault = fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento);
+			//gestione intersezione default e diff
+			valutazione.setValutazioni(handleValutazioniDefaultDiff(valutazioniDiff, valutazioniDefault));
+		}
+		else {
+			//setta i campi valutati positivamente di default
+			valutazione.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
+		}
 
 		//utente corrente che prende in carico
 		Account segretarioEcm = currentUser.getAccount();
@@ -1638,6 +1666,28 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		valutazione.setTipoValutazione(ValutazioneTipoEnum.SEGRETERIA_ECM);
 
 		valutazioneService.save(valutazione);
+	}
+
+	private Set<FieldValutazioneAccreditamento> handleValutazioniDefaultDiff(Set<FieldValutazioneAccreditamento> valutazioniDiff, Set<FieldValutazioneAccreditamento> valutazioniDefault) {
+		LOGGER.debug(Utils.getLogMessage("Gestione delle valutazioni di default e diff"));
+
+		//N.B. tutti i field valutazione sono già presenti su db
+
+		//rimuove dalle default quelle gestite in diff che andranno a sostituire (rimuove anche da db)
+		for(FieldValutazioneAccreditamento fva : valutazioniDiff) {
+			Iterator<FieldValutazioneAccreditamento> iterDefault = valutazioniDefault.iterator();
+			while(iterDefault.hasNext()) {
+				FieldValutazioneAccreditamento fvaDefault = iterDefault.next();
+				if(fva.getIdField() == fvaDefault.getIdField()
+						&& fva.getObjectReference() == fvaDefault.getObjectReference()) {
+					iterDefault.remove();
+					fieldValutazioneAccreditamentoService.delete(fvaDefault.getId());
+				}
+			}
+		}
+
+		valutazioniDefault.addAll(valutazioniDiff);
+		return valutazioniDefault;
 	}
 
 	public boolean canUserInviaAValutazioneCommissione(Long accreditamentoId, CurrentUser currentUser) throws Exception {

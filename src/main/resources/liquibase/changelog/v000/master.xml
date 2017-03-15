@@ -83,4 +83,6 @@
 	<include file="20170308_001_aggiuntaColonna_fake_account_comunicazioni.xml" relativeToChangelogFile="true"/>
 	<include file="20170308_003_applySQL_update_comunicazioni_gruppi.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170313_001_diffAccreditamento.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

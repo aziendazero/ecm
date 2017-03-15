@@ -662,6 +662,10 @@ public class AccreditamentoController {
 			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
 		}
 
+		if(accreditamento.isValutazioneSegreteriaAssegnamento() && accreditamento.isStandard()) {
+			creaMappaFullModificati(accreditamentoWrapper, valutazione);
+		}
+
 		//lista valutazioni per la valutazione complessiva
 		accreditamentoWrapper.setValutazioniList(valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamento.getId()));
 
@@ -765,6 +769,20 @@ public class AccreditamentoController {
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
+	}
+
+	//cicla i fieldValutazioneAccreditamento per capire quali ripetibili sono stati aggiunti/sostituiti nell'inserimento della nuova domanda
+	private void creaMappaFullModificati(AccreditamentoWrapper accreditamentoWrapper, Valutazione valutazione) {
+		//mappa <long, fieldValutazione> per verificare se il ripetibile ha subito una modifica "full", dal momento che proviene da un diff avrà sicuramente l'obj ref.
+		Map<Long, FieldValutazioneAccreditamento> mappaFieldFull = new HashMap<Long, FieldValutazioneAccreditamento>();
+
+		for(FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
+			if(IdFieldEnum.isFull(fva.getIdField().getNameRef())) {
+				mappaFieldFull.put(fva.getObjectReference(), fva);
+			}
+		}
+
+		accreditamentoWrapper.setMappaFullModificati(mappaFieldFull);
 	}
 
 	private void commonPrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper, AccreditamentoWrapperModeEnum mode){

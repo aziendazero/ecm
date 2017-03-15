@@ -208,6 +208,11 @@ public class SedeController {
 		try {
 			//controllo se è possibile modificare la valutazione o meno
 			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+
+			//aggiungo flag per controllo su campi modificati all'inserimento di una nuova domanda
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			if(accreditamento.isStandard() && accreditamento.isValutazioneSegreteriaAssegnamento())
+				model.addAttribute("checkIfAccreditamentoChanged", true);
 			SedeWrapper sedeWrapper = prepareSedeWrapperValidate(sedeService.getSede(id), accreditamentoId, providerId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false);
 			return goToValidate(model, sedeWrapper);
 		}catch (Exception ex){
@@ -541,9 +546,10 @@ public class SedeController {
 		}
 
 		//solo se la valutazione è del crecm / team leader dopo l'INTEGRAZIONE
-		if(accreditamento.getStatoUltimaIntegrazione() != null && (accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneTeamLeader() || accreditamento.isValutazioneCrecmVariazioneDati()))
+		if(accreditamento.getStatoUltimaIntegrazione() != null && (accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneTeamLeader() || accreditamento.isValutazioneCrecmVariazioneDati())){
 			stato = accreditamento.getStatoUltimaIntegrazione();
 			prepareValutazioneIntegrazioneReferee(sedeWrapper, accreditamentoId, stato, workFlowProcessInstanceId, subset);
+		}
 
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperValidate(" + sede.getId() + "," + accreditamentoId + "," + providerId +") - exiting"));
 		return sedeWrapper;

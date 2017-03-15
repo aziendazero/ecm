@@ -202,6 +202,9 @@ public class AccreditamentoWrapper {
 	//file pdf del verbale valutazione sul campo firmato
 	private File verbalePdfFirmato;
 
+	//mappa ripetibili modificati full in inserimento domanda standard
+	private Map<Long, FieldValutazioneAccreditamento> mappaFullModificati;
+
 	//info di destinazione della domanda standard
 	private AccreditamentoStatoEnum destinazioneStatoDomandaStandard;
 

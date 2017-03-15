@@ -264,6 +264,11 @@ public class PersonaController {
 		try {
 			//controllo se è possibile modificare la valutazione o meno
 			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+
+			//aggiungo flag per controllo su campi modificati all'inserimento di una nuova domanda
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			if(accreditamento.isStandard() && accreditamento.isValutazioneSegreteriaAssegnamento())
+				model.addAttribute("checkIfAccreditamentoChanged", true);
 			return goToValidate(model, preparePersonaWrapperValidate(personaService.getPersona(id), accreditamentoId, providerId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false));
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/" + id + "/validate"),ex);
@@ -727,7 +732,7 @@ public class PersonaController {
 			stato = accreditamento.getStatoUltimaIntegrazione();
 			prepareValutazioneIntegrazioneReferee(personaWrapper, accreditamentoId, stato, workFlowProcessInstanceId, subset);
 		}
-		
+
 		personaWrapper.setFiles(persona.getFiles());
 
 		LOGGER.info(Utils.getLogMessage("preparePersonaWrapperValidate(" + persona.getId() + ") - exiting"));

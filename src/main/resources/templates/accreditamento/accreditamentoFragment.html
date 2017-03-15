@@ -23,6 +23,8 @@
 				<a id="vademecum_link" target="_blank" th:text="#{label.vademecum}" href="">Modello di esempio</a>
 			</div>
 
+			<div th:if="${valutabile and accreditamentoWrapper.mappaFullModificati != null and !#maps.isEmpty(accreditamentoWrapper.mappaFullModificati)}" th:text="#{message.sono_evidenziati_gli_elementi_aggiunti_dal_ultimo_accreditamento}" class="alert alert-info"></div>
+
 			<div class="x_content">
 
 				<div id="tabs" class="" role="tabpanel" data-example-id="togglable-tabs">
@@ -121,7 +123,8 @@
 														</td>
 													</tr>
 													<!-- LEGALE RAPPRESENTANTE -->
-													<tr>
+													<tr th:classappend="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, accreditamentoWrapper.legaleRappresentante.id) and
+														accreditamentoWrapper.mappaFullModificati.get(accreditamentoWrapper.legaleRappresentante.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).LEGALE_RAPPRESENTANTE__FULL) ? 'integrazione-creazione' : ''}">
 														<td th:unless="${accreditamentoWrapper.legaleRappresentante == null}"><a th:text="#{label.legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.legaleRappresentante.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.legaleRappresentante == null}"><div th:text="#{label.legale_rappresentante}"></div></td>
 														<th:block th:unless="${enableField}">
@@ -148,7 +151,8 @@
 														</td>
 													</tr>
 													<!-- DELEGATO LEGALE RAPPRESENTANTE -->
-													<tr th:if="${accreditamentoWrapper.provider.tipoOrganizzatore.tipoP and ((mode != 'validate' and mode != 'enableField') or accreditamentoWrapper.delegatoLegaleRappresentante != null)}">
+													<tr th:if="${accreditamentoWrapper.provider.tipoOrganizzatore.tipoP and ((mode != 'validate' and mode != 'enableField') or accreditamentoWrapper.delegatoLegaleRappresentante != null)}" th:classappend="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, accreditamentoWrapper.delegatoLegaleRappresentante.id) and
+														accreditamentoWrapper.mappaFullModificati.get(accreditamentoWrapper.delegatoLegaleRappresentante.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).DELEGATO_LEGALE_RAPPRESENTANTE__FULL) ? 'integrazione-creazione' : ''}">
 														<td th:unless="${accreditamentoWrapper.delegatoLegaleRappresentante == null}"><a th:text="#{label.delegato_legale_rappresentante}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.delegatoLegaleRappresentante.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.delegatoLegaleRappresentante == null}"><div th:text="#{label.delegato_legale_rappresentante}"></div></td>
 														<th:block th:unless="${enableField}">
@@ -208,7 +212,9 @@
 												</thead>
 												<tbody>
 													<!-- SEDE LEGALE -->
-													<tr th:unless="${accreditamentoWrapper.sedeLegale == null}" th:classappend="${#sets.contains(accreditamentoWrapper.eliminati,accreditamentoWrapper.sedeLegale.id) ? 'integrazione-eliminazione' : (#sets.contains(accreditamentoWrapper.aggiunti,accreditamentoWrapper.sedeLegale.id) ? 'integrazione-creazione' : '') }">
+													<tr th:unless="${accreditamentoWrapper.sedeLegale == null}" th:classappend="${#sets.contains(accreditamentoWrapper.eliminati,accreditamentoWrapper.sedeLegale.id) ? 'integrazione-eliminazione' : (#sets.contains(accreditamentoWrapper.aggiunti,accreditamentoWrapper.sedeLegale.id) ? 'integrazione-creazione' : '')}"
+														th:class="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, accreditamentoWrapper.sedeLegale.id) and
+														accreditamentoWrapper.mappaFullModificati.get(accreditamentoWrapper.sedeLegale.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).SEDE__FULL) ? 'integrazione-creazione' : ''}">
 														<td><a th:text="#{label.sede_legale} + ' ' + ${accreditamentoWrapper.sedeLegale.sedeOperativa == true ? #messages.msg('label.anche_operativa') : ''}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${accreditamentoWrapper.sedeLegale.id}/show${urlParam}|}"></a></td>
 														<td	th:text="${accreditamentoWrapper.sedeLegale.provincia}"></td>
 														<td	th:text="#{label.indirizzo_sede(${accreditamentoWrapper.sedeLegale.indirizzo}, ${accreditamentoWrapper.sedeLegale.comune})}"></td>
@@ -248,7 +254,9 @@
 														</th:block>
 													</tr>
 													<!-- SEDI OPERATIVE -->
-													<tr th:each="sede, row : ${accreditamentoWrapper.sedi}" th:classappend="${#sets.contains(accreditamentoWrapper.eliminati,sede.id) ? 'integrazione-eliminazione' : (#sets.contains(accreditamentoWrapper.aggiunti,sede.id) ? 'integrazione-creazione' : '')}" >
+													<tr th:each="sede, row : ${accreditamentoWrapper.sedi}" th:classappend="${#sets.contains(accreditamentoWrapper.eliminati,sede.id) ? 'integrazione-eliminazione' : (#sets.contains(accreditamentoWrapper.aggiunti,sede.id) ? 'integrazione-creazione' : '')}"
+														th:class="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, sede.id) and
+														accreditamentoWrapper.mappaFullModificati.get(sede.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).SEDE__FULL) ? 'integrazione-creazione' : ''}">
 														<td><a th:text="#{label.sede_operativa}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/sede/${sede.id}/show${urlParam}|}"></a></td>
 														<td th:text="${sede.provincia}"></td>
 														<td	th:text="#{label.indirizzo_sede(${sede.indirizzo}, ${sede.comune})}"></td>
@@ -425,7 +433,8 @@
 												</thead>
 												<tbody>
 													<!-- RESPONSABILE SEGRETERIA -->
-													<tr>
+													<tr th:class="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, accreditamentoWrapper.responsabileSegreteria.id) and
+														accreditamentoWrapper.mappaFullModificati.get(accreditamentoWrapper.responsabileSegreteria.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SEGRETERIA__FULL) ? 'integrazione-creazione' : ''}">
 														<td th:unless="${accreditamentoWrapper.responsabileSegreteria == null}"><a th:text="#{label.responsabile_segreteria}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSegreteria.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.responsabileSegreteria == null}"><div th:text="#{label.responsabile_segreteria}"></div></td>
 														<th:block th:unless="${enableField}">
@@ -452,7 +461,8 @@
 														</td>
 													</tr>
 													<!-- RESPONSABILE AMMINISTRATIVO -->
-													<tr>
+													<tr th:class="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, accreditamentoWrapper.responsabileAmministrativo.id) and
+														accreditamentoWrapper.mappaFullModificati.get(accreditamentoWrapper.responsabileAmministrativo.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_AMMINISTRATIVO__FULL) ? 'integrazione-creazione' : ''}">
 														<td th:unless="${accreditamentoWrapper.responsabileAmministrativo == null}"><a th:text="#{label.responsabile_amministrativo}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileAmministrativo.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.responsabileAmministrativo == null}"><div th:text="#{label.responsabile_amministrativo}"></div></td>
 														<th:block th:unless="${enableField}">
@@ -479,7 +489,8 @@
 														</td>
 													</tr>
 													<!--  RESPONSABILE SISTEMA INFORMATICO -->
-													<tr>
+													<tr th:class="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, accreditamentoWrapper.responsabileSistemaInformatico.id) and
+														accreditamentoWrapper.mappaFullModificati.get(accreditamentoWrapper.responsabileSistemaInformatico.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_SISTEMA_INFORMATICO__FULL) ? 'integrazione-creazione' : ''}">
 														<td th:unless="${accreditamentoWrapper.responsabileSistemaInformatico == null}"><a th:text="#{label.responsabile_sistema_informatico}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileSistemaInformatico.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.responsabileSistemaInformatico == null}"><div th:text="#{label.responsabile_sistema_informatico}"></div></td>
 														<th:block th:unless="${enableField}">
@@ -506,7 +517,8 @@
 														</td>
 													</tr>
 													<!-- RESPONSABILE QUALITÀ -->
-													<tr>
+													<tr th:class="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, accreditamentoWrapper.responsabileQualita.id) and
+														accreditamentoWrapper.mappaFullModificati.get(accreditamentoWrapper.responsabileQualita.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).RESPONSABILE_QUALITA__FULL) ? 'integrazione-creazione' : ''}">
 														<td th:unless="${accreditamentoWrapper.responsabileQualita == null}"><a th:text="#{label.responsabile_qualita}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.responsabileQualita.id}/show${urlParam}|}"></a></td>
 														<td th:if="${accreditamentoWrapper.responsabileQualita == null}"><div th:text="#{label.responsabile_qualita}"></div></td>
 														<th:block th:unless="${enableField}">
@@ -566,7 +578,9 @@
 												</thead>
 												<tbody>
 													<!-- COORDINATORE COMITATO SCIENTIFICO -->
-													<tr th:unless="${accreditamentoWrapper.coordinatoreComitatoScientifico == null}" th:classappend="${#sets.contains(accreditamentoWrapper.eliminati,accreditamentoWrapper.coordinatoreComitatoScientifico.id) ? 'integrazione-eliminazione' : (#sets.contains(accreditamentoWrapper.aggiunti,accreditamentoWrapper.coordinatoreComitatoScientifico.id) ? 'integrazione-creazione' : '') }">
+													<tr th:unless="${accreditamentoWrapper.coordinatoreComitatoScientifico == null}" th:classappend="${#sets.contains(accreditamentoWrapper.eliminati,accreditamentoWrapper.coordinatoreComitatoScientifico.id) ? 'integrazione-eliminazione' : (#sets.contains(accreditamentoWrapper.aggiunti,accreditamentoWrapper.coordinatoreComitatoScientifico.id) ? 'integrazione-creazione' : '') }"
+													th:class="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, accreditamentoWrapper.coordinatoreComitatoScientifico.id) and
+														accreditamentoWrapper.mappaFullModificati.get(accreditamentoWrapper.coordinatoreComitatoScientifico.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).COMPONENTE_COMITATO_SCIENTIFICO__FULL) ? 'integrazione-creazione' : ''}">
 														<td><a th:text="#{label.coordinatore_comitato}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${accreditamentoWrapper.coordinatoreComitatoScientifico.id}/show${urlParam}|}"></a></td>
 														<td	th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.nome}"></td>
 														<td	th:text="${accreditamentoWrapper.coordinatoreComitatoScientifico.anagrafica.cognome}"></td>
@@ -607,7 +621,9 @@
 														</th:block>
 													</tr>
 													<!-- COMPONENTI COMITATO SCIENTIFICO -->
-													<tr th:each="componente, row : ${accreditamentoWrapper.componentiComitatoScientifico}" th:classappend="${#sets.contains(accreditamentoWrapper.eliminati,componente.id) ? 'integrazione-eliminazione' : (#sets.contains(accreditamentoWrapper.aggiunti,componente.id) ? 'integrazione-creazione' : '') }">
+													<tr th:each="componente, row : ${accreditamentoWrapper.componentiComitatoScientifico}" th:classappend="${#sets.contains(accreditamentoWrapper.eliminati,componente.id) ? 'integrazione-eliminazione' : (#sets.contains(accreditamentoWrapper.aggiunti,componente.id) ? 'integrazione-creazione' : '') }"
+														th:class="${(accreditamentoWrapper.mappaFullModificati != null and #maps.containsKey(accreditamentoWrapper.mappaFullModificati, componente.id) and
+														accreditamentoWrapper.mappaFullModificati.get(componente.id).idField == T(it.tredi.ecm.dao.enumlist.IdFieldEnum).COMPONENTE_COMITATO_SCIENTIFICO__FULL) ? 'integrazione-creazione' : ''}">
 														<td><a th:text="#{label.componente_comitato}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/provider/${accreditamentoWrapper.provider.id}/persona/${componente.id}/show${urlParam}|}"></a></td>
 														<td th:text="${componente.anagrafica.nome}"></td>
 														<td	th:text="${componente.anagrafica.cognome}"></td>
