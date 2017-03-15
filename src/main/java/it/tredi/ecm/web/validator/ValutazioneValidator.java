@@ -45,6 +45,37 @@ public class ValutazioneValidator {
 		}
 	}
 
+	public void validateValutazioneDatiAccreditamentoStandard(Object target, Errors errors, int sezione) {
+		Set<IdFieldEnum> fieldsDaControllare = new HashSet<IdFieldEnum>();
+		fieldsDaControllare = IdFieldEnum.getDatiAccreditamentoSplitBySezione(sezione);
+
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = (Map<IdFieldEnum, FieldValutazioneAccreditamento>) target;
+
+		for (Map.Entry<IdFieldEnum, FieldValutazioneAccreditamento> entry : mappa.entrySet()) {
+
+			//field che non sono effettivamente presenti perchè inglobati in altri più generici. es. DATI_ACCREDITAMENTO_NUMERO_DIPENDENTI
+			if(entry.getKey() != IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO &&
+					entry.getKey() != IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE &&
+					entry.getKey() != IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE &&
+					entry.getKey() != IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO &&
+					entry.getKey() != IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE &&
+					entry.getKey() != IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE &&
+					entry.getKey() != IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO &&
+					entry.getKey() != IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO) {
+				if(fieldsDaControllare.contains(entry.getKey())) {
+					String key = gestisciEccezioniKey(entry.getKey().getKey());
+					if(entry.getValue().getEsito() == null) {
+						errors.rejectValue(key, "error.atleast_one_empty");
+					}
+					else
+						if(entry.getValue().getEsito() == false && (entry.getValue().getNote() == null
+						|| entry.getValue().getNote().isEmpty()))
+							errors.rejectValue(key, "error.note_obbligatorie");
+				}
+			}
+		}
+	}
+
 	public void validateValutazione(Object target, Errors errors) {
 		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = (Map<IdFieldEnum, FieldValutazioneAccreditamento>) target;
 
@@ -62,6 +93,24 @@ public class ValutazioneValidator {
 					errors.rejectValue("", "error.note_obbligatorie");
 		}else{
 			for (Map.Entry<IdFieldEnum, FieldValutazioneAccreditamento> entry : mappa.entrySet()) {
+				String key = gestisciEccezioniKey(entry.getKey().getKey());
+				if(entry.getValue().getEsito() == null) {
+					errors.rejectValue(key, "error.atleast_one_empty");
+				}
+				else
+					if(entry.getValue().getEsito() == false && (entry.getValue().getNote() == null
+					|| entry.getValue().getNote().isEmpty()))
+						errors.rejectValue(key, "error.note_obbligatorie");
+			}
+		}
+	}
+
+	public void validateValutazioneStandard(Object target, Errors errors) {
+		Map<IdFieldEnum, FieldValutazioneAccreditamento> mappa = (Map<IdFieldEnum, FieldValutazioneAccreditamento>) target;
+
+		for (Map.Entry<IdFieldEnum, FieldValutazioneAccreditamento> entry : mappa.entrySet()) {
+			//se sono field valutazione nascosti che non posso effettivamente valutare li ignoro
+			if(!IdFieldEnum.isFull(entry.getKey())) {
 				String key = gestisciEccezioniKey(entry.getKey().getKey());
 				if(entry.getValue().getEsito() == null) {
 					errors.rejectValue(key, "error.atleast_one_empty");

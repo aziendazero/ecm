@@ -336,15 +336,18 @@ public class SedeController {
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/validate"));
 		try{
 			//validazione della sede
-			valutazioneValidator.validateValutazione(sedeWrapper.getMappa(), result);
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			//validator che ignora i FULL
+			if(accreditamento.isStandard() && accreditamento.isValutazioneSegreteriaAssegnamento())
+				valutazioneValidator.validateValutazioneStandard(sedeWrapper.getMappa(), result);
+			else
+				valutazioneValidator.validateValutazione(sedeWrapper.getMappa(), result);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
 			}else{
-				Accreditamento accreditamento = new Accreditamento();
-				accreditamento.setId(sedeWrapper.getAccreditamentoId());
 
 				if(sedeWrapper.getMappa() != null && sedeWrapper.getMappa().containsKey(IdFieldEnum.SEDE__FULL)){
 					Boolean esitoFull = sedeWrapper.getMappa().get(IdFieldEnum.SEDE__FULL).getEsito();

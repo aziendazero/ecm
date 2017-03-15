@@ -393,17 +393,18 @@ public class DatiAccreditamentoController {
 											@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs, Model model) throws Exception{
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/dati/validate"));
 		try {
-			//valutazioneValidator.validateValutazione(wrapper.getMappa(), result);
-			valutazioneValidator.validateValutazioneDatiAccreditamento(wrapper.getMappa(), result, wrapper.getSezione());
-
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			//validator che ignora i FULL
+			if(accreditamento.isStandard() && accreditamento.isValutazioneSegreteriaAssegnamento())
+				valutazioneValidator.validateValutazioneDatiAccreditamentoStandard(wrapper.getMappa(), result, wrapper.getSezione());
+			else
+				valutazioneValidator.validateValutazioneDatiAccreditamento(wrapper.getMappa(), result, wrapper.getSezione());
 			if(result.hasErrors()){
 				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
 			}else{
-				Accreditamento accreditamento = new Accreditamento();
-				accreditamento.setId(wrapper.getAccreditamentoId());
 				wrapper.getMappa().forEach((k, v) -> {
 					v.setIdField(k);
 					v.setAccreditamento(accreditamento);

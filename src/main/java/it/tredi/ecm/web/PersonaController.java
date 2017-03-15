@@ -381,8 +381,12 @@ public class PersonaController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId +"/provider/"+ providerId + "/persona/validate"));
 		try {
 			//validazione della persona
-			valutazioneValidator.validateValutazione(personaWrapper.getMappa(), result);
-
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			//validator che ignora i FULL
+			if(accreditamento.isStandard() && accreditamento.isValutazioneSegreteriaAssegnamento())
+				valutazioneValidator.validateValutazioneStandard(personaWrapper.getMappa(), result);
+			else
+				valutazioneValidator.validateValutazione(personaWrapper.getMappa(), result);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
@@ -390,9 +394,6 @@ public class PersonaController {
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
 			}else{
-				Accreditamento accreditamento = new Accreditamento();
-				accreditamento.setId(personaWrapper.getAccreditamentoId());
-
 				if(personaWrapper.getMappa() != null && personaWrapper.getMappa().containsKey(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL)){
 					Boolean esitoFull = personaWrapper.getMappa().get(IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL).getEsito();
 					if(esitoFull != null){

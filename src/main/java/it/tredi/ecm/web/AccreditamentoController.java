@@ -777,7 +777,7 @@ public class AccreditamentoController {
 		Map<Long, FieldValutazioneAccreditamento> mappaFieldFull = new HashMap<Long, FieldValutazioneAccreditamento>();
 
 		for(FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
-			if(IdFieldEnum.isFull(fva.getIdField().getNameRef())) {
+			if(IdFieldEnum.isFull(fva.getIdField())) {
 				mappaFieldFull.put(fva.getObjectReference(), fva);
 			}
 		}
