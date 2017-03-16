@@ -220,6 +220,13 @@ public class Provider extends BaseEntity{
 		return null;
 	}
 
+	public Persona getCoordinatoreComitatoScientifico(){
+		for(Persona p : persone)
+			if(p.isCoordinatoreComitatoScientifico())
+				return p;
+		return null;
+	}
+
 	public Persona getLegaleRappresentante(){
 		for(Persona p : persone)
 			if(p.isLegaleRappresentante())
