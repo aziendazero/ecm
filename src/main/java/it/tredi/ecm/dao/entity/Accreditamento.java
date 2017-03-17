@@ -406,7 +406,11 @@ public class Accreditamento extends BaseEntityDefaultId{
 	}
 
 	public AccreditamentoStatoEnum getStatoUltimaIntegrazione() {
-		if(this.getDataPreavvisoRigettoFine() == null || this.isVariazioneDati())
+		if(this.isVariazioneDati())
+			return AccreditamentoStatoEnum.INTEGRAZIONE;
+		if(this.getDataIntegrazioneInizio() == null)
+			return null;
+		if(this.getDataPreavvisoRigettoInizio() == null)
 			return AccreditamentoStatoEnum.INTEGRAZIONE;
 		else
 			return AccreditamentoStatoEnum.PREAVVISO_RIGETTO;
