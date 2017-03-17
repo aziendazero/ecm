@@ -111,7 +111,7 @@
 											</div>
 											<div class="right">
 												<h3>
-													<span th:text="${comunicazione.oggetto}"></span> <small th:text="${#temporals.format(comunicazione.dataCreazione, 'HH:mm - dd/MM/yy')}"></small>
+													<span th:text="${comunicazione.oggetto}"></span> <small th:text="${#temporals.format(comunicazione.dataUltimaModifica, 'HH:mm - dd/MM/yy')}"></small>
 												</h3>
 												<p th:text="${comunicazione.dataCreazione == comunicazione.dataUltimaModifica} ? #{label.nuova_comunicazione} : #{label.risposta_a_comunicazione}"></p>
 											</div>

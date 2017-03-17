@@ -215,8 +215,11 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 
 	@Override
 	public List<Comunicazione> getUltimi10MessaggiNonLetti(Long id) {
-		Page<Comunicazione> results = comunicazioneRepository.findMessaggiNonLettiOrderByDataCreazioneDesc(id, new PageRequest(0, 10));
+		Page<Comunicazione> results = comunicazioneRepository.findMessaggiNonLettiOrderByDataUltimaModificaDesc(id, new PageRequest(0, 10));
 		List<Comunicazione> ultimi10MessaggiNonLetti= results.getContent();
+		for(Comunicazione c : ultimi10MessaggiNonLetti) {
+			c.getDataUltimaModifica().toString();
+		}
 		return ultimi10MessaggiNonLetti;
 	}
 
@@ -227,7 +230,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 
 	@Override
 	public long getIdUltimaComunicazioneRicevuta(Long id) {
-		Page<Comunicazione> results = comunicazioneRepository.findMessaggiNonLettiOrderByDataCreazioneDesc(id, new PageRequest(0, 1));
+		Page<Comunicazione> results = comunicazioneRepository.findMessaggiNonLettiOrderByDataUltimaModificaDesc(id, new PageRequest(0, 1));
 		List<Comunicazione> ultimoMessaggioNonLetto = results.getContent();
 		if (!ultimoMessaggioNonLetto.isEmpty())
 			return ultimoMessaggioNonLetto.get(0).getId();
@@ -450,7 +453,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 
 	@Override
 	public Set<Comunicazione> getAllComunicazioniNonLetteByAccount(Account user) {
-		return comunicazioneRepository.findAllComunicazioneNonLetteOrderByDataCreazioneDesc(user.getId());
+		return comunicazioneRepository.findAllComunicazioneNonLetteOrderByDataUltimaModificaDesc(user.getId());
 	}
 
 	@Override
