@@ -1616,6 +1616,7 @@ public class AccreditamentoController {
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#id)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/riepilogo/{argument}/pdf")
 	public void pdfRiepilogoDomanda(@PathVariable Long accreditamentoId, @PathVariable String argument,
+			@RequestParam(required = false) Long valutazioneId,
 			Model model, RedirectAttributes redirectAttr, HttpServletResponse response) {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/riepilogo/domanda/pdf"));
 		try {
@@ -1624,7 +1625,7 @@ public class AccreditamentoController {
 			if(argument == null || !(argument.equals("domanda") || argument.equals("pianoFormativo") || argument.equals("valutazione")))
 				throw new Exception("Invalid argument");
 
-			ByteArrayOutputStream pdfOutputStream = pdfRiepiloghiService.creaOutputStreamPdfRiepilogoDomanda(accreditamentoId, argument);
+			ByteArrayOutputStream pdfOutputStream = pdfRiepiloghiService.creaOutputStreamPdfRiepilogoDomanda(accreditamentoId, argument, valutazioneId);
 			response.setContentLength(pdfOutputStream.size());
 			response.getOutputStream().write(pdfOutputStream.toByteArray());
 		}

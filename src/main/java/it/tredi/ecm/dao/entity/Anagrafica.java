@@ -55,4 +55,8 @@ public class Anagrafica extends BaseEntityDefaultId{
 		Anagrafica entitapiatta = (Anagrafica) o;
 		return Objects.equals(id, entitapiatta.id);
 	}
+
+	public String getFullName() {
+		return this.nome + " " + this.cognome;
+	}
 }

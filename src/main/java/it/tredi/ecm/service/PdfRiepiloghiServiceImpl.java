@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -37,12 +39,17 @@ import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DatiEconomici;
 import it.tredi.ecm.dao.entity.Disciplina;
+import it.tredi.ecm.dao.entity.EventoPianoFormativo;
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.enumlist.INomeEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 
 @Service
 public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
@@ -50,6 +57,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 
 	@Autowired private AccreditamentoService accreditamentoService;
 	@Autowired private ProviderService providerService;
+	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private MessageSource messageSource;
 
 	//formatters
@@ -85,19 +93,24 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 	private float spacingBefore = 10F;
 	private float spacingAfter = 10F;
 
+    Image imgCheck = null;
+    Image imgRemove = null;
+    Image imgQuestion = null;
+
+
 	@Override
-	public ByteArrayOutputStream creaOutputStreamPdfRiepilogoDomanda(Long accreditamentoId, String argument) throws Exception {
+	public ByteArrayOutputStream creaOutputStreamPdfRiepilogoDomanda(Long accreditamentoId, String argument, Long valutazioneId) throws Exception {
 		LOGGER.debug("Inizio procedura scrittura PDF del riepilogo della Domanda: " + accreditamentoId);
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 
 		ByteArrayOutputStream byteArrayOutputStreamPdf = new ByteArrayOutputStream();
-        writePdfRiepilogo(byteArrayOutputStreamPdf, accreditamento, argument);
+        writePdfRiepilogo(byteArrayOutputStreamPdf, accreditamento, argument, valutazioneId);
 
         return byteArrayOutputStreamPdf;
 	}
 
-	private void writePdfRiepilogo(OutputStream outputStream, Accreditamento accreditamento, String argument) throws Exception {
+	private void writePdfRiepilogo(OutputStream outputStream, Accreditamento accreditamento, String argument, Long valutazioneId) throws Exception {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, outputStream);
@@ -118,7 +131,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
             	break;
             case "valutazione":
             	document.addTitle("Riepilogo della Valutazione della Domanda di Accreditamento " + accreditamento.getId());
-            	writePdfRiepilogoValutazioneDomanda(document, accreditamento);
+            	writePdfRiepilogoValutazioneDomanda(document, accreditamento, valutazioneId);
             	break;
             }
         } catch (Exception e) {
@@ -237,7 +250,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         addCellLabelCampoValore("label.procedure_formative_tipologia", dati.getProcedureFormative(), tipologiaFormativaFields);
         addCellLabelCampoValore("label.professioniAccreditamento", dati.getProfessioniAccreditamento(), tipologiaFormativaFields);
         if(dati.getProfessioniAccreditamento().equals("Generale"))
-        	addCellLabelCampoLabel("label.professioniAccreditamento", "label.tutte_le_professioni", tipologiaFormativaFields);
+        	addCellLabelCampoLabel("label.professioni_discipline", "label.tutte_le_professioni", tipologiaFormativaFields);
         else
         	addCellLabelCampoValoreDiscipline("label.professioni_discipline", dati.getDiscipline(), tipologiaFormativaFields);
         document.add(tipologiaFormativaFields);
@@ -526,14 +539,318 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 
 	}
 
-	private void writePdfRiepilogoPianoFormativoDomanda(Document document, Accreditamento accreditamento) {
-		// TODO Auto-generated method stub
+	private void writePdfRiepilogoPianoFormativoDomanda(Document document, Accreditamento accreditamento) throws DocumentException {
+		Provider provider = accreditamento.getProvider();
+
+		//TITOLO
+		Object[] values = {intFormatter.print(accreditamento.getPianoFormativo().getAnnoPianoFormativo(), Locale.getDefault()), accreditamento.getTipoDomanda().getNome(), longFormatter.print(accreditamento.getId(), Locale.getDefault()), provider.getDenominazioneLegale()};
+        Paragraph parTitolo = new Paragraph();
+        parTitolo.setAlignment(Element.ALIGN_LEFT);
+        parTitolo.setFont(fontTitolo);
+        parTitolo.add(messageSource.getMessage("label.riepilogo_pf_domandaTipo_domandaId_providerDenominazione", values, Locale.getDefault()));
+        document.add(parTitolo);
+
+        document.add(Chunk.NEWLINE);
+        document.add(Chunk.NEWLINE);
+
+        //EVENTI DEL PIANO FORMATIVO
+        for(EventoPianoFormativo e : accreditamento.getPianoFormativo().getEventiPianoFormativo()) {
+        	Object[] id = {e.getCodiceIdentificativo()};
+    		Paragraph parEvento = new Paragraph();
+    		parEvento.setAlignment(Element.ALIGN_LEFT);
+    		parEvento.setFont(fontNomeCampo);
+    		parEvento.add(messageSource.getMessage("label.evento_idEvento", id, Locale.getDefault()));
+            document.add(parEvento);
+            PdfPTable eventoFields = getTableFields();
+            addAllCellsEventoPF(e, eventoFields);
+            document.add(eventoFields);
+        }
 
 	}
 
-	private void writePdfRiepilogoValutazioneDomanda(Document document, Accreditamento accreditamento) throws DocumentException {
-		// TODO Auto-generated method stub
+	private void writePdfRiepilogoValutazioneDomanda(Document document, Accreditamento accreditamento, Long valutazioneId) throws Exception {
+		if(valutazioneId == null)
+			throw new Exception("Id valutazione riepilogo non valido");
 
+		Valutazione valutazione = valutazioneService.getValutazione(valutazioneId);
+		if(valutazione == null)
+			throw new Exception("Valutazione " +  valutazioneId + "non trovata");
+
+		Provider provider = accreditamento.getProvider();
+
+		//TITOLO
+		Object[] values = {valutazione.getAccount().getFullName(), accreditamento.getTipoDomanda().getNome(), longFormatter.print(accreditamento.getId(), Locale.getDefault()), provider.getDenominazioneLegale()};
+        Paragraph parTitolo = new Paragraph();
+        parTitolo.setAlignment(Element.ALIGN_LEFT);
+        parTitolo.setFont(fontTitolo);
+        parTitolo.add(messageSource.getMessage("label.riepilogo_valutazione_domandaTipo_domandaId_providerDenominazione_valutatoreFullNome", values, Locale.getDefault()));
+        document.add(parTitolo);
+
+        document.add(Chunk.NEWLINE);
+        document.add(Chunk.NEWLINE);
+
+        //VALUTAZIONE COMPLESSIVA
+        Paragraph parValComplessiva = new Paragraph();
+        parValComplessiva.setAlignment(Element.ALIGN_LEFT);
+        parValComplessiva.setFont(fontParTitolo);
+        parValComplessiva.add(messageSource.getMessage("label.valutazione_complessiva", null, Locale.getDefault()));
+        document.add(parValComplessiva);
+        String valutazioneComplessiva = valutazione.getValutazioneComplessiva();
+        if(valutazioneComplessiva == null || valutazioneComplessiva.isEmpty())
+        	valutazioneComplessiva = messageSource.getMessage("label.dato_non_inserito", null, Locale.getDefault());
+        Paragraph parValComplessivaVal = new Paragraph();
+        parValComplessivaVal.setAlignment(Element.ALIGN_LEFT);
+        parValComplessivaVal.setFont(fontNomeCampo);
+        parValComplessivaVal.add(valutazioneComplessiva);
+        document.add(parValComplessivaVal);
+
+        document.add(Chunk.NEWLINE);
+
+        //FONT AWESOME IMAGES
+        imgCheck = Image.getInstance("src/main/resources/static/images/check.png");
+        imgCheck.scaleAbsolute(16f, 16f);
+        imgRemove = Image.getInstance("src/main/resources/static/images/remove.png");
+        imgRemove.scaleAbsolute(15f, 15f);
+        imgQuestion = Image.getInstance("src/main/resources/static/images/question.png");
+        imgQuestion.scaleAbsolute(15f, 15f);
+
+        //INFORMAZIONI DEL PROVIDER
+        List<FieldValutazioneAccreditamento> infoProviderVal = getOrderedFieldValutazioneBySubset(valutazione.getValutazioni(), SubSetFieldEnum.PROVIDER);
+	    if(!infoProviderVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.info_provider", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(infoProviderVal, table);
+	        document.add(table);
+        }
+
+	    //LEGALE RAPPRESENTANTE
+        List<FieldValutazioneAccreditamento> legaleRapprVal = getOrderedFieldValutazioneBySubset(valutazione.getValutazioni(), SubSetFieldEnum.LEGALE_RAPPRESENTANTE);
+	    if(!legaleRapprVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.legale_rappresentante", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(legaleRapprVal, table);
+	        document.add(table);
+        }
+
+	    //DELEGATO LEGALE RAPPRESENTANTE
+        List<FieldValutazioneAccreditamento> delegatoLegaleRapprVal = getOrderedFieldValutazioneBySubset(valutazione.getValutazioni(), SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE);
+	    if(!delegatoLegaleRapprVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.delegato_legale_rappresentante", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(delegatoLegaleRapprVal, table);
+	        document.add(table);
+        }
+
+	    //SEDI DEL PROVIDER
+        Paragraph parSediProvider = new Paragraph();
+        parSediProvider.setAlignment(Element.ALIGN_LEFT);
+        parSediProvider.setFont(fontParTitolo);
+        parSediProvider.add(messageSource.getMessage("label.sedi_provider", null, Locale.getDefault()));
+        document.add(parSediProvider);
+        //SEDE LEGALE
+        Sede sedeLegale = provider.getSedeLegale();
+        if(sedeLegale != null) {
+	        List<FieldValutazioneAccreditamento> sedeLegaleVal = getOrderedFieldValutazioneBySubsetAndObjectRef(valutazione.getValutazioni(), SubSetFieldEnum.SEDE, sedeLegale.getId());
+		    if(!sedeLegaleVal.isEmpty()) {
+		    	Object[] valSedeLegale = {sedeLegale.getAddressNameFull()};
+		        Paragraph par = new Paragraph();
+		        par.setAlignment(Element.ALIGN_LEFT);
+		        par.setFont(fontNomeCampo);
+		        par.add(messageSource.getMessage("label.sede_legale_withAddress", valSedeLegale, Locale.getDefault()));
+		        document.add(par);
+		        PdfPTable table = getTableFieldsValutazione();
+		        addTableValutazione(sedeLegaleVal, table);
+		        document.add(table);
+	        }
+        }
+        //SEDI OPERATIVE
+        for(Sede s : provider.getSedi()) {
+        	if(!s.isSedeLegale()) {
+                List<FieldValutazioneAccreditamento> sedeVal = getOrderedFieldValutazioneBySubsetAndObjectRef(valutazione.getValutazioni(), SubSetFieldEnum.SEDE, s.getId());
+    		    if(!sedeVal.isEmpty()) {
+    		    	Object[] valSede = {s.getAddressNameFull()};
+    		        Paragraph par = new Paragraph();
+    		        par.setAlignment(Element.ALIGN_LEFT);
+    		        par.setFont(fontNomeCampo);
+    		        par.add(messageSource.getMessage("label.sede_operativa_withAddress", valSede, Locale.getDefault()));
+    		        document.add(par);
+    		        PdfPTable table = getTableFieldsValutazione();
+    		        addTableValutazione(sedeVal, table);
+    		        document.add(table);
+    	        }
+        	}
+        }
+
+        //TIPOLOGIA FORMATIVA
+        List<FieldValutazioneAccreditamento> tipologiaFormativaVal = getOrderedFieldValutazioneTipologiaFormativa(valutazione.getValutazioni(), IdFieldEnum.getDatiAccreditamentoSplitBySezione(1));
+	    if(!tipologiaFormativaVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.tipologia_formativa", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(tipologiaFormativaVal, table);
+	        document.add(table);
+        }
+
+	    //DATI ECONOMICI
+        List<FieldValutazioneAccreditamento> datiEconomiciVal = getOrderedFieldValutazioneTipologiaFormativa(valutazione.getValutazioni(), IdFieldEnum.getDatiAccreditamentoSplitBySezione(2));
+	    if(!datiEconomiciVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.dati_economici", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(datiEconomiciVal, table);
+	        document.add(table);
+        }
+
+	    //DATI STRUTTURA
+        List<FieldValutazioneAccreditamento> datiStrutturaVal = getOrderedFieldValutazioneTipologiaFormativa(valutazione.getValutazioni(), IdFieldEnum.getDatiAccreditamentoSplitBySezione(3));
+	    if(!datiStrutturaVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.dati_struttura", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(datiStrutturaVal, table);
+	        document.add(table);
+        }
+
+	    //RESPONSABILE SEGRETERIA
+	    List<FieldValutazioneAccreditamento> respSegreteriaVal = getOrderedFieldValutazioneBySubset(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_SEGRETERIA);
+	    if(!respSegreteriaVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.responsabile_segreteria", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(respSegreteriaVal, table);
+	        document.add(table);
+        }
+
+	    //RESPONSABILE AMMINISTRATIVO
+	    List<FieldValutazioneAccreditamento> respAmministrativoVal = getOrderedFieldValutazioneBySubset(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_AMMINISTRATIVO);
+	    if(!respAmministrativoVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.responsabile_amministrativo", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(respAmministrativoVal, table);
+	        document.add(table);
+        }
+
+	    //RESPONSABILE SISTEMA INFORMATICO
+	    List<FieldValutazioneAccreditamento> respSistemaInfoVal = getOrderedFieldValutazioneBySubset(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO);
+	    if(!respSistemaInfoVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.responsabile_sistema_informatico", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(respSistemaInfoVal, table);
+	        document.add(table);
+        }
+
+	    //RESPONSABILE QUALITA
+	    List<FieldValutazioneAccreditamento> respQualitaVal = getOrderedFieldValutazioneBySubset(valutazione.getValutazioni(), SubSetFieldEnum.RESPONSABILE_QUALITA);
+	    if(!respQualitaVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.responsabile_qualita", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(respQualitaVal, table);
+	        document.add(table);
+        }
+
+	    //COMPONENTI COMITATO SCIENTIFICO
+        Paragraph parComitato = new Paragraph();
+        parComitato.setAlignment(Element.ALIGN_LEFT);
+        parComitato.setFont(fontParTitolo);
+        parComitato.add(messageSource.getMessage("label.componenti_comitato_scientifico", null, Locale.getDefault()));
+        document.add(parComitato);
+        //SEDE LEGALE
+        Persona coordinatore = provider.getCoordinatoreComitatoScientifico();
+        if(coordinatore != null) {
+	        List<FieldValutazioneAccreditamento> coordinatoreVal = getOrderedFieldValutazioneBySubsetAndObjectRef(valutazione.getValutazioni(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO, coordinatore.getId());
+		    if(!coordinatoreVal.isEmpty()) {
+		    	Object[] valuesCoordinatore = {coordinatore.getAnagrafica().getFullName()};
+		        Paragraph par = new Paragraph();
+		        par.setAlignment(Element.ALIGN_LEFT);
+		        par.setFont(fontNomeCampo);
+		        par.add(messageSource.getMessage("label.coordinatore_withName", valuesCoordinatore, Locale.getDefault()));
+		        document.add(par);
+		        PdfPTable table = getTableFieldsValutazione();
+		        addTableValutazione(coordinatoreVal, table);
+		        document.add(table);
+	        }
+        }
+        //SEDI OPERATIVE
+        for(Persona p : provider.getComponentiComitatoScientifico()) {
+        	if(!p.isCoordinatoreComitatoScientifico()) {
+                List<FieldValutazioneAccreditamento> componenteVal = getOrderedFieldValutazioneBySubsetAndObjectRef(valutazione.getValutazioni(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO, p.getId());
+    		    if(!componenteVal.isEmpty()) {
+    		    	Object[] valSede = {p.getAnagrafica().getFullName()};
+    		        Paragraph par = new Paragraph();
+    		        par.setAlignment(Element.ALIGN_LEFT);
+    		        par.setFont(fontNomeCampo);
+    		        par.add(messageSource.getMessage("label.componente_withName", valSede, Locale.getDefault()));
+    		        document.add(par);
+    		        PdfPTable table = getTableFieldsValutazione();
+    		        addTableValutazione(componenteVal, table);
+    		        document.add(table);
+    	        }
+        	}
+        }
+
+        //ALLEGATI
+        List<FieldValutazioneAccreditamento> allegatiVal = getOrderedFieldValutazioneBySubset(valutazione.getValutazioni(), SubSetFieldEnum.ALLEGATI_ACCREDITAMENTO);
+	    if(!allegatiVal.isEmpty()) {
+	        Paragraph par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_LEFT);
+	        par.setFont(fontParTitolo);
+	        par.add(messageSource.getMessage("label.allegati", null, Locale.getDefault()));
+	        document.add(par);
+	        PdfPTable table = getTableFieldsValutazione();
+	        addTableValutazione(allegatiVal, table);
+	        document.add(table);
+        }
+
+	    //VALUTAZIONI SUL CAMPO (SE STANDARD)
+	    if(accreditamento.isStandard()) {
+	    	List<FieldValutazioneAccreditamento> valutazioniCampoVal = getOrderedFieldValutazioneBySubset(valutazione.getValutazioni(), SubSetFieldEnum.VALUTAZIONE_SUL_CAMPO);
+		    if(!valutazioniCampoVal.isEmpty()) {
+		        Paragraph par = new Paragraph();
+		        par.setAlignment(Element.ALIGN_LEFT);
+		        par.setFont(fontParTitolo);
+		        par.add(messageSource.getMessage("label.valutazioni_sul_campo", null, Locale.getDefault()));
+		        document.add(par);
+		        PdfPTable table = getTableFieldsValutazione();
+		        addTableValutazione(valutazioniCampoVal, table);
+		        document.add(table);
+	        }
+	    }
 	}
 
 	private PdfPTable getTableFields() throws DocumentException {
@@ -545,19 +862,39 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		return tableFields;
 	}
 
+	private PdfPTable getTableFieldsValutazione() throws DocumentException {
+		PdfPTable tableFields = new PdfPTable(4);
+		tableFields.setWidthPercentage(100);
+		tableFields.setWidths(new float[]{0.5f, 2, 0.8f, 4});
+		tableFields.setSpacingBefore(spacingBefore);
+		tableFields.setSpacingAfter(spacingAfter);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.id", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.descrizione", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.valutazione", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.note", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		return tableFields;
+	}
+
+	private void addCellIntestaSubTableByString(String stringLabelCampo, PdfPTable table, BaseColor baseColor, boolean border, Integer elementAlign) {
+		PdfPCell cell = new PdfPCell(new Phrase(stringLabelCampo, fontNomeCampoSubTable));
+		if(!border)
+			cell.setBorder(PdfPCell.NO_BORDER);
+		if(baseColor != null)
+			cell.setBackgroundColor(baseColor);
+		if(elementAlign != null)
+			cell.setHorizontalAlignment(elementAlign);
+		else
+			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+		cell.setPadding(cellPaddingSubTable);
+		table.addCell(cell);
+	}
+
 	private void addCellLabelCampoValore(String labelCampo, String valoreCampo, PdfPTable table) {
 		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
 	}
 
 	private void addCellLabelCampoLabel(String labelCampo, String valoreCampo, PdfPTable table) {
 		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), messageSource.getMessage(valoreCampo, null, Locale.getDefault()), table);
-	}
-
-	private void addCellLabelCampoValoreValuta(String labelCampo, BigDecimal valoreLongCampo, PdfPTable table) {
-		String valoreCampo = null;
-		if(valoreLongCampo != null)
-			valoreCampo = valutaFormatter.print(valoreLongCampo, Locale.getDefault()) + "€";
-		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
 	}
 
 	private void addCellValoreCampoValoreValuta(String labelCampo, BigDecimal valoreLongCampo, PdfPTable table) {
@@ -756,5 +1093,114 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		addCellLabelCampoValore("label.telefono", sede.getTelefono(), tableFields);
 		addCellLabelCampoValore("label.fax", sede.getFax(), tableFields);
 		addCellLabelCampoValore("label.email", sede.getEmail(), tableFields);
+	}
+
+	private void addAllCellsEventoPF(EventoPianoFormativo evento, PdfPTable tableFields) throws DocumentException {
+		addCellLabelCampoValore("label.procedure_formative_tipologia", evento.getProceduraFormativa().getNome(), tableFields);
+		addCellLabelCampoValore("label.titolo", evento.getTitolo(), tableFields);
+		addCellLabelCampoValore("label.obiettivo_strategico_nazionale", evento.getObiettivoNazionale().getNome(), tableFields);
+		addCellLabelCampoValore("label.obiettivo_strategico_regionale", evento.getObiettivoRegionale().getNome(), tableFields);
+		addCellLabelCampoValore("label.professioni_cui_evento_si_riferisce", evento.getProfessioniEvento(), tableFields);
+		if(evento.getProfessioniEvento().equals("Generale"))
+        	addCellLabelCampoLabel("label.professioni_discipline", "label.tutte_le_professioni", tableFields);
+        else
+        	addCellLabelCampoValoreDiscipline("label.professioni_discipline", evento.getDiscipline(), tableFields);
+	}
+
+	private void addTableValutazione(List<FieldValutazioneAccreditamento> orderedVal, PdfPTable table) throws Exception {
+		for(FieldValutazioneAccreditamento fva : orderedVal) {
+			addCellSubTable(intFormatter.print(fva.getIdField().getIdEcm(), Locale.getDefault()), table);
+			addCellSubTable(messageSource.getMessage("IdFieldEnum_valutazione." + fva.getIdField().name(), null, Locale.getDefault()), table);
+			addCellSubTable(getIconForValutazione(fva.getEsito()), table);
+			addCellSubTable(getNoteForValutazione(fva.getNote()), table);
+		}
+	}
+
+	private List<FieldValutazioneAccreditamento> getOrderedFieldValutazioneBySubset(Set<FieldValutazioneAccreditamento> valutazioni, SubSetFieldEnum subset) {
+		List<FieldValutazioneAccreditamento> result = new ArrayList<FieldValutazioneAccreditamento>();
+		for(FieldValutazioneAccreditamento fva : valutazioni) {
+			if(fva.getIdField().getSubSetField() == subset  && fva.getIdField().getIdEcm() != -1)
+				result.add(fva);
+		}
+		result.sort((fva1, fva2) -> Integer.compare(fva1.getIdField().getIdEcm(), fva2.getIdField().getIdEcm()));
+		return result;
+	}
+
+	private List<FieldValutazioneAccreditamento> getOrderedFieldValutazioneBySubsetAndObjectRef(Set<FieldValutazioneAccreditamento> valutazioni, SubSetFieldEnum subset, Long id) {
+		List<FieldValutazioneAccreditamento> result = new ArrayList<FieldValutazioneAccreditamento>();
+		for(FieldValutazioneAccreditamento fva : valutazioni) {
+			if(fva.getIdField().getSubSetField() == subset && fva.getObjectReference() == id.longValue() && fva.getIdField().getIdEcm() != -1)
+				result.add(fva);
+		}
+		result.sort((fva1, fva2) -> Integer.compare(fva1.getIdField().getIdEcm(), fva2.getIdField().getIdEcm()));
+		return result;
+	}
+
+	private List<FieldValutazioneAccreditamento> getOrderedFieldValutazioneTipologiaFormativa(Set<FieldValutazioneAccreditamento> valutazioni, Set<IdFieldEnum> setIdField) {
+		List<FieldValutazioneAccreditamento> result = new ArrayList<FieldValutazioneAccreditamento>();
+		for(FieldValutazioneAccreditamento fva : valutazioni) {
+			if(setIdField.contains(fva.getIdField()))
+				result.add(fva);
+		}
+		result.sort((fva1, fva2) -> Integer.compare(fva1.getIdField().getIdEcm(), fva2.getIdField().getIdEcm()));
+		return result;
+	}
+
+	private void addCellSubTable(String valoreCampo, PdfPTable table) {
+		addCellSubTable(valoreCampo, table, null, true, null, false);
+	}
+
+	private void addCellSubTable(Image valoreCampo, PdfPTable table) {
+		addCellSubTable(valoreCampo, table, null, true, null, false);
+	}
+
+	private void addCellSubTable(String valoreCampo, PdfPTable table, BaseColor baseColor, boolean border, Integer elementAlign, boolean bold) {
+		PdfPCell cell = new PdfPCell(new Phrase(valoreCampo, bold ? fontValoreCampoSubTableBold : fontValoreCampoSubTable));
+		if(!border)
+			cell.setBorder(PdfPCell.NO_BORDER);
+		if(baseColor != null)
+			cell.setBackgroundColor(baseColor);
+		if(elementAlign != null)
+			cell.setHorizontalAlignment(elementAlign);
+		else
+			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+		cell.setPadding(cellPaddingSubTable);
+		table.addCell(cell);
+	}
+
+	private void addCellSubTable(Image img, PdfPTable table, BaseColor baseColor, boolean border, Integer elementAlign, boolean bold) {
+		//boolean scala l'immagine
+		PdfPCell cell = new PdfPCell(img, false);
+		if(!border)
+			cell.setBorder(PdfPCell.NO_BORDER);
+		if(baseColor != null)
+			cell.setBackgroundColor(baseColor);
+		if(elementAlign != null)
+			cell.setHorizontalAlignment(elementAlign);
+		else {
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+			cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		}
+		cell.setPadding(cellPaddingSubTable);
+		table.addCell(cell);
+	}
+
+	private Image getIconForValutazione(Boolean esito) throws Exception {
+		if(imgQuestion == null || imgCheck == null || imgRemove == null)
+			throw new Exception("Imgages not initialized");
+		if(esito == null)
+			return imgQuestion;
+		if(esito.booleanValue() == true)
+			return imgCheck;
+		if(esito.booleanValue() == false)
+			return imgRemove;
+		else
+			throw new Exception("Error in finding icon");
+	}
+
+	private String getNoteForValutazione(String note) {
+		if(note == null)
+			return " ";
+		else return note;
 	}
 }

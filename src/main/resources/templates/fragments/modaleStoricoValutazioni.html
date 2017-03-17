@@ -52,6 +52,8 @@
 							th:text="#{label.riepilogo_valutazione}">Riepilogo valutazione</h4>
 						<button type="button" id="apriCheck" class="btn btn-primary pull-right with-margin-top toggleButtonsValutazione" th:text="#{label.apri_tutte}" onclick="openAllValutazione()"></button>
 						<button type="button" id="chiudiCheck" class="btn btn-primary pull-right with-margin-top toggleButtonsValutazione" style="display: none" th:text="#{label.chiudi_tutte}" onclick="closeAllValutazione()"></button>
+						<a id="linkPdfRiepilogo" class="btn btn-primary pull-right with-margin-top" th:text="#{label.esporta_pdf}"
+							th:href="@{|/|}"></a>
 					</div>
 					<div class="modal-body">
 						<div id="container-valutazione-storico"></div>
@@ -102,6 +104,8 @@
 			function mostraRiepilogoValutazione(valutazioneId) {
 				var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/valutazione/|}]] + valutazioneId + "/show";
 				$("#container-valutazione-storico").html("");
+				baseLinkRiepilogo = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/riepilogo/valutazione/pdf|}]]
+				$("#linkPdfRiepilogo").attr("href", baseLinkRiepilogo + "?valutazioneId=" + valutazioneId);
 				$.get(url)
 				.done(function(data) {
 					$("#container-valutazione-storico").html(data);
@@ -115,6 +119,7 @@
 			$(".modal-showAllValutazioneStorico").on('hide.bs.modal', function() {
 				$("#apriCheck").show();
 				$("#chiudiCheck").hide();
+				$("#linkPdfRiepilogo").attr("href", [[@{|/|}]]);
 				$.each($('.datatable-responsive-search-validation-storico'), function(i,t) {
 					$(t).DataTable().destroy();
 				});

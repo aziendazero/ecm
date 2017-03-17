@@ -305,6 +305,8 @@
 								</button>
 								<h4 class="modal-title" id="myModalLabel"
 									th:text="#{label.riepilogo_piano_formativo}">Riepilogo piano formativo</h4>
+								<a class="btn btn-primary pull-right with-margin-top" th:text="#{label.esporta_pdf}"
+									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/riepilogo/pianoFormativo/pdf|}"></a>
 							</div>
 							<div class="modal-body">
 
@@ -330,7 +332,8 @@
 									di tutto l'accreditamento</h4>
 								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" th:text="#{label.apri_tutte}" onclick="openAll()"></button>
 								<button type="button" class="btn btn-primary pull-right with-margin-top toggleButtons" style="display: none" th:text="#{label.chiudi_tutte}" onclick="closeAll()"></button>
-								<a class="btn btn-primary pull-right with-margin-top" th:text="#{label.esporta_pdf}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/riepilogo/domanda/pdf|}"></a>
+								<a class="btn btn-primary pull-right with-margin-top" th:text="#{label.esporta_pdf}"
+									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/riepilogo/domanda/pdf|}"></a>
 							</div>
 							<div class="modal-body">
 
